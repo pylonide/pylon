@@ -239,8 +239,8 @@ jpf.resize.square = function(posY, posX, objResize) {
             t = parseInt(block.style.top),
             w = parseInt(block.style.width),
             h = parseInt(block.style.height),
-            resized = false,
-            objBlock = jpf.flow.isBlock(block);
+            resized = false;
+            //objBlock = jpf.flow.isBlock(block);
 
         if (e.preventDefault) {
             e.preventDefault();
@@ -312,15 +312,15 @@ jpf.resize.square = function(posY, posX, objResize) {
             width = Math.max(dw, width);
             height = Math.max(dh, height);
 
-            objBlock.moveTo(top, left);
-            objBlock.resize(width, height);
-
-            objResize.show();
+            //objBlock.moveTo(top, left);
+            //objBlock.resize(width, height);
 
             if(objResize.onresize) {
-                objResize.onresize(block);
+                objResize.onresize(block, top, left, width, height);
             }
 
+            objResize.show();
+            
             resized = true;
         };
 

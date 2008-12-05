@@ -700,6 +700,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
+        jpf.console.info("UPDATE");
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
         objBlock = objBlocks[blockId];
@@ -730,12 +731,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             : false;
 
         objBlock.setLock(lock);
-        if (lock) {
-            this.$setStyleClass(htmlNode, "locked", ["selected"]);
-        }
-        else {
-            this.$setStyleClass(htmlNode, "selected", ["locked"]);
-        }
 
         objBlock.changeRotation(
             this.applyRuleSetOnNode("rotation", xmlNode),
@@ -828,12 +823,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             resizeManager.hide();
         }
 
+        objBlock.updateOutputs();
+        objBlock.onMove();
+        //jpf.console.info("onMove - UPDATE")
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
-
+jpf.console.info("ADD");
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
@@ -943,7 +941,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
-
+jpf.console.info("FILL");
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
                 htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this),
@@ -1132,16 +1130,20 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
-            objBlock.updateOutputs();
-            objBlock.onMove();
+            //objBlock.updateOutputs();
+            //objBlock.onMove();
+            //jpf.console.info("onMove (resizeManager.onresizedone function)");
         };
 
-        resizeManager.onresize = function(htmlElement) {
+        resizeManager.onresize = function(htmlElement, t, l, w, h) {
             if (!htmlElement)
                 return;
             var objBlock = jpf.flow.isBlock(htmlElement);            
+            objBlock.moveTo(t, l);
+            objBlock.resize(w, h);
             objBlock.updateOutputs();
             objBlock.onMove();
+            //jpf.console.info("onMove (resizeManager.onresize function)");
         };
 
         jpf.flow.onaftermove = function(dt, dl) {
