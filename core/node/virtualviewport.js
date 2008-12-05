@@ -95,7 +95,7 @@ jpf.VirtualViewport = function(){
         offset : 0,
         limit  : 20,
         length : 0,
-        sb     : new jpf.Scrollbar(this.pHtmlNode).attach(this),
+        sb     : new jpf.scrollbar(this.pHtmlNode).attach(this),
         cache  : null,
         
         inited : false,

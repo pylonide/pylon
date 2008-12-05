@@ -159,6 +159,24 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     /**
+     * @attribute {String} progress a value between 0 and 1 which is visualized
+     * inside the slider. This can be used to show a progress indicator for 
+     * the download of movies or other media.
+     * Example:
+     * <code>
+     * </code>
+     */
+    this.$propHandlers["progress"] = function(value){
+        if (!this.oProgress) {
+            this.oProgress = 
+              jpf.xmldb.htmlImport(this.$getLayoutNode("progress"), 
+                this.$getLayoutNode("main", "progress", this.oExt));
+        }
+        
+        this.oProgress.style.width = (value * 100) + "%"
+    }
+    
+    /**
      * @attribute {Number} min the minimal value the slider can have. This is 
      * the value that the slider has when the grabber is at it's begin position.
      */
@@ -199,7 +217,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (dragging && !force)
             return;
-        
+
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var max, min, multiplier = (this.value - this.min) / (this.max - this.min);
         
@@ -375,7 +393,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             
             document.onmousemove = function(e){
                 var o = this.dragNode;
-                
+
                 if (!o) {
                     document.onmousemove = 
                     document.onmouseup   = 
