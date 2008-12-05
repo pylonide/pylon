@@ -106,7 +106,6 @@ jpf.flow = {
 
                 objBlock.onMove();
                 jpf.flow.onblockmove();
-                //jpf.console.info("onMove - MOVE")
 
                 return false;
             }
@@ -300,7 +299,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         //jpf.console.info("SetCaption");
         this.setCaption(this.other.caption);
         //jpf.console.info("SetLock");
-        this.setLock(this.other.lock)
+        this.setLock(this.other.lock, true)
 
         this.updateOutputs();
     };
@@ -351,13 +350,16 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     true    block is locked
      *     false   block is unlocked
      */
-    this.setLock = function(lock) {
-        if (this.other.lock !== lock) {
+    this.setLock = function(lock, init) {
+        if (this.other.lock !== lock || init) {
             this.draggable = !lock;
             this.other.lock = lock;
             this.outputsVisibility(!lock);
 
-            jpf.setStyleClass(this.htmlElement, lock ? "locked" : "selected", [ lock ? "selected" : "locked"]);
+            if (lock)
+                jpf.setStyleClass(this.htmlElement, "locked");
+            else
+                jpf.setStyleClass(this.htmlElement, "", ["locked"]);
         }
     };
 
@@ -1053,7 +1055,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                      : (s[1] > d[1]
                          ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
 
-        var condition = position 
+        var condition = position
                       + (sO == "left"
                           ? 1
                           : (sO == "right"
@@ -1095,10 +1097,14 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                 break;
             case "BR48":
             case "BR28":
-            case "BR21":
                 l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                 l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                break;
+            case "BR21":
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [parseInt((d[0] - s[0]) / 2)+1, "right"]);
                 break;
             case "TL44":
             case "TL42":
@@ -1439,16 +1445,13 @@ jpf.flow.label = function(connector, number) {
     else {
         var htmlElement = connector.htmlElement.appendChild(document.createElement("span"));
         jpf.setStyleClass(htmlElement, "label");
-        /*htmlElement.ondblclick = function(e) {
-            jpf.flow.onconnectionrename(e);
-        }*/
     }
 
     l += segment[1] == "top" || segment[1] == "bottom"
         ? segment[0].offsetWidth + 3
         : (segment[0].offsetWidth - htmlElement.offsetWidth) / 2;
     t += segment[1] == "top" || segment[1] == "bottom"
-        ? (segment[0].offsetHeight - htmlElement.offsetHeight)/2
+        ? (segment[0].offsetHeight - htmlElement.offsetHeight) / 2
         : segment[0].offsetHeight - 2;
 
     htmlElement.style.left = l + "px";

@@ -100,8 +100,8 @@ jpf.resize = function() {
         var sy = this.scales.scaley;
         var sr = this.scales.scaleratio;
 
-        if (!sx && !sy && !sr)
-            return;
+        /*if (!sx && !sy && !sr)
+            return;*/
 
         for (var i = 0, l = squares.length, s; i < l; i++) {
             s = squares[i];
@@ -163,8 +163,8 @@ jpf.resize.square = function(posY, posX, objResize) {
     this.repaint = function() {
         if (this.visible) {
             var block = objResize.htmlElement;
-            this.htmlElement.style.display = 'block';
-            
+            this.htmlElement.style.display = "block";
+
             var bw = parseInt(block.style.width) + jpf.getDiff(block)[0];
             var bh = parseInt(block.style.height) + jpf.getDiff(block)[1];
             var bt = parseInt(block.style.top);
@@ -198,6 +198,8 @@ jpf.resize.square = function(posY, posX, objResize) {
             this.htmlElement.style.cursor = c;
         }
         else {
+            //IE bug
+            var sw = this.htmlElement.offsetWidth;
             this.htmlElement.style.display = 'none';
         }
     };
@@ -207,7 +209,6 @@ jpf.resize.square = function(posY, posX, objResize) {
     };
 
     /* Events */
-
     this.htmlElement.onmouseover = function(e) {
         jpf.setStyleClass(_self.htmlElement, "squareHover");
     };
@@ -240,16 +241,10 @@ jpf.resize.square = function(posY, posX, objResize) {
             w = parseInt(block.style.width),
             h = parseInt(block.style.height),
             resized = false;
-            //objBlock = jpf.flow.isBlock(block);
 
         if (e.preventDefault) {
             e.preventDefault();
         }
-        //e.returnValue = false;
-
-        /*if (objResize.onbeforeresize) {
-            objResize.onbeforeresize(block);
-        }*/
 
         document.onmousemove = function(e) {
             e = (e || event);
@@ -311,9 +306,6 @@ jpf.resize.square = function(posY, posX, objResize) {
             /* Keep minimal size */
             width = Math.max(dw, width);
             height = Math.max(dh, height);
-
-            //objBlock.moveTo(top, left);
-            //objBlock.resize(width, height);
 
             if(objResize.onresize) {
                 objResize.onresize(block, top, left, width, height);

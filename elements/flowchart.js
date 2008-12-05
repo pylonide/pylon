@@ -265,21 +265,25 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (objBlock) {
             if (resizeManager) {
                 var prop = objBlock.other;
+                
                 if (prop.lock == 1)
                     return;
 
-                _self.$selectCaption(objBlock.caption);
+                //if (prop.scalex || prop.scaley || prop.scaleratio) {
+                    var scales = {
+                        scalex     : prop.scalex,
+                        scaley     : prop.scaley,
+                        scaleratio : prop.scaleratio,
+                        dwidth     : prop.dwidth,
+                        dheight    : prop.dheight
+                    }
 
-                var scales = {
-                    scalex     : prop.scalex,
-                    scaley     : prop.scaley,
-                    scaleratio : prop.scaleratio,
-                    dwidth     : prop.dwidth,
-                    dheight    : prop.dheight
-                }
-                resizeManager.grab(o, scales);
+                    resizeManager.grab(o, scales);
+                //}
+
             }
-        this.$setStyleClass(o, "selected");
+            this.$setStyleClass(o, "selected");
+            _self.$selectCaption(objBlock.caption);
         }
     };
 
@@ -1017,21 +1021,14 @@ jpf.console.info("FILL");
             }
             else {
                 var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
-                if (objBlock) {
-                    objBlock.setLock(lock);
-                    objBlock.oncreateconnection = function(sXmlNode, sInput,
-                                                           dXmlNode, dInput) {
-                        _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
-                    };
-                    objBlock.onremoveconnection = function(xmlNodeArray) {
-                        _self.removeConnectors(xmlNodeArray);
-                    };
-                    
-                    if (lock) {
-                        this.$setStyleClass(htmlElement, "locked");
-                    }
-                    objBlocks[id] = objBlock;
-                }
+
+                objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
+                    _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
+                };
+                objBlock.onremoveconnection = function(xmlNodeArray) {
+                    _self.removeConnectors(xmlNodeArray);
+                };
+                objBlocks[id] = objBlock;
             }
         }
 
@@ -1043,6 +1040,8 @@ jpf.console.info("FILL");
                                                  objBlocks[c[i].ref], c[i].input);
                 if (!con) {
                     if (objBlocks[id] && objBlocks[c[i].ref]) {
+                        //it's called because connection labels must be aligned
+                        objBlocks[id].onMove();
                         new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
                                                   objBlocks[c[i].ref], {
                             output  : c[i].output,
@@ -1059,7 +1058,7 @@ jpf.console.info("FILL");
                             output  : c[i].output,
                             input   : c[i].input,
                             label   : c[i].label,
-                            type    : c[i].type,                            
+                            type    : c[i].type,
                             xmlNode : c[i].xmlNode
                         });
                     }
