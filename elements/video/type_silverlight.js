@@ -106,7 +106,9 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         context:       this
     });
 
-    jpf.extend(this, jpf.video.TypeInterface);
+    //jpf.extend(this, jpf.video.TypeInterface);
+    jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight",
+        "jpf.all[" + this.oVideo.uniqueId + "].player.resizePlayer()");
 };
 
 jpf.video.TypeSilverlight.isSupported = function(){
@@ -206,7 +208,7 @@ jpf.video.TypeSilverlight.prototype = {
             iTo = 0;
         else if (iTo > this.options["duration"] - 4)
             iTo = this.options["duration"] - 4;
-        this.play();
+        //this.play();
         if (!isNaN(iTo)) {
             try{ //@todo added by ruben
                 this.video.Position = this.oVideo.getCounter(iTo, "%H:%M:%S");//this.spanstring(iTo);
@@ -389,8 +391,9 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     resizePlayer: function() {
-        var oSender  = this.options["sender"]
-        var oContent = oSender.getHost().content;
+        var oSender  = this.options["sender"];
+        if (!oSender) return;
+        var oContent = this.display.getHost().content;
         var width    = oContent.actualWidth;
         var height   = oContent.actualHeight;
 
@@ -439,6 +442,7 @@ jpf.video.TypeSilverlight.prototype = {
     },
 
     $destroy: function() {
+        jpf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight");
         this.stopPlayPoll();
         if (this.player) {
             this.player = this.video = this.preview = null;

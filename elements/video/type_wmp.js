@@ -199,11 +199,11 @@ jpf.video.TypeWmp.prototype = {
     play: function() {
         if (this.player)
             this.player.controls.play();
-        
+
         //@todo hack by ruben
         if (this.oVideo.readyState != jpf.Media.HAVE_ENOUGH_DATA)
             this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
-        
+
         return this;
     },
 
@@ -244,7 +244,7 @@ jpf.video.TypeWmp.prototype = {
         }
         return this;
     },
-    
+
     fullscreen : function(value){
         this.player.fullscreen = value ? true : false;
     },
@@ -377,7 +377,9 @@ jpf.video.TypeWmp.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
-            this.player.controls.stop();
+            try {
+                this.player.controls.stop();
+            } catch(e) {}
             this.player = null;
             delete this.player;
         }

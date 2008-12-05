@@ -364,6 +364,9 @@ jpf.video.TypeFlv.prototype = {
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
             "skinPath", "previewImagePath"];
 
+        jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
+            "jpf.all[" + this.oVideo.uniqueId + "].player.setSize()");
+
         return this;
     },
 
@@ -456,6 +459,7 @@ jpf.video.TypeFlv.prototype = {
     },
 
     $destroy: function() {
+        jpf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo");
         if (this.player) {
             this.player = this.container = null;
             delete this.player;
