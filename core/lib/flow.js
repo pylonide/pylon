@@ -1056,45 +1056,43 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                                   ? 4
                                   : 8));
     //rot.setValue(condition)
-   
-    var s1d1 = jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]);
-    var s0d0 = jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]);
-    var d0s0 = jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]);
-    var d1s1 = jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]);
-    var hd0s0 = jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2;
-    var hd1s1 = jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2);
-    var hs0d0 = jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2;
-    var hs1d1 = jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2);
 
         switch (condition) {
             case "TR41":
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
+                break;
             case "TR44":
             case "TR14":
             case "TR11":
-                l = this.createSegment(l, [s1d1, "top"]);
-                l = this.createSegment(l, [d0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 break;
             case "BR22":
             case "BR24":
             case "BR42":
             case "BR44":
-                l = this.createSegment(l, [d0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil(Math.abs(d[1] - s[1])), "bottom"]);
                 break;
-            case "BR48":
             case "BR41":
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : Math.ceil((d[0] - s[0]) / 2), "right"]);
+                break;
+            case "BR48":
             case "BR28":
             case "BR21":
-                l = this.createSegment(l, [hd0s0, "right"]);
-                l = this.createSegment(l, [d1s1, "bottom"]);
-                l = this.createSegment(l, [hd0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "TL44":
             case "TL42":
             case "TL24":
             case "TL22":
-                l = this.createSegment(l, [s1d1, "top"]);
-                l = this.createSegment(l, [s0d0, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TR21":
             case "TR24":
@@ -1104,114 +1102,118 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "TR24":
             case "TR81":
             case "TR84":
-                l = this.createSegment(l, [hd0s0, "right"]);
-                l = this.createSegment(l, [s1d1, "top"]);
-                l = this.createSegment(l, [hd0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "BR18":
             case "BR88":
             case "BR81":
             case "BR11":
-                l = this.createSegment(l, [d1s1, "bottom"]);
-                l = this.createSegment(l, [d0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 break;
             case "BR14":
-                l = this.createSegment(l, [hd1s1 , "bottom"]);
-                l = this.createSegment(l, [d0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BR84":
             case "BR82":
             case "BR12":
-                l = this.createSegment(l, [hd1s1 , "bottom"]);
-                l = this.createSegment(l, [d0s0, "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
                 break;
             case "BL84":
             case "BL24":
             case "BL21":
-                l = this.createSegment(l, [hd1s1, "bottom"]);
-                l = this.createSegment(l, [s0d0, "left"]);
-                l = this.createSegment(l, [hd1s1, "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BL11":
             case "BL14":
             case "BL41":
             case "BL44":
             case "BL81":
-                l = this.createSegment(l, [s0d0, "left"]);
-                l = this.createSegment(l, [d1s1, "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                 break;
             case "BL12":
             case "BL18":
             case "BL42":
             case "BL48":
-                l = this.createSegment(l, [hs0d0, "left"]);
-                l = this.createSegment(l, [d1s1, "bottom"]);
-                l = this.createSegment(l, [hs0d0, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "BL88":
             case "BL82":
             case "BL28":
             case "BL22":
-                l = this.createSegment(l, [d1s1, "bottom"]);
-                l = this.createSegment(l, [s0d0, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TL88":
             case "TL81":
             case "TL18":
             case "TL11":
-                l = this.createSegment(l, [s0d0, "left"]);
-                l = this.createSegment(l, [s1d1, "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             case "TL41":
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.ceil((s[1] - d[1]) / 2), "top"]);
+                break;
             case "TL48":
             case "TL28":
             case "TL21":
-                l = this.createSegment(l, [hs1d1, "top"]);
-                l = this.createSegment(l, [s0d0, "left"]);
-                l = this.createSegment(l, [hs1d1, "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TL12":
             case "TL14":
             case "TL82":
             case "TL84":
-                l = this.createSegment(l, [hs0d0, "left"]);
-                l = this.createSegment(l, [s1d1, "top"]);
-                l = this.createSegment(l, [hs0d0, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "TR12":
             case "TR18":
             case "TR42":
             case "TR48":
-                l = this.createSegment(l, [hs1d1, "top"]);
-                 l = this.createSegment(l, [d0s0, "right"]);
-                l = this.createSegment(l, [hs1d1, "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                 l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TR22":
             case "TR28":
             case "TR82":
             case "TR88":
-                l = this.createSegment(l, [d0s0, "right"]);
-                l = this.createSegment(l, [s1d1, "top"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             default:
                 switch (position) {
                     case "ML":
-                        l = this.createSegment(l, [s0d0, "left"]);
+                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MM":
-                        l = this.createSegment(l, [s0d0, "left"]);
-                        l = this.createSegment(l, [d1s1, "bottom"]);
+                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                         break;
                     case "TM":
-                        l = this.createSegment(l, [s1d1, "top"]);
-                        l = this.createSegment(l, [s0d0, "left"]);
+                        l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MR":
                         // This part is not checked, MR41 needs only "right"
                         // line, else need them both 
-                        l = this.createSegment(l, [d0s0, "right"]);
+                        l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                         if (condition.substring(2,4) == "41")
                             break;
                         l = this.createSegment(l, [Math.abs(d[1] - s[1]),
