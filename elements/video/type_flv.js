@@ -37,14 +37,11 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.oVideo              = oVideo;
     // #ifndef __PACKAGED
     this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/video/FAVideo.swf";
-    this.DEFAULT_SKIN_PATH   = jpf.basePath + "elements/video/ClearOverPlayMute.swf";
     /* #else
     this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
-    this.DEFAULT_SKIN_PATH   = jpf.basePath + "resources/ClearOverPlayMute.swf";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
-    this.DEFAULT_SKIN_PATH   = jpf.CDN + jpf.VERSION + "/resources/ClearOverPlayMute.swf";
     #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
@@ -321,7 +318,7 @@ jpf.video.TypeFlv.prototype = {
                  .invalidateProperty("clickToTogglePlay", "skinVisible",
                     "skinAutoHide", "autoPlay", "autoLoad", "volume", "bufferTime",
                     "videoScaleMode", "videoAlign", "playheadUpdateInterval",
-                    "skinPath", "previewImagePath").validateNow().makeDelayCalls();
+                    "previewImagePath").validateNow().makeDelayCalls();
 
                 this.oVideo.$initHook({type:"init"});
                 break;
@@ -348,7 +345,6 @@ jpf.video.TypeFlv.prototype = {
         this.volume                 = 50;
         this.skinVisible            = false;
         this.skinAutoHide           = false;
-        this.skinPath               = this.DEFAULT_SKIN_PATH;
         this.playheadTime           = null;
         this.bufferTime             = 0.1;
         this.videoScaleMode         = "maintainAspectRatio"; //maintainAspectRatio || exactFit || noScale
@@ -362,7 +358,7 @@ jpf.video.TypeFlv.prototype = {
         this.properties = ["volume", "skinAutoHide", "showControls", "autoPlay",
             "clickToTogglePlay", "autoLoad", "playHeadTime", "totalTime",
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
-            "skinPath", "previewImagePath"];
+            "previewImagePath"];
 
         jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
             "jpf.all[" + this.oVideo.uniqueId + "].player.setSize()");

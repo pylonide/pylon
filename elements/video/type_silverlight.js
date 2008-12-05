@@ -46,6 +46,9 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
     /* #else
     this.DEFAULT_PLAYER = jpf.basePath + "resources/wmvplayer.xaml";
     #endif */
+    /* #ifdef __WITH_CDN
+    this.DEFAULT_PLAYER = jpf.CDN + jpf.VERSION + "/resources/wmvplayer.xaml";
+    #endif */
     this.htmlElement    = node;
     this.options        = {
         backgroundcolor: "000000",
@@ -298,9 +301,6 @@ jpf.video.TypeSilverlight.prototype = {
         _self.video.AddEventListener("MediaEnded", function() {
             _self.handleState("MediaEnded");
         });
-        _self.video.AddEventListener("BufferingProgressChanged", function(o) {
-            //useless in XAML
-        });
         _self.video.AddEventListener("DownloadProgressChanged", function(o) {
             _self.oVideo.$progressHook({
                 bytesLoaded: Math.round(o.downloadProgress * 100), //percentage
@@ -364,6 +364,8 @@ jpf.video.TypeSilverlight.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
+            if (_self.oVideo && !_self.oVideo.READY && _self.video.CanSeek)
+                _self.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
             _self.oVideo.$changeHook({
                 type        : "change",
                 playheadTime: Math.round(_self.video.Position.Seconds * 1000)

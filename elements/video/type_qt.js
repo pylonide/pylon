@@ -678,9 +678,13 @@ jpf.video.TypeQT.prototype = {
             if (!_self.player) return;
             try {
                 _self.handleEvent({type: "qt_timechanged"});
-                if (!_self.oVideo.READY
-                  && Math.abs(_self.player.GetMaxBytesLoaded()
-                  - _self.player.GetMovieSize()) <= 20)
+                var iLoaded = _self.player.GetMaxBytesLoaded();
+                var iTotal  = _self.player.GetMovieSize();
+                _self.oVideo.$progressHook({
+                    bytesLoaded: iLoaded,
+                    totalBytes : iTotal
+                })
+                if (!_self.oVideo.READY && Math.abs(iLoaded - iTotal) <= 20)
                     _self.handleEvent({type: "qt_load"});
             }
             catch (e) {}

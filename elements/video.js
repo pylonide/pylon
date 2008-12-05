@@ -299,8 +299,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$changeHook = function(e) {
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
-            this.muted  = (e.volume > 0);
-            //this.setProperty('volume', e.volume);
+            if (!this.muted)
+                this.setProperty("volume", this.volume);
         }
         else {
             this.duration = this.player.getTotalTime();

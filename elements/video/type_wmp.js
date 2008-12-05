@@ -200,10 +200,6 @@ jpf.video.TypeWmp.prototype = {
         if (this.player)
             this.player.controls.play();
 
-        //@todo hack by ruben
-        if (this.oVideo.readyState != jpf.Media.HAVE_ENOUGH_DATA)
-            this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
-
         return this;
     },
 
@@ -302,7 +298,9 @@ jpf.video.TypeWmp.prototype = {
               _self.handleEvent(iState);
             });
         } catch (e) {
-            this.player.onplaystatechange = function(event) {alert(event);};
+            this.player.onplaystatechange = function(iState) {
+              _self.handleEvent(iState);
+            }
         }
 
         return this;
@@ -327,7 +325,9 @@ jpf.video.TypeWmp.prototype = {
                 this.stopPlayPoll();
                 break;
             case 3:   //Playing - The current media clip is playing.
-                this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"})
+                if (!this.oVideo.READY)
+                    this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
                 this.startPlayPoll();
                 break;
             case 10:  //Ready - Ready to begin playing.
