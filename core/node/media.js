@@ -36,15 +36,19 @@ var __MEDIA__ = 1 << 20;
 jpf.Media = function(){
     this.$regbase = this.$regbase | __MEDIA__;
 
-    this.$booleanProperties["paused"]   = true;
-    this.$booleanProperties["seeking"]  = true;
-    this.$booleanProperties["autoplay"] = true;
-    this.$booleanProperties["controls"] = true;
-    this.$booleanProperties["READY"]    = false;
+    this.muted = false;
+
+    this.$booleanProperties["paused"]     = true;
+    this.$booleanProperties["muted"]      = true;
+    this.$booleanProperties["seeking"]    = true;
+    this.$booleanProperties["autoplay"]   = true;
+    this.$booleanProperties["controls"]   = true;
+    this.$booleanProperties["READY"]      = false;
+    this.$booleanProperties["fullscreen"] = true;
 
     this.$supportedProperties.push("position", "networkState", "readyState",
-        "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused",
-        "seeking", "volume", "type", "src", "autoplay", "controls");
+        "progress", "buffered", "bufferedBytes", "totalBytes", "currentTime",
+        "paused", "seeking", "volume", "type", "src", "autoplay", "controls");
 
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
@@ -75,8 +79,18 @@ jpf.Media = function(){
         }
     };
 
+    this.$propHandlers["bufferedBytes"] = function(value) {
+        this.setProperty("progress", this.totalBytes
+            ? value.end / this.totalBytes
+            : 0);
+    };
+
     this.$propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
+            // first, check if the seek action doesn't go beyond the download progress of the media element.
+            if (value > this.progress)
+                return this.setProperty("position", this.progress - 0.05);
+
             var isPlaying = !this.paused;
             if (isPlaying)
                 this.pause();
@@ -98,25 +112,42 @@ jpf.Media = function(){
     };
 
     this.$propHandlers["volume"] = function(value){
+        if (!this.player) return;
+        // #ifdef __DEBUG
+        if (value < 0)
+            throw this.MediaError("Attempt to set the volume to a negative volue  '" + value);
+        // #endif
+
         if (value < 1 && value > 0)
             value = value * 100;
-        if (value >= 0) {
-            if (this.setVolume)
-                this.setVolume(value);
-            this.muted = !(value > 0);
+
+        if (this.setVolume)
+            this.setVolume(value);
+        if (value > 0 && this.muted)
+            this.setProperty("muted", false);
+    };
+
+    var oldVolume = null;
+
+    this.$propHandlers["muted"] = function(value){
+        if (!this.player || !this.setVolume) return;
+
+        if (value) { //mute the player
+            oldVolume = this.volume;
+            this.setVolume(0);
         }
         else
-            this.muted = true;
+            this.setVolume(oldVolume || 20);
     };
 
     this.$propHandlers["paused"] = function(value){
-        if (this.player) {
-            this.paused = jpf.isTrue(value);
-            if (this.paused)
-                this.player.pause();
-            else
-                this.player.play();
-        }
+        if (!this.player) return;
+
+        this.paused = jpf.isTrue(value);
+        if (this.paused)
+            this.player.pause();
+        else
+            this.player.play();
     };
 
     var loadTimer = null;
@@ -164,15 +195,22 @@ jpf.Media = function(){
     };
 
     this.$propHandlers["ID3"] = function(value){
+        if (!this.player) return;
         // usually this feature is only made available BY media as getters
         if (typeof this.player.setID3 == "function")
             this.player.setID3(value);
     };
 
+    this.$propHandlers["fullscreen"] = function(value) {
+        //TODO
+    };
+
     /**** DOM Hooks ****/
 
     this.$domHandlers["remove"].push(function(doOnlyAdmin){
+        // #ifdef __DEBUG
         jpf.console.log('Media: removing node...');
+        // #endif
         reset.call(this);
     });
 
@@ -348,7 +386,7 @@ jpf.Media = function(){
     };
 
     // controls
-    this.controls = this.muted = false;
+    //this.controls = this.muted = false;
 }
 
 // network state (.networkState)
