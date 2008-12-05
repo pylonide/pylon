@@ -145,7 +145,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
             mimeType = aMimeTypes[i];
-            
+
             if (mimeType.indexOf('flv') > -1)
                 playerType = "TypeFlv";
             else if (mimeType.indexOf('quicktime') > -1)
@@ -156,9 +156,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                 playerType = "TypeSilverlight";
             else if (mimeType.indexOf('vlc') > -1)
                 playerType = "TypeVlc";
-                
+
             if (playerType == "TypeWmp") {
-                if (!jpf.isIE && typeof jpf.video.TypeVlc != "undefined" 
+                if (!jpf.isIE && typeof jpf.video.TypeVlc != "undefined"
                   && jpf.video.TypeVlc.isSupported())
                     playerType = "TypeVlc";
                 else if (jpf.isMac)
