@@ -701,7 +701,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         for(var i = 0, l = nodes.length; i < l; i++){
             h = headings[nodes[i].getAttribute("hid")];
             
-            node = this.$getLayoutNode("cell", "caption", htmlNodes[i]) || htmlNodes[i];
+            //@todo fake optimization
+            node = htmlNodes[i].firstChild || htmlNodes[i];//this.$getLayoutNode("cell", "caption", htmlNodes[i]) || 
             
             if (h.type == "icon"){
                 (node.nodeType == 1 && node || node.parentNode)
@@ -715,6 +716,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
             }
         }
+        
+        return; //@todo fake optimization
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);

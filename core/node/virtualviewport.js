@@ -39,6 +39,8 @@ var __VIRTUALVIEWPORT__ = 1 << 19;
 jpf.VirtualViewport = function(){
     this.$regbase = this.$regbase | __VIRTUALVIEWPORT__;
     
+    jpf.setStyleClass(this.oExt, "virtual");
+    
     this.$deInitNode = function(xmlNode, htmlNode){
         /*  
             Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
@@ -67,7 +69,7 @@ jpf.VirtualViewport = function(){
             return;
         
         //execute update
-        this.$updateNode(xmlNode, htmlNode, noModifier);
+        this.$updateNode(xmlNode, htmlNode);//, noModifier);
     };
 
     this.$fill = function(){
@@ -93,9 +95,9 @@ jpf.VirtualViewport = function(){
     var _self = this;
     this.viewport = {
         offset : 0,
-        limit  : 20,
+        limit  : 15,
         length : 0,
-        sb     : new jpf.scrollbar(this.pHtmlNode).attach(this),
+        sb     : new jpf.scrollbar(this.pHtmlNode),
         cache  : null,
         
         inited : false,
@@ -112,17 +114,20 @@ jpf.VirtualViewport = function(){
         // set id's of xml to the viewport
         prepare : function(){
             if (!this.inited)
-                this.$draw();
+                this.draw();
             
             var nodes = _self.getTraverseNodes();
+            if (!nodes)
+                return;
+            
+            var docId  = jpf.xmldb.getXmlDocId(_self.xmlRoot);
             var hNodes = _self.oInt.childNodes;
             for (var j = 0, i = 0; i < hNodes.length; i++) {
                 if (hNodes[i].nodeType != 1) continue;
                 
                 hNodes[i].style.display = j >= nodes.length ? "none" : "block"; //Will ruin tables & lists
                 
-                hNodes[i].setAttribute(jpf.xmldb.htmlIdTag, 
-                  nodes[j].getAttribute(jpf.xmldb.xmlIdTag) + "|" + _self.uniqueId);
+                jpf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
                 j++;
             }
         },
@@ -132,7 +137,7 @@ jpf.VirtualViewport = function(){
          */
         resize : function(limit, updateScrollbar){
             this.cache = null;
-            
+
             //Viewport shrinks
             if (limit < this.limit) {
                 var nodes = _self.oInt.childNodes;
@@ -144,7 +149,7 @@ jpf.VirtualViewport = function(){
             }
             //Viewport grows
             else if (limit > this.limit) {
-                for (var i = this.limit-1; i < limit; i++) {
+                for (var i = this.limit; i < limit; i++) {
                     _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.oInt);
                 }
             }
@@ -162,34 +167,109 @@ jpf.VirtualViewport = function(){
          *          overlap between the new offset and the old one
         */
         change : function(offset, limit, updateScrollbar){
-            this.cache = null;
+            this.cache  = null;
+            var diff = offset - this.offset;
+            var oldLimit = this.limit;
+            if (diff*diff >= this.limit*this.limit) //there is no overlap
+                diff = 0;
             this.offset = offset;
-
+            
+            if (diff > 0) { //get last node before resize
+                var lastNode = _self.oInt.lastChild;
+                if (lastNode.nodeType != 1) lastNode = lastNode.previousSibling;
+            }
+            
             if (limit && this.limit != limit)
                 this.resize(limit, updateScrollbar);
-
-            if (updateScrollbar)
+            else if (updateScrollbar)
                 this.sb.update();
             
-            (function(){
-                this.viewport.prepare();
-                
-                 //Traverse through XMLTree
-                var nodes = this.$addNodes(this.xmlRoot, this.oInt, null, this.renderRoot);
-        
-                //Build HTML
-                //this.$fill(nodes);
-                
-                if (this.$selected) {
-                    this.$deselect(this.$selected);
-                    this.$selected = null;
+            //this.viewport.prepare();
+            
+            //Traverse through XMLTree
+            //var nodes = this.$addNodes(this.xmlRoot, this.oInt, null, this.renderRoot);
+            var nodes = _self.getTraverseNodes();
+            if (!nodes)
+                return;
+            
+            var docId  = jpf.xmldb.getXmlDocId(_self.xmlRoot);
+            var hNodes = _self.oInt.childNodes;
+
+            //remove nodes from the beginning
+            if (diff > 0) {
+                var xmlNode, htmlNode, xmlPos = oldLimit - diff, len = hNodes.length;
+                for (var j = 0, i = 0; j < diff && i < len; i++) {
+                    htmlNode = _self.oInt.firstChild;
+                    if (htmlNode.nodeType == 1) {
+                        j++;
+                        xmlNode = nodes[xmlPos++];
+                        //htmlNode.style.display = j >= nodes.length ? "none" : "block"
+                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                    }
+                    
+                    _self.oInt.appendChild(htmlNode);
                 }
                 
-                if (this.selected && this.$isInViewport(this.selected))
-                    this.select(this.selected);
-             }).call(_self);
+                //var lastNode = nodes[oldLimit - diff - 1]
+            }
+            //remove nodes from the end
+            else if (diff < 0) {
+                diff = diff * -1;
+                var xmlNode, htmlNode, xmlPos = 0; //should be adjusted for changing limit
+                for (var j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
+                    htmlNode = _self.oInt.lastChild;
+                    if (htmlNode.nodeType == 1) {
+                        j++;
+                        xmlNode = nodes[xmlPos++];
+                        //htmlNode.style.display = j >= nodes.length ? "none" : "block"
+                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                    }
+                    
+                    _self.oInt.insertBefore(htmlNode, _self.oInt.firstChild);
+                }
+            }
+            //Recalc all nodes
+            else {
+                var xmlNode, htmlNode, len = hNodes.length; 
+                for (var j = 0, i = 0; i < len; i++) {
+                    htmlNode = hNodes[i];
+                    if (htmlNode.nodeType == 1) {
+                        xmlNode = nodes[j++];
+                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                    }
+                }
+            }
+        
+            //Build HTML
+            //_self.$fill(nodes);
+            
+            /*if (_self.$selected) {
+                _self.$deselect(_self.$selected);
+                _self.$selected = null;
+            }
+            
+            if (_self.selected && _self.$isInViewport(_self.selected))
+                _self.select(_self.selected);*/
         }
     };
+    
+    var timer;
+    this.viewport.sb.realtime = false;//!jpf.isIE;
+    this.viewport.sb.attach(this.oInt, this.viewport, function(timed, pos){
+        var vp = _self.viewport;
+        
+        if (vp.sb.realtime || !timed)
+            vp.change(Math.round((vp.length - vp.limit) * pos), vp.limit, false);
+        else {
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                vp.change(Math.round((vp.length - vp.limit) * pos), vp.limit, false);
+            }, 300);
+        }
+    })
     
     this.$isInViewport = function(xmlNode, struct){
         var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
@@ -233,6 +313,8 @@ jpf.VirtualViewport = function(){
     var xmlUpdate = this.$xmlUpdate;
     this.$xmlUpdate = function(){
         this.viewport.cache = null;
+        this.viewport.length = this.xmlRoot.selectNodes(this.traverse).length; //@todo fix this for virtual length
+        this.viewport.sb.update();
         xmlUpdate.apply(this, arguments);
     };
     
@@ -251,11 +333,13 @@ jpf.VirtualViewport = function(){
             jpf.xmldb.createVirtualDataset(XMLRoot);
         
         //Prepare viewport
-        this.viewport.cache = null;
+        this.viewport.cache  = null;
+        this.viewport.length = this.xmlRoot.selectNodes(this.traverse).length; //@todo fix this for virtual length
+        this.viewport.sb.update();
         this.viewport.prepare();
         
         //Traverse through XMLTree
-        this.$addNodes(XMLRoot, null, null, this.renderRoot);
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
 
         //Build HTML
         //this.$fill(nodes);
@@ -399,21 +483,24 @@ jpf.VirtualViewport = function(){
     }
     
     this.getTraverseNodes = function(xmlNode){
+        if (!this.xmlRoot)
+            return;
+        
         if (this.viewport.cache)
             return this.viewport.cache;
-        
-        var start = this.viewport.offset;
-        var end   = start + this.viewport.limit - 1;
 
+        var start = this.viewport.offset;
+        var end   = start + this.viewport.limit + 1;
+        
         //caching statement here
 
         var markers = (xmlNode || this.xmlRoot).selectNodes("j_marker");
 
         //Special case for fully loaded virtual dataset
         if (!markers.length) {
-            var list = (xmlNode || this.xmlRoot).selectNode("("
+            var list = (xmlNode || this.xmlRoot).selectNodes("("
                 + this.traverse + ")[position() >= " + start
-                + " and position() < " + (start+vlen) + "]");
+                + " and position() < " + (end) + "]");
 
             //#ifdef __WITH_SORTING
             return this.$sort ? this.$sort.apply(list) : list;

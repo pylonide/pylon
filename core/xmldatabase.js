@@ -265,9 +265,10 @@ jpf.XmlDatabase = function(){
         if (!this.nodeCount[documentId]) 
             this.nodeCount[documentId] = 0;
 
-        var xmlId = xmlNode.getAttribute(this.xmlIdTag) || documentId 
-                        + "|" + ++this.nodeCount[documentId];
-        xmlNode.setAttribute(this.xmlIdTag, xmlId);
+        var xmlId;
+        xmlId = xmlNode.getAttribute(this.xmlIdTag) 
+          || xmlNode.setAttribute(this.xmlIdTag, (xmlId = documentId 
+               + "|" + ++this.nodeCount[documentId])) || xmlId;
         
         if (!o) 
             return xmlId;

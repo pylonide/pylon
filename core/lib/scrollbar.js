@@ -36,6 +36,7 @@ jpf.scrollbar = function(){
     var TIMER        = null;
     var SCROLLWAIT;
     var SLIDEMAXHEIGHT;
+    var _self = this;
     
     var offsetName = jpf.isIE ? "offset" : "layer";
     
@@ -44,6 +45,9 @@ jpf.scrollbar = function(){
     jpf.makeClass(this);
     
     //Init Skin
+    this.realtime = true;
+    this.$supportedProperties = [];
+    this.$propHandlers = {};
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     if (this.$loadSkin) 
         this.$loadSkin("default:scrollbar");
@@ -52,7 +56,7 @@ jpf.scrollbar = function(){
     jpf.dragmode.defineMode("scrollbar" + this.uniqueId, this);
     
     //Build Skin
-    this.$getNewContext("Main");
+    this.$getNewContext("main");
     this.oExt               = jpf.xmldb.htmlImport(this.$getLayoutNode("main"), document.body);
     this.oExt.host          = this;
     this.oExt.style.display = "none";
@@ -120,8 +124,8 @@ jpf.scrollbar = function(){
         if (!e) 
             e = event;
         STARTPOS = [e[offsetName + "X"], e[offsetName + "Y"] + BTN.offsetHeight];
-        
-        jpf.dragmode.setMode("scrollbar" + uniqueId);
+
+        jpf.dragmode.setMode("scrollbar" + _self.uniqueId);
         
         e.cancelBubble = true;
         return false;
@@ -135,7 +139,7 @@ jpf.scrollbar = function(){
         
         if (e[offsetName + "Y"] > INDICATOR.offsetTop + INDICATOR.offsetHeight) {
             CURVALUE += BIGSTEPVALUE;
-            setScroll();
+            setScroll(true);
             
             SLIDEFAST.style.display = "block";
             SLIDEFAST.style.top     = (INDICATOR.offsetTop
@@ -153,7 +157,7 @@ jpf.scrollbar = function(){
         else 
             if (e[offsetName + "Y"] < INDICATOR.offsetTop) {
                 CURVALUE -= BIGSTEPVALUE;
-                setScroll();
+                setScroll(true);
                 
                 SLIDEFAST.style.display = "block";
                 SLIDEFAST.style.top = BTN.offsetHeight + "px";
@@ -170,6 +174,8 @@ jpf.scrollbar = function(){
     
     MAIN.onmouseup = function(){
         clearInterval(TIMER);
+        if (!_self.realtime)
+            setScroll();
         SLIDEFAST.style.display = "none";
     };
     
@@ -198,6 +204,8 @@ jpf.scrollbar = function(){
     
     this.onmouseup = function(){
         STARTPOS = false;
+        if (!_self.realtime)
+            setScroll();
         jpf.dragmode.clear();
     };
     
@@ -212,34 +220,68 @@ jpf.scrollbar = function(){
          showData(value);*/
     }
     
-    this.attach = function(o, v, s, scroll_func){
+    this.attach = function(oHtml, o, scroll_func){
         LIST         = o;
         onscroll     = scroll_func;
-        viewheight   = v;
-        scrollheight = s;
+        viewheight   = oHtml.offsetHeight;
+        scrollheight = viewheight;
         
-        o.parentNode.appendChild(this.oExt);
+        oHtml.parentNode.appendChild(this.oExt);
         this.oExt.style.display = "block";
-        
-        this.oExt.style.left    = "166px";//(o.offsetLeft + o.offsetWidth) + "px";
+        this.oExt.style.zIndex  = 100000;
+        //this.oExt.style.left    = "166px";//(o.offsetLeft + o.offsetWidth) + "px";
         this.oExt.style.top     = "24px";//o.offsetTop + "px";
         this.oExt.style.height  = "160px";//o.offsetHeight + "px";
-        LIST.onmousewheel       = function(e){
+        
+        function wheel(e){
             if (!e) 
                 e = event;
-            CURVALUE += ((jpf.isOpera ? 1 : -1) * (e.wheelDelta / 120) * STEPVALUE);
+                
+            var delta = null;
+            if (e.wheelDelta) {
+                delta = e.wheelDelta / 120;
+                if (jpf.isOpera)
+                    delta *= -1;
+            }
+            else if (e.detail)
+                delta = -e.detail / 3;
+    
+            if (delta !== null) {
+                var ev = {delta: delta};
+                var res = jpf.dispatchEvent("mousescroll", ev);
+                if (res === false || ev.returnValue === false) {
+                    if (e.preventDefault)
+                        e.preventDefault();
+    
+                    e.returnValue = false;
+                }
+            }
+    
+                
+            STEPVALUE = (o.limit / o.length) / 5;
+            CURVALUE += ((jpf.isOpera ? 1 : -1) * delta * STEPVALUE);
             setScroll(true);
         }
         
+        if (document.addEventListener)
+            document.addEventListener('DOMMouseScroll', wheel, false);
+        else 
+            oHtml.onmousewheel = wheel;
+        
         SCROLLWAIT     = 0;//(LIST.len * COLS)/2;
         SLIDEMAXHEIGHT = MAIN.offsetHeight - BTNDOWN.offsetHeight - BTNUP.offsetHeight;
-        STEPVALUE      = (viewheight / scrollheight) / 5;
+        STEPVALUE      = (viewheight / scrollheight) / 20;
         BIGSTEPVALUE   = STEPVALUE * 3;
         
-        INDICATOR.style.height = Math.max(5, ((viewheight / scrollheight)
-            * SLIDEMAXHEIGHT)) + "px";
-        if (INDICATOR.offsetHeight - 4 == SLIDEMAXHEIGHT) 
-            MAIN.style.display = "none";
+        //viewheight / scrollheight
+        if (o.length) {
+            INDICATOR.style.height = Math.max(5, ((o.limit / o.length)
+                * SLIDEMAXHEIGHT)) + "px";
+            if (INDICATOR.offsetHeight - 4 == SLIDEMAXHEIGHT) 
+                MAIN.style.display = "none";
+        }
+        
+        return this;
     };
     
     var jmlNode = this;
@@ -253,7 +295,7 @@ jpf.scrollbar = function(){
         
         //status = CURVALUE;
         jmlNode.pos = CURVALUE;//(INDICATOR.offsetTop-BTNUP.offsetHeight)/(SLIDEMAXHEIGHT-INDICATOR.offsetHeight);
-        if (!noEvent) 
+        if (!noEvent)
             onscroll(timed, jmlNode.pos);
     }
     
@@ -293,6 +335,28 @@ jpf.scrollbar = function(){
         CURVALUE = pos;
         setScroll(null, noEvent);
     };
+    
+    this.update = function(){
+        var o = LIST;
+        if (o.length) {
+            SLIDEMAXHEIGHT = MAIN.offsetHeight - BTNDOWN.offsetHeight - BTNUP.offsetHeight;
+            INDICATOR.style.height = Math.max(5, ((o.limit / o.length) * 2
+                * SLIDEMAXHEIGHT)) + "px";
+            if (INDICATOR.offsetHeight - 4 == SLIDEMAXHEIGHT) 
+                MAIN.style.display = "none";
+            
+            STEPVALUE = (o.limit / o.length) / 20;
+            BIGSTEPVALUE   = STEPVALUE * 3;
+        }
+        
+        this.oExt.style.top    = "-2px";
+        this.oExt.style.right  = 0;
+        
+        if (this.oExt.parentNode.offsetHeight)
+            this.oExt.style.height = (this.oExt.parentNode.offsetHeight - 20) + "px";
+        else 
+            this.oExt.style.height = "100%"
+    }
 };
 
 //#endif
