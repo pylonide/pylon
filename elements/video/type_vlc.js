@@ -204,7 +204,7 @@ jpf.video.TypeVlc.prototype = {
             this.player.input.time = iTo;
         return this;
     },
-    
+
     fullscreen : function(value){
         if (this.player)
             this.player.video.fullscreen = value;
@@ -264,7 +264,7 @@ jpf.video.TypeVlc.prototype = {
         this.player.log.verbosity = 10; // disable VLC error logging
 
         this.currItem = parseInt(this.player.playlist.add(this.videoPath, null,
-            ":aspect-ratio=default :http-caching=5000 :udp-caching=5000 :http-reconnect=true"));
+            ":aspect-ratio=default :http-caching=5000 :http-reconnect=true"));
         if (this.autoPlay)
             this.play();
 
@@ -279,17 +279,19 @@ jpf.video.TypeVlc.prototype = {
      * @type  {Object}
      */
     handleEvent: function(iState) {
+        // #ifdef __DEBUG
         if (this.player.log.messages.count > 0) {
             // there is one or more messages in the log
             var iter = this.player.log.messages.iterator();
             while (iter.hasNext) {
                 var msg = iter.next();
                 var msgtype = msg.type.toString();
-                jpf.console.info(msg.message);
+                //jpf.console.info(msg.message);
             }
             // clear the log once finished to avoid clogging
             this.player.log.messages.clear();
         }
+        // #endif
         if (iState != this.currState) {
             this.currState = iState;
             if (!this.ready && (iState == 3 || iState == 4)) {
@@ -304,6 +306,11 @@ jpf.video.TypeVlc.prototype = {
                     break;
                 case 3:   //PLAYING - The current media clip is playing.
                     this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
+                    if (!this.oVideo.READY) {
+                        this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
+                        // @todo for now, set the downloadprogress to a maximum
+                        this.oVideo.$progressHook({bytesLoaded: 100, totalBytes: 100});
+                    }
                     this.startPlayPoll();
                     break;
                 case 4:   //PAUSED - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.

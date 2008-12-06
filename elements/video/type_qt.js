@@ -683,7 +683,7 @@ jpf.video.TypeQT.prototype = {
                 _self.oVideo.$progressHook({
                     bytesLoaded: iLoaded,
                     totalBytes : iTotal
-                })
+                });
                 if (!_self.oVideo.READY && Math.abs(iLoaded - iTotal) <= 20)
                     _self.handleEvent({type: "qt_load"});
             }

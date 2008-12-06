@@ -301,6 +301,7 @@ jpf.video.TypeSilverlight.prototype = {
         _self.video.AddEventListener("MediaEnded", function() {
             _self.handleState("MediaEnded");
         });
+        // BufferProgressChanged is of no use in XAML
         _self.video.AddEventListener("DownloadProgressChanged", function(o) {
             _self.oVideo.$progressHook({
                 bytesLoaded: Math.round(o.downloadProgress * 100), //percentage
