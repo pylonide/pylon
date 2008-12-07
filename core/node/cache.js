@@ -344,7 +344,7 @@ jpf.Cache = function(){
  */
 jpf.MultiselectCache = function(){
     this.$getCurrentFragment = function(){
-        var fragment = document.createDocumentFragment();
+        var fragment = this.oInt.ownerDocument.createDocumentFragment();
         
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);

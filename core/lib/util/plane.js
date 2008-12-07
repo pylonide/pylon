@@ -36,7 +36,8 @@ jpf.plane = {
         }
     },
 
-    show : function(o, dontAppend){
+    lastCursor : null,
+    show : function(o, dontAppend, copyCursor){
         this.init();
         
         var plane    = this.plane;
@@ -62,6 +63,12 @@ jpf.plane = {
                 ? document.documentElement.offsetHeight
                 : window.innerHeight)
             : plane.parentNode.offsetHeight);
+        
+        if (copyCursor) {
+            if (this.lastCursor === null)
+                this.lastCursor = document.body.style.cursor;
+            document.body.style.cursor = jpf.getStyle(o, "cursor");
+        }
         
         this.plane.style.display = "block";
         //this.plane.style.left    = p.scrollLeft;
@@ -95,6 +102,11 @@ jpf.plane = {
         }
         
         this.current = null;
+        
+        if (this.lastCursor !== null) {
+            document.body.style.cursor = this.lastCursor;
+            this.lastCursor = null;
+        }
         
         return this.plane;
     }

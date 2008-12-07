@@ -951,29 +951,29 @@ jpf.actiontracker.actions = {
         var q = UndoObj.args;//xmlNode, value, xpath
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            if (UndoObj.extra.newNode) {
+            /*if (UndoObj.extra.newNode) {
                 var xmlNode = q[0].appendChild(UndoObj.extra.newNode);
             }
-            else {
+            else {*/
                 var newNodes = [];
                 var xmlNode = jpf.xmldb.createNodeFromXpath(q[0], 
                     q[2], newNodes);
                 var node = newNodes[0] || xmlNode;
                 
-                UndoObj.extra.newNode = node.nodeType == 1 ? node : null;
-                if (UndoObj.extra.newNode == q[0]) 
-                    UndoObj.extra.newNode = null;
+                UndoObj.extra.newNode     = newNodes[0];
+                UndoObj.extra.appliedNode = xmlNode;
                 UndoObj.extra.oldValue = jpf.getXmlValue(q[0], q[2]);
-            }
+            //}
             
             jpf.xmldb.setNodeValue(xmlNode, q[1], true, UndoObj);
         }
         // Undo Setting NodeValue
         else {
-            if (UndoObj.extra.newNode) 
+            if (UndoObj.extra.newNode) {
                 jpf.xmldb.removeNode(UndoObj.extra.newNode);
+            }
             else 
-                jpf.xmldb.setNodeValue(q[0], UndoObj.extra.oldValue, true);
+                jpf.xmldb.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
         }
     },
     

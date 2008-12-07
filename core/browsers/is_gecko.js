@@ -24,9 +24,10 @@
  * Compatibility layer for Gecko based browsers.
  * @private
  */
-function runGecko(){
-    jpf.importClass(runNonIe, true, self);
-    
+jpf.runGecko = function(){
+    //jpf.importClass(jpf.runNonIe, true, self);
+    jpf.runNonIe();
+
     /* ***************************************************************************
      XSLT
      ****************************************************************************/

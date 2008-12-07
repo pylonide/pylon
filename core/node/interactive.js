@@ -259,7 +259,7 @@ jpf.Interactive = function(){
             return;
         
         //#ifdef __WITH_OUTLINE
-        resizeOutline = !(_self.resizeOutline == false || !resizeOutline);
+        resizeOutline = !(_self.resizeOutline == false || !jpf.appsettings.resizeOutline);
         /*#else
         resizeOutline = false;        
         #endif */

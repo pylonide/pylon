@@ -28,8 +28,8 @@
  * @param {String} value        the css value of the property.
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */ 
-jpf.setStyleRule = function(name, type, value, stylesheet){
-    var rules = document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
+jpf.setStyleRule = function(name, type, value, stylesheet, win){
+    var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
     for (var i = 0; i < rules.length; i++) {
         if (rules.item(i).selectorText == name) {
             rules.item(i).style[type] = value;

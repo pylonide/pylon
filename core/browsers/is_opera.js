@@ -24,7 +24,7 @@
  * Compatibility layer for Opera browsers.
  * @private
  */
-function runOpera(){
+jpf.runOpera = function (){
     /*var setTimeoutOpera = window.setTimeout;
     var lookupOperaCall = [];
     window.setTimeout = function(call, time){
@@ -114,7 +114,7 @@ function runOpera(){
     
     //#endif
     
-    jpf.importClass(runNonIe, true, self);
+    jpf.importClass(jpf.runNonIe, true, self);
 }
 
 // #endif

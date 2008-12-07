@@ -45,9 +45,10 @@
  */
 jpf.spreadsheet = 
 jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
-    this.$focussable = true; // This object can get the focus
-    this.multiselect = true; // Enable MultiSelect
-
+    this.$focussable  = true; // This object can get the focus
+    this.multiselect  = true; // Enable MultiSelect
+    this.bufferselect = false;
+    
     this.startClosed  = true;
     this.animType     = jpf.tween.NORMAL;
     this.animSteps    = 3;
@@ -58,6 +59,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var _self      = this;
     
     this.headings = [];
+    
+    //#ifdef __WITH_RENAME
+    this.$renameStartCollapse = false;
+    //#endif
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
@@ -71,11 +76,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * This method imports a stylesheet defined in a multidimensional array 
-     * @param {Array}	def Required Multidimensional array specifying 
-     * @param {Object}	win Optional Reference to a window
+     * @param {Array}    def Required Multidimensional array specifying 
+     * @param {Object}    win Optional Reference to a window
      * @method
      * @deprecated
-     */	
+     */    
     function importStylesheet(def, win){
         for(var i=0;i<def.length;i++){
             if (def[i][1]) {
@@ -106,7 +111,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
 
         var selXml = this.indicator || this.selected;
-        var oInt   = this.oInt;
+        var oInt   = useiframe ? this.oDoc.documentElement : this.oInt;
 
         switch (key) {
             case 13:
@@ -261,7 +266,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 var items      = Math.floor((oInt.offsetWidth
                     - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
-                    + margin[1] + margin[3]));
+                    + margin[1] + margin[3])) || 1;
                 var lines      = Math.floor((oInt.offsetHeight
                     - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
                     + margin[0] + margin[2]));
@@ -284,7 +289,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 //PGDN
                 if (!selXml && !this.$tempsel) 
                     return;
-                    
+
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
@@ -293,7 +298,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 var hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
                 var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 var items      = Math.floor((oInt.offsetWidth - (hasScrollY ? 15 : 0))
-                    / (selHtml.offsetWidth + margin[1] + margin[3]));
+                    / (selHtml.offsetWidth + margin[1] + margin[3])) || 1;
                 var lines      = Math.floor((oInt.offsetHeight - (hasScrollX ? 15 : 0))
                     / (selHtml.offsetHeight + margin[0] + margin[2]));
                 
@@ -314,8 +319,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             default:
                 if (this.celledit) {
-                    if (key > 46)
+                    if (!ctrlKey && !e.altKey && (key > 46 && key < 112 || key > 123))
                         this.startRename(null, true);
+                    return;
                 }
                 else if (key == 65 && ctrlKey) {
                     this.selectAll();
@@ -360,8 +366,37 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         };
         
         this.lookup = null;
+        return false;
     }, true);
     // #endif
+    
+    /**** Focus ****/
+    // Too slow for IE
+    
+    this.$focus = function(){
+        if (!this.oExt || (jpf.isIE && useiframe)) //@todo fix this by fixing focussing for this component
+            return;
+
+        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+        
+        if (this.oDoc)
+            this.$setStyleClass(this.oDoc.documentElement, this.baseCSSname + "Focus");
+    };
+
+    this.$blur = function(){
+        //#ifdef __WITH_RENAME
+        if (this.renaming)
+            this.stopRename(null, true);
+        //#endif
+
+        if (!this.oExt || (jpf.isIE && useiframe)) //@todo fix this by fixing focussing for this component
+            return;
+
+        this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
+        
+        if (this.oDoc)
+            this.$setStyleClass(this.oDoc.documentElement, "", [this.baseCSSname + "Focus"]);
+    };
     
     /**** Private methods ****/
     
@@ -485,7 +520,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Databinding ****/
     
-    var headings = [], cssRules = [];
+    var headings = [], cssRules = []; //@todo Needs to be reset
     this.$loaddatabinding = function(){
         //Set Up Headings
         var heads = this.bindingRules.heading;
@@ -494,7 +529,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         for (var i = 0; i < heads.length; i++) {
             xml     = heads[i];
             width   = xml.getAttribute("width") || defaultwidth;
-            options = xml.getAttribute("options") || "sort|size|move";
+            options = xml.getAttribute("options") || this.options || 
+                (_self.tagName == "spreadsheet"
+                    ? "size"
+                    : "sort|size|move");
+
             h     = {
                 width        : parseFloat(width),
                 isPercentage : width.indexOf("%") > -1,
@@ -554,9 +593,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //jpf.xmldb.htmlImport(nodes, this.oHead);
 
-        if (!found) {
+        if (!found) { //@todo removal???
             this.$isFixedGrid = true;
             this.$setStyleClass(this.oExt, "fixed");
+            
+            if (useiframe)
+                this.$setStyleClass(this.oDoc.documentElement, "fixed");
         }
 
         if (fixed > 0 && !this.$isFixedGrid) {
@@ -581,14 +623,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //Activate CSS Rules
         importStylesheet(cssRules, window);
         
-        this.oInt.onscroll = this.$isFixedGrid ? 
-            function(){
-                _self.oHead.scrollLeft = this.scrollLeft;
-            } : null;
+        if (useiframe)
+            importStylesheet(cssRules, this.oWin);
     }
     
     this.$unloaddatabinding = function(){
-        var headParent = this.$getLayoutNode("main", "head", this.oExt);
+        //@todo
+        /*var headParent = this.$getLayoutNode("main", "head", this.oExt);
         for(var i=0;i<headParent.childNodes.length;i++){
             headParent.childNodes[i].host = null;
             headParent.childNodes[i].onmousedown = null;
@@ -613,7 +654,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         headParent.innerHTML = "";
         totalWidth = 0;
-        this.headings = [];
+        this.headings = [];*/
     }
 
     this.nodes = [];
@@ -652,7 +693,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else {
                 jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
                     Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
-                    this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
+                    (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || " "); //@todo for IE but seems not a good idea
             }
         }
         
@@ -680,8 +721,20 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     }
     
+    var useTable = false;
     this.$fill = function(nodes){
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
+        if (useiframe)
+            this.pHtmlDoc = this.oDoc;
+        
+        if (useTable) {
+            jpf.xmldb.htmlImport(this.nodes, this.oInt, null,
+                 "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
+                 "</tbody></table>");
+        }
+        else {
+            jpf.xmldb.htmlImport(this.nodes, this.oInt);
+        }
+        
         this.nodes.length = 0;
     }
 
@@ -712,8 +765,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         + ")";
             }
             else {
-                jpf.xmldb.setNodeValue(node, 
-                    this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
+                node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || " "; //@todo for IE but seems not a good idea
+                //jpf.xmldb.setNodeValue(node, 
+                    //this.applyRuleSetOnNode([h.xml], xmlNode));
             }
         }
         
@@ -819,15 +873,20 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         return node.nodeType == 1 && node || node.parentNode;
     }
     
+    var lastCaptionCol = null;
     this.$getCaptionXml = function(xmlNode){
         var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
+        lastCaptionCol = lastcol || 0;
         return xmlNode.selectSingleNode(h.select || ".");
     }
     
     var $getSelectFromRule = this.getSelectFromRule;
     this.getSelectFromRule = function(setname, cnode){ 
         if (setname == "caption") {
-            var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
+            var h = headings[this.oHead.childNodes[lastCaptionCol !== null 
+                ? lastCaptionCol 
+                : (lastcol || 0)].getAttribute("hid")];
+            lastCaptionCol = null;
             return [h.select];
         }
         
@@ -933,8 +992,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             var diff = newsize - h.width;
             h.width = newsize;
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "width", newsize + "px"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", newsize + "px"); //Set
+            if (jpf.isIE && this.oIframe)
+                h.htmlNode.style.width = newsize + "px";
+            else
+                jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "width", newsize + "px"); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", newsize + "px", null, this.oWin); //Set
             
             var hFirst = headings[this.$first];
             this.$fixed += diff;
@@ -943,8 +1005,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!this.$isFixedGrid) {
                 //jpf.setStyleRule("." + this.baseCSSname + " .headings ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
                 //jpf.setStyleRule("." + this.baseCSSname + " .records ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
-                jpf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft); //Set
-                jpf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft); //Set
+                jpf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft, null, this.oWin); //Set
+                jpf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft, null, this.oWin); //Set
             
                 //headings and records have same padding-right
                 this.oInt.style.paddingRight  =
@@ -1003,7 +1065,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }*/
     }
 
-    var widthdiff, defaultwidth;
+    var widthdiff, defaultwidth, useiframe;
     this.$draw = function(){
         //Build Main Skin
         this.oExt  = this.$getExternal(); 
@@ -1017,8 +1079,85 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         widthdiff    = this.$getOption("main", "widthdiff") || 0;
         defaultwidth = this.$getOption("main", "defaultwidth") || "100";
+        useiframe    = jpf.isTrue(this.$getOption("main", "iframe"));
 
         jpf.JmlParser.parseChildren(this.$jml, null, this);
+        
+        //Initialize Iframe 
+        if (useiframe && !this.oIframe) {
+            //this.oInt.style.overflow = "hidden";
+            //var sInt = this.oInt.outerHTML 
+            var sClass = this.oInt.className;
+            //this.oInt.parentNode.removeChild(this.oInt);
+            this.oIframe = this.oInt.appendChild(document.createElement(jpf.isIE 
+                ? "<iframe frameborder='0'></iframe>"
+                : "iframe"));
+            this.oIframe.frameBorder = 0;
+            this.oWin = this.oIframe.contentWindow;
+            this.oDoc = this.oWin.document;
+            this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
+                <html xmlns="http://www.w3.org/1999/xhtml">\
+                    <head><script>jpf = {\
+                            lookup : function(uid){\
+                                return window.parent.jpf.lookup(uid);\
+                            },\
+                            Init : {add:function(){},run:function(){}}\
+                        };</script>\
+                    </head>\
+                    <body></body>\
+                </html>');
+            //Import CSS
+            //this.oDoc.body.innerHTML = sInt;
+            this.oInt = this.oDoc.body;//.firstChild;
+            this.oInt.className = sClass;//this.oIframe.parentNode.className;
+            this.oDoc.documentElement.className = this.oExt.className;
+            //this.oDoc.body.className = this.oExt.className;
+
+            jpf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
+            
+            if (jpf.isIE) //@todo this can be removed when focussing is fixed for this component
+                this.$setStyleClass(this.oDoc.documentElement, this.baseCSSname + "Focus");
+            
+            if (!jpf.isIE)
+                jpf.importClass(jpf.runNonIe, true, this.oWin);
+
+            jpf.convertIframe(this.oIframe, true);
+
+            // #ifdef __WITH_RENAME
+            this.oDoc.body.insertAdjacentHTML("beforeend", this.oTxt.outerHTML);
+
+            var t = this.oTxt; t.refCount--;
+            this.oTxt = this.oDoc.body.lastChild;
+            this.oTxt.parentNode.removeChild(this.oTxt);
+            this.oTxt.select = t.select;
+
+            this.oTxt.ondblclick    = 
+            this.oTxt.onselectstart = 
+            this.oTxt.onmouseover   = 
+            this.oTxt.onmouseout    = 
+            this.oTxt.oncontextmenu = 
+            this.oTxt.onmousedown   = function(e){ 
+                (e || _self.oWin.event).cancelBubble = true; 
+            };
+
+            this.oTxt.onfocus = t.onfocus;
+            this.oTxt.onblur = t.onblur;
+            this.oTxt.refCount = 1;
+            // #endif
+            
+            this.oDoc.documentElement.onscroll = 
+                function(){
+                    if (_self.$isFixedGrid)
+                        _self.oHead.scrollLeft = _self.oDoc.documentElement.scrollLeft;
+                };
+        }
+        else {
+            this.oInt.onscroll = 
+                function(){
+                    if (_self.$isFixedGrid)
+                        _self.oHead.scrollLeft = _self.oDoc.documentElement.scrollLeft;
+                };
+        }
         
         var dragging = false;
         
@@ -1038,7 +1177,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!e) e = event;
             var target = e.srcElement || e.target;
             
-            if (target == this || dragging != target) 
+            if (target == this || !jpf.xmldb.isChildOf(dragging, target, true)) 
                 return;
             
             while (target.parentNode != this)
@@ -1046,10 +1185,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             jpf.setStyleClass(target, "hover", ["down"]);
             
-            if (!headings[target.getAttribute("hid")].sortable)
-                return;
-
-            _self.sortColumn(parseInt(target.getAttribute("hid")));
+            if (headings[target.getAttribute("hid")].sortable)
+                _self.sortColumn(parseInt(target.getAttribute("hid")));
         }
         
         this.oHead.onmousedown = function(e){
@@ -1065,7 +1202,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             //Resizing
             var pos = jpf.getAbsolutePosition(target);
-            var sLeft = _self.oInt.scrollLeft;
+            var sLeft = _self.oHead.scrollLeft;
             var d = e.clientX - pos[0] + sLeft;
             if (d < 4 || target.offsetWidth - d - 8 < 3) {
                 var t = d < 4 && target.previousSibling || target;
@@ -1074,8 +1211,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     pos   = jpf.getAbsolutePosition(t);
                     jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
                     _self.oPointer.style.display = "block";
-                    _self.oPointer.style.left = t.offsetLeft - sLeft + "px";
-                    _self.oPointer.style.width = (t.offsetWidth - widthdiff) + "px";
+                    _self.oPointer.style.left = (t.offsetLeft - sLeft - 1) + "px";
+                    _self.oPointer.style.width = (t.offsetWidth - widthdiff + 1) + "px";
+                    
+                    jpf.plane.show(_self.oPointer, null, true);
                     
                     dragging = true;
                     document.onmouseup = function(){
@@ -1088,12 +1227,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         
                         dragging = false;
                         _self.oPointer.style.display = "none";
+                        
+                        jpf.plane.hide();
                     }
                     
                     document.onmousemove = function(e){
                         if (!e) e = event;
                         
-                        _self.oPointer.style.width = (e.clientX - pos[0] - 2 + sLeft) + "px";
+                        _self.oPointer.style.width = Math.max(10, e.clientX - pos[0] - 1 + sLeft) + "px";
                     }
                     
                     return;
@@ -1103,7 +1244,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(target, "down", ["hover"]);
             
             //Moving
-            if (_self.$isFixedGrid || !headings[target.getAttribute("hid")].movable) {
+            if (!headings[target.getAttribute("hid")].movable) {
                 document.onmouseup = function(e){
                     document.onmouseup = null;
                     dragging = false;
@@ -1209,7 +1350,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 target = target.parentNode;
             
             var pos = jpf.getAbsolutePosition(target);
-            var d = e.clientX - pos[0];
+            var sLeft = _self.oHead.scrollLeft;
+            var d = e.clientX - pos[0] + sLeft;
 
             if (d < 4 || target.offsetWidth - d - widthdiff < 3) {
                 var t = d < 4 ? target.previousSibling : target;
@@ -1269,3 +1411,114 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 );
 
 //#endif
+
+
+jpf.convertIframe = function(iframe, preventSelect){
+    var win = iframe.contentWindow;
+    var doc = win.document;
+    var pos;
+    
+    doc.onkeydown = function(e){
+        if(!e) e = win.event;
+
+        if (document.onkeydown) 
+            return document.onkeydown.call(document, e);
+        //return false;
+    }
+    
+    doc.onmousedown = function(e){
+        if(!e) e = win.event;
+        
+        q = {
+            offsetX : e.offsetX,
+            offsetY : e.offsetY,
+            x : e.x + pos[0],
+            y : e.y + pos[1],
+            button : e.button,
+            clientX : e.x + pos[0],
+            clientY : e.y + pos[1],
+            srcElement : iframe,
+            target : iframe,
+            targetElement : iframe
+        }
+        
+        if(document.body.onmousedown) document.body.onmousedown(q);
+        if(document.onmousedown) document.onmousedown(q);
+        
+        if (preventSelect && !jpf.isIE)
+            return false;
+    }
+    
+    if (preventSelect) {
+        doc.onselectstart = function(e){
+            return false;
+        }
+    }
+    
+    doc.onmouseup = function(e){
+        if(!e) e = win.event;
+        if(document.body.onmouseup) document.body.onmouseup(e);
+        if(document.onmouseup) document.onmouseup(e);
+    }
+    
+    doc.onclick = function(e){
+        if(!e) e = win.event;
+        if(document.body.onclick) document.body.onclick(e);
+        if(document.onclick) document.onclick(e);
+    }
+    
+    //all these events should actually be piped to the events of the container....
+    doc.documentElement.oncontextmenu = function(e){
+        if(!e) e = win.event;
+        if(!pos) pos = jpf.getAbsolutePosition(iframe);
+        
+        q = {
+            offsetX : e.offsetX,
+            offsetY : e.offsetY,
+            x : e.x + pos[0],
+            y : e.y + pos[1],
+            button : e.button,
+            clientX : e.x + pos[0],
+            clientY : e.y + pos[1],
+            srcElement : e.srcElement,
+            target : e.target,
+            targetElement : e.targetElement
+        }
+
+        //if(this.host && this.host.oncontextmenu) this.host.oncontextmenu(q);
+        if(document.body.oncontextmenu) document.body.oncontextmenu(q);
+        if(document.oncontextmenu) document.oncontextmenu(q);
+        
+        return false;
+    }
+
+    doc.documentElement.onmouseover = function(e){
+        pos = jpf.getAbsolutePosition(iframe);
+    }
+
+    doc.documentElement.onmousemove = function(e){
+        if(!e) e = win.event;
+        if(!pos) pos = jpf.getAbsolutePosition(iframe);
+    
+        q = {
+            offsetX : e.offsetX,
+            offsetY : e.offsetY,
+            x : e.x + pos[0],
+            y : e.y + pos[1],
+            button : e.button,
+            clientX : e.x + pos[0],
+            clientY : e.y + pos[1],
+            srcElement : e.srcElement,
+            target : e.target,
+            targetElement : e.targetElement
+        }
+
+        if(iframe.onmousemove) iframe.onmousemove(q);
+        if(document.body.onmousemove) document.body.onmousemove(q);            
+        if(document.onmousemove) document.onmousemove(q);
+        
+        return e.returnValue;
+    }
+    
+    return doc;
+}

@@ -147,6 +147,7 @@ jpf.Rename = function(){
         this.oTxt.host         = this;
         
         //this.oTxt.focus();
+        this.oTxt.focus();
         this.oTxt.select();
     };
     
@@ -224,14 +225,14 @@ jpf.Rename = function(){
     
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {
-            this.oTxt = document.createElement("DIV");
+            this.oTxt = this.pHtmlDoc.createElement("DIV");
             this.oTxt.contentEditable = true;
             if (jpf.isIE6)
                 this.oTxt.style.width = "1px";
             //this.oTxt.canHaveHTML = false;
         }
         else {
-            this.oTxt              = document.createElement("input");
+            this.oTxt              = this.pHtmlDoc.createElement("input");
             this.oTxt.id           = "txt_rename";
             this.oTxt.autocomplete = false;
         }
@@ -255,6 +256,9 @@ jpf.Rename = function(){
             //r.moveEnd("character", this.oExt.innerText.length);
             try {
                 r.moveToElementText(this);
+                
+                if (typeof this.host.$renameStartCollapse != "undefined")
+                    r.collapse(this.host.$renameStartCollapse);
             } catch(e) {} //BUG!!!!
 
             r.select();

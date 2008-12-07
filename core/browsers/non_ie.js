@@ -20,9 +20,9 @@
  */
 
 // #ifdef __SUPPORT_SAFARI || __SUPPORT_GECKO || __SUPPORT_SAFARI
-function runNonIe(){
+jpf.runNonIe = function (){
     //#ifdef __SUPPORT_IE_API
-    
+
     DocumentFragment.prototype.getElementById = function(id){
         return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
     };
@@ -344,7 +344,8 @@ function runNonIe(){
                 return;
             }
     
-            if (htmlNode.ownerDocument != document)
+            if (htmlNode.ownerDocument && htmlNode.ownerDocument != document
+              && xmlNode.ownerDocument == htmlNode.ownerDocument)
                 return htmlNode.insertBefore(xmlNode, beforeNode);
             
             var strHTML = (xmlNode.outerHTML

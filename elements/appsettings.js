@@ -36,7 +36,7 @@
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden.
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
- * @attribute {Boolean} undo-keys           whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
+ * @attribute {Boolean} undo-keys               whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
  * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
@@ -180,11 +180,11 @@ jpf.appsettings = {
         }
         else {
             this.dragOutline    = x.getAttribute("drag-outline")
-                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("drag-outline")))
-                : this.outline;
+                ? jpf.isTrue(jpf.parseExpression(x.getAttribute("drag-outline")))
+                : false;
             this.resizeOutline  = x.getAttribute("resize-outline")
                 ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline")))
-                : this.outline;
+                : true;
         }
 
         // #ifdef __WITH_IEPNGFIX

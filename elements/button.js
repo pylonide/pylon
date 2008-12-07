@@ -621,8 +621,8 @@ jpf.button.actions = {
             tracker = self[this.target].getActionTracker()
         }
         else {
-            var at, node = this.parentNode;
-            while(node)
+            var at, node = this;
+            while(node.parentNode)
                 at = (node = node.parentNode).$at;
         }
         
@@ -630,7 +630,7 @@ jpf.button.actions = {
     },
     
     "redo" : function(){
-        jpf.button.actions.call(this, "redo");
+        jpf.button.actions.undo.call(this, "redo");
     },
     //#endif
     

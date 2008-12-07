@@ -24,7 +24,7 @@
  * Compatibility layer for Webkit based browsers.
  * @private
  */
-function runSafari(){
+jpf.runSafari = function(){
     //#ifdef __SUPPORT_SAFARI2
     if (!jpf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
@@ -88,7 +88,7 @@ function runSafari(){
 
     // #endif
     
-    jpf.importClass(runNonIe, true, self);
+    jpf.importClass(jpf.runNonIe, true, self);
 }
 
 // #endif

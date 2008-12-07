@@ -255,13 +255,17 @@ jpf.parseExpression.regexp = /^\{(.*)\}$/;
 /**
  * @private
  */
-jpf.formatNumber = function(nr){
-    var str = new String(Math.round(parseFloat(nr) * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
+jpf.formatNumber = function(num, prefix){
+    var nr = parseFloat(num);
+    if (!nr) return num;
+    
+    var str = new String(Math.round(nr * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
         return m1.pad(3, "0", jpf.PAD_RIGHT);
     });
     if (str.indexOf(".") == -1) 
         str += ".00";
-    return str;
+    
+    return prefix + str;
 };
 
 // Serialize Objects
@@ -358,23 +362,25 @@ jpf.unserialize = function(str, secure){
  * @param {String} str  the javascript code to execute.
  * @return {String} the javascript code executed.
  */
-jpf.exec = function(str){
+jpf.exec = function(str, win){
     if (!str) 
         return str;
+    if (!win)
+        win = self;
     
-    if (typeof execScript != "undefined") {
-        execScript(str);
+    if (jpf.hasExecScript) {
+        win.execScript(str);
     } 
     else {
-        var head = document.getElementsByTagName("head")[0];
+        var head = win.document.getElementsByTagName("head")[0];
         if (head) {
-            var script = document.createElement('script');
+            var script = win.document.createElement('script');
             script.setAttribute('type', 'text/javascript');
             script.text = str;
             head.appendChild(script);
             head.removeChild(script);
         } else
-            eval(str, window);
+            eval(str, win);
     }
 
     return str;
@@ -541,7 +547,7 @@ jpf.getXmlValues = function(xmlNode, xpath){
 jpf.removeNode = function (element) {
     if (!element) return;
     
-    if (!jpf.isIE) {
+    if (!jpf.isIE || element.ownerDocument != document) {
         if (element.parentNode)
             element.parentNode.removeChild(element);
         return;

@@ -91,7 +91,7 @@ jpf.skins = {
                 this.importSkinDef(nodes[i], base, name);
         }
 
-        this.purgeCSS(mediaPath || base + "images/", iconPath || base + "icons/");
+        this.purgeCss(mediaPath || base + "images/", iconPath || base + "icons/");
     },
 
     /**
@@ -155,10 +155,10 @@ jpf.skins = {
     },
 
     loadedCss : "",
-    purgeCSS: function(imagepath, iconpath){
+    purgeCss: function(imagepath, iconpath){
         if (!this.css.length)
             return;
-
+        
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
         jpf.importCssString(document, cssString);
 
@@ -166,6 +166,18 @@ jpf.skins = {
         this.loadedCss += cssString;
         //#endif
 
+        this.css = [];
+    },
+    
+    loadCssInWindow : function(skinName, win, imagepath, iconpath){
+        this.css = [];
+        var name = skinName.split(":");
+        var skin = this.skins[name[0]];
+        var template = skin.templates[name[1]];
+        this.importSkinDef(template, skin.base, skin.name);
+        var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
+        jpf.importCssString(win.document, cssString);
+        
         this.css = [];
     },
 
@@ -692,6 +704,7 @@ jpf.Presentation = function(){
         if (jml && jml.getAttribute("bgimage"))
             oExt.style.backgroundImage = "url(" + jpf.getAbsolutePath(
                 this.mediaPath, jml.getAttribute("bgimage")) + ")";
+
 
         if (!this.baseCSSname)
             this.baseCSSname = oExt.className.trim().split(" ")[0];

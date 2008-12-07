@@ -20,7 +20,7 @@
  */
 
 // #ifdef __SUPPORT_SAFARI
-function runXslt(){
+jpf.runXslt = function(){
     /**
      * @constructor
      * @parser

@@ -24,7 +24,7 @@
  * Compatibility layer for Internet Explorer browsers.
  * @private
  */
-function runIE(){
+jpf.runIE = function(){
 
     /* ******** XML Compatibility ************************************************
      Extensions to the xmldb
@@ -126,7 +126,7 @@ function runIE(){
     //function extendXmlDb(){
     if (jpf.XmlDatabase) {
         //#ifdef __WITH_XMLDATABASE
-        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
+        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
                     str.push(xmlNode[i].xml);
@@ -134,7 +134,13 @@ function runIE(){
                     
                 str = jpf.html_entity_decode(str)
                     .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
-                    
+                
+                if (pre) {
+                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
+                        ? "beforebegin" 
+                        : "beforeend", pre + str + post);
+                }
+                
                 try {
                     (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
                         ? "beforebegin" 
@@ -343,7 +349,7 @@ function runIE(){
     //#endif
     
     //#ifdef __WITH_PRESENTATION
-    jpf.importClass(runXpath, true, self);
+    jpf.importClass(jpf.runXpath, true, self);
     //#endif
 }
 

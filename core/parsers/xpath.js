@@ -1,5 +1,5 @@
 // #ifdef __PARSER_XPATH || __SUPPORT_SAFARI || __SUPPORT_IE && __WITH_PRESENTATION
-function runXpath(){
+jpf.runXpath = function(){
  
 /**
  *	Workaround for the lack of having an XPath parser on safari
