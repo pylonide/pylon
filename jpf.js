@@ -283,23 +283,24 @@ var jpf = {
 
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
-        if (this.isIE)
-            this.importClass(runIE, true, self);
+        if (this.isIE) jpf.runIE();
+            //this.importClass(jpf.runIE, true, self);
         // #endif
         // #ifdef __SUPPORT_SAFARI
-        if (this.isSafari)
-            this.importClass(runSafari, true, self);
+        if (this.isSafari) jpf.runSafari();
+            //this.importClass(jpf.runSafari, true, self);
         // #endif
         // #ifdef __SUPPORT_OPERA
-        if (this.isOpera)
-            this.importClass(runOpera, true, self);
+        if (this.isOpera) jpf.runOpera();
+            //this.importClass(jpf.runOpera, true, self);
         // #endif
         // #ifdef __SUPPORT_GECKO
         if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
-            this.importClass(runGecko, true, self);
+            jpf.runGecko();
+            //this.importClass(jpf.runGecko, true, self);
         // #endif
-        runGecko = runOpera = runSafari = runIE = runXpath
-            = runNonIe = runXslt = undefined;
+        //runGecko = runOpera = runSafari = runIE = runXpath
+            //= runNonIe = runXslt = undefined;
 
         //#ifdef __PARSE_GET_VARS
         for (var i, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++)
@@ -447,11 +448,11 @@ var jpf = {
                 "importing class",
                 "Could not load reference. Reference is null"));
 
-        if (!jpf.hasExecScript)
-            return ref();//.call(self);
+        //if (!jpf.hasExecScript)
+            //return ref();//.call(self);
 
         if (!strip)
-            return jpf.exec(ref.toString());
+            return jpf.exec(ref.toString(), win);
 
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
@@ -459,7 +460,7 @@ var jpf = {
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
 
-        return jpf.exec(q);
+        return jpf.exec(q, win);
     },
 
     /**
