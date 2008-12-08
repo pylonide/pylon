@@ -141,12 +141,13 @@ jpf.video.TypeFlv.prototype = {
     },
 
     /**
-     * Not supported.
+     * Set the volume of the video to a specific range (0 - 100)
      *
-     * @type {Object}
+     * @param {Number} iVolume
+     * @type  {Object}
      */
-    setVolume: function() {
-        return this;
+    setVolume: function(iVolume) {
+        return this.callMethod("setVolume", iVolume);
     },
 
     /**
