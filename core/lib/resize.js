@@ -235,6 +235,7 @@ jpf.resize.square = function(posY, posX, objResize) {
             posY = _self.posY,
 
             width, height, top, left, dx, dy,
+            prev_w, prev_h,
 
             l = parseInt(block.style.left),
             t = parseInt(block.style.top),
@@ -279,6 +280,17 @@ jpf.resize.square = function(posY, posX, objResize) {
                     left = l + dx;
                     top = t + dx/proportion;
                 }
+
+                /* Keep minimal size */
+                if(width >= dw && height >= dh) {
+                    width  = prev_w = Math.max(dw, width);
+                    height = prev_h = Math.max(dh, height);
+                }
+                else {
+                    width  = prev_w;
+                    height = prev_h;
+                    return false;
+                }
             }
             else {
                 width = posX == "right"
@@ -301,11 +313,11 @@ jpf.resize.square = function(posY, posX, objResize) {
                     : (posY == "top"
                         ? Math.min(t + h - dh, t + dy)
                         : t);
-            }
 
-            /* Keep minimal size */
-            width = Math.max(dw, width);
-            height = Math.max(dh, height);
+                /* Keep minimal size */
+                width = Math.max(dw, width);
+                height = Math.max(dh, height);
+            }
 
             if(objResize.onresize) {
                 objResize.onresize(block, top, left, width, height);
