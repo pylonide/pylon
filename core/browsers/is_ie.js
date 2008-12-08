@@ -31,7 +31,7 @@ jpf.runIE = function(){
      ****************************************************************************/
     var hasIE7Security = hasIESecurity = false;
     // #ifdef __TP_IFRAME
-    if (self.XLMHttpRequest) 
+    if (self.XLMHttpRequest)
         try {
             new XLMHttpRequest()
         }
@@ -45,40 +45,40 @@ jpf.runIE = function(){
         hasIESecurity = true
     }
     // #endif
-    
+
     /* #ifdef __TP_IFRAME
      if(hasIESecurity) jpf.importClass(function(){
          __CONTENT_IFRAME
      }, true, self);
      #else*/
-    if (hasIESecurity) 
+    if (hasIESecurity)
         jpf.include(jpf.basePath + "teleport/iframe.js");
     //#endif
-    
+
     jpf.getHttpReq = hasIESecurity
         ? function(){
-            if (jpf.teleport.availHTTP.length) 
+            if (jpf.teleport.availHTTP.length)
                 return jpf.teleport.availHTTP.pop();
-                
+
             // #ifdef __DESKRUN
-            //if(jpf.isDeskrun && !self.useNativeHttp) 
+            //if(jpf.isDeskrun && !self.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
-            
+
             return new XMLHttpRequest();
         }
-        : function(){  
-            if (jpf.teleport.availHTTP.length) 
+        : function(){
+            if (jpf.teleport.availHTTP.length)
                 return jpf.teleport.availHTTP.pop();
-                
+
             // #ifdef __DESKRUN
-            //if(jpf.isDeskrun && !jpf.useNativeHttp) 
+            //if(jpf.isDeskrun && !jpf.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
-            
+
             return new ActiveXObject("microsoft.XMLHTTP");
         };
-    
+
     jpf.getXmlDom = hasIESecurity
         ? function(message, noError){
             var xmlParser = getDOMParser(message, noError);
@@ -91,59 +91,59 @@ jpf.runIE = function(){
                 xmlParser.preserveWhiteSpace = true;
 
             if (message) {
-                if (jpf.cantParseXmlDefinition) 
-                    message = message.replace(/\] \]/g, "] ]").replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0 
-                
+                if (jpf.cantParseXmlDefinition)
+                    message = message.replace(/\] \]/g, "] ]").replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
+
                 xmlParser.loadXML(message);
-                
-                if (!noError) 
+
+                if (!noError)
                     this.xmlParseError(xmlParser);
             }
-            
+
             return xmlParser;
         };
-    
+
     jpf.xmlParseError = function(xml){
         var xmlParseError = xml.parseError;
         if (xmlParseError != 0) {
             /*
              http://msdn.microsoft.com/library/en-us/xmlsdk30/htm/xmobjpmexmldomparseerror.asp?frame=true
-             
-             errorCode 	Contains the error code of the last parse error. Read-only.
-             filepos 		Contains the absolute file position where the error occurred. Read-only.
-             line 			Specifies the line number that contains the error. Read-only.
-             linepos 		Contains the character position within the line where the error occurred. Read-only.
-             reason 		Explains the reason for the error. Read-only.
-             srcText 		Returns the full text of the line containing the error. Read-only.
-             url 			Contains the URL of the XML document containing the last error. Read-only.
+
+             errorCode     Contains the error code of the last parse error. Read-only.
+             filepos         Contains the absolute file position where the error occurred. Read-only.
+             line             Specifies the line number that contains the error. Read-only.
+             linepos         Contains the character position within the line where the error occurred. Read-only.
+             reason         Explains the reason for the error. Read-only.
+             srcText         Returns the full text of the line containing the error. Read-only.
+             url             Contains the URL of the XML document containing the last error. Read-only.
              */
             throw new Error(jpf.formatErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
         }
-        
+
         return xml;
     };
-    
+
     //function extendXmlDb(){
     if (jpf.XmlDatabase) {
         //#ifdef __WITH_XMLDATABASE
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
             if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
+                for (var str = [], i = 0, l = xmlNode.length; i < l; i++)
                     str.push(xmlNode[i].xml);
                 str = str.join("");
-                    
+
                 str = jpf.html_entity_decode(str)
                     .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
-                
+
                 if (pre) {
-                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
-                        ? "beforebegin" 
+                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+                        ? "beforebegin"
                         : "beforeend", pre + str + post);
                 }
-                
+
                 try {
-                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
-                        ? "beforebegin" 
+                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+                        ? "beforebegin"
                         : "beforeend", str);
                 }
                 catch (e) {
@@ -151,87 +151,87 @@ jpf.runIE = function(){
                     document.body.insertAdjacentHTML("beforeend", "<table><tr>"
                         + str + "</tr></table>");
                     var x = document.body.lastChild.firstChild.firstChild;
-                    for (var i = x.childNodes.length - 1; i >= 0; i--) 
+                    for (var i = x.childNodes.length - 1; i >= 0; i--)
                         htmlNode.appendChild(x.childNodes[jpf.hasDynamicItemList ? 0 : i]);
                 }
-                
+
                 //Fix IE image loading bug
-                if (!this.nodes) 
+                if (!this.nodes)
                     this.nodes = [];
 
                 var id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
                 setTimeout('jpf.xmldb.doNodes(' + id + ')');
-                
+
                 return;
             }
-            
+
             //== ??? OR !=
             if (htmlNode.ownerDocument && htmlNode.ownerDocument != document
-              && xmlNode.ownerDocument == htmlNode.ownerDocument) 
+              && xmlNode.ownerDocument == htmlNode.ownerDocument)
                 return htmlNode.insertBefore(xmlNode, beforeNode);
             //if(htmlNode.ownerDocument && htmlNode.ownerDocument != document) return htmlNode.insertBefore(xmlNode, beforeNode);
-            
+
             var strHTML = jpf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
             var pNode = (beforeNode || htmlNode);
             if (pNode.nodeType == 11) {
                 var id = xmlNode.getAttribute("id");
-                if (!id) 
+                if (!id)
                     throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
-                
+
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
             }
-            else 
+            else
                 pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-            
+
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         };
-        
+
         jpf.XmlDatabase.prototype.doNodes = function(id){
             var nodes = this.nodes[id];
             for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].getAttribute("find")) 
+                if (nodes[i].getAttribute("find"))
                     nodes[i].style.backgroundImage = nodes[i].getAttribute("find");
             }
             this.nodes[id] = null;
         };
-        
+
         //Initialize xmldb
         jpf.xmldb = new jpf.XmlDatabase();
-        
+
         //#endif
     }
-    
+
     //jpf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
-    if (!hasIESecurity) 
+    if (!hasIESecurity)
         jpf.Init.run('xmldb');
-    
+
     jpf.getHorBorders = function(oHtml){
-        return Math.max(0, 
+        return Math.max(0,
               (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
     };
-    
+
     jpf.getVerBorders = function(oHtml){
-        return Math.max(0, 
+        return Math.max(0,
               (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
     };
-    
+
     jpf.getWidthDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
     };
-    
+
     jpf.getHeightDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
     };
-    
+
     jpf.getDiff = function(oHtml){
         return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
@@ -247,33 +247,33 @@ jpf.runIE = function(){
     jpf.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){
-            if (!this.popup) 
+            if (!this.popup)
                 this.init();
-            
+
             this.cache[cacheId] = {
                 content: content,
                 style  : style,
                 width  : width,
                 height : height
             };
-            if (content.parentNode) 
+            if (content.parentNode)
                 content.parentNode.removeChild(content);
-            if (style) 
+            if (style)
                 jpf.importCssString(this.popup.document, style);
-            
+
             return this.popup.document;
         },
-        
+
         removeContent: function(cacheId){
             this.cache[cacheId] = null;
             delete this.cache[cacheId];
         },
-        
+
         init: function(){
             this.popup = window.createPopup();
-            
+
             this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=jpf.ns.jpf xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=' + jpf.ns.jml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
                 <head>\
                     <script>\
                     var jpf = {\
@@ -295,20 +295,20 @@ jpf.runIE = function(){
                 </head>\
                 <body onmouseover="if(!self.jpf) return;if(this.c){jpf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
                 </html>');
-            
+
             var c = jpf;
             this.popup.document.body.onmousemove = function(){
                 this.c = c
             }
         },
-        
+
         show: function(cacheId, x, y, animate, ref, width, height, callback){
-            if (!this.popup) 
+            if (!this.popup)
                 this.init();
             var o = this.cache[cacheId];
-            //if(this.last != cacheId) 
+            //if(this.last != cacheId)
             this.popup.document.body.innerHTML = o.content.outerHTML;
-            
+
             if (animate) {
                 var iVal, steps = 7, i = 0, popup = this.popup;
                 iVal = setInterval(function(){
@@ -325,29 +325,29 @@ jpf.runIE = function(){
             else {
                 this.popup.show(x, y, width || o.width, height || o.height, ref);
             }
-            
+
             this.last = cacheId;
         },
-        
+
         hide: function(){
-            if (this.popup) 
+            if (this.popup)
                 this.popup.hide();
         },
-        
+
         forceHide: function(){
-            if (this.last) 
+            if (this.last)
                 jpf.lookup(this.last).dispatchEvent("popuphide");
         },
-        
+
         destroy: function(){
-            if (!this.popup) 
+            if (!this.popup)
                 return;
             this.popup.document.body.c = null;
             this.popup.document.body.onmouseover = null;
         }
     };
     //#endif
-    
+
     //#ifdef __WITH_PRESENTATION
     jpf.importClass(jpf.runXpath, true, self);
     //#endif

@@ -344,7 +344,7 @@ jpf.debugwin = {
          * @todo fix the edit state
          */
         var skinXml = '\
-        <j:skin id="debug" xmlns:j="' + jpf.ns.jpf + '">\
+        <j:skin id="debug" xmlns:j="' + jpf.ns.jml + '">\
             <j:markupedit name="debugmarkup">\
                 <j:style><![CDATA[\
                     .debugmarkup{\
@@ -518,7 +518,7 @@ jpf.debugwin = {
 
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
-            <j:parent xmlns:j='" + jpf.ns.jpf + "'>\
+            <j:parent xmlns:j='" + jpf.ns.jml + "'>\
                 <button style='float:right' onclick='jpf.debugwin.exec(\"attribute\")' onkeydown='event.cancelBubble=true;'>Attribute</button>\
                 <button style='float:right' onclick='jpf.debugwin.exec(\"textnode\")' onkeydown='event.cancelBubble=true;'>Textnode</button>\
                 <button style='float:right' onclick='jpf.debugwin.exec(\"remove\")' onkeydown='event.cancelBubble=true;'>Remove</button>\
@@ -537,7 +537,7 @@ jpf.debugwin = {
 
         if (jpf.isIE) {
             xml.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:j='" + jpf.ns.jpf + "'");
+                "xmlns:j='" + jpf.ns.jml + "'");
         }
 
         //Reset loading state in case of an error during init

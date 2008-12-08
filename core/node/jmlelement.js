@@ -569,7 +569,7 @@ jpf.JmlElement = function(){
             else {
                 if (typeof data == "string")
                     data = jpf.xmldb.getXml("<j:jml xmlns:j='"
-                        + jpf.ns.jpf +"'>" + data + "</j:jml>");
+                        + jpf.ns.jml +"'>" + data + "</j:jml>");
                 for (var i = data.childNodes.length - 1; i >= 0; i--)
                     JML.insertBefore(data.childNodes[i], JML.firstChild);
             }
@@ -597,7 +597,7 @@ jpf.JmlElement = function(){
 
     if (
       //#ifdef __WITH_DATABINDING
-      this.hasFeature(__DATABINDING__) && 
+      this.hasFeature(__DATABINDING__) &&
       //#endif
       !this.hasFeature(__MULTISELECT__) && !this.change) {
         /* ***********************
@@ -879,7 +879,7 @@ jpf.JmlElement.propHandlers = {
             //#endif
         }
     },
-    
+
     "enabled" : function(value){
        this.setProperty("disabled", !value);
     },

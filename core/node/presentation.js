@@ -115,7 +115,7 @@ jpf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var nodes = $xmlns(xmlNode, "style", jpf.ns.jpf), tnode, node;
+        var nodes = $xmlns(xmlNode, "style", jpf.ns.jml), tnode, node;
         for (var i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
 
@@ -158,7 +158,7 @@ jpf.skins = {
     purgeCss: function(imagepath, iconpath){
         if (!this.css.length)
             return;
-        
+
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
         jpf.importCssString(document, cssString);
 
@@ -168,7 +168,7 @@ jpf.skins = {
 
         this.css = [];
     },
-    
+
     loadCssInWindow : function(skinName, win, imagepath, iconpath){
         this.css = [];
         var name = skinName.split(":");
@@ -177,7 +177,7 @@ jpf.skins = {
         this.importSkinDef(template, skin.base, skin.name);
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
         jpf.importCssString(win.document, cssString);
-        
+
         this.css = [];
     },
 
@@ -223,14 +223,14 @@ jpf.skins = {
             originals = this.skins[name].originals[type] = {};
 
             // #ifdef __DEBUG
-            if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
+            if (!$xmlns(skin, "presentation", jpf.ns.jml)[0]) {
                 throw new Error(jpf.formatErrorString(1078, null,
                     "Retrieving Template",
                     "Missing presentation tag in '" + name + "'", cJml));
             }
             // #endif
 
-            var nodes = $xmlns(skin, "presentation", jpf.ns.jpf)[0].childNodes;
+            var nodes = $xmlns(skin, "presentation", jpf.ns.jml)[0].childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
                 originals[nodes[i].baseName || nodes[i][jpf.TAGNAME]] = nodes[i];
@@ -246,7 +246,7 @@ jpf.skins = {
 
     getCssString : function(skinName){
         return jpf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
-            "style", jpf.ns.jpf)[0], "text()");
+            "style", jpf.ns.jml)[0], "text()");
     },
 
     changeSkinset : function(value){
@@ -321,9 +321,9 @@ jpf.skins = {
             oHtml.style.backgroundPosition = ((-1 * left) - map.offset[0])
                 + "px " + ((-1 * top) - map.offset[1]) + "px";
         }
-        else 
+        else
         //#endif
-        
+
         //Assuming image url
         {
             //#ifdef __DEBUG

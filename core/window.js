@@ -92,7 +92,7 @@ jpf.windowManager = {
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
  *   {Object} htmlEvent the html event object.
- * @event keyup							Fires when the user stops pressing a key.
+ * @event keyup                            Fires when the user stops pressing a key.
  *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
@@ -100,11 +100,11 @@ jpf.windowManager = {
  *   {Boolean} shiftKey  wether the shift key was pressed.
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event mousescroll				Fires when the user scrolls the mouse
+ * @event mousescroll                Fires when the user scrolls the mouse
  *   cancellable: Prevents the container to scroll
  *   object:
  *   {Number} delta the scroll impulse.
- * @event hotkey						Fires when the user presses a hotkey
+ * @event hotkey                        Fires when the user presses a hotkey
  *   bubbles: yes
  *   cancellable: Prevents the default hotkey behaviour.
  *   object:
@@ -113,7 +113,7 @@ jpf.windowManager = {
  *   {Boolean} shiftKey  wether the shift key was pressed.
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event keydown						Fires when the user presses a key
+ * @event keydown                        Fires when the user presses a key
  *   bubbles: yes
  *   cancellable: Prevents the behaviour.
  *   object:
@@ -342,7 +342,7 @@ jpf.WindowImplementation = function(){
         jdwin.caption = q.getAttribute("caption") || "Javeline DeskRun";
         jdwin.icon    = q.getAttribute("icon") || 100;
 
-        var ct = $xmlns(q, "context", jpf.ns.jpf);
+        var ct = $xmlns(q, "context", jpf.ns.jml);
         if (ct.length) {
             ct = ct[0];
             if (!jpf.appsettings.tray)
@@ -1064,7 +1064,7 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
 
         //IE selection handling
-        if (jpf.JmlParser && !jpf.appsettings.allowSelect 
+        if (jpf.JmlParser && !jpf.appsettings.allowSelect
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
           || jpf.dragmode.isDragging
@@ -1509,15 +1509,15 @@ jpf.DocumentImplementation = function(){
             x = jpf.getXml(tagName)
         }
         else {
-            var prefix = jpf.findPrefix(jpf.JmlParser.$jml, jpf.ns.jpf);
+            var prefix = jpf.findPrefix(jpf.JmlParser.$jml, jpf.ns.jml);
             var doc = jpf.JmlParser.$jml.ownerDocument;
 
             if(jpf.JmlParser.$jml && doc.createElementNS) {
-                x = doc.createElementNS(jpf.ns.jpf, prefix + ":" + tagName);
+                x = doc.createElementNS(jpf.ns.jml, prefix + ":" + tagName);
             }
             else {
                 x = jpf.getXml("<" + prefix + ":" + tagName + " xmlns:"
-                               + prefix + "='" + jpf.ns.jpf + "' />", true);
+                               + prefix + "='" + jpf.ns.jml + "' />", true);
             }
         }
 
@@ -1526,7 +1526,7 @@ jpf.DocumentImplementation = function(){
                 prefix = x.prefix;
 
             x.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:" + prefix + "='" + jpf.ns.jpf + "'");
+                "xmlns:" + prefix + "='" + jpf.ns.jml + "'");
         }
 
         tagName = x[jpf.TAGNAME];

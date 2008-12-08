@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_TELEPORT || __PARSER_JML
 /**
- * The parser of the Javeline Markup Language. It parses other namespaces as 
+ * The parser of the Javeline Markup Language. It parses other namespaces as
  * well, such as html and xsd.
  * @parser
  * @private
@@ -30,7 +30,7 @@ jpf.JmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
     // #endif
-    
+
     stateStack : [],
     modelInit  : [],
 
@@ -42,17 +42,17 @@ jpf.JmlParser = {
         jpf.Latometer.start();
         // #endif
         this.$jml = x;
-        
+
         jpf.isParsing = true;
-        
+
         // #ifdef __DEBUG
         //Check for children in Jml node
         if (!x.childNodes.length)
-            throw new Error(jpf.formatErrorString(1014, null, 
-                "jpf.JmlParser", 
+            throw new Error(jpf.formatErrorString(1014, null,
+                "jpf.JmlParser",
                 "JML Parser got Markup without any children"));
         // #endif
-        
+
         //Create window and document
         jpf.window          = new jpf.WindowImplementation();
         jpf.document        = new jpf.DocumentImplementation();
@@ -62,63 +62,63 @@ jpf.JmlParser = {
         jpf.window.$at.name = "default";
         jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
         //#endif
-        
+
         //First pass parsing of all JML documents
         for (var docs = [x], i = 0; i < jpf.includeStack.length; i++)
             if(jpf.includeStack[i].nodeType)
                 docs.push(jpf.includeStack[i]);
-        
+
         this.docs = docs;
         this.parseSettings(docs);
-        
+
         if (!this.shouldWait)
             this.continueStartup();
     },
-    
+
     //Allow for Async processes set in appsettings to load before parsing...
     continueStartup : function(){
         this.parseFirstPass(this.docs);
-        
+
         //Main parsing pass
         jpf.JmlParser.parseChildren(this.$jml, document.body, jpf.document.documentElement);//, this);
-        
+
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
         if (jpf.appsettings.layout)
             jpf.layout.loadFrom(jpf.appsettings.layout);
         // #endif
-        
+
         //Last pass parsing
         setTimeout('jpf.JmlParser.parseLastPass();', 1);
-        
+
         //Set init flag for subparsers
         this.inited = true;
-        
+
         // #ifdef __DEBUG
         jpf.Latometer.end();
         jpf.Latometer.addPoint("Total load time");
         jpf.Latometer.start(true);
         // #endif
     },
-    
+
     parseSettings : function(xmlDocs) {
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["appsettings"]);
     },
-    
+
     parseFirstPass: function(xmlDocs){
         // #ifdef __DEBUG
         jpf.console.info("Parse First Pass");
         // #endif
-        
+
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["teleport", "presentation", "settings",
                 "skin[not(@j_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
         for (var i = 0; i < xmlDocs.length; i++)
-            this.preLoadRef(xmlDocs[i], ["style", "model[@id]", 
+            this.preLoadRef(xmlDocs[i], ["style", "model[@id]",
                 "smartbinding[@id]", "iconmap"], true);
     },
-    
+
     preparsed : [],
     preLoadRef : function(xmlNode, sel, parseLocalModel){
         /*BUG: IE document handling bugs
@@ -127,7 +127,7 @@ jpf.JmlParser = {
             if (xmlNode.style) return;
         }*/
 
-        var prefix = jpf.findPrefix(xmlNode, jpf.ns.jpf);
+        var prefix = jpf.findPrefix(xmlNode, jpf.ns.jml);
         if (prefix) prefix += ":";
         var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
@@ -135,7 +135,7 @@ jpf.JmlParser = {
         var i, o, name, tagName, x, l;
         for (i = 0, l = nodes.length; i < l; i++) {
             x = nodes[i];
-            
+
             //Check if node should be rendered
             if (jpf.xmldb.getInheritedAttribute(x, "render") == "runtime")
                 continue;
@@ -152,7 +152,7 @@ jpf.JmlParser = {
                 name = x.getAttribute("id"); //or u could use o.name
 
                 //Add this component to the nameserver
-                if (o && name) 
+                if (o && name)
                     jpf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
@@ -163,7 +163,7 @@ jpf.JmlParser = {
                 o.$jmlLoaded = true;
 
                 if (name) jpf.setReference(name, o);
-                
+
                 x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
             }
             else if (x.parentNode) {
@@ -171,11 +171,11 @@ jpf.JmlParser = {
             }
         }
     },
-    
+
     parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf, beforeNode){
         var parsing = jpf.isParsing;
         jpf.isParsing = true;
-        
+
         if (!jpf.window) {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
@@ -185,22 +185,22 @@ jpf.JmlParser = {
             jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
             //#endif
         }
-        
+
         if (!jmlParent)
             jmlParent = jpf.document.documentElement;
 
         this.parseFirstPass([x]);
-        
+
         if (parseSelf) {
             if (jmlParent.loadJml)
                 jmlParent.loadJml(x, jmlParent.parentNode);
             jmlParent.$jmlLoaded = true;
-            
+
             //#ifdef __WITH_ALIGNMENT
             if (jmlParent && jmlParent.pData)
                 jpf.layout.compileAlignment(jmlParent.pData);
             //#endif
-            
+
             //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
             if (jmlParent.pData || jmlParent.tagName == "grid")
                 jpf.layout.activateRules(pNode.oInt || document.body);
@@ -209,7 +209,7 @@ jpf.JmlParser = {
         else {
             var lastChild = pHtmlNode.lastChild;
             this.parseChildren(x, pHtmlNode, jmlParent, false, noImpliedParent);
-            
+
             if (beforeNode) {
                 var loop = pHtmlNode.lastChild;
                 while (lastChild != loop) {
@@ -218,11 +218,11 @@ jpf.JmlParser = {
                 }
             }
         }
-        
+
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
         jpf.layout.activateRules();//@todo maybe use processQueue
         //#endif
-        
+
         this.parseLastPass();
         jpf.isParsing = parsing;
     },
@@ -230,28 +230,28 @@ jpf.JmlParser = {
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
-        if (jmlParent.childNodes.length && jmlParent != jpf.document.documentElement) 
+        if (jmlParent.childNodes.length && jmlParent != jpf.document.documentElement)
             return pHtmlNode;
-        
+
         // #ifdef __DEBUG
         if (!jpf.Latometer.isStarted) jpf.Latometer.start();
         // #endif
-        
+
         // Check for delayed rendering flag
-        if (checkRender && jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
+        if (checkRender && jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__)
           && jmlParent.$checkDelay(x)) {
             // #ifdef __DEBUG
             jpf.console.info("Delaying rendering of children");
             // #endif
-            
+
             return pHtmlNode;
         }
         if (jmlParent)
             jmlParent.isRendered = true;
 
-        if (x.namespaceURI == jpf.ns.jpf || x.tagUrn == jpf.ns.jpf)
+        if (x.namespaceURI == jpf.ns.jml || x.tagUrn == jpf.ns.jml)
             this.lastNsPrefix = x.prefix || x.scopeName;
-        
+
         //Loop through Nodes
         for (var oCount = 0,i = 0; i < x.childNodes.length; i++) {
             var q = x.childNodes[i];
@@ -260,30 +260,30 @@ jpf.JmlParser = {
             // Text nodes and comments
             if (q.nodeType != 1) {
                 if (!pHtmlNode) continue;
-                
+
                 if (jpf.isIE && !q.nodeValue.trim())
                     continue;
-                
+
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
                     //if(jmlParent.name == "barTest") debugger;
                     pHtmlNode.appendChild(pHtmlNode.ownerDocument
                       .createTextNode(!jpf.hasTextNodeWhiteSpaceBug
                       ? q.nodeValue
                       : q.nodeValue.replace(this.reWhitespaces, " ")));
-                      
+
                 }
                 else if (q.nodeType == 4) {
                     pHtmlNode.appendChild(pHtmlNode.ownerDocument
                         .createCDataSection(q.nodeValue));
                 }
-                
+
                 //#ifdef __WITH_LANG_SUPPORT
                 jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
                     "$1"), {htmlNode : pHtmlNode});
                 //#endif
                 continue;
             }
-            
+
             //Parse node using namespace handler
             if (!this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml])
                 continue; //ignore tag
@@ -291,7 +291,7 @@ jpf.JmlParser = {
             this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml].call(
                 this, q, pHtmlNode, jmlParent, noImpliedParent);
         }
-        
+
         if (pHtmlNode) {
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
@@ -299,19 +299,19 @@ jpf.JmlParser = {
                 jpf.layout.compileAlignment(jmlParent.pData);
                 //jpf.layout.compile(pHtmlNode);
             // #endif
-            
+
             // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
             jpf.layout.activateRules(pHtmlNode);
             // #endif
         }
-        
+
         return pHtmlNode;
     },
-    
+
     addNamespaceHandler : function(xmlns, func){
         this.nsHandler[xmlns] = func;
     },
-    
+
     /**
      * @define include element that loads another jml files.
      * Example:
@@ -335,29 +335,29 @@ jpf.JmlParser = {
                 // #ifdef __DEBUG
                 jpf.console.info("Switching to include context");
                 // #endif
-                
+
                 var xmlNode = jpf.includeStack[x.getAttribute("iid")];
                 //#ifdef __DEBUG
                 if (!xmlNode)
                     return jpf.console.warn("No include file found");
                 // #endif
-                
+
                 this.parseChildren(xmlNode, pHtmlNode, jmlParent, null, true);
             }
-            else 
+            else
             // #endif
 
             // Handler
             if (this.handler[tagName]) {
                 var o, id, name;
-                
+
                 //Deal with preparsed nodes
                 if (id = x.getAttribute("j_preparsed")) {
                     x.removeAttribute("j_preparsed");
 
                     o = this.preparsed[id];
                     delete this.preparsed[id];
-                    
+
                     if (o && !o.parentNode) {
                         if (jmlParent.hasFeature && jmlParent.hasFeature(__WITH_JMLDOM__))
                             o.$setParent(jmlParent);
@@ -366,22 +366,22 @@ jpf.JmlParser = {
                             jmlParent.childNodes.push(o);
                         }
                     }
-                    
+
                     return o;
                 }
-                
+
                 // #ifdef __DEBUG
                 jpf.console.info("Processing '" + tagName + "' node");
                 // #endif
-                
-                o = this.handler[tagName](x, (noImpliedParent 
-                    ? null 
+
+                o = this.handler[tagName](x, (noImpliedParent
+                    ? null
                     : jmlParent), pHtmlNode);
 
                 name = x.getAttribute("id"); //or u could use o.name
 
                 //Add this component to the nameserver
-                if (o && name) 
+                if (o && name)
                     jpf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
@@ -393,10 +393,10 @@ jpf.JmlParser = {
 
                 o.$jmlLoaded = true;
 
-                if (name) 
+                if (name)
                     jpf.setReference(name, o);
             }
-            
+
             //XForms
             //#ifdef __WITH_XFORMS
             else if (jmlParent && (jmlParent.hasFeature(__XFORMS__)
@@ -421,11 +421,11 @@ jpf.JmlParser = {
                             jmlParent.setCaption(x.firstChild.nodeValue); //or replace it or something...
                             break;
                         }
-                    
+
                         //Create element using this function
-                        var oLabel = this.nsHandler[jpf.ns.jpf].call(this, x,
+                        var oLabel = this.nsHandler[jpf.ns.jml].call(this, x,
                             jmlParent.oExt.parentNode, jmlParent.parentNode);
-                        
+
                         //Set Dom stuff
                         oLabel.parentNode = jmlParent.parentNode;
                         for (var i = 0; i < jmlParent.parentNode.childNodes.length; i++) {
@@ -437,10 +437,10 @@ jpf.JmlParser = {
                                 break;
                             }
                         }
-                        
+
                         //Insert element to parentHtmlNode of jmlParent and before the node
                         oLabel.oExt.parentNode.insertBefore(oLabel.oExt, jmlParent.oExt);
-                        
+
                         //Use for
                         oLabel.setFor(jmlParent);
                         break;
@@ -451,19 +451,19 @@ jpf.JmlParser = {
             else if(pHtmlNode) {
                 // #ifdef __DEBUG
                 if (!jpf[tagName] || typeof jpf[tagName] != "function")
-                    throw new Error(jpf.formatErrorString(1017, null, 
-                        "Initialization", 
+                    throw new Error(jpf.formatErrorString(1017, null,
+                        "Initialization",
                         "Could not find Class Definition '" + tagName + "'.", x));
                 // #endif
-                
+
                 if (!jpf[tagName])
                     throw new Error("Could not find class " + tagName);
 
                 var objName = tagName;
-                
+
                 //Check if Class is loaded in current Window
                 //if(!self[tagName]) main.window.jpf.importClass(main.window[tagName], false, window);
-        
+
                 //#ifdef __WITH_XFORMS
                 if (tagName == "select1" && x.getAttribute("appearance") == "minimal") {
                     objName = "dropdown";
@@ -471,26 +471,26 @@ jpf.JmlParser = {
                 //#endif
                 // #ifdef __WITH_HTML5
                 if (tagName == "input") {
-                    objName = jpf.HTML5INPUT[objName = x.getAttribute("type")] 
+                    objName = jpf.HTML5INPUT[objName = x.getAttribute("type")]
                         || objName || "textbox";
                 }
                 //#endif
-        
+
                 //Create Object en Reference
                 var o = new jpf[objName](pHtmlNode, tagName, x);
                 if (x.getAttribute("id"))
                     jpf.setReference(x.getAttribute("id"), o);
-    
+
                 //Process JML
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
 
                 o.$jmlLoaded = true;
             }
-            
+
             return o;
         }
-    
+
         //#ifdef __WITH_XSD
         //XML Schema Definition
         ,"http://www.w3.org/2001/XMLSchema" : function(x, pHtmlNode, jmlParent, noImpliedParent){
@@ -499,12 +499,12 @@ jpf.JmlParser = {
                 jmlParent.setProperty("datatype", type);
         }
         //#endif
-    
+
         // #ifdef __WITH_HTML_PARSING
         //XHTML
         ,"http://www.w3.org/1999/xhtml" :  function(x, pHtmlNode, jmlParent, noImpliedParent){
             var parseWhole = x.tagName.match(/table|object|embed/i) ? true : false;
-            
+
             // Move all this to the respective browser libs in a wrapper function
             if (x.tagName == "script") {
                 return;
@@ -529,24 +529,24 @@ jpf.JmlParser = {
                 var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x.cloneNode(false))
                     : jpf.xmldb.htmlImport(x.cloneNode(false), pHtmlNode);
-                //o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x.cloneNode(false), false));    
+                //o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x.cloneNode(false), false));
             }
-            
+
             //Check attributes for j:left etc and j:repeat-nodeset
             var tagName;
-            var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jpf) || "";
+            var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jml) || "";
             if (prefix && !x.style) {
                 if (!jpf.supportNamespaces)
                     x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-                        + prefix + "='" + jpf.ns.jpf + "'");
+                        + prefix + "='" + jpf.ns.jml + "'");
                 prefix += ":";
             }
-            
+
             //#ifdef __WITH_XFORMS || __WITH_HTML_POSITIONING
             var done = {}, aNodes = !x.style && x.selectNodes("@" + prefix + "*") || [];
             for (var i = 0; i < aNodes.length; i++) {
                 tagName = aNodes[i][jpf.TAGNAME];
-                
+
                 //#ifdef __WITH_HTML_POSITIONING
                 //@todo rewrite this, and optimize html loading
                 if (tagName.match(/^(left|top|right|bottom|width|height|align)$/)) {
@@ -554,7 +554,7 @@ jpf.JmlParser = {
                     done["position"] = true;
                     //Create positioning object - remove attributes when done
                     var html = new jpf.HtmlWrapper(pHtmlNode, o, prefix);
-                    
+
                     if (x.getAttribute(prefix + "align")
                       || x.getAttribute(prefix + "align-position")) {
                         html.enableAlignment()
@@ -578,25 +578,25 @@ jpf.JmlParser = {
                     //return o;
                 }
                 //#endif
-                
+
                 //#ifdef __WITH_XFORMS
                 /* XForms support
-                    - repeat-model 
-                    - repeat-bind 
-                    - repeat-nodeset 
-                    - repeat-startindex 
-                    - repeat-number 
+                    - repeat-model
+                    - repeat-bind
+                    - repeat-nodeset
+                    - repeat-startindex
+                    - repeat-number
                 */
                 else if (tagName.match(/^repeat-/)) {
                     if (done["repeat"]) continue;
                     done["repeat"] = true;
                     //Create repeat object - remove attributes when done
-                    
+
                 }
                 //#endif
             }
              //#endif
-            
+
             if (jpf.canUseInnerHtmlWithTables || !parseWhole)
                 this.parseChildren(x, o, jmlParent);
             else {
@@ -605,14 +605,14 @@ jpf.JmlParser = {
                     ignoring all Javeline Platform Elements.");
                 //#endif
             }
-            
+
             // #ifdef __WITH_EDITMODE || __WITH_LANG_SUPPORT
             if (jpf.xmldb.getTextNode(x)) {
                 var data = {
                     jmlNode  : x,
                     htmlNode : o
                 }
-                
+
                 /* #ifdef __WITH_EDITMODE
                 EditServer.register(data);
                 #endif */
@@ -622,16 +622,16 @@ jpf.JmlParser = {
                 // #endif
             }
             // #endif
-            
+
             return o;
         }
         // #endif
     },
-    
+
     //#ifdef __WITH_XFORMS
     xforms : {
         "label"       : 3, //any non-has-children node
-        
+
         "action"      : 1, //stacked processing
         "dispatch"    : 1,
         "rebuild"     : 1,
@@ -646,7 +646,7 @@ jpf.JmlParser = {
         "message"     : 1,
         "insert"      : 1,
         "delete"      : 1,
-        
+
         "filename"    : 2, //widget specific processing
         "mediatype"   : 2,
         "itemset"     : 2,
@@ -657,21 +657,21 @@ jpf.JmlParser = {
         "hint"        : 2
     },
     //#endif
-    
+
     //#endif
-    
+
     invalidJml : function(jml, message){
         //#ifdef __DEBUG
-        jpf.console.warn((message || "Invalid JML syntax. The j:" 
+        jpf.console.warn((message || "Invalid JML syntax. The j:"
                         + jml[jpf.TAGNAME] + " node should not be placed under \
-                         it's current parent:") + "\n" 
+                         it's current parent:") + "\n"
                         + (jml.xml || jml.serialize));
         //#endif
     },
-    
+
     handler : {
         /**
-         * @define script element that loads javascript into the application 
+         * @define script element that loads javascript into the application
          * either from it's first child or from a file.
          * Example:
          * <code>
@@ -692,12 +692,12 @@ jpf.JmlParser = {
             if (q.getAttribute("src")) {
                 if (jpf.isOpera) {
                     setTimeout(function(){
-                        jpf.window.loadCodeFile(jpf.hostPath 
+                        jpf.window.loadCodeFile(jpf.hostPath
                             + q.getAttribute("src"));
                     }, 1000);
                 }
                 else {
-                    jpf.window.loadCodeFile(jpf.hostPath 
+                    jpf.window.loadCodeFile(jpf.hostPath
                         + q.getAttribute("src"));
                 }
             }
@@ -706,23 +706,23 @@ jpf.JmlParser = {
                 jpf.exec(scode);
             }
         },
-        
+
         //#ifdef __WITH_STATE
         /**
-         * @define state-group element that groups state elements together and 
+         * @define state-group element that groups state elements together and
          * provides a way to set a default state.
-         *  <j:state-group 
-         *    loginMsg.visible  = "false" 
+         *  <j:state-group
+         *    loginMsg.visible  = "false"
          *    winLogin.disabled = "false">
-         *      <j:state id="stFail" 
-         *          loginMsg.value   = "Username or password incorrect" 
+         *      <j:state id="stFail"
+         *          loginMsg.value   = "Username or password incorrect"
          *          loginMsg.visible = "true" />
-         *      <j:state id="stError" 
-         *          loginMsg.value   = "An error has occurred. Please check your network." 
+         *      <j:state id="stError"
+         *          loginMsg.value   = "An error has occurred. Please check your network."
          *          loginMsg.visible = "true" />
-         *      <j:state id="stLoggingIn" 
-         *          loginMsg.value    = "Please wait while logging in..." 
-         *          loginMsg.visible  = "true" 
+         *      <j:state id="stLoggingIn"
+         *          loginMsg.value    = "Please wait while logging in..."
+         *          loginMsg.visible  = "true"
          *          winLogin.disabled = "true" />
          *      <j:state id="stIdle" />
          *  </j:state-group>
@@ -732,39 +732,39 @@ jpf.JmlParser = {
         "state-group" : function(q, jmlParent){
             var name = q.getAttribute("name") || "stategroup" + jpf.all.length;
             var pState = jpf.StateServer.addGroup(name, null, jmlParent);
-            
+
             var nodes = q.childNodes, attr = q.attributes, al = attr.length;
             for (var j, i = 0, l = nodes.length; i < l; i++){
                 var node = nodes[i];
-                
+
                 if (node.nodeType != 1 || node[jpf.TAGNAME] != "state")
                     continue;
-                
+
                 for (j = 0; j < al; j++) {
                     if (!node.getAttribute(attr[j].nodeName))
                         node.setAttribute(attr[j].nodeName, attr[j].nodeValue);
                 }
-                
+
                 node.setAttribute("group", name);
-                
+
                 //Create Object en Reference and load JML
                 new jpf.state(jmlParent.pHtmlNode, "state", node)
                     .loadJml(node, pState);
             }
-            
+
             return pState;
         },
         //#endif
-        
+
         //#ifdef __WITH_ICONMAP
         /**
          * @define iconmap element that provides a means to get icons from a
          * single image containing many icons.
          * Example:
          * <code>
-         *  <j:iconmap id="tbicons" src="toolbar.icons.gif" 
+         *  <j:iconmap id="tbicons" src="toolbar.icons.gif"
          *    type="horizontal" size="20" offset="2,2" />
-         *  
+         *
          *  <j:menu id="mmain" skin="menu2005">
          *      <j:item icon="tbicons:1">Copy</j:item>
          *      <j:item icon="tbicons:2">Cut</j:item>
@@ -783,15 +783,15 @@ jpf.JmlParser = {
          */
         "iconmap" : function(q, jmlParent){
             var name = q.getAttribute("id");
-            
+
             //#ifdef __DEBUG
             if (!name) {
-                throw new Error(jpf.formatErrorString(0, null, 
+                throw new Error(jpf.formatErrorString(0, null,
                     "Creating icon map",
                     "Could not create iconmap. Missing id attribute", q));
             }
             //#endif
-            
+
             return jpf.skins.addIconMap({
                 name   : name,
                 src    : q.getAttribute("src"),
@@ -803,7 +803,7 @@ jpf.JmlParser = {
             });
         },
         //#endif
-        
+
         //#ifdef __JWINDOW
         /**
          * See {@link modalwindow}
@@ -814,13 +814,13 @@ jpf.JmlParser = {
 
             //Process JML
             o.loadJml(q, jmlParent);
-            
+
             //jpf.windowManager.addForm(q); //@todo rearchitect this
-            
+
             return o;
         },
         //#endif
-        
+
         //#ifdef __WITH_PRESENTATION
         /**
          * @define style element containing css
@@ -829,7 +829,7 @@ jpf.JmlParser = {
         "style" : function(q){
             jpf.importCssString(document, q.firstChild.nodeValue);
         },
-        
+
         /**
          * @define comment all elements within the comment tag are ignored by the parser.
          * @addnode anyjml
@@ -837,7 +837,7 @@ jpf.JmlParser = {
         "comment" : function (q){
             //do nothing
         },
-        
+
         /**
          * @define presentation element containing a skin definition
          * @addnode global, anyjml
@@ -850,14 +850,14 @@ jpf.JmlParser = {
             var skin = q.ownerDocument.createElement("skin"); skin.appendChild(q);
             jpf.skins.skins[name].templates[t] = skin;
         },
-        
+
         /**
          * @define skin element specifying the skin of an application.
          * Example:
          * <code>
-         *  <j:skin src="perspex.xml" 
-         *    name       = "perspex" 
-         *    media-path = "http://example.com/images" 
+         *  <j:skin src="perspex.xml"
+         *    name       = "perspex"
+         *    media-path = "http://example.com/images"
          *    icon-path  = "http://icons.example.com" />
          * </code>
          * @attribute {String} name       the name of the skinset.
@@ -880,90 +880,90 @@ jpf.JmlParser = {
                 var path = q.getAttribute("src")
                     ? jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("src"))
                     : jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("name")) + "/index.xml";
-                
+
                 jpf.loadJmlInclude(q, true, path);
             }
         },
         //#endif
-        
+
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
-        
+
         "model" : function(q, jmlParent){
             var model = new jpf.model().loadJml(q, jmlParent);
-            
+
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + jmlParent.uniqueId;
                 jmlParent.$jml.setAttribute("model", modelId);
                 model.register(jmlParent);
                 jpf.nameserver.register("model", modelId, model);
             }
-            
+
             return model;
         },
-        
+
         //#ifdef __WITH_SMARTBINDINGS
         "smartbinding" : function(q, jmlParent){
             var bc = new jpf.smartbinding(q.getAttribute("id"), q, jmlParent);
 
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
                 jpf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
-            
+
             return bc;
         },
-        
+
         "ref" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
                 return jpf.JmlParser.invalidJml(q);
-            
+
             jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addBindRule(q, jmlParent);
         }, //not referencable
-        
+
         "bindings" : function(q, jmlParent){
             var rules = jpf.getRules(q);
-            
+
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
                 jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addBindings(rules, q);
-            
+
             return rules;
         },
-        
+
         "action" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
                 return jpf.JmlParser.invalidJml(q);
-            
+
             jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addActionRule(q, jmlParent);
         }, //not referencable
-        
+
         "actions" : function(q, jmlParent){
             var rules = jpf.getRules(q);
-            
+
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addActions(rules, q);
             }
-            
+
             return rules;
         },
-        
+
         // #endif
         // #endif
-        
+
         // #ifdef __WITH_ACTIONTRACKER
         "actiontracker" : function(q, jmlParent){
             var at = new jpf.actiontracker(jmlParent);
-            
+
             if (jmlParent)
                 jmlParent.$at = at;
-            
+
             return at;
         },
         //#endif
-        
+
         // #ifdef __WITH_CONTEXTMENU
-        
+
         /**
          * @for JmlNode
          * @define contextmenu element specifying which menu is shown when a
@@ -982,33 +982,33 @@ jpf.JmlParser = {
          * @attribute {String} select the xpath executed on the selected element of the databound element which determines wether this contextmenu is shown.
          */
         "contextmenu" : function(q, jmlParent){
-            if (!jmlParent) 
+            if (!jmlParent)
                 return jpf.JmlParser.invalidJml(q); //not supported
-            
+
             if (!jmlParent.contextmenus)
                 jmlParent.contextmenus = [];
             jmlParent.contextmenus.push(q);
         },
-        
+
         //#endif
 
         // #ifdef __WITH_DRAGDROP
         "allow-drag" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
                 return jpf.JmlParser.invalidJml(q);
-            
+
             jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDragRule(q, jmlParent);
         },  //not referencable
-        
+
         "allow-drop" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
                 return jpf.JmlParser.invalidJml(q);
-            
+
             jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDropRule(q, jmlParent);
         },  //not referencable
-        
+
         "dragdrop" : function(q, jmlParent){
             var rules = jpf.getRules(q);
 
@@ -1016,7 +1016,7 @@ jpf.JmlParser = {
                 jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addDragDrop(rules, q);
             }
-            
+
             return rules;
         },
         // #endif
@@ -1027,27 +1027,27 @@ jpf.JmlParser = {
             return jpf.teleport.loadJml(q, jmlParent);
         },
         // #endif
-        
+
         // #ifdef __WITH_RSB
         "remote" : function(q, jmlParent){
             //Remote Smart Bindings
             return new jpf.remote(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
-        
+
         "appsettings" : function(q, jmlParent){
             return jpf.appsettings.loadJml(q, jmlParent);
         }
-        
+
         //#ifdef __DESKRUN
         , "deskrun" : function(q){
             if (!jpf.isDeskrun) return;
             jpf.window.loadJml(q); //@todo rearchitect this
         }
         //#endif
-        
+
         /**
-         * @define loader Element defining the html that is shown while the 
+         * @define loader Element defining the html that is shown while the
          * application is loading.
          * Example:
          * <code>
@@ -1063,13 +1063,13 @@ jpf.JmlParser = {
             //ignore, handled elsewhere
         }
     },
-    
+
     // #ifdef __WITH_SMARTBINDINGS
     getSmartBinding : function(id){
         return jpf.nameserver.get("smartbinding", id);
     },
     // #endif
-    
+
     // #ifdef __WITH_ACTIONTRACKER
     getActionTracker : function(id){
         var at = jpf.nameserver.get("actiontracker", id);
@@ -1079,7 +1079,7 @@ jpf.JmlParser = {
             return self[id].getActionTracker();
     },
     // #endif
-    
+
     // #ifdef __WITH_PRESENTATION
     replaceNode : function(newNode, oldNode){
         var nodes = oldNode.childNodes;
@@ -1089,53 +1089,53 @@ jpf.JmlParser = {
             }
             newNode.insertBefore(nodes[i], newNode.firstChild);
         }
-            
+
         newNode.onresize = oldNode.onresize;
-        
+
         return newNode;
     },
     // #endif
-    
+
     parseLastPass : function(){
         /* #ifdef __WITH_EDITMODE
         return;
         #endif */
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Parse final pass");
         //#endif
-        
+
         //#ifdef __WITH_OFFLINE //@todo remove this
         //if (!jpf.appsettings.offline)
         //   jpf.offline.init();
         //#endif
-        
+
         /*
             All these component dependant things might
             be suited better to be in a component generation
             called event
         */
-        
+
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS || __WITH_SMARTBINDINGS
         while (this.hasNewSbStackItems) {
             var sbInit              = this.sbInit;
             this.sbInit             = {};
             this.hasNewSbStackItems = false;
-            
+
             //Initialize Databinding for all GUI Elements in Form
             for (var uniqueId in sbInit) {
                 if (parseInt(uniqueId) != uniqueId)
                     continue;
-    
+
                 //Retrieve Jml Node
                 var jNode = jpf.lookup(uniqueId);
-    
+
                 //Set Main smartbinding
                 if (sbInit[uniqueId][0]) {
                     jNode.$propHandlers["smartbinding"]
                         .call(jNode, sbInit[uniqueId][0], true);
                 }
-                
+
                 //Set selection smartbinding if any
                 if (sbInit[uniqueId][1])
                     jNode.$setMultiBind(sbInit[uniqueId][1]);
@@ -1143,7 +1143,7 @@ jpf.JmlParser = {
         }
         this.sbInit = {};
         //#endif
-        
+
         //#ifdef __WITH_STATE || __WITH_PROPERTY_BINDING
         //Initialize property bindings
         var s = this.stateStack;
@@ -1161,11 +1161,11 @@ jpf.JmlParser = {
             var jmlNode, modelInit     = this.modelInit;
             this.modelInit             = {};
             this.hasNewModelStackItems = false;
-            
+
             for (var data,i = 0; i < modelInit.length; i++) {
                 data    = modelInit[i][1];
                 data[0] = data[0].substr(1);
-                
+
                 jmlNode = eval(data[0]);
                 if (jmlNode.connect)
                     jmlNode.connect(modelInit[i][0], null, data[2], data[1] || "select");
@@ -1180,79 +1180,79 @@ jpf.JmlParser = {
         if (!jpf.loaded)
             jpf.dispatchEvent("load");
         jpf.loaded = true;
-        
+
         //#ifdef __WITH_XFORMS
         var models = jpf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-ready");
         //#endif
-        
+
         // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
         jpf.layout.activateRules();// processQueue();
         //#endif
-        
+
         if (!this.loaded) {
             //#ifdef __DESKRUN
             if (jpf.isDeskrun)
                 jpf.window.deskrun.Show();
             //#endif
-            
+
             //Set the default selected element
             jpf.window.focusDefault();
-            
+
             this.loaded = true;
         }
-        
+
         //END OF ENTIRE APPLICATION STARTUP
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Initialization finished");
         //#endif
-        
+
         //#ifdef __DEBUG
         jpf.Latometer.end();
         jpf.Latometer.addPoint("Total time for final pass");
         //#endif
-        
+
         jpf.isParsing = false;
     }
-    
+
     // #ifdef __WITH_DATABINDING || __WITH_XFORMS || __WITH_SMARTBINDINGS
     ,
     addToSbStack : function(uniqueId, sNode, nr){
         this.hasNewSbStackItems = true;
-        
-        return ((this.sbInit[uniqueId] 
+
+        return ((this.sbInit[uniqueId]
             || (this.sbInit[uniqueId] = []))[nr||0] = sNode);
     },
-    
+
     getFromSbStack : function(uniqueId, nr, create){
         this.hasNewSbStackItems = true;
         if (nr) {
             if (!create)
                 return (this.sbInit[uniqueId] || {})[nr];
 
-            return this.sbInit[uniqueId] 
-                && (this.sbInit[uniqueId][nr] 
+            return this.sbInit[uniqueId]
+                && (this.sbInit[uniqueId][nr]
                     || (this.sbInit[uniqueId][nr] = new jpf.smartbinding()))
                 || ((this.sbInit[uniqueId] = [])[nr] = new jpf.smartbinding());
         }
-        
-        return !this.sbInit[uniqueId] 
+
+        return !this.sbInit[uniqueId]
             && (this.sbInit[uniqueId] = [new jpf.smartbinding()])[0]
-            || this.sbInit[uniqueId][0] 
+            || this.sbInit[uniqueId][0]
             || (this.sbInit[uniqueId][0] = new jpf.smartbinding());
     },
-    
+
     stackHasBindings : function(uniqueId){
         return (this.sbInit[uniqueId] && this.sbInit[uniqueId][0]
           && this.sbInit[uniqueId][0].bindings);
     }
     // #endif
-    
+
     // #ifdef __WITH_MODEL
     ,
-    
+
     addToModelStack : function(o, data){
         this.hasNewModelStackItems = true;
         this.modelInit.push([o, data]);

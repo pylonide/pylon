@@ -400,7 +400,7 @@ jpf.Media = function(){
     this.setSource = function(jml) {
         jml = jml || this.$jml;
         // first get the 'Not supported' placeholder...
-        var aNodes = jml.getElementsByTagName("nomedia");
+        var aNodes = $xmlns(jml, "nomedia", jpf.ns.jml);
         if (!aNodes.length) {
             this.notSupported = (jml.firstChild && jml.firstChild.nodeType == 3)
                 ? jml.firstChild.nodeValue
@@ -410,7 +410,7 @@ jpf.Media = function(){
             this.notSupported = aNodes[0].innerHTML;
 
         if (!this.src) { // no direct src-attribute set
-            var src, type, oSources = jml.getElementsByTagName("source");
+            var src, type, oSources = $xmlns(jml, "source", jpf.ns.jml);
             // iterate through all the <source> tags from left to right
             for (var i = 0, j = oSources.length; i < j; i++) {
                 src  = oSources[i].getAttribute("src");

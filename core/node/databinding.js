@@ -26,7 +26,7 @@ var __DATABINDING__ = 1 << 1;
 /**
  * Baseclass adding databinding features to this element. Databinding takes
  * care of automatically going from data to representation and establishing a
- * permanent link between the two. In this way data that is changed will 
+ * permanent link between the two. In this way data that is changed will
  * change the representation as well. Furthermore, actions that are executed on
  * the representation will change the underlying data.
  * Example:
@@ -63,9 +63,9 @@ jpf.DataBinding = function(){
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
-    
+
     /**
-     * Gets the xpath statement from the main bind rule. Each databound 
+     * Gets the xpath statement from the main bind rule. Each databound
      * element which does not implement jpf.MultiSelect has a main bind rule.
      * This method gets the xpath statement in the select attribute of this rule.
      *
@@ -96,7 +96,7 @@ jpf.DataBinding = function(){
             return false;
         return true;
     };
-    
+
     /**
      * Queries the bound data for a string value
      *
@@ -106,7 +106,7 @@ jpf.DataBinding = function(){
     this.query = function(xpath){
         return jpf.getXmlValue(this.xmlRoot, xpath );
     };
-    
+
     /**
      * Queries the bound data for an array of string values
      *
@@ -116,7 +116,7 @@ jpf.DataBinding = function(){
     this.queryArray = function(xpath){
         return jpf.getXmlValues(this.xmlRoot, xpath );
     };
-    
+
     /**
      * Loads the binding rules from the j:bindings element
      *
@@ -128,11 +128,11 @@ jpf.DataBinding = function(){
         if (this.bindingRules)
             this.unloadBindings();
         this.bindingRules = rules;
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Initializing Bindings for " + this.tagName + "[" + (this.name || '') + "]");
         //#endif
-        
+
         if (this.bindingRules["traverse"])
             this.parseTraverse(this.bindingRules["traverse"][0]);
 
@@ -141,7 +141,7 @@ jpf.DataBinding = function(){
 
         this.$checkLoadQueue();
     };
-    
+
     this.$checkLoadQueue = function(){
         // Load from queued load request
         if (loadqueue) {
@@ -158,7 +158,7 @@ jpf.DataBinding = function(){
     this.unloadBindings = function(){
         if (this.$unloaddatabinding)
             this.$unloaddatabinding();
-        
+
         var node = this.xmlBindings;//this.$jml.selectSingleNode("Bindings");
         if (!node || !node.getAttribute("connect"))
             return;
@@ -186,9 +186,9 @@ jpf.DataBinding = function(){
         if (this.actionRules)
             this.unloadActions();
         this.actionRules = rules;
-        
+
         //#ifdef __DEBUG
-        jpf.console.info("Initializing Actions for " + this.tagName 
+        jpf.console.info("Initializing Actions for " + this.tagName
             + "[" + (this.name || '') + "]");
         //#endif
 
@@ -198,14 +198,14 @@ jpf.DataBinding = function(){
           || node.selectSingleNode("add|update"))){
             if (!this.hasFeature(__TRANSACTION__))
                 this.inherit(jpf.Transaction); /** @inherits jpf.Transaction */
-            
+
             //Load ActionTracker & xmldb
             if (!this.$at)
                 this.$at = new jpf.actiontracker(this);
-            
+
             this.$at.realtime = isTrue(node.getAttribute("realtime"));
             this.defaultMode  = node.getAttribute("mode") || "update";
-            
+
             //Turn caching off, it collides with rendering views on copies of data with the same id's
             this.caching      = false;
         }
@@ -221,22 +221,22 @@ jpf.DataBinding = function(){
     this.getActionTracker = function(ignoreMe){
         if (!jpf.JmlDom)
             return jpf.window.$at;
-        
+
         var pNode = this, tracker = ignoreMe ? null : this.$at;
         if (!tracker && this.connectId)
             tracker = self[this.connectId].$at;
-        
+
         //jpf.xmldb.getInheritedAttribute(this.$jml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
                 return jpf.window.$at;
-            
+
             tracker = (pNode = pNode.parentNode).$at;
         }
         return tracker;
     };
-    
+
     /**
      * Unloads the action rules from this element
      *
@@ -245,26 +245,26 @@ jpf.DataBinding = function(){
     this.unloadActions = function(){
         this.xmlActions  = null;
         this.actionRules = null;
-        
+
         //Weird, this cannot be correct... (hack?)
         if (this.$at) {
             // #ifdef __DEBUG
             if (this.$at.undolength)
-                jpf.console.warn("Component : " 
+                jpf.console.warn("Component : "
                     + this.name + " [" + this.tagName + "]\n\
-                    Message : ActionTracker still has undo stack filled with " 
+                    Message : ActionTracker still has undo stack filled with "
                     + this.$at.undolength + " items.");
             // #endif
-        
+
             this.$at = null;
         }
     };
-    
+
     //#ifdef __WITH_LOCKING
     var lock    = {};
-    //#endif 
+    //#endif
     var actions = {};
-    
+
     /**
      *  Start the specified action, does optional locking and can be offline aware
      *  - This method can be cancelled by events, offline etc
@@ -304,40 +304,40 @@ jpf.DataBinding = function(){
     this.$startAction = function(name, xmlContext, fRollback){
         if (this.disabled)
             return false;
-        
+
         var actionRule = this.getNodeFromRule(name, xmlContext, true);
         if (this.actionRules && !actionRule)
             return false;
-        
+
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.canTransact())
             return false;
         //#endif
-        
+
         if (this.dispatchEvent(name + "start", {
             xmlContext: xmlContext
         }) === false)
             return false;
-        
+
         //#ifdef __WITH_LOCKING
-        
+
         //Requesting a lock, whilst we still have one open
         if (lock[name] && !lock[name].stopped) {
             //#ifdef __DEBUG
             jpf.console.warn("Starting new action whilst previous \
                 action wasn't terminated:" + name);
             //#endif
-            
+
             this.$stopAction(); //or should we call: fRollback.call(this, xmlContext);
         }
-        
+
         //Check if we should attain a lock (when offline, we just pretend to get it)
         var lockInstruction = actionRule ? actionRule.getAttribute("lock") : null;
         if ((!jpf.offline.enabled || !jpf.offline.onLine) && lockInstruction) {
             var curLock = lock[name] = {
                 start      : jpf.offline.onLine
                                 ? new Date().getTime()
-                                : jpf.offline.offlineTime, 
+                                : jpf.offline.offlineTime,
                 stopped    : false,
                 xmlContext : xmlContext,
                 instr      : lockInstruction,
@@ -348,48 +348,48 @@ jpf.DataBinding = function(){
             jpf.saveData(lockInstruction, xmlContext, null, function(data, state, extra){
                 if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
                     return extra.tpModule.retry(extra.id);
-                
+
                 if (state == jpf.SUCCESS) {
                     _self.dispatchEvent("locksuccess", jpf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
-                    
+
                     curLock.retrieved = true; //@todo Record timeout here... think of method
-                    
+
                     //Action was apparently finished before the lock came in, cancelling lock
                     if (curLock.stopped)
                         _self.$stopAction(name, true, curLock);
-                    
+
                     //That's it we're ready to go...
                 }
                 else {
                     if (curLock.stopped) //If the action has terminated we just let it go
                         return; //Do we want to take away the event from the developer??
-                    
+
                     _self.dispatchEvent("lockfailed", jpf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
-                    
+
                     //Cancel the action, because we didnt get a lock
                     fRollback.call(this, xmlContext);
                 }
             });
         }
         //#endif
-        
+
         actions[name] = xmlContext;
-        
+
         return true;
     };
-    
+
     //#ifdef __WITH_RSB
-    // @todo think about if this is only for rsb 
+    // @todo think about if this is only for rsb
     this.addEventListener("xmlupdate", function(e){
         if (jpf.xmldb.disableRSB != 2)
             return;
-        
+
         for (var name in actions) {
             if (jpf.xmldb.isChildOf(actions[name], e.xmlNode, true)) {
                 //this.$stopAction(name, true);
@@ -398,31 +398,31 @@ jpf.DataBinding = function(){
         }
     });
     //#endif
-    
+
     this.$stopAction = function(name, isCancelled, curLock){
         delete actions[name];
-        
+
         //#ifdef __WITH_LOCKING
         if (!curLock) curLock = lock[name];
-        
+
         if (curLock && !curLock.stopped) {
             curLock.stopped = true;
-            
+
             //The resource needs to unlock when the action is cancelled
             if (isCancelled && curLock.retrieved) {
                 //Execute unlocking request
                 jpf.saveData(curLock.instr, curLock.xmlContext, {
                         unlock     : true
-                    }, 
+                    },
                     function(data, state, extra){
                         if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
                             return extra.tpModule.retry(extra.id);
-                        
+
                         //Do we care if an unlock failed/succeeded?
                         _self.dispatchEvent(
                             (state == jpf.SUCCESS
                                 ? "unlocksuccess"
-                                : "unlockfailed"), 
+                                : "unlockfailed"),
                             jpf.extend({
                                 state   : extra.http.status,
                                 bubbles : true
@@ -430,11 +430,11 @@ jpf.DataBinding = function(){
                     });
             }
         }
-        
+
         return curLock;
         //#endif
     };
-     
+
     /**
      * Executes an action using action rules set in the j:actions element
      *
@@ -464,7 +464,7 @@ jpf.DataBinding = function(){
         if (this.disabled) return; //hack
 
         //#ifdef __DEBUG
-        jpf.console.info("Executing action '" + action + "' for " + this.name 
+        jpf.console.info("Executing action '" + action + "' for " + this.name
                          + " [" + (this.tagName || "") + "]");
         //#endif
 
@@ -477,7 +477,7 @@ jpf.DataBinding = function(){
         var rules = this.actionRules
             ? this.actionRules[action]
             : (!action.match(/change|select/) && jpf.appsettings.autoDisableActions
-                ? false 
+                ? false
                 : []);
 
         if (!rules)
@@ -490,28 +490,28 @@ jpf.DataBinding = function(){
         for (var node, i = 0; i < (rules.length || 1); i++) {
             if (!rules[i] || !rules[i].getAttribute("select")
                 || xmlNode.selectSingleNode(rules[i].getAttribute("select"))) {
-                
+
                 var options = {
-                    action        : atAction, 
+                    action        : atAction,
                     args          : args,
                     xmlActionNode : rules[i],
                     jmlNode       : this,
                     selNode       : contextNode
                     //#ifdef __WITH_LOCKING
-                    ,timestamp    : curLock 
-                                      ? curLock.start 
+                    ,timestamp    : curLock
+                                      ? curLock.start
                                       : new Date().getTime()
                     //#endif
                 };
-                
+
                 //Call Event and cancel if it returns false
                 if (!noevent) {
                     //Allow the action and arguments to be changed by the event
-                    if (this.dispatchEvent("before" + action.toLowerCase(), 
+                    if (this.dispatchEvent("before" + action.toLowerCase(),
                       options) === false)
                         return false;
                 }
-                
+
                 //Call ActionTracker and return ID of Action in Tracker
                 var UndoObj = this.getActionTracker().execute(options);
 
@@ -525,12 +525,12 @@ jpf.DataBinding = function(){
         //Action not executed
         return false;
     };
-    
+
     /**
      * Executes an action based on the set name and the new value
      * @param {String}      atName   the name of the action rule defined in j:actions for this element.
      * @param {String}      setName  the name of the binding rule defined in j:bindings for this element.
-     * @param {XMLElement}  xmlNode  the xml element to which the rules are applied  
+     * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
      * @param {String}      value    the new value of the node
      */
     this.executeActionByRuleSet = function(atName, setName, xmlNode, value){
@@ -539,7 +539,7 @@ jpf.DataBinding = function(){
 
         if (node) {
             if (jpf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
-            
+
             atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
             args = (node.nodeType == 1)
@@ -552,7 +552,7 @@ jpf.DataBinding = function(){
             if (!this.createModel) return false;
             atAction = "setValueByXpath";
             xpath    = selInfo[0];
-            
+
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
                 var model   = this.getModel();
@@ -563,18 +563,18 @@ jpf.DataBinding = function(){
                     + (xpath && xpath != "." ? "/" + xpath : "");
                 xmlNode = model.data;
             }
-            
+
             args = [xmlNode, value, xpath];
         }
-        
+
         //Use Action Tracker
         this.executeAction(atAction, args, atName, xmlNode);
     };
 
     /**
-     * Connects another element to this element. This connection is used 
-     * to push data from this element to the other element. Whenever this 
-     * element loads data, (a selection of) the data is pushed to the other 
+     * Connects another element to this element. This connection is used
+     * to push data from this element to the other element. Whenever this
+     * element loads data, (a selection of) the data is pushed to the other
      * element. For elements inheriting from MultiSelect data is pushed
      * when a selection occurs. In jml this is done as follows:
      * <code>
@@ -583,12 +583,12 @@ jpf.DataBinding = function(){
      * </code>
      *
      * @param {JmlNode} oElement  JmlNode specifying the element which is connected to this element.
-     * @param {Boolean} [dataOnly] 
+     * @param {Boolean} [dataOnly]
      *   Possible values:
      *   true   data is sent only once.
      *   false  real connection is made.
      * @param {String}  [xpath]     the Xpath statement used to select a subset of the data to sent.
-     * @param {String}  [type]      
+     * @param {String}  [type]
      *   Possible values:
      *   select  sents data when a node is selected
      *   choice  sents data when a node is chosen (by double clicking, or pressing enter)
@@ -598,7 +598,7 @@ jpf.DataBinding = function(){
     this.connect = function(o, dataOnly, xpath, type, noselect){
         if (o.dataParent)
             o.dataParent.parent.disconnect(o);
-        
+
         if (!this.signalXmlUpdate)
             this.signalXmlUpdate = {};
 
@@ -606,7 +606,7 @@ jpf.DataBinding = function(){
             parent: this,
             xpath : xpath
         };
-        
+
         //Onload - check if problem when doing setConnections to early
         if (dataOnly) {
             // #ifdef __DEBUG
@@ -644,7 +644,7 @@ jpf.DataBinding = function(){
                         });
                     }
                 }
-                
+
                 if (xmlNode)
                     o.load(xmlNode);
             }
@@ -658,10 +658,10 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Disconnects a previously established connection with another element. 
+     * Disconnects a previously established connection with another element.
      *
      * @param {JmlNode} oElement  the element to be disconnected from this element.
-     * @param {String}  [type]      
+     * @param {String}  [type]
      *   Possible values:
      *   select  disconnects the select connection
      *   choice  disconnects the choice connection
@@ -679,7 +679,7 @@ jpf.DataBinding = function(){
         //CAN BE OPTIMIZED IF NEEDED TO ONLY SET TO null
         for (var i = 0; i < ar.length; i++){
             if (ar[i].o != o) continue;
-    
+
             for (var j = i; j < ar.length; j++)
                 ar[j] = ar[j + 1];
             ar.length--;
@@ -688,10 +688,10 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Pushes data to connected elements 
+     * Pushes data to connected elements
      *
      * @param {XMLElement}  xmlNode  the xml data element to be pushed to the connected elements.
-     * @param {String}      [type]   
+     * @param {String}      [type]
      *   Possible Values:
      *   select  pushes data to the elements registered for selection
      *   choice  pushes data to the elements registered for choice
@@ -721,21 +721,21 @@ jpf.DataBinding = function(){
 
         cXmlOnLoad = null;
     };
-    
+
     /**
      * @private
      */
     this.importConnections = function(x){
         cXmlSelect = x;
     };
-    
+
     /**
      * @private
      */
     this.getConnections = function(){
         return cXmlSelect;
     };
-    
+
     /**
      * @private
      */
@@ -744,7 +744,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Uses bind rules to convert data into a value string 
+     * Uses bind rules to convert data into a value string
      *
      * @param {String}      setname  the name of the binding rule set.
      * @param {XMLElement}  cnode    the xml element to which the binding rules are applied.
@@ -763,12 +763,12 @@ jpf.DataBinding = function(){
         // #ifdef __DEBUG
         if (!this.$dcache)
             this.$dcache = {};
-        
+
         if (!rules && !def && !this.$dcache[this.uniqueId + "." + setname]
           && typeof this[setname] != "string") {
             this.$dcache[this.uniqueId + "." + setname] = true;
-            jpf.console.info("Could not find a binding rule for '" + setname 
-                             + "' (" + this.tagName 
+            jpf.console.info("Could not find a binding rule for '" + setname
+                             + "' (" + this.tagName
                              + " [" + (this.name || "") + "])")
         }
         // #endif
@@ -776,7 +776,7 @@ jpf.DataBinding = function(){
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
             return typeof this[setname] == "string" && setname != "value"
-                    && jpf.getXmlValue(cnode, this[setname]) 
+                    && jpf.getXmlValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
             /* #else
             return def && cnode.selectSingleNode(def) || false;
@@ -797,12 +797,12 @@ jpf.DataBinding = function(){
                     /**
                      * @todo internationalization for <j:caption value="no value" />
                      */
-                     
+
                     //#ifdef __WITH_LANG_SUPPORT
-    				//jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
+                    //jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
                     //    "$1"), {htmlNode : pHtmlNode});
-    				//#endif
-                    
+                    //#endif
+
                     return rules[i].getAttribute("value");
                 }
 
@@ -810,7 +810,7 @@ jpf.DataBinding = function(){
                 //Process XSLT/JSLT Stylesheet if needed
                 else if(rules[i].childNodes.length) {
                     var xsltNode;
-                    
+
                     //Check Cache
                     if (rules[i].getAttribute("cacheId")) {
                         xsltNode = jpf.nameserver.get("xslt",
@@ -820,7 +820,7 @@ jpf.DataBinding = function(){
                         //Find Xslt Node
                         var prefix = jpf.findPrefix(rules[i], jpf.ns.xslt);
                         var xsltNode;
-                        
+
                         if (rules[i].getElementsByTagNameNS) {
                             xsltNode = rules[i].getElementsByTagNameNS(jpf.ns.xslt, "*")[0];
                         }
@@ -833,7 +833,7 @@ jpf.DataBinding = function(){
                                 xsltNode = rules[i].selectSingleNode(prefix + ":*");
                             }
                         }
-                            
+
                         if (xsltNode) {
                             if (xsltNode[jpf.TAGNAME] != "stylesheet") {
                                 //Add it
@@ -848,14 +848,14 @@ jpf.DataBinding = function(){
                                 var xsltNode = baseXslt.cloneNode(true);
                                 for (var j = rules[i].childNodes.length; j >= 0; j++)
                                     xsltNode.firstChild.appendChild(rules[i].childNodes[j]);
-                                
+
                                 //Set cache Item
                                 rules[i].setAttribute("cacheId",
                                     jpf.nameserver.add("xslt", xsltNode));
                             }
                         }
                     }
-                    
+
                     //XSLT
                     if (xsltNode) {
                         var x = o.transformNode(xsltNode)
@@ -866,7 +866,7 @@ jpf.DataBinding = function(){
                     //JSLT
                     else {
                         var x = jpf.JsltInstance.apply(rules[i], o);
-                        
+
                         //#ifdef __DEBUG
                         var d = document.createElement("div");
                         var t = window.onerror;
@@ -879,8 +879,8 @@ jpf.DataBinding = function(){
                         window.onerror = t;
                         //#endif
                     }
-                    
-                    //#ifdef __DEBUG    
+
+                    //#ifdef __DEBUG
                     if (rules[i].getAttribute("method"))
                         try{eval(rules[i].getAttribute("method"));
                     }
@@ -888,7 +888,7 @@ jpf.DataBinding = function(){
                         return false;//throw new Error("---- Javeline Error ----\nMessage : Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML.")
                     }
                     //#endif
-                    
+
                     return rules[i].getAttribute("method") ? self[rules[i].getAttribute("method")](x, this) : x;
                 }
                 // #endif
@@ -899,7 +899,7 @@ jpf.DataBinding = function(){
                         // #ifdef __DEBUG
                         throw new Error(jpf.formatErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
                         // #endif
-                        
+
                         return false;
                     }
 
@@ -910,10 +910,10 @@ jpf.DataBinding = function(){
                 //Execute Expression
                 else if(rules[i].getAttribute("eval")){
                     var func = new Function('xmlNode', 'control', "return " + rules[i].getAttribute("eval"));
-                    
+
                     var value = func.call(this, o, this);
                     if (!value) continue;
-                    
+
                     return value;
                 }
                 //Process XMLElement
@@ -921,11 +921,11 @@ jpf.DataBinding = function(){
                     if (o.nodeType == 1) {
                         if (!o.firstChild || o.firstChild.nodeType == 1 || o.firstChild.nodeType > 4)
                             return " ";
-                        //(!o.firstChild || o.firstChild.nodeType == 1 && o.firstChild.nodeType > 4) ? o.appendChild(o.ownerDocument.createTextNode("")) : 
-                        
+                        //(!o.firstChild || o.firstChild.nodeType == 1 && o.firstChild.nodeType > 4) ? o.appendChild(o.ownerDocument.createTextNode("")) :
+
                         o = o.firstChild;
                     }
-    
+
                     //Return TextValue of Attribute | Text Node | CDATA Section
                     //else if(o.nodeType == 2 || o.nodeType == 3 || o.nodeType == 4){
                     var value;
@@ -973,7 +973,7 @@ jpf.DataBinding = function(){
     /**
      * Assigns a smartbinding definition to this element
      *
-     * @param {mixed} sb  
+     * @param {mixed} sb
      *   Possible values:
      *   {SmartBinding}  object to be assigned to this element.
      *   {String}        the name of the SmartBinding.
@@ -984,10 +984,10 @@ jpf.DataBinding = function(){
         this.$propHandlers["smartbinding"].call(this, sb);
         /*
             this.setProperty && this.setProperty("smartbinding", sb)
-            || 
+            ||
         */
     };
-    
+
     /**
      * Removes the smartbinding from this element
      *
@@ -996,7 +996,7 @@ jpf.DataBinding = function(){
     this.removeSmartBinding = function(){
         this.setProperty("smartbinding", null);
     };
-    
+
     /**
      * Gets the smartbinding of this element
      *
@@ -1006,7 +1006,7 @@ jpf.DataBinding = function(){
     this.getSmartBinding = function(){
         return this.smartBinding;
     };
-    
+
     /**
      * Gets the model to which this element is connected.
      * This is the model which acts as a datasource for this element.
@@ -1018,10 +1018,10 @@ jpf.DataBinding = function(){
     this.getModel = function(doRecur){
         if(doRecur && !this.$model)
             return this.dataParent ? this.dataParent.parent.getModel(true) : null;
-        
+
         return this.$model;
     };
-    
+
     /**
      * Sets the model to which this element is connected.
      * This is the model which acts as datasource for this element.
@@ -1033,10 +1033,10 @@ jpf.DataBinding = function(){
     this.setModel = function(model, xpath){
         if (typeof model == "string")
             model = jpf.nameserver.get("model", model);
-        
+
         model.register(this, xpath);
     };
-    
+
     /**
      * Gets the data element or binding / action rule of a binding set.
      *
@@ -1054,7 +1054,7 @@ jpf.DataBinding = function(){
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
             if (!isAction && !getRule && typeof this[setname] == "string") {
-                return cnode.selectSingleNode(this[setname]) || (createNode 
+                return cnode.selectSingleNode(this[setname]) || (createNode
                     ? jpf.xmldb.createNodeFromXpath(cnode, this[setname])
                     : false);
             }
@@ -1066,17 +1066,17 @@ jpf.DataBinding = function(){
             //#ifdef __SUPPORT_SAFARI2
             if (!rules[i]) continue;
             //#endif
-            
+
             var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
-            
+
             if (!sel)
                 return getRule ? rules[i] : false;
             if (!cnode) return false;
-            
+
             var o = cnode.selectSingleNode(sel);
             if (o)
                 return getRule ? rules[i] : o;
-            
+
             if (createNode || rules[i].getAttribute("create") == "true") {
                 var o = jpf.xmldb.createNodeFromXpath(cnode, sel);
                 return getRule ? rules[i] : o;
@@ -1086,7 +1086,7 @@ jpf.DataBinding = function(){
         //Retrieving Failed
         return false;
     };
-    
+
     /**
      * Returns the select statement of a binding or action rule
      *
@@ -1094,7 +1094,7 @@ jpf.DataBinding = function(){
      * @param {XMLElement}  cnode    the xml element to which the binding rules are applied.
      * @returns {String}
      */
-    this.getSelectFromRule = function(setname, cnode){ 
+    this.getSelectFromRule = function(setname, cnode){
         var rules = this.bindingRules && this.bindingRules[setname];
         if (!rules || !rules.length) {
             //#ifdef __WITH_INLINE_DATABINDING
@@ -1102,21 +1102,21 @@ jpf.DataBinding = function(){
             /* #else
             return ["."];
             #endif */
-                
+
         }
 
         for (var first, i = 0; i < rules.length; i++) {
             var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
-            
+
             if (!cnode) return [sel];
             if (i == 0)
                 first = sel;
-            
+
             var o = cnode.selectSingleNode(sel);
             if (o)
                 return [sel, o];
         }
-        
+
         return [first];
     };
 
@@ -1129,7 +1129,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Loads data in to this element using binding rules to transform the 
+     * Loads data in to this element using binding rules to transform the
      * data in to a presentation.
      * Example:
      * <code>
@@ -1151,7 +1151,7 @@ jpf.DataBinding = function(){
      *
      * @param {mixed}  [xmlRootNode]
      *   Possible Values:
-     *   {XMLElement}  an xml element loaded in to this element. 
+     *   {XMLElement}  an xml element loaded in to this element.
      *   {String}      an xml string which is loaded in this element.
      *   {Null         null clears this element from it's data {@link Cache#clear}.
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
@@ -1168,12 +1168,12 @@ jpf.DataBinding = function(){
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call
-        if ((!this.bindingRules && this.$jml 
+        if ((!this.bindingRules && this.$jml
             && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
             && !this.traverse) || (this.$canLoadData && !this.$canLoadData())) {
             //#ifdef __DEBUG
             if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
-                jpf.console.warn("Could not load data yet in " + this.tagName 
+                jpf.console.warn("Could not load data yet in " + this.tagName
                     + "[" + (this.name || "") + "]. The loaded data is queued \
                       until smartbinding rules are loaded or set manually.");
             }
@@ -1183,48 +1183,48 @@ jpf.DataBinding = function(){
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
             xmlRootNode = jpf.xmldb.getBindXmlNode(xmlRootNode);
-        
+
         // If no xmlRootNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
             this.dataParent.parent.signalXmlUpdate[this.uniqueId] = !xmlRootNode;
-        
+
         if (!xmlRootNode) {
             //#ifdef __DEBUG
-            jpf.console.warn("No xml root node was given to load in " 
+            jpf.console.warn("No xml root node was given to load in "
                 + this.tagName + "[" + (this.name || '') + "]. Clearing any \
                   loaded xml in this component");
             //#endif
-            
+
             this.clear(noClearMsg, true);
-            
+
             if (jpf.appsettings.autoDisable && !this.createModel)
                 this.disable();
-                
+
             this.setConnections();
             return;
         }
-        
+
         //#ifdef __DEBUG
-        jpf.console.info("Loading XML data in " 
+        jpf.console.info("Loading XML data in "
             + this.tagName + "[" + (this.name || '') + "]");
         //#endif
-        
+
         this.disabled = false;
-        
+
         // Remove listen root if available (support for listening to non-available data)
         if (this.$listenRoot) {
             jpf.xmldb.removeNodeListener(this.$listenRoot, this);
             this.$listenRoot = null;
         }
-        
+
         //Run onload event
         if (this.dispatchEvent("beforeload", {xmlNode : xmlRootNode}) === false)
             return false;
-        
+
         // If reloading current document, and caching is disabled, exit
         if (this.caching && !forceNoCache && xmlRootNode == this.xmlRoot)
             return;
-        
+
         // retrieve the cacheId
         if (!cacheID) {
             cacheID = xmlRootNode.getAttribute(jpf.xmldb.xmlIdTag) ||
@@ -1237,12 +1237,12 @@ jpf.DataBinding = function(){
 
         // Retrieve cached version of document if available
         if (this.caching && !forceNoCache && this.getCache(cacheID, xmlRootNode)) {
-            
+
             if (!this.hasFeature(__MULTISELECT__))
                 this.setConnections(this.xmlRoot, "select");
             else {
                 var nodes = this.getTraverseNodes();
-                
+
                 //Information needs to be passed to the followers... even when cached...
                 if (nodes.length && this.autoselect)
                     this.select(nodes[0], null, null, null, true);
@@ -1252,7 +1252,7 @@ jpf.DataBinding = function(){
                 if (!nodes.length)
                     this.$setClearMessage(this.emptyMsg, "empty");
             }
-            
+
             this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
             return;
         }
@@ -1269,7 +1269,7 @@ jpf.DataBinding = function(){
 
         // Check if subtree should be loaded
         this.$loadSubData(xmlRootNode);
-        
+
         this.disabled = true; //force enabling
         this.enable();
 
@@ -1280,12 +1280,12 @@ jpf.DataBinding = function(){
         // Run onafteronload event
         this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
     };
-    
+
     /**
      * @binding load Determines how new data is loaded data is loaded into this
      * element. Usually this is only the root node containing no children.
      * Example:
-     * This example shows a load rule in a text element. It gets its data from 
+     * This example shows a load rule in a text element. It gets its data from
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
      * <code>
@@ -1301,7 +1301,7 @@ jpf.DataBinding = function(){
      */
     this.$loadSubData = function(xmlRootNode){
         if (this.hasLoadStatus(xmlRootNode)) return;
-        
+
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         if (!jpf.offline.onLine) {
             jpf.offline.transactions.actionNotAllowed();
@@ -1309,11 +1309,11 @@ jpf.DataBinding = function(){
 
             if (this.hasFeature(__MULTISELECT__) && !this.getTraverseNodes().length)
                 this.$setClearMessage(this.offlineMsg, "offline");
-            
+
             return;
         }
         //#endif
-        
+
         //var loadNode = this.applyRuleSetOnNode("load", xmlRootNode);
         var loadNode, rule = this.getNodeFromRule("load", xmlRootNode, false, true);
         var sel = (rule && rule.getAttribute("select"))
@@ -1325,7 +1325,7 @@ jpf.DataBinding = function(){
 
             if (this.$setClearMessage)
                 this.$setClearMessage(this.loadingMsg, "loading");
-            
+
             //||jpf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
@@ -1335,7 +1335,7 @@ jpf.DataBinding = function(){
 
             var jmlNode = this;
             if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
-                    insertPoint : this.xmlRoot, 
+                    insertPoint : this.xmlRoot,
                     jmlNode     : this
                 }, function(){
                     jmlNode.setConnections(jmlNode.xmlRoot);
@@ -1358,13 +1358,13 @@ jpf.DataBinding = function(){
         ostatus = ostatus
             ? ostatus.replace(new RegExp("\\|\\w+\\:" + this.uniqueId + "\\|", "g"), "")
             : "";
-            
+
         if (!remove)
             ostatus += "|" + state + ":" + this.uniqueId + "|";
-            
+
         xmlNode.setAttribute("j_loaded", ostatus);
     };
-    
+
     /**
      * @private
      */
@@ -1390,12 +1390,12 @@ jpf.DataBinding = function(){
             XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLElement)
             parentXMLElement = this.xmlRoot;
-        
+
         if (this.dispatchEvent("beforeinsert", {xmlParentNode : parentXMLElement}) === false)
             return false;
-        
+
         //Integrate XMLTree with parentNode
-        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLElement, 
+        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLElement,
           jpf.extend(options, {copyAttributes: true}));
 
         //Call __XMLUpdate on all listeners
@@ -1408,7 +1408,7 @@ jpf.DataBinding = function(){
         }
         else if (this.xmlRoot == newNode)
             this.setConnections(this.xmlRoot, "select");
-        
+
         if (this.hasLoadStatus(parentXMLElement, "loading"))
             this.setLoadStatus(parentXMLElement, "loaded");
 
@@ -1424,7 +1424,7 @@ jpf.DataBinding = function(){
         ? jpf.MultiselectBinding
         : jpf.StandardBinding);
     // #endif
-    
+
     function findModel(x, isSelection) {
         return x.getAttribute((isSelection
             ? "ref"
@@ -1435,11 +1435,11 @@ jpf.DataBinding = function(){
                 if (xmlNode.getAttribute("model")) {
                     /*
                     var isCompRef = xmlNode.getAttribute("model").substr(0,1) == "#";
-                    if (xmlNode.getAttribute("id") 
+                    if (xmlNode.getAttribute("id")
                       && self[xmlNode.getAttribute("id")].hasFeature(__DATABINDING__)) {
                         var data = xmlNode.getAttribute("model").split(":", 3);
-                        return "#" + xmlNode.getAttribute("id") + ((isCompRef 
-                            ? data[2] 
+                        return "#" + xmlNode.getAttribute("id") + ((isCompRef
+                            ? data[2]
                             : data[1]) || "");
                     }
                     */
@@ -1464,42 +1464,42 @@ jpf.DataBinding = function(){
 
         //Set the model for normal smartbinding
         if (!this.ref || this.hasFeature(__MULTISELECT__)) {
-            var sb = jpf.JmlParser.sbInit[this.uniqueId] 
+            var sb = jpf.JmlParser.sbInit[this.uniqueId]
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
-            if (this.traverse && (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__))) { 
+            if (this.traverse && (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__))) {
                 initModelId = findModel(x);
 
                 if (initModelId) {
                     if (!sb)
                         this.smartBinding = true; //@todo experimental for traverse="" attributes
-                    
+
                     jpf.setModel(initModelId, this, 0);
                 }
             }
         }
-        
+
         initModelId = null;
 
         if (this.hasFeature(__MULTISELECT__)) {
             //@todo An optimization might be to loop through the parents once
             var defProps = ["empty-message", "loading-message", "offline-message"];
-    
+
             for (var i = 0, l = defProps.length; i < l; i++) {
                 if (!x.getAttribute(defProps[i]))
                     this.$propHandlers[defProps[i]].call(this);
             }
         }
-        
+
         if (!x.getAttribute("create-model"))
             this.$propHandlers["create-model"].call(this);
-        
-        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage 
+
+        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage
           && !loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__))
             this.$setClearMessage(this.emptyMsg, "empty");
     });
-    
+
     this.$jmlDestroyers.push(function(){
         // Remove data connections - Should be in DataBinding
         if (this.dataParent)
@@ -1509,10 +1509,10 @@ jpf.DataBinding = function(){
             this.unloadActions();
         }
     });
-    
+
     /**
      * @attribute {Boolean} render-root wether the xml element loaded into this
-     * element is rendered as well. Default is false. 
+     * element is rendered as well. Default is false.
      * Example:
      * This example shows a tree which also renders the root element.
      * <code>
@@ -1532,29 +1532,29 @@ jpf.DataBinding = function(){
     this.$supportedProperties.push("empty-message", "loading-message",
         "offline-message", "render-root", "smartbinding", "create-model",
         "bindings", "actions", "dragdrop");
-    
+
     /**
-     * @attribute {String} empty-message the message displayed by this element 
+     * @attribute {String} empty-message the message displayed by this element
      * when it contains no data. This property is inherited from parent nodes.
      * When none is found it is looked for on the appsettings element. Otherwise
      * it defaults to the string "No items".
      */
     this.$propHandlers["empty-message"] = function(value){
-        this.emptyMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message") 
+        this.emptyMsg = value
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
             || "No items";
-        
+
         if (!jpf.isParsing)
             this.$updateClearMessage(this.emptyMsg, "empty");
     };
-    
+
     /**
-     * @attribute {String} loading-message  the message displayed by this 
+     * @attribute {String} loading-message  the message displayed by this
      * element when it's loading. This property is inherited from parent nodes.
      * When none is found it is looked for on the appsettings element. Otherwise
      * it defaults to the string "Loading...".
      * Example:
-     * This example uses property binding to update the loading message. The 
+     * This example uses property binding to update the loading message. The
      * position of the progressbar should be updated by the script taking care
      * of loading the data.
      * <code>
@@ -1562,7 +1562,7 @@ jpf.DataBinding = function(){
      *  <j:progressbar id="progress1" />
      * </code>
      * Remarks:
-     * Usually a static loading message is displayed for only 100 milliseconds 
+     * Usually a static loading message is displayed for only 100 milliseconds
      * or so, whilst loading the data from the server. This is done for instance
      * when the load binding rule is used. In the code example below a list
      * binds on the selection of a tree displaying folders. When the selection
@@ -1578,38 +1578,38 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["loading-message"] = function(value){
-        this.loadingMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message") 
+        this.loadingMsg = value
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
             || "Loading...";
-        
+
         if (!jpf.isParsing)
             this.$updateClearMessage(this.loadingMsg, "loading");
     };
 
     /**
-     * @attribute {String} offline-message  the message displayed by this 
+     * @attribute {String} offline-message  the message displayed by this
      * element when it can't load data because the application is offline.
-     * This property is inherited from parent nodes. When none is found it is 
-     * looked for on the appsettings element. Otherwise it defaults to the 
+     * This property is inherited from parent nodes. When none is found it is
+     * looked for on the appsettings element. Otherwise it defaults to the
      * string "You are currently offline...".
      */
     this.$propHandlers["offline-message"] = function(value){
-        this.offlineMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message") 
+        this.offlineMsg = value
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
             || "You are currently offline...";
-        
+
         if (!jpf.isParsing)
             this.$updateClearMessage(this.offlineMsg, "offline");
     };
-    
+
     /**
-     * @attribute {Boolean} create-model wether the model this element connects 
+     * @attribute {Boolean} create-model wether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
      * Example:
-     * In this example a model is extended when the user enters information in 
+     * In this example a model is extended when the user enters information in
      * the form elements. Because no model is specified for the form elements
-     * the first available model is chosen. At the start it doesn't have any 
-     * data, this changes when for instance the name is filled in. A root node 
+     * the first available model is chosen. At the start it doesn't have any
+     * data, this changes when for instance the name is filled in. A root node
      * is created and under that a 'name' element with a textnode containing
      * the entered text.
      * <code>
@@ -1633,25 +1633,25 @@ jpf.DataBinding = function(){
         this.createModel = !jpf.isFalse(
             jpf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
     };
-    
+
     /**
-     * @attribute {String} smartbinding  the name of the SmartBinding for this 
-     * element. A smartbinding is a collection of rules which define how data 
-     * is transformed into representation, how actions on the representation are 
-     * propagated to the data and it's original source, how drag&drop actions 
-     * change the data and where the data is loaded from. Each of these are 
-     * optionally defined in the smartbinding set and can exist independently 
+     * @attribute {String} smartbinding  the name of the SmartBinding for this
+     * element. A smartbinding is a collection of rules which define how data
+     * is transformed into representation, how actions on the representation are
+     * propagated to the data and it's original source, how drag&drop actions
+     * change the data and where the data is loaded from. Each of these are
+     * optionally defined in the smartbinding set and can exist independently
      * of the smartbinding object.
      * Example:
      * This example shows a fully specified smartbinding. Usually only parts
      * are used. This example shows a tree with files and folders.
      * <code>
      *  <j:tree smartbinding="sbExample" />
-     *  
+     *
      *  <j:smartbinding id="sbExample">
      *      <j:bindings>
      *         <j:caption  select = "@name"/>
-     *         <j:icon     select = "self::file" 
+     *         <j:icon     select = "self::file"
      *                     value  = "icoFile.gif" />
      *         <j:icon     value  = "icoFolder.gif" />
      *         <j:traverse select = "file|folder|root" />
@@ -1661,7 +1661,7 @@ jpf.DataBinding = function(){
      *          <j:rename set = "url:move.php?from=oldValue&to={@path}" />
      *      </j:actions>
      *      <j:dragdrop>
-     *         <j:allow-drag select = "folder|file" /> 
+     *         <j:allow-drag select = "folder|file" />
      *         <j:allow-drop select = "folder" target = "root"        operation = "tree-append" />
      *         <j:allow-drop select = "folder" target = "folder"      operation = "insert-before" />
      *         <j:allow-drop select = "file"   target = "folder|root" operation = "tree-append" />
@@ -1687,7 +1687,7 @@ jpf.DataBinding = function(){
      *      <j:model />
      *  </j:tree>
      * </code>
-     * 
+     *
      * There are several ways to be less verbose in assigning certain rules.
      * see {@link MultiselectBinding#traverse}
      * see {@link DragDrop#dragEnabled}
@@ -1698,45 +1698,45 @@ jpf.DataBinding = function(){
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;
-        
+
         if (value && typeof value == "string") {
             sb = jpf.JmlParser.getSmartBinding(value);
-            
+
             //#ifdef __DEBUG
-            if (!sb) 
-                throw new Error(jpf.formatErrorString(1059, this, 
-                    "Attaching a smartbinding to " + this.tagName 
-                    + " [" + this.name + "]", 
+            if (!sb)
+                throw new Error(jpf.formatErrorString(1059, this,
+                    "Attaching a smartbinding to " + this.tagName
+                    + " [" + this.name + "]",
                     "Smartbinding '" + value + "' was not found."));
             //#endif
         }
-        else 
+        else
             sb = value;
-        
+
         if (this.smartBinding)
             this.smartBinding.deinitialize(this)
-        
+
         if (jpf.isParsing) {
             if (forceInit === true)
                 return (this.smartBinding = sb.initialize(this));
-            
+
             return jpf.JmlParser.addToSbStack(this.uniqueId, sb);
         }
-            
+
         return (this.smartBinding = sb.markForUpdate(this));
     };
-    
+
     /**
-     * @attribute {String} bindings the id of the j:bindings element which 
+     * @attribute {String} bindings the id of the j:bindings element which
      * provides the binding rules for this element.
      * Example:
      * This example shows a set of binding rules that transform data into the
      * representation of a list. In this case it displays the names of
-     * several email accounts, with after each account name the number of unread 
+     * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
      * <code>
      *  <j:list bindings="bndExample" />
-     * 
+     *
      *  <j:bindings id="bndExample">
      *      <j:caption>{text()} (#'mail[@read=0]')</j:caption>
      *      <j:icon     select = "@icon" />
@@ -1745,17 +1745,17 @@ jpf.DataBinding = function(){
      * </code>
      * Remarks:
      * Bindings can also be assigned directly by putting the bindings tag as a
-     * child of this element. 
+     * child of this element.
      *
-     * If the rule only contains a select attribute, it can be written in a 
-     * short way by adding an attribute with the name of the rule to the 
+     * If the rule only contains a select attribute, it can be written in a
+     * short way by adding an attribute with the name of the rule to the
      * element itself:
      * <code>
      *  <j:list caption="text()" icon="@icon" traverse="item" />
      * </code>
      */
     this.$propHandlers["bindings"] = function(value){
-        var sb = this.smartBinding || (jpf.isParsing 
+        var sb = this.smartBinding || (jpf.isParsing
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
             : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
 
@@ -1767,22 +1767,22 @@ jpf.DataBinding = function(){
 
         // #ifdef __DEBUG
         if (!jpf.nameserver.get("bindings", value))
-            throw new Error(jpf.formatErrorString(1064, this, 
-                "Connecting bindings", 
+            throw new Error(jpf.formatErrorString(1064, this,
+                "Connecting bindings",
                 "Could not find bindings by name '" + value + "'", this.$jml));
         // #endif
-        
+
         sb.addBindings(jpf.nameserver.get("bindings", value));
     };
 
     /**
-     * @attribute {String} actions the id of the j:actions element which 
+     * @attribute {String} actions the id of the j:actions element which
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
      * Example:
      * <code>
      *  <j:tree actions="actExample" />
-     * 
+     *
      *  <j:actions id="actExample">
      *      <j:rename set="rpc:comm.update({@id}, {@name})" />
      *      <j:remove set="rpc:comm.remove({@id})" />
@@ -1791,7 +1791,7 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["actions"] = function(value){
-        var sb = this.smartBinding || (jpf.isParsing 
+        var sb = this.smartBinding || (jpf.isParsing
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
             : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
 
@@ -1803,14 +1803,14 @@ jpf.DataBinding = function(){
 
         // #ifdef __DEBUG
         if (!jpf.nameserver.get("actions", value))
-            throw new Error(jpf.formatErrorString(1065, this, 
-                "Connecting bindings", 
+            throw new Error(jpf.formatErrorString(1065, this,
+                "Connecting bindings",
                 "Could not find actions by name '" + value + "'", this.$jml));
         // #endif
-        
+
         sb.addActions(jpf.nameserver.get("actions", value));
     };
-    
+
     // #ifdef __WITH_INLINE_DATABINDING
     function refModelPropSet(strBindRef){
         var isSelection = this.hasFeature(__MULTISELECT__) ? 1 : 0;
@@ -1818,37 +1818,37 @@ jpf.DataBinding = function(){
             ? this.$getMultiBind()
             : this;
 
-        var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 
+        var sb = hasRefBinding && o.smartBinding || (jpf.isParsing
             ? jpf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
             : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()))
-        
+
         //We don't want to change a shared smartbinding
         if (!hasRefBinding) {
             if (o.bindingRules)
                 o.unloadBindings();
             o.bindingRules = {};
         }
-        
+
         //Get or create bind rule
         var bindRule = (o.bindingRules[o.mainBind] ||
-            (o.bindingRules[o.mainBind] 
+            (o.bindingRules[o.mainBind]
                 = [jpf.getXml("<" + (o.mainBind || "value") + " />")]))[0];
-        
+
         //Check if the smartbinding has the rule (We assume all or nothing)
         ((sb.bindings || (sb.bindings = o.bindingRules))[o.mainBind])
             || (sb.bindings[o.mainBind] = [bindRule]);
-        
+
         // Define model
         var model, modelId;
         if (!jpf.isParsing)
             model = o.getModel();
-        
+
         if (!model) {
-            modelId = o.lastModelId = 
+            modelId = o.lastModelId =
                 o.model || findModel(this.$jml, isSelection);
-            
+
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
-    
+
             if (!modelId) {
                 if (jpf.globalModel) {
                     //#ifdef __DEBUG
@@ -1859,73 +1859,73 @@ jpf.DataBinding = function(){
                 }
                 //#ifdef __DEBUG
                 else
-                    throw new Error(jpf.formatErrorString(1062, this, "init", 
+                    throw new Error(jpf.formatErrorString(1062, this, "init",
                         "Could not find model to get data from", o.$jml));
                 //#endif
             }
         }
-        
+
         /*
-            We don't want to connect to the root, that would create a rush 
+            We don't want to connect to the root, that would create a rush
             of unnecessary update messages, so we'll find the element that's
             closest to the node that is gonna feed us the value
         */
         strBindRef.match(/^(.*?)((?:\@[\w-_\:]+|text\(\))(\[.*?\])?|[\w-_\:]+\[.*?\])?$/);
         var valuePath   = RegExp.$1;
         var valueSelect = RegExp.$2 || ".";
-        
+
         if (valuePath === null) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(1063, this, 
-                "Setting @ref", 
-                "Could not find xpath to determine XMLRoot: " 
+            throw new Error(jpf.formatErrorString(1063, this,
+                "Setting @ref",
+                "Could not find xpath to determine XMLRoot: "
                 + strBindRef, o.$jml));
             //#endif
-            
+
             return;
         }
-        
+
         if (modelId) {
             //Reconstructing modelId with new valuePath
             if (valuePath) {
                 var modelIdParts = modelId.split(":", 3);
-                
+
                 modelId = modelIdParts.shift();
                 if (modelId.indexOf("#") == 0) {
-                    modelId += (modelIdParts[0] 
-                        ? ":" + modelIdParts.shift() 
+                    modelId += (modelIdParts[0]
+                        ? ":" + modelIdParts.shift()
                         : ":select")
                 }
-                
-                modelId += ":" + ((modelIdParts[0] ? modelIdParts[0] + "/" : "") 
+
+                modelId += ":" + ((modelIdParts[0] ? modelIdParts[0] + "/" : "")
                     + (valuePath || "."))
                     .replace(/\/$/, "")
                     .replace(/\/\/+/, "/");
             }
-            
+
             if (jpf.isParsing)
                 initModelId[isSelection] = modelId
-            else 
+            else
                 setModelQueue(modelId, isSelection);
         }
         else {
             var m = (o.lastModelId || "").split(":");
-            var modelIdPart = ((m.shift().indexOf("#") == 0 
+            var modelIdPart = ((m.shift().indexOf("#") == 0
                 &&  m.shift() && m.shift() || m.shift()) || "");
 
-            model.$register(this, ((modelIdPart ? modelIdPart + "/" : "") 
+            model.$register(this, ((modelIdPart ? modelIdPart + "/" : "")
                 + (valuePath || "."))
                 .replace(/\/$/, "")
                 .replace(/\/\/+/, "/")); //Update model with new info
-            
+
             //Add this item to the queue to reload
             sb.markForUpdate(this, "model");
         }
-        
+
         bindRule.setAttribute("select", valueSelect);
     }
     //#endif
-    
+
     var timer = [];
     function setModelQueue(modelId, isSelection){
         clearTimeout(timer[isSelection ? 1 : 0]);
@@ -1933,9 +1933,9 @@ jpf.DataBinding = function(){
             jpf.setModel(modelId, _self, isSelection);
         });
     }
-    
+
     /**
-     * @attribute {String} model the name of the model to load data from or a 
+     * @attribute {String} model the name of the model to load data from or a
      * datainstruction to load data.
      * Example:
      * <code>
@@ -1953,12 +1953,12 @@ jpf.DataBinding = function(){
      * </code>
      * Remarks:
      * This attribute is inherited from a parent when not set. You can use this
-     * to tell sets of elements to use the same model. 
+     * to tell sets of elements to use the same model.
      * <code>
      *  <j:bar model="mdlForm">
      *      <j:label>Name</j:label>
      *      <j:textbox ref="name" />
-     *      
+     *
      *      <j:label>Happiness</j:label>
      *      <j:slider ref="happiness" min="0" max="10"/>
      *  </j:bar>
@@ -1967,28 +1967,28 @@ jpf.DataBinding = function(){
      *      <data />
      *  </j:model>
      * </code>
-     * When no model is specified the default model is choosen. The default 
-     * model is the first model that is found without a name, or if all models 
+     * When no model is specified the default model is choosen. The default
+     * model is the first model that is found without a name, or if all models
      * have a name, the first model found.
      *
-     * @attribute {String} select-model the name of the model or a 
-     * datainstruction to load data that determines the selection of this 
+     * @attribute {String} select-model the name of the model or a
+     * datainstruction to load data that determines the selection of this
      * element.
      * Example:
-     * This example shows a dropdown from which the user can select a country. 
+     * This example shows a dropdown from which the user can select a country.
      * The list of countries is loaded from a model. Usually this would be loaded
      * from a seperate url, but for clarity it's inlined. When the user selects
      * a country in the dropdown the value of the item is stored in the second
-     * model (mdlForm) at the position specified by the ref attribute. In this 
+     * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
      * <code>
      *  <j:label>Name</j:label>
      *  <j:textbox ref="name" model="mdlForm" />
      *
      *  <j:label>Country</j:label>
-     *  <j:dropdown 
-     *      ref          = "country" 
-     *      model        = "mdlCountries" 
+     *  <j:dropdown
+     *      ref          = "country"
+     *      model        = "mdlCountries"
      *      select-model = "mdlForm"
      *      traverse     = "country"
      *      value        = "@value"
@@ -2012,17 +2012,17 @@ jpf.DataBinding = function(){
      *  </j:model>
      * </code>
      * Remarks:
-     * In most cases this attribute isn't used because the model is inherited 
+     * In most cases this attribute isn't used because the model is inherited
      * from a parent element. In a typical form this will happen as follows:
      * <code>
      *  <j:bar model="mdlForm">
      *      <j:label>Name</j:label>
      *      <j:textbox ref="name" />
-     *      
+     *
      *      <j:label>Country</j:label>
-     *      <j:dropdown 
-     *          ref          = "country" 
-     *          model        = "url:countries.xml" 
+     *      <j:dropdown
+     *          ref          = "country"
+     *          model        = "url:countries.xml"
      *          traverse     = "country"
      *          value        = "@value"
      *          caption      = "text()">
@@ -2045,12 +2045,12 @@ jpf.DataBinding = function(){
         }
 
         this.lastModelId = value;
-        
+
         if (!this.hasFeature(__MULTISELECT__)) {
             // #ifdef __WITH_INLINE_DATABINDING
             if (jpf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
                 return; //Ref will take care of everything
-    
+
             //We're changing the model, lets do it using the @ref way
             if (this.ref) {
                 refModelPropSet.call(this, this.ref);
@@ -2058,16 +2058,16 @@ jpf.DataBinding = function(){
             }
             //#endif
         }
-        
+
         if (jpf.isParsing)
             initModelId[0] = value;
         else
             setModelQueue(value, this.hasFeature(__MULTISELECT__));
     };
-    
+
     // #ifdef __WITH_INLINE_DATABINDING
     /**
-     * @attribute {String} ref  an xpath statement used to select the data xml 
+     * @attribute {String} ref  an xpath statement used to select the data xml
      * element to which this element is bound to.
      * Example:
      * <code>
@@ -2090,23 +2090,23 @@ jpf.DataBinding = function(){
 
         //if (isSelection && x.getAttribute("selectcaption"))
         //    strBind.push("/><caption select='", x.getAttribute("selectcaption"), "' "); //hack!
-        
+
         hasRefBinding = value ? true : false;
     };
     //#endif
-    
+
     // #ifdef __WITH_VIRTUALVIEWPORT
     /**
      * @attribute {String} viewport the way this element renders its data.
      * Possible values:
-     * virtual  this element only renders data that it needs to display. 
+     * virtual  this element only renders data that it needs to display.
      * normal   this element renders all data at startup.
      * @experimental
      */
     this.$propHandlers["viewport"] = function(value){
         if (value != "virtual")
             return;
-        
+
         this.inherit(jpf.VirtualViewport);
     };
     //#endif
@@ -2130,24 +2130,24 @@ jpf.StandardBinding = function(){
         jpf.xmldb.addNodeListener(XMLRoot, this);
 
         //Set Properties
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         var lrule, rule;
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
             if (this.$supportedProperties.contains(lrule))
                 this.setProperty(lrule, this.applyRuleSetOnNode(rule,
-                    this.xmlRoot) || "", null, true); 
+                    this.xmlRoot) || "", null, true);
         }
         /* #else
-        
+
         this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue, null, true);
-        
+
         #endif */
-        
+
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
-            this.clearError(); 
+            this.clearError();
     };
 
     /**
@@ -2160,33 +2160,33 @@ jpf.StandardBinding = function(){
             var testNode = this.xmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
-                
+
             if (!testNode) {
                 //Set Component in listening state untill data becomes available again.
                 var model = this.getModel();
-                
+
                 //#ifdef __DEBUG
                 if (!model)
                     throw new Error(jpf.formatErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.$jml));
                 //#endif
-                
+
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
             }
         }
-        
+
         //Action Tracker Support
         if (UndoObj)
             UndoObj.xmlNode = this.xmlRoot;
 
         //Set Properties
-    
+
         //#ifdef __WITH_PROPERTY_BINDING
         var lrule, rule;
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
             if (this.$supportedProperties.contains(lrule)) {
                 var value = this.applyRuleSetOnNode(rule, this.xmlRoot) || "";
-                
+
                 if (this[lrule] != value)
                     this.setProperty(lrule, value, null, true);
             }
@@ -2195,18 +2195,18 @@ jpf.StandardBinding = function(){
 
         var value = this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue;
         if(this.selected != value) this.setProperty("value", value, null, true);
-        
+
         #endif */
-        
+
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
-            this.clearError(); 
+            this.clearError();
     };
-    
+
     if (!this.clear) {
         this.clear = function(nomsg, do_event){
             this.documentId = this.xmlRoot = this.cacheID = null;
-            
+
             if (this.$clear)
                 this.$clear(nomsg, do_event);
         };
@@ -2223,9 +2223,9 @@ jpf.MultiselectBinding = function(){
     /**
      * @define bindings
      * @allowchild traverse
-     * @define traverse Determines the list of elements which for which each 
+     * @define traverse Determines the list of elements which for which each
      * gets a visual representation within the element. It also can determine
-     * the sequence of how the elements are visualized by offering a way to 
+     * the sequence of how the elements are visualized by offering a way to
      * specify the sort order. (N.B. The sorting mechanism is very similar to
      * that of XSLT)
      * Example:
@@ -2243,10 +2243,10 @@ jpf.MultiselectBinding = function(){
      * This example shows how to use the traverse rule to order files based
      * on their modified data.
      * <code>
-     *  <j:traverse 
-     *      select      = "file" 
-     *      sort        = "@date" 
-     *      date-format = "DD-MM-YYYY" 
+     *  <j:traverse
+     *      select      = "file"
+     *      sort        = "@date"
+     *      date-format = "DD-MM-YYYY"
      *      order       = "descending" />
      * </code>
      * Example:
@@ -2298,12 +2298,12 @@ jpf.MultiselectBinding = function(){
      */
     this.parseTraverse = function (xmlNode){
         this.traverse = xmlNode.getAttribute("select");
-        
+
         //#ifdef __WITH_SORTING
         this.$sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
         //#endif
     };
-    
+
      //#ifdef __WITH_SORTING
     /**
      * Change the sorting order of this element
@@ -2323,59 +2323,59 @@ jpf.MultiselectBinding = function(){
     this.resort = function(options, clear){
         if (!this.$sort)
             this.$sort = new jpf.Sort();
-        
+
         this.$sort.set(options, clear);
         this.clearAllCache();
-        
+
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
             jpf.xmldb.clearVirtualDataset(this.xmlRoot);
             this.reload();
-            
+
             return;
         }*/
         //#endif
-        
+
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = _self.$sort.apply(
                 jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
-            
+
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch || _self.$withContainer){
                     var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
-                    
+
                     //#ifdef __DEBUG
                     if (!_self.$findContainer){
-                        throw new Error(jpf.formatErrorString(_self, 
-                            "Sorting Nodes", 
+                        throw new Error(jpf.formatErrorString(_self,
+                            "Sorting Nodes",
                             "This component does not \
                              implement _self.$findContainer"));
                     }
                     //#endif
-                    
+
                     var container = _self.$findContainer(htmlNode);
 
                     htmlParent.appendChild(htmlNode);
                     if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                         htmlParent.appendChild(container);
-                    
+
                     sortNodes(sNodes[i], container);
                 }
                 else
                     htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
             }
         })(this.xmlRoot, this.oInt);
-        
+
         return options;
     };
-    
+
     /**
      * Change sorting from ascending to descending and vice verse.
      */
     this.toggleSortOrder = function(){
         return this.resort({"ascending" : !this.$sort.get().ascending}).ascending;
     };
-    
+
     /**
      * Retrieves the current sort options
      *
@@ -2394,9 +2394,9 @@ jpf.MultiselectBinding = function(){
         return this.$sort.get();
     };
     //#endif
-    
+
     /**
-     * Gets a nodelist containing the xml data elements which are rendered by 
+     * Gets a nodelist containing the xml data elements which are rendered by
      * this element (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
@@ -2412,9 +2412,9 @@ jpf.MultiselectBinding = function(){
 
         return (xmlNode || this.xmlRoot).selectNodes(this.traverse);
     };
-    
+
     /**
-     * Gets the first xml data element which gets representation in this element 
+     * Gets the first xml data element which gets representation in this element
      * (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2428,12 +2428,12 @@ jpf.MultiselectBinding = function(){
             return this.$sort.apply(nodes)[0];
         }
         //#endif
-        
+
         return (xmlNode || this.xmlRoot).selectSingleNode(this.traverse);
     };
 
     /**
-     * Gets the last xml data element which gets representation in this element 
+     * Gets the last xml data element which gets representation in this element
      * (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2454,8 +2454,8 @@ jpf.MultiselectBinding = function(){
      */
     this.isTraverseNode = function(xmlNode){
         /*
-            Added optimization, only when an object has a tree architecture is it 
-            important to go up to the traverse parent of the xmlNode, else the node 
+            Added optimization, only when an object has a tree architecture is it
+            important to go up to the traverse parent of the xmlNode, else the node
             should always be based on the xmlroot of this component
         */
         var nodes = this.getTraverseNodes(this.isTreeArch
@@ -2469,7 +2469,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Gets the next traverse node (see {@link binding#traverse}) to be selected
-     * from a given traverse node. The method can do this in either direction and 
+     * from a given traverse node. The method can do this in either direction and
      * also return the Nth node for this algorithm.
      *
      * @param {XMLElement}  xmlNode  the starting point for determining the next selection.
@@ -2513,21 +2513,21 @@ jpf.MultiselectBinding = function(){
             count = 1;
         if (!xmlNode)
             xmlNode = this.selected;
-        
+
         var i = 0;
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);//.selectNodes(this.traverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-        
+
         return nodes[i + (up ? -1 * count : count)];
     };
-    
+
     /**
-     * Gets the parent traverse node (see {@link binding#traverse}). In some 
-     * cases the traverse rules has a complex form like 'children/item'. In those 
+     * Gets the parent traverse node (see {@link binding#traverse}). In some
+     * cases the traverse rules has a complex form like 'children/item'. In those
      * cases the generated tree has a different structure from that of the xml
-     * data. For these situations the xmlNode.parentNode property won't return 
-     * the traverse parent, this method will give you the right parent. 
+     * data. For these situations the xmlNode.parentNode property won't return
+     * the traverse parent, this method will give you the right parent.
      *
      * @param {XMLElement} xmlNode the node for which the parent element will be determined.
      * @return  {XMLElement} the parent node or null if none was found.
@@ -2535,7 +2535,7 @@ jpf.MultiselectBinding = function(){
      */
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
-        
+
         var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!id) {
             //return false;
@@ -2552,9 +2552,9 @@ jpf.MultiselectBinding = function(){
                 return xmlNode;
         } while (xmlNode.parentNode);
         */
-        
+
         //This is not 100% correct, but good enough for now
-        
+
         //temp untill I fixed the XPath implementation
         if (jpf.isSafari) {
             var y = this.traverse.split("\|");
@@ -2568,12 +2568,12 @@ jpf.MultiselectBinding = function(){
                 + this.traverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
                 + id + "']");
         }
-        
+
         if (id == "temp")
             xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
         return x;
     };
-    
+
     /**
      * Set listeners, calls HTML creation methods and
      * initializes select and focus states of object.
@@ -2600,27 +2600,27 @@ jpf.MultiselectBinding = function(){
                 sel = jpf.offline.state.get(this, "selection");
                 this.firstLoad = true;
             }
-            
+
             if (sel) {
                 var selstate = jpf.offline.state.get(this, "selstate");
-                
+
                 if (sel.length == 0) {
                     this.clearSelection();
                 }
                 else {
                     for (var i = 0; i < sel.length; i++) {
-                        sel[i] = jpf.remote.xpathToXml(sel[i], 
+                        sel[i] = jpf.remote.xpathToXml(sel[i],
                             this.xmlRoot);
                     }
-                    
+
                     if (selstate[1]) {
                         var selected = jpf.remote
                             .xpathToXml(selstate[1], this.xmlRoot);
                     }
-                    
+
                     this.selectList(sel, null, selected);
                 }
-                
+
                 if (selstate[0]) {
                     this.setIndicator(jpf.remote
                         .xpathToXml(selstate[0], this.xmlRoot));
@@ -2646,10 +2646,10 @@ jpf.MultiselectBinding = function(){
                 this.setConnections(null, "both");
             }
         }
-        
+
         if (this.focussable)
             jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)
             this.setProperty("length", length);
@@ -2675,18 +2675,18 @@ jpf.MultiselectBinding = function(){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
         if (!this.xmlRoot)
             return; //@todo think about purging cache when xmlroot is removed
-        
+
         var result, startNode = xmlNode;
         if (!listenNode)
             listenNode = this.xmlRoot;
 
-		if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
-			xmlNode = lastParent;
+        if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
+            xmlNode = lastParent;
 
         //Get First ParentNode connected
         do {
-			if (action == "add" && this.isTraverseNode(xmlNode) 
-			  && startNode == xmlNode)
+            if (action == "add" && this.isTraverseNode(xmlNode)
+              && startNode == xmlNode)
                 break; //@todo Might want to comment this out for adding nodes under a traversed node
 
             if (xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
@@ -2694,23 +2694,23 @@ jpf.MultiselectBinding = function(){
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
 
-				if (htmlNode 
-				  && (startNode != xmlNode || xmlNode == this.xmlRoot) 
-				  && actionFeature[action] & 1)
-				    action = "update";
-                    
+                if (htmlNode
+                  && (startNode != xmlNode || xmlNode == this.xmlRoot)
+                  && actionFeature[action] & 1)
+                    action = "update";
+
                 if (xmlNode == listenNode) {
                     if (xmlNode == this.xmlRoot)
                         return;
                     break;
                 }
-                
-				if (htmlNode && actionFeature[action] & 2 
-				  && !this.isTraverseNode(xmlNode))
+
+                if (htmlNode && actionFeature[action] & 2
+                  && !this.isTraverseNode(xmlNode))
                     action = "remove"; //@todo why not break here?
 
-				if (!htmlNode && actionFeature[action] & 4 
-				  && this.isTraverseNode(xmlNode)){
+                if (!htmlNode && actionFeature[action] & 4
+                  && this.isTraverseNode(xmlNode)){
                     action = "add";
                     break;
                 }
@@ -2718,16 +2718,16 @@ jpf.MultiselectBinding = function(){
                 if (htmlNode  || action == "move")
                     break;
             }
-			else if (actionFeature[action] & 8 && this.isTraverseNode(xmlNode)){
+            else if (actionFeature[action] & 8 && this.isTraverseNode(xmlNode)){
                 action = "add";
                 break;
             }
-            
+
             if (xmlNode == listenNode) break;
             xmlNode = xmlNode.parentNode;
         }
         while(xmlNode && xmlNode.nodeType != 9);
-        
+
         // #ifdef __WITH_VIRTUALVIEWPORT
         /**
          * @todo Think about not having this code here
@@ -2744,7 +2744,7 @@ jpf.MultiselectBinding = function(){
         var foundNode = xmlNode;
         if (xmlNode && xmlNode.nodeType == 9)
             xmlNode = startNode;
-        
+
         if (action == "replacechild"
           && (UndoObj ? UndoObj.args[0] == this.xmlRoot : !this.xmlRoot.parentNode)) {
             return this.load(UndoObj ? UndoObj.args[1] : listenNode); //Highly doubtfull this is exactly right...
@@ -2773,7 +2773,7 @@ jpf.MultiselectBinding = function(){
             if (!goesToThis)
                 action = "remove";
         }
-        
+
         //Remove loading message
         if (this.$removeClearMessage && this.$setClearMessage) {
             if (this.getFirstTraverseNode())
@@ -2786,16 +2786,16 @@ jpf.MultiselectBinding = function(){
         if (action == "insert" && (this.isTreeArch || xmlNode == this.xmlRoot)) {
             if (this.hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
-                
+
             result = this.$addNodes(xmlNode, (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
                 : htmlNode), true, false);//this.isTreeArch??
-                
+
             this.$fill(result);
 
             // #ifdef __DEBUG
             if (this.selectable && !this.xmlRoot.selectSingleNode(this.traverse))
-                jpf.console.warn("No traversable nodes were found for " 
+                jpf.console.warn("No traversable nodes were found for "
                                  + this.name + " [" + this.tagName + "]\n\
                                   Traverse Rule : " + this.traverse);
             // #endif
@@ -2804,14 +2804,14 @@ jpf.MultiselectBinding = function(){
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
-            //xmlNode.parentNode == this.xmlRoot ? this.oInt : 
+            //xmlNode.parentNode == this.xmlRoot ? this.oInt :
             var parentHTMLNode = xmlNode.parentNode == this.xmlRoot
                 ? this.oInt
                 : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
-            
+
             //this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag))
-            
+
             //This should be moved into a function (used in setCache as well)
             if (!parentHTMLNode)
                 parentHTMLNode = this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag)
@@ -2826,7 +2826,7 @@ jpf.MultiselectBinding = function(){
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt;
 
-                result = this.$addNodes(xmlNode, parentHTMLNode, true, true, 
+                result = this.$addNodes(xmlNode, parentHTMLNode, true, true,
                     this.getNodeByXml(this.getNextTraverse(xmlNode)));
 
                 if (parentHTMLNode)
@@ -2838,39 +2838,39 @@ jpf.MultiselectBinding = function(){
             if (htmlNode)
                 this.$deInitNode(xmlNode, htmlNode);
             else if (xmlNode == this.xmlRoot) {
-                return this.load(null, null, null, 
+                return this.load(null, null, null,
                     !this.dataParent || !this.dataParent.autoselect);
             }
         }
         else if (htmlNode) {
             this.$updateNode(xmlNode, htmlNode);
-            
+
             //Transaction 'niceties'
             if (action == "replacechild" && this.hasFeature(__MULTISELECT__)
               && this.selected && xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
               == this.selected.getAttribute(jpf.xmldb.xmlIdTag)) {
                 this.selected = xmlNode;
             }
-            
+
             //if(action == "synchronize" && this.autoselect) this.reselect();
         }
         else if (action == "redo-remove") { //Check Remove of the data (some ancestor) that this component is bound on
             var testNode = this.xmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
-            
+
             if (!testNode) {
                 //Set Component in listening state until data becomes available again.
                 var model = this.getModel();
-                
+
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(this, 
-                        "Setting change notifier on componet", 
-                        "Component without a model is listening for changes", 
+                    throw new Error(jpf.formatErrorString(this,
+                        "Setting change notifier on componet",
+                        "Component without a model is listening for changes",
                         this.$jml));
                 //#endif
-                
+
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
             }
         }
@@ -2881,21 +2881,21 @@ jpf.MultiselectBinding = function(){
             do {
                 var htmlNode = this.getNodeFromCache(pNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
-                    
+
                 if (htmlNode)
                     this.$updateNode(pNode, htmlNode);
             }
             while ((pNode = this.getTraverseParent(pNode)) && pNode.nodeType == 1);
         }
-        
+
         //Make sure the selection doesn't become corrupted
-        if (actionFeature[action] & 32 && this.selectable 
-          && startNode == xmlNode 
+        if (actionFeature[action] & 32 && this.selectable
+          && startNode == xmlNode
           && (action != "insert" || xmlNode == this.xmlRoot)) {
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && xmlNode == this.selected 
+            if (action == "remove" && xmlNode == this.selected
               || xmlNode == selectTimer.nextNode)
                 selectTimer.nextNode = this.getDefaultNext(xmlNode);
 
@@ -2905,7 +2905,7 @@ jpf.MultiselectBinding = function(){
                 selectTimer.nextNode = null;
             });
         }
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
@@ -2920,13 +2920,13 @@ jpf.MultiselectBinding = function(){
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
                 if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
-                
+
                 var o = jpf.lookup(uniqueId);
                 if (!this.selected) continue;
-                
+
                 var xmlNode = this.selected.selectSingleNode(o.dataParent.xpath);
                 if (!xmlNode) continue;
-                
+
                 o.load(xmlNode);
             }
         }
@@ -2937,7 +2937,7 @@ jpf.MultiselectBinding = function(){
             result : result
         });
     };
-    
+
     /**
      * Loop through NodeList of selected Traverse Nodes
      * and check if it has representation. If it doesn't
@@ -2946,8 +2946,8 @@ jpf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
         if (!this.traverse) {
-            throw new Error(jpf.formatErrorString(1060, this, 
-                "adding Nodes for load", 
+            throw new Error(jpf.formatErrorString(1060, this,
+                "adding Nodes for load",
                 "No traverse SmartBinding rule was specified. This rule is \
                  required for a " + this.tagName + " component.", this.$jml));
         }
@@ -2977,7 +2977,7 @@ jpf.MultiselectBinding = function(){
                 var parentNode = this.$add(nodes[i], Lid, isChild ? xmlNode.parentNode : xmlNode,
                      beforeNode ? parent || this.oInt : parent, beforeNode,
                      !beforeNode && i==nodes.length-1);//Should use getTraverParent
-                
+
                 //Exit if component tells us its done with rendering
                 if (parentNode === false) {
                     //Tag all needed xmlNodes for future reference
@@ -2997,11 +2997,11 @@ jpf.MultiselectBinding = function(){
 
         return nodes;
     };
-    
+
     //Trigger Databinding Connections
     this.addEventListener("beforeselect", function(e){
         var combinedvalue = null;
-        
+
         //#ifdef __WITH_MULTISELECT_BINDINGS
         if (this.indicator == this.selected || e.list && e.list.length > 1
           && this.getConnections().length) {
@@ -3009,37 +3009,37 @@ jpf.MultiselectBinding = function(){
             if (e.list && e.list.length > 1 && this.getConnections().length) {
                 var oEl  = this.xmlRoot.ownerDocument.createElement(this.selected.tagName);
                 var attr = {};
-                
+
                 //Fill basic nodes
                 var nodes = e.list[0].attributes;
                 for (var j = 0; j < nodes.length; j++)
                     attr[nodes[j].nodeName] = nodes[j].nodeValue;
-                
+
                 //Remove nodes
                 for (var i = 1; i < e.list.length; i++) {
                     for (prop in attr) {
                         if (typeof attr[prop] != "string") continue;
-                        
+
                         if (!e.list[i].getAttributeNode(prop))
                             attr[prop] = undefined;
                         else if(e.list[i].getAttribute(prop) != attr[prop])
                             attr[prop] = "";
                     }
                 }
-                
+
                 //Set attributes
                 for (prop in attr) {
                     if (typeof attr[prop] != "string") continue;
                     oEl.setAttribute(prop, attr[prop]);
                 }
-                
+
                 //missing is childnodes... will implement later when needed...
-                
+
                 oEl.setAttribute(jpf.xmldb.xmlIdTag, this.uniqueId);
                 jpf.MultiSelectServer.register(oEl.getAttribute(jpf.xmldb.xmlIdTag),
                     oEl, e.list, this);
                 jpf.xmldb.addNodeListener(oEl, jpf.MultiSelectServer);
-                
+
                 combinedvalue = oEl;
             }
         }
@@ -3050,14 +3050,14 @@ jpf.MultiselectBinding = function(){
             jNode.setConnections(combinedvalue || jNode.selected);
         }, 10);
     });
-    
+
     this.addEventListener("afterdeselect", function(){
         var _self = this;
         setTimeout(function(){
             _self.setConnections(null);
         }, 10);
     });
-    
+
     /**
      * @allowchild  item, choices
      * @define item         xml element which is rendered by this element.
@@ -3069,31 +3069,31 @@ jpf.MultiselectBinding = function(){
      * @allowchild  item
      */
     this.$loadInlineData = function(x){
-        if (!$xmlns(x, "item", jpf.ns.jpf).length)
+        if (!$xmlns(x, "item", jpf.ns.jml).length)
             return jpf.JmlParser.parseChildren(x, null, this);
-        
+
         //#ifdef __WITH_XFORMS
-        var parent = $xmlns(x, "choices", jpf.ns.jpf)[0] || x;
+        var parent = $xmlns(x, "choices", jpf.ns.jml)[0] || x;
         /* #else
         var parent = x;
         #endif */
 
-        var prefix = jpf.findPrefix(x, jpf.ns.jpf);
-            
+        var prefix = jpf.findPrefix(x, jpf.ns.jml);
+
         this.icon     = "@icon";
         this.image    = "@image";
         this.caption  = "label/text()|text()|@caption|@value";
         //this.value    = "value/text()|@value|text()";
         this.traverse = prefix + ":item";
-        
+
         this.load(x);
     };
-    
+
     var timer;
     this.$handleBindingRule = function(value, f, prop){
         if (!value)
             this[prop] = null;
-        
+
         if (this.xmlRoot && !timer && !jpf.isParsing) {
             timer = setTimeout(function(){
                 _self.reload();
@@ -3101,17 +3101,17 @@ jpf.MultiselectBinding = function(){
             });
         }
     };
-    
+
     // #ifdef __WITH_INLINE_DATABINDING
     /**
-     * @attribute {String} traverse the xpath statement that determines which 
-     * xml data elements are rendered by this element. See 
+     * @attribute {String} traverse the xpath statement that determines which
+     * xml data elements are rendered by this element. See
      * {@link binding#traverse} for more information.
      * Example:
      * <code>
      *  <j:label>Country</j:label>
-     *  <j:dropdown 
-     *      model        = "mdlCountries" 
+     *  <j:dropdown
+     *      model        = "mdlCountries"
      *      traverse     = "country"
      *      value        = "@value"
      *      caption      = "text()">
@@ -3128,10 +3128,10 @@ jpf.MultiselectBinding = function(){
      * </code>
      * @see  binding#traverse
      */
-    this.$propHandlers["traverse"] = 
-    
+    this.$propHandlers["traverse"] =
+
     /**
-     * @attribute {String} caption the xpath statement that determines from 
+     * @attribute {String} caption the xpath statement that determines from
      * which xml node the caption is retrieved.
      * Example:
      * <code>
@@ -3139,10 +3139,10 @@ jpf.MultiselectBinding = function(){
      * </code>
      * @see  binding#caption
      */
-    this.$propHandlers["caption"]  = 
-    
+    this.$propHandlers["caption"]  =
+
     /**
-     * @attribute {String} icon the xpath statement that determines from 
+     * @attribute {String} icon the xpath statement that determines from
      * which xml node the icon url is retrieved.
      * Example:
      * <code>
@@ -3150,10 +3150,10 @@ jpf.MultiselectBinding = function(){
      * </code>
      * @see  binding#icon
      */
-    this.$propHandlers["icon"]     = 
-    
+    this.$propHandlers["icon"]     =
+
     /**
-     * @attribute {String} tooltip the xpath statement that determines from 
+     * @attribute {String} tooltip the xpath statement that determines from
      * which xml node the tooltip text is retrieved.
      * Example:
      * <code>
@@ -3161,8 +3161,8 @@ jpf.MultiselectBinding = function(){
      * </code>
      * @see  binding#tooltip
      */
-    this.$propHandlers["tooltip"]  = 
-    
+    this.$propHandlers["tooltip"]  =
+
     /**
      * @attribute {String} select the xpath statement that determines wether
      * this node is selectable.
