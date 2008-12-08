@@ -85,7 +85,7 @@ jpf.editor.Plugin('anchor', function() {
             </div>\
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jpf + '" \
+        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
             caption="Insert" bottom="0" right="6" \
             onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />',
             document.getElementById(idButton));

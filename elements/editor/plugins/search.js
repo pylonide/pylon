@@ -172,7 +172,7 @@ jpf.editor.searchPlugin = function(sName) {
         this.oSearch = document.getElementById(idSearch);
         this.oCase   = document.getElementById(idCase);
         var oBtns    = document.getElementById(idBtns);
-        var oFind    = this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jpf
+        var oFind    = this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml
             + '" caption="Find next" bottom="0" ' +
             (this.name == "search" ? 'right="6"' : 'left="2"')
             + ' onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', oBtns);
@@ -180,11 +180,11 @@ jpf.editor.searchPlugin = function(sName) {
         if (this.name == "replace") {
             this.oReplace    = document.getElementById(idReplace);
             this.oReplBtn    = this.appendJmlNode('<j:button xmlns:j="'
-                + jpf.ns.jpf + '" caption="Replace" bottom="0" right="6" \
+                + jpf.ns.jml + '" caption="Replace" bottom="0" right="6" \
                 onclick="jpf.lookup(' + this.uniqueId + ').onDoReplClick(event)" />',
                 oBtns);
             this.oReplAllBtn = this.appendJmlNode('<j:button xmlns:j="'
-                + jpf.ns.jpf + '" caption="Replace all" bottom="0" right="106" \
+                + jpf.ns.jml + '" caption="Replace all" bottom="0" right="106" \
                 onclick="jpf.lookup(' + this.uniqueId + ').onReplAllClick(event)" />',
                 oBtns);
             this.oReplBtn.disable();

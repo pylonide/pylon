@@ -209,7 +209,7 @@ jpf.editor.clipboardPlugin = function(sName) {
 
         this.oArea = document.getElementById(idArea);
         jpf.sanitizeTextbox(this.oArea);
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jpf + '" \
+        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
             caption="Insert" bottom="0" right="6" \
             onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', panelBody);
         return panelBody;

@@ -46,23 +46,23 @@
 
 jpf.BaseList = function(){
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); 
+    this.inherit(jpf.Validation);
     //#endif
     //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); 
+    this.inherit(jpf.XForms);
     //#endif
-    
+
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
-    
+
     /**** Properties and Attributes ****/
-    
+
     this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
-    
+
     /**
-     * @attribute {String} fill the set of items that should be loaded into this 
+     * @attribute {String} fill the set of items that should be loaded into this
      * element. A start and an end seperated by a -.
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
@@ -76,11 +76,11 @@ jpf.BaseList = function(){
         else
             this.clear();
     }
-    
+
     /**** Keyboard support ****/
-    
+
     // #ifdef __WITH_KEYBOARD
-    
+
     //Handler for a plane list
     /**
      * @todo  something goes wrong when selecting using space, doing mode="check"
@@ -90,7 +90,7 @@ jpf.BaseList = function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         var selHtml  = this.$selected || this.$indicator;
-        
+
         if (!selHtml || this.renaming) //@todo how about allowdeselect?
             return;
 
@@ -101,7 +101,7 @@ jpf.BaseList = function(){
             case 13:
                 if (this.$tempsel)
                     this.selectTemp();
-            
+
                 this.choose(selHtml);
                 break;
             case 32:
@@ -111,12 +111,12 @@ jpf.BaseList = function(){
             case 109:
             case 46:
                 //DELETE
-                if (this.disableremove) 
+                if (this.disableremove)
                     return;
-            
+
                 if (this.$tempsel)
                     this.selectTemp();
-            
+
                 this.remove(this.mode ? this.indicator : null); //this.mode != "check"
                 break;
             case 36:
@@ -136,24 +136,24 @@ jpf.BaseList = function(){
                 break;
             case 37:
                 //LEFT
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
                 var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
                 var items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
-                    
+
                 var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                
+
                 node = this.getNextTraverseSelected(node, false);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -163,11 +163,11 @@ jpf.BaseList = function(){
                 break;
             case 38:
                 //UP
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
                 var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -175,12 +175,12 @@ jpf.BaseList = function(){
                 var items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
-                
+
                 node = this.getNextTraverseSelected(node, false, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                    
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -190,65 +190,65 @@ jpf.BaseList = function(){
                 break;
             case 39:
                 //RIGHT
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                
+
                 node = this.getNextTraverseSelected(node, true);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0];
-                    
+
                 break;
             case 40:
                 //DOWN
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
                 var hasScroll = oExt.scrollHeight > oExt.offsetHeight;
                 var items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
-                
+
                 node = this.getNextTraverseSelected(node, true, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ (hasScroll ? 10 : 0)
-                
+
                 break;
             case 33:
                 //PGUP
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
                 var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
@@ -258,14 +258,14 @@ jpf.BaseList = function(){
                 var lines      = Math.floor((oExt.offsetHeight
                     - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
                     + margin[0] + margin[2]));
-                
+
                 node = this.getNextTraverseSelected(node, false, items * lines);
                 if (!node)
                     node = this.getFirstTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -275,13 +275,13 @@ jpf.BaseList = function(){
                 break;
             case 34:
                 //PGDN
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
-                    
-                var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+
+                var node = this.$tempsel
+                    ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
                 var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
@@ -289,14 +289,14 @@ jpf.BaseList = function(){
                     / (selHtml.offsetWidth + margin[1] + margin[3]));
                 var lines      = Math.floor((oExt.offsetHeight - (hasScrollX ? 15 : 0))
                     / (selHtml.offsetHeight + margin[0] + margin[2]));
-                
+
                 node = this.getNextTraverseSelected(selXml, true, items * lines);
                 if (!node)
                     node = this.getLastTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) // - (hasScrollY ? 10 : 0)
@@ -304,13 +304,13 @@ jpf.BaseList = function(){
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
                 break;
-            
+
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
                 } else if (this.caption || (this.bindingRules || {})["caption"]) {
                     if (!this.xmlRoot) return;
-                    
+
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
                       - this.lookup.date.getTime() > 300)
@@ -318,22 +318,22 @@ jpf.BaseList = function(){
                             str  : "",
                             date : new Date()
                         };
-                    
+
                     this.lookup.str += String.fromCharCode(key);
-    
+
                     var nodes = this.getTraverseNodes(); //@todo start at current indicator
                     for (var v, i = 0; i < nodes.length; i++) {
                         v = this.applyRuleSetOnNode("caption", nodes[i]);
                         if (v && v.substr(0, this.lookup.str.length)
                           .toUpperCase() == this.lookup.str) {
-                            
+
                             if (!this.isSelected(nodes[i])) {
                                 if (this.mode == "check")
                                     this.setIndicator(nodes[i]);
                                 else
                                     this.select(nodes[i]);
                             }
-                            
+
                             if (selHtml)
                                 this.oInt.scrollTop = selHtml.offsetTop
                                     - (this.oInt.offsetHeight
@@ -345,26 +345,26 @@ jpf.BaseList = function(){
                 }
                 break;
         };
-        
+
         this.lookup = null;
         return false;
     };
-    
+
     // #endif
-    
+
     /**** Private databinding functions ****/
-    
+
     this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     }
-    
+
     this.$updateNode   = function(xmlNode, htmlNode, noModifier){
         //Update Identity (Look)
         var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
-        
+
         if (elIcon) {
             if (elIcon.nodeType == 1)
                 elIcon.style.backgroundImage = "url(" + this.iconPath
@@ -393,7 +393,7 @@ jpf.BaseList = function(){
             else
                 elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
         }
-        
+
         htmlNode.title = this.applyRuleSetOnNode("title", xmlNode) || "";
 
         // #ifdef __WITH_CSS_BINDS
@@ -410,7 +410,7 @@ jpf.BaseList = function(){
         if (!noModifier && this.$updateModifier)
             this.$updateModifier(xmlNode, htmlNode);
     }
-    
+
     this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
@@ -420,12 +420,12 @@ jpf.BaseList = function(){
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
-        
+
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
     }
-    
+
     var nodes = [];
-    
+
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Row
         this.$getNewContext("item");
@@ -435,19 +435,19 @@ jpf.BaseList = function(){
         var elImage    = this.$getLayoutNode("item", "image");
         var elCheckbox = this.$getLayoutNode("item", "checkbox");
         var elCaption  = this.$getLayoutNode("item", "caption");
-        
+
         Item.setAttribute("id", Lid);
-        
+
         //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId
             + ').$setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
-            + ').$setStyleClass(this, "", ["hover"]);'); 
+            + ').$setStyleClass(this, "", ["hover"]);');
 
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
                 // #ifdef __WITH_RENAME
-                'o.stopRename();' + 
+                'o.stopRename();' +
                 // #endif
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
@@ -463,15 +463,15 @@ jpf.BaseList = function(){
                 this.dorename = false;\
                 if (o.hasFeature(__DRAGDROP__) && event.ctrlKey)\
                     o.select(this, event.ctrlKey, event.shiftKey)');
-        } 
+        }
         else {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup('
                 + this.uniqueId + '); o.choose()');
             elSelect.setAttribute(this.itemSelectEvent
                 || "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
-                + '); o.select(this, event.ctrlKey, event.shiftKey)'); 
+                + '); o.select(this, event.ctrlKey, event.shiftKey)');
         }
-        
+
         //Setup Nodes Identity (Look)
         if (elIcon) {
             if (elIcon.nodeType == 1)
@@ -484,7 +484,7 @@ jpf.BaseList = function(){
         }
         else if (elImage) {
             if (elImage.nodeType == 1)
-                elImage.setAttribute("style", "background-image:url(" 
+                elImage.setAttribute("style", "background-image:url("
                     + this.mediaPath + this.applyRuleSetOnNode("image", xmlNode)
                     + ")");
             else {
@@ -500,18 +500,18 @@ jpf.BaseList = function(){
                 }
             }
         }
-        
+
         if (elCaption) {
             jpf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
-            
+
             //#ifdef __WITH_JML_BINDINGS
             if (this.lastRule && this.lastRule.getAttribute("parse") == "jml")
                 this.doJmlParsing = true;
             //#endif
         }
         Item.setAttribute("title", this.applyRuleSetOnNode("title", xmlNode) || "");
-        
+
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
@@ -529,14 +529,14 @@ jpf.BaseList = function(){
         else
             nodes.push(Item);
     }
-    
+
     this.$fill = function(){
         if (this.more && !this.moreItem) {
             this.$getNewContext("item");
             var Item      = this.$getLayoutNode("item");
             var elCaption = this.$getLayoutNode("item", "caption");
             var elSelect  = this.$getLayoutNode("item", "select");
-            
+
             Item.setAttribute("class", "more");
             elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId
                 + ').$setStyleClass(this, "more_down");');
@@ -544,13 +544,13 @@ jpf.BaseList = function(){
                 + ').$setStyleClass(this, "", ["more_down"]);');
             elSelect.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
                 + ').startMore(this)');
-            
+
             if (elCaption)
                 jpf.xmldb.setNodeValue(elCaption,
                     this.more.match(/caption:(.*)(;|$)/)[1]);
             nodes.push(Item);
         }
-        
+
         jpf.xmldb.htmlImport(nodes, this.oInt);
         nodes.length = 0;
 
@@ -559,37 +559,37 @@ jpf.BaseList = function(){
             var x = document.createElement("div");
             while (this.oExt.childNodes.length)
                 x.appendChild(this.oExt.childNodes[0]);
-            Application.loadSubNode(x, this.oExt, null, null, true);    
+            Application.loadSubNode(x, this.oExt, null, null, true);
         }
         //#endif
-        
+
         if (this.more && !this.moreItem) {
             this.moreItem = this.oInt.lastChild;
         }
     }
-    
+
     var lastAddedMore;
-    
+
     /**
      * Adds a new item to the list and lets the users type in the new name.
-     * This functionality is especially useful in the interface when 
+     * This functionality is especially useful in the interface when
      * {@link list#mode} is set to check or radio. For instance in a form.
      * @see {@link list#more}
      */
     this.startMore = function(o){
         this.$setStyleClass(o, "", ["more_down"]);
-        
+
         var xmlNode;
         if (!this.actionRules || !this.actionRules["add"])
-            xmlNode = "<j:item xmlns:j='" + jpf.ns.jpf + "' />";
+            xmlNode = "<j:item xmlns:j='" + jpf.ns.jml + "' />";
 
         var addedNode = this.add(xmlNode);
         this.select(addedNode, null, null, null, null, true);
         this.oInt.appendChild(this.moreItem);
-        
+
         var undoLastAction = function(){
             this.getActionTracker().undo(this.autoselect ? 2 : 1);
-            
+
             this.removeEventListener("stoprename", undoLastAction);
             this.removeEventListener("beforerename", removeSetRenameEvent);
             this.removeEventListener("afterrename",  afterRename);
@@ -601,7 +601,7 @@ jpf.BaseList = function(){
         var removeSetRenameEvent = function(e){
             this.removeEventListener("stoprename", undoLastAction);
             this.removeEventListener("beforerename", removeSetRenameEvent);
-            
+
             //There is already a choice with the same value
             var xmlNode = this.findXmlNodeByValue(e.args[1]);
             if (xmlNode || !e.args[1]) {
@@ -612,16 +612,16 @@ jpf.BaseList = function(){
                 return false;
             }
         };
-        
+
         this.addEventListener("stoprename",   undoLastAction);
         this.addEventListener("beforerename", removeSetRenameEvent);
         this.addEventListener("afterrename",  afterRename);
-        
+
         /*if (this.mode == "radio") {
             this.moreItem.style.display = "none";
             if (lastAddedMore)
                 this.removeEventListener("xmlupdate", lastAddedMore);
-                
+
             lastAddedMore = function(){
                 this.moreItem.style.display = addedNode.parentNode
                     ? "none"
@@ -632,9 +632,9 @@ jpf.BaseList = function(){
 
         this.startDelayedRename({}, 1);
     }
-    
+
     /**** Selection ****/
-    
+
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
         var nodes = this.getTraverseNodes();
@@ -646,7 +646,7 @@ jpf.BaseList = function(){
             if (nodes[i] == xmlEndNode)
                 f = false;
         }
-        
+
         if (!r.length || f) {
             r = [];
             for (var f = false, i = nodes.length - 1; i >= 0; i--) {
@@ -658,19 +658,19 @@ jpf.BaseList = function(){
                     f = false;
             }
         }
-        
+
         return r;
     }
-    
+
     this.$selectDefault = function(XMLRoot){
         this.select(this.getTraverseNodes()[0]);
     }
-    
-    this.inherit(jpf.MultiSelect, 
-                 jpf.Cache, 
-                 jpf.Presentation, 
+
+    this.inherit(jpf.MultiSelect,
+                 jpf.Cache,
+                 jpf.Presentation,
                  jpf.DataBinding);
-    
+
     /**
      * Generates a list of items based on a string.
      * @param {String} str the description of the items. A start and an end seperated by a -.
@@ -684,18 +684,18 @@ jpf.BaseList = function(){
         var parts = str.split("-");
         var start = parseInt(parts[0]);
         var end   = parseInt(parts[1]);
-        
+
         var strData = [];
         for (var i = start; i < end + 1; i++) {
             strData.push("<item>" + (i + "")
                 .pad(Math.max(parts[0].length, parts[1].length), "0")
               + "</item>");
         }
-        
+
         if (strData.length) {
             var sNode = new jpf.smartbinding(null,
-                jpf.getXmlDom("<smartbindings xmlns='" 
-                    + jpf.ns.jpf
+                jpf.getXmlDom("<smartbindings xmlns='"
+                    + jpf.ns.jml
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
                     + strData.join("") + "</items></model></smartbindings>")
                   .documentElement);
