@@ -85,6 +85,7 @@ var jpf = {
      */
     ns : {
         jpf    : "http://www.javeline.com/2005/jml",
+        jml    : "http://www.javeline.com/2005/jml",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",
@@ -1288,7 +1289,7 @@ var jpf = {
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(jpf.ns.jpf) == -1) {
+             .indexOf(jpf.ns.jml) == -1) {
             this.parsePartialJml(docElement);
 
             if (this.parseStrategy == 1 || jpf.jmlParts.length) {
@@ -1322,7 +1323,7 @@ var jpf = {
         //@todo this strategy needs some updating
         if (this.parseStrategy == 11 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(jpf.ns.jpf) == -1) {
+             .indexOf(jpf.ns.jml) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("The jml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
@@ -1345,11 +1346,11 @@ var jpf = {
                         //#endif
 
                         x = jpf.getXml("<j:applicaton xmlns:j='"
-                            + jpf.ns.jpf + "'>" + str + "</j:applicaton>", true);
+                            + jpf.ns.jml + "'>" + str + "</j:applicaton>", true);
 
                         if (jpf.isIE) { //@todo generalize this
                             x.ownerDocument.setProperty("SelectionNamespaces",
-                                "xmlns:j='" + jpf.ns.jpf + "'");
+                                "xmlns:j='" + jpf.ns.jml + "'");
                         }
 
                         jpf.loadJmlIncludes(x);
@@ -1392,7 +1393,7 @@ var jpf = {
             if (jpf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jpf + "'
+                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jml + "'
                     .replace(/HTML>$/, "j:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }
@@ -1475,7 +1476,7 @@ var jpf = {
 
         //Parse the second DOM (add includes)
 
-        var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
+        var prefix = jpf.findPrefix(docElement, jpf.ns.jml);
         if (prefix)
             prefix += ":";
         //#ifdef __SUPPORT_SAFARI2
@@ -1487,11 +1488,11 @@ var jpf = {
             throw new Error(jpf.formatErrorString(0, null,
                 "Parsing document",
                 "Unable to find Javeline PlatForm namespace definition. \
-                 (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
+                 (i.e. xmlns:j=\"" + jpf.ns.jml + "\")", docElement));
         //#endif
 
         jpf.AppData = jpf.supportNamespaces
-            ? docElement.createElementNS(jpf.ns.jpf, prefix + ":application")
+            ? docElement.createElementNS(jpf.ns.jml, prefix + ":application")
             : docElement.createElement(prefix + ":application");
 
         var i, nodes;
@@ -1523,7 +1524,7 @@ var jpf = {
 
         jpf.loadJmlIncludes(jpf.AppData);
 
-        if ($xmlns(jpf.AppData, "loader", jpf.ns.jpf).length) {
+        if ($xmlns(jpf.AppData, "loader", jpf.ns.jml).length) {
             jpf.loadScreen = {
                 show : function(){
                     this.oExt.style.display = "block";
@@ -1541,7 +1542,7 @@ var jpf = {
             //#ifdef __SUPPORT_SAFARI
             if (jpf.isSafariOld) {
                 var q = jpf.getFirstElement(
-                    $xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0]).serialize();
+                    $xmlns(jpf.AppData, "loader", jpf.ns.jml)[0]).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
                 jpf.loadScreen.oExt = document.body.lastChild;
             }
@@ -1549,7 +1550,7 @@ var jpf = {
             //#endif
             {
                 var htmlNode = jpf.getFirstElement(
-                    $xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0]);
+                    $xmlns(jpf.AppData, "loader", jpf.ns.jml)[0]);
 
                 //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)
@@ -1582,7 +1583,7 @@ var jpf = {
 
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
         for (var found = false, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeValue == jpf.ns.jpf) {
+            if (nodes[i].nodeValue == jpf.ns.jml) {
                 found = true;
                 break;
             }
@@ -1615,7 +1616,7 @@ var jpf = {
 
         var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
 
-        nodes = $xmlns(xmlNode, "include", jpf.ns.jpf);
+        nodes = $xmlns(xmlNode, "include", jpf.ns.jml);
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
 
@@ -1633,7 +1634,7 @@ var jpf = {
         else
             xmlNode.setAttribute("loading", "done");
 
-        nodes = $xmlns(xmlNode, "skin", jpf.ns.jpf);
+        nodes = $xmlns(xmlNode, "skin", jpf.ns.jml);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
               || nodes[i].childNodes.length)
