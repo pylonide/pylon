@@ -346,14 +346,11 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$loadJml = function(x){
-        if (x.firstChild && x.firstChild.nodeType == 3)
-            this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
+        if (this.setSource()) {
+            this.$propHandlers["type"].call(this, this.type);
 
-        if (typeof this.type == "undefined" && this.src)
-            this.type = this.$guessType(this.src);
-        this.$propHandlers["type"].call(this, this.type);
-
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+            //jpf.JmlParser.parseChildren(this.$jml, null, this);
+        }
     };
 
     this.$destroy = function(bRuntime) {

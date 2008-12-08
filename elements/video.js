@@ -181,9 +181,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      *
      * @type {Boolean}
      */
-    this.$isSupported = function() {
-        return (jpf.video[this.playerType]
-            && jpf.video[this.playerType].isSupported());
+    this.$isSupported = function(sType) {
+        sType = sType || this.playerType;
+        return (jpf.video[sType] && jpf.video[sType].isSupported());
     };
 
     /**
@@ -382,17 +382,14 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        if (x.firstChild && x.firstChild.nodeType == 3)
-            this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
+        this.width  = parseInt(this.width)  || null;
+        this.height = parseInt(this.height) || null;
 
-        this.width    = parseInt(this.width)  || null;
-        this.height   = parseInt(this.height) || null;
+        if (this.setSource()) {
+            this.$propHandlers["type"].call(this, this.type);
 
-        if (typeof this.type == "undefined" && this.src)
-            this.type = this.$guessType(this.src);
-        this.$propHandlers["type"].call(this, this.type);
-
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+            //jpf.JmlParser.parseChildren(this.$jml, null, this);
+        }
     };
 
     this.$destroy = function(bRuntime) {
