@@ -363,10 +363,15 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {String}   caption   block discription
      */
     this.setCaption = function(caption) {
-        this.caption.innerHTML = caption;
+        var c = this.caption;
+        c.innerHTML = caption;
         if (this.other.capPos == "inside") {
-            this.caption.style.marginLeft = "-" + (Math.ceil(this.caption.offsetWidth/2)) + "px";
-            this.caption.style.marginTop = "-" + (Math.ceil(this.caption.offsetHeight/2)) + "px";
+            if (c.offsetWidth !== 0 && c.offsetHeight !== 0) {
+                c.style.marginLeft =
+                    "-" + (Math.ceil(c.offsetWidth / 2)) + "px";
+                c.style.marginTop =
+                    "-" + (Math.ceil(c.offsetHeight / 2)) + "px";
+            }
         }
     }
 
