@@ -70,7 +70,7 @@ jpf.flow = {
             var target = e.target || e.srcElement;
             var isDraged = false;
 
-            if (target.tagName == 'HTML' || target.tagName == "BLOCKQUOTE")
+            if (target.tagName == 'HTML')
                 return;
             while (target != document.body && !jpf.flow.findBlock(target.id)) {
                 target = target.parentNode || target.parentElement;
@@ -287,18 +287,15 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 this.image.style.display = "block";
                 this.image.src = this.other.picture;
                 this.image.onload = function() {
-                     //jpf.console.info("ChangeRotation (image onLoad)");
                     _self.changeRotation(_self.other.rotation,
                         _self.other.fliph, _self.other.flipv, true);
                 }
             }
         }
-        //jpf.console.info("ChangeRotation");
+
         this.changeRotation(_self.other.rotation,
             _self.other.fliph, _self.other.flipv, true);
-        //jpf.console.info("SetCaption");
         this.setCaption(this.other.caption);
-        //jpf.console.info("SetLock");
         this.setLock(this.other.lock, true)
 
         this.updateOutputs();
@@ -337,9 +334,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             else
                 input.hide();
         }
-        //this.updateOutputs();
-        //this.onMove();
-        //jpf.console.info("onMove (outputVisiblity function)");
     };
 
     /**
@@ -370,6 +364,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.setCaption = function(caption) {
         this.caption.innerHTML = caption;
+        if (this.other.capPos == "inside") {
+            this.caption.style.marginLeft = "-" + (Math.ceil(this.caption.offsetWidth/2)) + "px";
+            this.caption.style.marginTop = "-" + (Math.ceil(this.caption.offsetHeight/2)) + "px";
+        }
     }
 
     /**
@@ -385,8 +383,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         if (t !== top || l !== left) {
             this.htmlElement.style.top  = top + "px";
             this.htmlElement.style.left = left + "px";
-            //this.onMove();
-            //jpf.console.info("onMove (moveTo function)");
         }
     }
 
@@ -407,10 +403,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                       = height + "px";
             this.image.style.height = height + "px";
             this.image.style.width = width + "px";
-            
-            //this.updateOutputs();
-            //this.onMove();
-            //jpf.console.info("onMove (resize function)");
         }
     }
 
@@ -450,9 +442,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
         if (init || (prev[0] != o.rotation  || prev[1] != o.fliph || prev[2] != o.flipv)) {
             this.repaintImage(flip, o.rotation, 'rel');
-            //this.updateOutputs();
-            //this.onMove();
-            //jpf.console.info("onMove (changeRotation function)");
         }
     };
 

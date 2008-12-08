@@ -269,21 +269,21 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (prop.lock == 1)
                     return;
 
-                //if (prop.scalex || prop.scaley || prop.scaleratio) {
-                    var scales = {
-                        scalex     : prop.scalex,
-                        scaley     : prop.scaley,
-                        scaleratio : prop.scaleratio,
-                        dwidth     : prop.dwidth,
-                        dheight    : prop.dheight
-                    }
+                var scales = {
+                    scalex     : prop.scalex,
+                    scaley     : prop.scaley,
+                    scaleratio : prop.scaleratio,
+                    dwidth     : prop.dwidth,
+                    dheight    : prop.dheight
+                }
 
-                    resizeManager.grab(o, scales);
-                //}
-
+                resizeManager.grab(o, scales);
             }
             this.$setStyleClass(o, "selected");
-            _self.$selectCaption(objBlock.caption);
+            
+            if (objBlock.other.capPos !== "inside") {
+                _self.$selectCaption(objBlock.caption);
+            }
         }
     };
 
@@ -704,7 +704,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
-        jpf.console.info("UPDATE");
+jpf.console.info("UPDATE");
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
         objBlock = objBlocks[blockId];
@@ -829,7 +829,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         objBlock.updateOutputs();
         objBlock.onMove();
-        //jpf.console.info("onMove - UPDATE")
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
@@ -867,9 +866,16 @@ jpf.console.info("ADD");
 
                 if (stylesFromTemplate) {
                     stylesFromTemplate = stylesFromTemplate.split(";");
+
                     for (var k = 0; k < stylesFromTemplate.length; k++) {
-                        if (stylesFromTemplate[k].trim() !== "") {
-                            style.push(stylesFromTemplate[k].trim());
+                        var _style = stylesFromTemplate[k].trim();
+                        if (_style !== "") {
+                            if (_style.substr(0, 5) == "color") {
+                                elCaption.setAttribute("style", [_style].join(";"));
+                            }
+                            else {
+                                style.push(_style);
+                            }
                         }
                     }
                 }
@@ -889,7 +895,8 @@ jpf.console.info("ADD");
         var width = this.applyRuleSetOnNode("width", xmlNode) || w || 56;
         var height = this.applyRuleSetOnNode("height", xmlNode) || h || 56;
         var lock = this.applyRuleSetOnNode("lock", xmlNode) || "false";
-        
+        var capPos = this.applyRuleSetOnNode("cap-pos", xmlNode) || "outside";
+
         style.push("width:" + width + "px");
         style.push("height:" + height + "px");
 
@@ -904,7 +911,6 @@ jpf.console.info("ADD");
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
-
         xmlNode.setAttribute("id", id);
         xmlNode.setAttribute("width", width);
         xmlNode.setAttribute("height", height);
@@ -912,11 +918,16 @@ jpf.console.info("ADD");
         xmlNode.setAttribute("left", left);
         xmlNode.setAttribute("top", top);
         xmlNode.setAttribute("zindex", zindex);
+        xmlNode.setAttribute("cap-pos", capPos);
+        
+        this.$setStyleClass(elCaption, capPos);
 
         elSelect.setAttribute(this.itemSelectEvent || 
             "onmousedown", 'var o = jpf.lookup('
             + this.uniqueId 
             + '); o.select(this, event.ctrlKey, event.shiftKey)');
+            
+
 
         jpf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
         xmlBlocks[id] = xmlNode;
@@ -1009,7 +1020,8 @@ jpf.console.info("FILL");
                         : false)
                     : false,
                 xmlNode : xmlBlock,
-                caption : this.applyRuleSetOnNode("caption", xmlBlock)
+                caption : this.applyRuleSetOnNode("caption", xmlBlock),
+                capPos  : this.applyRuleSetOnNode("cap-pos", xmlBlock)
             }
             
             var objBlock = jpf.flow.isBlock(htmlElement);
@@ -1129,9 +1141,6 @@ jpf.console.info("FILL");
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
-            //objBlock.updateOutputs();
-            //objBlock.onMove();
-            //jpf.console.info("onMove (resizeManager.onresizedone function)");
         };
 
         resizeManager.onresize = function(htmlElement, t, l, w, h) {
@@ -1142,7 +1151,6 @@ jpf.console.info("FILL");
             objBlock.resize(w, h);
             objBlock.updateOutputs();
             objBlock.onMove();
-            //jpf.console.info("onMove (resizeManager.onresize function)");
         };
 
         jpf.flow.onaftermove = function(dt, dl) {
