@@ -145,6 +145,7 @@ jpf.flow.canvas = function(htmlElement) {
 
     this.initCanvas = function() {
         jpf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
+        this.htmlElement.scrollLeft = 300;
     };
 
     this.removeConnector = function(id) {
@@ -292,7 +293,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 }
             }
         }
-
+        /* Set last scale ratio */
+        this.other.ratio = this.other.dwidth / this.other.dheight;
+        
         this.changeRotation(_self.other.rotation,
             _self.other.fliph, _self.other.flipv, true);
         this.setCaption(this.other.caption);
@@ -408,6 +411,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                       = height + "px";
             this.image.style.height = height + "px";
             this.image.style.width = width + "px";
+            
+            /* Set last scale ratio */
+            this.other.ratio = width / height;
         }
     }
 
@@ -892,8 +898,8 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     var sPos = jpf.getAbsolutePosition(this.htmlElement.parentNode);
 
     this.onMove = function(e) {
-        this.htmlElement.style.left = (e.clientX - sPos[0] + 2) + "px";
-        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2) + "px";
+        this.htmlElement.style.left = (e.clientX - sPos[0] + 2 + this.canvas.htmlElement.scrollLeft) + "px";
+        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 + this.canvas.htmlElement.scrollTop) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();

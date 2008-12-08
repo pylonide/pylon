@@ -231,6 +231,8 @@ jpf.resize.square = function(posY, posX, objResize) {
             dw = objResize.scales.dwidth,
             dh = objResize.scales.dheight,
 
+            r  = objResize.scales.ratio,
+
             posX = _self.posX,
             posY = _self.posY,
 
@@ -246,6 +248,19 @@ jpf.resize.square = function(posY, posX, objResize) {
         if (e.preventDefault) {
             e.preventDefault();
         }
+        
+        /*var keyDown = document.createEvent('keydown');
+            keyDown.initEvent('keydown', false, true);*/
+        
+        /*document.onkeydown = function(e) {
+            e = (e || event);
+
+            var shiftKey = e.shiftKey;
+            
+            if(shiftKey) {
+                alert(width)
+            }
+        }*/
 
         document.onmousemove = function(e) {
             e = (e || event);
@@ -257,28 +272,28 @@ jpf.resize.square = function(posY, posX, objResize) {
 
             if (shiftKey) {
                 if (posX == "right" && posY == "bottom") {
-                    width = w + dx;
+                    width  = w + dx;
                     height = width/proportion;
-                    left = l;
-                    top = t;
+                    left   = l;
+                    top    = t;
                 }
                 else if (posX == "right" && posY == "top") {
-                    width = w + dx;
+                    width  = w + dx;
                     height = width/proportion;
-                    left = l;
-                    top = t - dx/proportion;
+                    left   = l;
+                    top    = t - dx/proportion;
                 }
                 else if (posX == "left" && posY == "bottom") {
-                    width = w - dx;
+                    width  = w - dx;
                     height = width/proportion;
-                    left = l + dx;
-                    top = t;
+                    left   = l + dx;
+                    top    = t;
                 }
                 else if (posX == "left" && posY == "top") {
-                    width = w - dx;
+                    width  = w - dx;
                     height = width/proportion;
-                    left = l + dx;
-                    top = t + dx/proportion;
+                    left   = l + dx;
+                    top    = t + dx/proportion;
                 }
 
                 /* Keep minimal size */

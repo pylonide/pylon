@@ -165,6 +165,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (!sel || disabled)
             return;
+            
+        if (!key && shiftKey) {
+            resizeManager
+        }
 
         switch (key) {
             case 37:
@@ -274,7 +278,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     scaley     : prop.scaley,
                     scaleratio : prop.scaleratio,
                     dwidth     : prop.dwidth,
-                    dheight    : prop.dheight
+                    dheight    : prop.dheight,
+                    ratio      : prop.ratio
                 }
 
                 resizeManager.grab(o, scales);
@@ -689,6 +694,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var pos = jpf.getAbsolutePosition(el);
         var diff;
 
+        /* Dropped block have some padding and margin */
         for(var i=0, c = dragdata.indicator.childNodes; i<c.length; i++) {
             if (c[i].tagName.toLowerCase() == "blockquote")  {
                 var _temp = jpf.getDiff(c[i])
@@ -698,8 +704,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.moveTo(
             [dragdata.xmlNode],
-            (dragdata.x - pos[0] - dragdata.indicator.startX + diff[0]),
-            (dragdata.y - pos[1] - dragdata.indicator.startY + diff[1])
+            (dragdata.x - pos[0] - dragdata.indicator.startX
+             + diff[0] + _self.objCanvas.htmlElement.scrollLeft),
+            (dragdata.y - pos[1] - dragdata.indicator.startY
+             + diff[1] + _self.objCanvas.htmlElement.scrollTop)
         );
     }
 
