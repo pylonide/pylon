@@ -228,7 +228,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$beforeRename = function(e) {
         e = e || event;
         var target = e.srcElement || e.target;
-
         _self.$selectCaption(target);
 
         if (target !== torename) {
@@ -247,6 +246,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
        _self.objCanvas.disableremove = false;
     }
     this.addEventListener("afterrename", $afterRenameMode);
+    this.addEventListener("stoprename", $afterRenameMode);
 
     this.$selectCaption = function(o) {
         this.$setStyleClass(o, "selected");
