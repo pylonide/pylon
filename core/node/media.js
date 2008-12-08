@@ -307,7 +307,7 @@ jpf.Media = function(){
     this.canPlayType = function(sType) {
         if (this.$getPlayerType) {
             var sPlayer = this.$getPlayerType(sType);
-            if (!sType)
+            if (!sPlayer || !this.$isSupported(sPlayer))
                 return "no";
             if (sPlayer.indexOf("Wmp") != -1)
                 return "maybe";
@@ -385,9 +385,56 @@ jpf.Media = function(){
             });
     };
 
-    // controls
-    //this.controls = this.muted = false;
-}
+    /**
+     * Set the source for a media element by going through all the &lt;source&gt;
+     * child elements of the &lt;audio&gt; or &lt;video&gt; node, searching for
+     * a valid source media file that is playable by one of our plugins.
+     * The 'src' and 'type' attributes respectively have precedence over any
+     * &lt;source&gt; element.
+     * It also parses the &lt;nomedia&gt; tag that specifies what text or HTML to
+     * display when a medium is not supported and/ or playable.
+     *
+     * @param  {XmlDomElement} [jml] Parent Jml node of the player
+     * @return {Boolean}             Tells the client that no supported/ playable source file was found
+     */
+    this.setSource = function(jml) {
+        jml = jml || this.$jml;
+        // first get the 'Not supported' placeholder...
+        var aNodes = jml.getElementsByTagName("nomedia");
+        if (!aNodes.length) {
+            this.notSupported = (jml.firstChild && jml.firstChild.nodeType == 3)
+                ? jml.firstChild.nodeValue
+                : "Unable to playback, medium not supported.";
+        }
+        else
+            this.notSupported = aNodes[0].innerHTML;
+
+        if (!this.src) { // no direct src-attribute set
+            var src, type, oSources = jml.getElementsByTagName("source");
+            // iterate through all the <source> tags from left to right
+            for (var i = 0, j = oSources.length; i < j; i++) {
+                src  = oSources[i].getAttribute("src");
+                if (!src) continue;
+                type = oSources[i].getAttribute("type");
+                if (!type) // auto-detect type, based on file extension
+                    type = this.$guessType(src);
+                if (this.canPlayType(type) != "no") {
+                    // yay! we found a type that we can play for the client
+                    this.src  = src;
+                    this.type = type;
+                    break; //escape!
+                }
+            }
+        }
+        else if (!this.type) {
+            this.type = this.$guessType(this.src);
+            if (this.canPlayType(this.type) == "no")
+                return false;
+        }
+
+        return (this.src && this.type);
+    };
+};
 
 // network state (.networkState)
 jpf.Media.NETWORK_EMPTY   = 0;
