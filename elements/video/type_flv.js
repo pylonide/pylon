@@ -47,7 +47,7 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     //this.DEFAULT_HEIGHT      = "100%";
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
-    this.inited = false;
+    this.inited       = false;
 
     // Div name, flash name, and container name
     this.divName      = this.oVideo.uniqueId;
@@ -55,9 +55,9 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.name         = "FAVideo_" + this.oVideo.uniqueId;
 
     // Video props
-    this.videoPath  = options.src;
-    this.width      = "100%"; //(options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
-    this.height     = "100%"; //(options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
+    this.videoPath    = options.src;
+    this.width        = "100%"; //(options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
+    this.height       = "100%"; //(options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
 
     // Initialize player
     this.player = null;
@@ -383,7 +383,7 @@ jpf.video.TypeFlv.prototype = {
             "bgcolor",          "#000000",
             "allowFullScreen",  "true",
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id
+            "flashvars",        "playerID=" + this.id + "&volume=" + this.volume
             /* #ifdef __WITH_CDN
             + "&secureDomain=" + window.location.protocol + "//" + window.location.host
             #endif */
