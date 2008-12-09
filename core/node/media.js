@@ -88,8 +88,8 @@ jpf.Media = function(){
     this.$propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             // first, check if the seek action doesn't go beyond the download progress of the media element.
-            if (value > this.progress)
-                return this.setProperty("position", this.progress - 0.05);
+            if (value >= this.progress)
+                value = this.progress - 0.05;
 
             var isPlaying = !this.paused;
             if (isPlaying)
