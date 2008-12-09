@@ -231,7 +231,8 @@ jpf.resize.square = function(posY, posX, objResize) {
             dw = objResize.scales.dwidth,
             dh = objResize.scales.dheight,
 
-            r  = objResize.scales.ratio,
+            objBlock = jpf.flow.isBlock(block),
+            r  = objBlock.other.ratio,
 
             posX = _self.posX,
             posY = _self.posY,
@@ -248,19 +249,6 @@ jpf.resize.square = function(posY, posX, objResize) {
         if (e.preventDefault) {
             e.preventDefault();
         }
-        
-        /*var keyDown = document.createEvent('keydown');
-            keyDown.initEvent('keydown', false, true);*/
-        
-        /*document.onkeydown = function(e) {
-            e = (e || event);
-
-            var shiftKey = e.shiftKey;
-            
-            if(shiftKey) {
-                alert(width)
-            }
-        }*/
 
         document.onmousemove = function(e) {
             e = (e || event);
@@ -268,7 +256,7 @@ jpf.resize.square = function(posY, posX, objResize) {
             dx = e.clientX - sx;
             dy = e.clientY - sy;
             var shiftKey = e.shiftKey,
-                proportion = (width || w) / (height || h);
+                proportion = r;
 
             if (shiftKey) {
                 if (posX == "right" && posY == "bottom") {
@@ -348,6 +336,7 @@ jpf.resize.square = function(posY, posX, objResize) {
             if (objResize.onresizedone) {
                 if(resized) {
                     objResize.onresizedone(width, height, top, left);
+                    objBlock.other.ratio = width / height;
                     resized = false;
                 }
             }

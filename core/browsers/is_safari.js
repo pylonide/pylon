@@ -82,8 +82,8 @@ jpf.runSafari = function(){
             return jpf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
-        jpf.importClass(runXpath, true, self);
-        jpf.importClass(runXslt, true, self);
+        jpf.importClass(jpf.runXpath, true, self);
+        jpf.importClass(jpf.runXslt, true, self);
     }
 
     // #endif

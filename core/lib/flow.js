@@ -88,6 +88,8 @@ jpf.flow = {
                 dx = 0, dy = 0,
                 l = parseInt(target.style.left),
                 t = parseInt(target.style.top);
+                
+            //objBlock.canvas.htmlElement.scrollLeft = Math.round(l+dx+target.offsetWidth);
 
             if (e.preventDefault) {
                 e.preventDefault();
@@ -145,7 +147,6 @@ jpf.flow.canvas = function(htmlElement) {
 
     this.initCanvas = function() {
         jpf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
-        this.htmlElement.scrollLeft = 300;
     };
 
     this.removeConnector = function(id) {
@@ -411,9 +412,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                       = height + "px";
             this.image.style.height = height + "px";
             this.image.style.width = width + "px";
-            
-            /* Set last scale ratio */
-            this.other.ratio = width / height;
         }
     }
 
@@ -1129,8 +1127,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "BR88":
             case "BR81":
             case "BR11":
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
+                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
                 break;
             case "BR14":
                 l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);

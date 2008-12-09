@@ -143,7 +143,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     lastBlockId = 0;
 
     template      = null;
-    torename      = null;
+    //torename      = null;
     resizeManager = null;
 
     xmlBlocks      = {};
@@ -174,19 +174,19 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             case 37:
                 //Left Arrow
                 this.moveTo(sel, - value, 0);
-                return false;
+                break;
             case 38:
                 //Top Arrow
                 this.moveTo(sel, 0, - value);
-                return false;
+                break;
             case 39:
                 //Right Arrow
                 this.moveTo(sel, value, 0);
-                return false;
+                break;
             case 40:
                 //Bottom Arrow
                 this.moveTo(sel, 0, value);
-                return false;
+                break;
             case 46:
                 //Delete
                 resizeManager.hide();
@@ -212,6 +212,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 break;
         }
+    
+        return false;
     }
 
     //#ifdef __WITH_KEYBOARD
@@ -234,15 +236,28 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var target = e.srcElement || e.target;
         _self.$selectCaption(target);
 
-        if (target !== torename) {
+        /*if (target !== torename) {
             torename = target;
             return false;
-        }
+        }*/
 
         _self.objCanvas.disableremove = true;
         _self.$deselectCaption(target);
         _self.startRename();
-        torename = null;
+        
+        var rename_input = this.pHtmlDoc.getElementById("txt_rename");
+        this.$setStyleClass(rename_input, target.className);
+
+        var c = rename_input;
+        if ((target.className || "").indexOf("inside") != -1) {
+            if (c.offsetHeight !== 0) {
+               
+                c.style.marginTop =
+                    "-" + (Math.ceil(c.offsetHeight / 2)) + "px";
+            }
+        }
+
+        //torename = null;
         return false;
     }
 
@@ -299,6 +314,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var objBlock = jpf.flow.isBlock(o);
         this.$deselectCaption(objBlock.caption);
+
         resizeManager.hide();
     };
 
@@ -850,7 +866,7 @@ jpf.console.info("ADD");
         var elimageContainer = this.$getLayoutNode("block", "imagecontainer");
         var elCaption        = this.$getLayoutNode("block", "caption");
 
-        elCaption.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
+        elCaption.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId
             + ').$beforeRename(event); return false;');
 
         this.nodes.push(block);
