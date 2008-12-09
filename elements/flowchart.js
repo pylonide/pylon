@@ -236,11 +236,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var target = e.srcElement || e.target;
         _self.$selectCaption(target);
 
-        /*if (target !== torename) {
-            torename = target;
-            return false;
-        }*/
-
         _self.objCanvas.disableremove = true;
         _self.$deselectCaption(target);
         _self.startRename();
@@ -257,7 +252,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        //torename = null;
         return false;
     }
 
@@ -334,15 +328,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!xmlNodeArray.length) {
             xmlNodeArray = [xmlNodeArray];
         }
-
+//jpf.flow.alert_r(xmlNodeArray[0])
         var props = changes = [];
         var setNames = ["top", "left"];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
             for (var j = 0; j < setNames.length; j++) {
                 var node = this.getNodeFromRule(setNames[j], xmlNodeArray[i], false, false, this.createModel),
-                    value = (setNames[j] == "left" ? dl : dt) + parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0;
-    
+                    value = (setNames[j] == "left" ? dl : dt) + (parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0);
+//alert((setNames[j] == "left" ? dl : dt) + (parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0))
                 if (node) {
                     var atAction = node.nodeType == 1 || node.nodeType == 3
                                 || node.nodeType == 4
@@ -361,7 +355,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
         }
-
+//jpf.flow.alert_r(changes[0].args[1]+" "+changes[0].args[2]);
+//jpf.flow.alert_r(changes[1].args[1]+" "+changes[1].args[2]);
         this.executeAction("multicall", changes, "moveTo", xmlNodeArray);
     };
 
@@ -709,7 +704,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$dragdrop = function(el, dragdata, candrop) {
         var pos = jpf.getAbsolutePosition(el);
         var diff;
+jpf.console.info("DRAGDROP");
 
+//alert("this.$dragdrop function");
+//jpf.flow.alert_r(dragdata.xmlNode)
         /* Dropped block have some padding and margin */
         for(var i=0, c = dragdata.indicator.childNodes; i<c.length; i++) {
             if (c[i].tagName.toLowerCase() == "blockquote")  {
@@ -729,6 +727,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
 jpf.console.info("UPDATE");
+//alert("update")
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
         objBlock = objBlocks[blockId];
@@ -858,6 +857,7 @@ jpf.console.info("UPDATE");
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
+//jpf.flow.alert_r(xmlNode)
 jpf.console.info("ADD");
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
@@ -935,6 +935,7 @@ jpf.console.info("ADD");
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
+//jpf.flow.alert_r(xmlNode);
         xmlNode.setAttribute("id", id);
         xmlNode.setAttribute("width", width);
         xmlNode.setAttribute("height", height);
@@ -943,7 +944,8 @@ jpf.console.info("ADD");
         xmlNode.setAttribute("top", top);
         xmlNode.setAttribute("zindex", zindex);
         xmlNode.setAttribute("cap-pos", capPos);
-        
+//jpf.flow.alert_r(xmlNode);
+   
         this.$setStyleClass(elCaption, capPos);
 
         elSelect.setAttribute(this.itemSelectEvent || 
