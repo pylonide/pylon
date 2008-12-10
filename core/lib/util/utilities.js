@@ -47,6 +47,23 @@ jpf.formatXml = function(strXml){
 };
 
 /**
+ * Syntax highlights an xml string using html.
+ * @param {String} strXml the xml to highlight.
+ * @return {String} the highlighted string.
+ */
+jpf.highlightXml = function(str){
+	return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
+	   .replace(/>/g, "_@B@_")
+	   .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
+	   .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
+	   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+	   .replace(/\n/g, "<br />")
+	   .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
+	   .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
+	return str;//"<div style='font-family:Courier New;font-size:9pt;white-space:nowrap'>" + str + "</div>";	
+}
+
+/**
  * Formats a javascript string with good indentation. Also known as pretty printing.
  * @param {String} strJs the javascript to format.
  * @return {String} the formatted string.

@@ -1533,6 +1533,10 @@ jpf.DataBinding = function(){
         "offline-message", "render-root", "smartbinding", "create-model",
         "bindings", "actions", "dragdrop");
 
+    this.$propHandlers["render-root"] = function(value){
+        this.renderRoot = value;
+    }
+    
     /**
      * @attribute {String} empty-message the message displayed by this element
      * when it contains no data. This property is inherited from parent nodes.

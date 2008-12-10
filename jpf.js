@@ -1893,7 +1893,7 @@ var jpf = {
             jpf.JmlParser.parseMoreJml(jpf.AppNode, pHtmlNode, null,
                 true, false);
 
-            var pNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
+            var pNode, firstNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
             while (loop && lastChild != loop) {
                 info = jpf.jmlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
@@ -1904,8 +1904,13 @@ var jpf = {
                             pNode);
                     }
                     else {
-                        lastBefore = pNode.insertBefore(jpf.getNode(loop, [0]),
-                            typeof info[1] == "number" ? lastBefore : info[1]);
+                        firstNode = jpf.getNode(loop, [0]);
+                        if (firstNode) {
+                            lastBefore = pNode.insertBefore(firstNode,
+                                typeof info[1] == "number" ? lastBefore : info[1]);
+                        }
+                        else
+                            lastBefore = typeof info[1] == "number" ? lastBefore : info[1];
                     }
 
                     loop.parentNode.removeChild(loop);
