@@ -60,7 +60,34 @@ jpf.highlightXml = function(str){
 	   .replace(/\n/g, "<br />")
 	   .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
 	   .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
-	return str;//"<div style='font-family:Courier New;font-size:9pt;white-space:nowrap'>" + str + "</div>";	
+}
+
+/**
+ * Syntax highlights a code string using html.
+ * @param {String} strCode the code to highlight.
+ * @return {String} the highlighted string.
+ */
+jpf.highlightCode = function(strCode){
+	return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
+	   .replace(/>/g, "_@B@_")
+	   .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
+	   .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
+	   .replace(/(_@A@_[\s\S]*?_@B@_)|(\/\/.*)$|("[^"]*")|('[^']*')|\.(\w+)(\s*\()|(\W)(jpf\.document|jpf|break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/gm, 
+	        function(m, tag, co, str1, str2, f, fws, nw, kw, nw2) {
+	            if (tag) return tag;
+	            else if (f)
+	                return '.<span style="color:#ff8000">' + f + '</span>' + fws;
+	            else if (co)
+	                return '<span style="color:green">' + co + '</span>';
+	            else if (str1 || str2)
+	                return '<span style="color:#808080">' + (str1 || str2) + '</span>';
+	            else if (nw)
+	                return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
+            })
+	   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+	   .replace(/\n/g, "<br />")
+	   .replace(/_@B@_/g, "<span style='color:#127ac6'>&gt;</span>")
+	   .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
 }
 
 /**

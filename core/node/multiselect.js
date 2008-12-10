@@ -33,6 +33,8 @@ var __MULTISELECT__ = 1 << 8;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.5
+ *
+ * @inherits jpf.MultiselectBinding
  */
 jpf.MultiSelect = function(){
     var noEvent;
