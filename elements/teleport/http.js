@@ -584,7 +584,7 @@ jpf.http = function(){
             extra.message = errorMessage.join("\n");
             
             // Send callback error state
-            if (!callback || !callback(extra.data, jpf.ERROR, extra))
+            if (!callback || !callback(null, jpf.ERROR, extra))
                 this.clearQueueItem(id);
             
             return;

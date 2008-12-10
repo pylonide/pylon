@@ -146,7 +146,7 @@ jpf.cgi = function(){
             return vars.join("&");
         
         this.url = this.url + (vars.length 
-            ? (this.url.match("?") ? "&" : "?") + vars.join("&")
+            ? (this.url.indexOf("?") > -1 ? "&" : "?") + vars.join("&")
             : "");
         
         return "";

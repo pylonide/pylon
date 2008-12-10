@@ -97,7 +97,7 @@ jpf.rpc = function(){
         this[name].callback = func;
     }
 
-    this.$convertArgs = function(args){
+    this.$convertArgs = function(name, args){
         if (!this.namedArguments)
             return args.slice();
 
@@ -130,7 +130,7 @@ jpf.rpc = function(){
     }
 
     this.call = function(name, args, options){
-        args = this.$convertArgs(args);
+        args = this.$convertArgs(name, args);
 
         // Set up multicall
         if (this.multicall) {
@@ -342,7 +342,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //#endif
 
     //force multicall if needed;
-    if (multicall)
+    if (options.multicall)
         obj.forceMulticall = true;
 
     //Set information later neeed
@@ -353,7 +353,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
             instruction '" + options.instruction + "'"));
     //#endif
 
-    if (userdata)
+    if (options.userdata)
         obj[method].userdata = options.userdata;
 
     if (!obj.multicall)
@@ -364,7 +364,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
 
     if (obj.multicall)
         return obj.purge(callback, "&@^%!@"); //Warning!! @todo Make multicall work with offline
-    else if (multicall) {
+    else if (options.multicall) {
         obj.forceMulticall = false;
         return obj;
     }
