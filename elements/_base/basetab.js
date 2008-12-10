@@ -993,7 +993,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         this.$active = true;
 
         // #ifdef __WITH_DELAYEDRENDER
-        this.render();
+        this.$render();
         // #endif
     };
 

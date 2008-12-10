@@ -90,7 +90,7 @@ jpf.DelayedRender = function(){
      *
      * @param {Boolean} [usedelay] wether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */
-    this.render = function(usedelay){
+    this.$render = function(usedelay){
         if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld") 
             return;
         this.dispatchEvent("beforerender");
@@ -100,12 +100,12 @@ jpf.DelayedRender = function(){
                 "use-render-delay") == "true";
         
         if (this.usedelay || usedelay) 
-            setTimeout("jpf.lookup(" + this.uniqueId + ").$render()", 10);
+            setTimeout("jpf.lookup(" + this.uniqueId + ").$renderparse()", 10);
         else 
-            this.$render();
+            this.$renderparse();
     };
     
-    this.$render = function(){
+    this.$renderparse = function(){
         if (this.isRendered) 
             return;
 

@@ -44,7 +44,7 @@ jpf.container = jpf.component(jpf.NODE_VISIBLE, function(pHtmlNode){
     
     this.$show = function(){ 
         // #ifdef __WITH_DELAYEDRENDER
-        this.render();
+        this.$render();
         // #endif 
     }
     

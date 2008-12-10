@@ -288,7 +288,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             //if (!x && !y && !center) center = true;
     
             // #ifdef __WITH_DELAYEDRENDER
-            this.render();
+            this.$render();
             // #endif
             
             if (this.oCover){ 

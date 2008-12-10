@@ -103,7 +103,7 @@ jpf.Alignment = function(){
             && !this.parentNode.pData;
         
         var layout = l.get(this.pHtmlNode, buildParent
-            ? jpf.getBox(this.parentNode.margin || "")
+            ? jpf.getBox(this.parentNode.margin || this.pHtmlNode.getAttribute("margin") || "")
             : null);
 
         if (buildParent) {

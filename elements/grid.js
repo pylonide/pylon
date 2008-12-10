@@ -193,6 +193,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$updateGrid = function(){
         if (!update)
             return;
+        
+        var pWidth  = "pWidth";
+        var pHeight = "pHeight";
 
         this.cellheight = parseInt(this.cellheight);
         var cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
@@ -201,9 +204,6 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         var rowheight   = [];
         this.padding    = parseInt(this.padding);
         
-        var pWidth  = "pWidth";
-        var pHeight = "pHeight";
-
         var oCols   = [];
 
         var col, row, oExt, diff, j, m, cellInfo;
@@ -272,9 +272,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         var rule = [
             "var ids = jpf.all[" + this.uniqueId + "].ids",
             "var total = 0, pHeight = ids[0].offsetHeight - " 
-                + ((rowheight.length - 1) * this.padding),
+                + ((rowheight.length - 1) * this.padding + margin[0] + margin[2]),
             "var pWidth  = ids[0].offsetWidth - " 
-                + ((collength - 1) * this.padding)
+                + ((collength - 1) * this.padding + margin[1] + margin[3]) 
         ];
         
         /*for (i = 0; i < this.ids.length; i++) {
@@ -448,6 +448,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.oExt.style.height = "80%"
         this.oExt.style.width  = "100%"
         this.oExt.style.top    = 0;
+        
+        if (this.$jml.getAttribute("class")) 
+            this.oExt.className = this.$jml.getAttribute("class");
         
         if (!jpf.isIE)
             jpf.importCssString(document, ".grid>*{position:absolute}");
