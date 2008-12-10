@@ -27,7 +27,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  * Baseclass adding the Document Object Model (DOM) to this element. The DOM
  * is the primary method for accessing and manipulating an xml document. This
  * includes html documents and jml documents. Every element in the javeline
- * markup language can be manipulated using the W3C DOM. <strong> This means
+ * markup language can be manipulated using the W3C DOM. This means
  * that every element and attribute you can set in the xml format, can be
  * changed, set, removed reparented, etc runtime. This offers a great deal of
  * flexibility. Well known methods

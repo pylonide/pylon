@@ -576,7 +576,9 @@ jpf.DataBinding = function(){
      * to push data from this element to the other element. Whenever this
      * element loads data, (a selection of) the data is pushed to the other
      * element. For elements inheriting from MultiSelect data is pushed
-     * when a selection occurs. In jml this is done as follows:
+     * when a selection occurs. 
+     * Example:
+     * This is how it's achieved using the javeline markup language.
      * <code>
      *  <j:list id="lstExample" />
      *  <j:text model="#lstExample:select" />
