@@ -100,7 +100,7 @@ jpf.cgi = function(){
         function recur(o, stack){
             if (o && o.dataType == "array") {
                 for (var j = 0; j < o.length; j++) 
-                    recur(o[j], stack + "%5B%5D");//" + j + "
+                    recur(o[j], stack + "%5B" + j + "%5D");//" + j + "
             }
             else 
                 if (typeof o == "object") {
