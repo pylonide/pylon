@@ -46,7 +46,7 @@
  * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.pHtmlNode  = document.body;
+    this.pHtmlNode = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     this.$supportedProperties.push("width", "value", "max", "min", "focused");
@@ -110,13 +110,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         if (jpf.hasFocusBug)
             jpf.sanitizeTextbox(this.oInput);
         //#endif
-        
+
         this.focused = true;
         this.$setStyleClass(this.oFirst, "focus");
         this.$setStyleClass(this.oInput, "focus");
         this.$setStyleClass(this.oButtonPlus, "plusFocus");
         this.$setStyleClass(this.oButtonMinus, "minusFocus");
-        jpf.console.info("focus")
     };
 
     this.$blur = function(e) {
@@ -140,13 +139,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
         var keyAccess = (key < 8 || (key > 8 && key < 37) 
                       || (key > 40 && key < 46) || (key > 46 && key < 48) 
-                      || (key > 57 && key < 109) || (key > 109 && key !==189));
+                      || (key > 57 && key < 109) || (key > 109 && key !== 189));
 
        if (keyAccess)
            return false;
-       
+
     }, true);
-    
+
     this.addEventListener("keyup", function(e) {
         this.setValue(this.oInput.value);
     }, true);
