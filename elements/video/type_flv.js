@@ -48,6 +48,7 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited       = false;
+    this.resizeTimer  = null;
 
     // Div name, flash name, and container name
     this.divName      = this.oVideo.uniqueId;
@@ -151,18 +152,24 @@ jpf.video.TypeFlv.prototype = {
     },
 
     /**
+     * Resize event handler, used by the layoutManager hook
+     *
+     * @type {void}
+     */
+    onResize: function() {
+        clearTimeout(this.resizeTimer);
+        var _self = this;
+        this.resizeTimer = window.setTimeout(function() {
+            _self.setSize();
+        }, 20);
+    },
+
+    /**
      * Set the size of the video.
      *
-     * @param {Number} width The width of the video.
-     * @param {Number} height The height of the video.
      * @type {Object}
      */
-    setSize: function(width, height) {
-        /*this.width  = width;
-        this.height = height;
-        // Change the DOM.  Do not rerender.
-        this.container.style.width  = this.width + "px";
-        this.container.style.height = this.height + "px";*/
+    setSize: function() {
         return this.callMethod("setSize", this.htmlElement.offsetWidth,
             this.htmlElement.offsetHeight);
     },
@@ -362,7 +369,7 @@ jpf.video.TypeFlv.prototype = {
             "previewImagePath"];
 
         jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
-            "jpf.all[" + this.oVideo.uniqueId + "].player.setSize()");
+            "jpf.all[" + this.oVideo.uniqueId + "].player.onResize()");
 
         return this;
     },
