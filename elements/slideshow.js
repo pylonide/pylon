@@ -92,7 +92,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var previous, next, current, last;
 
-    /* previous dimension of big image */
     var lastIHeight = 0,
         lastIWidth  = 0,
         onuse       = false,
@@ -199,7 +198,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var im                         = _self.oImage;
                     this.style.display             = "none";
                     _self.oThumbnails.style.height = _self.thumbheight + "px";
-jpf.console.info("onLoad")
+
                     if (current)
                         _self.addSelection(); 
 
@@ -272,7 +271,6 @@ jpf.console.info("onLoad")
                     var timer2;
                     timer2 = setInterval(function() {
                         if (checkWH[0] && checkWH[1]) {
-jpf.console.info("showing after check")
                             if (current)
                                 setSiblings();
 
@@ -309,7 +307,6 @@ jpf.console.info("showing after check")
                             clearInterval(timer2);
 
                             onuse = false;
-                            jpf.console.info("onuse false");
                             _self.addSelection();
 
                             if (play) {
@@ -376,8 +373,11 @@ jpf.console.info("showing after check")
                 this.addSelection(move);
             }
         }
-        this.$setStyleClass(this.$selected, "", ["selected"]);
-        this.$setStyleClass(htmlElement, "selected");
+        if (this.$selected)
+            this.$selected.className = "picture";
+        if (htmlElement)
+            htmlElement.className = "picture selected";
+
         this.$selected = htmlElement;
     };
 
@@ -423,7 +423,6 @@ jpf.console.info("showing after check")
         var timer8;
         clearInterval(timer8);
         timer8 = setInterval(function() {
-//jpf.console.info("onuse: "+onuse)
             if (!onuse) {
                 if (lastChoose.length) {
                     current = lastChoose.pop();
@@ -444,15 +443,14 @@ jpf.console.info("showing after check")
             this.showLast();
             return;
         }
-        
-        if(play)
+
+        if (play)
             clearInterval(timer7);
 
         var img = _self.oImage;
         setSiblings();
 
         onuse = true;
-        jpf.console.info("onuse true");
 
         jpf.tween.single(img, {
             steps : 3,
@@ -472,21 +470,27 @@ jpf.console.info("showing after check")
                 img.style.top                 = "0px";
                 var _src = (_self.applyRuleSetOnNode("src", current) || _self.defaultimage || _self.defaultthumb);
                 var _src_temp = img.src;
-jpf.console.info(img.src+" "+_src)
+
                 img.src = _src;
 
-                if (img.src == _src_temp) {
+                /* Safari and Chrome fix for reloading current image */
+                if (img.src == _src_temp && (jpf.isChrome || jpf.isSafari)) {
                     onuse = false;
                     jpf.tween.single(img, {
-                        steps : 5,
+                        steps : 3,
                         type  : "fade",
                         from  : 0,
                         to    : 1
                     });
+                    jpf.tween.single(_self.oTitle, {
+                        steps : 3,
+                        type  : "fade",
+                        from  : 0,
+                        to    : 1
+                    });
+                    _self.oTitle.style.visibility = "visible";
                 }
-                
-jpf.console.info("onuse: "+onuse)
-jpf.console.info(img.src)
+
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
@@ -871,7 +875,7 @@ jpf.console.info(img.src)
             oEmpty.parentNode.removeChild(oEmpty);
     };
 
-    this.$setCurrentFragment = function(fragment){
+    this.$setCurrentFragment = function(fragment) {
         this.otBody.appendChild(fragment);
 
         this.dataset = fragment.dataset;
