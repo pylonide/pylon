@@ -83,17 +83,18 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     this.arrange    = "vertical";
     this.margin     = "10 10 10 10";
 
+    var lastPos = null;
+    var showing = 0;
+    var _self   = this;
+    var sign    = 1;
+
+
     this.$supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
 
     this.$propHandlers["position"] = function(value) {
         lastPos = null;
     }
-
-    var lastPos = null;
-    var showing = 0;
-    var _self   = this;
-    var sign    = 1;
 
     function getStartPosition(x, wh, ww, nh, nw) {
          var margin = jpf.getBox(document.body.style.margin || "10");
@@ -171,12 +172,14 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             x = ["top", "right"];
         }
 
+        var _reset = false;
         /* start positions */
         if (!lastPos) {
             lastPos = getStartPosition(x, wh, ww, nh, nw);
+            _reset = true;
         }
 
-        if ((showing !==1 && x[0] == "bottom" && sign == 1) ||
+        if ((!_reset && x[0] == "bottom" && sign == 1) ||
            (x[0] == "top" && sign == -1)) {
             if (this.arrange == "vertical") {
                 lastPos[0] += x[1] == "center"
@@ -228,7 +231,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                         : 0));
         }
 
-        /* Start from begining if You fill entire screen */
+        /* Start from begining if entire screen is filled */
         if (lastPos) {
             if ((lastPos[0] > wh -nh || lastPos[0] < 0) && 
                 this.arrange == "horizontal") {
