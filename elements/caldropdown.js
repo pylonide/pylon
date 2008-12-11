@@ -29,7 +29,7 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-05" />
+ *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-06" />
  * </code>
  * 
  * @constructor
@@ -676,6 +676,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oLabel  = this.$getLayoutNode("main", "label", this.oExt);
         this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         this.oFirst  = this.$getLayoutNode("main", "first", this.oExt);
+        
+        document.body.appendChild(this.oSlider);
 
         this.oNavigation = this.$getLayoutNode("container",
                                                "navigation",  this.oSlider);
