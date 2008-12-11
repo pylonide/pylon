@@ -221,12 +221,7 @@ jpf.tween = {
 
     /**
      * Tweens a single property of a single element or html element from a
-     * start to an end value. Multiple animations can be run after eachother
-     * by calling this function multiple times.
-     * Example:
-     * <code>
-     *  jpf.tween.single(myDiv, options).single(myDiv2, options2);
-     * </code>
+     * start to an end value. 
      * Example:
      * <code>
      * jpf.tween.single(myDiv, {
@@ -236,7 +231,14 @@ jpf.tween = {
      *     anim : jpf.tween.EASEIN
      * });
      * </code>
-     * @param {Object} info the settings of the animation.
+     * Example:
+     * Multiple animations can be run after eachother
+     * by calling this function multiple times.
+     * <code>
+     *  jpf.tween.single(myDiv, options).single(myDiv2, options2);
+     * </code>
+     * @param {Element}  oHtml the object to animate.
+     * @param {Object}   info  the animation settings.
      *   Properties:
      *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to jpf.tween with the name of the property modifier. Default there are several handlers available.
      *      Possible values:
@@ -325,12 +327,7 @@ jpf.tween = {
 
     /**
      * Tweens multiple properties of a single element or html element from a
-     * start to an end value. Multiple animations can be run after eachother
-     * by calling this function multiple times.
-     * Example:
-     * <code>
-     *  jpf.tween.multi(myDiv, options).multi(myDiv2, options2);
-     * </code>
+     * start to an end value. 
      * Example:
      * Animating both the left and width at the same time.
      * <code>
@@ -348,6 +345,13 @@ jpf.tween = {
      *      }]
      *  });
      * </code>
+     * Example:
+     * Multiple animations can be run after eachother
+     * by calling this function multiple times.
+     * <code>
+     *  jpf.tween.multi(myDiv, options).multi(myDiv2, options2);
+     * </code>
+     * @param {Element}  oHtml the object to animate.
      * @param {Object} info the settings of the animation.
      *   Properties:
      *   {Number}   [steps]     the number of steps to divide the tween in
@@ -420,12 +424,13 @@ jpf.tween = {
 
     /**
      * Tweens an element or html element from it's current state to a css class.
+     * Example:
      * Multiple animations can be run after eachother by calling this function
      * multiple times.
-     * Example:
      * <code>
      *  jpf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
      * </code>
+     * @param {Element}  oHtml the object to animate.
      * @param {String} className the classname that defines the css properties to be set or removed.
      * @param {Object} info the settings of the animation.
      *   Properties:

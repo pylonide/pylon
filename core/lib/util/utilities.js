@@ -84,6 +84,7 @@ jpf.highlightCode = function(strCode){
 	            else if (nw)
 	                return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
             })
+       .replace(/_@A@_(!--[\s\S]*?--)_@B@_/g, '<span style="color:green">&lt;$1&gt;</span>')
 	   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
 	   .replace(/\n/g, "<br />")
 	   .replace(/_@B@_/g, "<span style='color:#127ac6'>&gt;</span>")

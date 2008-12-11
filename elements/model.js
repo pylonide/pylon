@@ -759,7 +759,7 @@ jpf.model = function(data, caching){
                     data: data
                 });
 
-                if (options.callback)
+                if (options && options.callback)
                     options.callback.apply(this, arguments);
             }
         });
