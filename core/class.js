@@ -159,7 +159,7 @@ jpf.Class = function(){
     };
 	
     /**
-     * Sets a dynamic property from a string
+     * Sets a dynamic property from a string.
      * The string used for this function is the same as used in JML to set a dynamic property:
      * <j:button visible="{rbTest.value == 'up'}" />
      *

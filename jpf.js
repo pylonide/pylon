@@ -1212,7 +1212,7 @@ var jpf = {
                         temp.parentNode.removeChild(temp);
 
                     temp = node;
-                    node = node.nextSibling;
+                    //node = node.nextSibling;
                 }
 
                 if (jpf.jmlParts.length
@@ -1220,7 +1220,7 @@ var jpf = {
                     jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
 
                 jpf.jmlParts.push([node.parentNode, jpf.isIE
-                    ? node.nextSibling : node]);
+                    ? node.nextSibling : node.nextSibling]);
             }
             else if (node.tagName == "SCRIPT" && node.getAttribute("src")
               && (node.getAttribute("src").indexOf("ajax.org") > -1
@@ -1236,7 +1236,8 @@ var jpf = {
                     .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/i, "")
                     .replace(/<\/SCRIPT>$/mi, "")
                     .replace(/<\/?\s*(?:p|br)\s*\/?>/ig, "")
-                    .replace(/<\!--\s*.*?\s*--><script.*/ig, "");
+                    .replace(/<\!--\s*.*?\s*-->\s*<script.*/ig, "")
+                    .replace(/\\+(['"])/g, "$1");
 
                 if (strXml.trim()) {
                     var xmlNode = jpf.getJmlDocFromString("<div jid='"
@@ -1255,7 +1256,7 @@ var jpf = {
             //Walk entire html tree
             if (!isPrefix && node.firstChild
               || node.nextSibling) {
-                if (node.firstChild) {
+                if (!isPrefix && node.firstChild) {
                     node = node.firstChild;
                 }
                 else {

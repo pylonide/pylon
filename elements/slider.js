@@ -173,7 +173,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$getLayoutNode("main", "progress", this.oExt));
         }
         
-        this.oProgress.style.width = (value * 100) + "%"
+        this.oProgress.style.width = ((value || 0) * 100) + "%";
     }
     
     /**

@@ -85,7 +85,6 @@
  * @inherits jpf.Cache
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
- * @inherits jpf.JmlElement
  * @inherits jpf.Rename
  */
 jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){

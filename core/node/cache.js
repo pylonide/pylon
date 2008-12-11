@@ -327,7 +327,7 @@ jpf.Cache = function(){
     
     // #ifdef __WITH_MULTISELECT
     if (this.hasFeature(__MULTISELECT__))
-        this.inherit(jpf.MultiselectCache); /** @inherits jpf.MultiselectCache */
+        this.inherit(jpf.MultiselectCache);
     // #endif
     
     this.$jmlDestroyers.push(function(){
