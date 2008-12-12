@@ -370,6 +370,7 @@ jpf.video.TypeFlv.prototype = {
 
         jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
             "jpf.all[" + this.oVideo.uniqueId + "].player.onResize()");
+        jpf.layout.activateRules(this.oVideo.oExt);
 
         return this;
     },
