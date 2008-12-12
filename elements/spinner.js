@@ -119,7 +119,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$blur = function(e) {
-        if (!this.oExt && !this.focused) 
+        if (!this.oExt && !this.focused)
             return;
         this.$setStyleClass(this.oFirst, "", ["focus"]);
         this.$setStyleClass(this.oInput, "", ["focus"]);
@@ -137,8 +137,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         var key = e.keyCode;
 
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
-        var keyAccess = (key < 8 || (key > 8 && key < 37) 
-                      || (key > 40 && key < 46) || (key > 46 && key < 48) 
+        var keyAccess = (key < 8 || (key > 8 && key < 37)
+                      || (key > 40 && key < 46) || (key > 46 && key < 48)
                       || (key > 57 && key < 109) || (key > 109 && key !== 189));
 
        if (keyAccess)
@@ -175,8 +175,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
             var value = parseInt(this.value) || 0, step = 0,
                 cy = e.clientY, cx = e.clientX,
-                ot = (this.offsetTop || 33), ol = (this.offsetLeft || 9),
-                ow = this.offsetWidth, oh = this.offsetHeight;
+                ot = _self.oInt.offsetTop, ol = _self.oInt.offsetLeft,
+                ow = _self.oInt.offsetWidth, oh = _self.oInt.offsetHeight;
 
             clearInterval(timer);
             timer = setInterval(function() {
@@ -324,7 +324,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.change(value);
             }
         };
-        
+
         this.oButtonMinus.onmouseup = function(e) {
             e = e || event;
             e.cancelBubble = true;
