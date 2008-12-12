@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JCALENDAR || __INC_ALL
+// #ifdef __JCALDROPDOWN || __INC_ALL
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
@@ -33,7 +33,7 @@
  * </code>
  * 
  * @constructor
- * @addnode elements:calendar
+ * @addnode elements:caldropdown
  *
  * @attribute {String}   date-format   It's a style of displaying date,
  *                                     default is ddd mmm dd yyyy HH:MM:ss
@@ -53,8 +53,8 @@
  *                                     calendar will be showing this date, if
  *                                     not, current date.
  * 
- * @classDescription    This class creates a new calendar
- * @return {Calendar}   Returns a new calendar
+ * @classDescription    This class creates a new calendar dropdown
+ * @return {Caldropdown}   Returns a new calendar dropdown
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
