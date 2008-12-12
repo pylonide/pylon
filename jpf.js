@@ -1091,7 +1091,7 @@ var jpf = {
                 var strXml = (htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(
                   new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
                   + ".*" + htmlNode.tagName))[0] + ">")
-                    .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                    .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
                     .replace(/ disabled /g, " disabled='true' ")
                     .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
                         if (tags[tag]) {

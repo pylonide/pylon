@@ -72,7 +72,7 @@ jpf.highlightCode = function(strCode){
 	   .replace(/>/g, "_@B@_")
 	   .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
 	   .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
-	   .replace(/(_@A@_[\s\S]*?_@B@_)|(\/\/.*)$|("[^"]*")|('[^']*')|\.(\w+)(\s*\()|(\W)(jpf\.document|jpf|break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/gm, 
+	   .replace(/(_@A@_[\s\S]*?_@B@_)|(\/\/.*)$|("[^"]*")|('[^']*')|\.(\w+)(\s*\()|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/gm, 
 	        function(m, tag, co, str1, str2, f, fws, nw, kw, nw2) {
 	            if (tag) return tag;
 	            else if (f)

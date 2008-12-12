@@ -421,7 +421,7 @@ jpf.Interactive = function(){
         var oHtml = resizeOutline && !force
             ? oOutline
             : _self.oExt;
-        
+
         var sLeft = document.documentElement.scrollLeft;
         var sTop = document.documentElement.scrollTop;
         
@@ -440,7 +440,7 @@ jpf.Interactive = function(){
                     startPos[3] - (e.clientY - startPos[1]) + rY + sTop
                     ) - verdiff)) + "px"; //@todo
         }
-        
+
         if (ea)
             oHtml.style.width  = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
@@ -452,7 +452,7 @@ jpf.Interactive = function(){
                 max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
-        
+
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(_self.oInt);
     }

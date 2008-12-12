@@ -716,8 +716,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.xmldb.setNodeValue(this.$getLayoutNode("container", "container", oDesc), desc);
             oDesc.setAttribute("class", (oDesc.getAttribute("class") || "") + " row" + this.uniqueId);
             
-            if(htmlParentNode) jpf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
-            else this.nodes.push(oDesc);
+            if(htmlParentNode) 
+                jpf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
+            else 
+                this.nodes.push(oDesc);
         }
     }
     

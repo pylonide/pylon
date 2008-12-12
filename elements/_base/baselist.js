@@ -439,10 +439,8 @@ jpf.BaseList = function(){
         Item.setAttribute("id", Lid);
 
         //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
-        elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId
-            + ').$setStyleClass(this, "hover");');
-        elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
-            + ').$setStyleClass(this, "", ["hover"]);');
+        elSelect.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
+        elSelect.setAttribute("onmouseout", 'jpf.setStyleClass(this, "", ["hover"]);');
 
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +

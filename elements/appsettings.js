@@ -70,9 +70,9 @@ jpf.appsettings = {
     disableSpace       : true,
     disableBackspace   : true,
     useUndoKeys        : false,
-    outline            : true,
-    dragOutline        : true,
-    resizeOutline      : true,
+    outline            : false,
+    dragOutline        : false,
+    resizeOutline      : false,
     disableTabbing     : false,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
@@ -176,7 +176,7 @@ jpf.appsettings = {
         if (x.getAttribute("outline")) {
             this.dragOutline    =
             this.resizeOutline  =
-            this.outline        = !jpf.isFalse(jpf.parseExpression(x.getAttribute("outline")));
+            this.outline        = jpf.isTrue(jpf.parseExpression(x.getAttribute("outline")));
         }
         else {
             this.dragOutline    = x.getAttribute("drag-outline")
@@ -184,7 +184,7 @@ jpf.appsettings = {
                 : false;
             this.resizeOutline  = x.getAttribute("resize-outline")
                 ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline")))
-                : true;
+                : false;
         }
 
         // #ifdef __WITH_IEPNGFIX

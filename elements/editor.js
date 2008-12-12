@@ -26,8 +26,7 @@
  * make it behave that way, simply because it is considered to be the market leader among
  * word-processors.
  * Example:
- *
- * <code language=jml>
+ * <code>
  *     <j:editor
  *         id="myEditor"
  *         left="100"

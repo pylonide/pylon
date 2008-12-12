@@ -96,8 +96,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.startClosed  = true;
     this.animType     = jpf.tween.NORMAL;
-    this.animSteps    = 3;
-    this.animSpeed    = 20;
+    this.animOpenStep = 3;
+    this.animCloseStep= 1;
+    this.animSpeed    = 10;
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
@@ -286,7 +287,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             from    : 0, 
             to      : container.scrollHeight, 
             anim    : this.animType, 
-            steps   : this.animSteps,
+            steps   : this.animOpenStep,
             interval: this.animSpeed,
             onfinish: function(container){
                 if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
@@ -323,7 +324,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             from    : container.scrollHeight, 
             to      : 0, 
             anim    : this.animType, 
-            steps   : this.animSteps,
+            steps   : this.animCloseStep,
             interval: this.animSpeed,
             onfinish: function(container, data){
                container.style.display = "none";
@@ -434,9 +435,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!startClosed && !this.noCollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
+        var removeContainer = (!this.removecontainer || hasChildren);
+        
         //TEMP on for dynamic subloading
-        if (!hasChildren || loadChildren)
+        if (!hasChildren || loadChildren) {
             container.setAttribute("style", "display:none;");
+        }
         
         //Dynamic SubLoading (Insertion) of SubTree
         if (loadChildren && !this.hasLoadStatus(xmlNode))
@@ -448,7 +452,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
           && xmlParentNode == this.xmlRoot) {
             this.nodes.push(htmlNode);
-            if (!jpf.xmldb.isChildOf(htmlNode, container, true))
+            if (!jpf.xmldb.isChildOf(htmlNode, container, true) && removeContainer)
                 this.nodes.push(container);
             
             this.$setStyleClass(htmlNode,  "root");
@@ -481,13 +485,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlNode, container, true)) 
+                if (!jpf.xmldb.isChildOf(htmlNode, container, true) && removeContainer) 
                     var container = jpf.xmldb.htmlImport(container, 
                         htmlParentNode, beforeNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlParentNode, container, true)) 
+                if (!jpf.xmldb.isChildOf(htmlParentNode, container, true) && removeContainer) 
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 
@@ -623,10 +627,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //@todo this should use dispatchEvent, and be moved to oExt
         oItem.setAttribute("onmouseover",
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (o.onmouseover) o.onmouseover(event, this)");
+            if (o.onmouseover) o.onmouseover(event, this);\
+            jpf.setStyleClass(this, 'hover');");
         oItem.setAttribute("onmouseout",
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (o.onmouseout) o.onmouseout(event, this)");
+            if (o.onmouseout) o.onmouseout(event, this);\
+            jpf.setStyleClass(this, '', ['hover']);");
         oItem.setAttribute("onmousedown",
             "var o = jpf.lookup(" + this.uniqueId + ");\
             if (o.onmousedown) o.onmousedown(event, this);");
