@@ -41,7 +41,7 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/videoplayer.swf";
     #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
