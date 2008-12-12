@@ -1190,7 +1190,7 @@ jpf.DataBinding = function(){
         if (this.dataParent && this.dataParent.xpath)
             this.dataParent.parent.signalXmlUpdate[this.uniqueId] = !xmlRootNode;
 
-        if (!xmlRootNode) {
+        if (!xmlRootNode && (!cacheID || !this.isCached(cacheID))) {
             //#ifdef __DEBUG
             jpf.console.warn("No xml root node was given to load in "
                 + this.tagName + "[" + (this.name || '') + "]. Clearing any \
@@ -1224,7 +1224,7 @@ jpf.DataBinding = function(){
             return false;
 
         // If reloading current document, and caching is disabled, exit
-        if (this.caching && !forceNoCache && xmlRootNode == this.xmlRoot)
+        if (this.caching && !forceNoCache && xmlRootNode && xmlRootNode == this.xmlRoot)
             return;
 
         // retrieve the cacheId
@@ -1238,8 +1238,11 @@ jpf.DataBinding = function(){
             this.$removeClearMessage();
 
         // Retrieve cached version of document if available
-        if (this.caching && !forceNoCache && this.getCache(cacheID, xmlRootNode)) {
-
+        var fromCache;
+        if (this.caching && !forceNoCache && (fromCache = this.getCache(cacheID, xmlRootNode))) {
+            if (fromCache == -1)
+                return;
+            
             if (!this.hasFeature(__MULTISELECT__))
                 this.setConnections(this.xmlRoot, "select");
             else {

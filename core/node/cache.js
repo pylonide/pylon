@@ -62,7 +62,7 @@ jpf.Cache = function(){
      */
     this.getCache = function(id, xmlNode){
         //Checking Current
-        if (id == this.cacheID) return false;
+        if (id == this.cacheID) return -1;
         /*
             Let's check if the requested source is actually 
             a sub tree of an already rendered part
@@ -314,6 +314,16 @@ jpf.Cache = function(){
     this.getCacheItem = function(id){
         return cache[id];
     };
+    
+    /**
+     * Checks wether a cache item exists by the specified id
+     *
+     * @param {String} id  the id of the cache item to check.
+     * @see DataBinding#clearCacheItem
+     */
+    this.isCached = function(id){
+        return cache[id] ? true : false;
+    }
     
     /* ********************************************************************
                                         PRIVATE METHODS
