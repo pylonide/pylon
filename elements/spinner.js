@@ -10,7 +10,6 @@
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
@@ -46,7 +45,6 @@
  * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.pHtmlNode = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     this.$supportedProperties.push("width", "value", "max", "min", "focused");
