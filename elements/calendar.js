@@ -29,7 +29,7 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-05" />
+ *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-06" />
  * </code>
  * 
  * @constructor
@@ -84,9 +84,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = null,
         _numberOfDays = null,
         _dayNumber    = null;
-        
+
     var _width = null;
-        
+
     var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
@@ -240,7 +240,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             : minWidth;
         _width = this.width || _width;
 
-        this.oNavigation.style.width = (Math.floor((_width - 36)/8)*8 + 32
+        this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
             - jpf.getDiff(this.oNavigation)[0]) + "px";
 
         var w_firstYearDay = new Date(year, 0, 1);
@@ -290,22 +290,22 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        var squareSize = Math.floor((_width - 37)/8);
+        var squareSize = Math.floor((_width - 37) / 8);
 
         var daysofweek = this.oDow.childNodes;
-        this.oDow.style.width = (squareSize*8 + 32) + "px";
-        this.oNavigation.style.width = (squareSize*8 + 32) 
+        this.oDow.style.width = (squareSize * 8 + 32) + "px";
+        this.oNavigation.style.width = (squareSize * 8 + 32) 
                                      - jpf.getDiff(this.oNavigation)[0] + "px";
 
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].style.width  = squareSize + "px";
-                daysofweek[i].style.height = Math.floor((squareSize/2 + 12)/2)
+                daysofweek[i].style.height = Math.floor((squareSize / 2 + 12) / 2)
                                            + "px";
-                daysofweek[i].style.paddingTop = Math.max(squareSize/2 - 3 
-                    - (Math.floor((squareSize/2 + 12 -2)/2)), 0) + "px";
+                daysofweek[i].style.paddingTop = Math.max(squareSize / 2 - 3 
+                    - (Math.floor((squareSize / 2 + 12 -2) / 2)), 0) + "px";
 
-                if(squareSize/2 < 9) {
+                if (squareSize / 2 < 9) {
                     daysofweek[i].style.fontSize = "9px";
                 }
 
@@ -321,8 +321,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (squareSize*8 + 32) + "px";
-            if(!jpf.isGecko) {
+            rows[i].style.width = (squareSize * 8 + 32) + "px";
+            if (!jpf.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
 
@@ -332,9 +332,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     continue;
                 z++;
                 cells[j].style.width = squareSize + "px";
-                cells[j].style.height = Math.floor((squareSize + 12)/2) + "px";
+                cells[j].style.height = Math.floor((squareSize + 12) / 2) + "px";
                 cells[j].style.paddingTop = squareSize 
-                                          - (Math.floor((squareSize + 12)/2))
+                                          - (Math.floor((squareSize + 12) / 2))
                                           + "px";
 
                 this.$setStyleClass(cells[j], "", ["weekend", "disabled", 
@@ -510,7 +510,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     oRow.appendChild(oCell);
                 }
             }
-            
+
             var oNavigation = this.$getLayoutNode("main", "navigation", oExt);
 
             if (oNavigation) {
