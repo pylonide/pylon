@@ -64,7 +64,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             : jpf.JmlParser.parseChildren(x, oInt, this);*/
             //this.engine = jpf.chart.canvasDraw.init(this);
         jpf.draw.initDriver();
-        jpf.draw.init(this);
+        jpf.draw.initRoot(this);
         
         //var dt = new Date().getTime();
         for (var o, i = 0, j = 0; i < x.childNodes.length; i++){
@@ -74,11 +74,11 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if (x.childNodes[i][jpf.TAGNAME] == "axis") {
                 o = new jpf.chart.axis(this.oExt, "axis");
                 o.parentNode = this;
-                o.$loadJml(x.childNodes[i], this, j++);
+                o.$loadJml(x.childNodes[i], this, j++, this);
                 this.childNodes.push(o);
             }
         }
-        //lert( (new Date()).getTime() - dt);
+        //alert( (new Date()).getTime() - dt);
 
         var ox, oy, lx, ly, bt, stack = [], interact = false;
             iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
@@ -240,7 +240,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.mouseMove = function(dx,dy,bt,ox,oy,lx,ly){
         // we need to 
         dx = dx / this.cwidth, dy = dy / this.cheight; 
-        var zx = this.zoomx, zy = this.zoomy;
+        var zx = this.zoomx, zy = this.zoomy, v;
         this.mousex=lx/this.cwidth;
         this.mousey=ly/this.cheight;
         if(bt == 1){
@@ -257,8 +257,8 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 ty = 1-((oy - this.ctop)/this.cheight);
             this.setProperty("distance", Math.min(Math.max( this.distance * 
                     (1 - 4*dy), 3 ),100) );
-            this.setProperty("zoomx", this.zoomx * (1 - 4*dx)  );
-            this.setProperty("zoomy", this.zoomy * (1 - 4*dy) );
+            this.setProperty("zoomx", (v=this.zoomx * (1 - 4*dx))<0.001?0.001:(v>1000?1000:v)  );
+            this.setProperty("zoomy", (v=this.zoomy * (1 - 4*dy))<0.001?0.001:(v>1000?1000:v) );
             this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
             this.setProperty("movey", this.movey + (zy-this.zoomy)*ty );
         }
@@ -266,14 +266,14 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
     
     this.mouseWheel = function(x,y,d){
-        var zx = this.zoomx, zy = this.zoomy,
+        var zx = this.zoomx, zy = this.zoomy,v,
             tx = (x - this.cleft)/this.cwidth, 
             ty = 1-((y - this.ctop)/this.cheight);
         
         this.setProperty("distance", Math.min(Math.max( this.distance * 
             (1 - 0.1*d), 3 ),100) );
-        this.setProperty("zoomx", this.zoomx * (1 - 0.1*d)  );
-        this.setProperty("zoomy", this.zoomy * (1 - 0.1*d) );
+        this.setProperty("zoomx", (v=this.zoomx * (1 - 0.1*d))<0.001?0.001:(v>1000?1000:v)  );
+        this.setProperty("zoomy", (v=this.zoomy * (1 - 0.1*d))<0.001?0.001:(v>1000?1000:v) );
         this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
         this.setProperty("movey", this.movey + (zy-this.zoomy)*ty );
     }
@@ -329,7 +329,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         }
     }
 
-    this.$loadJml = function(x, obj, order){
+    this.$loadJml = function(x, obj, order, root){
         this.jml     = x;
         
         if (x.getAttribute("id"))
@@ -352,7 +352,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         this.type = this.type || "2D";
         this.is3d = this.type.match( "3D" );
 
-        jpf.draw.initLayer(this);
+        jpf.draw.initLayer(this, root);
         
         this.style        = jpf.draw.parseStyle( jpf.chart.axis.draw['_grid'+this.type], this.stylestr );
         this.cleft   = this.left+(this.style.margin?
@@ -371,7 +371,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // init graph layers with proper drawing viewport
         // after each draw, we should have the lines x and y positions in an array ready to be drawn in text, or looked up to text.
         
-        for (var o, i = 0; i < x.childNodes.length; i++){
+        for (var o, i = 0, j = 1; i < x.childNodes.length; i++){
             if (x.childNodes[i].nodeType != 1)
                 continue;
             var n = x.childNodes[i][jpf.TAGNAME];
@@ -382,7 +382,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 // add some margins for the childnodes
                 o.left = this.cleft,  o.top = this.ctop,
                 o.width = this.cwidth,o.height = this.cheight;
-                o.$loadJml(x.childNodes[i]);
+                o.$loadJml(x.childNodes[i], this, j++, root);
 				
                 // expand our viewport to hold the childgraph
                 if( o.x1 !== undefined && o.x1 < this.x1 || this.x1===undefined)this.x1 = o.x1;
@@ -514,8 +514,9 @@ jpf.chart.axis.draw = {
         var ml = s.margin.left*l.ds, mt = s.margin.top*l.ds,
             mr = s.margin.right*l.ds, mb = s.margin.bottom*l.ds;
         var c = e.optimize([
-        e.begin2D(l,ml,mt,mr,mb),
-        "var v,d,u,t,h,",
+        e.beginLayer(l),
+        e.vars2D(ml,mt,mr,mb),
+        "var v,d,u,h,",
              "vcx = 0.5*__pow(",s.pow,", __round(__log(__abs(vw)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
              "vcy = 0.5*__pow(",s.pow,", __round(__log(__abs(vh)/",s.pow,
@@ -535,15 +536,15 @@ jpf.chart.axis.draw = {
          "var xmaxstep = __ceil( (dex-dbx)/dcx )+4,",
              "ymaxstep = __ceil( (dey-dby)/dcy )+4;",
 
-        s.plane.active?[ e.shape(s.plane),
+        s.plane.active?[ e.beginShape(s.plane),
             e.rect(ml,mt,"dw","dh")
         ]:"",
-        s.plane2.active?[ e.shape(s.plane2),
+        s.plane2.active?[ e.beginShape(s.plane2),
             e.rect(ml,mt,"dw","dh")
         ]:"",
         s.tiles.active?[ 
             e.rectInv?[
-                e.shape(s.tiles),
+                e.beginShape(s.tiles),
                  "if((u=dbx2-dcx-",ml,")>0){",
                     e.rectInv(ml,mt,"u","dh"),
                 "}",
@@ -563,8 +564,7 @@ jpf.chart.axis.draw = {
                     e.rectInv(ml,"v","dw","__min(-dcy,u)"),
                 "}"              
             ]:[
-                e.shape(s.tiles),
-                e.clip(ml,mt,mr,mb),
+                e.beginShape(s.tiles,ml,mt,mr,mb),
                 "for( u = dey2+dcy2, t = dby2-dcy2; u <= t; u -= dcy2){",
                 "for( v = dbx2-dcx2, d = dex2+dcx2; v <= d; v += dcx2){",
                     e.rect("v+dcx","u","dcx","-dcy"),
@@ -572,7 +572,7 @@ jpf.chart.axis.draw = {
                 "};",
             "}"]
         ]:"",
-        s.xbar.active?[ e.shape(s.xbar),
+        s.xbar.active?[ e.beginShape(s.xbar),
             "if((u=dbx2-dcx-",ml,")>0){",
                 e.rect(ml,mt,"u","dh"),
             "}",
@@ -583,7 +583,7 @@ jpf.chart.axis.draw = {
                 e.rect("v",mt,"__min(dcx,u)","dh"),
             "}"
         ]:"",
-        s.ybar.active?[ e.shape(s.ybar),
+        s.ybar.active?[ e.beginShape(s.ybar),
             "if((u=dey2+dcy-",mt,")>0){",
                 e.rect(ml,mt,"dw","u"),
             "}",
@@ -594,7 +594,7 @@ jpf.chart.axis.draw = {
                 e.rect(ml,"v","dw","__min(-dcy,u)"),
             "}"
         ]:"",
-        s.xtick.active?[ e.shape(s.xtick),
+        s.xtick.active?[ e.beginShape(s.xtick),
             "u = ",s.xlabel.axis?("ty+"+(s.xtick.top*l.ds)):
                   (s.xlabel.side?s.xtick.size*-l.ds+ml:("db")),";",
             "t = dcx/",s.xtick.steps,";",
@@ -605,11 +605,11 @@ jpf.chart.axis.draw = {
                 "if(u+h>dr)h=dr-u;"]:"",
                 "x = dbx-dcx;while(x<dx)x+=t;",
                 "for(; x < dr; x += t){",
-                    e.vline("x","u","h"),
+                    e.lineV("x","u","h"),
                 "};",        
             s.xlabel.axis?"}":"",
         ]:"",
-        s.ytick.active?[ e.shape(s.ytick),
+        s.ytick.active?[ e.beginShape(s.ytick),
             "t = dcy/",s.ytick.steps,";",
             "u = ",s.ylabel.axis?("tx+"+s.ytick.left*l.ds):
                   (s.ylabel.side?s.ytick.size*-l.ds+mt:"dr"),";",
@@ -620,25 +620,25 @@ jpf.chart.axis.draw = {
                 "if(u+h>dr)h=dr-u;"]:"",            
                 "y = dey+dcy;while(y<dy)y-=t;",
                 "for(; y < db; y -= t){", // Y INVERTED
-                    e.hline("u","y","h"),
+                    e.lineH("u","y","h"),
                 "};",    
             s.ylabel.axis?"}":"",
         ]:"",
-        s.xgrid.active?[ e.shape(s.xgrid),
+        s.xgrid.active?[ e.beginShape(s.xgrid),
             "t=dw+",s.xgrid.extend*l.ds,";",
             "u=",(s.xgrid.extend*l.ds*-s.ylabel.side)+ml,";",
             "for(y = dby; y >= dey; y += dcy){", // Y INVERTED
-                e.hline("u","y","t"),
+                e.lineH("u","y","t"),
             "};"
         ]:"",
-        s.ygrid.active?[ e.shape(s.ygrid),
+        s.ygrid.active?[ e.beginShape(s.ygrid),
             "t=dh+",s.ygrid.extend*l.ds,";",
             "u=",(s.ygrid.extend*l.ds*-s.xlabel.side)+mt,";",
             "for(x = dbx; x <= dex; x += dcx){",
-                e.vline("x","u","t"),
+                e.lineV("x","u","t"),
             "};"
         ]:"",    
-        s.xtickg.active?[ e.shape(s.xtickg),
+        s.xtickg.active?[ e.beginShape(s.xtickg),
             "u = ",s.xlabel.axis?("ty+"+s.xtickg.top*l.ds):
                   (s.xlabel.side?s.xtickg.size*-l.ds+ml:("db")),";",
             "h = ",s.xtickg.size*l.ds,";",
@@ -647,11 +647,11 @@ jpf.chart.axis.draw = {
                 "if(u<dy)h=h-(dy-u),u=dy;",
                 "if(u+h>db)h=db-u;"]:"",
                 "for(v=dbx; v <= dr; v += dcx){",
-                    e.vline("v","u","h"),
+                    e.lineV("v","u","h"),
                 "};",
             s.xlabel.axis?"}":"",
         ]:"",                            
-        s.ytickg.active?[ e.shape(s.ytickg),
+        s.ytickg.active?[ e.beginShape(s.ytickg),
             "u = ",s.ylabel.axis?("tx+"+s.ytickg.left*l.ds):
                   (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dr"),";",
             "h = ",s.ytickg.size*l.ds,";",
@@ -660,32 +660,34 @@ jpf.chart.axis.draw = {
                 "if(u<dx)h=h-(dx-u),u=dx;",
                 "if(u+h>dr)h=dr-u;"]:"",    
                 "for(v=dby; v >= dy; v += dcy){", // Y INVERTED
-                    e.hline("u","v","h"),
+                    e.lineH("u","v","h"),
                 "};",
             s.ylabel.axis?"}":"",
         ]:"",   
-        s.xaxis.active?[ e.shape(s.xaxis),
+        s.xaxis.active?[ e.beginShape(s.xaxis),
             "if(ty>=dy && ty<=dy+dh){",
                 "t=dw+",s.xaxis.extend*l.ds,";",
                 "u=dx+",(s.xaxis.extend*l.ds*-s.ylabel.side),";",
-                e.hline("u","ty","t"),
+                e.lineH("u","ty","t"),
             "}"
         ]:"",
-        s.yaxis.active?[ e.shape(s.yaxis),
+        s.yaxis.active?[ e.beginShape(s.yaxis),
             "if(tx>=dx && tx<=dx+dw){",
                 "t=dh+",s.yaxis.extend*l.ds,";",
                 "u=dy+",(s.yaxis.extend*l.ds*-s.xlabel.side),";",    
-                e.vline("tx","u","t"),
+                e.lineV("tx","u","t"),
             "}"
         ]:"",
         s.xlabel.active?[
             s.xlabel.axis?
-                e.text(s.xlabel, "xmaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.xlabel, "xmaxstep", ml/l.ds-s.xlabel.edgeclip,0,mr/l.ds-s.xlabel.edgeclip,0),
+                e.beginFont(s.xlabel, "xmaxstep", 
+                    ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+                e.beginFont(s.xlabel, "xmaxstep", 
+                    ml/l.ds-s.xlabel.edgeclip,0,mr/l.ds-s.xlabel.edgeclip,0),
             "for( v = vbx, u = vex,d = dbx + ",
                     (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
                     "; v <= u; v+= vcx, d+= dcx ){",
-                e.print("d",s.xlabel.axis?"ty+"+(s.xlabel.top*l.ds):
+                e.text("d",s.xlabel.axis?"ty+"+(s.xlabel.top*l.ds):
                             (s.xlabel.side?(mt-s.xlabel.height*l.ds-s.xlabel.top*l.ds):
                                 "dh+"+(mt+s.xlabel.top*l.ds)),
                     s.xlabel.format), 
@@ -693,18 +695,20 @@ jpf.chart.axis.draw = {
         ]:"",
         s.ylabel.active?[
             s.ylabel.axis?
-                e.text(s.ylabel, "ymaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.ylabel, "ymaxstep", 0,mt/l.ds-s.ylabel.edgeclip,0,mb/l.ds-s.ylabel.edgeclip),
+                e.beginFont(s.ylabel, "ymaxstep", 
+                    ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+                e.beginFont(s.ylabel, "ymaxstep", 
+                    0,mt/l.ds-s.ylabel.edgeclip,0,mb/l.ds-s.ylabel.edgeclip),
             "for( v = vby, u = vey,d = dby + ",
                  (-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
                   "; v<= u; v+= vcy, d+= dcy ){;",
-                e.print(s.ylabel.axis?"tx+"+(s.ylabel.left*l.ds):
+                e.text(s.ylabel.axis?"tx+"+(s.ylabel.left*l.ds):
                        (s.ylabel.side?s.ylabel.left*l.ds+ml:
                        "dr+"+(-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds) ),
                        "d",s.xlabel.format),
             "}"
         ]:"",
-        e.end2D()
+        e.endLayer()
         ]);
         //alert(c);
         try{
@@ -772,7 +776,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
         this[prop] = value;
     }
     
-    this.$loadJml = function(x,obj){
+    this.$loadJml = function(x,obj, order, root){
         this.jml     = x;
         
         if (x.getAttribute("id"))
@@ -814,11 +818,19 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 }
             }
         }
-        this.v_state[3] = 0x20000001;
-        this.v_state[4] = 0x20000002;
-        this.v_state[5] = 0x20000003;
-        this.v_state[6] = 0x20000004;
+        
+this.v_state[1] = 0x20000002;
+this.v_state[2] = 0x20000003;
+this.v_state[3] = 0x20000004;
+this.v_state[5] = 0x20000005;
+this.v_state[6] = 0x20000002;
+this.v_state[7] = 0x20000003;
 
+        /*      
+        this.v_state[4] = 0x20000003;
+        this.v_state[5] = 0x20000004;
+        this.v_state[6] = 0x20000005;
+*/
 		// check if we need to autoviewport
 		if(!this.viewport){
 			var x1,y1=x1= 10000000;
@@ -853,12 +865,14 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // alert(this.type);
         // create render layer
         
-        jpf.draw.initLayer(this);
+        jpf.draw.initLayer(this, root);
         this.style      = jpf.draw.parseStyle(jpf.chart.graph.draw['_'+this.type], this.stylestr );
         // pick if we have a formula or need to parse some data
         this.pformula   = jpf.draw.parseJSS( this.formula );
         this.datasource = jpf.chart.graph.datasources[this.source]( this );
+        
         this.$draw      = jpf.chart.graph.draw[this.type](this, this.datasource);
+//        alert(  (new Date()).getTime() - dt );
     }
 });
 
@@ -968,37 +982,75 @@ jpf.chart.graph.draw = {
     _bar2D: {
         steps : 10,
         margin : 0,
-        bar : {
+        graph : {
             inherit : 'shape',
-             
             line: '#000000',
             weight : 1,
             fill : 'red',
-            width : 1,
-            height : 1,
-            'width-align' : 'center', 
-            'height-align' : 'center',
-            'height-clip' : 1,
-            'offset-x' : 0,
-            'offset-y' : 0,
         $:0}
-    },    
+    },
     bar2D : function(l,d){
         var e = jpf.draw, s = l.style, g = jpf.visualize;
          
         var c = e.optimize([
-            e.begin2D(l),
-            d.head||"",
+            e.beginLayer(l),
+            e.vars2D(),
+            d.vars||"",
             "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x,xw=x2-x1,idx=xw/xs,",
                 "wx = idx*tw,wy;",
-            d.begin||"",
-            e.stateShape(s.bar),
+            d.seek||"",
+            e.beginState(s.graph, e, e.draw2D, 4),
             "for(x=x1;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{",
-                e.stateDraw("("+d.x+")*tw+tx","wy=("+d.y+")*th+ty",
-                            "wx","ty-wy",d.state,d.time),
+                e.drawState(d.state,d.time,"("+d.x+")*tw+tx","wy=("+d.y+")*th+ty",
+                            "wx","ty-wy"),
             "};",
-            e.end2D()])
-            alert(c);
+            e.endLayer()]);
+        // lets return a mouse tracking function too.
+        try{
+            return new Function('l','v',c);
+        }catch(x){
+            alert(x.message+"\nFailed to compile:\n"+c);return 0;
+        }
+    },
+    // #endif
+    
+    // #ifdef __ENABLE_CHART_PIE2D
+    _pie2D: {
+        steps : 10,
+        margin : 0,
+        left: 1,
+        top: 1,
+        width: 1,
+        height: 1,
+        chart : {
+            inherit : 'shape',
+            line: '#000000',
+            weight : 1,
+            fill : 'red',
+        $:0}
+    },    
+    pie2D : function(l,d){
+        var e = jpf.draw, s = l.style, g = jpf.visualize;
+        var c = e.optimize([
+            e.beginLayer(l),
+            e.vars2D(),
+            d.vars||"",
+            d.stats,
+            "var x1=",d.vx1,",x2=",d.vx2,",xw=x2-x1,",
+                "idx=1,sum=1/(",d.sum,"),rx=0,",
+                "xp=(",s.left,")*tw+tx,",
+                "yp=(",s.top,")*th+ty,",
+                "wp=(",s.width,")*tw,",
+                "hp=(",s.height,")*th;",
+            d.seek||"",
+            e.beginState(s.chart,e,e.drawPart,6),
+            "for(x=x1;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{",
+                e.drawState(d.state,d.time,"xp","yp","wp","hp",
+                            "rx","-rx+(rx+=("+d.y+")*sum)"),
+            "};",
+            e.endLayer()]);
+        // lets return a mouse tracking function too.
+        
         try{
             return new Function('l','v',c);
         }catch(x){
@@ -1067,7 +1119,7 @@ jpf.chart.graph.draw = {
             "}",
             e.endShape(),
             e.endLayer()].join('');
-        try{        
+        try{
             return new Function('l',c);
         }catch(x){
             alert("Failed to compile:\n"+c);return 0;
@@ -1100,7 +1152,7 @@ jpf.chart.graph.datasources = {
         
         return {
             type : 'mathX',
-            head : "var _stp= l.style.step&&(vx2-vx1)/l.style.step<l.style.steps?l.style.step:(vx2-vx1)/l.style.steps;",
+            vars : "var _stp= l.style.step&&(vx2-vx1)/l.style.step<l.style.steps?l.style.step:(vx2-vx1)/l.style.steps;",
             vx1 : 0, vx2 : 1, vy1 : 0, vy2 : 1,
             x1 : "__floor(vx1/_stp)*_stp",
             x2 : "__ceil(vx2/_stp+1)*_stp",
@@ -1135,13 +1187,18 @@ jpf.chart.graph.datasources = {
     },    
     
     seriesX : function(l) {
-        var    len = l.v_yval.length;
         return {
             type : 'seriesX',
-            vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
-            head : "var _yv = l.v_yval,_sv = l.v_state, _tv = l.v_time;",
+            vars : "var _yv = l.v_yval,_sv = l.v_state, _tv = l.v_time,_i,_mi,_ma;",
+            vx1 : 0, vx2 : "_yv.length", vy1 : -1, vy2 : 1,
             state : "_sv[x]",
             time : "_tv[x]",
+            sum : "l.v_sum",
+            min : "l.v_min",
+            max : "l.v_max",
+            avg : "l.v_avg",
+            stats : 
+"if(!l.v_sum){for(i=_yv.length-1,j=0,_mi=10000000,_ma=-10000000;i>=0;--i)j+=((m=_yv[i])<_mi?_mi=m:m)>_ma?_ma=m:m;l.v_avg=(l.v_sum=j)/_yv.length;l.v_min=_mi;l.v_max=_ma;}",
             x1 : "__max(__floor(vx1),0)", 
             x2 : "__min(__ceil(vx2)+1,_yv.length)", 
             xs : "x2-x1",
@@ -1153,12 +1210,12 @@ jpf.chart.graph.datasources = {
         var    len = l.yvalue.length;
         return {
             type : 'seriesX2',
-            head : 'var _xv = l.xvalue, _yv = l.yvalue, _len = _yv.length;',
+            vars : 'var _xv = l.xvalue, _yv = l.yvalue, _len = _yv.length;',
             vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
             x1 : 0, 
             x2 : "_len", 
             xs : "_len", 
-            begin : "var _lx = vx1, _sf=0;\
+            seek : "var _lx = vx1, _sf=0;\
                      for(x=l.xfirst||0;x > 0 && _xv[x]>=vx1 ;x--);",
             for_ : " && _lx<=vx2",
             if_  : "if( (!_sf && (x==_len-1 || _xv[x+1]>=vx1) && ++_sf && (xfirst=l.xfirst=x || 1)) || _sf)",
@@ -1171,7 +1228,7 @@ jpf.chart.graph.datasources = {
         return {
             type : 'seriesXY',
             vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
-            head : "var _vx = l.xvalue, _vy = l.yvalue, _len = _vy.length;",
+            vars : "var _vx = l.xvalue, _vy = l.yvalue, _len = _vy.length;",
             x1 : 0, 
             x2 : "_len", 
             xs : "_len",

@@ -66,8 +66,10 @@ jpf.draw.canvas = {
         this.doclose = 0; 
         var s=[ "var _c=l.canvas,_styles=l._styles,",
                 "_s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
+                "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
+                "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
                 "_s,_sh,_sp,_sl,_sv,_st,_dx,_dy,_td,_l,_lc,",
-                "_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o,_m;",
+                "_tc,_cv,_t,_u,_r,_q,_o,_m,_sr,_cr;",
                 "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
 
         if( l.dx != 0 )
@@ -359,7 +361,18 @@ jpf.draw.canvas = {
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
                 "_c.lineTo(",x,this.mx,",",y,this.my,");\n"].join('');
     },
-    rect : function( x,y,w,h ){
+    circle : function( x,y,r,s,e,c ){
+        this.doclose = 1;
+        if(!s)s='0'; if(!e)e='3.141593';c=c?1:0;
+        return["_c.arc(",x,",",y,",",r,",",s,",",e,",",c,");"].join('');
+    },
+    ellipse : function( x,y,w,h,s,e,c){
+        this.doclose = 1;
+        if(!s) s = '0'; if(!e) e = 'Math.PI*2';c=c?1:0;
+        return["_c.translate(_x1=(",x,"),_y1=(",y,"));_c.scale(_x2=(",w,"),_y2=(",h,"));",
+               "_c.arc(0,0,1,",s,",",e,",",!c,");_c.scale(1/_x2,1/_y2);_c.translate(-_x1,-_y1);"].join('');
+    },
+    rect : function( x,y,w,h){
        /*
          if(this.style.outx){
             x=(parseFloat(x)==x)?(parseFloat(x)-this.ox):"("+x+"-"+this.ox+")";
@@ -414,20 +427,21 @@ jpf.draw.canvas = {
     // State rendering
     
     //----------------------------------------------------------------------
-         
-    // state based drawing
-    beginState : function( style, obj, func, nargs ){
-        var s = [
-            this.beginShape(style),
-            "_sh = _s.$statehash, _sl = _s.$storelist,",
-            "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n",
-        ];
+        // state based drawing
+    beginState : function( style, sthis, func, nargs ){
+        var s = [this.beginShape(style.$shadow || style)];
+        
         this.statemode = 1;
-        this.stateobj = obj;
+        this.statethis = sthis;
         this.stateargs = nargs;
         this.statefunc = func;
-        // prep arrays for other styles
+    
         var v = style.$statelist, i, l;
+        if(!v || !v.length) return s.join('');
+    
+        s.push("_sh = _s.$statehash, _sl = _s.$storelist,",
+               "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n");
+        
         for(i = 0, l = v.length;i<l;i++){
             s[s.length]="_sl["+i+"].length=0;";
         }
@@ -435,51 +449,60 @@ jpf.draw.canvas = {
     },
     
     drawState:function(state,time) {
-        var a=[],t,i,j,s = [
-                "if((_t=",state,")&0x36EC0000){",
-                    "if((t=(n-",time,")*_sp[_t])>1){",
+        var a=[],t,i,j,v = this.style.$statelist;
+        if(!v || !v.length){
+             for(i = 2, j = arguments.length;i<j;i++)
+                a.push(arguments[i]);
+            return this.statefunc.apply(this.statethis,a);
+        }
+        var s=["if((_t=",state,")&0x36EC0000){",
+                    "if((t=(n-",time,")*(_sp[_t]||100000))>1){",
                         "_t=",state,"=_st[_t],",time,"=n,t=0;",
                     "}",
                 "}"];
         for(i = 2, j = arguments.length;i<j;i++){
-            a.push(v="_s"+(i-1));
-            s.push( v,"=",arguments[i],";");
+            a.push(t="_s"+(i-1));
+            s.push( t,"=",arguments[i],";");
         }
+
         t = a.join(',');
         s.push("if(_t=_sh[_t]){",
-                "_t.push(t,",t,");",
+                "_t.push(t,x,",t,");",
                     "if(_u=_t.base){",
-                        "if(_u.sort)_u.push(t,",t,");",
+                        "if(_u.sort)_u.push(t,x,",t,");",
                         "else _t=0;",
                     "}",
                 "}",
-                "if(!_t){",this.stateobj[this.statefunc].apply(this.stateobj,a),"}"
+                "if(!_t){",this.statefunc.apply(this.statethis,a),"}\n"
             );
         return s.join('');
     },
     
-    $endState :function(){
+    $endState : function(){
         this.statemode = 0;
         var style = this.style, s = [this.$endDraw()];
+
+        var v = style.$statelist, i, l, m, n = this.stateargs+2, a = [];
+        if(!v || !v.length)return s.join('');
         
-        var v = style.$statelist, i, l, n = this.stateargs+1, a = [];
-        for(i=1;i<n;i++){
+        for(i=2;i<n;i++){
             a.push("_sh[_sv+"+i+"]");
         }
         for(i = 0, l = v.length;i<l;i++){
+            style = v[i]; 
             s[s.length]=[
               "if((_st=(_sh=_sl["+i+"]).length)>0){",
                   "t = _sh[0];",
-                  this.beginShape( v[i] ),
+                  this.beginShape(style),
                   "for(_sv=0;_sv<_st;_sv+=",n,"){",
-                    v[i].trans?"t=_sh[_sv];":"",
-                    this.stateobj[this.statefunc].apply(this.stateobj,a),
+                    style.trans?"t=_sh[_sv];":"","x=_sh[_sv+1];",
+                    this.statefunc.apply(this.statethis,a),
                   "}",
                   this.$endDraw(),
               "}"].join('');
         }
         return s.join('');
-    }
+    } 
     
 }
 //#endif

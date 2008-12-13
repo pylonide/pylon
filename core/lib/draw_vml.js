@@ -85,7 +85,11 @@ jpf.draw.vml = {
     beginLayer : function(l){
         this.l = l,this.mx="",this.my="",this.last=null;
         return [ this.jssVars,
-                "var _t,_u,_l,_dx,_dy,_tn,_tc,_lc,_s,_p,_styles = this._styles;"
+                "var _s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
+                "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
+                "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
+                    "_t,_u,_l,_dx,_dy,_tn,_tc,_lc,_s,_p,",
+                   "_styles = this._styles;"
         ].join('');
     },
 
@@ -97,6 +101,7 @@ jpf.draw.vml = {
         var j = 0,i = 0, t, k, v, len = this.l._styles.length;
         for(;i<len;i++){
             var style = this.l._styles[i];
+
             if(style._prev===undefined){ // original style
                 var n = l._vmlgroup.childNodes[j++];
                 if(style.isshape){
@@ -137,7 +142,7 @@ jpf.draw.vml = {
                 style._prev = i;
                 break;
             }
-        }
+        }       
 
         if(style._prev === undefined) {
             s.push("_p=(_s=_styles[",style._id,"])._path=[];");
@@ -286,6 +291,7 @@ jpf.draw.vml = {
             if(this.last !== style._prev)
                 s.push("_p=(_s=_styles[",style._prev,"])._path;");
         }    */
+       
         return s.join('');
     },
        
@@ -294,33 +300,60 @@ jpf.draw.vml = {
         return ["_p.push('m',__round(",x,")",
                ",' ',__round(",y+"),'l');\n"].join('');
     },
+    
     lineTo : function(x, y){
         return ["_p.push(__round(",x,")",
                ",' ',__round("+y+"));\n"].join('');
     },
+    
     lineH : function(x,y,w){
         return ["_p.push('m',__round(",x,")",
                 ",' ',__round(",y,")",
                 ",'r',__round(",w,"),' 0');"].join('');
     },
+    
     lineV : function(x,y,h){
         return ["_p.push('m',__round(",x,")",
                 ",' ',__round(",y,")",
                 ",'r0 ',__round(",h,"));"].join('');
     },
+    
     dot : function(x,y){
         return ["_p.push('m',__round(",x,")",
                 ",' ',__round(",y,")",
                 ",'r0 0');"].join('');
     },
+    
     rect : function( x,y,w,h,inv ){
         return ["_u=",x,";if((_t=__round(",w,"))>0)_p.push('m',__round(_u),' ',__round(",y,")",
                 ",'r',_t,' 0r0 ',__round(",h,
                 inv?"),'r-'+_t,' 0x');":"),'r-'+_t,' 0xe');"].join('');
     },
+
+    ellipse : function( x,y,w,h,s,e,c){
+       if(!s){
+        return ["_p.push('at ',(_x1=__round(",x,"))-(_x2=__round(",w,")),' ',(_y1=__round(",y,"))-(_y2=__round(",h,")),' ',",
+                "_x1+_x2,' ',_y1+_y2,' 0 0 0 0');"].join('');
+       }else{ // generate heaps of crap
+        return ["if( (_t=",s,")+0.000001<(_u=",e,")){",
+                "_p.push('",c?"at":"wa"," ',(_x1=__round(",x,"))-(_x2=__round(",w,")),' ',(_y1=__round(",y,"))-(_y2=__round(",h,")),' ',",
+                "_x1+_x2,' ',_y1+_y2,' ',__round(_x1+__cos(_t)*_x2*4000),' ',__round(_y1+__sin(_t)*_y2*4000),' ',",
+                "__round(_x1+__cos(_u)*_x2*4000),' ',__round(_y1+__sin(_u)*_y2*4000),'x');}else{",
+                "_p.push('l',__round((",x,")+__cos(_t)*(",w,")),' ',__round((",y,")+__sin(_t)*(",h,")),'x');",
+                "}",
+                ].join('');
+       }
+       /*
+       
+       return ["_p.push('al ',_x1=__round(",x,"),' ',_y1=__round(",y,"),' ',",
+               "_x1+__round(",w,"),' ',_y1+__round(",h,"),' 90 1024');"].join('');*/
+    },
+
+    
     rectInv : function( x,y,w,h ){
         return this.rect(x,y,w,h,1);
     },
+    
     close : function (){
         return "_p.push('xe');";
     },
@@ -343,20 +376,21 @@ jpf.draw.vml = {
     
     //----------------------------------------------------------------------
 
-            
     // state based drawing
-    beginState : function( style, obj, func, nargs ){
-        var s = [
-            this.beginShape(style),
-            "_sh = _s.$statehash, _sl = _s.$storelist,",
-            "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n",
-        ];
+    beginState : function( style, sthis, func, nargs ){
+        var s = [this.beginShape(style.$shadow || style)];
+        
         this.statemode = 1;
-        this.stateobj = obj;
+        this.statethis = sthis;
         this.stateargs = nargs;
         this.statefunc = func;
-        // prep arrays for other styles
+    
         var v = style.$statelist, i, l;
+        if(!v || !v.length) return s.join('');
+    
+        s.push("_sh = _s.$statehash, _sl = _s.$storelist,",
+               "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n");
+        
         for(i = 0, l = v.length;i<l;i++){
             s[s.length]="_sl["+i+"].length=0;";
         }
@@ -364,48 +398,57 @@ jpf.draw.vml = {
     },
     
     drawState:function(state,time) {
-        var a=[],t,i,j,s = [
-                "if((_t=",state,")&0x36EC0000){",
-                    "if((t=(n-",time,")*_sp[_t])>1){",
+        var a=[],t,i,j,v = this.style.$statelist;
+        if(!v || !v.length){
+             for(i = 2, j = arguments.length;i<j;i++)
+                a.push(arguments[i]);
+            return this.statefunc.apply(this.statethis,a);
+        }
+        var s=["if((_t=",state,")&0x36EC0000){",
+                    "if((t=(n-",time,")*(_sp[_t]||100000))>1){",
                         "_t=",state,"=_st[_t],",time,"=n,t=0;",
                     "}",
                 "}"];
         for(i = 2, j = arguments.length;i<j;i++){
-            a.push(v="_s"+(i-1));
-            s.push( v,"=",arguments[i],";");
+            a.push(t="_s"+(i-1));
+            s.push( t,"=",arguments[i],";");
         }
+
         t = a.join(',');
         s.push("if(_t=_sh[_t]){",
-                "_t.push(t,",t,");",
+                "_t.push(t,x,",t,");",
                     "if(_u=_t.base){",
-                        "if(_u.sort)_u.push(t,",t,");",
+                        "if(_u.sort)_u.push(t,x,",t,");",
                         "else _t=0;",
                     "}",
                 "}",
-                "if(!_t){",this.stateobj[this.statefunc].apply(this.stateobj,a),"}"
+                "if(!_t){",this.statefunc.apply(this.statethis,a),"}\n"
             );
         return s.join('');
     },
     
-    $endState :function(){
+    $endState : function(){
         this.statemode = 0;
         var style = this.style, s = [this.$endDraw()];
+
+        var v = style.$statelist, i, l, m, n = this.stateargs+2, a = [];
+        if(!v || !v.length)return s.join('');
         
-        var v = style.$statelist, i, l, n = this.stateargs+1, a = [];
-        for(i=1;i<n;i++){
+        for(i=2;i<n;i++){
             a.push("_sh[_sv+"+i+"]");
         }
         for(i = 0, l = v.length;i<l;i++){
+            style = v[i]; 
             s[s.length]=[
               "if((_st=(_sh=_sl["+i+"]).length)>0){",
                   "t = _sh[0];",
-                  this.beginShape( v[i] ),
+                  this.beginShape(style),
                   "for(_sv=0;_sv<_st;_sv+=",n,"){",
-                    v[i].trans?"t=_sh[_sv];":"",
-                    this.stateobj[this.statefunc].apply(this.stateobj,a),
+                    style.trans?"t=_sh[_sv];":"","x=_sh[_sv+1];",
+                    this.statefunc.apply(this.statethis,a),
                   "}",
                   this.$endDraw(),
-              "}"].join('');
+              "}else _styles[",style._id,"]._path=[];\n"].join('');
         }
         return s.join('');
     } 

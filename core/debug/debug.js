@@ -26,9 +26,10 @@
  *
  * @param {mixed} obj the object to investigate
  */
-jpf.vardump = function(obj, depth, recur){
+jpf.vardump = function(obj, depth, recur,endless){
     if (!obj) return obj + "";
     if (!depth) depth = 0;
+    if (!endless)endless = {};
 
     var str = "{\n";
     switch (obj.dataType) {
@@ -45,12 +46,15 @@ jpf.vardump = function(obj, depth, recur){
                 str += "     ".repeat(depth+1) + i + " => "
                 + (!recur && depth > 0
                     ? typeof obj[i]
-                    : jpf.vardump(obj[i], depth + 1, recur)) + "\n";
+                    : jpf.vardump(obj[i], depth + 1, recur,endless)) + "\n";
             }
             str += "     ".repeat(depth) + "}";
             
             return str;
         default:
+            if(endless[obj])return "{recur}";
+            endless[obj]=1;
+
             if (typeof obj == "function")
                 return "function";
             if (obj.nodeType !== undefined && obj.style && depth != 0)
@@ -67,7 +71,7 @@ jpf.vardump = function(obj, depth, recur){
                     str += "     ".repeat(depth+1) + prop + " => "
                     + (!recur && depth > 0
                         ? typeof obj[prop]
-                        : jpf.vardump(obj[prop], depth + 1, recur)) + "\n";
+                        : jpf.vardump(obj[prop], depth + 1, recur,endless)) + "\n";
                 } catch(e) {
                     str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
                 }

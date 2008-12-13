@@ -48,13 +48,13 @@ jpf.draw = {
                 ",dy = ",mt?mt:0,
                 ",db = dy+dh, dr = dx+dw",
                 ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
-                ",t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
-                ",e=Math.E, p=Math.PI;\n"].join('');
+                ",v,t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
+                ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p;\n"].join('');
     },
     vars2D : function(ml,mt,mr,mb){
         return [
             this.vars(ml,mt,mr,mb),
-            "var x, y, i, j, k;\n"
+            "var x, y, i, j;\n"
         ].join('');
     },
     
@@ -238,7 +238,7 @@ jpf.draw = {
                         v.$base=n[0],v.$class=n[1];
                         if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
                         w[w.length] = (n[1].split(':'))[0];
-                    }else if(m && typeof(t=d[m[0]]) && m[0].indexOf('.')==-1){
+                    }else if(m && typeof(t=d[m[0]])=='object' && m[0].indexOf('.')==-1){
                         v.$base=m[0],v.$state=m[1];
                         if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
                         w[w.length] = m[1];                    
@@ -260,7 +260,7 @@ jpf.draw = {
                     }
                 }
                 // do all inheritance of classes and states
-                for(k in d)if( typeof(v=d[k])=='object' && (o=v.$base) ){
+                for(k in d)if( typeof(v=d[k])=='object' && v && (o=v.$base) ){
                     m = v.$state,n = v.$class;
                     if(!v.nobase){
                         while(m=_self.$stateInherit[m]){
@@ -280,24 +280,24 @@ jpf.draw = {
                 }
                 // hurrah now lets go and create the hashmaps CODECOMPLEXITY++
                 n = _self.stateBit, q = _self.$stateFallback;
-                for(k in d)if( typeof(v=d[k])=='object' && (v.isshape||v.isfont) ){
-                    w = v.$statehash = {}, y = v.$statelist = [],
-                    r = v.$storelist = [], h = v.$speedhash={};
-                    delete v.$merge;delete v.$merged;
-                    //jpf.alert_r(v);
-
+                for(k in d)if( typeof(v=d[k])=='object' && v && (v.isshape||v.isfont) ){
+                    
+                    var shadow = d[k+'.shadow'];
                     if(v.$isbase){
+                        w = v.$statehash = {}, y = v.$statelist = [],
+                        r = v.$storelist = [], h = v.$speedhash={};
+                        delete v.$merge;delete v.$merged;
+                        
                         m = v.$classmap || [], u = v.$base;
                         m.unshift(null); // add 'normal' state
                         for(i=m.length-1;i>=0;--i){
                             t=u+((t=m[i])?'.'+t:'');
                             for(p in n){
-                                //alert( (n[p]|i).toString(16) );
-
                                 o = p;
-                                while(!(x = d[ o!=0?t+':'+o:t ]))
+                                while(!(x = d[ g=(o!=0?t+':'+o:t) ]))
                                     if(!(o=q[o]))break;
-                                if(x){ // it has a special rendertarget
+                                    
+                                if(x && (x.$class!='shadow' || x.$state)){ // it has a special rendertarget
                                     while(x.$merged) x = x.$merged;
                                     if(!x.$isbase){
                                         if(!x.$inlist){
@@ -307,17 +307,27 @@ jpf.draw = {
                                             if(x.$class) y.unshift(x),r.unshift(g) ;
                                             else y[y.length]=x, r[r.length]=g;
                                         }
-                                        //alert(n[p]|i);
                                         if(!(o = w[z=(n[p]|i)] = x.$store).base &&
                                             x.overlay)o.base = (m[i]?d[t]:0) || {};
                                         if(z&0x36EC0000)o.trans=x.trans=1;
                                         h[z] = x.speed || 1;
-                                    }
+                                    }else if(shadow)w[n[p]|i] = {};
                                 }
                             }
                         }
+                        if(shadow){// if we have a shadow class so we need to shuffle some stuff around
+                            g = v.$store = [];
+                            // add our shadow to all the classes to be a baseclass
+                            for(x = 0, p = r.length; x<p; x++)
+                                r[x].base = ((m=y[x].$state)?((m=d[k+'.shadow:'+m])?m.$store:0):0)||{} 
+                            for(x in w)if(!w[x].sort)w[x] = g;
+
+                            r.unshift(g),y.unshift(v),g.base = {},w[0] = g;
+                            v.$shadow = shadow;
+                            shadow.$statelist = v.$statelist,shadow.$statehash = v.$statehash;
+                            shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
+                        }
                     }
-                    
                     styleinit(v);
                 }
             }
@@ -404,18 +414,42 @@ jpf.draw = {
         if(typeof(m)=='object' && m.sort) return m.join('');
         return m;
     },
+    
     getColor : function (a) {
         if(a.match(/\(/)) return a;
         if(a.match(/^#/)) return "'"+a+"'";
         var b = a.toLowerCase();
         return (this.colors[b])?"'"+this.colors[b]+"'":a;
     },
+    
+    getX : function( s, pre, val, post, def){    
+        var v; return (typeof(v=s[val+'-x'])=='undefined' && 
+               (typeof(v=s[val])!='object' || typeof(v=v[0])=='undefined'))?
+               (typeof(def)!='undefined'?def:''):(pre+v+post);
+    },
+    getY : function( s, pre, val, post, def, ovl){    
+        var v; return (typeof(v=s[val+'-y'])=='undefined' && 
+               (typeof(v=s[val])!='object' || typeof(v=v[1])=='undefined'))?
+               (typeof(def)!='undefined'?def:''):(pre+v+post);
+    },
+   checkX : function( s, val, ovl, no){    
+        var v; return (typeof(v=s[val+'-x'])=='undefined' && 
+               (typeof(v=s[val])!='object' || typeof(v=v[0])=='undefined'))?
+               (typeof(no)=='undefined'?'':no):ovl;
+    },
+   checkY : function( s, val, ovl, no){    
+        var v; return (typeof(v=s[val+'-y'])=='undefined' && 
+               (typeof(v=s[val])!='object' || typeof(v=v[1])=='undefined'))?
+               (typeof(no)=='undefined'?'':no):ovl;
+    },
+
     isDynamic : function( a ) {
         // check if we have a dynamic property.. how?
-        return a && typeof(a)=='string' && a.match(/[\(+*\/-]/)!=null;
+        return a && typeof(a)=='string' && 
+              !(a.indexOf('.')!=-1 && a.match(/^[\s:a-zA-Z0-9\/\\\._-]+$/)) && 
+               a.match(/[\(+*\/-]/)!=null;
     },
     
-   
     optimize : function( code ){
         var c2,c3,s=[],cnt={},n=0;
         // first we need to join all nested arrays to depth 2
@@ -445,7 +479,7 @@ jpf.draw = {
             return Math[b](c);
         });
         //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
-        code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
+        //code = code.replace(/\(0\)\+/g,""); 
         
         //TODO pull out 0 multiplication
         //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
@@ -471,11 +505,13 @@ jpf.draw = {
     },
     
     parseJSS : function(s,err){
+        if(!s)return{};
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
             ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
-                s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?[\n]/g,'').replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                s=s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?;/g,'');
+                s.replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
                     function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
                     /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
                     (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
@@ -590,7 +626,7 @@ jpf.draw = {
         log : function(a){return "__log("+a+")";},
         max : function(a){return "__max("+a+")";},
         min : function(a){return "__min("+a+")";},
-        pow : function(a){return "__pow("+a+")";},
+        pow : function(a,b){return "__pow("+a+","+b+")";},
         random : function(a){return "__random("+a+")";},
         round : function(a){return "__round("+a+")";},
         sqrt : function(a){return "__sqrt("+a+")";},
@@ -782,6 +818,12 @@ jpf.draw = {
         tcos : function(a){
             return "(0.5+0.5*__cos("+a+"))"; 
         },
+        usin : function(a){
+            return "(0.5-0.5*__sin("+a+"))"; 
+        },
+        ucos : function(a){
+            return "(0.5-0.5*__cos("+a+"))"; 
+        },        
         two : function(a){
             return "(0.5+0.5*("+a+"))"; 
         }
@@ -864,32 +906,190 @@ jpf.draw = {
     draw3D : function(x,y,z,w,h,d){
         return '';
     },
-       
-    draw2D : function(x,y,h,w){
+    
+    //----------------------------------------------------------------------
+    
+    drawPart : function(x,y,w,h,rs,rw,ds,dw){
+        var t = this.style;
+        var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
+        switch(t.shape){
+            default:
+            case 'pie':
+                if(gx(t,'','scale','','1')!='1'){
+                    rs=['_x5=(',gx(t,'(','offset',')+'),'(',rs,')','+',
+                        gx(t,'(','center',')','0.5'),'*(_x3=',rw,')',
+                        gx(t,'*(1-(_x4=','scale','))'),')*p2'].join('');
+                    rw='_x5+(_x3*_x4)*p2';
+                }else{
+                    rs = ['_x5=(',gx(t,'(','offset',')+'),'(',rs,')',')*p2'].join('');
+                    rw = '_x5+('+rw+')*p2';
+                }   
+                if(gy(t,'','scale','','1')!='1'){
+                    ds=[gy(t,'(','offset',')+'),gy(t,'(','center',')','0.5'),
+                       gy(t,'*(1-(_y4=','scale','))')].join('');
+                    dw='_y4';
+                }else{
+                    ds = [gy(t,'(','offset',')','0')].join('');
+                    dw = '1';
+                }
+                // lets draw an ellipse with rs and rw phases
+                // now we have an offset y and a size y how do we deal with that?
+                if(ds!='0'){
+                    return [
+                        this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+
+                                    ds+")*(_x7="+w+")+("+x+")"+gx(t,'+_x7*(','move',')'),
+                                    "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"+gy(t,'+_y7*(','move',')') ),
+                        this.ellipse( '_x6','_y6','_x7*(_x3='+dw+')','_y7*_x3','_x9','_y9',1),
+                        this.close()].join('');
+                }else{
+                    return [
+                        this.moveTo("_x6=("+x+")","_y6=("+y+")"),
+                        this.ellipse( '_x6','_y6',dw=='1'?'('+w+')':'('+w+')*(_x3='+dw+')',
+                                     dw=='1'?'('+h+')':'('+h+')*_x3',rs,rw,1),
+                        this.close()].join('');
+                }
+            
+            /*
+                if(gx(t,'','scale','','1')!='1'){
+                    rs=['_x5=(',gx(t,'(','offset',')+'),'(',rs,')','+',
+                        gx(t,'(','center',')','0.5'),'*(_x3=',rw,')',
+                        gx(t,'*(1-(_x4=','scale','))'),
+                        gx(t,'+_x3*(','move',')'),')*p2'].join('');
+                    rw='_x5+(_x3*_x4)*p2';
+                }else{
+                    rs = ['_x5=(',gx(t,'(','offset',')+'),'(',rs,')',
+                          gx(t,'+(_x3='+rw+')*(','move',')'),')*p2'].join('');
+                    rw = '_x5+('+cx(t,'move','_x3',rw)+')*p2';
+                }   
+                if(gy(t,'','scale','','1')!='1'){
+                    ds=[gy(t,'(','offset',')+'),gy(t,'(','center',')','0.5'),
+                       gy(t,'*(1-(_y4=','scale','))'),gy(t,'+(','move',')')].join('');
+                    dw='_y4';
+                }else{
+                    ds = [gy(t,'(','offset',')','0'),gy(t,'+(','move',')')].join('');
+                    dw = '1';
+                }
+                // lets draw an ellipse with rs and rw phases
+                // now we have an offset y and a size y how do we deal with that?
+                if(ds!='0'){
+                    return [
+                        this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+w+")+("+x+")",
+                                    "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"),
+                        this.ellipse( '_x6','_y6','_x7*(_x3='+dw+')','_y7*_x3','_x9','_y9',1),
+                        this.close()].join('');
+                }else{
+                    return [
+                        this.moveTo("_x6=("+x+")","_y6=("+y+")"),
+                        this.ellipse( '_x6','_y6',dw=='1'?'('+w+')':'('+w+')*(_x3='+dw+')',
+                                     dw=='1'?'('+h+')':'('+h+')*_x3',rs,rw,1),
+                        this.close()].join('');
+                }*/
+        }
+    },
+    
+    //----------------------------------------------------------------------
+    
+    draw2D : function(x,y,w,h){
+        // css stylable drawing
+        var t = this.style;
+        var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
+        function rect(){
+            if(gx(t,'','scale','','1')!='1'){
+                x=[gx(t,'(','offset',')+'),'(',x,')','+',gx(t,'(','center',')','0.5'),'*(_x3=',w,')',
+                   gx(t,'*(1-(_x4=','scale','))'),gx(t,'+_x3*(','move',')')].join('');
+                w='_x3*_x4';
+            }else{
+                x = [gx(t,'(','offset',')+'),'(',x,')',gx(t,'+(_x3='+w+')*(','move',')')].join('');
+                w = cx(t,'move','_x3',w);
+            }   
+            if(gy(t,'','scale','','1')!='1'){
+                y=[gy(t,'(','offset',')+'),'(',y,')','+',gy(t,'(','center',')','0.5'),'*(_y3=',h,')',
+                   gy(t,'*(1-(_y4=','scale','))'),gy(t,'+_y3*(','move',')')].join('');
+                h='_y3*_y4';
+            }else{
+                y = [gy(t,'(','offset',')+'),'(',y,')',gy(t,'+(_y3='+h+')*(','move',')')].join('');
+                h = cy(t,'move','_y3',h);
+            }   
+        }
+        switch(t.shape){
+            case 'rect':
+            default:
+                if(!t.rotate){
+                    rect();
+                    return this.rect(x,y,w,h);
+                }else{
+                    return  [
+                     '_x9=(_x8=(_x6=',gx(t,'(','center',')','0.5'),'*(_x3=',w,'))*(',gx(t,
+                          '(1-(_x4=','scale','))','0'),'-1))+_x3',cx(t,'scale','*_x4'),';',
+                     '_y9=(_y8=(_y6=',gy(t,'(','center',')','0.5'),'*(_y3=',h,'))*(',gy(t,
+                          '(1-(_y4=','scale','))','0'),'-1))+_y3',cy(t,'scale','*_y4'),';',
+                     this.moveTo('(_cr=__cos(_t='+t.rotate+'))*_x8-(_sr=__sin(_t))*_y8+(_x5='+
+                                 gx(t,'(','offset',')+')+x+'+_x6)','_sr*_x8+_cr*_y8+(_y5='+
+                                 gy(t,'(','offset',')+')+y+'+_y6)'),
+                     this.lineTo('_cr*_x9-_sr*_y8+_x5','_sr*_x9+_cr*_y8+_y5'),
+                     this.lineTo('_cr*_x9-_sr*_y9+_x5','_sr*_x9+_cr*_y9+_y5'),
+                     this.lineTo('_cr*_x8-_sr*_y9+_x5','_sr*_x8+_cr*_y9+_y5'),
+                     this.close()
+                    ].join('');
+            }
+            case 'circle':{
+                rect();
+                return t.pie?[
+                    this.moveTo('_x6='+x+'+'+'(_x5=0.5*('+w+'))','_y6='+y+'+'+'(_y5=0.5*('+h+'))'),
+                    this.ellipse('_x6','_y6','_x5','_y5',gx(t,'','range','' ),gy(t,'','range','' ) ),
+                    this.close()].join(''):[
+                    this.ellipse(x+'+'+'(_x5=0.5*('+w+'))',y+'+'+'(_y5=0.5*('+h+'))',
+                                 '_x5','_y5',gx(t,'','range','' ),gy(t,'','range','' ) ),
+                    this.close()].join('');
+            }break;
+             case 'polygon':{
+                if(t.frames){
+                    
+                }else{
+                    return [
+                        "_x3=((_x2=",gy(t,"","range","","2*p"),
+                        ")-(_x1=",gx(t,'','range','','0'),"))/(",t.steps||10,");v=_x1;",
+                        this.moveTo("(_x4="+x+")+__sin(_x1)*(_x5="+w+")",
+                                    "(_y4="+y+")+__cos(_x1)*(_y5="+h+")"),
+                        "for(v=_x1+_x3;v<_x2;v+=_x3){",
+                            this.lineTo("_x4+__sin(_x1)*_x5",
+                                        "_y4+__cos(_x1)*_y5"),
+                        "}",
+                        this.close()
+                    ].join('');
+                }
+            }break;
+            case 'math':{
+                if(t.frames){
+                    // expand shape
+                }else{
+                    rect();
+                    return [
+                        "_x7=((_x6=",gy(t,"","range","","2*p"),
+                        ")-(_x5=",gx(t,'','range','','0'),"))/(",t.steps||10,");v=_x5;",
+                        this.moveTo("(_x8="+x+")+"+gx(t,"(","path",")","0")+"*(_x9="+w+")",
+                                    "(_y8="+y+")+"+gy(t,"(","path",")","0")+"*(_y9="+h+")"),
+                        "for(v=_x5+_x7;v<_x6;v+=_x7){",
+                            this.lineTo("_x8"+gx(t,"+(","path",")*_x9"),
+                                        "_y8"+gy(t,"+(","path",")*_y9")),
+                        "}",
+                        this.close()
+                    ].join('');
+                }
+            }break;
+        }
         return '';
-    },
-    
-    beginState2D : function(style){
-        return this.beginState(style,this,'draw2D',4);
-    },
-    
-    beginState3D : function(style){
-        return this.beginState(style,this,'draw3D',4);
-    },
-
-    beginStateRect : function(style){
-        return this.beginState(style,this,'rect',4);
     },
     
     $endDraw : function() {
         if(this.statemode){
             return this.$endState();
         }
-        var s = this.style;
-        if(s){
-            if(s.isshape)
+        var t = this.style;
+        if(t){
+            if(t.isshape)
                 return this.$endShape();
-            if(s.isfont)
+            if(t.isfont)
                 return this.$endFont();
         }
         return '';
