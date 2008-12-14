@@ -500,7 +500,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 else {
                     throw new Error(jpf.formatErrorString(0, this, 
                         "Parsing children of menu component",
-                        "Unknown component found as child of tab", node));
+                        "Unknown component found as child of menu", node));
                 }
                 //#endif
             }

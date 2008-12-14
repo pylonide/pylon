@@ -103,21 +103,22 @@ jpf.cgi = function(){
                 for (var j = 0; j < o.length; j++)
                     recur(o[j], stack + "%5B" + j + "%5D");//" + j + "
             }
-            else
-                if (typeof o == "object") {
-                    for (prop in o) {
-                        //#ifdef __SUPPORT_SAFARI2
-                        if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
-                            continue;
-                        //#endif
+            else if (typeof o == "object") {
+                for (prop in o) {
+                    //#ifdef __SUPPORT_SAFARI2
+                    if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                        continue;
+                    //#endif
 
-                        if (typeof o[prop] == "function")
-                            continue;
-                        recur(o[prop], stack + "%5B" + encodeURIComponent(prop) + "%5D");
-                    }
+                    if (typeof o[prop] == "function")
+                        continue;
+                    recur(o[prop], stack + "%5B" + encodeURIComponent(prop) + "%5D");
                 }
-                else
+            }
+            else {
+                if (typeof o != "undefined" && o !== null) 
                     vars.push(stack + (restful ? "/" : "=") + encodeURIComponent(o));
+            }
         };
 
         if (this.multicall) {

@@ -824,14 +824,15 @@ jpf.MultiSelect = function(){
      * @event indicate Fires when an item becomes the indicator.
      */
     this.setIndicator = function(xmlNode){
-        /* **** Type Detection *****/
-        // #ifdef __DEBUG
-        if (!xmlNode)
-            throw new Error(jpf.formatErrorString(1075, this, 
-                "Setting indicator", 
-                "Missing xmlNode reference"));
-        // #endif
+        if (!xmlNode) {
+            if (this.$indicator)
+                this.$deindicate(this.$indicator);
+            this.indicator  = 
+            this.$indicator = null;
+            return;
+        }
         
+        /* **** Type Detection *****/
         if (typeof xmlNode != "object")
             xmlNode = jpf.xmldb.getNodeById(xmlNode);
         if (!xmlNode.style)
@@ -1096,7 +1097,7 @@ jpf.MultiSelect = function(){
     this.reselectable = false;
     
     this.$booleanProperties["selectable"]    = true;
-    this.$booleanProperties["ctrlselect"]    = true;
+    //this.$booleanProperties["ctrlselect"]    = true;
     this.$booleanProperties["multiselect"]   = true;
     this.$booleanProperties["autoselect"]    = true;
     this.$booleanProperties["delayedselect"] = true;
@@ -1149,6 +1150,11 @@ jpf.MultiSelect = function(){
             this.oInt.onmousedown = null;
         }
     };
+    
+    this.$propHandlers["ctrlselect"] = function(value){
+        if (value != "enter")
+            this.ctrlselect = jpf.isTrue(value);
+    }
 
     function fAutoselect(){this.selectAll();}
     this.$propHandlers["autoselect"] = function(value){

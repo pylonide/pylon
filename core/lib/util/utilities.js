@@ -70,13 +70,13 @@ jpf.highlightXml = function(str){
 jpf.highlightCode = function(strCode){
 	return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
 	   .replace(/>/g, "_@B@_")
-	   .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
-	   .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
-	   .replace(/(_@A@_[\s\S]*?_@B@_)|(\/\/.*)$|("[^"]*")|('[^']*')|\.(\w+)(\s*\()|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/gm, 
-	        function(m, tag, co, str1, str2, f, fws, nw, kw, nw2) {
+	   .replace(/((?:\s|^)[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
+	   .replace(/((?:\s|^)[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
+	   .replace(/(_@A@_[\s\S]*?_@B@_|<[\s\S]*?>)|(\/\/.*)$|("(?:[^"]+|\\.)*")|('(?:[^']+|\\.)*')|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm, 
+	        function(m, tag, co, str1, str2, nw, kw, nw2, fW, f, fws) {
 	            if (tag) return tag;
 	            else if (f)
-	                return '.<span style="color:#ff8000">' + f + '</span>' + fws;
+	                return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
 	            else if (co)
 	                return '<span style="color:green">' + co + '</span>';
 	            else if (str1 || str2)

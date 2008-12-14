@@ -1093,6 +1093,7 @@ var jpf = {
                   + ".*" + htmlNode.tagName))[0] + ">")
                     .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
                     .replace(/ disabled /g, " disabled='true' ")
+                    .replace(/\]\]\&gt;/g, "]]>")
                     .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
                         if (tags[tag]) {
                             return "<" + tag + (c||"") + "/>";
@@ -1906,12 +1907,16 @@ var jpf = {
                     }
                     else {
                         firstNode = jpf.getNode(loop, [0]);
-                        if (firstNode) {
-                            lastBefore = pNode.insertBefore(firstNode,
-                                typeof info[1] == "number" ? lastBefore : info[1]);
+                        while(firstNode){
+                            if (firstNode) {
+                                lastBefore = pNode.insertBefore(firstNode,
+                                    typeof info[1] == "number" ? lastBefore : info[1]);
+                            }
+                            else {
+                                lastBefore = typeof info[1] == "number" ? lastBefore : info[1];
+                            }
+                            firstNode = jpf.getNode(loop, [0]);
                         }
-                        else
-                            lastBefore = typeof info[1] == "number" ? lastBefore : info[1];
                     }
 
                     loop.parentNode.removeChild(loop);

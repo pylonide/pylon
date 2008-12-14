@@ -713,6 +713,9 @@ jpf.BaseTab = function(){
                     if (callback)
                         callback.call(page, node);
                 }
+                else if(tagName == "comment"){
+                    //ignore
+                }
                 else if (callback) {
                     callback(tagName, node);
                 }

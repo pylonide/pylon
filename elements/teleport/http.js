@@ -43,7 +43,7 @@
  *      alert(data);
  *  });
  * </code>
- * Example
+ * Example:
  * Async http request with retry.
  * <code>
  *  var http = new jpf.http();

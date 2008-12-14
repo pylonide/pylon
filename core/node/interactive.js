@@ -214,6 +214,8 @@ jpf.Interactive = function(){
                 oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
+            
+            _self.dispatchEvent("drag");
         };
         
         if (jpf.isIE)
@@ -285,6 +287,11 @@ jpf.Interactive = function(){
         rY = y;
 
         if (!resizeType)
+            return;
+
+        if (_self.dispatchEvent("resizestart", {
+            type : resizeType
+          }) === false)
             return;
 
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
@@ -383,6 +390,8 @@ jpf.Interactive = function(){
                 oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
+            
+            _self.dispatchEvent("resize");
         };
         
         if (jpf.isIE)

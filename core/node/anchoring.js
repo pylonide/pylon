@@ -54,6 +54,7 @@ var __ANCHORING__ = 1 << 13;
  */
 jpf.Anchoring = function(){
     this.$regbase = this.$regbase | __ANCHORING__;
+    this.$anchors = [];
     
     var VERTICAL   = 1;
     var HORIZONTAL = 2;
@@ -74,12 +75,13 @@ jpf.Anchoring = function(){
         if (l.queue)
             l.queue(this.pHtmlNode);
 
-        this.$propHandlers["left"]   = 
-        this.$propHandlers["width"]  = 
-        this.$propHandlers["right"]  = 
-        this.$propHandlers["top"]    = 
-        this.$propHandlers["height"] = 
-        this.$propHandlers["bottom"] = null;
+        this.$propHandlers["anchors"] = 
+        this.$propHandlers["left"]    = 
+        this.$propHandlers["width"]   = 
+        this.$propHandlers["right"]   = 
+        this.$propHandlers["top"]     = 
+        this.$propHandlers["height"]  = 
+        this.$propHandlers["bottom"]  = null;
         
         this.$domHandlers["remove"].remove(remove);
         this.$domHandlers["reparent"].remove(reparent);
@@ -127,6 +129,14 @@ jpf.Anchoring = function(){
         
         this.$supportedProperties.push("right", "bottom", "width", 
             "left", "top", "height");
+        
+        this.$propHandlers["anchors"]  = function(value){
+            this.$anchors = value.splitSafe("(?:, *| )");
+            
+            if (!updateQueue && jpf.loaded)
+                l.queue(this.pHtmlNode, this);
+            updateQueue = updateQueue | HORIZONTAL | VERTICAL;
+        };
         
         this.$propHandlers["left"]  = 
         this.$propHandlers["width"] = 
@@ -254,7 +264,7 @@ jpf.Anchoring = function(){
             return;
         }
 
-        if (this.left || this.top || this.right || this.bottom)
+        if (this.left || this.top || this.right || this.bottom || this.$anchors.length)
             this.oExt.style.position = "absolute";
         
         var rules;
@@ -262,8 +272,8 @@ jpf.Anchoring = function(){
         if (updateQueue & HORIZONTAL) {
             rules = [];
 
-            var left  = this.left;
-            var right = this.right;
+            var left  = this.left || this.$anchors[3];
+            var right = this.right || this.$anchors[1];
             var width = this.width;
             
             if (right && typeof right == "string")
@@ -308,8 +318,8 @@ jpf.Anchoring = function(){
         if (updateQueue & VERTICAL) {
             rules = [];
             
-            var top    = this.top;
-            var bottom = this.bottom;
+            var top    = this.top || this.$anchors[0];
+            var bottom = this.bottom || this.$anchors[2];
             var height = this.height;
             
             if (bottom && typeof bottom == "string")

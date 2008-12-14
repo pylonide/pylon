@@ -535,6 +535,11 @@ jpf.Event = function(name, data){
 	    this.cancelBubble = true;
 	}
 	
+	//@todo should be implemented;
+	this.isCharacter = function(){
+	    return this.keyCode < 33  && event.keyCode != 13 || event.keyCode > 42;
+	}
+	
     jpf.extend(this, data);
     //this.returnValue = undefined;
 };

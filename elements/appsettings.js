@@ -30,6 +30,7 @@
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
  * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
  * @attribute {Boolean} allow-select            whether any text in the application can be selected.
+ * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element
  * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
  * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
@@ -37,8 +38,9 @@
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
  * @attribute {Boolean} undo-keys               whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
- * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
+ * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
+ * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. 
+ * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. 
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
@@ -63,6 +65,7 @@ jpf.appsettings = {
     //Defaults
     disableRightClick  : false,
     allowSelect        : false,
+    allowBlur          : false,
     autoDisableActions : false,
     autoDisable        : true,
     disableF5          : true,
@@ -96,6 +99,7 @@ jpf.appsettings = {
             this.disableBackspace   = false;
             this.useUndoKeys        = false;
             this.disableTabbing     = true;
+            this.allowBlur          = true;
         }
         //#endif
     },
@@ -159,6 +163,7 @@ jpf.appsettings = {
 
         this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
         this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
+        this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));
 
         this.autoDisableActions = jpf.isTrue(x.getAttribute("auto-disable-actions"));
         this.autoDisable        = !jpf.isFalse(x.getAttribute("auto-disable"));

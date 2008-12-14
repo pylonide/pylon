@@ -549,15 +549,19 @@ jpf.DataBinding = function(){
                     : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
         }
         else {
-            if (!this.createModel) return false;
+            if (!this.createModel) 
+                return false;
+
             atAction = "setValueByXpath";
             xpath    = selInfo[0];
 
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
                 var model   = this.getModel();
-                if (!model || !model.data)
+                if (!model)
                     return false;
+                if (!model.data)
+                    model.load("<data />");
 
                 xpath   = (model.getXpathByJmlNode(this) || ".")
                     + (xpath && xpath != "." ? "/" + xpath : "");
@@ -1210,7 +1214,8 @@ jpf.DataBinding = function(){
         jpf.console.info("Loading XML data in "
             + this.tagName + "[" + (this.name || '') + "]");
         //#endif
-
+        
+        var disabled = this.disabled;
         this.disabled = false;
 
         // Remove listen root if available (support for listening to non-available data)
@@ -1275,8 +1280,12 @@ jpf.DataBinding = function(){
         // Check if subtree should be loaded
         this.$loadSubData(xmlRootNode);
 
-        this.disabled = true; //force enabling
-        this.enable();
+        if (!this.createModel) {
+            this.disabled = true;
+            this.enable();
+        }
+        else
+            this.disabled = disabled;
 
         // Check Connections
         if (!this.hasFeature(__MULTISELECT__))
@@ -2657,7 +2666,7 @@ jpf.MultiselectBinding = function(){
         }
 
         if (this.focussable)
-            jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
+            jpf.window.focussed == this ? this.$focus() : this.$blur();
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)

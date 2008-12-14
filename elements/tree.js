@@ -961,6 +961,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (this.$tempsel)
                     this.selectTemp();
             
+                if (this.ctrlselect == "enter")
+                    this.select(this.indicator, true);
+            
                 this.choose(selHtml);
                 break;
             case 32:
@@ -1019,7 +1022,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     do {
                         var container = this.$getLayoutNode("item", "container",
                             this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
-                        if (jpf.getStyle(container, "display") == "block" 
+                        if (container && jpf.getStyle(container, "display") == "block" 
                           && nodes.length) {
                                 sNode = nodes[nodes.length-1];
                         }
@@ -1028,8 +1031,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                     while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
                 }
-                else if (this.getTraverseParent(node) == this.xmlRoot) 
+                else if (this.getTraverseParent(node) == this.xmlRoot) {
+                    this.dispatchEvent("selecttop");
                     return;
+                }
                 else
                     sNode = this.getTraverseParent(node);
 
@@ -1055,7 +1060,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (sNode) {
                     var container = this.$getLayoutNode("item", "container",
                         this.getNodeFromCache(jpf.xmldb.getID(node, this)));
-                    if (jpf.getStyle(container, "display") != "block")
+                    if (container && jpf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
                 

@@ -919,7 +919,7 @@ jpf.XmlDatabase = function(){
             
             //Check if component is just waiting for data to become available
             if (jmlNode.$listenRoot) {
-                var model = o.getModel();
+                var model = jmlNode.getModel();
                 
                 //#ifdef __DEBUG
                 if (!model) 
@@ -1187,18 +1187,22 @@ jpf.XmlDatabase = function(){
     
     /**
      * @private
+     * @todo xml doc leakage
      */
     this.getXmlDocId = function(xmlNode, model){
-        var docId = (xmlNode.ownerDocument.documentElement || xmlNode)
-            .getAttribute(this.xmlDocTag) || xmlDocLut.indexOf(xmlNode.ownerDocument);
+        var docEl = xmlNode.ownerDocument.documentElement;
+        if (!this.isChildOf(docEl, xmlNode))
+            docEl = xmlNode;
+        
+        var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag) 
+            || xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
         
         if (docId && docId > -1)
             return docId;
         
-        docId = xmlDocLut.push(xmlNode.ownerDocument.documentElement
-            || xmlNode.ownerDocument || xmlNode) - 1;
-        if (xmlNode.ownerDocument.documentElement) 
-            xmlNode.ownerDocument.documentElement.setAttribute(this.xmlDocTag, docId);
+        docId = xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
+        if (docEl) 
+            docEl.setAttribute(this.xmlDocTag, docId);
         
         if (model)
             jpf.nameserver.register("model", docId, model);

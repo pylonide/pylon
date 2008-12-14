@@ -176,8 +176,8 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
                 + "|" + this.uniqueId);
 
-            this.loadHTML(this.applyRuleSetOnNode("value", xmlNode) || "",
-                true, cacheObj);
+            this.$propHandlers["value"].call(this, 
+                this.applyRuleSetOnNode("value", xmlNode) || "");
         }
         else {
             this.$propHandlers["value"].call(this, 
@@ -197,10 +197,10 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (cacheObj)
                     cacheObj.contents = value;
             }
-            this.loadHTML(value);
+            this.$propHandlers["value"].call(this, value);
         }
         else
-            this.loadHTML("");
+            this.$propHandlers["value"].call(this, "");
     };
     // #endif
     
@@ -259,7 +259,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
-        if (jpf.hasCssUpdateScrollbarBug)
+        if (jpf.hasCssUpdateScrollbarBug && !jpf.getStyle(this.oInt, "padding"))
             this.$fixScrollBug();
         
         this.oScroll = this.oFocus ? this.oFocus.parentNode : this.oInt;

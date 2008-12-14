@@ -394,6 +394,16 @@ jpf.JmlElement = function(){
             } else
             //#endif
             {
+                //#ifdef __WITH_PROPERTY_BINDING
+                if (name == "disabled") {
+                    jpf.JmlParser.stateStack.push({
+                        node  : this,
+                        name  : name,
+                        value : value
+                    });
+                }
+                //#endif
+                
                 if (a.nodeName.indexOf("on") === 0) {
                     this.addEventListener(name, new Function('event', value));
                     continue;
@@ -832,7 +842,7 @@ jpf.JmlElement.propHandlers = {
             }
             loopChildren(this.childNodes);
 
-            this.disabled = undefined;
+            //this.disabled = undefined;
             return;
         }
 

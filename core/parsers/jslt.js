@@ -209,8 +209,9 @@ jpf.JsltImplementation = function(){
     }
     
     function jpar(f, str){
-        var n = parseXML(str).documentElement;
-        f(n);
+        f ((typeof str != "string")
+           ? str
+           : parseXML(str).documentElement);
     }
     
     function jfor(n, f, p, sp, ep){

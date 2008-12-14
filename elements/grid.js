@@ -86,9 +86,10 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$focussable = false;
-    
     /**** Properties and Attributes ****/
+    
+    this.canHaveChildren = true;
+    this.$focussable     = false;
     
     this.columns    = "100,*";
     this.padding    = 2;
@@ -297,7 +298,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         if (fillCol !== null) {
             rule.push("var colw" + fillCol + " = " + pWidth 
-                    + " - total - " + total + " - " + (margin[1] + margin[3]));
+                    + " - total - " + total);
             cols[fillCol] = "colw" + fillCol;
         }
         
@@ -332,7 +333,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         if (fillRow !== null) {
             rule.push("var rowh" + fillRow + " = " + pHeight 
-                    + " - total - " + total + " - " + (margin[0] + margin[2]));
+                    + " - total - " + total);
             rowheight[fillRow] = "rowh" + fillRow;
         }
         
@@ -448,6 +449,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.oExt.style.height = "80%"
         this.oExt.style.width  = "100%"
         this.oExt.style.top    = 0;
+        this.oExt.style.position = "relative";
         
         if (this.$jml.getAttribute("class")) 
             this.oExt.className = this.$jml.getAttribute("class");

@@ -55,7 +55,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**** Properties and Attributes ****/
 
-    this.realtime          = false;
+    //this.realtime          = false;
     this.isContentEditable = true;
     this.multiline         = this.tagName == "textarea" ? true : false;
 
@@ -74,7 +74,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oInt.innerHTML = value;
         }
         else
-            if (this.oInt.value != value) {
+            if (this.oInt.value.replace(/\r/g, "") != value) {
                 this.oInt.value = value;
             }
     };
@@ -184,8 +184,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
      * the user presses enter.
      */
     this.$propHandlers["realtime"] = function(value){
-        this.realtime = value
-            || jpf.xmldb.getInheritedAttribute(x, "value") || false;
+        this.realtime = typeof value == "boolean"
+            ? value
+            : jpf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
     };
 
     /**
@@ -277,10 +278,16 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$clear = function(){
         this.value = "";
 
+        var value = "";
+        if (this.initialMsg && jpf.window.focussed != this) {
+            value = this.initialMsg;
+            jpf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
+        }
+
         if (this.oInt.tagName.toLowerCase().match(/input|textarea/i))
-            this.oInt.value = "";
+            this.oInt.value = value;
         else {
-            this.oInt.innerHTML = "";
+            this.oInt.innerHTML = value;
             //try{this.oInt.focus();}catch(e){}
 
             if (!jpf.hasMsRangeObject) return;
@@ -448,10 +455,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!_self.realtime)
                 if (e.keyCode == 13)
                     _self.change(_self.getValue());
-            else
-                if (jpf.isSafari && _self.xmlRoot) //safari issue (only old??)
-                    setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
-                        o.change(o.getValue())");
+            else if (jpf.isSafari && _self.xmlRoot) //safari issue (only old??)
+                setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
+                    o.change(o.getValue())");
 
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.ctrlKey)
                 return false;

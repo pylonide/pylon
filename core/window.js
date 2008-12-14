@@ -485,20 +485,21 @@ jpf.WindowImplementation = function(){
     this.$blur = function(jmlNode){
         if (this.focussed != jmlNode)
             return false;
+        
+        //#ifdef __DEBUG
+        jpf.console.info(this.focussed.tagName + " ["
+            + (this.focussed.name || "") + "] was blurred.");
+        //#endif
 
+        jpf.window.focussed.$focusParent.$lastFocussed = null;
         this.focussed = null;
 
         jpf.dispatchEvent("movefocus", {
             fromElement : jmlNode
         });
 
-        //#ifdef __DEBUG
-        jpf.console.info(this.focussed.tagName + " ["
-            + (this.focussed.name || "") + "] was blurred.");
-        //#endif
-
         //#ifdef __WITH_XFORMS
-        o.dispatchEvent("DOMFocusOut");
+        jmlNode.dispatchEvent("DOMFocusOut");
         //#endif
     };
 
@@ -1016,7 +1017,13 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left
-        if ((p = jpf.window.focussed && jpf.window.focussed.$focusParent || lastFocusParent)
+        if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false) 
+          && jpf.appsettings.allowBlur) {
+            lastFocusParent = null;
+            if (jpf.window.focussed)
+                jpf.window.focussed.blur();
+        }
+        else if ((p = jpf.window.focussed && jpf.window.focussed.$focusParent || lastFocusParent)
             && p.visible && p.modal && jmlNode.$focusParent != p) {
                 jpf.window.$focusLast(p, {mouse: true});
         }
