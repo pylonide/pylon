@@ -804,8 +804,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
             var diff = jpf.getDiff(img);
 
-            if (!img.height)
-                img.setAttribute("height", this.thumbheight - 15);
+            img.setAttribute("height", this.thumbheight - 15);
+
             var temp_margin = 
                 Math.floor((this.thumbheight - img.height - diff[1]) / 2);
 
