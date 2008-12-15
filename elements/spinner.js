@@ -223,7 +223,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonPlus.onmousedown = function(e) {
             e = e || window.event;
 
-            var value = (parseInt(_self.oInput.value) || 0) + 1;
+            //var value = (parseInt(_self.oInput.value) || 0) + 1;
+            var value = parseInt(_self.oInput.value) || 0;
 
             jpf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
 
@@ -242,8 +243,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmousedown = function(e) {
             e = e || window.event;
 
-            var value = (parseInt(_self.oInput.value) || 0) - 1;
-
+            //var value = (parseInt(_self.oInput.value) || 0) - 1;
+            var value = parseInt(_self.oInput.value) || 0;
+            
             jpf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
 
             clearInterval(timer);
@@ -304,7 +306,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.setStyleClass(_self.oInput, "focus");
         };
 
-        this.oButtonPlus.onmouseup  = function(e) {
+        this.oButtonPlus.onmouseup = function(e) {
             e = e || event;
             e.cancelBubble = true;
 
@@ -313,11 +315,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             window.clearInterval(timer);
             z = 0;
 
-            var value = parseInt(_self.oInput.value);
+            var value = parseInt(_self.oInput.value) + 1;
 
             if (value != _self.value) {
                 _self.value = value;
                 _self.change(value);
+                _self.oInput.value = value;
             }
         };
 
@@ -330,11 +333,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             window.clearInterval(timer);
             z = 0;
 
-            var value = parseInt(_self.oInput.value);
+            var value = parseInt(_self.oInput.value) - 1;
 
             if (value != _self.value) {
                 _self.value = value;
                 _self.change(value);
+                _self.oInput.value = value;
             }
         };
 
