@@ -346,7 +346,7 @@ jpf.JmlElement = function(){
             }
             #endif*/
 
-            if (this.visible === undefined)
+            if (this.visible === undefined && !x.getAttribute("visible"))
                 this.visible = true;
 
             this.$drawn = true;

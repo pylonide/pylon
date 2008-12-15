@@ -1510,7 +1510,8 @@ jpf.DataBinding = function(){
             this.$propHandlers["create-model"].call(this);
 
         if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage
-          && !loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__))
+          && (!loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__)
+          || !this.hasFeature(__MULTISELECT__)))
             this.$setClearMessage(this.emptyMsg, "empty");
     });
 

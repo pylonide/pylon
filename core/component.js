@@ -124,10 +124,6 @@ jpf.component = function(nodeFunc, oBase) {
                     this.$focussable = jpf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
                 
                 this.$booleanProperties = {
-                    //#ifdef __WITH_INTERACTIVE
-                    "draggable"        : true,
-                    "resizable"        : true,
-                    //#endif
                     //#ifdef __WITH_KEYBOARD
                     "disable-keyboard" : true,
                     //#endif

@@ -1253,7 +1253,7 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __WITH_FOCUS
         //Focus handling
-        else if (!jpf.appsettings.disableTabbing && e.keyCode == 9) {
+        else if ((!jpf.appsettings.disableTabbing || jpf.window.focussed) && e.keyCode == 9) {
             //Window focus handling
             if (e.ctrlKey) {
                 if (jpf.window.focussed) {
@@ -1276,7 +1276,8 @@ jpf.WindowImplementation = function(){
 
         //Disable backspace behaviour triggering the backbutton behaviour
         if (jpf.appsettings.disableBackspace
-          && (e.keyCode == 8 || e.altKey && (e.keyCode == 37 || e.keyCode == 39))) {
+          && (e.keyCode == 8 || e.altKey && (e.keyCode == 37 || e.keyCode == 39))
+          && !ta[(e.srcElement || e.target).tagName]) {
             if (jpf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;

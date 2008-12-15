@@ -229,21 +229,13 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$setClearMessage = function(msg){
-        /*var oEmpty = xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
-        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
-        if(empty) empty.nodeValue = msg;
-        if(oEmpty) oEmpty.setAttribute("id", "empty" + this.uniqueId);*/
-        
-        //hack!
-        this.oInt.innerHTML = "";
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+        this.oInt.innerHTML = msg;
     };
     
     this.$removeClearMessage = function(){
-        var oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty)
-            oEmpty.parentNode.removeChild(oEmpty);
-        else
-            this.oInt.innerHTML = ""; //clear if no empty message is supported
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
     
     this.$clear = function(){
@@ -335,6 +327,9 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$loadJml = function(x){
         this.caching = false;// hack
+        
+        if (this.emptyMsg)
+            this.$setClearMessage(this.emptyMsg);
         
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());

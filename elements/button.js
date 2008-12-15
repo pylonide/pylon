@@ -475,6 +475,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                 .className = "extradiv"
         }
         
+        if (this.tagName == "submit")
+            this.action = "submit";
+        else if (this.tagName == "reset")
+            this.action = "reset";
+            
         this.$setupEvents();
     };
     
@@ -716,6 +721,66 @@ jpf.button.actions = {
     
     "logout" : function(){
         jpf.auth.logout();
+    },
+    //#endif
+    
+    //#ifdef __WITH_MODEL
+    "submit" : function(doReset){
+        var parent = this.target && self[this.target]
+            ? self[this.target]
+            : this.parentNode;
+
+        if (!parent.$validgroup) {
+            parent.$validgroup = parent.validgroup
+                ? self[parent.validgroup]
+                : new jpf.ValidationGroup();
+        }
+        
+        var vg = parent.$validgroup;
+        if (!vg.childNodes.length)
+            vg.childNodes = parent.childNodes.slice();
+
+        var model;
+        function loopChildren(nodes){
+            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                
+                if (node.getModel) {
+                    model = node.getModel();
+                    if (model)
+                        return false;
+                }
+                
+                if (node.childNodes.length)
+                    if (loopChildren(node.childNodes) === false)
+                        return false;
+            }
+        }
+        loopChildren(parent.childNodes);
+        
+        if (!model) {
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Finding a model to submit", 
+                "Could not find a model to submit."));
+            //#endif
+            
+            return;
+        }
+        
+        if (doReset) {
+            model.reset();
+            return;
+        }
+
+        if (!vg.isValid())
+            return;
+
+        model.submit();
+    },
+    
+    "reset" : function(){
+        jpf.button.actions["submit"].call(this, true);
     },
     //#endif
     

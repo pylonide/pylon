@@ -165,10 +165,12 @@ jpf.Anchoring = function(){
         };
         
         this.$show = function(){
-            rules = rule_header + "\n" + rule_v + "\n" + rule_h;
-            l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
-            this.oExt.style.display = "none";
-            l.queue(this.pHtmlNode, this);
+            if (rule_v || rule_h) {
+                rules = rule_header + "\n" + rule_v + "\n" + rule_h;
+                l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
+                this.oExt.style.display = "none";
+                l.queue(this.pHtmlNode, this);
+            }
         };
         
         inited   = true;

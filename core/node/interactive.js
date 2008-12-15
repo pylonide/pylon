@@ -64,6 +64,9 @@ jpf.Interactive = function(){
     this.$regbase = this.$regbase | __INTERACTIVE__;
 
     this.$propHandlers["draggable"] = function(value){
+        if (jpf.isFalse(value))
+            this.draggable = value = false;
+        
         var o = this.oDrag || this.oExt;
         if (o.interactive & 1) 
             return;
@@ -81,6 +84,9 @@ jpf.Interactive = function(){
     };
 
     this.$propHandlers["resizable"] = function(value){
+        if (jpf.isFalse(value))
+            this.resizable = value = false;
+        
         var o = this.oResize || this.oExt;
         if (o.interactive & 2) 
             return;
@@ -471,18 +477,22 @@ jpf.Interactive = function(){
             tcursor = "";
         posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
 
-        if (y < rszborder + marginBox[0])
-            cursor = posAbs ? "n" : "";
-        else if (y > this.offsetHeight - rszborder) //marginBox[0] - marginBox[2] - 
-            cursor = "s";
-        else if (y > this.offsetHeight - rszcorner) //marginBox[0] - marginBox[2] - 
-            tcursor = "s";
-
-        if (x < (cursor ? rszcorner : rszborder))  // + marginBox[3]
-            cursor += tcursor + (posAbs ? "w" : "");
-        else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
-            cursor += tcursor + "e";
-
+        if (_self.resizable == true || _self.resizable == "vertical") {
+            if (y < rszborder + marginBox[0])
+                cursor = posAbs ? "n" : "";
+            else if (y > this.offsetHeight - rszborder) //marginBox[0] - marginBox[2] - 
+                cursor = "s";
+            else if (y > this.offsetHeight - rszcorner) //marginBox[0] - marginBox[2] - 
+                tcursor = "s";
+        }
+        
+        if (_self.resizable == true || _self.resizable == "horizontal") {
+            if (x < (cursor ? rszcorner : rszborder))  // + marginBox[3]
+                cursor += tcursor + (posAbs ? "w" : "");
+            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
+                cursor += tcursor + "e";
+        }
+        
         return cursor;
     }
     

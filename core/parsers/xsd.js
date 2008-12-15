@@ -266,8 +266,12 @@ jpf.XSDImplementation = function(){
         "jpf:url": function(value){
             //@todo please write this
         },
+        "jpf:website": function(value){
+            //@todo please make this better
+            return /^([\w-]+\.)+\w{2,4}$/.test(value.trim());
+        },
         "jpf:email": function(value){
-            return /^[A-Z0-9\.\_\%\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,4}$/i.test(value)
+            return /^[A-Z0-9\.\_\%\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,4}$/i.test(value.trim())
         },
         "jpf:creditcard": function(value){
             value = value.replace(/ /g, "");

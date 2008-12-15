@@ -542,10 +542,6 @@ var jpf = {
 
         if (nodeFunc != jpf.NODE_HIDDEN) {
             o.$booleanProperties = {
-                //#ifdef __WITH_INTERACTIVE
-                "draggable"        : true,
-                "resizable"        : true,
-                //#endif
                 "visible"          : true,
                 "focussable"       : true,
                 "disabled"         : true,

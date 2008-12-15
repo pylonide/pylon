@@ -56,6 +56,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
 
     //this.realtime          = false;
+    this.value             = "";
     this.isContentEditable = true;
     this.multiline         = this.tagName == "textarea" ? true : false;
 
@@ -453,9 +454,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             //Change
             if (!_self.realtime)
-                if (e.keyCode == 13)
+                if (e.keyCode == 13 && _self.getValue() != this.value)
                     _self.change(_self.getValue());
-            else if (jpf.isSafari && _self.xmlRoot) //safari issue (only old??)
+            else if (jpf.isSafari && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
                 setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
                     o.change(o.getValue())");
 
@@ -490,7 +491,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             if (_self.realtime) {
                 setTimeout(function(){
-                    if (!_self.mask)
+                    if (!_self.mask && _self.getValue() != _self.value)
                         _self.change(_self.getValue()); //this is a hack
                     _self.dispatchEvent("keyup", {keyCode : keyCode});
                 });

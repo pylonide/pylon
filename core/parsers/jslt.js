@@ -873,8 +873,14 @@ jpf.JsltImplementation = function(){
             //check the jslt node for cache setting
             cacheId = jsltNode.getAttribute("cache");
             jsltFunc = this.cache[cacheId];
-            if (!jsltFunc) 
-                jsltStr = jsltNode.selectSingleNode('text()').nodeValue
+            if (!jsltFunc) {
+                var jsltStr = [], textNodes = jsltNode.selectNodes('text()');
+                for (var i = 0; i < textNodes.length; i++) {
+                    jsltStr = textNodes[i].nodeValue;
+                    if (jsltStr.trim()) 
+                        break;
+                }
+            }
         }
         else {
             cacheId = jsltNode;

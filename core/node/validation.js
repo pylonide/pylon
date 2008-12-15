@@ -535,10 +535,8 @@ jpf.ValidationGroup = function(name){
      *
      */
     this.hideAllErrors = function(){
-        for (var i = 0; i < this.childNodes.length; i++) {
-            if (this.childNodes[i].errBox)
-                this.childNodes[i].errBox.hide();
-        }
+        if (errbox && errbox.host)
+            errbox.host.clearError();       
     };
     
     function checkValidChildren(oParent, ignoreReq, nosetError){
