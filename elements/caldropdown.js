@@ -179,7 +179,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oSlider.style.display = "";
         this.$setStyleClass(this.oButton, "down");
-        this.$setStyleClass(this.oFirst, "down");
+        //this.$setStyleClass(this.oFirst, "down");
         this.$setStyleClass(this.oLabel, "down");
 
         jpf.popup.show(this.uniqueId, {
@@ -211,7 +211,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.$setStyleClass(this.oButton, "", ["down"]);
-        this.$setStyleClass(this.oFirst, "", ["down"]);
+        //this.$setStyleClass(this.oFirst, "", ["down"]);
         this.$setStyleClass(this.oLabel, "", ["down"]);
         jpf.popup.hide();
 
@@ -243,15 +243,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         //this.slideUp();
 
         this.$setStyleClass(this.oLabel, "", ["focus"]);
-        this.$setStyleClass(this.oButton, "", ["focus"]);
-        this.$setStyleClass(this.oFirst, "", ["focus"]);
+        //this.$setStyleClass(this.oButton, "", ["focus"]);
+        this.$setStyleClass(this.oExt, "", ["caldropdown_focus"]);
     };
 
     this.$focus = function() {
         jpf.popup.forceHide();
         this.$setStyleClass(this.oLabel, "focus");
-        this.$setStyleClass(this.oButton, "focus");
-        this.$setStyleClass(this.oFirst, "focus");
+        //this.$setStyleClass(this.oButton, "focus");
+        this.$setStyleClass(this.oExt, "caldropdown_focus");
     }
 
     this.$setClearMessage = function(msg) {
@@ -355,7 +355,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _width = this.oExt.offsetWidth >= minWidth
             ? this.oExt.offsetWidth
             : minWidth;
-        _width = Math.max(this.width || 0, _width);
+        _width = Math.max((this.width) || 0, _width);
 
         this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
             - jpf.getDiff(this.oNavigation)[0]) + "px";
@@ -607,9 +607,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             oButton.setAttribute("onmousedown", 'var o = jpf.lookup('
                     + this.uniqueId + '); o.slideToggle(event);');
 
-            var oFirst = this.$getLayoutNode("main", "first", this.oExt);
+            /*var oFirst = this.$getLayoutNode("main", "first", this.oExt);
             oFirst.setAttribute("onmousedown", 'var o = jpf.lookup('
-                    + this.uniqueId + '); o.slideToggle(event);');
+                    + this.uniqueId + '); o.slideToggle(event);');*/
 
             var oLabel = this.$getLayoutNode("main", "label", this.oExt);
             oLabel.setAttribute("onmousedown", 'var o = jpf.lookup('
@@ -675,7 +675,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oLabel  = this.$getLayoutNode("main", "label", this.oExt);
         this.oButton = this.$getLayoutNode("main", "button", this.oExt);
-        this.oFirst  = this.$getLayoutNode("main", "first", this.oExt);
+        //this.oFirst  = this.$getLayoutNode("main", "first", this.oExt);
         
         document.body.appendChild(this.oSlider);
 
@@ -696,12 +696,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             this.setProperty("value", new Date().format(this.dateFormat));
         }
 
-        var size = (this.width || Math.max(this.oExt.offsetWidth, this.width || 0))
+        /*var size = (parseInt(this.width) || Math.max(this.oExt.offsetWidth, parseInt(this.width) || 0))
                  - this.oButton.offsetWidth
                  - this.oFirst.offsetWidth
                  - jpf.getDiff(this.oLabel)[0];
 
-        this.oLabel.style.width = (size > 0 ? size : 1) + "px";
+        this.oLabel.style.width = (size > 0 ? size : 1) + "px";*/
     };
 
     this.$destroy = function() {
