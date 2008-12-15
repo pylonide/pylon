@@ -24,12 +24,15 @@
  * When plus button is clicked longer, number growing up faster. The same
  * situation is for minus button. It's possible to increment and decrement
  * value by moving mouse cursor up or down with clicked input. Max and
- * min attributes creates range with allowed values.
+ * min attributes define range with allowed values.
  * 
  * Example:
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
- * <j:spinner value="6" min="-99" max="199" />
+ * 
+ * <code>
+ *     <j:spinner value="6" min="-99" max="199"></j:spinner>
+ * </code>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000
  * @attribute {Number}   min       minimal allowed value, default is -64000
@@ -110,7 +113,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         //#endif
 
         this.focused = true;
-        //this.oInput.className = "focus";
         this.$setStyleClass(this.oInput, "focus");
         this.$setStyleClass(this.oButtonPlus, "plusFocus");
         this.$setStyleClass(this.oButtonMinus, "minusFocus");
@@ -119,8 +121,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$blur = function(e) {
         if (!this.oExt && !this.focused)
             return;
-            
-        //this.oInput.className = "";
+
         this.$setStyleClass(this.oInput, "", ["focus"]);
         this.$setStyleClass(this.oButtonPlus, "", ["plusFocus"]);
         this.$setStyleClass(this.oButtonMinus, "", ["minusFocus"]);
@@ -223,7 +224,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonPlus.onmousedown = function(e) {
             e = e || window.event;
 
-            //var value = (parseInt(_self.oInput.value) || 0) + 1;
             var value = parseInt(_self.oInput.value) || 0;
 
             jpf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
@@ -243,7 +243,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmousedown = function(e) {
             e = e || window.event;
 
-            //var value = (parseInt(_self.oInput.value) || 0) - 1;
             var value = parseInt(_self.oInput.value) || 0;
             
             jpf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
@@ -271,7 +270,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.change(value);
             }
             jpf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
-            
+
             if (!_self.focused) {
                _self.$blur(e);
             }
