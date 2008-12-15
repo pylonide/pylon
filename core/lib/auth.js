@@ -50,7 +50,7 @@
  *  <j:appsettings>
  *      <j:auth login  = "xmpp:login(username, password)" 
  *              logout = "xmpp:logout()" 
- *              auto-start    = "true" 
+ *              autostart    = "true" 
  *              window        = "winLogin" 
  *              fail-state    = "stFail" 
  *              error-state   = "stError" 
@@ -109,7 +109,7 @@
  *
  * @attribute {String}  login           the datainstruction on how to log in to a service.
  * @attribute {String}  logout          the datainstruction on how to log out of a service.
- * @attribute {Boolean} auto-start      wether to fire authrequired at startup.
+ * @attribute {Boolean} autostart      wether to fire authrequired at startup.
  * @attribute {String}  window          the id of the window element that offers a log in form to the user.
  * @attribute {String}  fail-state      the id of the state element which is activated when logging in failed because the credentials where incorrect.
  * @attribute {String}  error-state     the id of the state element which is activated when logging in failed because of an error (i.e. network disconnected).
@@ -154,8 +154,8 @@ jpf.auth = {
         if (jml.getAttribute("retry"))
             this.retry = jpf.isTrue(jml.getAttribute("retry"));
         
-        if (jml.getAttribute("auto-start"))
-            this.autoStart = jpf.isTrue(jml.getAttribute("auto-start"));
+        if (jml.getAttribute("autostart"))
+            this.autoStart = jpf.isTrue(jml.getAttribute("autostart"));
         
         //Handling
         var loginWindow  = jml.getAttribute("window");

@@ -66,6 +66,8 @@ jpf.Interactive = function(){
     this.$propHandlers["draggable"] = function(value){
         if (jpf.isFalse(value))
             this.draggable = value = false;
+        else if (jpf.isTrue(value))
+            this.draggable = value = true;
         
         var o = this.oDrag || this.oExt;
         if (o.interactive & 1) 
@@ -86,6 +88,8 @@ jpf.Interactive = function(){
     this.$propHandlers["resizable"] = function(value){
         if (jpf.isFalse(value))
             this.resizable = value = false;
+        else if (jpf.isTrue(value))
+            this.resizable = value = true;
         
         var o = this.oResize || this.oExt;
         if (o.interactive & 2) 
