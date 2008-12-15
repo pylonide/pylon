@@ -43,7 +43,7 @@ jpf.Media = function(){
     this.$booleanProperties["seeking"]    = true;
     this.$booleanProperties["autoplay"]   = true;
     this.$booleanProperties["controls"]   = true;
-    this.$booleanProperties["READY"]      = false;
+    this.$booleanProperties["ready"]      = false;
     this.$booleanProperties["fullscreen"] = true;
 
     this.$supportedProperties.push("position", "networkState", "readyState",
@@ -75,7 +75,7 @@ jpf.Media = function(){
             this.dispatchEvent("havefuturedata");
         else if (value == jpf.Media.HAVE_ENOUGH_DATA) {
             this.dispatchEvent("haveenoughdata");
-            this.setProperty('READY', true);
+            this.setProperty('ready', true);
         }
     };
 
@@ -201,8 +201,46 @@ jpf.Media = function(){
             this.player.setID3(value);
     };
 
+    var oldStyle = null; //will hold old style of the media elements' parentNode on fullscreen
     this.$propHandlers["fullscreen"] = function(value) {
-        //TODO
+        if (!this.player) return;
+        // only go fullscreen when the feature is supported by the active player
+        if (typeof this.player.setFullscreen == "function")
+            this.player.setFullscreen(value);
+        else if (this.parentNode && this.parentNode.tagName != "application"
+          && this.parentNode.setWidth) {
+            // we're going into fullscreen mode...
+            if (value) {
+                oldStyle = {
+                    width   : this.parentNode.getWidth(),
+                    height  : this.parentNode.getHeight(),
+                    top     : this.parentNode.getTop(),
+                    left    : this.parentNode.getLeft(),
+                    position: jpf.getStyle(this.parentNode.oInt, 'position'),
+                    zIndex  : jpf.getStyle(this.parentNode.oInt, 'z-index')
+                }
+                this.parentNode.oInt.style.position = "absolute";
+                this.parentNode.oInt.style.zIndex = "1000000";
+                this.parentNode.setWidth('100%');
+                this.parentNode.setHeight('100%');
+                this.parentNode.setTop('0');
+                this.parentNode.setLeft('0');
+            }
+            // we're going back to normal mode...
+            else if (oldStyle) {
+                this.parentNode.oInt.style.zIndex = oldStyle.zIndex;
+                this.parentNode.oInt.style.position = oldStyle.position;
+                this.parentNode.setWidth(oldStyle.width);
+                this.parentNode.setHeight(oldStyle.height);
+                this.parentNode.setTop(oldStyle.top);
+                this.parentNode.setLeft(oldStyle.left);
+                oldStyle = null;
+            }
+            var _self = this;
+            window.setTimeout(function() {
+                jpf.layout.forceResize(_self.parentNode.oInt);
+            }, 100)
+        }
     };
 
     /**** DOM Hooks ****/
@@ -219,7 +257,7 @@ jpf.Media = function(){
             return;
 
         // #ifdef __DEBUG
-        jpf.console.log('Media: reparenting - ', beforeNode, pNode);
+        jpf.console.log('Media: reparenting - ' + beforeNode + ', ' + pNode);
         // #endif
 
         this.$draw();
@@ -229,7 +267,7 @@ jpf.Media = function(){
     function reset() {
         this.setProperty('networkState',  jpf.Media.NETWORK_EMPTY);
         //this.setProperty('readyState',   jpf.Media.HAVE_NOTHING);
-        this.setProperty('READY',         false);
+        this.setProperty('ready',         false);
         this.setProperty('buffered',      {start: 0, end: 0, length: 0});
         this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
         this.setProperty('totalBytes',    0);

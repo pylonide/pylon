@@ -22,7 +22,7 @@
 //#ifdef __WITH_CLASS
 
 /**
- * BaseClass for any object offering property binding, 
+ * BaseClass for any object offering property binding,
  * event handling, constructor and destructor hooks.
  *
  * @constructor
@@ -87,7 +87,7 @@ jpf.Class = function(){
             boundObjects[myProp] = {};
         if (!boundObjects[myProp][bObject.uniqueId])
             boundObjects[myProp][bObject.uniqueId] = [];
-		
+
         if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
             //#ifdef __DEBUG
             throw new Error(jpf.formatErrorString(0, this,
@@ -96,7 +96,7 @@ jpf.Class = function(){
             //#endif
             return;
         }
-		
+
         if (strDynamicProp)
             boundObjects[myProp][bObject.uniqueId].push([bProp, strDynamicProp]);
         else
@@ -107,10 +107,10 @@ jpf.Class = function(){
         boundObjects[myProp].push([bObject, bProp, strDynamicProp]);
 
         #--endif */
-		
+
         bObject.$handlePropSet(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
     };
-	
+
     /**
      * Remove the binding of a property of another compontent to a property of this element.
      *
@@ -122,7 +122,7 @@ jpf.Class = function(){
         //#--ifdef __DEBUG
         boundObjects[myProp][bObject.uniqueId].remove(bProp);
         /* #--else
-		
+
         if(!boundObjects[myProp]) return;
         for(var i=0;i<boundObjects[myProp].length;i++){
                 if(boundObjects[myProp][0] == bObject && boundObjects[myProp][1] == bProp){
@@ -132,7 +132,7 @@ jpf.Class = function(){
 
         #--endif */
     };
-	
+
     /**
      * Unbinds all bound properties for this componet.
      */
@@ -150,14 +150,14 @@ jpf.Class = function(){
             }
         }
     };
-	
+
     /**
      * Gets an array of properties for this element which can be bound.
      */
     this.getAvailableProperties = function(){
         return this.$supportedProperties.slice();
     };
-	
+
     /**
      * Sets a dynamic property from a string.
      * The string used for this function is the same as used in JML to set a dynamic property:
@@ -178,7 +178,7 @@ jpf.Class = function(){
                 "Invalid binding found: " + pValue));
         }
         // #endif
-		
+
         //Remove any bounds if relevant
         if (myBoundPlaces[prop]) {
             for (var i = 0; i < myBoundPlaces[prop].length; i++) {
@@ -193,7 +193,7 @@ jpf.Class = function(){
 
             if (!p[1])
                 p[1] = self[p[0]].$supportedProperties[0]; // Default state property
-			
+
             //Two way property binding
             self[p[0]].bindProperty(p[1], this, prop);
             myBoundPlaces[prop] = [p];
@@ -206,7 +206,7 @@ jpf.Class = function(){
                 function(m, m1){
                     if(m1) matches[m1] = true;
                 });
-			
+
             pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");  //.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
             myBoundPlaces[prop] = [];
 
@@ -220,8 +220,19 @@ jpf.Class = function(){
                 o = p.split(".");
                 if (o.length > 2) { //jpf.offline.syncing
                     bProp = o.pop();
+                    //#ifdef __DEBUG
+                    try{
+                        node  = eval(o.join("."));
+                    }
+                    catch(e){
+                        throw new Error(jpf.formatErrorString(0, this,
+                            "Creating a dynamic property bind",
+                            "invalid bind statement '" + pValue + "'"));
+                    }
+                    /* #else
                     node  = eval(o.join("."));
-                    
+                    #endif*/
+
                     if (typeof node != "object" || !node.$regbase) {
                         bProp = o[1];
                         node  = self[o[0]];
@@ -233,7 +244,7 @@ jpf.Class = function(){
                     bProp = o[1];
                     node  = self[o[0]];
                 }
-				
+
                 if (!node || !node.bindProperty)
                     continue;  //return
 
@@ -243,7 +254,7 @@ jpf.Class = function(){
             }
 
             if (!found)
-			    this.$handlePropSet(prop, eval(pValue));
+                this.$handlePropSet(prop, eval(pValue));
         }
         else
             this.$handlePropSet(prop, pValue);
@@ -261,15 +272,15 @@ jpf.Class = function(){
      * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
-        if (reqValue && !value || !jpf || this.$ignoreSignals) 
-        	return;
+        if (reqValue && !value || !jpf || this.$ignoreSignals)
+            return;
 
         if (String(this[prop]) !== String(value) || typeof value == "object") {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
-            if (jpf.loaded && jpf.offline.state.enabled 
-              && (!this.bindingRules || !this.bindingRules[prop] 
+            if (jpf.loaded && jpf.offline.state.enabled
+              && (!this.bindingRules || !this.bindingRules[prop]
               || this.traverse)) {
-                jpf.offline.state.set(this, prop, typeof value == "object" 
+                jpf.offline.state.set(this, prop, typeof value == "object"
                     ? value.name
                     : value);
             }
@@ -283,9 +294,9 @@ jpf.Class = function(){
                 return false;
             }
         }
-		
+
         //#ifdef __WITH_PROPERTY_BINDING
-		
+
         var nodes = boundObjects[prop];
         if (!nodes) return;
 
@@ -294,7 +305,7 @@ jpf.Class = function(){
         for (id in nodes) {
             if (jpf.isSafari && (typeof nodes[id] != "object" || !nodes[id]))
                 continue;
-			
+
             for (var o = jpf.lookup(id), i = nodes[id].length - 1; i >= 0; --i) {
                 try {
                     value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
@@ -320,10 +331,10 @@ jpf.Class = function(){
         #--endif */
 
         //#endif
-        
+
         return value;
     };
-	
+
     /**
      * Gets the value of a property of this element.
      *
@@ -332,7 +343,7 @@ jpf.Class = function(){
     this.getProperty = function(prop){
         return this[prop];
     };
-	
+
     /* ***********************
         EVENT HANDLING
     ************************/
@@ -349,7 +360,7 @@ jpf.Class = function(){
      */
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue;
-		
+
         /* #ifdef __WITH_EDITMODE
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
         #endif */
@@ -358,26 +369,26 @@ jpf.Class = function(){
             e = options;
         else if (!e)
             e = new jpf.Event(eventName, options);
-		
-		if (!e.originalElement) {
-		    e.originalElement = this;
-		    
-		    //Capture support
-		    if (arr = capture_stack[eventName]) {
+
+        if (!e.originalElement) {
+            e.originalElement = this;
+
+            //Capture support
+            if (arr = capture_stack[eventName]) {
                 for (var i = 0; i < arr.length; i++) {
                     rValue = arr[i].call(this, e);
                     if (rValue != undefined)
                         result = rValue;
                 }
             }
-		}
-		
+        }
+
         if (this.disabled)
             result = false;
         else {
             if (this["on" + eventName])
                 result = this["on" + eventName].call(this, e); //Backwards compatibility
-			
+
             if (arr = events_stack[eventName]) {
                 for (var i = 0; i < arr.length; i++) {
                     rValue = arr[i].call(this, e);
@@ -386,7 +397,7 @@ jpf.Class = function(){
                 }
             }
         }
-		
+
         //#ifdef __WITH_EVENT_BUBBLING
         if (e.bubbles && !e.cancelBubble && this != jpf) {
             rValue = (this.parentNode || jpf).dispatchEvent(eventName, null, e);
@@ -395,10 +406,10 @@ jpf.Class = function(){
                 result = rValue;
         }
         //#endif
-		
+
         return e.returnValue !== undefined ? e.returnValue : result;
     };
-	
+
     /**
      * Add a function to be called when a event is called.
      *
@@ -410,16 +421,16 @@ jpf.Class = function(){
         if (jpf.profiler)
             jpf.profiler.wrapFunction(Profiler_functionTemplate());
         //#endif
-        
+
         if (eventName.indexOf("on") == 0)
             eventName = eventName.substr(2);
-        
+
         var stack = useCapture ? capture_stack : events_stack;
         if (!stack[eventName])
             stack[eventName] = [];
         stack[eventName].pushUnique(callback);
     }
-	
+
     /**
      * Remove a function registered for an event.
      *
@@ -431,7 +442,7 @@ jpf.Class = function(){
         if (stack[eventName])
             stack[eventName].remove(callback);
     };
-	
+
     /**
      * Checks if there is an event listener specified for the event.
      *
@@ -441,7 +452,7 @@ jpf.Class = function(){
     this.hasEventListener = function(eventName){
         return (events_stack[eventName] && events_stack[eventName].length > 0);
     };
-    
+
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
@@ -452,65 +463,65 @@ jpf.Class = function(){
     this.destroy = this.destroy || function(deep){
         if (!this.$jmlDestroyers) //@todo check why this happens
             return;
-        
+
         if (this.$destroy)
             this.$destroy();
-		
+
         for (var i = this.$jmlDestroyers.length - 1; i >= 0; i--)
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
-		
+
         //Remove from jpf.all
-        if (typeof this.uniqueId == "undefined") 
+        if (typeof this.uniqueId == "undefined")
             return;
 
         jpf.all[this.uniqueId] = undefined;
-        
+
         if (!this.nodeFunc) { //If this is not a JmlNode, we're done.
             //Remove id from global js space
             if (this.name)
                 self[this.name] = null;
             return;
         }
-		
+
         if (this.oExt && !this.oExt.isNative && this.oExt.nodeType == 1) {
             this.oExt.oncontextmenu = this.oExt.host = null;
         }
         if (this.oInt && !this.oExt.isNative && this.oInt.nodeType == 1)
             this.oInt.host = null;
-		
+
         this.$jml = null;
-		
-		//Remove from DOM tree if we are still connected
-		if (this.parentNode)
-		    this.removeNode();
-		
-		//Remove from focus list - Should be in JmlNode
+
+        //Remove from DOM tree if we are still connected
+        if (this.parentNode)
+            this.removeNode();
+
+        //Remove from focus list - Should be in JmlNode
         if (this.$focussable && this.focussable)
             jpf.window.$removeFocus(this);
-		
-		//Remove dynamic properties
+
+        //Remove dynamic properties
         this.unbindAllProperties();
-		
-		//Clear all children too
-		if (deep && this.childNodes) {
-		    var i, l, nodes = this.childNodes;
+
+        //Clear all children too
+        if (deep && this.childNodes) {
+            var i, l, nodes = this.childNodes;
             for (i = 0, l = nodes.length; i < l; i++) {
                 if (nodes[i].destroy)
                     nodes[i].destroy(true);
             }
             this.childNodes = null;
-		}
-		
-		//#ifdef __DEBUG
-		if (deep !== false && this.childNodes) {
-		    jpf.console.warn("You have destroyed a Jml Node without destroying\
-		                      it's children. Please be aware that if you don't\
-		                      maintain a reference, memory might leak");
-		}
-		//#endif
-		
-		//Remove id from global js space
+        }
+
+        //#ifdef __DEBUG
+        if (deep !== false && this.childNodes) {
+            jpf.console.warn("You have destroyed a Jml Node without destroying\
+                              it's children. Please be aware that if you don't\
+                              maintain a reference, memory might leak");
+        }
+        //#endif
+
+        //Remove id from global js space
         if (this.name)
             self[this.name] = null;
     };
@@ -521,20 +532,20 @@ jpf.Class = function(){
  */
 jpf.Event = function(name, data){
     this.name = name;
-	
+
     //#ifdef __WITH_EVENT_BUBBLING
     this.bubbles = false;
     this.cancelBubble = false;
     //#endif
-	
-	this.preventDefault = function(){
-	    this.returnValue = false;
-	}
-	
-	this.stopPropagation = function(){
-	    this.cancelBubble = true;
-	}
-	
+
+    this.preventDefault = function(){
+        this.returnValue = false;
+    }
+
+    this.stopPropagation = function(){
+        this.cancelBubble = true;
+    }
+
 	//@todo should be implemented;
 	this.isCharacter = function(){
 	    return this.keyCode < 33  && event.keyCode != 13 || event.keyCode > 42;
