@@ -221,10 +221,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             };
         };
 
+        /* Fix for mousedown for IE */
+        var buttonDown = false;
         this.oButtonPlus.onmousedown = function(e) {
             e = e || window.event;
+            buttonDown = true;
 
-            var value = parseInt(_self.oInput.value) || 0;
+            var value = (parseInt(_self.oInput.value) || 0) + 1;
 
             jpf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
 
@@ -242,9 +245,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oButtonMinus.onmousedown = function(e) {
             e = e || window.event;
+            buttonDown = true;
 
-            var value = parseInt(_self.oInput.value) || 0;
-            
+            var value = (parseInt(_self.oInput.value) || 0) - 1;
+
             jpf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
 
             clearInterval(timer);
@@ -314,12 +318,19 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             window.clearInterval(timer);
             z = 0;
 
-            var value = parseInt(_self.oInput.value) + 1;
+            var value = parseInt(_self.oInput.value);
+
+            if (!buttonDown) {
+                value++;
+                _self.oInput.value = value;
+            }
+            else {
+                buttonDown = false;
+            }
 
             if (value != _self.value) {
                 _self.value = value;
                 _self.change(value);
-                _self.oInput.value = value;
             }
         };
 
@@ -332,7 +343,16 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             window.clearInterval(timer);
             z = 0;
 
-            var value = parseInt(_self.oInput.value) - 1;
+            var value = parseInt(_self.oInput.value);
+
+            if (!buttonDown) {
+                value--;
+                _self.oInput.value = value;
+            }
+            else {
+                buttonDown = false;
+            }
+
 
             if (value != _self.value) {
                 _self.value = value;
