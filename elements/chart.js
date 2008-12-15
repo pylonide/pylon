@@ -1018,8 +1018,8 @@ jpf.chart.graph.draw = {
     _pie2D: {
         steps : 10,
         margin : 0,
-        left: 1,
-        top: 1,
+        left: 0,
+        top: 0,
         width: 1,
         height: 1,
         chart : {
@@ -1032,7 +1032,6 @@ jpf.chart.graph.draw = {
     pie2D : function(l,d){
         var e = jpf.draw, s = l.style, g = jpf.visualize;
         var c = e.optimize([
-            e.beginLayer(l),
             e.vars2D(),
             d.vars||"",
             d.stats,
@@ -1041,18 +1040,25 @@ jpf.chart.graph.draw = {
                 "xp=(",s.left,")*tw+tx,",
                 "yp=(",s.top,")*th+ty,",
                 "wp=(",s.width,")*tw,",
-                "hp=(",s.height,")*th;",
+                "hp=(",s.height,")*th,",
+                "wq=0.5*wp, hq = 0.5*hp,",
+                "xc=xp+wq, yc=yp+hq;",
             d.seek||"",
+            "if(m){",
+                "if(m.x<xp || m.y<yp || m.x>xp+wp || m.y>yp+hp)return;",
+                "return;",
+            "}",
+            e.beginLayer(l),
             e.beginState(s.chart,e,e.drawPart,6),
             "for(x=x1;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{",
-                e.drawState(d.state,d.time,"xp","yp","wp","hp",
+                e.drawState(d.state,d.time,"xc","yc","wq","hq",
                             "rx","-rx+(rx+=("+d.y+")*sum)"),
             "};",
             e.endLayer()]);
         // lets return a mouse tracking function too.
         
         try{
-            return new Function('l','v',c);
+            return new Function('l','v','m',c);
         }catch(x){
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
