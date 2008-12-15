@@ -306,7 +306,7 @@ jpf.video.TypeVlc.prototype = {
                     break;
                 case 3:   //PLAYING - The current media clip is playing.
                     this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
-                    if (!this.oVideo.READY) {
+                    if (!this.oVideo.ready) {
                         this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
                         // @todo for now, set the downloadprogress to a maximum
                         this.oVideo.$progressHook({bytesLoaded: 100, totalBytes: 100});

@@ -326,7 +326,7 @@ jpf.video.TypeWmp.prototype = {
                 break;
             case 3:   //Playing - The current media clip is playing.
                 this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"})
-                if (!this.oVideo.READY)
+                if (!this.oVideo.ready)
                     this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
                 this.startPlayPoll();
                 break;

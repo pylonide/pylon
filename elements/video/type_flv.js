@@ -318,6 +318,9 @@ jpf.video.TypeFlv.prototype = {
             case "cuePoint":
                 this.oVideo.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
+            case "fullscreen":
+                jpf.console.log('fullscreen: ', evtObj.state);
+                this.oVideo.fullscreen = false;
             case "init":
                 this.inited = true;
                 // There is a bug in IE innerHTML. Tell flash what size it is.
@@ -445,7 +448,7 @@ jpf.video.TypeFlv.prototype = {
         for (var n in this.invalidProperties)
             props[n] = this[n];
         this.invalidProperties = {};
-        this.player.callMethod("update", props);
+        this.callMethod("update", props);
         return this;
     },
 

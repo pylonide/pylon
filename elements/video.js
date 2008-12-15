@@ -38,6 +38,7 @@
  */
 
 jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
+    this.$supportFullscreen = true;
 
     this.mainBind = "src";
 

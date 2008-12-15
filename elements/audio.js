@@ -40,6 +40,8 @@
 jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
 
+    this.$supportFullscreen = false;
+
     this.mainBind = "src";
 
     /**

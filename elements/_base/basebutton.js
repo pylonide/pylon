@@ -33,28 +33,46 @@
  */
 
 jpf.BaseButton = function(pHtmlNode){
-    var refKeyDown   = 0;     // Number of keys pressed. 
+    var refKeyDown   = 0;     // Number of keys pressed.
     var refMouseDown = 0;     // Mouse button down?
     var mouseOver    = false; // Mouse hovering over the button?
     var mouseLeft    = false; // Has the mouse left the control since pressing the button.
     var _self        = this;
-    
+
     /**** Properties and Attributes ****/
-    
+
     /**
-     * @attribute {string} background sets a multistate background
+     * @attribute {string} background sets a multistate background. The arguments
+     * are seperated by pipes '|' and are in the order of:
+     * 'imagefilename|mapdirection|nrofstates|imagesize'
+     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
+     * The nrofstates argument specifies the number of states the iconfile contains:
+     * 1 - normal
+     * 2 - normal, hover
+     * 3 - normal, hover, down
+     * 4 - normal, hover, down, disabled
+     * The imagesize argument specifies how high or wide each icon is inside the
+     * map, depending of the mapdirection argument.
+     *
      * Example:
      * A 3 state picture where each state is 16px high, vertically spaced
      * <code>
-     * background="3state.gif|vertical|3|16"
+     * background="threestates.gif|vertical|3|16"
      * </code>
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.oExt);
+        // #ifdef __DEBUG
+        if (!oNode)
+            return jpf.console.warn("No background defined in the Button skin", "button");
+        /* #else
+        if (!oNode) return;
+        #endif */
+
         if (value) {
             var b = value.split("|");
             this.$background = b.concat(["vertical", 2, 16].slice(b.length - 1));
-            
+
             oNode.style.backgroundImage  = "url(" + this.mediaPath + b[0] + ")";
             oNode.style.backgroundRepeat = "no-repeat";
         }
@@ -64,9 +82,9 @@ jpf.BaseButton = function(pHtmlNode){
             this.$background = null;
         }
     }
-    
+
     /**** Keyboard Support ****/
-    
+
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -93,12 +111,12 @@ jpf.BaseButton = function(pHtmlNode){
         switch (key) {
             case 32:
                 refKeyDown--;
-                
+
                 if (refKeyDown < 0) {
                     refKeyDown = 0;
                     return;
                 }
-                
+
                 if (refKeyDown + refMouseDown == 0 && !this.disabled) {
                     this.oExt.onmouseup(e, true);
                 }
@@ -107,7 +125,7 @@ jpf.BaseButton = function(pHtmlNode){
         }
     }, true);
     //#endif
-    
+
     /**** Private state handling methods ****/
 
     this.states = {
@@ -115,7 +133,7 @@ jpf.BaseButton = function(pHtmlNode){
         "Over"  : 2,
         "Down"  : 3
     };
-    
+
     this.$updateState = function(e, strEvent) {
         if (this.disabled || e.reset) {
             refKeyDown   = 0;
@@ -123,9 +141,9 @@ jpf.BaseButton = function(pHtmlNode){
             mouseOver    = false;
             return false;
         }
-        
-        if (refKeyDown > 0 
-          || (refMouseDown > 0 && mouseOver) 
+
+        if (refKeyDown > 0
+          || (refMouseDown > 0 && mouseOver)
           || (this.isBoolean && this.value)) {
             this.$setState ("Down", e, strEvent);
         }
@@ -133,15 +151,15 @@ jpf.BaseButton = function(pHtmlNode){
             this.$setState ("Over", e, strEvent);
         else
             this.$setState ("Out", e, strEvent);
-    }	
-    
+    }
+
     this.$setupEvents = function() {
         this.oExt.onmousedown = function(e) {
             if (!e) e = event;
 
             if (_self.$notfromext && (e.srcElement || e.target) == this)
                 return;
-            
+
             refMouseDown = 1;
             mouseLeft    = false;
             _self.$updateState(e, "mousedown");
@@ -149,91 +167,91 @@ jpf.BaseButton = function(pHtmlNode){
         this.oExt.onmouseup = function(e, force) {
             if (!e) e = event;
             //if (e)  e.cancelBubble = true;
-            
+
             if (!force && (!mouseOver || !refMouseDown))
                 return;
 
             refMouseDown = 0;
-            _self.$updateState (e, "mouseup"); 
+            _self.$updateState (e, "mouseup");
 
             // If this is coming from a mouse click, we shouldn't have left the button.
             if (_self.disabled || (e && e.type == "click" && mouseLeft == true))
                 return false;
-                
+
             // If there are still buttons down, this is not a real click.
             if (refMouseDown + _self.refKeyDown)
-                return false;	
-    
+                return false;
+
             if (_self.$clickHandler && _self.$clickHandler())
                 _self.$updateState (e || event, "click");
             else
                 _self.dispatchEvent("click", {htmlEvent : e});
-            
+
             return false;
         };
 
         this.oExt.onmousemove = function(e) {
             if (!mouseOver) {
                 if (!e) e = event;
-            
+
                 if (_self.$notfromext && (e.srcElement || e.target) == this)
                     return;
-                
+
                 mouseOver = true;
                 _self.$updateState(e, "mouseover");
             }
         };
 
-        this.oExt.onmouseout = function(e) { 
+        this.oExt.onmouseout = function(e) {
             if(!e) e = event;
-            
+
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
             if (this == tEl || jpf.xmldb.isChildOf(this, tEl))
                 return;
-                
+
             mouseOver    = false;
             refMouseDown = 0;
             mouseLeft    = true;
-            _self.$updateState (e || event, "mouseout"); 
+            _self.$updateState (e || event, "mouseout");
         };
 
         if (jpf.hasClickFastBug)
             this.oExt.ondblclick = this.oExt.onmouseup;
     }
-    
+
     this.$doBgSwitch = function(nr){
         if (this.bgswitch && (this.$background[2] >= nr || nr == 4)) {
-            if (nr == 4) 
+            if (nr == 4)
                 nr = this.$background[2] + 1;
-            
-            var strBG = this.$background[1] == "vertical" 
-                ? "0 -" + (parseInt(this.$background[3]) * (nr - 1)) + "px" 
+
+            var strBG = this.$background[1] == "vertical"
+                ? "0 -" + (parseInt(this.$background[3]) * (nr - 1)) + "px"
                 : "-" + (parseInt(this.$background[3]) * (nr - 1)) + "px 0";
-            
-            this.$getLayoutNode("main", "background", 
+
+            this.$getLayoutNode("main", "background",
                 this.oExt).style.backgroundPosition = strBG;
         }
     }
-    
+
     /**** Focus Handling ****/
-    
+
     this.$focus = function(){
-        if (!this.oExt) 
+        if (!this.oExt)
             return;
-        
+
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
     }
 
     this.$blur = function(oBtn){
-        if (!this.oExt) 
+        if (!this.oExt)
             return; //FIREFOX BUG!
-        
+
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         /*refKeyDown   = 0;
         refMouseDown = 0;
         mouseLeft    = true;*/
-        
+
         //#ifdef __JTOOLBAR || __INC_ALL
         /*if (this.submenu) {
             if (this.value) {
@@ -242,16 +260,16 @@ jpf.BaseButton = function(pHtmlNode){
             }
         }*/
         //#endif
-        
+
         if (oBtn)
             this.$updateState(oBtn);//, "onblur"
     }
-    
+
     /*** Clearing potential memory leaks ****/
-    
+
     this.$destroy = function(skinChange){
         if (!skinChange) {
-            this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover = 
+            this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover =
             this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
         }
     }

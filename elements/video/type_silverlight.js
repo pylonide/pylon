@@ -365,7 +365,7 @@ jpf.video.TypeSilverlight.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            if (_self.oVideo && !_self.oVideo.READY && _self.video.CanSeek)
+            if (_self.oVideo && !_self.oVideo.ready && _self.video.CanSeek)
                 _self.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
             _self.oVideo.$changeHook({
                 type        : "change",

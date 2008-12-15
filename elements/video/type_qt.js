@@ -684,7 +684,7 @@ jpf.video.TypeQT.prototype = {
                     bytesLoaded: iLoaded,
                     totalBytes : iTotal
                 });
-                if (!_self.oVideo.READY && Math.abs(iLoaded - iTotal) <= 20)
+                if (!_self.oVideo.ready && Math.abs(iLoaded - iTotal) <= 20)
                     _self.handleEvent({type: "qt_load"});
             }
             catch (e) {}

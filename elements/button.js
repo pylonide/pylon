@@ -44,22 +44,22 @@ jpf.reset   =
 jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var useExtraDiv;
     var _self = this;
-    
+
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
         "main": [["caption", "text()"]]
     };
     // #endif
-    
+
     /* #ifdef __WITH_EDITMODE
      this.editableEvents = {"click":true}
     #endif */
-     
+
     /**** Properties and Attributes ****/
-    
+
     this.$focussable = true; // This object can get the focus
     this.value       = null;
-    
+
     /**
      * @attribute {String}  icon     the url from which the icon image is loaded.
      * @attribute {Boolean} state    wether this boolean is a multi state button.
@@ -85,30 +85,36 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
      */
     this.$booleanProperties["default"] = true;
-    this.$supportedProperties.push("icon", "value", "tooltip", "state", 
+    this.$supportedProperties.push("icon", "value", "tooltip", "state",
         "color", "caption", "action", "target", "default", "submenu");
 
     this.$propHandlers["icon"] = function(value){
+        // #ifdef __DEBUG
+        if (!this.oIcon)
+            return jpf.console.warn("No icon defined in the Button skin", "button");
+        /* #else
         if (!this.oIcon) return;
-        
+        #endif */
+
+
         if (value)
             this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
-        
+
         jpf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     this.$propHandlers["value"] = function(value){
-        if (value === undefined) 
+        if (value === undefined)
             value = !this.value;
         this.value = value;
-        
-        if (this.value) 
+
+        if (this.value)
             this.$setState("Down", {});
-        else 
+        else
             this.$setState("Out", {});
-        
+
         this.dispatchEvent("click");
     };
 
@@ -126,7 +132,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$propHandlers["caption"] = function(value){
-        if (this.oCaption) 
+        if (this.oCaption)
             this.oCaption.nodeValue = (value || "").trim();
     };
 
@@ -134,92 +140,92 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["default"] = function(value){
         this.parentNode.removeEventListener("focus", setDefault);
         this.parentNode.removeEventListener("blur", removeDefault);
-        
+
         if (!value)
             return;
-        
+
         //Currrently only support for parentNode, this might need to be expanded
         this.parentNode.addEventListener("focus", setDefault);
         this.parentNode.addEventListener("blur", removeDefault);
     };
-    
+
     function setDefault(e){
         if (e.defaultButtonSet || e.returnValue === false)
             return;
-            
+
         e.defaultButtonSet = true;
-        
+
         if (useExtraDiv)
             _self.oExt.appendChild(jpf.button.$extradiv);
-        
+
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
-        
+
         if (e.srcElement != _self && _self.$focusParent) {
             _self.$focusParent.addEventListener("keydown", btnKeyDown);
         }
     }
-    
+
     function removeDefault(e){
         if (useExtraDiv && jpf.button.$extradiv.parentNode == _self.oExt)
             _self.oExt.removeChild(jpf.button.$extradiv);
-        
+
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
-        
+
         if (e.srcElement != _self && _self.$focusParent) {
             _self.$focusParent.removeEventListener("keydown", btnKeyDown);
         }
     }
-    
+
     function btnKeyDown(e){
         var ml;
-        
+
         var f = jpf.window.focussed;
         if (f) {
             if (f.hasFeature(__MULTISELECT__))
                 return;
-            
+
             ml = f.multiline;
         }
-        
-        if (ml && ml != "optional" && e.keyCode == 13 
-          && e.ctrlKey || (!ml || ml == "optional") 
+
+        if (ml && ml != "optional" && e.keyCode == 13
+          && e.ctrlKey || (!ml || ml == "optional")
           && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey)
             _self.oExt.onmouseup(e.htmlEvent, true);
     }
-    
+
     this.addEventListener("focus", setDefault);
     this.addEventListener("blur", removeDefault);
-    
+
     //#ifdef __JTOOLBAR || __INC_ALL
-    
+
     //@todo move this to menu.js
     function menuKeyHandler(e){
         return;
         var key = e.keyCode;
-        
+
         var next, nr = jpf.xmldb.getChildNumber(this);
         if (key == 37) { //left
-            next = nr == 0 
-                ? this.parentNode.childNodes.length - 1 
+            next = nr == 0
+                ? this.parentNode.childNodes.length - 1
                 : nr - 1;
             this.parentNode.childNodes[next].dispatchEvent("mouseover");
         }
         else if (key == 39) { //right
-            next = (nr >= this.parentNode.childNodes.length - 1) 
-                ? 0 
+            next = (nr >= this.parentNode.childNodes.length - 1)
+                ? 0
                 : nr + 1;
             this.parentNode.childNodes[next].dispatchEvent("mouseover");
         }
     }
-    
+
     function menuDown(e){
         var menu = self[this.submenu];
-        
+
         this.value = !this.value;
-        
+
         if (this.value)
             this.$setState("Down", {});
-            
+
         //#ifdef __DEBUG
         if (!menu) {
             throw new Error(jpf.formatErrorString(0, this,
@@ -227,50 +233,50 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                 "Could not find submenu '" + this.submenu + "'"));
         }
         //#endif
-        
+
         if (!this.value) {
             menu.hide();
             this.$setState("Over", {}, "toolbarover");
-            
+
             this.parentNode.menuIsPressed = false;
-            if (this.parentNode.hasMoved) 
+            if (this.parentNode.hasMoved)
                 this.value = false;
-            
+
             if (jpf.hasFocusBug)
                 jpf.window.$focusfix();
-            
+
             return false;
         }
-        
+
         this.parentNode.menuIsPressed = this;
-        
+
         var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
-        menu.display(pos[0], 
+        menu.display(pos[0],
             pos[1] + this.oExt.offsetHeight, false, this,
             null, null, this.oExt.offsetWidth - 2);
-        
+
         this.parentNode.hasMoved = false;
-        
+
         e.htmlEvent.cancelBubble = true;
-        
+
         return false;
     }
-    
+
     function menuOver(){
         var menuPressed = this.parentNode.menuIsPressed;
-        
+
         if (!menuPressed || menuPressed == this)
             return;
 
         menuPressed.setValue(false);
         var oldMenu = self[menuPressed.submenu];
         oldMenu.$propHandlers["visible"].call(oldMenu, false, true);//.hide();
-        
+
         this.setValue(true);
         this.parentNode.menuIsPressed = this;
-        
+
         var menu = self[this.submenu];
-        
+
         //#ifdef __DEBUG
         if (!menu) {
             throw new Error(jpf.formatErrorString(0, this,
@@ -278,30 +284,30 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                 "Could not find submenu '" + this.submenu + "'"));
         }
         //#endif
-        
+
         var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
-        
-        menu.display(pos[0], 
+
+        menu.display(pos[0],
             pos[1] + this.oExt.offsetHeight, true, this,
             null, null, this.oExt.offsetWidth - 2);
-        
+
         //jpf.window.$focus(this);
         this.$focus();
-        
+
         this.parentNode.hasMoved = true;
-        
+
         return false;
     }
-    
+
     /**
-     * @attribute {string} submenu If this attribute is set, the button will 
+     * @attribute {string} submenu If this attribute is set, the button will
      * function like a menu button
      */
     this.$propHandlers["submenu"] = function(value){
         if (!value){
             if (this.value && this.parentNode)
                 menuDown.call(this);
-            
+
             this.$focussable = true;
             this.$setNormalBehaviour();
             this.removeEventListener("mousedown", menuDown);
@@ -309,10 +315,10 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.removeEventListener("keydown", menuKeyHandler, true);
             return;
         }
-        
+
         this.$focussable = false;
         this.$setStateBehaviour();
-        
+
         this.addEventListener("mousedown", menuDown);
         this.addEventListener("mouseover", menuOver);
         this.addEventListener("keydown", menuKeyHandler, true);
@@ -320,14 +326,14 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     //#endif
 
     /**** Public Methods ****/
-    
+
     /**
      * @copy   Widget#setValue
      */
     this.setValue = function(value){
         this.setProperty("value", value);
     };
-    
+
     /**
      * Sets the text displayed as caption of this element.
      *
@@ -337,7 +343,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setCaption = function(value){
         this.setProperty("caption", value);
     };
-    
+
     /**
      * Sets the URL of the icon displayed on this element.
      *
@@ -348,47 +354,47 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setIcon = function(url){
         this.setProperty("icon", url);
     };
-    
+
     /**** Private state methods ****/
-    
+
     this.$enable = function(){
         if (this["default"]) {
             setDefault({});
             if (jpf.window.focussed)
                 jpf.window.focussed.focus(true);
         }
-        
+
         this.$doBgSwitch(1);
     };
-    
+
     this.$disable = function(){
         if (this["default"])
             removeDefault({});
-        
+
         this.$doBgSwitch(4);
-        this.$setStyleClass(this.oExt, "", 
+        this.$setStyleClass(this.oExt, "",
             [this.baseCSSname + "Over", this.baseCSSname + "Down"]);
     };
-    
+
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
         this.isBoolean = true;
         this.$setStyleClass(this.oExt, this.baseCSSname + "Bool");
-        
+
         if (this.value) {
             this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
             this.$doBgSwitch(this.states["Down"]);
         }
     };
-    
+
     this.$setNormalBehaviour = function(){
         this.value     = null;
         this.isBoolean = false;
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
     };
-    
+
     this.$setState = function(state, e, strEvent){
-        if (this.disabled) 
+        if (this.disabled)
             return;
 
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
@@ -401,14 +407,14 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.submenu) {
             bs = this.baseCSSname + "menu";
-            this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""), 
+            this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""),
             [(this.value ? "" : bs + "Down"), bs + "Over"]);
         }
-        
-        //if (state != "Down") 
+
+        //if (state != "Down")
             //e.cancelBubble = true;
     };
-    
+
     this.$clickHandler = function(){
         // This handles the actual OnClick action. Return true to redraw the button.
         if (this.isBoolean && !this.submenu) {
@@ -416,7 +422,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             return true;
         }
     };
-    
+
     //#ifdef __JTOOLBAR || __INC_ALL
     this.$submenu = function(hide, force){
         if (hide) {
@@ -426,31 +432,31 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     //#endif
-    
+
     /**** DOM Hooks ****/
-    
+
     //@todo can't we make this generic for button, bar, page, divider and others, maybe in presentation
     this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
             if (!this.$jmlLoaded)
                 return;
-            
+
             var skinName;
-            if (isUsingParentSkin && !withinParent 
+            if (isUsingParentSkin && !withinParent
               && this.skinName != pNode.skinName
-              || !isUsingParentSkin && (skinName = this.parentNode.$getOption 
+              || !isUsingParentSkin && (skinName = this.parentNode.$getOption
               && this.parentNode.$getOption("main", "button-skin"))) {
                 isUsingParentSkin = true;
                 this.$forceSkinChange(this.parentNode.skinName.split(":")[0] + ":" + skinName);
             }
         });
-    
+
     /**** Init ****/
-    
+
     var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
         var skinName;
-        if (this.parentNode && (skinName = this.parentNode.$getOption 
+        if (this.parentNode && (skinName = this.parentNode.$getOption
           && this.parentNode.$getOption("main", "button-skin"))) {
             isUsingParentSkin = true;
             skinName = this.parentNode.skinName.split(":")[0] + ":" + skinName;
@@ -463,18 +469,18 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$loadSkin();
             this.$focussable = true;
         }
-        
+
         //Build Main Skin
         this.oExt     = this.$getExternal();
         this.oIcon    = this.$getLayoutNode("main", "icon", this.oExt);
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
-        
+
         useExtraDiv = jpf.isTrue(this.$getOption("main", "extradiv"));
         if (!jpf.button.$extradiv && useExtraDiv) {
             (jpf.button.$extradiv = document.createElement("div"))
                 .className = "extradiv"
         }
-        
+
         if (this.tagName == "submit")
             this.action = "submit";
         else if (this.tagName == "reset")
@@ -482,101 +488,101 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             
         this.$setupEvents();
     };
-    
+
     //#ifdef __WITH_SKIN_CHANGE
     this.$skinchange = function(){
         if (this.caption)
             this.$propHandlers["caption"].call(this, this.caption);
-            
+
         if (this.icon)
             this.$propHandlers["icon"].call(this, this.icon);
 
         this.$updateState({reset:1});
         //this.$blur();
-        
+
         //if (this.$focussable !== true && this.hasFocus())
             //jpf.window.$focusLast(this.$focusParent);
     }
     //#endif
-    
+
     this.$loadJml = function(x){
         if (!this.caption && x.firstChild)
             this.setProperty("caption", x.firstChild.nodeValue);
-        
+
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
-        
+
         if (!inited) {
             jpf.JmlParser.parseChildren(this.$jml, null, this);
             inited = true;
         }
     };
-    
+
     //#ifdef __ENABLE_BUTTON_ACTIONS
     //@todo solve how this works with XForms
     this.addEventListener("click", function(e){
         var action = this.action;
-        
+
         //#-ifdef __WITH_HTML5
         if (!action)
             action = this.tagName;
         //#-endif
-        
+
         setTimeout(function(){
             (jpf.button.actions[action] || jpf.K).call(_self);
         });
     });
     //#endif
-    
+
     /* #ifdef __WITH_XFORMS
-    
+
     //XForms support
     if (this.tagName == "trigger") {
         this.addEventListener("click", function(e){
             this.dispatchXFormsEvent("DOMActivate", e);
         });
     }
-    
+
     //XForms support
-    this.action = (this.tagName == "submit") 
-        ? "submit" 
+    this.action = (this.tagName == "submit")
+        ? "submit"
         : x.getAttribute("action");
     this.target = x.getAttribute("target");
-    if (this.action == "submit") 
+    if (this.action == "submit")
         this.submission = x.getAttribute("submission");
-    
+
     this.addEventListener("click", function(e){
-        if (!this.action) 
+        if (!this.action)
             return;
         var target;
-        
+
         if (this.submission) {
             var submission = self[this.submission];
-            if (!submission) 
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Submission", 
-                    "Could not find submission to execute action on '" 
+            if (!submission)
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Submission",
+                    "Could not find submission to execute action on '"
                     + this.submission + "'", this.$jml));
-            
+
             submission.dispatchXFormsEvent("xforms-submit");
-            
+
             return;
         }
-        else 
+        else
             if (this.target) {
                 //#ifdef __DEBUG
-                if (!self[this.target]) 
-                    throw new Error(jpf.formatErrorString(0, this, 
-                        "Clicking on Button", 
-                        "Could not find target to execute action on '" 
-                        + this.target + "' with action '" 
+                if (!self[this.target])
+                    throw new Error(jpf.formatErrorString(0, this,
+                        "Clicking on Button",
+                        "Could not find target to execute action on '"
+                        + this.target + "' with action '"
                         + this.action + "'", this.$jml));
                 //#endif
-                
+
                 target = self[this.target]
             }
             else {
@@ -588,32 +594,32 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                     p = p.parentNode;
                 };
-                
+
                 if (!target) {
                     target = this.getModel();
                     //#ifdef __DEBUG
-                    if (!target) 
-                        throw new Error(jpf.formatErrorString(0, this, 
-                            "Clicking on Button", 
-                            "Could not find target to for action '" 
+                    if (!target)
+                        throw new Error(jpf.formatErrorString(0, this,
+                            "Clicking on Button",
+                            "Could not find target to for action '"
                             + this.action + "'", this.$jml));
                     //#endif
                 }
             }
-        
+
         //#ifdef __DEBUG
         if (!target[this.action])
-            throw new Error(jpf.formatErrorString(0, this, 
-                "Clicking on Button", 
+            throw new Error(jpf.formatErrorString(0, this,
+                "Clicking on Button",
                 "Could not find action on target.", this.$jml));
         //#endif
-        
+
         target[this.action]();
     });
-    
+
     //if(x.getAttribute("condition")) this.condition = x.getAttribute("condition");
     //this.form.registerButton(this.action, this);
-    
+
     #endif*/
 }).implement(jpf.Presentation, jpf.BaseButton);
 
@@ -630,47 +636,47 @@ jpf.button.actions = {
             while(node.parentNode)
                 at = (node = node.parentNode).$at;
         }
-        
+
         (tracker || jpf.window.$at)[action || "undo"]();
     },
-    
+
     "redo" : function(){
         jpf.button.actions.undo.call(this, "redo");
     },
     //#endif
-    
+
     //#ifdef __WITH_MULTISELECT
     "remove" : function(){
         if (this.target && self[this.target])
             self[this.target].remove()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to remove wasn't found or specified:'" 
+            jpf.console.warn("Target to remove wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
-    
+
     "add" : function(){
         if (this.target && self[this.target])
             self[this.target].add()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to add wasn't found or specified:'" 
+            jpf.console.warn("Target to add wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
-    
+
     "rename" : function(){
         if (this.target && self[this.target])
             self[this.target].startRename()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to rename wasn't found or specified:'" 
+            jpf.console.warn("Target to rename wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
     //#endif
-    
+
     //#ifdef __WITH_AUTH
     "login" : function(){
         var parent = this.target && self[this.target]
@@ -680,50 +686,50 @@ jpf.button.actions = {
         var vg = parent.$validgroup || new jpf.ValidationGroup();
         if (!vg.childNodes.length)
             vg.childNodes = parent.childNodes.slice();
-        
+
         var vars = {};
         function loopChildren(nodes){
             for (var node, i = 0, l = nodes.length; i < l; i++) {
                 node = nodes[i];
-                
-                if (node.hasFeature(__VALIDATION__) 
+
+                if (node.hasFeature(__VALIDATION__)
                   && !node.$validgroup && !node.form) {
                     node.setProperty("validgroup", vg);
                 }
-                
+
                 if (node.$jml.getAttribute("type"))
                     vars[node.$jml.getAttribute("type")] = node.getValue();
-                
+
                 if (vars.username && vars.password)
                     return;
-                
+
                 if (node.childNodes.length)
                     loopChildren(node.childNodes);
             }
         }
         loopChildren(parent.childNodes);
-        
+
         if (!vg.isValid())
             return;
-        
+
         if (!vars.username || !vars.password) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, this, 
-                "Clicking the login button", 
+            throw new Error(jpf.formatErrorString(0, this,
+                "Clicking the login button",
                 "Could not find the username or password box"));
             //#endif
-            
+
             return;
         }
 
         jpf.auth.login(vars.username, vars.password);
     },
-    
+
     "logout" : function(){
         jpf.auth.logout();
     },
     //#endif
-    
+
     //#ifdef __WITH_MODEL
     "submit" : function(doReset){
         var parent = this.target && self[this.target]
@@ -787,7 +793,7 @@ jpf.button.actions = {
     //#ifdef __WITH_TRANSACTION
     "ok" : function(){
         var node;
-        
+
         if (this.target) {
             node = self[this.target];
         }
@@ -796,17 +802,17 @@ jpf.button.actions = {
             while (node && !node.hasFeature(__TRANSACTION__)) {
                 node = node.parentNode;
             }
-        
+
             if (!node.hasFeature(__TRANSACTION__))
                 return;
         }
-        
+
         node.ok();
     },
-    
+
     "cancel" : function(){
         var node;
-        
+
         if (this.target) {
             node = self[this.target];
         }
@@ -815,17 +821,17 @@ jpf.button.actions = {
             while (node && !node.hasFeature(__TRANSACTION__)) {
                 node = node.parentNode;
             }
-        
+
             if (!node.hasFeature(__TRANSACTION__))
                 return;
         }
-        
+
         node.cancel();
     },
-    
+
     "apply" : function(){
         var node;
-        
+
         if (this.target) {
             node = self[this.target];
         }
@@ -834,28 +840,28 @@ jpf.button.actions = {
             while (node && !node.hasFeature(__TRANSACTION__)) {
                 node = node.parentNode;
             }
-        
+
             if (!node.hasFeature(__TRANSACTION__))
                 return;
         }
-        
+
         node.apply();
     },
     //#endif
-    
+
     "close" : function(){
         var parent = this.target && self[this.target]
             ? self[this.target]
             : this.parentNode;
-        
+
         while(parent && !parent.close)
             parent = parent.parentNode;
-        
+
         if (parent && parent.close)
             parent.close();
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to close wasn't found or specified:'" 
+            jpf.console.warn("Target to close wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     }
