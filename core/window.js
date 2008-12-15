@@ -1033,8 +1033,10 @@ jpf.WindowImplementation = function(){
         else if (!jmlNode.disabled && jmlNode.focussable !== false) {
             if (jmlNode.$focussable === jpf.KEYBOARD_MOUSE)
                 jpf.window.$focus(jmlNode, {mouse: true});
-            else if (jmlNode.canHaveChildren == 2)
-                jpf.window.$focusLast(jmlNode, {mouse: true});
+            else if (jmlNode.canHaveChildren == 2) {
+                if (!jpf.appsettings.allowBlur)
+                    jpf.window.$focusLast(jmlNode, {mouse: true});
+            }
             else
                 jpf.window.$focusDefault(jmlNode, {mouse: true});
         }

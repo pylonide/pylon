@@ -225,7 +225,8 @@ jpf.Interactive = function(){
             
             jpf.dragmode.isDragging = false;
             
-            _self.dispatchEvent("drag");
+            if (_self.dispatchEvent)
+                _self.dispatchEvent("drag");
         };
         
         if (jpf.isIE)
@@ -299,7 +300,7 @@ jpf.Interactive = function(){
         if (!resizeType)
             return;
 
-        if (_self.dispatchEvent("resizestart", {
+        if (_self.dispatchEvent && _self.dispatchEvent("resizestart", {
             type : resizeType
           }) === false)
             return;
@@ -401,7 +402,8 @@ jpf.Interactive = function(){
             
             jpf.dragmode.isDragging = false;
             
-            _self.dispatchEvent("resize");
+            if (_self.dispatchEvent)
+                _self.dispatchEvent("resize");
         };
         
         if (jpf.isIE)

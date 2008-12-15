@@ -37,7 +37,7 @@
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden.
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
- * @attribute {Boolean} undo-keys               whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
+ * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
  * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
  * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. 
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. 
@@ -172,7 +172,7 @@ jpf.appsettings = {
 
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
-        this.useUndoKeys        = jpf.isTrue(x.getAttribute("undo-keys"));
+        this.useUndoKeys        = jpf.isTrue(x.getAttribute("undokeys"));
 
         //#ifdef __WITH_QUERYAPPEND
         this.queryAppend        = x.getAttribute("query-append");

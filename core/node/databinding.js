@@ -1482,7 +1482,9 @@ jpf.DataBinding = function(){
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
-            if (this.traverse && (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__))) {
+            if (this.traverse && (sb && !sb.model 
+              || !sb && this.hasFeature(__MULTISELECT__))
+              || !initModelId[0] && sb) {
                 initModelId = findModel(x);
 
                 if (initModelId) {

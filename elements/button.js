@@ -455,6 +455,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
+        if (typeof this.focussable == "undefined") {
+            this.focussable = !this.parentNode.parentNode 
+              || this.parentNode.parentNode.tagName != "toolbar";
+        }
+        
         var skinName;
         if (this.parentNode && (skinName = this.parentNode.$getOption
           && this.parentNode.$getOption("main", "button-skin"))) {
@@ -732,46 +737,51 @@ jpf.button.actions = {
 
     //#ifdef __WITH_MODEL
     "submit" : function(doReset){
+        var vg, model;
+        
         var parent = this.target && self[this.target]
             ? self[this.target]
             : this.parentNode;
 
-        if (!parent.$validgroup) {
-            parent.$validgroup = parent.validgroup
-                ? self[parent.validgroup]
-                : new jpf.ValidationGroup();
-        }
-        
-        var vg = parent.$validgroup;
-        if (!vg.childNodes.length)
-            vg.childNodes = parent.childNodes.slice();
-
-        var model;
-        function loopChildren(nodes){
-            for (var node, i = 0, l = nodes.length; i < l; i++) {
-                node = nodes[i];
-                
-                if (node.getModel) {
-                    model = node.getModel();
-                    if (model)
-                        return false;
-                }
-                
-                if (node.childNodes.length)
-                    if (loopChildren(node.childNodes) === false)
-                        return false;
+        if (parent.tagName == "model")
+            model = parent;
+        else {
+            if (!parent.$validgroup) {
+                parent.$validgroup = parent.validgroup
+                    ? self[parent.validgroup]
+                    : new jpf.ValidationGroup();
             }
-        }
-        loopChildren(parent.childNodes);
-        
-        if (!model) {
-            //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, this, 
-                "Finding a model to submit", 
-                "Could not find a model to submit."));
-            //#endif
             
-            return;
+            vg = parent.$validgroup;
+            if (!vg.childNodes.length)
+                vg.childNodes = parent.childNodes.slice();
+    
+            function loopChildren(nodes){
+                for (var node, i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    
+                    if (node.getModel) {
+                        model = node.getModel();
+                        if (model)
+                            return false;
+                    }
+                    
+                    if (node.childNodes.length)
+                        if (loopChildren(node.childNodes) === false)
+                            return false;
+                }
+            }
+            loopChildren(parent.childNodes);
+            
+            if (!model) {
+                //#ifdef __DEBUG
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Finding a model to submit", 
+                    "Could not find a model to submit."));
+                //#endif
+                
+                return;
+            }
         }
         
         if (doReset) {
@@ -779,7 +789,7 @@ jpf.button.actions = {
             return;
         }
 
-        if (!vg.isValid())
+        if (vg && !vg.isValid())
             return;
 
         model.submit();

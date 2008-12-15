@@ -449,6 +449,10 @@ jpf.isNull = function(value){
     return (value == null || !String(value).length);
 };
 
+jpf.isNumber = function(value){
+    return parseFloat(value) == value;
+}
+
 /**
  * Determines wether a string is true in the html attribute sense.
  * @param {mixed} value the variable to check

@@ -154,8 +154,8 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             return false;
         
         this.isOpen = true;
-        
-        this.$propHandlers["maxitems"].call(this, this.getTraverseNodes().length);
+
+        this.$propHandlers["maxitems"].call(this, this.xmlRoot ? this.getTraverseNodes().length : 0);
         
         this.oSlider.style.display = "block";
         this.oSlider.style[jpf.supportOverflowComponent

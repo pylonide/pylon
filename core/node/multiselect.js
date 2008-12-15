@@ -346,10 +346,21 @@ jpf.MultiSelect = function(){
         
         if (xmlNode)
             return callback(xmlNode, jpf.SUCCESS);
-        else if (node.getAttribute("get"))
-            return jpf.getData(node.getAttribute("get"), node, null, callback)
-        else if (node.firstChild)
-            return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
+        else {
+            //#ifdef __DEBUG
+            if (!node) {
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Executing add action",
+                    "Missing add action defined in action rules. Unable to \
+                     perform action."));
+            }
+            //#endif
+            
+            if (node.getAttribute("get"))
+                return jpf.getData(node.getAttribute("get"), node, null, callback)
+            else if (node.firstChild)
+                return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
+        }
         
         return addXmlNode;
     };

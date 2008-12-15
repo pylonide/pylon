@@ -135,7 +135,7 @@ jpf.Rename = function(){
             ? this.$getCaptionXml(renameSubject)
             : this.getNodeFromRule("caption", renameSubject);
 
-        this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] = startEmpty
+        this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] = startEmpty || !xmlNode
             ? ""
             : (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
                 ? unescape(decodeURI(xmlNode.nodeValue))

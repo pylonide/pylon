@@ -58,7 +58,9 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.max   = 100;
 
     this.$booleanProperties["autostart"] = true;
-    this.$supportedProperties.push("value", "min", "max", "autostart");
+    this.$booleanProperties["autohide"] = true;
+    
+    this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
     this.$propHandlers["value"] = function(value){
         this.value = parseInt(value) || 0;
 
@@ -108,8 +110,11 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oSlider.style.display = "none";
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
         
-        if(restart) this.timer = setInterval("jpf.lookup(" + this.uniqueId 
-            + ").start(" + restart_time + ")");
+        if(restart) 
+            this.timer = setInterval("jpf.lookup(" + this.uniqueId 
+                + ").start(" + restart_time + ")");
+        if (this.autohide)
+            this.hide();
     };
     
     /**

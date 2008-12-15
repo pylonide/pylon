@@ -374,7 +374,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     // Too slow for IE
     
     this.$focus = function(){
-        if (!this.oExt || (jpf.isIE && useiframe)) //@todo fix this by fixing focussing for this component
+        if (!this.oExt || (jpf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
@@ -389,7 +389,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.stopRename(null, true);
         //#endif
 
-        if (!this.oExt || (jpf.isIE && useiframe)) //@todo fix this by fixing focussing for this component
+        if (!this.oExt || (jpf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);

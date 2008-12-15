@@ -834,7 +834,8 @@ jpf.JmlElement.propHandlers = {
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
-                    node.setProperty("disabled", value);
+                    if (node.nodeFunc == jpf.NODE_VISIBLE)
+                        node.setProperty("disabled", value);
 
                     if (node.childNodes.length)
                         loopChildren(node.childNodes);
