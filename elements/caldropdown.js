@@ -224,7 +224,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     /**** Public methods ****/
 
     /**
-     * Toggles the visibility of the container with the list elements. It opens
+     * Toggles the visibility of the container with the calendar. It opens
      * or closes it using a slide effect.
      */
     this.slideToggle = function(e) {
@@ -254,7 +254,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
 
         this.oSlider.style.height = (this.sliderHeight - 1) + "px";
-        this.oSlider.style.width  = (this.oExt.offsetWidth - 2 + 1) + "px";
+        this.oSlider.style.width  = (this.oExt.offsetWidth - 1) + "px";
 
         this.redraw(_month, _year);
 
@@ -274,7 +274,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Hides the container with the list elements using a slide effect.
+     * Hides the container with the calendar using a slide effect.
      */
     this.slideUp = function() {
         if (this.isOpen == 2) return false;
