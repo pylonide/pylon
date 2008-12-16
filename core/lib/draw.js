@@ -46,17 +46,37 @@ jpf.draw = {
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
                 ",dx = ",ml?ml:0,
                 ",dy = ",mt?mt:0,
+                ",mx = m&&m.x, my = m&&m.y",
                 ",db = dy+dh, dr = dx+dw",
                 ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
                 ",v,t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
                 ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p;\n"].join('');
     },
+    
+    beginLayer2D : function(l,ml,mt,mr,mb){
+        return [
+            this.beginLayer(l),
+            this.vars2D(ml,mt,mr,mb)
+        ].join('');
+    },
+    
+    endLayer2D : function(){ return this.endLayer(); },
+
     vars2D : function(ml,mt,mr,mb){
         return [
             this.vars(ml,mt,mr,mb),
             "var x, y, i, j;\n"
         ].join('');
     },
+    
+    beginLayer3D : function(l,maxoverlap,ml,mt,mr,mb){
+        return [
+            this.beginLayer(l),
+            this.vars3D(maxoverlap,ml,mt,mr,mb)
+        ].join('');
+    },
+    
+    endLayer3D : function(){ return this.endLayer(); },
     
     vars3D : function(maxoverlap,ml,mt,mr,mb){
         if(l.style.persp<0){ // we have ortho perspective
@@ -906,11 +926,76 @@ jpf.draw = {
     draw3D : function(x,y,z,w,h,d){
         return '';
     },
+
+    //----------------------------------------------------------------------
+    
+    beginMouseState : function( style, sthis, func, nargs ){
+        var s = [], l = this.l;
+
+        this.mousestyle = style;
+        this.mousethis = sthis;
+        this.mousefunc = func;
+        this.mousestates = [];
+        var v = style.$statelist, i, j, t;
+        if(!v || !v.length) return '';
+        
+        v = this.mousestates = v.slice(0);
+        if(v[0]!=style)
+            v.unshift(style);
+
+        if(!l._mousestyles)l._mousestyles = [];
+        for(i = 0, j = v.length;i<j;i++){
+           (t=v[i])._mid = l._mousestyles.push(t)-1;
+        }
+        
+        s.push("_s = l._mousestyles[",style._mid,"], _sl = _s.$storelist, _sp = _s.$speedhash;");
+        
+        return s.join('');
+    },
+    
+    checkMouseState:function(state,time) {
+        var a=[],t,i,j,v = this.mousestates, s;
+
+        if(!v || !v.length){
+            for(i = 2, j = arguments.length;i<j;i++)a.push(arguments[i]);
+            a.push(true);
+            this.style = this.mousestyle;
+            s = this.mousefunc.apply(this.mousethis,a);
+            this.style = 0;
+            return s;
+        }
+        s = ["t=(n-",time,")*(_sp[_t=_sl[",state,"]]||100000);"];
+        for(i = 2, j = arguments.length;i<j;i++){
+            a.push( t = "_s"+(i-1) );
+            s.push( t,"=",arguments[i],";");
+        }
+        a.push(true);
+        
+        s.push("switch(_t?_t._mid:0){" );
+        for(i = 0, j = v.length;i<j;i++){
+            style = v[i]; 
+            this.style = style;
+            if(v[i].active)
+                s[s.length]=[
+                "case ",style._mid,":{",
+                     this.mousefunc.apply(this.mousethis,a),
+                "}break;"].join('');
+        }
+        s.push("};");
+        this.style = 0;
+        return s.join('');
+    },
+    
+    $endMouseState : function(){
+        this.mousestyle = 0;
+        return '';
+    },
     
     //----------------------------------------------------------------------
     
-    drawPart : function(x,y,w,h,rs,rw,ds,dw){
+    drawPart : function(x,y,w,h,rs,rw,m){
         var t = this.style;
+        var ds = '0', dw = '1';
         var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
         switch(t.shape){
             default:
@@ -935,21 +1020,29 @@ jpf.draw = {
                 // lets draw an ellipse with rs and rw phases
                 // now we have an offset y and a size y how do we deal with that?
                 if(ds!='0'){
-                    return [
-                        this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+
-                                    ds+")*(_x7="+w+")+("+x+")"+gx(t,'+_x7*(','move',')'),
-                                    "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"+gy(t,'+_y7*(','move',')') ),
-                        this.ellipse( '_x6','_y6','_x7*(_x3='+dw+')','_y7*_x3','_x9','_y9',1),
-                        this.close()].join('');
+                    x = "_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+
+                                    ds+")*(_x7="+w+")+("+x+")"+gx(t,'+_x7*(','move',')');
+                    y = "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"+gy(t,'+_y7*(','move',')');
+                    w = '_x7*(_x3='+dw+')';
+                    h = '_y7*_x3';
+                    rs = '_x9';
+                    rw = '_y9';
+                }else{
+                    x = "_x6=("+x+")";
+                    y = "_y6=("+y+")";
+                    w = dw=='1'?'('+w+')':'('+w+')*(_x3='+dw+')';
+                    h = dw=='1'?'('+h+')':'('+h+')*_x3';
+                }
+                if(m){
+                    
+                    return '';
                 }else{
                     return [
-                        this.moveTo("_x6=("+x+")","_y6=("+y+")"),
-                        this.ellipse( '_x6','_y6',dw=='1'?'('+w+')':'('+w+')*(_x3='+dw+')',
-                                     dw=='1'?'('+h+')':'('+h+')*_x3',rs,rw,1),
+                        this.moveTo(x,y),
+                        this.ellipse('_x6','_y6',w,h,rs,rw,1),
                         this.close()].join('');
                 }
-            
-            /*
+                /*
                 if(gx(t,'','scale','','1')!='1'){
                     rs=['_x5=(',gx(t,'(','offset',')+'),'(',rs,')','+',
                         gx(t,'(','center',')','0.5'),'*(_x3=',rw,')',
@@ -973,7 +1066,7 @@ jpf.draw = {
                 // now we have an offset y and a size y how do we deal with that?
                 if(ds!='0'){
                     return [
-                        this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+w+")+("+x+")",
+this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+w+")+("+x+")",
                                     "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"),
                         this.ellipse( '_x6','_y6','_x7*(_x3='+dw+')','_y7*_x3','_x9','_y9',1),
                         this.close()].join('');
@@ -989,7 +1082,7 @@ jpf.draw = {
     
     //----------------------------------------------------------------------
     
-    draw2D : function(x,y,w,h){
+    draw2D : function(x,y,w,h,m){
         // css stylable drawing
         var t = this.style;
         var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
@@ -1082,6 +1175,9 @@ jpf.draw = {
     },
     
     $endDraw : function() {
+        if(this.mousemode){
+            return this.$endMouse();
+        }
         if(this.statemode){
             return this.$endState();
         }

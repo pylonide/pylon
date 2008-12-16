@@ -93,6 +93,10 @@ jpf.draw.vml = {
         ].join('');
     },
 
+    clear : function(){
+        return '';
+    },
+    
     endLayer : function(){
         var l = this.l;
         var s = [this.$endDraw()];
@@ -132,7 +136,9 @@ jpf.draw.vml = {
         var l=this.l, html = l._htmljoin, i, t,
             shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
         style._path = [];
-        style._id = l._styles.push(style)-1;
+        if(style._id === undefined){
+            style._id = l._styles.push(style)-1;
+        }
         this.style = style;
 
         // find a suitable same-styled other shape so we minimize the VML nodes
@@ -385,13 +391,13 @@ jpf.draw.vml = {
         this.stateargs = nargs;
         this.statefunc = func;
     
-        var v = style.$statelist, i, l;
+        var v = style.$statelist, i, n;
         if(!v || !v.length) return s.join('');
     
         s.push("_sh = _s.$statehash, _sl = _s.$storelist,",
                "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n");
         
-        for(i = 0, l = v.length;i<l;i++){
+        for(i = 0, n = v.length;i<n;i++){
             s[s.length]="_sl["+i+"].length=0;";
         }
         return s.join('');
@@ -431,13 +437,13 @@ jpf.draw.vml = {
         this.statemode = 0;
         var style = this.style, s = [this.$endDraw()];
 
-        var v = style.$statelist, i, l, m, n = this.stateargs+2, a = [];
+        var v = style.$statelist, i, j, l, m, n = this.stateargs+2, a = [];
         if(!v || !v.length)return s.join('');
         
         for(i=2;i<n;i++){
             a.push("_sh[_sv+"+i+"]");
         }
-        for(i = 0, l = v.length;i<l;i++){
+        for(i = 0, j = v.length;i<j;i++){
             style = v[i]; 
             s[s.length]=[
               "if((_st=(_sh=_sl["+i+"]).length)>0){",
