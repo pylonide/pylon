@@ -78,7 +78,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.multiselect   = false;
 
     this.outputFormat  = "ddd mmm dd yyyy HH:MM:ss";
-    this.value         = null;
+    this.captionFormat = "yyyy/mm/dd";
 
     this.sliderHeight  = 0;
 
@@ -110,7 +110,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var _self = this;
 
-    this.$supportedProperties.push("initial-message", "output-format");
+    this.$supportedProperties.push("initial-message", "output-format",
+                                   "default", "caption-format");
 
     /**
      * @attribute {String} initial-message the message displayed by this element
@@ -123,11 +124,25 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["output-format"] = function(value) {
-        this.setProperty("value", new Date().format(this.outputFormat = value));
+        if (this.value) {
+            this.setProperty("value", Date(this.value).format(this.outputFormat = value));
+        }
+        else {
+            this.outputFormat = value
+        }
+    }
+    
+    this.$propHandlers["caption-format"] = function(value) {
+        if (_year && _month && _day) {
+            this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(value));
+        }
+        else {
+            this.captionFormat = value
+        }
     }
 
     this.$propHandlers["value"] = function(value) {
-        this.$setLabel(value);
+        this.value = value;
 
         var date = Date.parse(value, this.outputFormat);
         //#ifdef __DEBUG
@@ -140,6 +155,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _day   = date.getDate();
         _month = date.getMonth();
         _year  = date.getFullYear();
+
+        this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
 
         this.redraw(_month, _year);
     }
@@ -800,8 +817,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.selected && this.initialMsg)
             this.$setLabel();
 
-        if (!x.getAttribute("output-format") && !x.getAttribute("value")) {
-            this.setProperty("value", new Date().format(this.outputFormat));
+        if (typeof this.value == "undefined") {
+            var def = this["default"] || "today";
+
+            switch(def) {
+                case "today":
+                    this.setProperty("value", new Date().format(this.outputFormat));
+                    break;
+            }
+            
         }
     };
 
