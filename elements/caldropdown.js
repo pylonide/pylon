@@ -758,10 +758,17 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.$getNewContext("button");
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
-                    if (buttons[i] !== "status")
+                    if (buttons[i] !== "status") {
                         btn.setAttribute("onmousedown", 'jpf.lookup('
-                                         + this.uniqueId + ').'
-                                         + buttons[i] + '()');
+                            + this.uniqueId
+                            + ').' + buttons[i] + '()');
+                        btn.setAttribute("onmouseover", 'jpf.lookup('
+                            + this.uniqueId
+                            + ').$setStyleClass(this, "hover");');
+                        btn.setAttribute("onmouseout", 'jpf.lookup('
+                            + this.uniqueId
+                            + ').$setStyleClass(this, "", ["hover"]);');
+                    }
                 }
             }
 
@@ -774,8 +781,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         });
 
-        this.oNavigation = this.$getLayoutNode("container", "navigation",  this.oSlider);
-        this.oDow        = this.$getLayoutNode("container", "daysofweek",  this.oSlider);
+        this.oNavigation = this.$getLayoutNode("container", "navigation", this.oSlider);
+        this.oDow = this.$getLayoutNode("container", "daysofweek", this.oSlider);
 
         //Set up the popup
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
@@ -784,8 +791,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
-
-        this.itemHeight = this.$getOption("main", "item-height") || 18.5;
 
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
