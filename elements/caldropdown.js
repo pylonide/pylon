@@ -29,13 +29,13 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *     <j:caldropdown top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
+ *     <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
  * </code>
  * 
  * @constructor
  * @addnode elements:caldropdown
  *
- * @attribute {String}   date-format   It's a style of displaying date,
+ * @attribute {String}   output-format It's a style of displaying date,
  *                                     default is ddd mmm dd yyyy HH:MM:ss
  *     Possible values:
  *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a default date format
@@ -63,25 +63,25 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
-    
+
     /**** Properties and Attributes ****/
-    
+
     this.dragdrop      = false;
     this.reselectable  = true;
     this.$focussable   = true;
     this.autoselect    = false;
     this.multiselect   = false;
-    
-    this.outputFormat    = "ddd mmm dd yyyy HH:MM:ss";
+
+    this.outputFormat  = "ddd mmm dd yyyy HH:MM:ss";
     this.value         = null;
-    
-    this.sliderHeight = 0;
-    
+
+    this.sliderHeight  = 0;
+
     var _day          = null,
         _month        = null,
         _year         = null,
@@ -92,8 +92,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         _currentYear  = null,
         _numberOfDays = null,
         _dayNumber    = null;
-        
-    var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
@@ -119,15 +117,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
      * when it doesn't have a value set. This property is inherited from parent 
      * nodes. When none is found it is looked for on the appsettings element. 
      */
-    this.$propHandlers["initial-message"] = function(value){
+    this.$propHandlers["initial-message"] = function(value) {
         this.initialMsg = value 
             || jpf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
     };
-    
+
     this.$propHandlers["output-format"] = function(value) {
         this.setProperty("value", new Date().format(this.outputFormat = value));
     }
-    
+
     this.$propHandlers["value"] = function(value) {
         this.$setLabel(value);
 
@@ -145,7 +143,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.redraw(_month, _year);
     }
-    
+
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
         e = e || event;
@@ -222,15 +220,14 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     }, true);
     //#endif
-   
-    
+
     /**** Public methods ****/
-    
+
     /**
      * Toggles the visibility of the container with the list elements. It opens
      * or closes it using a slide effect.
      */
-    this.slideToggle = function(e){
+    this.slideToggle = function(e) {
         if (!e) e = event;
 
         if (this.isOpen)
@@ -242,22 +239,21 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Shows the container with the list elements using a slide effect.
      */
-    this.slideDown = function(e){
+    this.slideDown = function(e) {
         if (this.dispatchEvent("slidedown") === false)
             return false;
-        
+
         this.isOpen = true;
         
         this.oSlider.style.display = "block";
         this.oSlider.style[jpf.supportOverflowComponent
             ? "overflowY"
             : "overflow"] = "hidden";
-        
+
         this.oSlider.style.display = "";
         this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
-        
-        //var pos = jpf.getAbsolutePosition(this.oExt);
-        this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
+
+        this.oSlider.style.height = (this.sliderHeight - 1) + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2 + 1) + "px";
 
         this.redraw(_month, _year);
@@ -269,83 +265,77 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             ref     : this.oExt,
             width   : this.oExt.offsetWidth + 1,
             height  : this.sliderHeight,
-            callback: function(container){
-                container.style[jpf.supportOverflowComponent 
+            callback: function(container) {
+                container.style[jpf.supportOverflowComponent
                     ? "overflowY"
                     : "overflow"] = "auto";
             }
         });
     };
-    
+
     /**
      * Hides the container with the list elements using a slide effect.
      */
-    this.slideUp = function(){
+    this.slideUp = function() {
         if (this.isOpen == 2) return false;
         if (this.dispatchEvent("slideup") === false) return false;
-        
+
         this.isOpen = false;
         if (this.selected) {
             var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
-            if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
+            if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
-        
+
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
         jpf.popup.hide();
         return false;
     };
-    
+
     /**** Private methods and event handlers ****/
 
-    this.$setLabel = function(value){
+    this.$setLabel = function(value) {
         //#ifdef __SUPPORT_SAFARI
         this.oLabel.innerHTML = value || this.initialMsg || "";
         /* #else
 
         #endif */
-        
+
         this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
             [!value ? "" : this.baseCSSname + "Initial"]);
     };
 
     this.addEventListener("afterselect", function(e) {
         if (!e) e = event;
-        
+
         this.slideUp();
         if (!this.isOpen)
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"]);
-        
+
         this.$setLabel(this.applyRuleSetOnNode("value", this.selected))
-        
+
         //#ifdef __WITH_MULTIBINDING
         this.$updateOtherBindings();
         //#endif
-        
+
         //#ifdef __JSUBMITFORM || __INC_ALL
         if (this.hasFeature(__VALIDATION__) && this.form) {
             this.validate();
         }
         //#endif
     });
-    
-    this.addEventListener("afterdeselect", function(){
+
+    this.addEventListener("afterdeselect", function() {
         this.$setLabel("");
     });
-    
+
     function setMaxCount() {
         if (this.isOpen == 2)
             this.slideDown();
     }
 
-    /*this.addEventListener("afterload", setMaxCount);
-    this.addEventListener("xmlupdate", function(){
-        setMaxCount.call(this);
-        this.$setLabel(this.applyRuleSetOnNode("caption", this.selected));
-    });*/
-    
     //#ifdef __WITH_MULTIBINDING
     //For MultiBinding
-    this.$showSelection = function(value){
+    this.$showSelection = function(value) {
         //Set value in Label
         var bc = this.$getMultiBind();
 
@@ -372,12 +362,10 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
                 value = sValue2 || sValue;
             }
         }
-
-        //this.$setLabel(value || "");
     };
-    
+
     //I might want to move this method to the MultiLevelBinding baseclass
-    this.$updateOtherBindings = function(){
+    this.$updateOtherBindings = function() {
         if (!this.multiselect) {
             // Set Caption bind
             var bc = this.$getMultiBind(), caption;
@@ -393,9 +381,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     //#endif
-    
+
     // Private functions
-    this.$blur = function(){
+    this.$blur = function() {
         this.slideUp();
         //this.oExt.dispatchEvent("mouseout")
         if (!this.isOpen)
@@ -410,31 +398,31 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }*/
     
-    this.$setClearMessage = function(msg){
-        if(msg)
+    this.$setClearMessage = function(msg) {
+        if (msg)
             this.$setLabel(msg);
     };
     
-    this.$removeClearMessage = function(){
+    this.$removeClearMessage = function() {
         this.$setLabel("");
     };
 
     //#ifdef __JSUBMITFORM || __INC_ALL
-    this.addEventListener("slidedown", function(){
+    this.addEventListener("slidedown", function() {
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
         if (!this.form || !this.form.xmlActions || this.xmlRoot)
             return;
         var loadlist = this.form.xmlActions
             .selectSingleNode("LoadList[@element='" + this.name + "']");
         if (!loadlist) return;
-        
+
         this.isOpen = 2;
         this.form.processLoadRule(loadlist, true, [loadlist]);
-        
+
         return false;
     });
     //#endif	
-    
+
     this.addEventListener("popuphide", this.slideUp);
 
     var isLeapYear = function(year) {
@@ -442,7 +430,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             ? true
             : false;
     };
-    
+
     this.redraw = function(month, year) {
         _currentMonth = month;
         _currentYear  = year;
@@ -466,7 +454,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         var date = new Date(year, month);
 
         _numberOfDays = months[date.getMonth()].number;
-        if (isLeapYear(year) && date.getMonth() == 1) 
+        if (isLeapYear(year) && date.getMonth() == 1)
             _numberOfDays++;
 
         _dayNumber = new Date(year, month, 1).getDay();
@@ -497,20 +485,22 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        this.sliderHeight = 27;
+        this.sliderHeight = 22; //navigators bar height
         var squareSize = Math.floor((_width - 37) / 8);
 
         var daysofweek = this.oDow.childNodes;
         this.oDow.style.width = (squareSize * 8 + 32) + "px";
 
-        this.sliderHeight += (Math.ceil(squareSize / 2) + 3);
+        this.sliderHeight += Math.floor(squareSize / 4 + 6)
+            + Math.max(squareSize / 2 - 3 - (Math.floor(squareSize / 4 + 5)), 0);
+
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].style.width  = squareSize + "px";
-                daysofweek[i].style.height = Math.floor((squareSize / 2 + 12) / 2)
+                daysofweek[i].style.height = Math.floor(squareSize / 4 + 6)
                                            + "px";
-                /*daysofweek[i].style.paddingTop = Math.max(squareSize/2 - 3
-                    - (Math.floor((squareSize / 2 + 12 -2) / 2)), 0) + "px";*/
+                daysofweek[i].style.paddingTop = Math.max(squareSize / 2 - 3
+                    - (Math.floor(squareSize / 4 + 5)), 0) + "px";
 
                 daysofweek[i].style.fontSize = _width  <= 220 ? "9px" : "11px";
 
@@ -528,7 +518,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
             rows[i].style.width = (squareSize * 8 + 32 - jpf.getDiff(rows[i])[0])
                                 + "px";
-            if(!jpf.isGecko) {
+            if (!jpf.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
 
@@ -540,10 +530,11 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
                     continue;
                 z++;
                 cells[j].style.width = squareSize + "px";
-                cells[j].style.height = Math.floor((squareSize + 12)/2) + "px";
-                cells[j].style.paddingTop = squareSize 
-                                          - (Math.floor((squareSize + 12)/2))
+                cells[j].style.height = Math.floor((squareSize + 12) / 2) + "px";
+                cells[j].style.paddingTop = squareSize
+                                          - (Math.floor((squareSize + 12) / 2))
                                           + "px";
+
                 cells[j].style.margin = z%8 == 0 && z !== 1 
                     ? "1px 0 1px 0"
                     : "1px 2px 1px 0";
@@ -596,7 +587,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
     };
-    
+
     /**
      * Change choosen date with selected and highlight its cell in calendar
      * component
@@ -685,7 +676,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**** Init ****/
     
-    this.$draw = function(){
+    this.$draw = function() {
         this.$getNewContext("main");
         this.$getNewContext("container");
         
@@ -693,19 +684,21 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId
+        this.oExt = this.$getExternal(null, null, function(oExt) {
+            oExt.setAttribute("onmouseover", 'var o = jpf.lookup('
+                + this.uniqueId
                 + ');o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
-            oExt.setAttribute("onmouseout", 'var o = jpf.lookup(' + this.uniqueId
+            oExt.setAttribute("onmouseout", 'var o = jpf.lookup('
+                + this.uniqueId
                 + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
-            
+
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
-            
+
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
@@ -714,12 +707,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         });
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
-        
+
         //#ifdef __SUPPORT_SAFARI
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif
-        
+
         this.oIcon = this.$getLayoutNode("main", "icon", this.oExt);
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
@@ -780,34 +773,34 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function(){
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
             }
         });
-        
+
         this.oNavigation = this.$getLayoutNode("container", "navigation",  this.oSlider);
         this.oDow        = this.$getLayoutNode("container", "daysofweek",  this.oSlider);
 
         //Set up the popup
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
-        
+
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
-        
+
         this.itemHeight = this.$getOption("main", "item-height") || 18.5;
-        
+
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
     };
-    
-    this.$loadJml = function(x){
+
+    this.$loadJml = function(x) {
         if (!this.selected && this.initialMsg)
             this.$setLabel();
-            
+
         if (!x.getAttribute("output-format") && !x.getAttribute("value")) {
             this.setProperty("value", new Date().format(this.outputFormat));
         }
     };
-    
-    this.$destroy = function(){
+
+    this.$destroy = function() {
         jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
