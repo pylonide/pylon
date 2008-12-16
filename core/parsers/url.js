@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
- 
+
 //#ifdef __PARSER_URL
 
 /**
@@ -44,21 +44,22 @@
  * @since       1.0
  */
 jpf.url = function(str) {
-    if (str.indexOf(":") == -1) {
-        var base = new jpf.url(window.location.toString());
+    var base;
+    if (str.indexOf(":") == -1 && (base = window.location.toString()).indexOf(":") != -1) {
+        base = new jpf.url(base);
         str = jpf.getAbsolutePath("http://" + base.host + "/"
             + (base.directory.charAt(base.directory.length - 1) == "/"
                  ? base.directory
                  : base.directory + '/'), str);
     }
-    var	o    = jpf.url.options,
+    var o    = jpf.url.options,
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
     i        = 14;
     this.uri = str.toString(); //copy string
-    
+
     while (i--)
         this[o.key[i]] = m[i] || "";
-    
+
     this[o.q.name] = {};
     var _self = this;
     this[o.key[12]].replace(o.q.parser, function($0, $1, $2){
@@ -71,20 +72,20 @@ jpf.url.prototype = {
     /**
      * Checks if the same origin policy is in effect for this URI.
      * @link http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
-     * 
+     *
      * @type {Boolean}
      */
     isSameLocation: function(){
         // filter out anchors
-        if (this.uri.length && this.uri.charAt(0) == "#") 
+        if (this.uri.length && this.uri.charAt(0) == "#")
             return false;
         // totally relative -- ../../someFile.html
-        if (!this.protocol && !this.port && !this.host) 
+        if (!this.protocol && !this.port && !this.host)
             return true;
-        
+
         // scheme relative with port specified -- foo.com:8080
-        if (!this.protocol && this.host && this.port 
-          && window.location.hostname == this.host 
+        if (!this.protocol && this.host && this.port
+          && window.location.hostname == this.host
           && window.location.port     == this.port) {
             return true;
         }
@@ -94,8 +95,8 @@ jpf.url.prototype = {
           && window.location.port     == 80) {
             return true;
         }
-        return window.location.protocol == (this.protocol + ":") 
-            && window.location.hostname == this.host 
+        return window.location.protocol == (this.protocol + ":")
+            && window.location.hostname == this.host
             && (window.location.port    == this.port || !window.location.port && !this.port);
     }
 };
@@ -103,7 +104,7 @@ jpf.url.prototype = {
 jpf.url.options = {
     strictMode: false,
     key: ["source", "protocol", "authority", "userInfo", "user", "password",
-          "host", "port", "relative", "path", "directory", "file", "query", 
+          "host", "port", "relative", "path", "directory", "file", "query",
           "anchor"],
     q  : {
         name  : "queryKey",

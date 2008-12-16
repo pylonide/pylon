@@ -64,9 +64,10 @@ jpf.JmlParser = {
         //#endif
 
         //First pass parsing of all JML documents
-        for (var docs = [x], i = 0; i < jpf.includeStack.length; i++)
+        for (var docs = [x], i = 0; i < jpf.includeStack.length; i++) {
             if(jpf.includeStack[i].nodeType)
                 docs.push(jpf.includeStack[i]);
+        }
 
         this.docs = docs;
         this.parseSettings(docs);
