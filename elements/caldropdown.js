@@ -453,8 +453,11 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = year;
         _width = this.oExt.offsetWidth;
 
-        this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
-            - jpf.getDiff(this.oNavigation)[0]) + "px";
+        var temp = Math.floor((_width - 36) / 8) * 8
+                 + 32 - jpf.getDiff(this.oNavigation)[0];
+
+        if (temp >= 0)
+            this.oNavigation.style.width = temp + "px";
 
         var w_firstYearDay = new Date(year, 0, 1);
         var w_dayInWeek    = w_firstYearDay.getDay();
