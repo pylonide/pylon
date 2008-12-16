@@ -29,13 +29,13 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-06" />
+ *     <j:calendar top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06" />
  * </code>
  * 
  * @constructor
  * @addnode elements:calendar
  *
- * @attribute {String}   date-format   It's a style of displaying date,
+ * @attribute {String}   output-format   It's a style of displaying date,
  *                                     default is ddd mmm dd yyyy HH:MM:ss
  *     Possible values:
  *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a default date format
@@ -71,7 +71,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
-    this.dateFormat    = "ddd mmm dd yyyy HH:MM:ss";
+    this.outputFormat    = "ddd mmm dd yyyy HH:MM:ss";
     this.value         = null;
 
     var _day          = null,
@@ -109,14 +109,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$booleanProperties["disableremove"] = true;
 
     this.$supportedProperties.push("disableremove", "initial-message",
-        "value", "date-format", "width");
+        "value", "output-format", "width");
 
-    this.$propHandlers["date-format"] = function(value) {
-        this.setProperty("value", new Date().format(this.dateFormat = value));
+    this.$propHandlers["output-format"] = function(value) {
+        this.setProperty("value", new Date().format(this.outputFormat = value));
     }
 
     this.$propHandlers["value"] = function(value) {
-        var date = Date.parse(value, this.dateFormat);
+        var date = Date.parse(value, this.outputFormat);
         //#ifdef __DEBUG
         if (!date) {
             throw new Error(jpf.formErrorString(this, "Parsing date",
@@ -413,7 +413,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes,
-            _seconds).format(this.dateFormat));
+            _seconds).format(this.outputFormat));
     };
 
     /**
@@ -470,7 +470,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
      * Select today's date on calendar component
      */
     this.today = function() {
-        this.setProperty("value", new Date().format(this.dateFormat));
+        this.setProperty("value", new Date().format(this.outputFormat));
     };
 
     /**** Init ****/
@@ -543,8 +543,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.selected && this.initialMsg)
             this.$setLabel();
 
-        if (!x.getAttribute("date-format") && !x.getAttribute("value")) {
-            this.setProperty("value", new Date().format(this.dateFormat));
+        if (!x.getAttribute("output-format") && !x.getAttribute("value")) {
+            this.setProperty("value", new Date().format(this.outputFormat));
         }
     };
     
