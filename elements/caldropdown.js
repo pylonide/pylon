@@ -268,6 +268,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
      * Shows the container with the list elements using a slide effect.
      */
     this.slideDown = function(e) {
+
         if (this.dispatchEvent("slidedown") === false)
             return false;
 
@@ -281,8 +282,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oSlider.style.display = "";
         this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
 
-        this.oSlider.style.height = (this.sliderHeight - 1) + "px";
-        this.oSlider.style.width  = (this.oExt.offsetWidth - 1) + "px";
+        this.oSlider.style.height = (this.sliderHeight > 0
+            ? this.sliderHeight - 1
+            : 0) + "px";
+
+        this.oSlider.style.width  = (this.oExt.offsetWidth > 0 
+            ? this.oExt.offsetWidth - 1
+            : 0) + "px";
 
         if (!jpf.isIE) {
             this.overwriteEvents();
@@ -817,7 +823,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oNavigation = cal["oNavigation"];
             this.oDow = cal["oDow"];
 
-            jpf.caldropdown.refcount++;
+            //jpf.caldropdown.refcount++;
 
             //Set up the popup
             this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
@@ -826,7 +832,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         }
         else {
-            jpf.caldropdown.refcount = 0;
+            //jpf.caldropdown.refcount = 0;
         }
 
        this.oSlider = this.$getExternal("container", null, function(oExt1) {
@@ -959,7 +965,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
-        jpf.caldropdown.refcount--;
+        //jpf.caldropdown.refcount--;
     };
 }).implement(
     jpf.Presentation, 
