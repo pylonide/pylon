@@ -39,8 +39,8 @@
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
  * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
  * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
- * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. 
- * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. 
+ * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
+ * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
@@ -194,22 +194,9 @@ jpf.appsettings = {
 
         // #ifdef __WITH_IEPNGFIX
         this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
-        if (this.iePngFix) {
-            // #ifndef __PACKAGED
-            var sPath = jpf.basePath + "elements/appsettings/iepngfix.htc";
-            /* #else
-            var sPath = jpf.basePath + "recources/iepngfix.htc";
-            #endif */
-            /* #ifdef __WITH_CDN
-            sPath = jpf.CDN + jpf.VERSION + "/resources/iepngfix.htc";
-            #endif */
-
-            // #ifdef __WITH_CSS
-            jpf.importCssString(document, "img, .pngfix, input { behavior: url('"
-                + sPath + "') }");
-            // #endif
-            jpf.iePngFix.init();
-        }
+        if (this.iePngFix)
+            jpf.belatedpngfix.createVmlNameSpace().createVmlStyleSheet()
+                .fix('img, .pngfix, input');
         // #endif
 
         //#ifdef __DESKRUN

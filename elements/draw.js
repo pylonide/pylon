@@ -22,7 +22,7 @@
 /**
  * @experimental
  */
-jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
+jpf.draw = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
     engine = null;
     mode = "draw";
@@ -55,7 +55,7 @@ jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
     this.load = function(data) {
         if(jpf.supportSVG){
             var l = data.childNodes.length;
-      
+
             for(var i = 0; i < l; i++){
                 if(data.childNodes[i].nodeType == 1){
                     engine.area.appendChild(data.childNodes[i].cloneNode(true));
@@ -69,10 +69,10 @@ jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        engine = jpf.supportSVG 
+        engine = jpf.supportSVG
                 ? jpf.draw.svgDraw
                 : jpf.draw.vmlDraw;
-                
+
         engine.init(this, this.oInt);
 
         /* Events */
@@ -105,8 +105,8 @@ jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
                 x = e.layerX - abs[0];
 
                 sh = cy - y;
-                sw = cx - x;    
- 
+                sw = cx - x;
+
                 sx = mode == "draw" ? (sw > 0 ? x : cx) : -1 * sw;
                 sy = mode == "draw" ? (sh > 0 ? y : cy) : -1 * sh;
 
@@ -178,7 +178,7 @@ jpf.draw.svgDraw = {
             this.element.setAttribute("y", y);
             this.element.setAttribute("width", w);
             this.element.setAttribute("height", h);
-        }    
+        }
 
         this.move = function(x, y){
             this.element.setAttribute("x", x);
