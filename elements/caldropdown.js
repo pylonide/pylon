@@ -35,23 +35,36 @@
  * @constructor
  * @addnode elements:caldropdown
  *
- * @attribute {String}   output-format It's a style of displaying date,
- *                                     default is ddd mmm dd yyyy HH:MM:ss
+ * @attribute {String}   output-format   It's a style of returned date, default yyyy-mm-dd
  *     Possible values:
- *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a default date format
- *     m/d/yy                          (11/6/08), It's a short date format
- *     mmm d, yyyy                     (Nov 6, 2008), It's a medium date format
- *     mmmm d, yyyy                    (November 6, 2008), It's a long date format
- *     dddd, mmmm d, yyyy              (Thursday, November 6, 2008), It's a full date format
- *     h:MM TT                         (2:31 PM), It's a short time format
- *     h:MM:ss TT                      (2:32:23 PM), It's a medium time format
- *     h:MM:ss TT Z                    (2:35:06 PM GMT+01000), It's a long time format
- *     yyyy-mm-dd                      (2008-11-06), It's a iso date format
- *     HH:MM:ss                        (14:36:13), It's a iso time format
- * @attribute {String}   value         It's a date wrote in allowed format.
- *                                     If value propertie is set at begining,
- *                                     calendar will be showing this date, if
- *                                     not, current date.
+ *     ddd mmm dd yyyy HH:MM:ss          (Thu Nov 06 2008 14:27:46), It's a very long date format
+ *     m/d/yy                            (11/6/08), It's a short date format
+ *     mmm d, yyyy                       (Nov 6, 2008), It's a medium date format
+ *     mmmm d, yyyy                      (November 6, 2008), It's a long date format
+ *     dddd, mmmm d, yyyy                (Thursday, November 6, 2008), It's a full date format
+ *     h:MM TT                           (2:31 PM), It's a short time format
+ *     h:MM:ss TT                        (2:32:23 PM), It's a medium time format
+ *     h:MM:ss TT Z                      (2:35:06 PM GMT+01000), It's a long time format
+ *     yyyy-mm-dd                        (2008-11-06), It's a iso date format
+ *     HH:MM:ss                          (14:36:13), It's a iso time format
+ * @attribute {String}   caption-format   It's a style of displayed date, default yyyy-mm-dd
+ *     Possible values:
+ *     ddd mmm dd yyyy HH:MM:ss           (Thu Nov 06 2008 14:27:46), It's a very long date format
+ *     m/d/yy                             (11/6/08), It's a short date format
+ *     mmm d, yyyy                        (Nov 6, 2008), It's a medium date format
+ *     mmmm d, yyyy                       (November 6, 2008), It's a long date format
+ *     dddd, mmmm d, yyyy                 (Thursday, November 6, 2008), It's a full date format
+ *     h:MM TT                            (2:31 PM), It's a short time format
+ *     h:MM:ss TT                         (2:32:23 PM), It's a medium time format
+ *     h:MM:ss TT Z                       (2:35:06 PM GMT+01000), It's a long time format
+ *     yyyy-mm-dd                         (2008-11-06), It's a iso date format
+ *     HH:MM:ss                           (14:36:13), It's a iso time format
+ * @attribute {String}   default   Name which represent some date
+ *     Possible values:
+ *     today   calendar is set on today's date
+ * @attribute {String}   value   Date returned by calendar in allowed format.
+ *                               If value propertie is set at begining, calendar
+ *                               will be showing this date
  * 
  * @classDescription    This class creates a new calendar dropdown
  * @return {Caldropdown}   Returns a new calendar dropdown
@@ -77,8 +90,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.autoselect    = false;
     this.multiselect   = false;
 
-    this.outputFormat  = "ddd mmm dd yyyy HH:MM:ss";
-    this.captionFormat = null;
+    this.outputFormat  = "yyyy-mm-dd";
+    this.captionFormat = "yyyy-mm-dd";
 
     this.sliderHeight  = 0;
 
@@ -124,26 +137,23 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["output-format"] = function(value) {
-        if (this.value) {
-            this.setProperty("value", Date(this.value).format(this.outputFormat = value));
-        }
-        else {
-            this.outputFormat = value
-        }
+        if (this.value)
+            this.setProperty("value", new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.outputFormat = value));
+        else 
+            this.outputFormat = value;
     }
-    
+
     this.$propHandlers["caption-format"] = function(value) {
-        if (_year && _month && _day) {
-            this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(value));
+        if (this.value) {
+            this.$setLabel(new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.captionFormat = value));
         }
-        else {
-            this.captionFormat = value
-        }
+        else
+            this.captionFormat = value;
     }
 
     this.$propHandlers["value"] = function(value) {
-        
-
         var date = Date.parse(value, this.outputFormat);
         //#ifdef __DEBUG
         if (!date) {
@@ -156,9 +166,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _month = date.getMonth();
         _year  = date.getFullYear();
 
-        //this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
         this.value = value;
-        
+        this.$setLabel(new Date(_year, _month, _day, _hours,
+            _minutes, _seconds).format(this.captionFormat));
         this.redraw(_month, _year);
     }
 
@@ -375,11 +385,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 //#ifdef __SUPPORT_SAFARI
                 xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
-                /*#else
-                xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
-                #endif */
-                
-                var xmlNode = this.xmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
+
+                var xmlNode = this.xmlRoot.selectSingleNode(xpath);
                 value = this.applyRuleSetOnNode("caption", xmlNode);
             } else {
                 value = sValue2 || sValue;
@@ -416,14 +423,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
-    /*this.$focus = function(){
+    this.$focus = function(){
         jpf.popup.forceHide();
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
-    }*/
+    }
     
     this.$setClearMessage = function(msg) {
-        if (msg)
+        if (msg) {
             this.$setLabel(msg);
+        }
+            
     };
     
     this.$removeClearMessage = function() {
@@ -639,8 +648,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             newYear++;
         }
 
-        this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes, _seconds).format(this.outputFormat));
-        this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
+        this.change(new Date(newYear, (newMonth - 1), nr, _hours,
+            _minutes, _seconds).format(this.outputFormat));
     };
 
     /**
@@ -705,7 +714,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.overwriteEvents = function() {
         var rows = this.oSlider.childNodes;
-        var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today", "status"];
+        var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
+            "today", "status"];
         
         for (var i = 0, l = rows.length; i < l; i++) {
             if ((rows[i].className || "").indexOf("navigation") > -1) {
@@ -729,27 +739,29 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
             else if ((rows[i].className || "").indexOf("row") > -1) {
-               for (var j = 0, l2 = rows[i].childNodes.length; j < l2; j++) {
-                   var cell = rows[i].childNodes[j];
-                   
-                   if ((cell.className || "").indexOf("cell") > -1) {
-                       cell.className = "cell";
-                       
-                       cell.setAttribute("onmouseover",
-                           "if (this.className.indexOf('disabled') > -1 "
-                           + "|| this.className.indexOf('active') > -1) "
-                           + "return;jpf.lookup(" + this.uniqueId 
-                           + ").$setStyleClass(this, 'hover');");
-                       cell.setAttribute("onmouseout", 
-                           "var o = jpf.lookup(" + this.uniqueId 
-                           + ").$setStyleClass(this, '', ['hover']);");
-                       cell.setAttribute("onmousedown", 
-                           "var o = jpf.lookup(" + this.uniqueId + ");"
-                           + " if (this.className.indexOf('prev') > -1) { "
-                           + "o.selectDay(this.innerHTML, 'prev');}"
-                           + " else if (this.className.indexOf('next') > -1) {"
-                           + "o.selectDay(this.innerHTML, 'next');}"
-                           + " else {o.selectDay(this.innerHTML);}o.slideUp();");
+                for (var j = 0, l2 = rows[i].childNodes.length, c = 0; j < l2; j++) {
+                    var cell = rows[i].childNodes[j];
+
+                    if ((cell.className || "").indexOf("cell") > -1) {
+                        if (c > 0) {
+                            cell.className = "cell";
+                            cell.setAttribute("onmouseover",
+                                "if (this.className.indexOf('disabled') > -1 "
+                                + "|| this.className.indexOf('active') > -1) "
+                                + "return;jpf.lookup(" + this.uniqueId 
+                                + ").$setStyleClass(this, 'hover');");
+                            cell.setAttribute("onmouseout", 
+                                "var o = jpf.lookup(" + this.uniqueId 
+                                + ").$setStyleClass(this, '', ['hover']);");
+                            cell.setAttribute("onmousedown", 
+                                "var o = jpf.lookup(" + this.uniqueId + ");"
+                                + " if (this.className.indexOf('prev') > -1) { "
+                                + "o.selectDay(this.innerHTML, 'prev');}"
+                                + " else if (this.className.indexOf('next') > -1) {"
+                                + "o.selectDay(this.innerHTML, 'next');}"
+                                + " else {o.selectDay(this.innerHTML);}o.slideUp();");
+                        }
+                        c++;
                    }
                }
             }
@@ -917,18 +929,29 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$loadJml = function(x) {
-        if (!this.selected && this.initialMsg)
-            this.$setLabel();
-
         if (typeof this.value == "undefined") {
-            var def = this["default"] || "today";
-
-            switch(def) {
+            switch(this["default"]) {
                 case "today":
                     this.setProperty("value", new Date().format(this.outputFormat));
                     break;
+                default :
+                    var date =  new Date();
+                    _day   = date.getDate();
+                    _month = date.getMonth();
+                    _year  = date.getFullYear();
+                    
+                    if (!this.selected && this.initialMsg)
+                        this.$setLabel();
+                    break;
             }
-            
+        }
+        else {
+            var date = Date.parse(this.value, this.outputFormat);
+            _day   = date.getDate();
+            _month = date.getMonth();
+            _year  = date.getFullYear();
+
+            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat));
         }
     };
 
