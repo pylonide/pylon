@@ -78,7 +78,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.multiselect   = false;
 
     this.outputFormat  = "ddd mmm dd yyyy HH:MM:ss";
-    this.captionFormat = "yyyy/mm/dd";
+    this.captionFormat = null;
 
     this.sliderHeight  = 0;
 
@@ -142,7 +142,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$propHandlers["value"] = function(value) {
-        this.value = value;
+        
 
         var date = Date.parse(value, this.outputFormat);
         //#ifdef __DEBUG
@@ -156,8 +156,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _month = date.getMonth();
         _year  = date.getFullYear();
 
-        this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
-
+        //this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
+        this.value = value;
+        
         this.redraw(_month, _year);
     }
 
@@ -633,8 +634,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             newYear++;
         }
 
-        this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes,
-            _seconds).format(this.outputFormat));
+        this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes, _seconds).format(this.outputFormat));
+        this.$setLabel(new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.captionFormat || this.outputFormat));
     };
 
     /**
@@ -814,6 +815,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
+            
+        /*if (jpf.caldropdown.cached) {
+            alert(jpf.caldropdown.cached)
+        }
+        else {
+            jpf.caldropdown.cached = "uzza";
+            alert("save")
+        }*/
+        
     };
 
     this.$loadJml = function(x) {
