@@ -3103,7 +3103,7 @@ jpf.MultiselectBinding = function(){
 
         this.icon     = "@icon";
         this.image    = "@image";
-        this.caption  = "label/text()|text()|@caption|@value";
+        this.caption  = "label/text()|text()|@caption";//|@value
         //this.value    = "value/text()|@value|text()";
         this.traverse = prefix + ":item";
 

@@ -67,7 +67,7 @@ jpf.appsettings = {
     allowSelect        : false,
     allowBlur          : false,
     autoDisableActions : false,
-    autoDisable        : true,
+    autoDisable        : false, /** @todo fix this to only autodisable when createmodel is not true */
     disableF5          : true,
     autoHideLoading    : true,
     disableSpace       : true,
@@ -132,8 +132,8 @@ jpf.appsettings = {
     //@todo adhere to defaults (loop attributes)
     loadJml: function(x, parentNode){
         this.$jml = x;
-
         //#ifdef __WITH_JMLDOM_FULL
+        
         this.parentNode = parentNode;
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
@@ -166,7 +166,7 @@ jpf.appsettings = {
         this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));
 
         this.autoDisableActions = jpf.isTrue(x.getAttribute("auto-disable-actions"));
-        this.autoDisable        = !jpf.isFalse(x.getAttribute("auto-disable"));
+        this.autoDisable        = jpf.isTrue(x.getAttribute("auto-disable")); //@todo temporarily changed default
         this.disableF5          = jpf.isTrue(x.getAttribute("disable-f5"));
         this.autoHideLoading    = !jpf.isFalse(x.getAttribute("auto-hide-loading"));
 

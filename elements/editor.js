@@ -1152,8 +1152,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else
             jpf.JmlParser.parseChildren(this.$jml, null, this);
 
-        this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
-        this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
+        jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
+        //this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
+        //this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
 
         //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
         //jpf.console.log('use iframe? ', this.useIframe);

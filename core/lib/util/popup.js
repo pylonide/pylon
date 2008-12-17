@@ -99,21 +99,24 @@ jpf.popup = {
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
         
-        var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
-        var top    = (options.y || 0) + pos[1];
-        var p      = jpf.getOverflowParent(o.content); 
-
-        if (options.width || o.width)
-            popup.style.width = ((options.width || o.width) - 3) + "px";
         
-        var moveUp = false;//(top + (height || o.height || o.content.offsetHeight) + y) > (p.offsetHeight + p.scrollTop);
+        if (options.ref) {
+            var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
+            var top    = (options.y || 0) + pos[1];
+            var p      = jpf.getOverflowParent(o.content); 
         
-        if (moveUp)
-            popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
-        else
-            popup.style.top = top + "px";
-        popup.style.left = ((options.x || 0) + pos[0]) + "px";
-
+            if (options.width || o.width)
+                popup.style.width = ((options.width || o.width) - 3) + "px";
+            
+            var moveUp = false;//(top + (height || o.height || o.content.offsetHeight) + y) > (p.offsetHeight + p.scrollTop);
+            
+            if (moveUp)
+                popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
+            else
+                popup.style.top = top + "px";
+            popup.style.left = ((options.x || 0) + pos[0]) + "px";
+        }
+        
         if (options.animate) {
             if (options.animate == "fade") {
                 jpf.tween.single(popup, {
@@ -164,9 +167,14 @@ jpf.popup = {
     hide : function(){
         if (this.isDragging) return;
 
-        if (this.cache[this.last])
+        if (this.cache[this.last] && this.cache[this.last].content)
             this.cache[this.last].content.style.display = "none";
         //if(this.popup) this.popup.hide();
+    },
+    
+    isShowing : function(cacheId){
+        return this.last && this.last == cacheId 
+            && this.cache[this.last].content.style.display != "none";
     },
 
     isDragging   : false,

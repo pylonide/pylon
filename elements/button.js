@@ -418,7 +418,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$clickHandler = function(){
         // This handles the actual OnClick action. Return true to redraw the button.
         if (this.isBoolean && !this.submenu) {
-            this.value = !this.value;
+            this.setProperty("value", !this.value);
             return true;
         }
     };
@@ -456,8 +456,10 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
         if (typeof this.focussable == "undefined") {
-            this.focussable = !this.parentNode.parentNode 
-              || this.parentNode.parentNode.tagName != "toolbar";
+            if (this.parentNode.parentNode 
+              && this.parentNode.parentNode.tagName == "toolbar"
+              && !this.$jml.getAttribute("focussable"))
+                this.focussable = false;
         }
         
         var skinName;

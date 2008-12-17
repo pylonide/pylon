@@ -757,7 +757,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             h = headings[nodes[i].getAttribute("hid")];
             
             //@todo fake optimization
-            node = htmlNodes[i].firstChild || htmlNodes[i];//this.$getLayoutNode("cell", "caption", htmlNodes[i]) || 
+            node = this.$getLayoutNode("cell", "caption", htmlNodes[i]) || htmlNodes[i];//htmlNodes[i].firstChild || 
             
             if (h.type == "icon"){
                 (node.nodeType == 1 && node || node.parentNode)

@@ -541,9 +541,8 @@ jpf.ValidationGroup = function(name){
     
     function checkValidChildren(oParent, ignoreReq, nosetError){
         var found;
-        
         //Per Element
-        for (var i = 0; i < oParent.childNodes.length; i++) {
+        for (var v, i = 0; i < oParent.childNodes.length; i++) {
             var oEl = oParent.childNodes[i];
 
             if (!oEl)
@@ -551,7 +550,7 @@ jpf.ValidationGroup = function(name){
             if (!oEl.disabled
               && (!this.validateVisibleOnly && oEl.visible || !oEl.oExt || oEl.oExt.offsetHeight)
               && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid()
-                || !ignoreReq && oEl.required && new String(oEl.getValue()).trim().length == 0)) {
+                || !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0))) {
                 if (!nosetError) {
                     if (!found) {
                         oEl.validate(true);

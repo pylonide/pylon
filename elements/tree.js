@@ -742,10 +742,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.$setStyleClass(this.$getLayoutNode("item", null,
-                 oItem), cssClass);
-            if (cssClass)
-                this.dynCssClasses.push(cssClass);
+            this.$setStyleClass(this.$getLayoutNode("item", null, oItem), cssClass);
+            this.$setStyleClass(this.$getLayoutNode("item", "container", oItem), cssClass);
+            this.dynCssClasses.push(cssClass);
         }
         // #endif
 
@@ -832,10 +831,15 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
-            if (elCaption.nodeType == 1)
+            /*if (elCaption.nodeType == 1)
                 elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
             else
-                elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+                elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);*/
+            
+            if (elCaption.nodeType != 1)
+                elCaption = elCaption.parentNode;
+
+            elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
         }
         
         var strTooltip = this.applyRuleSetOnNode("tooltip", xmlNode);

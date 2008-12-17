@@ -231,7 +231,8 @@ jpf.JmlParser = {
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
-        if (jmlParent.childNodes.length && jmlParent != jpf.document.documentElement)
+        if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length 
+          && jmlParent != jpf.document.documentElement)
             return pHtmlNode;
 
         // #ifdef __DEBUG

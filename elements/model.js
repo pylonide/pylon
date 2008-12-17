@@ -263,6 +263,9 @@ jpf.model = function(data, caching){
      * of it's root node
      */
     this.appendXml = function(xmlNode){
+        if (typeof xmlNode == "string")
+            xmlNode = jpf.getXml(xmlNode);
+        
         xmlNode = !model.nodeType //Check if a model was passed
             ? model.getXml()
             : jpf.xmldb.copyNode(xmlNode);

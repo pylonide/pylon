@@ -262,7 +262,11 @@ jpf.Cache = function(){
                 + this.xmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
 
         this.documentId = this.xmlRoot = this.cacheID = null;
-        this.dataset    = {set: {}, seq: []};
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        if (length != this.length)
+            this.setProperty("length", length);
+        //#endif
     };
     
     /**

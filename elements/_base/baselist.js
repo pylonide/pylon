@@ -377,11 +377,11 @@ jpf.BaseList = function(){
             var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
-                    elImage.style.backgroundImage = "url(" + this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode) + ")";
+                    elImage.style.backgroundImage = "url(" + 
+                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode)) + ")";
                 else
-                    elImage.nodeValue = this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode);
+                    elImage.nodeValue = 
+                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode));
             }
         }
 
@@ -483,18 +483,18 @@ jpf.BaseList = function(){
         else if (elImage) {
             if (elImage.nodeType == 1)
                 elImage.setAttribute("style", "background-image:url("
-                    + this.mediaPath + this.applyRuleSetOnNode("image", xmlNode)
+                    + jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode))
                     + ")");
             else {
                 if (jpf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
                     var p = elImage.ownerElement.parentNode;
                     var img = p.appendChild(p.ownerDocument.createElement("img"));
-                    img.setAttribute("src", this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode));
+                    img.setAttribute("src", 
+                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode)));
                 }
                 else {
-                    elImage.nodeValue = this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode);
+                    elImage.nodeValue = 
+                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode));
                 }
             }
         }

@@ -75,7 +75,6 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.JmlParser.parseLastPass();
         }
         else {
-            alert(value);
             this.oInt.innerHTML = value;
         }
     };
