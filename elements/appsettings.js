@@ -133,7 +133,7 @@ jpf.appsettings = {
     loadJml: function(x, parentNode){
         this.$jml = x;
         //#ifdef __WITH_JMLDOM_FULL
-        
+
         this.parentNode = parentNode;
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
@@ -196,7 +196,7 @@ jpf.appsettings = {
         this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
         if (this.iePngFix)
             jpf.belatedpngfix.createVmlNameSpace().createVmlStyleSheet()
-                .fix('img, .pngfix, input');
+                .fix('img,.pngfix,input');
         // #endif
 
         //#ifdef __DESKRUN
