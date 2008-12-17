@@ -65,7 +65,7 @@ jpf.JmlParser = {
 
         //First pass parsing of all JML documents
         for (var docs = [x], i = 0; i < jpf.includeStack.length; i++) {
-            if(jpf.includeStack[i].nodeType)
+            if (jpf.includeStack[i].nodeType)
                 docs.push(jpf.includeStack[i]);
         }
 
@@ -450,7 +450,7 @@ jpf.JmlParser = {
             }
             //#endif
             //JML Components
-            else if(pHtmlNode) {
+            else if (pHtmlNode) {
                 // #ifdef __DEBUG
                 if (!jpf[tagName] || typeof jpf[tagName] != "function")
                     throw new Error(jpf.formatErrorString(1017, null,
