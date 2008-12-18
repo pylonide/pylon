@@ -47,15 +47,15 @@
  * @define notifier
  * @attribute   {String}   position     Vertical and horizontal element's start position, it can be changed in any time, default is 'top-right'
  *     Possible values:
- *     top-right       element is placed in top-right corner of borwser window
- *     top-left        element is placed in top-left corner of borwser window
- *     bottom-right    element is placed in bottom-right corner of borwser window
- *     bottom-left     element is placed in bottom-left corner of borwser window
+ *     top-right       element is placed in top-right corner of browser window
+ *     top-left        element is placed in top-left corner of browser window
+ *     bottom-right    element is placed in bottom-right corner of browser window
+ *     bottom-left     element is placed in bottom-left corner of browser window
  *     center-center   element is placed in the middle of browser window
- *     right-top       element is placed in top-right corner of borwser window
- *     left-top        element is placed in top-left corner of borwser window
- *     right-bottom    element is placed in bottom-right corner of borwser window
- *     left-bottom     element is placed in bottom-left corner of borwser window
+ *     right-top       element is placed in top-right corner of browser window
+ *     left-top        element is placed in top-left corner of browser window
+ *     right-bottom    element is placed in bottom-right corner of browser window
+ *     left-bottom     element is placed in bottom-left corner of browser window
  *     center-center   element is placed in the middle of browser window
  * @attribute   {String}   margin       It's a free space around popup element, default is '10 10 10 10' pixels
  * @attribute   {String}   columnsize   Specify element width and cols width where element will be displayed, default is 300 pixels
