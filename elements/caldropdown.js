@@ -540,7 +540,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].style.width  = squareSize + "px";
                 daysofweek[i].style.height = Math.floor(squareSize / 4 + 6) + "px";
-                daysofweek[i].style.paddingTop = squareSize / 2 - 3 - Math.floor(squareSize / 4 + 5) + "px";
+                var temp = Math.floor(squareSize / 4 - 8);
+                daysofweek[i].style.paddingTop = (temp > 0 ? temp : 0) + "px";
+                //daysofweek[i].style.paddingTop = (squareSize / 2 - 3 - Math.floor(squareSize / 4 + 5)) + "px";
 
                 daysofweek[i].style.fontSize = _width  <= 220 ? "9px" : "11px";
 
