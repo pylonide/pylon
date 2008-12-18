@@ -527,21 +527,20 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.sliderHeight = 22; //navigators bar height
-
-        var squareSize = Math.floor((_width - 37) / 8);
+        var temp = Math.floor((_width - 37) / 8);
+        var squareSize = temp > 0 ? temp : 0;
 
         var daysofweek = this.oDow.childNodes;
-        this.oDow.style.width = Math.max(squareSize * 8 + 32, 0) + "px";
+        this.oDow.style.width = (squareSize * 8 + 32) + "px";
 
         this.sliderHeight += Math.floor(squareSize / 4 + 6)
             + Math.max(squareSize / 2 - 3 - (Math.floor(squareSize / 4 + 5)), 0);
 
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].style.width  = Math.max(squareSize, 0) + "px";
-                daysofweek[i].style.height = Math.max(Math.floor(squareSize / 4 + 6), 0) + "px";
-                daysofweek[i].style.paddingTop = Math.max(squareSize / 2 - 3
-                    - (Math.floor(squareSize / 4 + 5)), 0) + "px";
+                daysofweek[i].style.width  = squareSize + "px";
+                daysofweek[i].style.height = Math.floor(squareSize / 4 + 6) + "px";
+                daysofweek[i].style.paddingTop = squareSize / 2 - 3 - Math.floor(squareSize / 4 + 5) + "px";
 
                 daysofweek[i].style.fontSize = _width  <= 220 ? "9px" : "11px";
 
@@ -570,8 +569,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 if ((cells[j].className || "").indexOf("cell") == -1)
                     continue;
                 z++;
-                cells[j].style.width = Math.max(squareSize, 0) + "px";
-                cells[j].style.height = Math.max(Math.floor((squareSize + 12) / 2), 0) + "px";
+                cells[j].style.width = squareSize + "px";
+                cells[j].style.height = Math.floor((squareSize + 12) / 2) + "px";
                 cells[j].style.paddingTop = Math.max(squareSize - (Math.floor((squareSize + 12) / 2)), 0) + "px";
 
                 cells[j].style.margin = z%8 == 0 && z !== 1 
