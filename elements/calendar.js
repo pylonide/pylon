@@ -36,9 +36,9 @@
  * @addnode elements:calendar
  *
  * @attribute {String}   output-format   It's a style of displaying date,
- *                                     default is ddd mmm dd yyyy HH:MM:ss
+ *                                     default is yyyy-mm-dd
  *     Possible values:
- *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a default date format
+ *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a very long date format
  *     m/d/yy                          (11/6/08), It's a short date format
  *     mmm d, yyyy                     (Nov 6, 2008), It's a medium date format
  *     mmmm d, yyyy                    (November 6, 2008), It's a long date format
@@ -71,8 +71,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
-    this.outputFormat    = "ddd mmm dd yyyy HH:MM:ss";
-    this.value         = null;
+    this.outputFormat  = "yyyy-mm-dd";
 
     var _day          = null,
         _month        = null,
@@ -108,11 +107,15 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$booleanProperties["disableremove"] = true;
 
-    this.$supportedProperties.push("disableremove", "initial-message",
-        "value", "output-format", "width");
+    this.$supportedProperties.push("disableremove", "initial-message", 
+        "output-format", "default");
 
     this.$propHandlers["output-format"] = function(value) {
-        this.setProperty("value", new Date().format(this.outputFormat = value));
+        if (this.value)
+            this.setProperty("value", new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.outputFormat = value));
+        else 
+            this.outputFormat = value;
     }
 
     this.$propHandlers["value"] = function(value) {
@@ -135,10 +138,6 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.setValue = function(value) {
         this.setProperty("value", value);
-    };
-
-    this.getValue = function() {
-        return this.value;
     };
 
     /**** Private methods and event handlers ****/
@@ -235,6 +234,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.redraw = function(month, year) {
         _currentMonth = month;
         _currentYear  = year;
+
         _width = this.oExt.offsetWidth >= minWidth
             ? this.oExt.offsetWidth
             : minWidth;
@@ -540,11 +540,20 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$loadJml = function(x) {
-        if (!this.selected && this.initialMsg)
-            this.$setLabel();
+        if (typeof this.value == "undefined") {
+            switch(this["default"]) {
+                case "today":
+                    this.setProperty("value", new Date().format(this.outputFormat));
+                    break;
+                default :
+                    var date =  new Date();
+                    _day   = 0;
+                    _month = date.getMonth();
+                    _year  = date.getFullYear();
 
-        if (!x.getAttribute("output-format") && !x.getAttribute("value")) {
-            this.setProperty("value", new Date().format(this.outputFormat));
+                    this.redraw(_month, _year);
+                    break;
+            }
         }
     };
     
