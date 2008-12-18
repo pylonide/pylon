@@ -991,9 +991,7 @@ jpf.console.info("FILL");
 
             if (type) {
                 if (template) {
-                    var elTemplate = template.selectSingleNode("//element[@type='"
-                                   + this.applyRuleSetOnNode("type", xmlBlock)
-                                   + "']");
+                    var elTemplate = template.selectSingleNode("element[@type='" + this.applyRuleSetOnNode("type", xmlBlock) + "']");
 
                     var inputs = elTemplate.selectNodes("input");
                     for (var i = 0, l = inputs.length; i < l; i++) {
@@ -1049,7 +1047,7 @@ jpf.console.info("FILL");
                 caption : this.applyRuleSetOnNode("caption", xmlBlock),
                 capPos  : this.applyRuleSetOnNode("cap-pos", xmlBlock)
             }
-            
+
             var objBlock = jpf.flow.isBlock(htmlElement);
             
             if (objBlock) {
@@ -1132,6 +1130,7 @@ jpf.console.info("FILL");
         }
 
         this.nodes = [];
+        
     }
 
     this.$destroy = function() {

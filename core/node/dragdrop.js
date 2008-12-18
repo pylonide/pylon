@@ -109,6 +109,7 @@ jpf.DragDrop = function(){
         //Use Action Tracker
         var exec = this.executeAction("appendChild",
             [pNode, xmlNode, beforeNode], "copy", xmlNode);
+
         if (exec !== false)
             return xmlNode;
 
@@ -139,7 +140,6 @@ jpf.DragDrop = function(){
      */
     this.isDragAllowed = function(x){
         //#ifdef __WITH_OFFLINE
-
         if(!jpf.offline.canTransact())
             return false;
         //#endif
@@ -171,7 +171,6 @@ jpf.DragDrop = function(){
      * @return {Boolean} result of the test
      */
     this.isDropAllowed = function(x, target){
-
         //#ifdef __WITH_OFFLINE
         if(!jpf.offline.canTransact())
             return false;
