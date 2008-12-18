@@ -917,6 +917,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         //Set up the popup
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
+        
+        document.body.appendChild(this.oSlider);
 
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
