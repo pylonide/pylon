@@ -474,8 +474,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = year;
         _width = this.oExt.offsetWidth;
 
-        var temp = Math.floor((_width - 36) / 8) * 8
-                 + 32 - jpf.getDiff(this.oNavigation)[0];
+        var temp = Math.floor((_width - 36) / 8) * 8 + 32 - jpf.getDiff(this.oNavigation)[0];
 
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
@@ -530,21 +529,23 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         var temp = Math.floor((_width - 37) / 8);
         var squareSize = temp > 0 ? temp : 0;
 
-        var daysofweek = this.oDow.childNodes;
-        this.oDow.style.width = (squareSize * 8 + 32) + "px";
+        var daysofweek   = this.oDow.childNodes;
+        var d_height     = Math.floor(squareSize / 4 + 6);
+        var d_paddingTop = Math.floor(squareSize / 4 - 8) > 0 ? Math.floor(squareSize / 4 - 8) : 0;
+        var d_fontSize   = _width  <= 220 ? "9px" : "11px";
+        var d_width      = (squareSize * 8 + 32);
+        
+        
+        this.oDow.style.width = d_width + "px";
 
-        this.sliderHeight += Math.floor(squareSize / 4 + 6)
-            + Math.max(squareSize / 2 - 3 - (Math.floor(squareSize / 4 + 5)), 0);
+        this.sliderHeight += d_height + d_paddingTop;
 
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].style.width  = squareSize + "px";
-                daysofweek[i].style.height = Math.floor(squareSize / 4 + 6) + "px";
-                var temp = Math.floor(squareSize / 4 - 8);
-                daysofweek[i].style.paddingTop = (temp > 0 ? temp : 0) + "px";
-                //daysofweek[i].style.paddingTop = (squareSize / 2 - 3 - Math.floor(squareSize / 4 + 5)) + "px";
-
-                daysofweek[i].style.fontSize = _width  <= 220 ? "9px" : "11px";
+                daysofweek[i].style.width      = squareSize   + "px";
+                daysofweek[i].style.height     = d_height     + "px";
+                daysofweek[i].style.paddingTop = d_paddingTop + "px";
+                daysofweek[i].style.fontSize   = d_fontSize;
 
                 if (z > 0) {
                     daysofweek[i].innerHTML = days[z - 1].substr(0, 3);
@@ -553,13 +554,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
+        var c_height     = Math.floor((squareSize + 12) / 2);
+        var c_paddingTop = squareSize - c_height > 0 ? squareSize - c_height : 0;
+
         rows = this.oSlider.childNodes;
         for (z = 0, y = 0, i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (squareSize * 8 + 32 - jpf.getDiff(rows[i])[0])
-                                + "px";
+            rows[i].style.width = (d_width - jpf.getDiff(rows[i])[0]) + "px";
             if (!jpf.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
@@ -571,9 +574,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 if ((cells[j].className || "").indexOf("cell") == -1)
                     continue;
                 z++;
-                cells[j].style.width = squareSize + "px";
-                cells[j].style.height = Math.floor((squareSize + 12) / 2) + "px";
-                cells[j].style.paddingTop = Math.max(squareSize - (Math.floor((squareSize + 12) / 2)), 0) + "px";
+                cells[j].style.width      = squareSize   + "px";
+                cells[j].style.height     = c_height     + "px";
+                cells[j].style.paddingTop = c_paddingTop + "px";
 
                 cells[j].style.margin = z%8 == 0 && z !== 1 
                     ? "1px 0 1px 0"
@@ -721,7 +724,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         var rows = this.oSlider.childNodes;
         var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
             "today", "status"];
-        
+
         for (var i = 0, l = rows.length; i < l; i++) {
             if ((rows[i].className || "").indexOf("navigation") > -1) {
                 for (var j = 0, l2 = rows[i].childNodes.length, b = 0; j < l2; j++) {
