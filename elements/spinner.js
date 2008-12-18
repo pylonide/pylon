@@ -48,16 +48,14 @@
  * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-
-    this.$supportedProperties.push("width", "value", "max", "min", "focused");
-
     this.max     = 64000;
     this.min     = -64000;
     this.value   = 0;
     this.focused = false;
 
     var _self    = this;
+
+    this.$supportedProperties.push("width", "value", "max", "min");
 
     this.$propHandlers["value"] = function(value) {
         this.value = this.oInput.value = parseInt(value) || 0;
@@ -127,7 +125,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oButtonMinus, "", ["minusFocus"]);
         this.focused = false;
     }
-
 
     /* ***********************
      Keyboard Support
