@@ -63,7 +63,7 @@
  *     Possible values:
  *     vertical     element will be displayed in rows
  *     horizontal   element will be displayed in columns
- * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2000 milliseconds
+ * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2 seconds
  * $attribute   {String}   onclick      It's an action executed after user click on notifier cloud
  * 
  * @constructor
@@ -94,6 +94,10 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$propHandlers["position"] = function(value) {
         lastPos = null;
+    }
+    
+    this.$propHandlers["timeout"] = function(value) {
+        this.timeout = parseInt(value) * 1000;
     }
 
     function getStartPosition(x, wh, ww, nh, nw) {
