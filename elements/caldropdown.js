@@ -290,10 +290,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             ? this.oExt.offsetWidth - 1
             : 0) + "px";
 
-        if (!jpf.isIE) {
-            this.overwriteEvents();
-            jpf.caldropdown.cached.host = this;
-        }
+        jpf.caldropdown.cache["oSlider"].host = this;
 
         this.redraw(_month, _year);
 
@@ -489,7 +486,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             w_days += months[i].number;
         }
 
-        var w_weeks  = Math.ceil(w_days / 7);
+        var w_weeks = Math.ceil(w_days / 7);
 
         var date = new Date(year, month);
 
@@ -717,65 +714,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.setProperty("value", new Date().format(this.outputFormat));
     };
 
-    /**
-     * When oSlider is reused, it need its own events
-     */
-    this.overwriteEvents = function() {
-        var rows = this.oSlider.childNodes;
-        var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
-            "today", "status"];
-
-        for (var i = 0, l = rows.length; i < l; i++) {
-            if ((rows[i].className || "").indexOf("navigation") > -1) {
-                for (var j = 0, l2 = rows[i].childNodes.length, b = 0; j < l2; j++) {
-                    var btn = rows[i].childNodes[j];
-                    if ((btn.className || "").indexOf("button") > -1) {
-                        btn.className = "button " + buttons[b];
-                        if (buttons[b] !== "status") {
-                            btn.setAttribute("onmousedown", 'jpf.lookup('
-                                + this.uniqueId
-                                + ').' + buttons[b] + '()');
-                            btn.setAttribute("onmouseover", 'jpf.lookup('
-                                + this.uniqueId
-                                + ').$setStyleClass(this, "hover");');
-                            btn.setAttribute("onmouseout", 'jpf.lookup('
-                                + this.uniqueId
-                                + ').$setStyleClass(this, "", ["hover"]);');
-                        }
-                        b++;
-                    }
-                }
-            }
-            else if ((rows[i].className || "").indexOf("row") > -1) {
-                for (var j = 0, l2 = rows[i].childNodes.length, c = 0; j < l2; j++) {
-                    var cell = rows[i].childNodes[j];
-
-                    if ((cell.className || "").indexOf("cell") > -1) {
-                        if (c > 0) {
-                            cell.className = "cell";
-                            cell.setAttribute("onmouseover",
-                                "if (this.className.indexOf('disabled') > -1 "
-                                + "|| this.className.indexOf('active') > -1) "
-                                + "return;jpf.lookup(" + this.uniqueId 
-                                + ").$setStyleClass(this, 'hover');");
-                            cell.setAttribute("onmouseout", 
-                                "var o = jpf.lookup(" + this.uniqueId 
-                                + ").$setStyleClass(this, '', ['hover']);");
-                            cell.setAttribute("onmousedown", 
-                                "var o = jpf.lookup(" + this.uniqueId + ");"
-                                + " if (this.className.indexOf('prev') > -1) { "
-                                + "o.selectDay(this.innerHTML, 'prev');}"
-                                + " else if (this.className.indexOf('next') > -1) {"
-                                + "o.selectDay(this.innerHTML, 'next');}"
-                                + " else {o.selectDay(this.innerHTML);}o.slideUp();");
-                        }
-                        c++;
-                   }
-               }
-            }
-        }
-    }
-
     /**** Init ****/
 
     this.$draw = function() {
@@ -819,8 +757,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
 
-        if (jpf.caldropdown.cached && !jpf.isIE) {
-            var cal = jpf.caldropdown.cached;
+        if (jpf.caldropdown.cache) {
+            var cal = jpf.caldropdown.cache;
             this.oSlider = cal["oSlider"];
             this.oNavigation = cal["oNavigation"];
             this.oDow = cal["oDow"];
@@ -853,28 +791,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                             + "|| this.className.indexOf('active') > -1) "
                             + "return; jpf.setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmousedown",
-                            "var o = jpf.lookup(" + this.uniqueId + ");"
+                            "var o = jpf.findHost(this);"
                             + " if (this.className.indexOf('prev') > -1) {"
                             + "o.selectDay(this.innerHTML, 'prev');}"
                             + " else if (this.className.indexOf('next') > -1) {"
                             + "o.selectDay(this.innerHTML, 'next');}"
                             + " else {o.selectDay(this.innerHTML);}o.slideUp();");
-
-                        /*oCell.setAttribute("onmouseover",
-                            "if (this.className.indexOf('disabled') > -1 "
-                            + "|| this.className.indexOf('active') > -1) "
-                            + "return; jpf.lookup(" + this.uniqueId 
-                            + ").$setStyleClass(this, 'hover');");
-                        oCell.setAttribute("onmouseout",
-                            "var o = jpf.lookup(" + this.uniqueId 
-                            + ").$setStyleClass(this, '', ['hover']);");
-                        oCell.setAttribute("onmousedown", 
-                            "var o = jpf.lookup(" + this.uniqueId + ");"
-                            + " if (this.className.indexOf('prev') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'prev');}"
-                            + " else if (this.className.indexOf('next') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'next');}"
-                            + " else {o.selectDay(this.innerHTML);}o.slideUp();");*/
                     }
                     oRow.appendChild(oCell);
                 }
@@ -891,15 +813,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
                     if (buttons[i] !== "status") {
-                        btn.setAttribute("onmousedown", 'jpf.lookup('
-                            + this.uniqueId
-                            + ').' + buttons[i] + '()');
-                        btn.setAttribute("onmouseover", 'jpf.lookup('
-                            + this.uniqueId
-                            + ').$setStyleClass(this, "hover");');
-                        btn.setAttribute("onmouseout", 'jpf.lookup('
-                            + this.uniqueId
-                            + ').$setStyleClass(this, "", ["hover"]);');
+                        btn.setAttribute("onmousedown", 'jpf.findHost(this).' + buttons[i] + '()');
+                        btn.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
+                        btn.setAttribute("onmouseout",  'jpf.setStyleClass(this, "", ["hover"]);');
                     }
                 }
             }
@@ -929,8 +845,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
 
-        if (!jpf.caldropdown.cached && !jpf.isIE) {
-            jpf.caldropdown.cached = {
+        if (!jpf.caldropdown.cache) {
+            jpf.caldropdown.cache = {
                 "oSlider"     : this.oSlider,
                 "oNavigation" : this.oNavigation,
                 "oDow"        : this.oDow
