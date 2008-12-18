@@ -462,13 +462,6 @@ jpf.DataBinding = function(){
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode){
         if (this.disabled) return; //hack
-/*alert(atAction);
-jpf.flow.alert_r(args[0]);
-jpf.flow.alert_r(args[1]);
-jpf.flow.alert_r(action);
-jpf.flow.alert_r(xmlNode);
-jpf.flow.alert_r(noevent);
-jpf.flow.alert_r(contextNode);*/
 
         //#ifdef __DEBUG
         jpf.console.info("Executing action '" + action + "' for " + this.name
