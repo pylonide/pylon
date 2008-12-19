@@ -762,7 +762,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oNavigation = cal["oNavigation"];
             this.oDow = cal["oDow"];
 
-            //jpf.caldropdown.refcount++;
+            jpf.caldropdown.cache.refcount++;
 
             //Set up the popup
             this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
@@ -770,11 +770,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
             return;
         }
-        else {
-            //jpf.caldropdown.refcount = 0;
-        }
 
-       this.oSlider = this.$getExternal("container", null, function(oExt1) {
+        this.oSlider = this.$getExternal("container", null, function(oExt1) {
             var oSlider = this.$getLayoutNode("container", "contents", oExt1);
 
             for (var i = 0; i < 6; i++) {
@@ -850,6 +847,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 "oNavigation" : this.oNavigation,
                 "oDow"        : this.oDow
             };
+            jpf.caldropdown.cache.refcount = 0;
         }
     };
 
@@ -884,7 +882,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
-        //jpf.caldropdown.refcount--;
+
+        if (jpf.caldropdown.cache.refcount == 0) {
+            jpf.caldropdown.cache = null;
+        }
+        else {
+            jpf.caldropdown.cache.refcount--;
+        }
     };
 }).implement(
     jpf.Presentation,
