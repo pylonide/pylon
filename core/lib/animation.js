@@ -79,9 +79,11 @@ jpf.tween = {
             alert(value)
         }
     },
-    scrollheight: function(oHtml, value){
+    scrollheight: function(oHtml, value, info){
+        var diff = jpf.getHeightDiff(oHtml);
         oHtml.style.height = value + "px";
-        oHtml.scrollTop    = oHtml.scrollHeight - oHtml.offsetHeight;
+        var oInt = info.oInt || oHtml;
+        oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff;
     },
     scrolltop: function(oHtml, value){
         oHtml.style.height = value + "px";
@@ -273,8 +275,10 @@ jpf.tween = {
     single : function(oHtml, info){
         info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
 
-        if (oHtml.nodeFunc > 100)
+        if (oHtml.nodeFunc > 100) {
+            info.oInt = oHtml.oInt;
             oHtml = oHtml.oExt;
+        }
 
         if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
@@ -291,7 +295,7 @@ jpf.tween = {
 
         var steps = info.color
             ? jpf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
-            : jpf.tween.$calcSteps(info.anim, info.from, info.to, info.steps);
+            : jpf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps);
 
         var _self = this;
         var stepFunction = function(step){
@@ -313,6 +317,8 @@ jpf.tween = {
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
             else {
                 _self.current = null;
+                if (info.control)
+                    info.control.stopped = true;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -367,8 +373,10 @@ jpf.tween = {
     multi : function(oHtml, info){
         info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
 
-        if (oHtml.nodeFunc > 100)
+        if (oHtml.nodeFunc > 100) {
+            info.oInt = oHtml.oInt;
             oHtml = oHtml.oExt;
+        }
 
         for (var steps = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
@@ -410,6 +418,8 @@ jpf.tween = {
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
             else {
                 _self.current = null;
+                if (info.control)
+                    info.control.stopped = true;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 

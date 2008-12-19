@@ -1056,8 +1056,12 @@ jpf.WindowImplementation = function(){
             window.onfocus();
         }
         //#endif
-
         //#endif
+        
+        jpf.dispatchEvent("mousedown", {
+            htmlEvent : e,
+            jmlNode   : jmlNode
+        });
 
         //Non IE selection handling
         if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect

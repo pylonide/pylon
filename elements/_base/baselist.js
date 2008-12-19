@@ -367,11 +367,10 @@ jpf.BaseList = function(){
 
         if (elIcon) {
             if (elIcon.nodeType == 1)
-                elIcon.style.backgroundImage = "url(" + this.iconPath
-                    + this.applyRuleSetOnNode("icon", xmlNode) + ")";
+                elIcon.style.backgroundImage = "url(" + 
+                  jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode)) + ")";
             else
-                elIcon.nodeValue = this.iconPath
-                    + this.applyRuleSetOnNode("icon", xmlNode);
+                elIcon.nodeValue =jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode));
         }
         else {
             var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
@@ -474,11 +473,10 @@ jpf.BaseList = function(){
         if (elIcon) {
             if (elIcon.nodeType == 1)
                 elIcon.setAttribute("style", "background-image:url("
-                    + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode)
+                    + jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode))
                     + ")");
             else
-                elIcon.nodeValue = this.iconPath
-                    + this.applyRuleSetOnNode("icon", xmlNode);
+                elIcon.nodeValue = jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode));
         }
         else if (elImage) {
             if (elImage.nodeType == 1)

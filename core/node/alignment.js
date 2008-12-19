@@ -121,13 +121,13 @@ jpf.Alignment = function(){
         if (this.align || this.$jml.getAttribute("align")) {
             l.addAlignNode(this, layout.root);
 
-            if (this.aData.hidden)
+            if (this.aData.hidden || this.$jml.getAttribute("visible") == "false")
                 this.aData.prehide(true);
             
-            if (!jpf.isParsing) //buildParent && 
+            if (!jpf.isParsing || jpf.parsingFinalPass) //buildParent && 
                 this.purgeAlignment();
         }
-        else 
+        else
         //#endif
         {
             var pData = this.parentNode.aData || this.parentNode.pData;

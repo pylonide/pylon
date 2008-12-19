@@ -559,7 +559,9 @@ jpf.MultiSelect = function(){
 
         if(!noEvent && this.dispatchEvent('beforeselect', {
             xmlNode : xmlNode,
-            htmlNode: htmlNode}) === false)
+            htmlNode: htmlNode,
+            ctrlKey : ctrlKey, 
+            shiftKey : shiftKey}) === false)
               return false;
 
         /**** Selection ****/

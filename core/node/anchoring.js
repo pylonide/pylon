@@ -141,7 +141,7 @@ jpf.Anchoring = function(){
         this.$propHandlers["left"]  =
         this.$propHandlers["width"] =
         this.$propHandlers["right"] = function(value){
-            if (!updateQueue && jpf.loaded)
+            if (!updateQueue && (!jpf.isParsing || jpf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | HORIZONTAL;
         };
@@ -149,7 +149,7 @@ jpf.Anchoring = function(){
         this.$propHandlers["top"]    =
         this.$propHandlers["height"] =
         this.$propHandlers["bottom"] = function(value){
-            if (!updateQueue && jpf.loaded)
+            if (!updateQueue && (!jpf.isParsing || jpf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | VERTICAL;
         };
@@ -166,12 +166,14 @@ jpf.Anchoring = function(){
 
         this.$show = function(){
             //@todo
-            //if (rule_v || rule_h) {
+            if (rule_v || rule_h) {
                 rules = rule_header + "\n" + rule_v + "\n" + rule_h;
                 l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
                 this.oExt.style.display = "none";
                 l.queue(this.pHtmlNode, this);
-            //}
+            }
+            
+            l.processQueue();
         };
 
         inited   = true;

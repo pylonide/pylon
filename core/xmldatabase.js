@@ -871,7 +871,7 @@ jpf.XmlDatabase = function(){
                         continue;
                     }
                     
-                    if ("|remove|move-away|".indexOf("|" + action + "|") > -1) {
+                    if ("|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
                         jmlNode = jpf.lookup(uIds[i]);
                         if (jmlNode)
                             jmlNode.$xmlUpdate(action, xmlNode, 

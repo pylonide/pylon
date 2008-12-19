@@ -114,8 +114,6 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setState("Down", {});
         else
             this.$setState("Out", {});
-
-        this.dispatchEvent("click");
     };
 
     this.$propHandlers["tooltip"] = function(value){
@@ -132,6 +130,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$propHandlers["caption"] = function(value){
+        if (value)
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        else
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+        
         if (this.oCaption)
             this.oCaption.nodeValue = (value || "").trim();
     };

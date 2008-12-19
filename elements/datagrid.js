@@ -523,7 +523,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var headings = [], cssRules = []; //@todo Needs to be reset
     this.$loaddatabinding = function(){
         //Set Up Headings
-        var heads = this.bindingRules.heading;
+        var heads = this.bindingRules.column;
+        
+        //#ifdef __DEBUG
+        if (!heads) {
+            throw new Error(jpf.formatErrorstring(0, this,
+                "Parsing bindings jml",
+                "No column definition found"));
+        }
+        //#endif
         
         var found, options, xml, width, h, fixed = 0, oHead, hId, nodes = [];
         for (var i = 0; i < heads.length; i++) {

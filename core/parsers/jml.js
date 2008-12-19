@@ -507,6 +507,14 @@ jpf.JmlParser = {
         ,"http://www.w3.org/1999/xhtml" :  function(x, pHtmlNode, jmlParent, noImpliedParent){
             var parseWhole = x.tagName.match(/table|object|embed/i) ? true : false;
 
+            //#ifdef __DEBUG
+            if (!pHtmlNode) {
+                throw new Error(jpf.formatErrorString(0, jmlParent, 
+                    "Parsing html elements",
+                    "Unexpected HTML found", x));
+            }
+            //#endif
+
             // Move all this to the respective browser libs in a wrapper function
             if (x.tagName == "script") {
                 return;
@@ -599,7 +607,7 @@ jpf.JmlParser = {
             }
              //#endif
 
-            if (jpf.canUseInnerHtmlWithTables || !parseWhole)
+            if ((jpf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName != "IFRAME")
                 this.parseChildren(x, o, jmlParent);
             else {
                 //#ifdef __DEBUG
@@ -1112,6 +1120,8 @@ jpf.JmlParser = {
         //   jpf.offline.init();
         //#endif
 
+        jpf.parsingFinalPass = true;
+
         /*
             All these component dependant things might
             be suited better to be in a component generation
@@ -1217,6 +1227,7 @@ jpf.JmlParser = {
         //#endif
 
         jpf.isParsing = false;
+        jpf.parsingFinalPass = false;
     }
 
     // #ifdef __WITH_DATABINDING || __WITH_XFORMS || __WITH_SMARTBINDINGS

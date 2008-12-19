@@ -2241,6 +2241,8 @@ jpf.StandardBinding = function(){
  * @private
  */
 jpf.MultiselectBinding = function(){
+    this.length = 0;
+    
     /**
      * @define bindings
      * @allowchild traverse

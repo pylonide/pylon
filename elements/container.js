@@ -53,7 +53,7 @@ jpf.container = jpf.component(jpf.NODE_VISIBLE, function(pHtmlNode){
         this.oExt = this.$getExternal();
         
         //#ifndef __WITH_EDITMODE
-        this.setInactive();
+        this.setProperty("visible", false);
         //#endif
     }
     

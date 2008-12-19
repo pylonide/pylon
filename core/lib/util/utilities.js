@@ -519,7 +519,7 @@ jpf.getFilename = function(url){
  * @return {String} the absolute url.
  */
 jpf.getAbsolutePath = function(base, url){
-    return url.match(/^\w+\:\/\//) ? url : base + url;
+    return !url || url.match(/^\w+\:\/\//) ? url : base + url;
 };
 
 /**

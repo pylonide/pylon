@@ -230,11 +230,34 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         this.radiogroup.addRadio(this);
     };
 
+
+    this.$propHandlers["icon"] = function(value){
+        // #ifdef __DEBUG
+        if (!this.oIcon)
+            return jpf.console.warn("No icon defined in the Button skin", "button");
+        /* #else
+        if (!this.oIcon) return;
+        #endif */
+
+        if (value)
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
+        else
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+
+        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
+    };
+
     /**
      * @copy checkbox#label
      */
     this.$propHandlers["label"] = function(value){
-        this.oLabel.innerHTML = value;
+        if (value)
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        else
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+        
+        if (this.oLabel)
+            this.oLabel.innerHTML = value;
     };
 
     /**
@@ -348,9 +371,17 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(this, _self.baseCSSname + "Down");
         }
 
+        this.oExt.onmouseover = function(e){
+            if (!e) e = event;
+            if ((e.srcElement || e.target) == this)
+                return;
+
+            jpf.setStyleClass(this, _self.baseCSSname + "Over");
+        }
+
         this.oExt.onmouseout =
         this.oExt.onmouseup  = function(){
-            jpf.setStyleClass(this, "", [_self.baseCSSname + "Down"]);
+            jpf.setStyleClass(this, "", [_self.baseCSSname + "Down", _self.baseCSSname + "Over"]);
         }
     };
 
@@ -441,6 +472,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
         this.oInput = this.$getLayoutNode("main", "input", this.oExt);
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
+        this.oIcon  = this.$getLayoutNode("main", "icon", this.oExt);
 
         /* #ifdef __WITH_EDITMODE
          if(this.editable)

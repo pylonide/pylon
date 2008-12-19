@@ -137,8 +137,7 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        if (x.firstChild)
-            this.setMessage(x.firstChild.nodeValue);
+        jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
         
         /* #ifdef __WITH_EDITMODE
         if (this.editable && this.form.elements[x.getAttribute("for")]) {

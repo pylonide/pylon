@@ -414,7 +414,8 @@ jpf.layout = {
                 //Check if parent is empty
 
                 for (var c = 0, i = 0; i < this.parent.children.length; i++) {
-                    if (!this.parent.children[i].hidden) {
+                    if (!this.parent.children[i].hidden 
+                      || jpf.layout.dlist.contains(this.parent.children[i])) {
                         c = 1;
                         break;
                     }
@@ -429,7 +430,7 @@ jpf.layout = {
                 this.hidden = false;
 
                 //Check if parent is shown
-                if (this.parent.hidden)
+                if (this.parent.hidden || jpf.layout.dlist.contains(this.parent))
                     this.parent.preshow();
 
                 if (jpf.layout.dlist.contains(this)) {
@@ -1043,9 +1044,8 @@ jpf.layout = {
                     hbox = s[i];
                     break;
                 }
-                else
-                    if (s[i].node && s[i].template == "top")
-                        p = i;
+                else if (s[i].node && s[i].template == "top")
+                    p = i;
             }
 
             //create hbox
@@ -1082,12 +1082,48 @@ jpf.layout = {
                 col.template = align;
 
                 if (align == "left") {
+                    if (!a.fwidth) {
+                        var ncol, n = hbox.children;
+                        for (var found = false, i = 0; i < n.length; i++) {
+                            if (n[i].template == "middle") {
+                                found = n[i];
+                                break;
+                            }
+                        }
+                        
+                        if (found && !found.children.length) {
+                            n.remove(found);
+                            for(var i = 0; i < n.length; i++)
+                                n[i].stackId = i;
+                        }
+                    }
+                    
                     n.unshift(col);
                     for (var i = 0; i < n.length; i++)
                         n[i].stackId = i;
                 }
-                else if (align == "right")
+                else if (align == "right") {
+                    if (a.fwidth) {
+                        var ncol, n = hbox.children;
+                        for (var found = false, i = 0; i < n.length; i++) {
+                            if (n[i].template == "middle") {
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        //create middle layer if none is specified
+                        if (!found) {
+                            ncol = jpf.layout.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
+                            ncol.parent = hbox;
+                            ncol.template = "middle";
+                            
+                            ncol.stackId = n.push(ncol) - 1;
+                        }
+                    }
+                    
                     col.stackId = n.push(col) - 1;
+                }
                 else if (align == "middle") {
                     for (var f, i = 0; i < n.length; i++)
                         if (n[i].template == "right")
