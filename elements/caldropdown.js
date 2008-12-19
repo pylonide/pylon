@@ -472,7 +472,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = year;
         _width = this.oExt.offsetWidth;
 
-        var temp = Math.floor((_width - 36) / 8) * 8 + 32 - jpf.getDiff(this.oNavigation)[0];
+        var temp = Math.floor((_width - 36) / 8) * 8
+                 + 32 - jpf.getDiff(this.oNavigation)[0];
 
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
@@ -505,11 +506,11 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
                 if (_width < 300) {
-                    rows[i].innerHTML = "T";
+                    rows[i].innerHTML   = "T";
                     rows[i].style.width = "8px";
                 }
                 else {
-                    rows[i].innerHTML = "Today";
+                    rows[i].innerHTML   = "Today";
                     rows[i].style.width = "32px";
                 }
             }
@@ -529,7 +530,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var daysofweek   = this.oDow.childNodes;
         var d_height     = Math.floor(squareSize / 4 + 6);
-        var d_paddingTop = Math.floor(squareSize / 4 - 8) > 0 ? Math.floor(squareSize / 4 - 8) : 0;
+        var d_paddingTop = Math.floor(squareSize / 4 - 8) > 0
+            ? Math.floor(squareSize / 4 - 8)
+            : 0;
         var d_fontSize   = _width  <= 220 ? "9px" : "11px";
         var d_width      = (squareSize * 8 + 32);
 
@@ -553,7 +556,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         var c_height     = Math.floor((squareSize + 12) / 2);
-        var c_paddingTop = squareSize - c_height > 0 ? squareSize - c_height : 0;
+        var c_paddingTop = squareSize - c_height > 0
+            ? squareSize - c_height
+            : 0;
 
         rows = this.oSlider.childNodes;
         for (z = 0, y = 0, i = 0; i < rows.length; i++) {
@@ -616,16 +621,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
 
-            if (!this.height) {
-                rows[i].style.display = disabledRow == 7
-                    ? "none"
-                    : "block";
-            }
-            else {
-                rows[i].style.visibility = disabledRow == 7
-                    ? "hidden"
-                    : "visible";
-            }
+            rows[i].style.visibility = disabledRow == 7
+                ? "hidden"
+                : "visible";
         }
     };
 
