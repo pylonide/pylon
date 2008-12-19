@@ -38,7 +38,107 @@
  */
 
 jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
-    this.$supportFullscreen = true;
+    this.$booleanProperties["fullscreen"] = true;
+
+    var oldStyle = null; //will hold old style of the media elements' parentNode on fullscreen
+    var placeHolder = null;
+    this.$propHandlers["fullscreen"] = function(value) {
+        if (!this.player) return;
+        // only go fullscreen when the feature is supported by the active player
+        if (typeof this.player.setFullscreen == "function")
+            this.player.setFullscreen(value);
+        else if (this.parentNode && this.parentNode.tagName != "application"
+          && this.parentNode.setWidth) {
+            // we're going into fullscreen mode...
+            var oParent = this.parentNode.oExt;
+            if (value) {
+                oldStyle = {
+                    width    : this.parentNode.getWidth(),
+                    height   : this.parentNode.getHeight(),
+                    top      : this.parentNode.getTop(),
+                    left     : this.parentNode.getLeft(),
+                    position : jpf.getStyle(oParent, 'position'),
+                    zIndex   : jpf.getStyle(oParent, 'z-index'),
+                    resizable: this.parentNode.resizable
+                }
+
+                if (oParent.parentNode != document.body) {
+                    window.console.log('still reparenting!');
+                    window.console.dir(oParent.parentNode);
+                    placeHolder = document.createElement('div');
+                    placeHolder.setAttribute('id', '__jpf_video_placeholder__');
+                    placeHolder.style.display = "none";
+                    oParent.parentNode.insertBefore(placeHolder, oParent);
+
+                    document.body.appendChild(oParent);
+                }
+
+                this.parentNode.oExt.style.position = "absolute";
+                this.parentNode.oExt.style.zIndex = "1000000";
+                this.parentNode.setWidth('100%');
+                this.parentNode.setHeight('100%');
+                this.parentNode.setTop('0');
+                this.parentNode.setLeft('0');
+
+                if (this.parentNode.resizable)
+                    this.parentNode.setAttribute("resizable", false);
+            }
+            // we're going back to normal mode...
+            else if (oldStyle) {
+                if (placeHolder) {
+                    window.console.log('still reparenting!');
+                    placeHolder.parentNode.insertBefore(oParent, placeHolder);
+                    placeHolder.parentNode.removeChild(placeHolder);
+                    placeHolder = null;
+                }
+
+                this.parentNode.oExt.style.zIndex = oldStyle.zIndex;
+                this.parentNode.oExt.style.position = oldStyle.position;
+                this.parentNode.setWidth(oldStyle.width);
+                this.parentNode.setHeight(oldStyle.height);
+                this.parentNode.setTop(oldStyle.top);
+                this.parentNode.setLeft(oldStyle.left);
+
+                if (oldStyle.resizable)
+                    this.parentNode.setAttribute("resizable", true);
+
+                oldStyle = null;
+            }
+
+            if (this.player.onAfterFullscreen)
+                this.player.onAfterFullscreen(value);
+
+            var _self = this;
+            window.setTimeout(function() {
+                jpf.layout.forceResize(_self.parentNode.oExt);
+            }, 100)
+        }
+    };
+
+    /**** Event listeners ****/
+
+    /* #ifdef __WITH_KEYBOARD
+    this.addEventListener("keydown", function(e){
+        window.console.log('keydown on media element');
+        switch (e.keyCode) {
+            case 13 && (e.ctrlKey || e.altKey): //(CTRL | ALT) + RETURN
+            case 70: //f
+                this.setPropery("fullscreen", true);
+                return false;
+                break;
+            case 80:
+                this.setProperty("paused", !this.paused);
+                return false;
+                break;
+            case 27: //ESC
+                this.setProperty("fullscreen", false);
+                return false;
+                break;
+            default:
+                break;
+        };
+    }, true);
+    // #endif*/
 
     this.mainBind = "src";
 

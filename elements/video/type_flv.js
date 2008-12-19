@@ -119,7 +119,8 @@ jpf.video.TypeFlv.prototype = {
     pause: function(pauseState) {
         if (typeof pauseState == "undefined")
             pauseState = true;
-        return this.callMethod("pause", pauseState);
+        this.callMethod("pause", pauseState);
+        return this;
     },
 
     /**
@@ -128,7 +129,8 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     stop: function() {
-        return this.callMethod("stop");
+        this.callMethod("stop");
+        return this;
     },
 
     /**
@@ -138,7 +140,8 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     seek: function(millis) {
-        return this.callMethod("seek", millis / 1000);
+        this.callMethod("seek", millis / 1000);
+        return this;
     },
 
     /**
@@ -148,7 +151,8 @@ jpf.video.TypeFlv.prototype = {
      * @type  {Object}
      */
     setVolume: function(iVolume) {
-        return this.callMethod("setVolume", iVolume);
+        this.callMethod("setVolume", iVolume);
+        return this;
     },
 
     /**
@@ -170,8 +174,9 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     setSize: function() {
-        return this.callMethod("setSize", this.htmlElement.offsetWidth,
+        this.callMethod("setSize", this.htmlElement.offsetWidth,
             this.htmlElement.offsetHeight);
+        return this;
     },
 
     /**
@@ -229,7 +234,6 @@ jpf.video.TypeFlv.prototype = {
             this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
         else
             this.delayCalls.push(arguments);
-        return this;
     },
 
     /**
@@ -325,17 +329,19 @@ jpf.video.TypeFlv.prototype = {
                 this.inited = true;
                 // There is a bug in IE innerHTML. Tell flash what size it is.
                 // This will probably not work with liquid layouts in IE.
-                this.setSize()
-                 .invalidateProperty("clickToTogglePlay", "skinVisible",
+                this.invalidateProperty("clickToTogglePlay", "skinVisible",
                     "skinAutoHide", "autoPlay", "autoLoad", "volume", "bufferTime",
                     "videoScaleMode", "videoAlign", "playheadUpdateInterval",
                     "previewImagePath").validateNow().makeDelayCalls();
 
                 this.oVideo.$initHook({type:"init"});
+                this.onResize();
                 break;
+            // #ifdef __DEBUG
             case "debug":
-                jpf.console.log('debug: ' + evtObj.msg);
+                jpf.console.log('Flash debug: ' + evtObj.msg);
                 break;
+            // #endif
         }
     },
 
