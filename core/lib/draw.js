@@ -936,7 +936,7 @@ jpf.draw = {
         this.mousethis = sthis;
         this.mousefunc = func;
         this.mousestates = [];
-        var v = style.$statelist, i, j, t;
+        var v = style.$statelist, i, j, t, u;
         if(!v || !v.length) return '';
         
         v = this.mousestates = v.slice(0);
@@ -945,10 +945,11 @@ jpf.draw = {
 
         if(!l._mousestyles)l._mousestyles = [];
         for(i = 0, j = v.length;i<j;i++){
-           (t=v[i])._mid = l._mousestyles.push(t)-1;
+           u = (t=v[i])._mid = l._mousestyles.push(t)-1;
+           if(t.$store)t.$store._mid = u;
         }
         
-        s.push("_s = l._mousestyles[",style._mid,"], _sl = _s.$storelist, _sp = _s.$speedhash;");
+        s.push("_s = l._mousestyles[",style._mid,"], _sh = _s.$statehash, _sp = _s.$speedhash;");
         
         return s.join('');
     },
@@ -964,7 +965,7 @@ jpf.draw = {
             this.style = 0;
             return s;
         }
-        s = ["t=(n-",time,")*(_sp[_t=_sl[",state,"]]||100000);"];
+        s = ["t=(n-",time,")*(_sp[_t=_sh[",state,"]]||100000);"];
         for(i = 2, j = arguments.length;i<j;i++){
             a.push( t = "_s"+(i-1) );
             s.push( t,"=",arguments[i],";");
@@ -1020,9 +1021,9 @@ jpf.draw = {
                 // lets draw an ellipse with rs and rw phases
                 // now we have an offset y and a size y how do we deal with that?
                 if(ds!='0'){
-                    x = "_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+
+                    x = "_x6=__sin(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+
                                     ds+")*(_x7="+w+")+("+x+")"+gx(t,'+_x7*(','move',')');
-                    y = "_y6=__sin(_y8)*_x8*(_y7="+h+")+("+y+")"+gy(t,'+_y7*(','move',')');
+                    y = "_y6=__cos(_y8)*_x8*(_y7="+h+")+("+y+")"+gy(t,'+_y7*(','move',')');
                     w = '_x7*(_x3='+dw+')';
                     h = '_y7*_x3';
                     rs = '_x9';
@@ -1034,8 +1035,17 @@ jpf.draw = {
                     h = dw=='1'?'('+h+')':'('+h+')*_x3';
                 }
                 if(m){
-                    
-                    return '';
+                    return [
+                        "if( ((_x1=((",x,")-mx)/(",w,"))*_x1+(_y1=((",y,")-my)/(",h,"))*_y1) < 1 ){",
+                            "_x1=(p+__atan2(_x1,_y1));",
+                            "if( ((_x2=(",rs,")%p2)<0?(_x2=p2-_x2):_x2) >",
+                                "((_y2=(",rw,")%p2)<0?(_y2=p2-_y2):_y2) ){",
+                                "if(_x1 >= _x2 || _x1<=_y2 )return x;",
+                            "}else{",
+                                "if(_x1 >= _x2 && _x1<=_y2 )return x;",
+                            "}",
+                        "}"
+                    ].join('');
                 }else{
                     return [
                         this.moveTo(x,y),

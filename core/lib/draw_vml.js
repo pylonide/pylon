@@ -338,14 +338,20 @@ jpf.draw.vml = {
 
     ellipse : function( x,y,w,h,s,e,c){
        if(!s){
-        return ["_p.push('at ',(_x1=__round(",x,"))-(_x2=__round(",w,")),' ',(_y1=__round(",y,"))-(_y2=__round(",h,")),' ',",
+        return ["_p.push('at ',(_x1=__round(",x,"))-(_x2=__round(",w,
+                ")),' ',(_y1=__round(",y,"))-(_y2=__round(",h,")),' ',",
                 "_x1+_x2,' ',_y1+_y2,' 0 0 0 0');"].join('');
        }else{ // generate heaps of crap
         return ["if( (_t=",s,")+0.000001<(_u=",e,")){",
-                "_p.push('",c?"at":"wa"," ',(_x1=__round(",x,"))-(_x2=__round(",w,")),' ',(_y1=__round(",y,"))-(_y2=__round(",h,")),' ',",
-                "_x1+_x2,' ',_y1+_y2,' ',__round(_x1+__cos(_t)*_x2*4000),' ',__round(_y1+__sin(_t)*_y2*4000),' ',",
-                "__round(_x1+__cos(_u)*_x2*4000),' ',__round(_y1+__sin(_u)*_y2*4000),'x');}else{",
-                "_p.push('l',__round((",x,")+__cos(_t)*(",w,")),' ',__round((",y,")+__sin(_t)*(",h,")),'x');",
+                "_p.push('",c?"wa":"at"," ',(_x1=__round(",x,
+                "))-(_x2=__round(",w,")),' ',(_y1=__round(",y,
+                "))-(_y2=__round(",h,")),' ',_x1+_x2,' ',_y1+_y2,' ',",
+                "__round(_x1+__sin(_t)*_x2*4000),' ',",
+                "__round(_y1+__cos(_t)*_y2*4000),' ',",
+                "__round(_x1+__sin(_u)*_x2*4000),' ',",
+                "__round(_y1+__cos(_u)*_y2*4000),'x');}else{",
+                "_p.push('l',__round((",x,")+__sin(_t)*(",w,
+                ")),' ',__round((",y,")+__cos(_t)*(",h,")),'x');",
                 "}",
                 ].join('');
        }

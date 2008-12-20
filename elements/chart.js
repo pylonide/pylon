@@ -49,13 +49,12 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         for(var i = 0;i<this.childNodes.length;i++){
             this.childNodes[i].drawAxis();
         }
-       }
+    }
     
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
     }
-
     
     this.$loadJml = function(x){
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
@@ -89,8 +88,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             bt = (_self.canvas)?ffbt[e.button]:iebt[e.button];
             if(!bt)return;
             //interact = true;
-              lx = e.clientX, ly = e.clientY;
-            ox = lx - _self.oExt.offsetLeft, oy = ly - _self.oExt.offsetTop;
+              lx = e.clientX- _self.oExt.offsetLeft, ly = e.clientY- _self.oExt.offsetTop;
+             ox = lx , oy = ly;
             // we need to check if our mousedown was in the axis, ifso send it a mousedown and keep it on our eventstack
             for(var t, i = _self.childNodes.length-1;i>=0;i--){
                 t = _self.childNodes[i];
@@ -120,7 +119,9 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.onmousemove = function(e){
             //if (!interact) return;
             if (!e) e = event;
-            var dx = (-lx + (lx=e.clientX)),dy = (-ly + (ly=e.clientY));
+            var dx = (-lx + (lx=e.clientX-_self.oExt.offsetLeft)),
+                dy = (-ly + (ly=e.clientY-_self.oExt.offsetTop));
+            
             if(bt){
                 for(var t, i = stack.length-1;i>=0;i--)
                     (t = stack[i]).mouseMove(dx,dy,bt,ox-t.left,oy-t.top,lx-t.left,ly-t.top);
@@ -232,26 +233,30 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     
     this.mouseDown = function(x,y,bt){
         if(bt == 3) this.resetView();
+        for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
+            (n = d[i++]).mouseDown(x,y,bt);
+        }
     }
     
     this.mouseUp = function(x,y){
+        for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
+            (n = d[i++]).mouseUp(x,y);
+        }
     }
     
     this.mouseMove = function(dx,dy,bt,ox,oy,lx,ly){
-        // we need to 
+        // send mouseMove to charts
+        //document.title = lx+' '+ly+this.left;
+        var cx = this.cleft, cy = this.ctop;
+        for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
+            (n = d[i++]).mouseMove(dx,dy, bt, ox-cx, oy-cy, lx-cx, ly-cy);
+        }
+        
         dx = dx / this.cwidth, dy = dy / this.cheight; 
         var zx = this.zoomx, zy = this.zoomy, v;
         this.mousex=lx/this.cwidth;
         this.mousey=ly/this.cheight;
-        
-        // send mouseMove to charts
-        /*
-        for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
-            (n = d[i++]);
-            n.mouseMove(
-            n.$draw(n, l);
-        }*/
-        
+
         if(bt == 1){
             if(ox<this.cleft)dx = 0;
             if(oy>this.ctop+this.cheight)dy = 0;
@@ -329,13 +334,14 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         //document.title = l.vx2;
         //var dt=(new Date()).getTime();
         //for(var j = 0;j<100;j++)
-            l.griddraw( l, l );
+         l.$draw( l, l );
         //document.title = ((new Date()).getTime()-dt)/100;
 
         for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
             (n = d[i++]);n.tilex=this.tilex;n.tiley=this.tiley;
             n.zoom = this.zoomx;
-            n.$draw(n, l);
+            n.chartDraw( l );
+            //n.drawChart();
         }
     }
 
@@ -376,7 +382,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // initialize drawing function
         var dt = (new Date()).getTime();
        
-        this.griddraw  = jpf.chart.axis.draw['grid'+this.type]( this, this.style );
+        this.$draw  = jpf.chart.axis.draw['grid'+this.type]( this, this.style );
         
         // init graph layers with proper drawing viewport
         // after each draw, we should have the lines x and y positions in an array ready to be drawn in text, or looked up to text.
@@ -781,8 +787,42 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.style = {};
     this.tilex = 0;
     this.tiley = 0;
+    this.m={x:0,y:0};
+    
     this.$handlePropSet = function(prop, value, force) {
         this[prop] = value;
+    }
+    
+    this.chartDraw = function( v ){
+        this.$draw( this, v);
+    }
+    
+    this.mouseDown = function(x,y,bt){
+
+    }
+    
+    this.mouseUp = function(x,y){
+
+    }
+    
+    this.lastOver = -1;
+    this.mouseMove = function(dx,dy,bt,ox,oy,lx,ly){
+        var m = this.m;m.x = lx*this.ds, m.y = ly*this.ds;
+        var o = this.$draw( this, this.parentNode, this.m), l;
+        var t = (new Date()).getTime();
+        if(o!=(l=this.lastOver)){
+            // we should remove the over-state from the last
+            if(l>=0){
+                // put the last one in hover-out state
+                this.v_state[l] = this.v_state[l] & 0xff;
+                this.v_time[l] = t;
+            }
+            if(o>=0){
+                this.v_state[o] = this.v_state[o] | jpf.draw.stateBit['select'];
+                this.v_time[o] = t;
+             }
+            this.lastOver = o;
+        }
     }
     
     this.$loadJml = function(x,obj, order, root){
@@ -814,7 +854,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
             p = (this.series.indexOf(" ") != -1) ? this.series.split(" ") : 
                 this.series.split(",");
             for( v = 0; v < p.length; v++ ){
-                this.v_state[v] = 0x20000000;
+                //this.v_state[v] = 0x20000000;
                 this.v_time[v] = t;
                 k = p[v].split(",");
                 if( l = k.length > 0 ){
@@ -828,12 +868,12 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
             }
         }
         
-this.v_state[1] = 0x20000002;
-this.v_state[2] = 0x20000003;
-this.v_state[3] = 0x20000004;
-this.v_state[5] = 0x20000005;
-this.v_state[6] = 0x20000002;
-this.v_state[7] = 0x20000003;
+this.v_state[1] = 0x00000002;
+this.v_state[2] = 0x00000003;
+this.v_state[3] = 0x00000004;
+this.v_state[5] = 0x00000005;
+this.v_state[6] = 0x00000002;
+this.v_state[7] = 0x00000003;
 
         /*      
         this.v_state[4] = 0x20000003;
@@ -1058,12 +1098,14 @@ jpf.chart.graph.draw = {
                     e.checkMouseState(d.state,d.time,"xc","yc","wq","hq",
                                 "rx","-rx+(rx+=("+d.y+")*sum)"),
                 "};",
+                "return -1;",
             "}",
             e.clear(),
             e.beginState(s.chart,e,e.drawPart,6),
             "for(rx=0,x=x1;x<x2",d.forx,";x+=idx",d.incx,")",d.ifx,"{",
-                e.drawState(d.state,d.time,"xc","yc","wq","hq",
-                            "rx","-rx+(rx+=("+d.y+")*sum)"),
+/*                e.drawState(d.state,d.time,"xc","yc","wq","hq",
+                            "rx","-rx+(rx+=("+d.y+")*sum)"),*/
+                e.drawState(d.state,d.time,"xc","yc","wq","hq","rx","-rx+(rx+=("+d.y+")*sum)"),
             "};",
             e.endLayer2D()]);
             //alert(c);
