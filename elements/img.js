@@ -124,7 +124,7 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
             wratio = this.oImg.offsetWidth / (this.oExt.offsetWidth - diff[0]);
         else if (this.oImg.offsetHeight > this.oExt.offsetHeight)
             hratio = this.oImg.offsetHeight / (this.oExt.offsetHeight - diff[1]);
-        document.title = wratio + ":" + hratio;
+
         if (wratio > hratio && wratio > 1)
             this.oImg.style.width = "100%";
         else if (hratio > wratio && hratio > 1)
