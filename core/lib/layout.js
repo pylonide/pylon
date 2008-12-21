@@ -413,9 +413,9 @@ jpf.layout = {
 
                 //Check if parent is empty
 
-                for (var c = 0, i = 0; i < this.parent.children.length; i++) {
-                    if (!this.parent.children[i].hidden 
-                      || jpf.layout.dlist.contains(this.parent.children[i])) {
+                for (var child, c = 0, i = 0; i < this.parent.children.length; i++) {
+                    child = this.parent.children[i];
+                    if (child != this && (!child.hidden || jpf.layout.dlist.contains(child))) {
                         c = 1;
                         break;
                     }
@@ -423,11 +423,14 @@ jpf.layout = {
                 if (!c)
                     this.parent.prehide();
             },
-            preshow : function(){
+            preshow : function(adminOnly){
                 if (!this.hidden)
                     return;
 
                 this.hidden = false;
+
+                if (adminOnly)
+                    return this.show(true);
 
                 //Check if parent is shown
                 if (this.parent.hidden || jpf.layout.dlist.contains(this.parent))
@@ -462,7 +465,7 @@ jpf.layout = {
                 }
             },
 
-            show : function(){
+            show : function(adminOnly){
                 //Check if position is still available
                 var nodes = this.parent.children;
                 if (this.hidepos.prev && this.hidepos.prev.parent == this.parent
@@ -501,13 +504,15 @@ jpf.layout = {
                 //Remove from hidden
                 this.parent.hiddenChildren.remove(this);
 
-                if (this.hidden != 3) {
-                    if (this.hid)
-                        jpf.lookup(this.hid).visible = true;
-                    if (this.oHtml)
-                        this.oHtml.style.display = "block";
+                if (!adminOnly) {
+                    if (this.hidden != 3) {
+                        if (this.hid)
+                            jpf.lookup(this.hid).visible = true;
+                        if (this.oHtml)
+                            this.oHtml.style.display = "block";
+                    }
                 }
-
+                
                 this.hidden  = false;
                 this.hidepos = null;
             },
@@ -517,7 +522,7 @@ jpf.layout = {
                 if (!p)
                     return;
 
-                if (this.hidden) {
+                if (this.hidden || p.hiddenChildren.contains(this)) {
                     p.hiddenChildren.remove(this);
                     jpf.layout.dlist.remove(this);
                 }
@@ -926,9 +931,9 @@ jpf.layout = {
 
                 //@todo test this with reparenting
                 var pNode = node.parent;
-                if (pNode && !pNode.fheight && firstNode.fheight
+                if ((pNode && !pNode.fheight && firstNode.fheight
                   || firstNode.last.fheight && firstNode.fheight !== null
-                  && firstNode.last.fheight == pNode.fheight) {
+                  && firstNode.last.fheight == pNode.fheight) && node.children.length == 1) {
                     firstNode.last.fheight =
                     pNode.fheight           = firstNode.fheight;
                     firstNode.fheight      = null;
@@ -940,9 +945,9 @@ jpf.layout = {
                     already inherited it and wasn't set later (and is thus
                     different from cached version (in .last)
                 */
-                if (!node.fheight && firstNode.fheight
+                if ((!node.fheight && firstNode.fheight
                   || firstNode.last.fheight && firstNode.fheight !== null
-                  && firstNode.last.fheight == node.fheight) {
+                  && firstNode.last.fheight == node.fheight) && node.children.length == 1) {
                     firstNode.last.fheight =
                     node.fheight           = firstNode.fheight;
                     firstNode.fheight      = null;
@@ -1066,7 +1071,7 @@ jpf.layout = {
             }
 
             //find col
-            var col, n = hbox.children;
+            var col, n = hbox.children.concat(hbox.hiddenChildren);
             for (var i = 0; i < n.length; i++) {
                 if (n[i].template == align) {
                     col = n[i];
@@ -1074,6 +1079,7 @@ jpf.layout = {
                 }
             }
 
+            n = hbox.children;
             //create col
             if (!col) {
                 var l = jpf.layout.get(pData.pHtml);
@@ -1083,7 +1089,7 @@ jpf.layout = {
 
                 if (align == "left") {
                     if (!a.fwidth) {
-                        var ncol, n = hbox.children;
+                        var ncol;
                         for (var found = false, i = 0; i < n.length; i++) {
                             if (n[i].template == "middle") {
                                 found = n[i];
@@ -1104,9 +1110,9 @@ jpf.layout = {
                 }
                 else if (align == "right") {
                     if (a.fwidth) {
-                        var ncol, n = hbox.children;
+                        var ncol;
                         for (var found = false, i = 0; i < n.length; i++) {
-                            if (n[i].template == "middle") {
+                            if (n[i].template == "middle" || n[i].template == "left" && !n[i].fwidth) {
                                 found = true;
                                 break;
                             }
@@ -1142,6 +1148,10 @@ jpf.layout = {
 
             a.stackId = col.children.push(a) - 1;
             a.parent = col;
+            
+            if (col.hidden) {
+                col.preshow(true);
+            }
         }
     },
     //#endif

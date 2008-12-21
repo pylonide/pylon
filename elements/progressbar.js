@@ -122,6 +122,9 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
      * @param {Number} start the time between each step in milliseconds.
      */
     this.start = function(time){
+        if (this.autohide)
+            this.show();
+        
         clearInterval(this.timer);
         this.oSlider.style.display = "block";
         this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()", 
@@ -166,6 +169,9 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         if (this.autostart)
            this.start();
+           
+        if (this.autohide)
+            this.hide();
     };
 }).implement(
     // #ifdef __WITH_DATABINDING

@@ -318,11 +318,13 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Set row heights
         rule.push("total = 0");
+        var needcalc = false;
         for (total = 0, i = 0; i < rowheight.length; i++) {
             if (rowheight[i] == "*")
                 fillRow = i;
             else {
                 if (parseFloat(rowheight[i]) != rowheight[i]) {
+                    needcalc = true;
                     rule.push("var rowh" + i + "; total += rowh" 
                         + i + " = " + rowheight[i]);
                     rowheight[i] = "rowh" + i;
@@ -332,10 +334,14 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         if (fillRow !== null) {
+            needcalc = true;
             rule.push("var rowh" + fillRow + " = " + pHeight 
                     + " - total - " + total);
             rowheight[fillRow] = "rowh" + fillRow;
         }
+        
+        if (!needcalc)
+            this.oExt.style.height = (total + (rowheight.length * this.padding) + margin[0] + margin[2]) + "px";
         
         //Set column start position
         var rowstart = [margin[0]];
@@ -447,7 +453,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
         //this.oExt.style.height = "80%"
-        this.oExt.style.width  = "100%"
+        //this.oExt.style.width  = "100%"
         this.oExt.style.top    = 0;
         this.oExt.style.position = "relative";
         

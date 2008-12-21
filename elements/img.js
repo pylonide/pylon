@@ -61,6 +61,8 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
     this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
+    var _self = this;
+    
     /**
      * @copy Widget#setValue
      */
@@ -80,11 +82,24 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String} value the url location of the image displayed.
      */
     this.$propHandlers["value"] = function(value){
-        var imgNode = this.$getLayoutNode("main", "image", this.oExt);
-        if (imgNode.nodeType == 1)
-            imgNode.style.backgroundImage = "url("+ value+")";
+        if (this.oImage.nodeType == 1)
+            this.oImage.style.backgroundImage = "url(" + value + ")";
         else
-            imgNode.nodeValue = value;
+            this.oImage.nodeValue = value;
+        
+        //@todo resize should become a generic thing
+        if (this.oImage.nodeType == 2 && !this.$resize.done) {
+            this.oImg = this.oInt.getElementsByTagName("img")[0];
+            jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
+                "jpf.all[" + this.uniqueId + "].$resize()");
+            jpf.layout.activateRules(this.pHtmlNode);
+            
+            this.oImg.onload = function(){
+                jpf.layout.forceResize(_self.pHtmlNode);
+            }
+            
+            this.$resize.done = true;
+        }
     };
     
     /**** Init ****/
@@ -95,7 +110,29 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
+        this.oImage = this.$getLayoutNode("main", "image", this.oExt);
     };
+    
+    this.$resize = function(){
+        var diff = jpf.getDiff(this.oExt);
+        var wratio = 1, hratio = 1;
+        
+        this.oImg.style.width = "";
+        this.oImg.style.height = "";
+        
+        if (this.oImg.offsetWidth > this.oExt.offsetWidth)
+            wratio = this.oImg.offsetWidth / (this.oExt.offsetWidth - diff[0]);
+        else if (this.oImg.offsetHeight > this.oExt.offsetHeight)
+            hratio = this.oImg.offsetHeight / (this.oExt.offsetHeight - diff[1]);
+        document.title = wratio + ":" + hratio;
+        if (wratio > hratio && wratio > 1)
+            this.oImg.style.width = "100%";
+        else if (hratio > wratio && hratio > 1)
+            this.oImg.style.height = "100%";
+        
+        this.oImg.style.top = ((this.oExt.offsetHeight - jpf.getHeightDiff(this.oExt) 
+            - this.oImg.offsetHeight) / 2) + "px";
+    }
     
     this.$loadJml = function(x){
         if(x.getAttribute("src"))

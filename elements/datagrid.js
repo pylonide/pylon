@@ -527,7 +527,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //#ifdef __DEBUG
         if (!heads) {
-            throw new Error(jpf.formatErrorstring(0, this,
+            throw new Error(jpf.formatErrorString(0, this,
                 "Parsing bindings jml",
                 "No column definition found"));
         }

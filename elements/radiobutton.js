@@ -192,7 +192,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "background", "group",
-        "label", "checked");
+        "label", "checked", "tooltip", "icon");
 
     /**
      * @attribute {String} group the name of the group to which this radio
@@ -229,7 +229,10 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.radiogroup.addRadio(this);
     };
-
+    
+    this.$propHandlers["tooltip"] = function(value){
+        this.oExt.setAttribute("title", value);
+    };
 
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG

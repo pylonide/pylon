@@ -359,7 +359,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.select();
         };
 
-        if (e && e.mouse && jpf.isIE) {
+        if ((!e || e.mouse) && jpf.isIE) {
             clearInterval(fTimer);
             fTimer = setInterval(delay, 1);
         }

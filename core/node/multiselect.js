@@ -903,7 +903,7 @@ jpf.MultiSelect = function(){
             
             this.timer = setTimeout(function(){
                 _self.selectTemp();
-            }, 200);
+            }, 400);
         }
     };
     
