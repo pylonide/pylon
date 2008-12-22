@@ -734,7 +734,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
-                oButton.setAttribute("onmousedown", 'jpf.lookup('
+                oButton.setAttribute("onclick", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
 
