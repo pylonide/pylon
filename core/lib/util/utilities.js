@@ -29,20 +29,20 @@
 jpf.formatXml = function(strXml){
     if (!strXml) return "";
     strXml = strXml.trim();
-    
+
     var lines = strXml.split("\n");
-    for (var i = 0; i < lines.length; i++) 
+    for (var i = 0; i < lines.length; i++)
         lines[i] = lines[i].trim();
     lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
         .replace(/\n\</g, "<").replace(/\</g, "\n<").split("\n");
     lines.removeIndex(0);//test if this is actually always fine
     lines.removeIndex(lines.length);
-    
-    for (var depth = 0, i = 0; i < lines.length; i++) 
+
+    for (var depth = 0, i = 0; i < lines.length; i++)
         lines[i] = "\t".repeat((lines[i].match(/^\s*\<\//)
             ? --depth
             : (lines[i].match(/^\s*\<[^\?][^>]+[^\/]\>/) ? depth++ : depth))) + lines[i];
-    
+
     return lines.join("\n");
 };
 
@@ -52,14 +52,14 @@ jpf.formatXml = function(strXml){
  * @return {String} the highlighted string.
  */
 jpf.highlightXml = function(str){
-	return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
-	   .replace(/>/g, "_@B@_")
-	   .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
-	   .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
-	   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-	   .replace(/\n/g, "<br />")
-	   .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
-	   .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
+    return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
+       .replace(/>/g, "_@B@_")
+       .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
+       .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
+       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+       .replace(/\n/g, "<br />")
+       .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
+       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
 }
 
 /**
@@ -68,27 +68,27 @@ jpf.highlightXml = function(str){
  * @return {String} the highlighted string.
  */
 jpf.highlightCode = function(strCode){
-	return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
-	   .replace(/>/g, "_@B@_")
-	   .replace(/((?:\s|^)[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
-	   .replace(/((?:\s|^)[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
-	   .replace(/(_@A@_[\s\S]*?_@B@_|<[\s\S]*?>)|(\/\/.*)$|("(?:[^"]+|\\.)*")|('(?:[^']+|\\.)*')|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm, 
-	        function(m, tag, co, str1, str2, nw, kw, nw2, fW, f, fws) {
-	            if (tag) return tag;
-	            else if (f)
-	                return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
-	            else if (co)
-	                return '<span style="color:green">' + co + '</span>';
-	            else if (str1 || str2)
-	                return '<span style="color:#808080">' + (str1 || str2) + '</span>';
-	            else if (nw)
-	                return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
+    return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
+       .replace(/>/g, "_@B@_")
+       .replace(/((?:\s|^)[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
+       .replace(/((?:\s|^)[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
+       .replace(/(_@A@_[\s\S]*?_@B@_|<[\s\S]*?>)|(\/\/.*)$|("(?:[^"]+|\\.)*")|('(?:[^']+|\\.)*')|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm,
+            function(m, tag, co, str1, str2, nw, kw, nw2, fW, f, fws) {
+                if (tag) return tag;
+                else if (f)
+                    return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
+                else if (co)
+                    return '<span style="color:green">' + co + '</span>';
+                else if (str1 || str2)
+                    return '<span style="color:#808080">' + (str1 || str2) + '</span>';
+                else if (nw)
+                    return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
             })
        .replace(/_@A@_(!--[\s\S]*?--)_@B@_/g, '<span style="color:green">&lt;$1&gt;</span>')
-	   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-	   .replace(/\n/g, "<br />")
-	   .replace(/_@B@_/g, "<span style='color:#127ac6'>&gt;</span>")
-	   .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
+       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+       .replace(/\n/g, "<br />")
+       .replace(/_@B@_/g, "<span style='color:#127ac6'>&gt;</span>")
+       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
 }
 
 /**
@@ -102,11 +102,11 @@ jpf.formatJS = function(strJs){
         function(m, a, b, c){
             if (a) d++;
             if (b) d--;
-            
+
             var o = '';
-            for (var i = 0; i < d; i++) 
+            for (var i = 0; i < d; i++)
                 o += '\t\t';
-                
+
             if (a) return '{\n' + o;
             if (b) return '\n' + o + '}';
             if (c) return ';\n' + o;
@@ -127,7 +127,7 @@ jpf.pasteWindow = function(str){
 /**
  * @private
  */
-jpf.xmlEntityMap = { 
+jpf.xmlEntityMap = {
     'quot': '34', 'amp': '38', 'apos': '39', 'lt': '60', 'gt': '62',
     'nbsp': '160', 'iexcl': '161', 'cent': '162', 'pound': '163', 'curren': '164',
     'yen': '165', 'brvbar': '166', 'sect': '167', 'uml': '168', 'copy': '169',
@@ -233,7 +233,7 @@ jpf.randomGenerator = {
     Q: null,
     R: null,
     oneOverM: null,
-    
+
     /**
      * Generates a random Number between a lower and upper boundary.
      * The algorithm uses the system time, in minutes and seconds, to 'seed'
@@ -254,7 +254,7 @@ jpf.randomGenerator = {
         this.oneOverM = 1.0 / this.M;
         return Math.floor((unr - lnr + 1) * this.next() + lnr);
     },
-    
+
     /**
      * Returns a new random number, based on the 'seed', generated by the
      * <i>generate</i> method.
@@ -278,8 +278,8 @@ jpf.randomGenerator = {
  * @return {String} the url with timestamp.
  */
 jpf.getNoCacheUrl = function(url){
-    return url 
-        + (url.indexOf("?") == -1 ? "?" : "&") 
+    return url
+        + (url.indexOf("?") == -1 ? "?" : "&")
         + "nocache=" + new Date().getTime();
 };
 
@@ -292,8 +292,19 @@ jpf.getNoCacheUrl = function(url){
 jpf.parseExpression = function(str){
     if(!jpf.parseExpression.regexp.test(str))
         return str;
-        
-    return eval(RegExp.$1);
+
+    //#ifdef __DEBUG
+    try {
+    //#endif
+        return eval(RegExp.$1);
+    //#ifdef __DEBUG
+    }
+    catch(e) {
+        throw new Error(jpf.formatErrorString(0, null,
+            "Parsing Expression",
+            "Invalid expression given '" + str + "'"));
+    }
+    //#endif
 };
 jpf.parseExpression.regexp = /^\{(.*)\}$/;
 
@@ -303,13 +314,13 @@ jpf.parseExpression.regexp = /^\{(.*)\}$/;
 jpf.formatNumber = function(num, prefix){
     var nr = parseFloat(num);
     if (!nr) return num;
-    
+
     var str = new String(Math.round(nr * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
         return m1.pad(3, "0", jpf.PAD_RIGHT);
     });
-    if (str.indexOf(".") == -1) 
+    if (str.indexOf(".") == -1)
         str += ".00";
-    
+
     return prefix + str;
 };
 
@@ -321,32 +332,32 @@ jpf.JSONSerialize = {
     object: function(o){
         //XML support - NOTICE: Javeline PlatForm specific
         if (o.nodeType && o.cloneNode)
-            return "jpf.xmldb.getXml(" 
+            return "jpf.xmldb.getXml("
                 + this.string(jpf.xmldb.serializeNode(o)) + ")";
-        
+
         //Normal JS object support
         var str = [];
         for (var prop in o) {
             str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
                 + jpf.serialize(o[prop]));
         }
-        
+
         return "{" + str.join(", ") + "}";
     },
-    
+
     string: function(s){
         s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
         return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
     },
-    
+
     number: function(i){
         return i.toString();
     },
-    
+
     "boolean": function(b){
         return b.toString();
     },
-    
+
     date: function(d){
         var padd = function(s, p){
             s = p + s;
@@ -358,16 +369,16 @@ jpf.JSONSerialize = {
         var h   = padd(d.getUTCHours(), "00");
         var min = padd(d.getUTCMinutes(), "00");
         var s   = padd(d.getUTCSeconds(), "00");
-        
+
         var isodate = y + m + D + "T" + h + ":" + min + ":" + s;
-        
+
         return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
     },
-    
+
     array: function(a){
-        for (var q = [], i = 0; i < a.length; i++) 
+        for (var q = [], i = 0; i < a.length; i++)
             q.push(jpf.serialize(a[i]));
-        
+
         return "[" + q.join(", ") + "]";
     }
 };
@@ -379,7 +390,7 @@ jpf.JSONSerialize = {
  * @todo allow for XML serialization
  */
 jpf.serialize = function(args){
-    if (typeof args == "function" || jpf.isNot(args)) 
+    if (typeof args == "function" || jpf.isNot(args))
         return "null";
     return jpf.JSONSerialize[args.dataType || "object"](args);
 };
@@ -388,7 +399,7 @@ jpf.serialize = function(args){
  * Evaluate a serialized object back to JS with eval(). When the 'secure' flag
  * is set to 'TRUE', the provided string will be validated for being valid
  * JSON.
- * 
+ *
  * @param {String}  str     the json string to create an object from.
  * @param {Boolean} secure  wether the json string should be checked to prevent malice.
  * @return {Object} the object created from the json string.
@@ -398,24 +409,24 @@ jpf.unserialize = function(str, secure){
     if (secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/)
       .test(str.replace(/\\./g, '@').replace(/"(?:\\"|[^"])*"|'(?:\\'|[^'])*'/g, '')))
         return str;
-	return eval('(' + str + ')');
+    return eval('(' + str + ')');
 };
 
 /**
  * Execute a script in the global scope.
- * 
+ *
  * @param {String} str  the javascript code to execute.
  * @return {String} the javascript code executed.
  */
 jpf.exec = function(str, win){
-    if (!str) 
+    if (!str)
         return str;
     if (!win)
         win = self;
-    
+
     if (jpf.hasExecScript) {
         win.execScript(str);
-    } 
+    }
     else {
         var head = win.document.getElementsByTagName("head")[0];
         if (head) {
@@ -444,7 +455,7 @@ jpf.K = function(){};
  * @return {Boolean}
  */
 jpf.isNull = function(value){
-    if (value) 
+    if (value)
         return false;
     return (value == null || !String(value).length);
 };
@@ -483,7 +494,7 @@ jpf.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
-/** 
+/**
  * Determines wether a value should be considered false. This excludes amongst
  * others the number 0.
  * @param {mixed} value the variable to check
@@ -552,7 +563,7 @@ jpf.cancelBubble = function(e, o){
 // #ifdef __WITH_XMLDATABASE
 
 /**
- * Queries an xml node using xpath for a string value. 
+ * Queries an xml node using xpath for a string value.
  * @param {XMLElement} xmlNode the xml element to query.
  * @param {String}     xpath   the xpath query.
  * @return {String} the value of the query result or empty string.
@@ -566,7 +577,7 @@ jpf.getXmlValue = function (xmlNode, xpath){
 };
 
 /**
- * Queries an xml node using xpath for a string value. 
+ * Queries an xml node using xpath for a string value.
  * @param {XMLElement} xmlNode the xml element to query.
  * @param {String}     xpath   the xpath query.
  * @return {Arary} list of values which are a result of the query.
@@ -574,10 +585,10 @@ jpf.getXmlValue = function (xmlNode, xpath){
 jpf.getXmlValues = function(xmlNode, xpath){
     var out = [];
     if (!xmlNode) return out;
-    
+
     var nodes = xmlNode.selectNodes(xpath);
     if (!nodes.length) return out;
-    
+
     for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i];
         if (n.nodeType == 1)
@@ -595,13 +606,13 @@ jpf.getXmlValues = function(xmlNode, xpath){
  */
 jpf.removeNode = function (element) {
     if (!element) return;
-    
+
     if (!jpf.isIE || element.ownerDocument != document) {
         if (element.parentNode)
             element.parentNode.removeChild(element);
         return;
     }
-    
+
     var garbageBin = document.getElementById('IELeakGarbageBin');
     if (!garbageBin) {
         garbageBin    = document.createElement('DIV');
@@ -621,7 +632,7 @@ jpf.removeNode = function (element) {
  */
 jpf.getRules = function(node){
     var rules = {};
-    
+
     for (var w = node.firstChild; w; w = w.nextSibling){
         if (w.nodeType != 1)
             continue;
@@ -631,7 +642,7 @@ jpf.getRules = function(node){
             rules[w[jpf.TAGNAME]].push(w);
         }
     }
-    
+
     return rules;
 };
 //#endif
@@ -641,12 +652,12 @@ jpf.getRules = function(node){
  */
 jpf.getBox = function(value, base){
     if (!base) base = 0;
-    
-    if (value == null || (!parseInt(value) && parseInt(value) != 0)) 
+
+    if (value == null || (!parseInt(value) && parseInt(value) != 0))
         return [0, 0, 0, 0];
-    
+
     var x = value.split(" ");
-    for (var i = 0; i < x.length; i++) 
+    for (var i = 0; i < x.length; i++)
         x[i] = parseInt(x[i]) || 0;
     switch (x.length) {
         case 1:
@@ -662,7 +673,7 @@ jpf.getBox = function(value, base){
             x[3] = x[1];
             break;
     }
-    
+
     return x;
 };
 
@@ -687,7 +698,7 @@ jpf.getNode = function(data, tree){
             }
         }
     }
-    
+
     return null;
 };
 
@@ -705,13 +716,13 @@ jpf.getFirstElement = function(xmlNode){
             : xmlNode.firstChild.nextSibling
     }
     catch (e) {
-        throw new Error(jpf.formatErrorString(1052, null, 
-            "Xml Selection", 
-            "Could not find element:\n" 
+        throw new Error(jpf.formatErrorString(1052, null,
+            "Xml Selection",
+            "Could not find element:\n"
             + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
-    
+
     return xmlNode.firstChild.nodeType == 1
         ? xmlNode.firstChild
         : xmlNode.firstChild.nextSibling;
@@ -729,28 +740,28 @@ jpf.getLastElement = function(xmlNode){
         xmlNode.lastChild.nodeType == 1
             ? xmlNode.lastChild
             : xmlNode.lastChild.nextSibling
-    } 
+    }
     catch (e) {
-        throw new Error(jpf.formatErrorString(1053, null, 
-            "Xml Selection", 
-            "Could not find last element:\n" 
+        throw new Error(jpf.formatErrorString(1053, null,
+            "Xml Selection",
+            "Could not find last element:\n"
             + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
-    
+
     return xmlNode.lastChild.nodeType == 1
         ? xmlNode.lastChild
         : xmlNode.lastChild.previousSibling;
 };
 
 /**
- * Selects the content of an html element. Currently only works in 
+ * Selects the content of an html element. Currently only works in
  * internet explorer.
  * @param {HTMLElement} oHtml the container in which the content receives the selection.
  */
 jpf.selectTextHtml = function(oHtml){
     if (!jpf.hasMsRangeObject) return;// oHtml.focus();
-    
+
     var r = document.selection.createRange();
     try {r.moveToElementText(oHtml);} catch(e){}
     r.select();
