@@ -68,14 +68,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     //this.forceVScrollIE       = true;
     //this.UseBROnCarriageReturn= true;
-    this.imagehandles      = false;
-    this.tablehandles      = false;
     this.isContentEditable = true;
-    this.useIframe         = false;
+    //this.useIframe         = false;
     this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
 
+    this.$booleanProperties["realtime"] = false;
+    this.$booleanProperties["imagehandles"] = false;
+    this.$booleanProperties["tablehandles"] = false;
     this.$supportedProperties.push("value", "imagehandles", "tablehandles",
-        "output", "state");
+        "plugins", "output", "state");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -121,8 +122,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (bChanged) // if state has changed, update the button look/ feel
             this.notifyAll(value);
     };
+
     this.$propHandlers["plugins"] = function(value){
         this.$plugins = value && value.splitSafe(value) || null;
+    };
+
+    /**
+     * @attribute {Boolean} realtime wether the value of the bound data is
+     * updated as the user types it, or only when this element looses focus or
+     * the user presses enter.
+     */
+    this.$propHandlers["realtime"] = function(value){
+        this.realtime = typeof value == "boolean"
+            ? value
+            : jpf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
     };
 
     /**
@@ -213,8 +226,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {String} html
      * @type  {void}
      */
-    this.setHTML = function(html) {
-        this.$propHandlers['value'].call(this, html);
+    this.setHTML  =
+    this.setValue = function(value){
+        return this.setProperty("value", value);
     };
 
     /**
@@ -243,8 +257,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.parseHTML = function(html) {
         // Convert strong and em to b and i in FF since it can't handle them
         if (jpf.isGecko) {
-            html = html.replace(/<(\/?)strong>|<strong( [^>]+)>/gi, '<$1b$2>');
-            html = html.replace(/<(\/?)em>|<em( [^>]+)>/gi, '<$1i$2>');
+            html = html.replace(/<(\/?)strong>|<strong( [^>]+)>/gi, '<$1b$2>')
+                       .replace(/<(\/?)em>|<em( [^>]+)>/gi, '<$1i$2>');
         }
         else if (jpf.isIE)
             html = html.replace(/&apos;/g, '&#39;'); // IE can't handle apos
@@ -546,6 +560,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else if (e.code == 8 || e.code == 46) //backspace or del
             listBehavior.call(_self, e, true); //correct lists, if any
 
+        if (_self.realtime) {
+            setTimeout(function() {
+                _self.change(_self.getValue());
+            });
+        }
+
         document.onkeydown(e);
         keydownTimer = null;
     }
@@ -706,17 +726,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
+        if (!this.realtime)
+            this.change(this.getValue());
+
         /*if (jpf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
             r.collapse();
             r.select();
-        }*/
-
+        }
         try {
             //if (jpf.isIE || !e || e.srcElement != jpf.window)
                 //this.oWin.blur();
         }
-        catch(e) {}
+        catch(e) {}*/
     };
 
     /**
@@ -1152,9 +1174,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else
             jpf.JmlParser.parseChildren(this.$jml, null, this);
 
+        if (typeof this.realtime == "undefined")
+            this.$propHandlers["realtime"].call(this);
+
         jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
         //this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         //this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
+        if (!jpf.isIE)
+            this.iframe.style.marginTop = this.oToolbar.offsetHeight + 'px';
 
         //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
         //jpf.console.log('use iframe? ', this.useIframe);
