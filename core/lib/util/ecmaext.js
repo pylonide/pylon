@@ -89,7 +89,7 @@ Array.prototype.copy = function(){
     var ar = [];
     for (var i = 0, j = this.length; i < j; i++)
         ar[i] = this[i] && this[i].copy ? this[i].copy() : this[i];
-    
+
     return ar;
 };
 
@@ -124,7 +124,7 @@ Array.prototype.arrayAdd = function(){
             s[j] += arguments[i][j];
         }
     }
-    
+
     return s;
 };
 
@@ -136,7 +136,7 @@ Array.prototype.arrayAdd = function(){
  */
 Array.prototype.equals = function(obj){
     for (var i = 0, j = this.length; i < j; i++)
-        if (this[i] != obj[i]) 
+        if (this[i] != obj[i])
             return false;
     return true;
 };
@@ -148,12 +148,12 @@ Array.prototype.equals = function(obj){
  */
 Array.prototype.makeUnique = function(){
     var i, length, newArr = [];
-    for (i = 0, length = this.length; i < length; i++) 
-        if (newArr.indexOf(this[i]) == -1) 
+    for (i = 0, length = this.length; i < length; i++)
+        if (newArr.indexOf(this[i]) == -1)
             newArr.push(this[i]);
-    
+
     this.length = 0;
-    for (i = 0, length = newArr.length; i < length; i++) 
+    for (i = 0, length = newArr.length; i < length; i++)
         this.push(newArr[i]);
 
     return this;
@@ -175,7 +175,7 @@ Array.prototype.contains = function(obj, from){
  * Search for the index of the first occurence of a value 'obj' inside an array
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
- * 
+ *
  * @param {mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
@@ -215,7 +215,7 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
  * @type  {Array}
  */
 Array.prototype.pushUnique = function(item){
-    if (this.indexOf(item) == -1) 
+    if (this.indexOf(item) == -1)
         this.push(item);
     return this;
 };
@@ -228,12 +228,12 @@ Array.prototype.pushUnique = function(item){
  */
 Array.prototype.search = function(){
     for (var i = 0, length = arguments.length; i < length; i++) {
-        if (typeof this[i] != "array") 
+        if (typeof this[i] != "array")
             continue;
         for (var j = 0; j < length; j++) {
-            if (this[i][j] != arguments[j]) 
+            if (this[i][j] != arguments[j])
                 break;
-            else if (j == (length - 1)) 
+            else if (j == (length - 1))
                 return this[i];
         }
     }
@@ -246,7 +246,7 @@ Array.prototype.search = function(){
  * @param {Function} fn
  * @type  {Array}
  */
-Array.prototype.each = 
+Array.prototype.each =
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
         fn.call(this, this[i], i, this);
@@ -261,12 +261,12 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
  */
 Array.prototype.remove = function(obj){
     for (var i = this.length - 1; i >= 0; i--) {
-        if (this[i] != obj) 
+        if (this[i] != obj)
             continue;
 
         this.splice(i, 1);
     }
-    
+
     return this;
 };
 
@@ -306,7 +306,7 @@ Array.prototype.reverse = Array.prototype.reverse || function(){
         this[i]     = this[l - i]
         this[l - i] = temp;
     }
-    
+
     return this;
 };
 
@@ -314,7 +314,7 @@ Array.prototype.reverse = Array.prototype.reverse || function(){
 
 /*
     These functions are really old, is there any browser that
-    doesn't support them? I don't think so. Lets opt for 
+    doesn't support them? I don't think so. Lets opt for
     removal
 */
 /**
@@ -349,7 +349,7 @@ Array.prototype.pop = Array.prototype.pop || function(){
  */
 Array.prototype.shift = Array.prototype.shift || function(){
     var item = this[0];
-    for (var i = 0, l = this.length; i < l; i++) 
+    for (var i = 0, l = this.length; i < l; i++)
         this[i] = this[i + 1];
     this.length--;
     return item;
@@ -362,7 +362,7 @@ Array.prototype.shift = Array.prototype.shift || function(){
  * @type  {String}
  */
 Array.prototype.join = Array.prototype.join || function(connect){
-    for (var str = "", i = 0, l = this.length; i < l; i++) 
+    for (var str = "", i = 0, l = this.length; i < l; i++)
         str += this[i] + (i < l - 1 ? connect : "");
     return str;
 };
@@ -381,7 +381,7 @@ Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
 
 /**
  * Attempt to fully comply (in terms of functionality) with the JS specification,
- * up till version 1.7: 
+ * up till version 1.7:
  * @link http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array
  */
 
@@ -459,7 +459,7 @@ Math.hexlist  = "0123456789ABCDEF";
 Math.decToHex = function(value){
     var hex = this.floor(value / 16);
     hex = (hex > 15 ? this.decToHex(hex) : this.hexlist.charAt(hex));
-    
+
     return hex + "" + this.hexlist.charAt(this.floor(value % 16));
 };
 
@@ -470,10 +470,68 @@ Math.decToHex = function(value){
  * @type  {Number}
  */
 Math.hexToDec = function(value){
-    if (!/(.)(.)/.exec(value.toUpperCase())) 
+    if (!/(.)(.)/.exec(value.toUpperCase()))
         return false;
     return this.hexlist.indexOf(RegExp.$1) * 16 + this.hexlist.indexOf(RegExp.$2);
 };
+
+// #ifdef __WITH_UUID
+/**
+ * Generate a random uuid. Usage: Math.uuid(length, radix)
+ *
+ * EXAMPLES:
+ *   // No arguments  - returns RFC4122, version 4 ID
+ *   >>> Math.uuid()
+ *   "92329D39-6F5C-4520-ABFC-AAB64544E172"
+ *
+ *   // One argument - returns ID of the specified length
+ *   >>> Math.uuid(15)     // 15 character ID (default base=62)
+ *   "VcydxgltxrVZSTV"
+ *
+ *   // Two arguments - returns ID of the specified length, and radix. (Radix must be <= 62)
+ *   >>> Math.uuid(8, 2)  // 8 character ID (base=2)
+ *   "01001010"
+ *   >>> Math.uuid(8, 10) // 8 character ID (base=10)
+ *   "47473046"
+ *   >>> Math.uuid(8, 16) // 8 character ID (base=16)
+ *   "098F4D35"
+ *
+ * @param {Number} length - the desired number of characters
+ * @param {Number} radix  - the number of allowable values for each character.
+ * @type  {String}
+ */
+Math.uuid = function (len, radix) {
+    var chars = Math.uuid.CHARS, uuid = [], rnd = Math.random;
+    radix = radix || chars.length;
+
+    if (len) {
+        // Compact form
+        for (var i = 0; i < len; i++)
+            uuid[i] = chars[0 | rnd() * radix];
+    }
+    else {
+        // rfc4122, version 4 form
+        var r;
+        // rfc4122 requires these characters
+        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+        uuid[14] = '4';
+
+        // Fill in random data.  At i==19 set the high bits of clock sequence as
+        // per rfc4122, sec. 4.1.5
+        for (var i = 0; i < 36; i++) {
+            if (!uuid[i]) {
+                r = 0 | rnd() * 16;
+                uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+            }
+        }
+    }
+
+    return uuid.join('');
+};
+//Public array of chars to use
+Math.uuid.CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+
+// #endif
 
 /**
  * Casts the first character in a string to uppercase.
@@ -614,7 +672,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
 
 /**
  * Appends a random number with a specified length to this String instance.
- * 
+ *
  * @see randomGenerator
  * @param {Number} length
  * @type  {String}
@@ -630,7 +688,7 @@ String.prototype.appendRandomNumber = function(length) {
 
 /**
  * Prepends a random number with a specified length to this String instance.
- * 
+ *
  * @see randomGenerator
  * @param {Number} length
  * @type  {String}
@@ -647,20 +705,20 @@ String.prototype.prependRandomNumber = function(length) {
 /**
  * Returns a string produced according to the formatting string. It replaces
  * all <i>%s</i> occurrences with the arguments provided.
- * 
+ *
  * @link http://www.php.net/sprintf
  * @type {String}
  */
 String.prototype.sprintf = function() {
     // Create a new string from the old one, don't just create a copy
     var str = this.toString();
-	var i = 0, inx = str.indexOf('%s');
-	while (inx >= 0) {
+    var i = 0, inx = str.indexOf('%s');
+    while (inx >= 0) {
         var replacement = arguments[i++] || ' ';
-		str = str.substr(0, inx) + replacement + str.substr(inx + 2);
-		inx = str.indexOf('%s');
-	}
-	return str;
+        str = str.substr(0, inx) + replacement + str.substr(inx + 2);
+        inx = str.indexOf('%s');
+    }
+    return str;
 };
 
 // #endif
