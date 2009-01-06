@@ -53,9 +53,13 @@ The SoundManager2 library, version 2.78a.20080901, is copyrighted by Scott
 Schiller 2008 (http://schillmania.com/projects/soundmanager2/) and licensed
 under the BSD license.
 
-The DD_belatedPNG library, version 0.0.6a is copyrighted by Drew Diller 2008
+The DD_belatedPNG library, version 0.0.6a, is copyrighted by Drew Diller 2008
 (http://www.dillerdesign.com/experiment/DD_belatedPNG/) and licensed under the
 MIT license.
+
+The Math.uuid.js library, version 1.4, is copyrighted by Robert Kieffer 2008
+(http://www.broofa.com/blog/?p=151) and licensed under a permissive,
+non-standard license.
 
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the
