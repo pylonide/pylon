@@ -548,7 +548,7 @@ jpf.Event = function(name, data){
 
 	//@todo should be implemented;
 	this.isCharacter = function(){
-	    return this.keyCode < 33  && event.keyCode != 13 || event.keyCode > 42;
+	    return this.keyCode < 33  && this.keyCode != 13 || this.keyCode > 42;
 	}
 	
     jpf.extend(this, data);
