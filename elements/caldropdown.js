@@ -171,9 +171,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         //#endif
 
-        _day   = date.getDate();
-        _month = date.getMonth();
-        _year  = date.getFullYear();
+        _day     = date.getDate();
+        _month   = date.getMonth();
+        _year    = date.getFullYear();
+        _hours   = date.getHours();
+        _minutes = date.getMinutes();
+        _seconds = date.getSeconds();
 
         this.value = value;
         this.$setLabel(new Date(_year, _month, _day, _hours,
