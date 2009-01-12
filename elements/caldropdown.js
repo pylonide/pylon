@@ -90,7 +90,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.autoselect    = false;
     this.multiselect   = false;
 
-    this.outputFormat  = "yyyy-mm-dd";
+    this.outputFormat  = null;
     this.captionFormat = "yyyy-mm-dd";
 
     this.sliderHeight  = 0;
@@ -104,7 +104,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentMonth = null,
         _currentYear  = null,
         _numberOfDays = null,
-        _dayNumber    = null;
+        _dayNumber    = null,
+        
+        _temp         = null;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
@@ -137,9 +139,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["output-format"] = function(value) {
-        if (this.value)
-            this.setProperty("value", new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.outputFormat = value));
+        if (this.value) {
+            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat = value));
+        }
         else
             this.outputFormat = value;
     }
@@ -154,7 +156,14 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$propHandlers["value"] = function(value) {
+        if (!this.outputFormat) {
+            _temp = value;
+            jpf.console.info("return: "+value+" "+this.outputFormat);
+            return;
+        }
+
         var date = Date.parse(value, this.outputFormat);
+
         //#ifdef __DEBUG
         if (!date) {
             throw new Error(jpf.formErrorString(this, "Parsing date",
@@ -869,7 +878,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         else {
-            var date = Date.parse(this.value, this.outputFormat);
+            var date = Date.parse(_temp || this.value, this.outputFormat);
             _day   = date.getDate();
             _month = date.getMonth();
             _year  = date.getFullYear();

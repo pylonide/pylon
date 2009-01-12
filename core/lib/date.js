@@ -39,12 +39,18 @@ jpf.date = {
 
     // Internationalization strings
     i18n : {
-        dayNames: [
+        dayNames : [
             "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
             "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
             "Friday", "Saturday"
         ],
-        monthNames: [
+
+        dayNumbers : {
+            "Sun" : 0, "Mon" : 1, "Tue" : 2, "Wed" : 3, "Thu" : 4, "Fri" : 5,
+            "Sat" : 6, "Sunday" : 0, "Monday" : 1, "Tuesday" : 2,
+            "Wednesday" : 3, "Thursday" : 4, "Friday" : 5, "Saturday" : 6
+        },
+        monthNames : [
             "Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
             "January", "February", "March", "April", "May", "June",
@@ -53,9 +59,6 @@ jpf.date = {
         monthNumbers : {
             "Jan" : 0, "Feb" : 1, "Mar" : 2, "Apr" : 3, "May" : 4, "Jun" : 5,
             "Jul" : 6, "Aug" : 7, "Sep" : 8, "Oct" : 9, "Nov" : 10, "Dec" : 11,
-            "Janary" : 0, "February" : 1, "March" : 2, "April" : 3, "June" : 5,
-            "July" : 6, "August" : 7, "September" : 8, "October" : 9,
-            "November" : 10, "December" : 11
         }
     }
 };
@@ -84,6 +87,7 @@ jpf.date.dateFormat = (function () {
 
         // Passing date through Date applies Date.parse, if necessary
         date = date ? new Date(date) : new Date();
+
         if (isNaN(date)) throw new SyntaxError("invalid date");
 
         mask = String(dF.masks[mask] || mask || dF.masks["default"]);
@@ -146,6 +150,7 @@ jpf.date.dateFormat = (function () {
     };
 })();
 
+
 /**
  * Create a object representation of date parsing datetime string with datetime
  * format string
@@ -154,31 +159,82 @@ jpf.date.dateFormat = (function () {
  * @param {String}   format     It's a style of displaying date
  */
 jpf.date.getDateTime = function(datetime, format) {
-    var regexp = /[\/, :\-][ ]?/
+    var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
+    var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC:)(?:[-+]\d{4})?)\b/g;
+    var alteration = 0;
+    var time_y = new Date().getFullYear(), m = 1, d = 1,
+        h = 12, M = 0, s = 0;
+    var i18n = jpf.date.i18n;
 
-    var values = {},
-        datetimeArray = datetime.split(regexp),
-        formatArray   = format.split(regexp),
-        y, m, d, h, M, s;
+    format = format.replace(timezone, "");
 
-    for (var i = 0; i < datetimeArray.length; i++) {
-        values[formatArray[i]] = datetimeArray[i];
-    }
+    var str = format.replace(token, function(str, offset, p) {
+        var part = datetime.substring(p + alteration, p + alteration + str.length);
 
-    /* Fix for yy dates */
-    y = values["yyyy"] || (values["yy"]
-              ? parseInt(values["yy"]) < 70
-                  ? "20"+values["yy"]
-                  : values["yy"]
-              : new Date().getFullYear());
+        switch (str) {
+            case 'd':
+            case 'm':
+            case 'h':
+            case 'H':
+            case 'M':
+            case 's':
+                if (!/[\/, :\-](d|m|h|H|M|s)$|^(d|m|h|H|M|s)[\/, :\-]|[\/, :\-](d|m|h|H|M|s)[\/, :\-]/.test(format)) {
+                    throw new Error(jpf.formatErrorString(0, null, "date-format", "Dates without leading zero needs separators"));
+                }
 
-    m = values["m"] || values["mm"]
-            || jpf.date.i18n.monthNumbers[values["mmm"]] + 1
-            || jpf.date.i18n.monthNumbers[values["mmmm"]] + 1 || 1;
-    d = values["d"] || values["dd"] || 1;
-    h = values["H"] || values["HH"] || values["h"] || values["hh"] || 0;
-    M = values["M"] || values["MM"] || 0;
-    s = values["s"] || values["ss"] || 0;
+                var value = parseInt(datetime.substring(p + alteration, p + alteration + 2));
+
+                if(value.toString().length == 2)
+                    alteration++;
+    
+                return str == 'd'
+                    ? d = value
+                    : (str == 'm'
+                        ? m = value
+                        : (str == 'M'
+                            ? M = value
+                            : (str == 's'
+                                ? s = value
+                                : h = value))); 
+            case 'dd':
+                return d = parseInt(part); //01-31
+            case 'dddd':
+                //changeing alteration because "dddd" have no information about day number
+                alteration += i18n.dayNames[i18n.dayNumbers[part.substring(0,3)] + 7].length - 4;
+                break;
+            case 'mm':
+                return m = parseInt(part); //01 - 11
+            case 'mmm':
+                return m = i18n.monthNumbers[part] + 1;
+            case 'mmmm':
+                var monthNumber = i18n.monthNumbers[part.substring(0,3)];
+                alteration += i18n.monthNames[monthNumber + 12].length - 4;
+                return m = monthNumber + 1;
+            case 'yy':
+                return y = parseInt(part) < 70 ? "20" + part : part;
+            case 'yyyy':
+                return y = part;
+            case 'hh':
+                return h = part;
+            case 'HH':
+                return h = part;
+            case 'MM':
+                return M = part;
+            case 'ss':
+                return s = part;
+            case "'T'":
+            case "'Z'":
+                //because in date we have only T
+                alteration -= 2;
+                break;
+            case "UTC:":
+                alteration -= 4;
+                break;
+         }
+    });
+
+    //alert(y+" "+m+" "+d+" / "+h+" "+M+" "+s);
+    //alert(new Date(y, m-1, d, h, M, s));
 
     return new Date(y, m-1, d, h, M, s);
 };
@@ -189,6 +245,7 @@ Date.prototype.format = function (mask, utc) {
 };
 
 Date.parse = function (datetime, format) {
+    //var test = jpf.date.dateFormat2(this, format, false);
     return jpf.date.getDateTime(datetime, format);
 };
 // #endif
