@@ -205,9 +205,17 @@ jpf.video.TypeVlc.prototype = {
         return this;
     },
 
-    fullscreen : function(value){
+    /**
+     * Set the fullscreen property of the video to switch between fullscreen and
+     * normal mode.
+     *
+     * @param {Boolean} value Set to TRUE is switching to fullscreen mode is required
+     * @type  {Object}
+     */
+    setFullscreen : function(value){
         if (this.player)
             this.player.video.fullscreen = value;
+        return this;
     },
 
     /**
@@ -252,7 +260,7 @@ jpf.video.TypeVlc.prototype = {
 
         this.htmlElement.innerHTML = jpf.video.TypeVlcCompat.getHtml(playerId,
             "100%", "100%", {
-                MRL        : "",
+                //MRL        : "",
                 ShowDisplay: "True",
                 AutoLoop   : "False",
                 AutoPlay   : "False",
@@ -260,13 +268,16 @@ jpf.video.TypeVlc.prototype = {
                 StartTime  : 0
             });
 
-        this.player = this.getElement(playerId);
-        this.player.log.verbosity = 10; // disable VLC error logging
+        var _self = this;
+        window.setTimeout(function() {
+            _self.player = _self.getElement(playerId);
+            _self.player.log.verbosity = 10; // disable VLC error logging
 
-        this.currItem = parseInt(this.player.playlist.add(this.videoPath, null,
-            ":aspect-ratio=default :http-caching=5000 :http-reconnect=true"));
-        if (this.autoPlay)
-            this.play();
+            _self.currItem = parseInt(_self.player.playlist.add(_self.videoPath, _self.videoPath,
+                jpf.isIE ? [] : ""));
+            if (_self.autoPlay)
+                _self.play();
+        });
 
         return this;
     },
