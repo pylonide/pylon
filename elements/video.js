@@ -41,7 +41,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["fullscreen"] = true;
 
     var oldStyle = null; //will hold old style of the media elements' parentNode on fullscreen
-    var placeHolder = null;
+    //var placeHolder = null;
     this.$propHandlers["fullscreen"] = function(value) {
         if (!this.player) return;
         // only go fullscreen when the feature is supported by the active player
@@ -50,7 +50,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         else if (this.parentNode && this.parentNode.tagName != "application"
           && this.parentNode.setWidth) {
             // we're going into fullscreen mode...
-            var oParent = this.parentNode.oExt;
+            var i, node, oParent = this.parentNode.oExt;
             if (value) {
                 oldStyle = {
                     width    : this.parentNode.getWidth(),
@@ -59,18 +59,31 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                     left     : this.parentNode.getLeft(),
                     position : jpf.getStyle(oParent, 'position'),
                     zIndex   : jpf.getStyle(oParent, 'z-index'),
-                    resizable: this.parentNode.resizable
+                    resizable: this.parentNode.resizable,
+                    nodes    : []
                 }
 
-                if (oParent.parentNode != document.body) {
-                    window.console.log('still reparenting!');
-                    window.console.dir(oParent.parentNode);
-                    placeHolder = document.createElement('div');
-                    placeHolder.setAttribute('id', '__jpf_video_placeholder__');
-                    placeHolder.style.display = "none";
-                    oParent.parentNode.insertBefore(placeHolder, oParent);
+                if (oParent != document.body) {
+                    while (oParent.parentNode != document.body) {
+                        var node = oParent.parentNode;
+                        i = oldStyle.nodes.push({
+                            pos:  jpf.getSyle(node, 'position') || "",
+                            top:  jpf.getSyle(node, 'top')  || node.offsetTop + "px",
+                            left: jpf.getSyle(node, 'left') || node.offsetLeft + "px",
+                            node: node
+                        }) - 1;
+                        node.style.position = "absolute";
+                        node.style.top      = "0";
+                        node.style.left     = "0";
+                        /*window.console.log('still reparenting!');
+                        window.console.dir(oParent.parentNode);
+                        placeHolder = document.createElement('div');
+                        placeHolder.setAttribute('id', '__jpf_video_placeholder__');
+                        placeHolder.style.display = "none";
+                        oParent.parentNode.insertBefore(placeHolder, oParent);
 
-                    document.body.appendChild(oParent);
+                        document.body.appendChild(oParent);*/
+                    }
                 }
 
                 this.parentNode.oExt.style.position = "absolute";
@@ -85,12 +98,22 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             // we're going back to normal mode...
             else if (oldStyle) {
-                if (placeHolder) {
+                var coll;
+                if (oldStyle.nodes.length) {
+                    for (i = oldStyle.nodes.length - 1; i >= 0; i--) {
+                        coll = oldStyle.nodes[i];
+                        node = coll.node;
+                        node.style.position = coll.pos;
+                        node.style.top      = coll.top;
+                        node.style.left     = coll.left;
+                    }
+                }
+                /*if (placeHolder) {
                     window.console.log('still reparenting!');
                     placeHolder.parentNode.insertBefore(oParent, placeHolder);
                     placeHolder.parentNode.removeChild(placeHolder);
                     placeHolder = null;
-                }
+                }*/
 
                 this.parentNode.oExt.style.zIndex = oldStyle.zIndex;
                 this.parentNode.oExt.style.position = oldStyle.position;
@@ -103,6 +126,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.parentNode.setAttribute("resizable", true);
 
                 oldStyle = null;
+                delete oldStyle;
             }
 
             if (this.player.onAfterFullscreen)

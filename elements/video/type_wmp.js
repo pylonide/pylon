@@ -27,7 +27,7 @@ jpf.video.TypeWmpCompat = (function() {
     /**
      * Windows Media Player checking code adapted from
      * eMedia Communications Strategies information and Microsoft documentation
-     * see http://www.emediacommunications.biz/sm5/articlesm5.html
+     * see http://www.learningapi.com/sm5/articlesm5.html
      * and http://support.microsoft.com/default.aspx?scid=kb;en-us;279022
      *
      * Note: Windows Media Player version 7+ ships with the old 6.4

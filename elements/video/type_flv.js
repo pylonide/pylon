@@ -218,6 +218,11 @@ jpf.video.TypeFlv.prototype = {
         return this.setProperty("totalTime", value);
     },
 
+    /*setFullscreen: function(value) {
+        jpf.console.info('j:video::flash - going fullscreen = ' + value);
+        return this.callMethod('setFullscreen', value);
+    },*/
+
     /**
      * All public methods use this proxy to make sure that methods called before
      * initialization are properly called after the player is ready.

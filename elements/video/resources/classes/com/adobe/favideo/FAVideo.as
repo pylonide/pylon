@@ -90,6 +90,7 @@ class com.adobe.favideo.FAVideo extends BaseView {
 	private var resizeDelegate:Function;
 	private var initDelegate:Function;
 	private var fullscreenDelegate:Function;
+	private var keyListener:Object;
 	private var lastSize:Object;
 	private var netConn:NetConnection;
 	private var netStream:NetStream;
@@ -542,7 +543,6 @@ class com.adobe.favideo.FAVideo extends BaseView {
 		clickToTogglePlayDelegate = Delegate.create(this, togglePlay);
 		initDelegate              = Delegate.create(this, init);
 		resizeDelegate            = Delegate.create(this, onResize);
-		fullscreenDelegate        = Delegate.create(this, onFullscreen);
 		
 		uiManager = new UIManager(this);
 		uiManager.skin_mc._visible = false;
@@ -554,8 +554,6 @@ class com.adobe.favideo.FAVideo extends BaseView {
 		
 		playPauseBtn.onRelease = clickToTogglePlayDelegate;
 		playPauseBtn._visible  = false;
-		
-		Stage.addListener(fullscreenDelegate);
 		
 		var cm:ContextMenu = new ContextMenu();
 		cm.hideBuiltInItems();
@@ -605,6 +603,19 @@ class com.adobe.favideo.FAVideo extends BaseView {
 		
 		Stage.scaleMode = 'noScale';
 		Stage.align     = 'TL';
+		
+		// initialize event listeners after setting stage properties:
+		var fsListener:Object = new Object();
+		fsListener.onFullScreen = Delegate.create(this, onFullscreen);
+		Stage.addListener(fsListener);
+		
+		keyListener = new Object();
+		AsBroadcaster.initialize(keyListener);
+		keyListener.onKeyDown = function() {
+			Stage['displayState'] = Stage['displayState'] == 'normal' ? 'fullScreen' : 'normal';
+		};
+		Key.addListener(keyListener);
+		
 		if (ExternalInterface.available) {
 			initCallbacks();
 		}
@@ -888,12 +899,18 @@ class com.adobe.favideo.FAVideo extends BaseView {
 	 * Called from JS, when fullscreen mode needs to be activated.
 	 */
 	private function setFullscreen(bFull:Boolean):Void {
-		sendEvent('debug', {msg: 'going in to fullscreen mode: ' + bFull});
+		keyListener.broadcastMessage('onKeyDown');
+		/*if (bFull)
+			sendEvent('debug', {msg: 'going in to fullscreen mode: current: ' + Stage['displayState']});
+		else
+			sendEvent('debug', {msg: 'going in to normal mode: current: ' + Stage['displayState']});
 		try {
-			Stage['displayState'] = bFull ? 'fullscreen' : 'normal';
+			//Stage.displayState = bFull ? 'fullScreen' : 'normal';
+			_global.handlerFullscreen(bFull);
+			sendEvent('debug', {msg: 'fullscreen - displayState is now: ' + Stage['displayState']});
 		} catch(e:Error) {
 			sendEvent('debug', {msg: 'fullscreen error: ' + e.toString()});
-		}
+		}*/
 		//TODO add event listeners and resize the video to match fullscreen dims
 	}
 	
@@ -906,6 +923,11 @@ class com.adobe.favideo.FAVideo extends BaseView {
 			setSize(lastSize.width, lastSize.height);
 		}
 		sendEvent('fullscreen', {state: bFull});
+	}
+	
+	private function onKeydown():Void {
+		sendEvent('debug', {msg: 'onKeyDown event fired...'});
+		Stage['displayState'] = Stage['displayState'] == 'normal' ? 'fullScreen' : 'normal';
 	}
 	
 	/**
