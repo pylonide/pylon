@@ -166,6 +166,10 @@ jpf.date.getDateTime = function(datetime, format) {
         h = 12, M = 0, s = 0;
     var i18n = jpf.date.i18n;
 
+    if (!format) {
+        throw new Error(jpf.formatErrorString(0, null, "date-format", "Date format is null"));
+    }
+
     format = format.replace(timezone, "");
 
     var str = format.replace(token, function(str, offset, p) {
