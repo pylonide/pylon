@@ -184,7 +184,7 @@ jpf.date.getDateTime = function(datetime, format) {
 
                 var value = parseInt(datetime.substring(p + alteration, p + alteration + 2));
 
-                if(value.toString().length == 2)
+                if (value.toString().length == 2)
                     alteration++;
     
                 return str == 'd'
@@ -207,7 +207,7 @@ jpf.date.getDateTime = function(datetime, format) {
             case 'mmm':
                 return m = i18n.monthNumbers[part] + 1;
             case 'mmmm':
-                var monthNumber = i18n.monthNumbers[part.substring(0,3)];
+                var monthNumber = i18n.monthNumbers[part.substring(0, 3)];
                 alteration += i18n.monthNames[monthNumber + 12].length - 4;
                 return m = monthNumber + 1;
             case 'yy':
@@ -227,14 +227,8 @@ jpf.date.getDateTime = function(datetime, format) {
                 //because in date we have only T
                 alteration -= 2;
                 break;
-            case "UTC:":
-                alteration -= 4;
-                break;
          }
     });
-
-    //alert(y+" "+m+" "+d+" / "+h+" "+M+" "+s);
-    //alert(new Date(y, m-1, d, h, M, s));
 
     return new Date(y, m-1, d, h, M, s);
 };
@@ -245,7 +239,6 @@ Date.prototype.format = function (mask, utc) {
 };
 
 Date.parse = function (datetime, format) {
-    //var test = jpf.date.dateFormat2(this, format, false);
     return jpf.date.getDateTime(datetime, format);
 };
 // #endif
