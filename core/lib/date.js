@@ -152,11 +152,31 @@ jpf.date.dateFormat = (function () {
 
 
 /**
- * Create a object representation of date parsing datetime string with datetime
- * format string
+ * Create a object representation of date from datetime string parsing it with
+ * datetime format string
  * 
- * @param {String}   datetime   It's a date and time wrote in allowed format
- * @param {String}   format     It's a style of displaying date
+ * @param {String}   datetime   the date and time wrote in allowed format
+ * @param {String}   format     style of displaying date, created using various
+ *                              masks
+ *     Possible masks:
+ *     d      day of the month as digits, no leading zero for single-digit days
+ *     dd     day of the month as digits, leading zero for single-digit days
+ *     ddd    day of the week as a three-letter abbreviation
+ *     dddd   day of the week as its full name
+ *     m      month as digits, no leading zero for single-digit months
+ *     mm     month as digits, leading zero for single-digit months
+ *     mmm    month as a three-letter abbreviation
+ *     mmmm   month as its full name
+ *     yy     year as last two digits, leading zero for years less than 2010
+ *     yyyy   year represented by four digits
+ *     h      hours, no leading zero for single-digit hours (12-hour clock)
+ *     hh     hours, leading zero for single-digit hours (12-hour clock)
+ *     H      hours, no leading zero for single-digit hours (24-hour clock)
+ *     HH     hours, leading zero for single-digit hours (24-hour clock)
+ *     M      minutes, no leading zero for single-digit minutes
+ *     MM     minutes, leading zero for single-digit minutes
+ *     s      seconds, no leading zero for single-digit seconds
+ *     ss     seconds, leading zero for single-digit seconds
  */
 jpf.date.getDateTime = function(datetime, format) {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
@@ -167,7 +187,8 @@ jpf.date.getDateTime = function(datetime, format) {
     var i18n = jpf.date.i18n;
 
     if (!format) {
-        throw new Error(jpf.formatErrorString(0, null, "date-format", "Date format is null"));
+        throw new Error(jpf.formatErrorString(0, null,
+            "date-format", "Date format is null"));
     }
 
     format = format.replace(timezone, "");
@@ -183,10 +204,12 @@ jpf.date.getDateTime = function(datetime, format) {
             case 'M':
             case 's':
                 if (!/[\/, :\-](d|m|h|H|M|s)$|^(d|m|h|H|M|s)[\/, :\-]|[\/, :\-](d|m|h|H|M|s)[\/, :\-]/.test(format)) {
-                    throw new Error(jpf.formatErrorString(0, null, "date-format", "Dates without leading zero needs separators"));
+                    throw new Error(jpf.formatErrorString(0, null,
+                        "date-format", "Dates without leading zero needs separators"));
                 }
 
-                var value = parseInt(datetime.substring(p + alteration, p + alteration + 2));
+                var value = parseInt(datetime.substring(p + alteration,
+                    p + alteration + 2));
 
                 if (value.toString().length == 2)
                     alteration++;
