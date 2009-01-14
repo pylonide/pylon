@@ -1,65 +1,47 @@
 jpf.uirecorder = {
     actionStack : [],
+    playStack   : [],
     isPlaying   : false,
     isRecording : false,
-    playStack   : [],
-    lastTime    : null,
-    
-    init : function() {
-        var isPlaying = jpf.uirecorder.isPlaying;
-        var isRecording = jpf.uirecorder.isRecording;
+    inited      : false,
 
-        /* Mouse events
-         * Keyboard events
-         * HTML events
-         * UI events
-         */
+    init : function() {
+        if (jpf.uirecorder.inited)
+            return;
+
+        jpf.uirecorder.inited = true;
 
         var dEvents = [
             "onclick", "onmousedown", "onmouseup", "onmousemove", "onmouseover", "onmouseout", 
             "onkeydown", "onkeyup", "onkeypress",
             "onselect", "onchange", "onsubmit", "onreset", "onfocus", "onblur",
-            "onscroll", "onactivate"];
-        
-        var wEvents = ["onresize"];
-        /*var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
-            "DOMNodeInsertedIntoDocument", "DOMAttrModified", "DOMCharacterDataModified"];*/
+            "onscroll"];
 
-        for(var i = 0, l = dEvents.length; i < l; i++) {
+        var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
+            "DOMNodeInsertedIntoDocument", "DOMAttrModified", "DOMCharacterDataModified", "DOMActivate"];
+
+        for (var i = 0, l = dEvents.length; i < l; i++) {
             document.documentElement[dEvents[i]] = function(e) {
-                if (isPlaying || !isRecording)
+                if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
                     return;
         
-                if (!e) e = event;
+                e = e || event;
         
                 jpf.uirecorder.actionStack.push([new Date().getTime(), dEvents[i],
                     e.srcElement || e.target, jpf.extend({}, e)]);
             }
         }
         
-        for(var i = 0, l = wEvents.length; i < l; i++) {
-            window[wEvents[i]] = function(e) {
-                if (isPlaying || !isRecording)
+        for (var i = 0; i < mEvents.length; i++) {
+            document.addEventListener(mEvents[i], function(e) {
+                if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
                     return;
 
-                if (!e) e = event;
+                e = e || event;
 
-                jpf.uirecorder.actionStack.push([new Date().getTime(), wEvents[i],
-                    e.srcElement || e.target, jpf.extend({}, e)]);
-            }
-        }
-        
-        /*for(var i = 0; i < mEvents.length; i++) {
-            document.addEventListener(mEvents[i], function(e) {
-                if (isPlaying || !isRecording)
-                        return;
-    
-                    if (!e) e = event;
-
-                    jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i],
-                        e.srcElement || e.target, jpf.extend({}, e)]);
+                jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, jpf.extend({}, e)]);
             }, false);
-        }*/
+        }
         
     }
 };
@@ -72,7 +54,7 @@ jpf.uirecorder.record = function() {
 jpf.uirecorder.play = function() {
     jpf.uirecorder.isRecording = false;
     jpf.uirecorder.isPlaying   = true;
-    jpf.uirecorder.playStack   = jpf.uirecorder.actionStack.slice(0);
+    jpf.uirecorder.playStack = jpf.uirecorder.actionStack.slice(0);
 
     playItem();
 };
@@ -82,30 +64,33 @@ jpf.uirecorder.stop = function() {
     jpf.uirecorder.isPlaying   = false;
 };
 
+jpf.uirecorder.reset = function() {
+    jpf.uirecorder.isRecording = false;
+    jpf.uirecorder.isPlaying   = false;
+    jpf.uirecorder.playStack = [];
+    jpf.uirecorder.actionStack = [];
+};
+
+var timeout;
 function playItem() {
-    var ill = jpf.uirecorder;
-    var item = ill.playStack.shift();
-    lastTime = item[0];
+    var item = jpf.uirecorder.playStack.shift();
+
+    if(!item)
+        return;
+
+    var lastTime = item[0];
 
     if (jpf.isIE) {
         var e = document.createEventObject();
+        
         for (prop in item[3]) {
             if (item[3][prop])
                 e[prop] = item[3][prop];
         }
-        //e.srcElement = item[2];
-        e.target = item[2];
 
-        if(item[1] == "onkeydown") {
-            jpf.flow.alert_r(e);
-        }
-        //setTimeout(function(){
-        //try{
-            item[2].fireEvent(item[1], e);
-        /*}
-        catch(e){
-        }*/
-        //});
+        e.srcElement = e.target = item[2];//orginalnie byl tylko e.target
+
+        item[2].fireEvent(item[1], e);
     }
     else {
         var src = item[3], e;
@@ -122,7 +107,6 @@ function playItem() {
                   src.screenY, src.clientX, src.clientY, src.ctrlKey, src.altKey,
                   src.shiftKey, src.metaKey, src.button, src.target
                 );
-                jpf.console.info("Mouse Events: "+src.type);
                 break;
             case "keyup":
             case "keydown":
@@ -131,7 +115,6 @@ function playItem() {
                 e.initKeyEvent(src.type, src.bubbles, true, window, 
                         src.ctrlKey, src.altKey, src.shiftKey, src.metaKey, 
                         src.keyCode, src.charCode); 
-                jpf.console.info("Keyboard Events: "+src.type);
                 break;
             case "select":
             case "change":
@@ -139,26 +122,25 @@ function playItem() {
             case "reset":
             case "focus":
             case "blur":
-                e = document.createEvent("HTMLEvents");
-                e.initEvent(src.type, src.bubbles, src.cancelable);
-                jpf.console.info("HTML Events: "+src.type);
-                break;
             case "resize":
             case "scroll":
-            case "activate":
+                e = document.createEvent("HTMLEvents");
+                e.initEvent(src.type, src.bubbles, src.cancelable);
+                break;
+            case "DOMActivate":
                 e = document.createEvent("UIEvents");
                 e.initUIEvent(src.type, src.bubbles, src.cancelable, e.view, e.detail);
-                jpf.console.info("UI Events: "+src.type);
-           /*case "DOMAttrModified":
+                break;
+           case "DOMAttrModified":
            case "DOMCharacterDataModified":
            case "DOMNodeInsertedIntoDocument":
            case "DOMNodeRemovedFromDocument":
            case "DOMNodeRemoved":
            case "DOMNodeInserted":
            case "DOMSubtreeModified":
-               e = document.createEvent("MutationEvent");
-               e.initMutationEvent(src.type, src.bubbles, src.cancelable, src.relatedNode, src.prevValue, src.newValue, src.attrName);
-               break;*/
+               e = document.createEvent("MutationEvents");
+               e.initMutationEvent(src.type, src.bubbles, src.cancelable, src.relatedNode, src.prevValue, src.newValue, src.attrName, src.attrChange);
+               break;
            default:
                jpf.console.info("default: "+src.type);
                break;
@@ -167,10 +149,14 @@ function playItem() {
         item[2].dispatchEvent(e);
     }
 
-    if (ill.playStack.length) {
-        setTimeout(function() {
+    if (jpf.uirecorder.playStack.length) {
+        timeout = setTimeout(function() {
             playItem();
-        }, ill.playStack[0][0] - lastTime);
+        }, jpf.uirecorder.playStack[0][0] - lastTime);
+    }
+    else {
+        jpf.uirecorder.isPlaying = false;
+        clearInterval(timeout);
     }
 };
 
