@@ -216,7 +216,7 @@ jpf.editor.clipboardPlugin = function(sName) {
     };
 };
 
-jpf.editor.Plugin('pastetext', jpf.editor.clipboardPlugin);
-jpf.editor.Plugin('pasteword', jpf.editor.clipboardPlugin);
+jpf.editor.plugin('pastetext', jpf.editor.clipboardPlugin);
+jpf.editor.plugin('pasteword', jpf.editor.clipboardPlugin);
 
 // #endif

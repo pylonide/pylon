@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-jpf.editor.Plugin('code', function() {
+jpf.editor.plugin('code', function() {
     this.name        = 'code';
     this.icon        = 'code';
     this.type        = jpf.editor.TOOLBARITEM;

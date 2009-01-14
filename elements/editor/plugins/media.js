@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-jpf.editor.Plugin('media', function(){
+jpf.editor.plugin('media', function(){
     this.name        = 'media';
     this.icon        = 'media';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -33,7 +33,7 @@ jpf.editor.Plugin('media', function(){
     this.execute = function(editor) {
         // @todo: implement this plugin
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };

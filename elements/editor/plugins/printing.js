@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
-jpf.editor.Plugin('print', function(){
+jpf.editor.plugin('print', function(){
     this.name        = 'print';
     this.icon        = 'print';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -34,13 +34,13 @@ jpf.editor.Plugin('print', function(){
         if (jpf.print)
             jpf.print(editor.getValue());
     };
-    
+
     this.queryState = function() {
         return this.state;
     };
 });
 
-jpf.editor.Plugin('preview', function(){
+jpf.editor.plugin('preview', function(){
     this.name        = 'preview';
     this.icon        = 'preview';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -53,7 +53,7 @@ jpf.editor.Plugin('preview', function(){
         if (jpf.printer)
             jpf.printer.preview(editor.getValue());
     };
-    
+
     this.queryState = function() {
         return this.state;
     };

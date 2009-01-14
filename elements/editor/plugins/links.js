@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-jpf.editor.Plugin('link', function(){
+jpf.editor.plugin('link', function(){
     this.name        = 'link';
     this.icon        = 'link';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -54,7 +54,7 @@ jpf.editor.Plugin('link', function(){
     };
 
     this.queryState = function(editor) {
-        if (editor.Selection.isCollapsed() || editor.Selection.getSelectedNode().tagName == "A")
+        if (editor.selection.isCollapsed() || editor.selection.getSelectedNode().tagName == "A")
             return jpf.editor.DISABLED;
         return this.state;
     };
@@ -74,7 +74,7 @@ jpf.editor.Plugin('link', function(){
             oLink.target = this.oTarget.value;
             oLink.title  = this.oTitle.value;
         }
-        this.editor.Selection.collapse(false);
+        this.editor.selection.collapse(false);
 
         e.stop();
         return false;
@@ -120,7 +120,7 @@ jpf.editor.Plugin('link', function(){
     };
 });
 
-jpf.editor.Plugin('unlink', function(){
+jpf.editor.plugin('unlink', function(){
     this.name        = 'unlink';
     this.icon        = 'unlink';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -133,18 +133,20 @@ jpf.editor.Plugin('unlink', function(){
         if (this.queryState(editor) == jpf.editor.DISABLED)
             return;
 
-        var oNode = editor.Selection.getSelectedNode();
+        var sel = editor.selection;
+        sel.set();
+        var oNode = sel.getSelectedNode();
         if (oNode.tagName == "A") {
             var txt = oNode.innerHTML;
-            editor.Selection.selectNode(oNode);
-            editor.Selection.remove();
-            editor.Selection.collapse();
+            sel.selectNode(oNode);
+            sel.remove();
+            sel.collapse();
             editor.insertHTML(txt);
         }
     };
 
     this.queryState = function(editor) {
-        if (editor.Selection.getSelectedNode().tagName == "A")
+        if (editor.selection.getSelectedNode().tagName == "A")
             return jpf.editor.OFF;
 
         return jpf.editor.DISABLED;

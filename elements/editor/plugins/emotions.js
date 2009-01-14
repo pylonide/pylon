@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-jpf.editor.Plugin('emotions', function() {
+jpf.editor.plugin('emotions', function() {
     this.name        = 'emotions';
     this.icon        = 'emotions';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -77,10 +77,9 @@ jpf.editor.Plugin('emotions', function() {
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
         jpf.popup.forceHide();
-        this.storeSelection();
         this.editor.insertHTML('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
-        this.restoreSelection();
+        //this.restoreSelection();
     };
 
     this.createPanelBody = function() {

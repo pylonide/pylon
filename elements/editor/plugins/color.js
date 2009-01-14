@@ -178,7 +178,7 @@ jpf.editor.colorPlugin = function(sName) {
 };
 jpf.editor.colorPlugin.palette = null;
 
-jpf.editor.Plugin('forecolor', jpf.editor.colorPlugin);
-jpf.editor.Plugin('backcolor', jpf.editor.colorPlugin);
+jpf.editor.plugin('forecolor', jpf.editor.colorPlugin);
+jpf.editor.plugin('backcolor', jpf.editor.colorPlugin);
 
 // #endif

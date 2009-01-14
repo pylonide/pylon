@@ -32,13 +32,13 @@ jpf.editor.directionPlugin = function(sName) {
     this.execute = function(editor) {
         // @todo: implement this baby
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };
 };
 
-jpf.editor.Plugin('ltr', jpf.editor.directionPlugin);
-jpf.editor.Plugin('rtl', jpf.editor.directionPlugin);
+jpf.editor.plugin('ltr', jpf.editor.directionPlugin);
+jpf.editor.plugin('rtl', jpf.editor.directionPlugin);
 
 // #endif

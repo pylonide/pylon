@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-jpf.editor.Plugin('fonts', function() {
+jpf.editor.plugin('fonts', function() {
     this.name        = 'fonts';
     this.icon        = 'fonts';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -86,15 +86,18 @@ jpf.editor.Plugin('fonts', function() {
         var sFont = e.target.getAttribute('rel');
         if (sFont) {
             jpf.popup.forceHide();
-            if (jpf.isIE && this.editor.Selection.isCollapsed()) {
-                this.editor.$visualFocus();
-                var r = this.editor.Selection.getRange();
-                r.moveStart('character', -1);
-                r.select();
+            if (jpf.isIE) {
+                this.editor.selection.set();
+                if (this.editor.selection.isCollapsed()) {
+                    this.editor.$visualFocus();
+                    var r = this.editor.selection.getRange();
+                    r.moveStart('character', -1);
+                    r.select();
+                }
             }
             this.editor.executeCommand('FontName', sFont);
             if (jpf.isIE)
-                this.editor.Selection.collapse(false);
+                this.editor.selection.collapse(false);
         }
     };
 
@@ -114,7 +117,7 @@ jpf.editor.Plugin('fonts', function() {
     };
 });
 
-jpf.editor.Plugin('fontsize', function() {
+jpf.editor.plugin('fontsize', function() {
     this.name        = 'fontsize';
     this.icon        = 'fontsize';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -183,15 +186,18 @@ jpf.editor.Plugin('fontsize', function() {
         var sSize = e.target.getAttribute('rel');
         if (sSize) {
             jpf.popup.forceHide();
-            if (jpf.isIE && this.editor.Selection.isCollapsed()) {
-                this.editor.$visualFocus();
-                var r = this.editor.Selection.getRange();
-                r.moveStart('character', -1);
-                r.select();
+            if (jpf.isIE) {
+                this.editor.selection.set();
+                if (this.editor.selection.isCollapsed()) {
+                    this.editor.$visualFocus();
+                    var r = this.editor.selection.getRange();
+                    r.moveStart('character', -1);
+                    r.select();
+                }
             }
             this.editor.executeCommand('FontSize', sSize);
             if (jpf.isIE)
-                this.editor.Selection.collapse(false);
+                this.editor.selection.collapse(false);
         }
         e.stop();
         return false;

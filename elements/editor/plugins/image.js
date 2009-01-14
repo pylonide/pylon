@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-jpf.editor.Plugin('image', function(){
+jpf.editor.plugin('image', function(){
     this.name        = 'image';
     this.icon        = 'image';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -33,7 +33,7 @@ jpf.editor.Plugin('image', function(){
     this.execute = function(editor) {
         // @todo: implement this plugin
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };

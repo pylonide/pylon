@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-jpf.editor.Plugin('charmap', function() {
+jpf.editor.plugin('charmap', function() {
     this.name        = 'charmap';
     this.icon        = 'charmap';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -91,9 +91,9 @@ jpf.editor.Plugin('charmap', function() {
         var sCode = e.target.getAttribute('rel');
         if (sCode) {
             jpf.popup.forceHide();
-            this.storeSelection();
+            //this.storeSelection();
             this.editor.insertHTML(sCode);
-            this.restoreSelection();
+            //this.restoreSelection();
         }
     };
 

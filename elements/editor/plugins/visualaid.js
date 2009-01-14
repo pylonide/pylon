@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-jpf.editor.Plugin('visualaid', function(){
+jpf.editor.plugin('visualaid', function(){
     this.name        = 'visualaid';
     this.icon        = 'visualaid';
     this.type        = jpf.editor.TOOLBARITEM;

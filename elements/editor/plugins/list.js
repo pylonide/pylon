@@ -71,9 +71,11 @@ jpf.editor.listPlugin = function(sName) {
     }
 
     this.correctLists = function(editor) {
-        var oNode = editor.Selection.getSelectedNode();
+        editor.selection.set();
+
+        var oNode = editor.selection.getSelectedNode();
         //window.console.log('correcting lists0: ', oNode);
-        //window.console.dir(editor.Selection.getRange());
+        //window.console.dir(editor.selection.getRange());
         if (oNode.tagName != "LI") {
             oNode = getEmptyLi(oNode);
             if (!oNode || oNode.tagName != "LI")
@@ -99,10 +101,10 @@ jpf.editor.listPlugin = function(sName) {
         //while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
         //    moveListItems(oSibling.nextSibling, oSibling);
 
-        editor.Selection.selectNode(oNode);
+        editor.selection.selectNode(oNode);
         if (!jpf.isIE)
-            editor.Selection.getRange().setStart(oNode, 0);
-        editor.Selection.collapse(!jpf.isIE);
+            editor.selection.getRange().setStart(oNode, 0);
+        editor.selection.collapse(!jpf.isIE);
         editor.$visualFocus();
         return true;
     };
@@ -123,7 +125,7 @@ jpf.editor.listPlugin = function(sName) {
     };
 };
 
-jpf.editor.Plugin('bullist', jpf.editor.listPlugin);
-jpf.editor.Plugin('numlist', jpf.editor.listPlugin);
+jpf.editor.plugin('bullist', jpf.editor.listPlugin);
+jpf.editor.plugin('numlist', jpf.editor.listPlugin);
 
 // #endif

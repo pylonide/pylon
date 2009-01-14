@@ -48,7 +48,7 @@ jpf.editor.searchPlugin = function(sName) {
         this.editor.showPopup(this, this.uniqueId, this.buttonNode,
             this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
         // prefill search box with selected text
-        this.oSearch.value = this.editor.Selection.getContent();
+        this.oSearch.value = this.editor.selection.getContent();
         this.oSearch.focus();
         //return button id, icon and action:
 
@@ -68,8 +68,12 @@ jpf.editor.searchPlugin = function(sName) {
         if (!val)
             return;
 
+        if (jpf.isIE)
+            this.editor.selection.set();
+        this.editor.$visualFocus();
+
         this.editor.executeCommand('SelectAll');
-        this.editor.Selection.collapse(false);
+        this.editor.selection.collapse(false);
 
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
@@ -77,7 +81,7 @@ jpf.editor.searchPlugin = function(sName) {
         var found = false;
 
         if (jpf.isIE) {
-            var range = this.editor.Selection.getRange();
+            var range = this.editor.selection.getRange();
             if (range.findText(val, 1, flag)) {
                 range.scrollIntoView();
                 range.select();
@@ -93,6 +97,7 @@ jpf.editor.searchPlugin = function(sName) {
         }
         if (this.oReplBtn)
             this.oReplBtn[!found ? "disable" : "enable"]();
+
         if (!found)
             alert("No occurences found for '" + val + "'");
 
@@ -101,17 +106,25 @@ jpf.editor.searchPlugin = function(sName) {
     };
 
     function onDoReplClick(e) {
-        if (!this.editor.Selection.isCollapsed())
+        if (!this.editor.selection.isCollapsed())
             this.replace();
     }
 
     function onReplAllClick(e) {
-        var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
+        var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0,
+            ed  = this.editor;
+        if (!val)
+            return;
+
+        if (jpf.isIE)
+            this.editor.selection.set();
+        this.editor.$visualFocus();
+
         // Move caret to beginning of text
         this.editor.executeCommand('SelectAll');
-        this.editor.Selection.collapse(true);
+        this.editor.selection.collapse(true);
 
-        var range = this.editor.Selection.getRange(), found = 0;
+        var range = this.editor.selection.getRange(), found = 0;
 
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
@@ -123,8 +136,10 @@ jpf.editor.searchPlugin = function(sName) {
                 this.replace();
                 found++;
             }
-            this.storeSelection();
-        } else {
+            this.editor.selection.cache();
+            //this.storeSelection();
+        }
+        else {
             while (this.editor.oWin.find(val, bMatchCase, false, false, false, false, false)) {
                 this.replace();
                 found++;
@@ -141,9 +156,11 @@ jpf.editor.searchPlugin = function(sName) {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
         if (jpf.isIE) {
-            this.restoreSelection();
-            this.editor.Selection.getRange().duplicate().pasteHTML(sRepl);
-        } else
+            //this.restoreSelection();
+            this.editor.selection.set();
+            this.editor.selection.getRange().duplicate().pasteHTML(sRepl);
+        }
+        else
             this.editor.SoDoc.execCommand('InsertHTML', false, sRepl);
     };
 
@@ -202,7 +219,7 @@ jpf.editor.searchPlugin = function(sName) {
     };
 };
 
-jpf.editor.Plugin('search',  jpf.editor.searchPlugin);
-jpf.editor.Plugin('replace', jpf.editor.searchPlugin);
+jpf.editor.plugin('search',  jpf.editor.searchPlugin);
+jpf.editor.plugin('replace', jpf.editor.searchPlugin);
 
 // #endif

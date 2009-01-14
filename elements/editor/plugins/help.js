@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-jpf.editor.Plugin('help', function(){
+jpf.editor.plugin('help', function(){
     this.name        = 'help';
     this.icon        = 'help';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -33,7 +33,7 @@ jpf.editor.Plugin('help', function(){
     this.execute = function(editor) {
         // @todo: implement this plugin
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };

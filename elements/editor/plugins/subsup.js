@@ -37,7 +37,7 @@ jpf.editor.subSupCommand = function(sName) {
             // @todo build support for IE on this one...
         }
     };
-    
+
     this.queryState = function(editor) {
         if (jpf.isGecko) {
             return editor.getCommandState(this.name == "sub"
@@ -50,7 +50,7 @@ jpf.editor.subSupCommand = function(sName) {
         return this.state;
     };
 }
-jpf.editor.Plugin('sub', jpf.editor.subSupCommand);
-jpf.editor.Plugin('sup', jpf.editor.subSupCommand);
+jpf.editor.plugin('sub', jpf.editor.subSupCommand);
+jpf.editor.plugin('sup', jpf.editor.subSupCommand);
 
 // #endif

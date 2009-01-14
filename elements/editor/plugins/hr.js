@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_HR || __INC_ALL
 
-jpf.editor.Plugin('hr', function(){
+jpf.editor.plugin('hr', function(){
     this.name        = 'hr';
     this.icon        = 'hr';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -36,7 +36,7 @@ jpf.editor.Plugin('hr', function(){
         else
             editor.executeCommand('InsertHorizontalRule');
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };

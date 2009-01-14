@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-jpf.editor.Plugin('table', function() {
+jpf.editor.plugin('table', function() {
     this.name        = 'table';
     this.icon        = 'table';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -79,8 +79,10 @@ jpf.editor.Plugin('table', function() {
         aOut.push('</table>')
 
         //this.restoreSelection();
+        //if (jpf.isIE)
+        //    this.editor.selection.set();
         this.editor.insertHTML(aOut.join(''));
-        this.editor.Selection.collapse(false);
+        this.editor.selection.collapse(false);
         this.editor.$visualFocus();
     };
 
@@ -206,7 +208,7 @@ jpf.editor.Plugin('table', function() {
     };
 });
 
-jpf.editor.Plugin('tablewizard', function() {
+jpf.editor.plugin('tablewizard', function() {
     this.name        = 'tablewizard';
     this.icon        = 'tablewizard';
     this.type        = jpf.editor.CONTEXTPANEL;
@@ -248,7 +250,7 @@ jpf.editor.Plugin('tablewizard', function() {
     };
 
     this.queryState = function(editor) {
-        var oNode = editor.Selection.getSelectedNode();
+        var oNode = editor.selection.getSelectedNode();
         if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
           || oNode.tagName == "TR" || oNode.tagName == "TD") {
             activeNode = oNode;
@@ -365,6 +367,8 @@ jpf.editor.Plugin('tablewizard', function() {
                         idx = i;
             }
 
+            _self.editor.selection.set();
+
             switch (e.value) {
                 case "rowbefore":
                     oRow = oDoc.createElement('tr');
@@ -428,7 +432,7 @@ jpf.editor.Plugin('tablewizard', function() {
                     break;
                 case "mergecells":
                     var rows = [], cells = [],
-                        oSel = _self.editor.Selection.getSelection(),
+                        oSel = _self.editor.selection.get(),
                         grid = getTableGrid(_self.oTable),
                         oCellPos, aRows, aRowCells, aBrs, oTd, k;
 

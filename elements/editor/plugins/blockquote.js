@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
-jpf.editor.Plugin('blockquote', function(){
+jpf.editor.plugin('blockquote', function(){
     this.name        = 'blockquote';
     this.icon        = 'blockquote';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -34,7 +34,7 @@ jpf.editor.Plugin('blockquote', function(){
     this.execute = function(editor) {
         editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
     };
-    
+
     this.queryState = function(editor) {
         return editor.getCommandState('FormatBlock');
     };

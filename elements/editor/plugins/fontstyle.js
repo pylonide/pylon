@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-jpf.editor.Plugin('blockformat', function() {
+jpf.editor.plugin('blockformat', function() {
     this.name         = 'blockformat';
     this.icon         = 'blockformat';
     this.type         = jpf.editor.TOOLBARITEM;
@@ -93,15 +93,18 @@ jpf.editor.Plugin('blockformat', function() {
         var sSize = e.target.getAttribute('rel');
         if (sSize) {
             jpf.popup.forceHide();
-            if (jpf.isIE && this.editor.Selection.isCollapsed()) {
-                this.editor.$visualFocus();
-                var r = this.editor.Selection.getRange();
-                r.moveStart('character', -1);
-                r.select();
+            if (jpf.isIE) {
+                this.editor.selection.set();
+                if (this.editor.selection.isCollapsed()) {
+                    this.editor.$visualFocus();
+                    var r = this.editor.selection.getRange();
+                    r.moveStart('character', -1);
+                    r.select();
+                }
             }
             this.editor.executeCommand('FontSize', sSize);
             if (jpf.isIE)
-                this.editor.Selection.collapse(false);
+                this.editor.selection.collapse(false);
         }
     };
 

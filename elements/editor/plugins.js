@@ -28,7 +28,7 @@
  * @namespace jpf
  * @author Mike de Boer <mike@javeline.com>
  */
-jpf.editor.Plugins = function(coll, editor) {
+jpf.editor.plugins = function(coll, editor) {
     // the collections that are simple lookup tables so we don't need to use
     // for-loops to do plugin lookups...
     this.coll      = {};
@@ -40,11 +40,11 @@ jpf.editor.Plugins = function(coll, editor) {
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
-     * @type  {jpf.editor.Plugin}
+     * @type  {jpf.editor.plugin}
      */
     this.add = function(sPlugin) {
-        if (!jpf.editor.Plugin[sPlugin]) return null;
-        var plugin = new jpf.editor.Plugin[sPlugin](sPlugin);
+        if (!jpf.editor.plugin[sPlugin]) return null;
+        var plugin = new jpf.editor.plugin[sPlugin](sPlugin);
         this.coll[plugin.name] = plugin;
 
         if (plugin.type) {
@@ -93,7 +93,7 @@ jpf.editor.Plugins = function(coll, editor) {
      * API; Get a plugin object
      *
      * @param {String} name
-     * @type  {jpf.editor.Plugin}
+     * @type  {jpf.editor.plugin}
      */
     this.get = function(name) {
         if (arguments.length == 1)
@@ -184,7 +184,10 @@ jpf.editor.Plugins = function(coll, editor) {
     };
 
     /**
-     *
+     * Turns an object of mapped keystrokes to a numeric representation.
+     * Since ASCII numbers of character codes don't go above 255, we start
+     * with 256 for modifier keys and shift bits around to the left until we
+     * get a unique hash for each key combination.
      *
      * @param {Object} keyMap
      * @type  {Number}
@@ -210,11 +213,11 @@ jpf.editor.Plugins = function(coll, editor) {
     };
 
     /*
-     * Initialize the Editor.Plugins class.
+     * Initialize the Editor.plugins class.
      *
      * @param {Array}  coll   Collection of plugins that should be searched for and loaded
      * @param {Editor} editor
-     * @type  {jpf.editor.Plugins}
+     * @type  {jpf.editor.plugins}
      */
     this.editor = editor;
     if (coll && coll.length) {
@@ -252,8 +255,8 @@ jpf.editor.CMDMACRO      = "commandmacro";
  * });
  * </code>
  */
-jpf.editor.Plugin = function(sName, fExec) {
-    jpf.editor.Plugin[sName] = function() {
+jpf.editor.plugin = function(sName, fExec) {
+    jpf.editor.plugin[sName] = function() {
         this.uniqueId = jpf.all.push(this) - 1;
 
         /**
@@ -265,7 +268,7 @@ jpf.editor.Plugin = function(sName, fExec) {
          */
         this.storeSelection = function() {
             if (this.editor)
-                this.bookmark = this.editor.Selection.getBookmark('simple');
+                this.bookmark = this.editor.selection.getBookmark('simple');
         };
 
         /**
@@ -276,7 +279,7 @@ jpf.editor.Plugin = function(sName, fExec) {
          */
         this.restoreSelection = function() {
             if (this.editor && jpf.isIE && this.bookmark)
-                this.editor.Selection.moveToBookmark(this.bookmark);
+                this.editor.selection.moveToBookmark(this.bookmark);
         };
 
         this.appendJmlNode = function(sNode, oParent) {

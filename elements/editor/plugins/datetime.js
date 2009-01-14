@@ -38,15 +38,6 @@ jpf.editor.dateTimePlugin = function(sName) {
         days_short   :"Sun,Mon,Tue,Wed,Thu,Fri,Sat,Sun"
     };
 
-    function addZeros(value, len) {
-        value = "" + value;
-        if (value.length < len) {
-            for (var i = 0; i < (len - value.length); i++)
-                value = "0" + value;
-        }
-        return value;
-    }
-
     this.execute = function(editor) {
         if (typeof this.i18n.months_long == "string") {
             this.i18n.months_long  = this.i18n.months_long.split(',');
@@ -60,27 +51,32 @@ jpf.editor.dateTimePlugin = function(sName) {
                  .replace("%r", "%I:%M:%S %p")
                  .replace("%Y", "" + d.getFullYear())
                  .replace("%y", "" + d.getYear())
-                 .replace("%m", addZeros(d.getMonth()+1, 2))
-                 .replace("%d", addZeros(d.getDate(), 2))
-                 .replace("%H", "" + addZeros(d.getHours(), 2))
-                 .replace("%M", "" + addZeros(d.getMinutes(), 2))
-                 .replace("%S", "" + addZeros(d.getSeconds(), 2))
-                 .replace("%I", "" + ((d.getHours() + 11) % 12 + 1))
+                 .replace("%m", ("" + d.getMonth() + 1).pad(2, "0"))
+                 .replace("%d", ("" + d.getDate()).pad(2, "0"))
+                 .replace("%H", ("" + d.getHours()).pad(2, "0"))
+                 .replace("%M", ("" + d.getMinutes()).pad(2, "0"))
+                 .replace("%S", ("" + d.getSeconds()).pad(2, "0"))
+                 .replace("%I", "" + (d.getHours() + 11) % 12 + 1)
                  .replace("%p", "" + (d.getHours() < 12 ? "AM" : "PM"))
                  .replace("%B", "" + this.i18n.months_long[d.getMonth()])
                  .replace("%b", "" + this.i18n.months_short[d.getMonth()])
                  .replace("%A", "" + this.i18n.days_long[d.getDay()])
                  .replace("%a", "" + this.i18n.days_short[d.getDay()])
                  .replace("%%", "%");
+
         editor.insertHTML(fmt);
+//        setTimeout(function(){
+//            editor.selection.set();
+//            editor.$visualFocus();
+//        });
     };
-    
+
     this.queryState = function() {
         return this.state;
     };
 };
 
-jpf.editor.Plugin('insertdate', jpf.editor.dateTimePlugin);
-jpf.editor.Plugin('inserttime', jpf.editor.dateTimePlugin);
+jpf.editor.plugin('insertdate', jpf.editor.dateTimePlugin);
+jpf.editor.plugin('inserttime', jpf.editor.dateTimePlugin);
 
 // #endif

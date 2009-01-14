@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-jpf.editor.Plugin('anchor', function() {
+jpf.editor.plugin('anchor', function() {
     this.name        = 'anchor';
     this.icon        = 'anchor';
     this.type        = jpf.editor.TOOLBARITEM;
@@ -55,7 +55,7 @@ jpf.editor.Plugin('anchor', function() {
 
     this.queryState = function(editor) {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
-        var oNode = editor.Selection.getSelectedNode();
+        var oNode = editor.selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute('name'))
             return jpf.editor.ON;
 
@@ -67,10 +67,10 @@ jpf.editor.Plugin('anchor', function() {
 
         if (!this.oName.value) return;
 
-        this.storeSelection();
+        //this.storeSelection();
         this.editor.insertHTML('<a name="' + this.oName.value + '" class="itemAnchor" />');
-        this.restoreSelection();
-        this.editor.Selection.collapse(false);
+        //this.restoreSelection();
+        this.editor.selection.collapse(false);
     };
 
     this.createPanelBody = function() {
