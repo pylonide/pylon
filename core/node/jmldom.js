@@ -177,10 +177,10 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      */
     this.insertBefore = function(jmlNode, beforeNode){
         //#ifdef __DEBUG
-        if (!jmlNode || !jmlNode.hasFeature || !jmlNode.hasFeature(__WITH_JMLDOM__)){
+        if (!jmlNode || !jmlNode.nodeFunc || !jmlNode.hasFeature(__WITH_JMLDOM__)){
             throw new Error(jpf.formatErrorString(1072, this,
                 "Insertbefore DOM operation",
-                "Node is not a jml dom node"));
+                "Invalid argument passed. Expecting a JMLElement."));
         }
         //#endif
 
@@ -270,6 +270,14 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *
      */
     this.removeNode = function(doOnlyAdmin){
+        //#ifdef __DEBUG
+        if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Removing node from parent",
+                "Invalid DOM Call. removeNode() does not take any arguments."));
+        }
+        //#endif
+        
         if (!this.parentNode || !this.parentNode.childNodes)
             return;
 
@@ -329,6 +337,14 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * Removes a child from the node list of this element.
      */
     this.removeChild = function(childNode) {
+        //#ifdef __DEBUG
+        if (!childNode || !childNode.nodeFunc) {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Removing a child node",
+                "Invalid Argument. removeChild() requires one argument of type JMLElement."));
+        }
+        //#endif
+        
         childNode.removeNode();
     };
 

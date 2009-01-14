@@ -450,7 +450,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setClearMessage(container);
 
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
-          && xmlParentNode == this.xmlRoot) {
+          && xmlParentNode == this.xmlRoot && !beforeNode) {
             this.nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true) && removeContainer)
                 this.nodes.push(container);
@@ -578,7 +578,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setStyleClass(this.$getLayoutNode("item", "container", htmlNode),
                 treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
             
-            if (!hasChildren)
+            if (!hasChildren && container)
                 container.style.display = "none";
 
             if (state & HAS_CHILD) {
