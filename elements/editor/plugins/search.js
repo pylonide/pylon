@@ -49,6 +49,8 @@ jpf.editor.searchPlugin = function(sName) {
             this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
         // prefill search box with selected text
         this.oSearch.value = this.editor.selection.getContent();
+        if (panelBody.style.visibility == "hidden")
+            panelBody.style.visibility = "visible";
         this.oSearch.focus();
         //return button id, icon and action:
 
@@ -170,6 +172,7 @@ jpf.editor.searchPlugin = function(sName) {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
         var idSearch  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idReplace = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replace';
         var idCase    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_case';
@@ -217,6 +220,10 @@ jpf.editor.searchPlugin = function(sName) {
                 jpf.sanitizeTextbox(this.oReplace);
         }
         //#endif
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
 
         return panelBody;
     };

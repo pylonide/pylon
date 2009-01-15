@@ -45,6 +45,8 @@ jpf.editor.plugin('anchor', function() {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 215, 56);
+        if (panelBody.style.visibility == "hidden")
+            panelBody.style.visibility = "visible";
         this.oName.focus();
         //return button id, icon and action:
         return {
@@ -76,6 +78,7 @@ jpf.editor.plugin('anchor', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
         var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
         var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
         panelBody.innerHTML =
@@ -91,6 +94,11 @@ jpf.editor.plugin('anchor', function() {
             document.getElementById(idButton));
         this.oName = document.getElementById(idName);
         jpf.sanitizeTextbox(this.oName);
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
+
         return panelBody;
     };
 });

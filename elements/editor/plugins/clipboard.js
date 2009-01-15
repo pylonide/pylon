@@ -45,6 +45,8 @@ jpf.editor.clipboardPlugin = function(sName) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 265);
+        if (panelBody.style.visibility == "hidden")
+            panelBody.style.visibility = "visible";
         this.oArea.focus();
         //return button id, icon and action:
         return {
@@ -198,6 +200,7 @@ jpf.editor.clipboardPlugin = function(sName) {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
         var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
         panelBody.innerHTML =
@@ -212,6 +215,11 @@ jpf.editor.clipboardPlugin = function(sName) {
         this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
             caption="Insert" bottom="0" right="6" \
             onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', panelBody);
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
+
         return panelBody;
     };
 };
