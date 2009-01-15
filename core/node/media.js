@@ -49,6 +49,8 @@ jpf.Media = function(){
         "progress", "buffered", "bufferedBytes", "totalBytes", "currentTime",
         "paused", "seeking", "volume", "type", "src", "autoplay", "controls");
 
+    this.mainBind = "src";
+
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
