@@ -355,7 +355,7 @@ jpf.Class = function(){
      * @param  {String}  eventName  the name of the event to dispatch.
      * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
      *   Properties:
-     *   {Boolean} bubbles  wether the event should bubble up to it's parent
+     *   {Boolean} bubbles  whether the event should bubble up to it's parent
      * @return {mixed} return value of the event
      */
     this.dispatchEvent = function(eventName, options, e){
@@ -447,7 +447,7 @@ jpf.Class = function(){
      * Checks if there is an event listener specified for the event.
      *
      * @param  {String}  eventName  the name of the event to check.
-     * @return {Boolean} wether the event has listeners
+     * @return {Boolean} whether the event has listeners
      */
     this.hasEventListener = function(eventName){
         return (events_stack[eventName] && events_stack[eventName].length > 0);
@@ -457,7 +457,7 @@ jpf.Class = function(){
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
      * This function is called when exiting the application or closing the window.
-     * @param {Boolean} deep wether the children of this element should be destroyed.
+     * @param {Boolean} deep whether the children of this element should be destroyed.
      * @method
      */
     this.destroy = this.destroy || function(deep){
@@ -546,11 +546,11 @@ jpf.Event = function(name, data){
         this.cancelBubble = true;
     }
 
-	//@todo should be implemented;
-	this.isCharacter = function(){
-	    return this.keyCode < 33  && this.keyCode != 13 || this.keyCode > 42;
-	}
-	
+    //@todo should be implemented;
+    this.isCharacter = function(){
+        return this.keyCode < 33  && this.keyCode != 13 || this.keyCode > 42;
+    }
+
     jpf.extend(this, data);
     //this.returnValue = undefined;
 };

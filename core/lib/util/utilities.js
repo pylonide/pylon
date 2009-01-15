@@ -401,7 +401,7 @@ jpf.serialize = function(args){
  * JSON.
  *
  * @param {String}  str     the json string to create an object from.
- * @param {Boolean} secure  wether the json string should be checked to prevent malice.
+ * @param {Boolean} secure  whether the json string should be checked to prevent malice.
  * @return {Object} the object created from the json string.
  */
 jpf.unserialize = function(str, secure){
@@ -450,7 +450,8 @@ jpf.K = function(){};
 // #ifdef __WITH_ECMAEXT
 
 /**
- * Determines wether a variable is null or empty string.
+ * Determines whether a variable is null or empty string.
+ *
  * @param {mixed} value the variable to check
  * @return {Boolean}
  */
@@ -460,12 +461,29 @@ jpf.isNull = function(value){
     return (value == null || !String(value).length);
 };
 
+/**
+ * Reliably determines whether a variable is a Number.
+ *
+ * @param {mixed}   value The variable to check
+ * @type  {Boolean}
+ */
 jpf.isNumber = function(value){
     return parseFloat(value) == value;
-}
+};
 
 /**
- * Determines wether a string is true in the html attribute sense.
+ * Reliably determines whether a variable is an array.
+ * @see http://thinkweb2.com/projects/prototype/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+ *
+ * @param {mixed}   value The variable to check
+ * @type  {Boolean}
+ */
+jpf.isArray = function(value) {
+    return Object.prototype.toString.call(value) === "[object Array]";
+};
+
+/**
+ * Determines whether a string is true in the html attribute sense.
  * @param {mixed} value the variable to check
  *   Possible values:
  *   true   The function returns true.
@@ -473,14 +491,14 @@ jpf.isNumber = function(value){
  *   'on'   The function returns true.
  *   1      The function returns true.
  *   '1'    The function returns true.
- * @return {Boolean} wether the string is considered to imply truth.
+ * @return {Boolean} whether the string is considered to imply truth.
  */
 jpf.isTrue = function(c){
     return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
 };
 
 /**
- * Determines wether a string is false in the html attribute sense.
+ * Determines whether a string is false in the html attribute sense.
  * @param {mixed} value the variable to check
  *   Possible values:
  *   false   The function returns true.
@@ -488,17 +506,17 @@ jpf.isTrue = function(c){
  *   'off'   The function returns true.
  *   0       The function returns true.
  *   '0'     The function returns true.
- * @return {Boolean} wether the string is considered to imply untruth.
+ * @return {Boolean} whether the string is considered to imply untruth.
  */
 jpf.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
 /**
- * Determines wether a value should be considered false. This excludes amongst
+ * Determines whether a value should be considered false. This excludes amongst
  * others the number 0.
  * @param {mixed} value the variable to check
- * @return {Boolean} wether the variable is considered false.
+ * @return {Boolean} whether the variable is considered false.
  */
 jpf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string

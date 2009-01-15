@@ -23,14 +23,14 @@
 
 /**
  * Object handling the offline state of the application resources. This includes
- * the files that contain application logic themselve. In most cases the 
- * functionality of this object will be managed from within the offline 
+ * the files that contain application logic themselve. In most cases the
+ * functionality of this object will be managed from within the offline
  * element in JML.
  * Example:
  * <code>
- *  <j:offline 
- *      version-get  = "url:version.php" 
- *      providers    = "gears|air" 
+ *  <j:offline
+ *      version-get  = "url:version.php"
+ *      providers    = "gears|air"
  *      auto-install = "true" />
  * </code>
  *
@@ -43,7 +43,7 @@
  * @attribute {String} [providers]      a pipe seperated list of possible providers.
  *   Possible values:
  *   gears  Uses the Google Gears plugin for storage of application files
- * @attribute {Boolean} [auto-install]  wether the required plugin is installed when it's not installed yet.
+ * @attribute {Boolean} [auto-install]  whether the required plugin is installed when it's not installed yet.
  *
  * @default_private
  * @todo a later version should also clear models and thus undo state
@@ -52,23 +52,23 @@ jpf.namespace("offline.application", {
     enabled   : false,
     urls      : [],
     providers : ["deskrun", "gears"],
-    
+
     init : function(jml){
         if (this.enabled)
             return;
-            
+
         this.namespace = jpf.appsettings.name + ".jpf.offline.application";
-        
+
         if (typeof jml == "string") {
             this.providers = jml.split("|");
         }
         else if (jml.nodeType) {
             if (jml.getAttribute("version-get"))
                 this.application.versionGet = jml.getAttribute("version-get");
-                
+
             if (jml.getAttribute("providers"))
                 this.providers = jml.getAttribute("providers").split("|");
-            
+
             if (jml.getAttribute("auto-install"))
                 this.autoInstall = jpf.isTrue(jml.getAttribute("auto-install"));
         }
@@ -77,33 +77,33 @@ jpf.namespace("offline.application", {
         for (var i = 0; i < this.providers.length; i++) {
             if (!this[this.providers[i]]) {
                 //#ifdef __DEBUG
-                jpf.console.warn("Module not loaded for offline provider: " 
+                jpf.console.warn("Module not loaded for offline provider: "
                                     + this.providers[i]);
                 //#endif
                 continue;
             }
-            
+
             if (this[this.providers[i]].isAvailable()) {
                 this.provider = this[this.providers[i]].init(this.storeName);
-                
+
                 if (this.provider !== false) {
                     this.provider.name = this.providers[i];
                     break;
                 }
             }
         }
-        
+
         //@todo if online please check if the latest version is loaded here
-        
+
         if (!this.provider) {
             if (this.autoInstall) {
                 if (this.install() === false) {
                     //#ifdef __DEBUG
                     jpf.console.warn("Could not install any of the preferred \
-                                         offline providers:" 
+                                         offline providers:"
                                         + this.providers.join(", "));
                     //#endif
-                    
+
                     jpf.offline.application = null; //Can't put the app offline
                     return this.providers[0];
                 }
@@ -111,32 +111,32 @@ jpf.namespace("offline.application", {
             else {
                 //#ifdef __DEBUG
                 jpf.console.warn("Could not find any of the specified \
-                                     offline providers:" 
+                                     offline providers:"
                                     + this.providers.join(", "));
                 //#endif
-                
+
                 jpf.offline.application = null; //Can't put the app offline
                 return this.providers[0];
             }
         }
-        
+
         if (!jpf.loaded) { //@todo you might want to consider creating single run events
             jpf.addEventListener("load", function(){
                 if (jpf.offline.application.enabled)
                     jpf.offline.application.save();
             });
         }
-        else { 
+        else {
             jpf.offline.addEventListener("load", function(){
                 jpf.offline.application.save();
             });
         }
-        
+
         this.enabled = true;
-        
+
         return this.provider.name;
     },
-    
+
     install : function(){
         if (jpf.offline.dispatchEvent("beforeinstall") === false) {
             //#ifdef __DEBUG
@@ -144,25 +144,25 @@ jpf.namespace("offline.application", {
             //#endif
             return false;
         }
-        
+
         for (var i = 0; i < this.providers.length; i++) {
             if (!this[this.providers[i]])
                 continue;
-            
+
             if (this[this.providers[i]].install()) {
                 this.provider = this[this.providers[i]].init(this.storeName);
-                
+
                 if (this.provider !== false)
                     break;
             }
         }
-        
+
         jpf.offline.dispatchEvent("afterinstall");
-        
+
         if (!this.provider)
             return false;
     },
-    
+
     clear : function(){
         if (this.provider)
             this.provider.clear();
@@ -173,51 +173,51 @@ jpf.namespace("offline.application", {
             //return;
         if (url.indexOf(":") > -1 && url.indexOf("http://" + location.host) == -1)
             return;
-            
+
         this.urls.pushUnique(url.replace(/\#.*$/, ""));
     },
-    
+
     remove : function(url){
         this.urls.remove(url)
     },
-    
+
     refresh : function(callback){
         var storage = jpf.offline.storage;
-        
+
         if(this.versionGet){
             var oldVersion = storage.get("oldVersion", this.namespace);
             var newVersion = null;
             var _self      = this;
-            
+
             jpf.getData(this.versionGet, null, null,
                 function(newVersion, state, extra){
                     if (state == jpf.TIMEOUT)
                         return extra.tpModule.retryTimeout(extra, state, jpf.offline);
-                    
+
                     if (state == jpf.OFFLINE)
                         return;
-                    
+
                     if (state == jpf.ERROR)
                         storage.remove("oldVersion", _self.namespace);
-                    
-                    if (jpf.debug || !newVersion || !oldVersion 
+
+                    if (jpf.debug || !newVersion || !oldVersion
                         || oldVersion != newVersion){
-                        
+
                         //#ifdef __DEBUG
                         jpf.console.info("Refreshing offline file list");
                         //#endif
-                        
+
                         // #ifdef __WITH_OFFLINE_STATE
                         if (jpf.offline.state.enabled) {
                             jpf.offline.state.clear();
-                            
+
                             if (jpf.offline.state.realtime)
                                 jpf.offline.state.search();
                         }
                         // #endif
-                        
+
                         _self.search();
-                        _self.provider.store(_self.urls, 
+                        _self.provider.store(_self.urls,
                             callback, newVersion);
                     }
                     else{
@@ -240,7 +240,7 @@ jpf.namespace("offline.application", {
             this.provider.store(this.urls, callback);
         }
     },
-    
+
     //forEach???
     search : function(){
         //Html based sources
@@ -249,25 +249,25 @@ jpf.namespace("offline.application", {
         var i, nodes = document.getElementsByTagName("script");
         for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("src"));
-        
+
         nodes = document.getElementsByTagName("link");
         for (i = 0; i < nodes.length; i++){
             if((nodes[i].getAttribute("rel") || "").toLowerCase() == "stylesheet")
                 continue;
-            
+
             this.cache(nodes[i].getAttribute("href"));
         }
-        
+
         nodes = document.getElementsByTagName("img");
         for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("src"));
-        
+
         nodes = document.getElementsByTagName("a");
         for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("href"));
-        
+
         // @todo handle 'object' and 'embed' tag
-        
+
         // parse our style sheets for inline URLs and imports
         var _self = this, j, rule, sheet, sheets = document.styleSheets;
         for (i = 0; i < sheets.length; i++) {
@@ -283,12 +283,12 @@ jpf.namespace("offline.application", {
             else {
                 if (sheet.ownerNode.tagName == "STYLE")
                     continue;
-                
+
                 for (j = 0; j < sheet.cssRules.length; j++) {
                     rule = sheet.cssRules[j].cssText;
-                    if(!rule) 
+                    if(!rule)
                         continue;
-                
+
                     rule.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
                         _self.cache(url);
                         return "";
@@ -296,31 +296,31 @@ jpf.namespace("offline.application", {
                 }
             }
         }
-        
+
         //Cache Skin CSS
         jpf.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
             _self.cache(url);
             return "";
         });
-        
+
         //Jml based sources
         if (jpf.JmlParser.$jml) {
             function callback(item){
                 if(!item.nodeType) return;
-                
+
                 var nodes = item.selectNodes("//include/@src|//skin/@src");
                 for (var i = 0; i < nodes.length; i++) {
                     _self.cache(nodes[i].nodeValue);
                 }
             }
-            
+
             callback(jpf.JmlParser.$jml);
             jpf.includeStack.forEach(callback);
         }
-        
+
         //Cached resources??
     },
-    
+
     save : function(callback){
         if (!jpf.offline.onLine) {
             var func = function(){
@@ -328,10 +328,10 @@ jpf.namespace("offline.application", {
                 jpf.offline.removeEventListener("afteronline", func)
             }
             jpf.offline.addEventListener("afteronline", func);
-            
+
             return;
         }
-        
+
         this.refresh(callback);
     }
 });

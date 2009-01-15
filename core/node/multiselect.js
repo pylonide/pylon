@@ -26,7 +26,7 @@ var __MULTISELECT__ = 1 << 8;
 /**
  * Baseclass adding selection features to this element. This includes handling
  * for multiselect and several keyboard based selection interaction. It also
- * takes care of caret handling when multiselect is enabled. 
+ * takes care of caret handling when multiselect is enabled.
  *
  * @constructor
  * @baseclass
@@ -42,19 +42,19 @@ jpf.MultiSelect = function(){
     var valueList    = [];
     var selectedList = [];
     var _self        = this;
-    
+
     this.$regbase    = this.$regbase|__MULTISELECT__;
-    
+
     /**** Properties ****/
-    
+
     this.selected     = null;
     this.$selected    = null;
     this.indicator    = null;
     this.$indicator   = null;
     this.useindicator = true;
-    
+
     // #ifdef __WITH_DATABINDING
-    
+
     /**
      * Removes an xml data element from the data of this element.
      * Example:
@@ -74,21 +74,21 @@ jpf.MultiSelect = function(){
      *              <product name="Coprocessor"  type="chips"    id="product15" />
      *              <product name="Keyboard"     type="input"    id="product17" />
      *              <product name="Diskdrive"    type="storage"  id="product20" />
-     *          </products> 
+     *          </products>
      *      </j:model>
      *  </j:list>
      * </code>
      * Example:
-     * This example selects a product by it's value and then removes the 
+     * This example selects a product by it's value and then removes the
      * selection.
      * <code>
      *  myList.setValue("product20");
-     *  myList.remove(); 
+     *  myList.remove();
      * </code>
      * Example:
      * This example gets a product by it's value and then removes it.
      * <code>
-     *  var xmlNode = myList.findXmlNodeByValue("product20"); 
+     *  var xmlNode = myList.findXmlNodeByValue("product20");
      *  myList.remove(xmlNode);
      * </code>
      * Example:
@@ -109,7 +109,7 @@ jpf.MultiSelect = function(){
      * <code>
      *  <j:button action="remove" target="myList">Remove item</j:button>
      * </code>
-     * Using the action methodology you can let the original data source 
+     * Using the action methodology you can let the original data source
      * (usually the server) know that the user removed an item.
      * <code>
      *  <j:actions>
@@ -129,48 +129,48 @@ jpf.MultiSelect = function(){
      * @param  {mixed} [nodeList]  the data element(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
      *   {NodeList}   the xml data elements to be removed.
-     *   {XMLElement} the data element to be removed. 
+     *   {XMLElement} the data element to be removed.
      * @return  {Boolean}  specifies if the removal succeeded
      */
     this.remove = function(nodeList){
         //Use the current selection if no xmlNode is defined
-        if (!nodeList) 
+        if (!nodeList)
             nodeList = valueList;
-        
+
         //If we're an xml node let's convert
         if (nodeList.nodeType)
             nodeList = [nodeList];
-        
+
         //If there is no selection we'll exit, nothing to do
-        if (!nodeList || !nodeList.length) 
+        if (!nodeList || !nodeList.length)
             return;
 
         //#ifdef __DEBUG
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.xmlRoot)) {
-            throw new Error(jpf.formatErrorString(0, 
+            throw new Error(jpf.formatErrorString(0,
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
                  component. This is not allowed."));
         }
         //#endif
-        
+
         var rValue;
-        if (nodeList.length > 1 && (!this.actionRules 
+        if (nodeList.length > 1 && (!this.actionRules
           || this.actionRules["removegroup"] || !this.actionRules["remove"])) {
             rValue = this.executeAction("removeNodeList", nodeList,
                 "removegroup", nodeList[0]);
         }
         else {
             for (var i = 0; i < nodeList.length; i++) {
-                rValue = this.executeAction("removeNode", 
+                rValue = this.executeAction("removeNode",
                     [nodeList[i]], "remove", nodeList[i]);
             }
         }
-        
+
         return rValue;
     };
-    
+
     /**
      * Adds an xml data element to the data of this element.
      * Example:
@@ -190,7 +190,7 @@ jpf.MultiSelect = function(){
      *              <product name="Coprocessor"  type="chips"    id="product15" />
      *              <product name="Keyboard"     type="input"    id="product17" />
      *              <product name="Diskdrive"    type="storage"  id="product20" />
-     *          </products> 
+     *          </products>
      *      </j:model>
      *  </j:list>
      * </code>
@@ -198,10 +198,10 @@ jpf.MultiSelect = function(){
      * This example adds a product to this element.
      * selection.
      * <code>
-     *  myList.add('<product name="USB drive" type="storage" />'); 
+     *  myList.add('<product name="USB drive" type="storage" />');
      * </code>
      * Example:
-     * This example copy's the selected product, changes it's name and then 
+     * This example copy's the selected product, changes it's name and then
      * adds it. After selecting the new node the user is offered a rename input
      * box.
      * <code>
@@ -213,11 +213,11 @@ jpf.MultiSelect = function(){
      * </code>
      * Remarks:
      * Another way to trigger this method is by using the action attribute on a
-     * button. 
+     * button.
      * <code>
      *  <j:button action="add" target="myList">Add new product</j:button>
      * </code>
-     * Using the action methodology you can let the original data source 
+     * Using the action methodology you can let the original data source
      * (usually the server) know that the user added an item.
      * <code>
      *  <j:actions>
@@ -232,7 +232,7 @@ jpf.MultiSelect = function(){
      *      </j:add>
      *  </j:actions>
      * </code>
-     * In some cases the server needs to create the new product before it's 
+     * In some cases the server needs to create the new product before it's
      * added. This is done as follows.
      * <code>
      *  <j:actions>
@@ -276,45 +276,45 @@ jpf.MultiSelect = function(){
                     }
                 }
             }
-            
+
             if (!node && this.actionRules["add"])
                 node = this.actionRules["add"][0];
         }
         else
             node = null;
-        
+
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.canTransact())
             return false;
-        
+
         if (!jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
             return false;
         //#endif
-        
+
         var jmlNode  = this; //PROCINSTR
         var callback = function(addXmlNode, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
-                
+
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(1032, jmlNode, 
-                    "Loading xml data", 
-                    "Could not add data for control " + jmlNode.name 
-                    + "[" + jmlNode.tagName + "] \nUrl: " + extra.url 
+                oError = new Error(jpf.formatErrorString(1032, jmlNode,
+                    "Loading xml data",
+                    "Could not add data for control " + jmlNode.name
+                    + "[" + jmlNode.tagName + "] \nUrl: " + extra.url
                     + "\nInfo: " + extra.message + "\n\n" + xmlNode));
                 //#endif
-                
+
                 if (extra.tpModule.retryTimeout(extra, state, jmlNode, oError) === true)
                     return true;
-                
+
                 throw oError;
             }
-            
+
             if (typeof addXmlNode != "object")
                 addXmlNode = jpf.getXmlDom(addXmlNode).documentElement;
             if (addXmlNode.getAttribute(jpf.xmldb.xmlIdTag))
                 addXmlNode.setAttribute(jpf.xmldb.xmlIdTag, "");
-            
+
             var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
                 ? jmlNode.selected
                 : jmlNode.xmlRoot, true, true);
@@ -324,55 +324,55 @@ jpf.MultiSelect = function(){
                         .selectSingleNode(actionNode.getAttribute("parent"));
                 }
                 else {
-                    pNode = jmlNode.isTreeArch 
-                        ? jmlNode.selected || jmlNode.xmlRoot 
+                    pNode = jmlNode.isTreeArch
+                        ? jmlNode.selected || jmlNode.xmlRoot
                         : jmlNode.xmlRoot
                 }
             }
-            
+
             if (!pNode)
                 pNode = jmlNode.xmlRoot;
-            
-            if (jpf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument) 
+
+            if (jpf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument)
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
-            
-            if (jmlNode.executeAction("appendChild", 
-              [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false 
+
+            if (jmlNode.executeAction("appendChild",
+              [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
               && jmlNode.autoselect)
                 jmlNode.select(addXmlNode);
 
             return addXmlNode;
         }
-        
+
         if (xmlNode)
             return callback(xmlNode, jpf.SUCCESS);
         else {
             //#ifdef __DEBUG
             if (!node) {
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(jpf.formatErrorString(0, this,
                     "Executing add action",
                     "Missing add action defined in action rules. Unable to \
                      perform action."));
             }
             //#endif
-            
+
             if (node.getAttribute("get"))
                 return jpf.getData(node.getAttribute("get"), node, null, callback)
             else if (node.firstChild)
                 return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
         }
-        
+
         return addXmlNode;
     };
-    
+
     if (!this.setValue) {
         /**
-         * Sets the value of this element.The value 
-         * corresponds to an item in the list of loaded data elements. This 
-         * element will receive the selection. If no data element is found, the 
+         * Sets the value of this element.The value
+         * corresponds to an item in the list of loaded data elements. This
+         * element will receive the selection. If no data element is found, the
          * selection is cleared.
          *
-         * @param  {String}  value  the new value for this element. 
+         * @param  {String}  value  the new value for this element.
          * @see #getValue
          */
         this.setValue = function(value, disable_event){
@@ -381,7 +381,7 @@ jpf.MultiSelect = function(){
             noEvent = false;
         };
     }
-    
+
     /**
      * Retrieves an xml data element that has a value that corresponds to the
      * string that is searched on.
@@ -389,8 +389,8 @@ jpf.MultiSelect = function(){
      */
     this.findXmlNodeByValue = function(value){
         var nodes = this.getTraverseNodes();
-        var bindSet = this.bindingRules && this.bindingRules[this.mainBind] 
-            ? this.mainBind 
+        var bindSet = this.bindingRules && this.bindingRules[this.mainBind]
+            ? this.mainBind
             : "caption";
 
         for (var i = 0; i < nodes.length; i++) {
@@ -398,40 +398,40 @@ jpf.MultiSelect = function(){
                 return nodes[i];
         }
     };
-    
+
     if (!this.getValue) {
         /**
-         * Retrieves the value of this element. This is the value of the 
+         * Retrieves the value of this element. This is the value of the
          * first selected data element.
          * @see #setValue
          */
         this.getValue = function(xmlNode){
             if (!this.bindingRules) return false;
-            
+
             // #ifdef __DEBUG
             if (!this.bindingRules[this.mainBind] && !this.bindingRules["caption"])
-                throw new Error(jpf.formatErrorString(1074, this, 
-                    "getValue Method", 
+                throw new Error(jpf.formatErrorString(1074, this,
+                    "getValue Method",
                     "Could not find default value bind rule for this control."));
             // #endif
-            
+
             // #ifdef __WITH_MULTIBINDING
-            if (!this.multiselect && !this.xmlRoot && selSmartbinding && selSmartbinding.xmlRoot) 
+            if (!this.multiselect && !this.xmlRoot && selSmartbinding && selSmartbinding.xmlRoot)
                 return selSmartbinding.applyRuleSetOnNode(selSmartbinding.mainBind,
                     selSmartbinding.xmlRoot, null, true);
             // #endif
-            
+
             return this.applyRuleSetOnNode(this.mainBind, xmlNode || this.selected, null, true)
                 || this.applyRuleSetOnNode("caption", xmlNode || this.selected, null, true);
-            
+
         };
     }
-    
+
     /**
      * Sets the second level SmartBinding for Multilevel Databinding.
      * For more information see {@link MultiLevelBinding}
      *
-     * @return  {SmartBinding}  
+     * @return  {SmartBinding}
      * @see #getSelectionBindClass
      * @private
      */
@@ -440,25 +440,25 @@ jpf.MultiSelect = function(){
             selSmartbinding = new jpf.MultiLevelBinding(this);
 
         selSmartbinding.setSmartBinding(smartbinding, part);
-        
+
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
     };
-    
+
     /**
      * Gets the second level SmartBinding for Multilevel Databinding.
      * For more information see {@link MultiLevelBinding}
      *
-     * @return  {SmartBinding}  
+     * @return  {SmartBinding}
      * @see #setSelectionBindClass
      * @private
      */
     this.$getMultiBind = function(){
-        return (selSmartbinding 
+        return (selSmartbinding
             || (selSmartbinding = new jpf.MultiLevelBinding(this)));
     };
-    
+
     // #endif
-    
+
     /**
      * Select the current selection again.
      *
@@ -468,7 +468,7 @@ jpf.MultiSelect = function(){
         if (this.selected) this.select(this.selected, null, this.ctrlselect,
             null, true);//no support for multiselect currently.
     };
-    
+
     /**
      * Selects a single, or set of {@info TraverseNodes "Traverse Nodes"}.
      * The selection can be visually represented in this element.
@@ -478,14 +478,14 @@ jpf.MultiSelect = function(){
      *   {XMLElement}  the xml data element to be used in the selection as a start/end point or to toggle the selection on the node.
      *   {HTMLElement} the html element node used as visual representation of data node. Used to determine the xml data element for selection.
      *   {String}      the value of the xml data element to be select.
-     * @param {Boolean} [ctrlKey]    wether the Ctrl key was pressed
-     * @param {Boolean} [shiftKey]   wether the Shift key was pressed
-     * @param {Boolean} [fakeselect] wether only visually a selection is made
-     * @param {Boolean} [force]      wether reselect is forced.
-     * @param {Boolean} [noEvent]    wether to not call any events
-     * @return  {Boolean}  wether the selection could be made
+     * @param {Boolean} [ctrlKey]    whether the Ctrl key was pressed
+     * @param {Boolean} [shiftKey]   whether the Shift key was pressed
+     * @param {Boolean} [fakeselect] whether only visually a selection is made
+     * @param {Boolean} [force]      whether reselect is forced.
+     * @param {Boolean} [noEvent]    whether to not call any events
+     * @return  {Boolean}  whether the selection could be made
      *
-     * @event  beforeselect  Fires before a selection is made 
+     * @event  beforeselect  Fires before a selection is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that will be selected.
      *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
@@ -500,14 +500,14 @@ jpf.MultiSelect = function(){
 
         if (this.ctrlselect && !shiftKey)
             ctrlKey = true;
-        
+
         // Selection buffering (for async compatibility)
         if (!this.xmlRoot) {
             buffered        = [arguments, this.autoselect];
             this.autoselect = true;
             return;
         }
-        
+
         if (buffered) {
             var x    = buffered;
             buffered = null;
@@ -515,14 +515,14 @@ jpf.MultiSelect = function(){
                 this.autoselect = x[1];
             return this.select.apply(this, x[0]);
         }
-        
+
         var htmlNode;
 
         /* **** Type Detection *****/
         if (!xmlNode) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(1075, this, 
-                "Making a selection", 
+            throw new Error(jpf.formatErrorString(1075, this,
+                "Making a selection",
                 "No selection was specified"))
             //#endif
 
@@ -532,7 +532,7 @@ jpf.MultiSelect = function(){
         if (typeof xmlNode != "object") {
             var str = xmlNode;
             xmlNode = jpf.xmldb.getNodeById(xmlNode);
-            
+
             //Select based on the value of the xml node
             if (!xmlNode) {
                 xmlNode = this.findXmlNodeByValue(str);
@@ -553,19 +553,19 @@ jpf.MultiSelect = function(){
             while (!id && htmlNode.parentNode)
                 var id = (htmlNode = htmlNode.parentNode).getAttribute(
                     jpf.xmldb.htmlIdTag);
-            
+
             xmlNode = jpf.xmldb.getNodeById(id, this.xmlRoot);
         }
 
         if(!noEvent && this.dispatchEvent('beforeselect', {
             xmlNode : xmlNode,
             htmlNode: htmlNode,
-            ctrlKey : ctrlKey, 
+            ctrlKey : ctrlKey,
             shiftKey : shiftKey}) === false)
               return false;
 
         /**** Selection ****/
-        
+
         var lastIndicator = this.indicator;
         this.indicator    = xmlNode;
 
@@ -576,10 +576,10 @@ jpf.MultiSelect = function(){
 
             if (this.$indicator)
                 this.$deindicate(this.$indicator);
-            
+
             this.selectList(range);
-            
-            this.$selected  = 
+
+            this.$selected  =
             this.$indicator = this.$indicate(htmlNode);
         }
         else if (ctrlKey && this.multiselect) { //Multiselect with CTRL Key.
@@ -589,12 +589,12 @@ jpf.MultiSelect = function(){
                     selectedList.remove(htmlNode);
                     valueList.remove(xmlNode);
                 }
-                
+
                 if (this.selected == xmlNode) {
                     var ind = this.$indicator;
                     this.clearSelection(true, true);
                      this.$deindicate(ind);
-                    
+
                     if (valueList.length && !fakeselect) {
                         //this.$selected = selectedList[0];
                         this.selected = valueList[0];
@@ -602,11 +602,11 @@ jpf.MultiSelect = function(){
                 }
                 else
                     this.$deselect(htmlNode, xmlNode);
-                
+
                 if (htmlNode != this.$indicator)
                     this.$deindicate(this.$indicator);
-                
-                this.$selected  = 
+
+                this.$selected  =
                 this.$indicator = this.$indicate(htmlNode);
             }
             // Node will be selected
@@ -614,10 +614,10 @@ jpf.MultiSelect = function(){
                 if (this.$indicator)
                     this.$deindicate(this.$indicator);
                 this.$indicator = this.$indicate(htmlNode);
-                
+
                 this.$selected   = this.$select(htmlNode);
                 this.selected     = xmlNode;
-            
+
                 if (!fakeselect) {
                     selectedList.push(htmlNode);
                     valueList.push(xmlNode);
@@ -642,13 +642,13 @@ jpf.MultiSelect = function(){
             this.$indicator = this.$indicate(htmlNode, xmlNode);
             this.$selected  = this.$select(htmlNode, xmlNode);
             this.selected    = xmlNode;
-            
+
             selectedList.push(htmlNode);
             valueList.push(xmlNode);
         }
 
         if (!noEvent) {
-            if (this.delayedselect){ 
+            if (this.delayedselect){
                 var jNode = this;
                 setTimeout(function(){
                     jNode.dispatchEvent("afterselect", {
@@ -663,7 +663,7 @@ jpf.MultiSelect = function(){
                     xmlNode : xmlNode
                 });
         }
-        
+
         return true;
     };
 
@@ -685,24 +685,24 @@ jpf.MultiSelect = function(){
      */
     this.choose = function(xmlNode){
         if (!this.selectable || this.disabled) return;
-        
+
         if (this.dispatchEvent("beforechoose", {xmlNode : xmlNode}) === false)
             return false;
-        
+
         if (xmlNode && !xmlNode.style)
             this.select(xmlNode);
-        
+
         if (this.hasFeature(__DATABINDING__)
           && this.dispatchEvent("afterchoose", {xmlNode : this.selected}) !== false)
             this.setConnections(this.selected, "choice");
     };
-    
+
     /**
      * Removes the selection of one or more selected nodes.
      *
-     * @param {Boolean} [singleNode] wether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    wether to not call any events
-     * @event  beforedeselect  before a choice is made 
+     * @param {Boolean} [singleNode] whether to only deselect the indicated node
+     * @param {Boolean} [noEvent]    whether to not call any events
+     * @event  beforedeselect  before a choice is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that will be deselected.
      * @event  afterdeselect   after a choice is made
@@ -711,13 +711,13 @@ jpf.MultiSelect = function(){
      */
     this.clearSelection = function(singleNode, noEvent){
         if (!this.selectable || this.disabled) return;
-        
+
         var clSel = singleNode ? this.selected : valueList;
         if (!noEvent && this.dispatchEvent("beforedeselect", {
             xmlNode : clSel
           }) === false)
             return false;
-        
+
         if (this.selected) {
             var htmlNode = this.caching
                 ? this.getNodeFromCache(this.selected.getAttribute(
@@ -726,10 +726,10 @@ jpf.MultiSelect = function(){
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
             this.$deselect(htmlNode);
         }
-        
+
         //if(this.$selected) this.$deselect(this.$selected);
         this.$selected = this.selected = null;
-        
+
         if (!singleNode) {
             for (var i = valueList.length - 1; i >= 0; i--) {
                 var htmlNode = this.caching
@@ -743,22 +743,22 @@ jpf.MultiSelect = function(){
             selectedList = [];
             valueList    = [];
         }
-        
+
         if (this.indicator) {
             var htmlNode = this.caching
                 ? this.getNodeFromCache(this.indicator.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.indicator.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
-            
-            this.$selected  = 
+
+            this.$selected  =
             this.$indicator = this.$indicate(htmlNode);
         }
-        
+
         if (!noEvent)
             this.dispatchEvent("afterdeselect", {xmlNode : clSel});
     };
-    
+
     /**
      * Selects a set of items
      *
@@ -767,12 +767,12 @@ jpf.MultiSelect = function(){
     //@todo I think there are missing events here?
     this.selectList = function(xmlNodeList, noEvent, selected){
         if (!this.selectable || this.disabled) return;
-        
+
         if (!noEvent && this.dispatchEvent("beforeselect", {
             xmlNode : selected
           }) === false)
             return false;
-        
+
         this.clearSelection(null, true);
 
         for (var sel, i=0;i<xmlNodeList.length;i++) {
@@ -790,7 +790,7 @@ jpf.MultiSelect = function(){
                 xmlNode  = jpf.xmldb.getNodeById(htmlNode.getAttribute(
                     jpf.xmldb.htmlIdTag));
             }
-            
+
             if (!xmlNode) {
                 // #ifdef __DEBUG
                 jpf.console.warn("Component : " + this.name + " ["
@@ -803,16 +803,16 @@ jpf.MultiSelect = function(){
             if (htmlNode) {
                 if (!sel && selected == htmlNode)
                     sel = htmlNode;
-                
+
                 this.$select(htmlNode);
                 selectedList.push(htmlNode);
             }
             valueList.push(xmlNode);
         }
-        
+
         this.$selected = sel || selectedList[0];
         this.selected   = selected || valueList[0];
-        
+
         if (!noEvent) {
             this.dispatchEvent("afterselect", {
                 list    : valueList,
@@ -820,13 +820,13 @@ jpf.MultiSelect = function(){
             });
         }
     };
-    
+
     /**
-     * Sets the caret on an item to indicate to the user that the keyboard 
+     * Sets the caret on an item to indicate to the user that the keyboard
      * actions are done relevant to that item. Using the keyboard
-     * a user can change the position of the indicator using the Ctrl and arrow 
-     * keys while not making a selection. When making a selection with the mouse 
-     * or keyboard the indicator is always set to the selected node. Unlike a 
+     * a user can change the position of the indicator using the Ctrl and arrow
+     * keys while not making a selection. When making a selection with the mouse
+     * or keyboard the indicator is always set to the selected node. Unlike a
      * selection there can be only one indicator item.
      *
      * @param {mixed}   xmlNode      the identifier to determine the indicator.
@@ -840,11 +840,11 @@ jpf.MultiSelect = function(){
         if (!xmlNode) {
             if (this.$indicator)
                 this.$deindicate(this.$indicator);
-            this.indicator  = 
+            this.indicator  =
             this.$indicator = null;
             return;
         }
-        
+
         /* **** Type Detection *****/
         if (typeof xmlNode != "object")
             xmlNode = jpf.xmldb.getNodeById(xmlNode);
@@ -867,19 +867,19 @@ jpf.MultiSelect = function(){
             this.$deindicate(this.$indicator);
         this.indicator  = xmlNode;
         this.$indicator = this.$indicate(htmlNode);
-        
+
         this.dispatchEvent("indicate");
     };
-    
+
     this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
         clearTimeout(this.timer);
-            
+
         if (ctrlKey || this.ctrlselect) {
             if (this.$tempsel) {
                 this.select(this.$tempsel);
                 this.$tempsel = null;
             }
-            
+
             this.setIndicator(xmlNode);
         }
         else if (shiftKey){
@@ -887,7 +887,7 @@ jpf.MultiSelect = function(){
                 this.$deselect(this.$tempsel);
                 this.$tempsel = null;
             }
-            
+
             this.select(xmlNode, null, shiftKey);
         }
         else if (!this.bufferselect) {
@@ -895,28 +895,28 @@ jpf.MultiSelect = function(){
         }
         else {
             var id = jpf.xmldb.getID(xmlNode, this);
-            
+
             this.$deselect(this.$tempsel || this.$selected);
             this.$deindicate(this.$tempsel || this.$indicator);
             this.$tempsel = this.$indicate(document.getElementById(id));
             this.$select(this.$tempsel);
-            
+
             this.timer = setTimeout(function(){
                 _self.selectTemp();
             }, 400);
         }
     };
-    
+
     this.selectTemp = function(){
         if (!this.$tempsel)
             return;
-        
+
         clearTimeout(this.timer);
         this.select(this.$tempsel);
         this.$tempsel = null;
         this.timer    = null;
     };
-    
+
     /**
      * Selects all the {@info TraverseNodes "Traverse Nodes"} of this element
      *
@@ -931,12 +931,12 @@ jpf.MultiSelect = function(){
         //this.select(nodes[nodes.length-1], null, true);
         this.selectList(nodes);
     };
-    
+
     /**
-     * Retrieves an array or a document fragment containing all the selected 
+     * Retrieves an array or a document fragment containing all the selected
      * xml data elements from this element.
      *
-     * @param {Boolean} [xmldoc] wether the method should return a document fragment.
+     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
      * @return {mixed} the selection of this element.
      */
     this.getSelection = function(xmldoc){
@@ -954,7 +954,7 @@ jpf.MultiSelect = function(){
 
         return r;
     };
-    
+
     /**
      * Selects the next xml data element to be selected.
      *
@@ -973,22 +973,22 @@ jpf.MultiSelect = function(){
 
     /**
      * Selects the next xml data element when available.
-     */	
+     */
     this.selectNext = function(){
         var xmlNode = this.getNextTraverse();
         if (xmlNode)
             this.select(xmlNode);
     };
-    
+
     /**
      * Selects the previous xml data element when available.
-     */	
+     */
     this.selectPrevious = function(){
         var xmlNode = this.getNextTraverse(null, -1);
         if (xmlNode)
-            this.select(xmlNode);	
+            this.select(xmlNode);
     };
-    
+
     /**
      * @private
      */
@@ -998,30 +998,30 @@ jpf.MultiSelect = function(){
 
         return (next && next != xmlNode)
             ? next
-            : (isTree 
-                ? this.getTraverseParent(xmlNode) 
+            : (isTree
+                ? this.getTraverseParent(xmlNode)
                 : null); //this.getFirstTraverseNode()
     };
-    
+
     /**
-     * Determines wether a node is selected.
+     * Determines whether a node is selected.
      *
      * @param  {XMLElement} xmlNode  The xml data element to be checked.
-     * @return  {Boolean} wether the element is selected.
+     * @return  {Boolean} whether the element is selected.
      */
     this.isSelected = function(xmlNode){
         if (!xmlNode) return false;
-        
+
         for (var i = 0; i < valueList.length; i++) {
             if (valueList[i] == xmlNode)
                 return true;
         }
-        
+
         return false;
     };
-    
+
     /**
-     * This function checks wether the current selection is still correct.
+     * This function checks whether the current selection is still correct.
      * Selection can become invalid when updates to the underlying data
      * happen. For instance when a selected node is removed.
      */
@@ -1032,10 +1032,10 @@ jpf.MultiSelect = function(){
                 if (jpf.xmldb.isChildOf(this.xmlRoot, valueList[i]))
                     lst.push(valueList[i]);
             }
-            
+
             if (lst.length > 1) {
                 this.selectList(lst);
-                if(this.indicator 
+                if(this.indicator
                   && !jpf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
                     this.setIndicator(nextNode || this.selected);
                 }
@@ -1048,11 +1048,11 @@ jpf.MultiSelect = function(){
         }
 
         if (!nextNode) {
-            if (this.selected 
+            if (this.selected
               && !jpf.xmldb.isChildOf(this.xmlRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
-            else if(this.selected && this.indicator 
+            else if(this.selected && this.indicator
               && !jpf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
                 this.setIndicator(this.selected);
             }
@@ -1065,7 +1065,7 @@ jpf.MultiSelect = function(){
                 return; //Nothing to do
             }
         }
-        
+
         if (nextNode) {
             if (this.autoselect) {
                 this.select(nextNode);
@@ -1078,22 +1078,22 @@ jpf.MultiSelect = function(){
         }
         else
             this.clearSelection();
-        
+
         //if(action == "synchronize" && this.autoselect) this.reselect();
     };
-    
+
     /**
-     * @attribute {Boolean} [multiselect]  wether the user may select multiple items. Default is true, false for j:dropdown
-     * @attribute {mixed} [autoselect]  
+     * @attribute {Boolean} [multiselect]  whether the user may select multiple items. Default is true, false for j:dropdown
+     * @attribute {mixed} [autoselect]
      *   Possible values:
-     *   {Boolean} wether a selection is made after data is loaded. Default is true, false for j:Dropdown.
-     *   {String}  
+     *   {Boolean} whether a selection is made after data is loaded. Default is true, false for j:Dropdown.
+     *   {String}
      *     Possible values:
      *     all  all items are selected after data is loaded.
-     * @attribute {Boolean} [selectable]    wether this element can receive a selection.
-     * @attribute {Boolean} [ctrlselect]    wether the user makes a selection as if it was holding the Ctrl key.
-     * @attribute {Boolean} [allowdeselect] wether the user can remove the selection of an element.
-     * @attribute {Boolean} [reselectable]  wether selected nodes can be selected again such that the select events are called.
+     * @attribute {Boolean} [selectable]    whether this element can receive a selection.
+     * @attribute {Boolean} [ctrlselect]    whether the user makes a selection as if it was holding the Ctrl key.
+     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of an element.
+     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again such that the select events are called.
      * @attribute {String}  [selected]      the value of the xml data element which should be selected after loading data in this element.
      */
     this.selectable = true;
@@ -1108,7 +1108,7 @@ jpf.MultiSelect = function(){
     if (this.allowdeselect === undefined)
         this.allowdeselect = true;
     this.reselectable = false;
-    
+
     this.$booleanProperties["selectable"]    = true;
     //this.$booleanProperties["ctrlselect"]    = true;
     this.$booleanProperties["multiselect"]   = true;
@@ -1117,27 +1117,27 @@ jpf.MultiSelect = function(){
     this.$booleanProperties["allowdeselect"] = true;
     this.$booleanProperties["reselectable"]  = true;
 
-    this.$supportedProperties.push("selectable", "ctrlselect", "multiselect", 
+    this.$supportedProperties.push("selectable", "ctrlselect", "multiselect",
         "autoselect", "delayedselect", "allowdeselect", "reselectable", "value");
 
     this.$propHandlers["value"] = function(value){
-        if (!this.bindingRules && !this.caption || !this.xmlRoot) 
+        if (!this.bindingRules && !this.caption || !this.xmlRoot)
             return;
-    
+
         // #ifdef __DEBUG
-        if (!this.caption && !this.bindingRules["caption"] 
+        if (!this.caption && !this.bindingRules["caption"]
           && !this.bindingRules[this.mainBind] && !this.caption)
-            throw new Error(jpf.formatErrorString(1074, this, 
-                "Setting the value of this component", 
+            throw new Error(jpf.formatErrorString(1074, this,
+                "Setting the value of this component",
                 "Could not find default value bind rule for this control."))
         // #endif
-        
+
         if (jpf.isNot(value))
             return this.clearSelection(null, noEvent);
-        
+
         if (!this.xmlRoot)
             return this.select(value);
-        
+
         var xmlNode = this.findXmlNodeByValue(value);
         if (xmlNode)
             this.select(xmlNode, null, null, null, null, noEvent);
@@ -1150,12 +1150,12 @@ jpf.MultiSelect = function(){
             var _self = this;
             this.oInt.onmousedown = function(e){
                 if (!e) e = event;
-                if (e.ctrlKey || e.shiftKey) 
+                if (e.ctrlKey || e.shiftKey)
                     return;
-                
+
                 var srcElement = e.srcElement || e.target;
-                if (_self.allowdeselect && (srcElement == this 
-                  || srcElement.getAttribute(jpf.xmldb.htmlIdTag))) 
+                if (_self.allowdeselect && (srcElement == this
+                  || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
                     _self.clearSelection(); //hacky
             }
         }
@@ -1163,7 +1163,7 @@ jpf.MultiSelect = function(){
             this.oInt.onmousedown = null;
         }
     };
-    
+
     this.$propHandlers["ctrlselect"] = function(value){
         if (value != "enter")
             this.ctrlselect = jpf.isTrue(value);
@@ -1183,11 +1183,11 @@ jpf.MultiSelect = function(){
         if (!value && valueList.length > 1) {
             this.select(this.selected);
         }
-        
+
         if (value)
             this.bufferselect = false; //@todo doesn't return to original value
     };
-    
+
     // Select Bind class
     // #ifdef __WITH_DATABINDING
     this.addEventListener("beforeselect", function(e){
@@ -1195,40 +1195,40 @@ jpf.MultiSelect = function(){
             return false;
     });
     // #endif
-    
+
     // #ifdef __WITH_PROPERTY_BINDING || __WITH_OFFLINE_STATE
     this.addEventListener("afterselect", function (e){
         //#ifdef __WITH_PROPERTY_BINDING
-        if (this.bindingRules && (this.bindingRules["value"] 
+        if (this.bindingRules && (this.bindingRules["value"]
           || this.bindingRules["caption"]) || this.caption) {
-            this.value = this.applyRuleSetOnNode(this.bindingRules && this.bindingRules["value"] 
-                ? "value" 
+            this.value = this.applyRuleSetOnNode(this.bindingRules && this.bindingRules["value"]
+                ? "value"
                 : "caption", e.xmlNode);
 
             //@todo this will also set the xml again - actually I don't think so because of this.value == value;
-            this.setProperty("value", this.value); 
+            this.setProperty("value", this.value);
         }
-        
+
         if (this.sellength != valueList.length)
             this.setProperty("sellength", valueList.length);
         //#endif
-        
+
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled && jpf.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < valueList.length; i++)
                 sel.push(jpf.remote.xmlToXpath(valueList[i], null, true));
-            
+
             jpf.offline.state.set(this, "selection", sel);
             fSelState.call(this);
         }
         //#endif
     });
     // #endif
-    
+
     //#ifdef __WITH_OFFLINE_STATE
     function fSelState(){
         if (jpf.offline.state.enabled && jpf.offline.state.realtime) {
-            jpf.offline.state.set(this, "selstate", 
+            jpf.offline.state.set(this, "selstate",
                 [this.indicator
                     ? jpf.remote.xmlToXpath(this.indicator, null, true)
                     : "",
@@ -1237,7 +1237,7 @@ jpf.MultiSelect = function(){
                     : ""]);
         }
     }
-    
+
     this.addEventListener("indicate", fSelState);
     //#endif
 };
@@ -1250,21 +1250,21 @@ jpf.MultiSelectServer = {
      * @private
      */
     objects : {},
-    
+
     /**
      * @private
      */
     register : function(xmlId, xmlNode, selList, jNode){
         if (!this.uniqueId)
             this.uniqueId = jpf.all.push(this) - 1;
-        
+
         this.objects[xmlId] = {
             xml   : xmlNode,
             list  : selList,
             jNode : jNode
         };
     },
-    
+
     $xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
         if (action != "attribute") return;
 
@@ -1278,7 +1278,7 @@ jpf.MultiSelectServer = {
             jpf.xmldb.setAttribute(data.list[j], UndoObj.name,
                 xmlNode.getAttribute(UndoObj.name));
         }
-        
+
         //jpf.xmldb.synchronize();
     }
 };

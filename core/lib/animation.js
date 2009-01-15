@@ -223,7 +223,7 @@ jpf.tween = {
 
     /**
      * Tweens a single property of a single element or html element from a
-     * start to an end value. 
+     * start to an end value.
      * Example:
      * <code>
      * jpf.tween.single(myDiv, {
@@ -264,13 +264,13 @@ jpf.tween = {
      *   {Number}   [steps]     the number of steps to divide the tween in
      *   {Number}   [interval]  the time between each step
      *   {Number}   [anim]      the distribution of change between the step over the entire animation
-     *   {Boolean}  [color]     wether the specified values are colors
+     *   {Boolean}  [color]     whether the specified values are colors
      *   {Mixed}    [userdata]  any data you would like to have available in your callback methods
      *   {Function} [onfinish]  a function that is called at the end of the animation
      *   {Function} [oneach]    a function that is called at each step of the animation
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
-     *     {Boolean} stop       wether the animation should stop.
+     *     {Boolean} stop       whether the animation should stop.
      */
     single : function(oHtml, info){
         info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
@@ -333,7 +333,7 @@ jpf.tween = {
 
     /**
      * Tweens multiple properties of a single element or html element from a
-     * start to an end value. 
+     * start to an end value.
      * Example:
      * Animating both the left and width at the same time.
      * <code>
@@ -367,7 +367,7 @@ jpf.tween = {
      *   {Function} [oneach]    a function that is called at each step of the animation
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
-     *     {Boolean} stop       wether the animation should stop.
+     *     {Boolean} stop       whether the animation should stop.
      *   {Array}    [tweens]    a collection of simple objects specifying the single value animations that are to be executed simultaneously. (for the properties of these single tweens see the single tween method).
      */
     multi : function(oHtml, info){
@@ -451,8 +451,8 @@ jpf.tween = {
      *   {Function} [oneach]    a function that is called at each step of the animation
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
-     *     {Boolean} stop       wether the animation should stop.
-     * @param {Boolean} remove wether the class is set or removed from the element or html element
+     *     {Boolean} stop       whether the animation should stop.
+     * @param {Boolean} remove whether the class is set or removed from the element or html element
      */
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];

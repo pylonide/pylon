@@ -49,7 +49,7 @@ jpf.vardump = function(obj, depth, recur,endless){
                     : jpf.vardump(obj[i], depth + 1, recur,endless)) + "\n";
             }
             str += "     ".repeat(depth) + "}";
-            
+
             return str;
         default:
             if(endless[obj])return "{recur}";
@@ -77,7 +77,7 @@ jpf.vardump = function(obj, depth, recur,endless){
                 }
             }
             str += "     ".repeat(depth) + "}";
-            
+
             return str;
     }
 }
@@ -94,12 +94,12 @@ jpf.alert_r = function(obj, recur){
 /**
  * Object timing the time between one point and another.
  *
- * @param {Boolean} nostart wether the profiler should start measuring at creation.
+ * @param {Boolean} nostart whether the profiler should start measuring at creation.
  * @constructor
  */
 jpf.ProfilerClass = function(nostart){
     this.totalTime = 0;
-    
+
     /**
      * Starts the timer.
      * @param {Boolean} clear resets the total time.
@@ -107,10 +107,10 @@ jpf.ProfilerClass = function(nostart){
     this.start = function(clear){
         if (clear) this.totalTime = 0;
         this.startTime = new Date().getTime();
-        
+
         this.isStarted = true;
     }
-    
+
     /**
      * Stops the timer.
      * @method
@@ -121,7 +121,7 @@ jpf.ProfilerClass = function(nostart){
         this.totalTime += new Date().getTime() - this.startTime;
         this.isStarted = false;
     }
-    
+
     /**
      * Sends the total time to the console.
      * @param {String} msg Message displayed in the console.
@@ -131,7 +131,7 @@ jpf.ProfilerClass = function(nostart){
         jpf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
         this.start(true);
     }
-    
+
     if (!nostart)
         this.start();
 };

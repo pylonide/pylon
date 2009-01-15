@@ -42,15 +42,15 @@ jpf.Cache = function(){
     var cache     = {};
     var subTreeCacheContext;
 
-    this.caching  = true; 
+    this.caching  = true;
     this.$regbase = this.$regbase | __CACHE__;
-    
+
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
-    
+
     /**
-     * Checks the cache for a cached item by ID. If the ID is found the 
+     * Checks the cache for a cached item by ID. If the ID is found the
      * representation is loaded from cache and set active.
      *
      * @param  {String} id  the id of the cache element which is looked up.
@@ -64,7 +64,7 @@ jpf.Cache = function(){
         //Checking Current
         if (id == this.cacheID) return -1;
         /*
-            Let's check if the requested source is actually 
+            Let's check if the requested source is actually
             a sub tree of an already rendered part
         */
         //#ifdef __WITH_MULTISELECT
@@ -78,7 +78,7 @@ jpf.Cache = function(){
                     get ambiguous, so we have to put it back later
                 */
                 this.clear(true);
-                
+
                 var oHtml = this.getNodeFromCache(
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                 subTreeCacheContext = {
@@ -87,11 +87,11 @@ jpf.Cache = function(){
                     beforeNode : oHtml.nextSibling,
                     cacheItem  : cacheItem
                 };
-                
+
                 this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
                 this.xmlRoot    = xmlNode;
-                
+
                 //Load html
                 if (this.renderRoot)
                     this.oInt.appendChild(oHtml);
@@ -99,7 +99,7 @@ jpf.Cache = function(){
                     while (oHtml.childNodes.length)
                         this.oInt.appendChild(oHtml.childNodes[0]);
                 }
-                
+
                 return true;
             }
         }
@@ -111,21 +111,21 @@ jpf.Cache = function(){
         //Removing previous
         if (this.cacheID)
             this.clear(true);
-            
+
         //Get Fragment and clear Cache Item
         var fragment    = cache[id];
-        
+
         this.documentId = fragment.documentId;
         this.cacheID    = id;
         this.xmlRoot    = fragment.xmlRoot;
-        
+
         this.clearCacheItem(id);
 
         this.$setCurrentFragment(fragment);
 
         return true;
     };
-    
+
     /**
      * Sets cache element and it's ID
      *
@@ -137,7 +137,7 @@ jpf.Cache = function(){
 
         cache[id] = fragment;
     };
-    
+
     /**
      * Finds HTML presentation node in cache by ID
      *
@@ -147,24 +147,24 @@ jpf.Cache = function(){
     this.getNodeFromCache = function(id){
         var node = this.$findNode(null, id);
         if (node) return node;
-        
+
         for (prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
                 var node = this.$findNode(cache[prop], id);
                 if (node) return node;
             }
         }
-        
+
         return null;
-    };    
-    
+    };
+
     this.$findNode = function(cacheNode, id){
         if (!cacheNode)
             return this.pHtmlDoc.getElementById(id);
 
         return cacheNode.getElementById(id);
     };
-    
+
     /**
      * Finds HTML presentation element in cache by xmlNode or xml id
      *
@@ -172,13 +172,13 @@ jpf.Cache = function(){
      * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
      */
     this.getNodeByXml = function(xmlNode){
-        return xmlNode 
+        return xmlNode
             ? this.getNodeFromCache((typeof xmlNode == "object"
                 ? xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                 : xmlNode) + "|" + this.uniqueId)
             : null;
     };
-    
+
     /**
      * Finds cache element by ID of HTMLElement in cache
      *
@@ -188,23 +188,23 @@ jpf.Cache = function(){
     this.getCacheItemByHtmlId = function(id){
         var node = this.$findNode(null, id);
         if (node) return this.oInt;
-        
+
         for (var prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
                 var node = this.$findNode(cache[prop], id);
                 if (node) return cache[prop];
             }
         }
-        
+
         return null;
     };
-    
+
     /**
      * Unloads data from this element and resets state displaying an empty message.
      * Empty message is set on the {@link JmlNode#msg} property.
      *
-     * @param {Boolean} [nomsg]   wether to display the empty message.
-     * @param {Boolean} [doEvent] wether to sent select events.
+     * @param {Boolean} [nomsg]   whether to display the empty message.
+     * @param {Boolean} [doEvent] whether to sent select events.
      * @see DataBinding#load
      */
     this.clear = function(nomsg, doEvent){
@@ -215,11 +215,11 @@ jpf.Cache = function(){
             /*
                 Check if we borrowed an HTMLElement
                 We should return it where it came from
-                
+
                 note: There is a potential that we can't find the exact location
                 to put it back. We should then look at it's position in the xml.
                 (but since I'm lazy it's not doing this right now)
-                There might also be problems when removing the xmlroot 
+                There might also be problems when removing the xmlroot
             */
             if (this.hasFeature(__MULTISELECT__)
                 && subTreeCacheContext && subTreeCacheContext.oHtml) {
@@ -229,7 +229,7 @@ jpf.Cache = function(){
                     while (this.oInt.childNodes.length)
                         subTreeCacheContext.oHtml.appendChild(this.oInt.childNodes[0]);
                 }
-                
+
                 this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
             }
             else{
@@ -243,7 +243,7 @@ jpf.Cache = function(){
                     // Here we cache the current part
                     var fragment = this.$getCurrentFragment();
                     if (!fragment) return;//this.$setClearMessage(this.emptyMsg);
-    
+
                     fragment.documentId = this.documentId;
                     fragment.xmlRoot    = this.xmlRoot;
                 }
@@ -256,43 +256,43 @@ jpf.Cache = function(){
             this.$setClearMessage(this.emptyMsg, "empty");
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
-        
-        if (this.caching && (this.cacheID || this.xmlRoot)) 
+
+        if (this.caching && (this.cacheID || this.xmlRoot))
             this.setCache(this.cacheID || this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
                 + this.xmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
 
         this.documentId = this.xmlRoot = this.cacheID = null;
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", 0);
         //#endif
     };
-    
+
     /**
      * @private
      */
     this.clearAllTraverse = function(msg, className){
         if (this.clearSelection)
             this.clearSelection(null, true);
-            
+
         this.oInt.innerHTML = "";
         this.$setClearMessage(msg || this.emptyMsg, className || "empty");
         this.dataset = {set: {}, seq: []};
     };
-    
+
     /**
      * Removes an item from the cache.
      *
      * @param {String}  id       the id of the HTMLElement which is looked up.
-     * @param {Boolean} [remove] wether to destroy the Fragment.
+     * @param {Boolean} [remove] whether to destroy the Fragment.
      * @see DataBinding#clear
      */
     this.clearCacheItem = function(id, remove){
         cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
-        
+
         if (remove)
             jpf.removeNode(cache[id]);
-        
+
         cache[id] = null;
     };
 
@@ -307,7 +307,7 @@ jpf.Cache = function(){
                 this.clearCacheItem(prop, true);
         }
     };
-    
+
     /**
      * Gets the cache item by it's id
      *
@@ -317,9 +317,9 @@ jpf.Cache = function(){
     this.getCacheItem = function(id){
         return cache[id];
     };
-    
+
     /**
-     * Checks wether a cache item exists by the specified id
+     * Checks whether a cache item exists by the specified id
      *
      * @param {String} id  the id of the cache item to check.
      * @see DataBinding#clearCacheItem
@@ -327,22 +327,22 @@ jpf.Cache = function(){
     this.isCached = function(id){
         return cache[id] ? true : false;
     }
-    
+
     /* ********************************************************************
                                         PRIVATE METHODS
     *********************************************************************/
-    
+
     /**
-     * @attribute {Boolean} caching wether caching is enabled for this element.
+     * @attribute {Boolean} caching whether caching is enabled for this element.
      */
     this.$booleanProperties["caching"] = true;
     this.$supportedProperties.push("caching");
-    
+
     // #ifdef __WITH_MULTISELECT
     if (this.hasFeature(__MULTISELECT__))
         this.inherit(jpf.MultiselectCache);
     // #endif
-    
+
     this.$jmlDestroyers.push(function(){
         //Remove all cached Items
         this.clearAllCache();
@@ -358,7 +358,7 @@ jpf.Cache = function(){
 jpf.MultiselectCache = function(){
     this.$getCurrentFragment = function(){
         var fragment = this.oInt.ownerDocument.createDocumentFragment();
-        
+
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);
         }
@@ -366,12 +366,12 @@ jpf.MultiselectCache = function(){
 
         return fragment;
     };
-    
+
     this.$setCurrentFragment = function(fragment){
         this.oInt.appendChild(fragment);
-            
+
         this.dataset = fragment.dataset;
-        
+
         if (!jpf.window.hasFocus(this))
             this.blur();
     };
@@ -382,40 +382,40 @@ jpf.MultiselectCache = function(){
 
         return cacheNode.getElementById(id);
     };
-    
+
     var oEmpty;
     this.$setClearMessage = function(msg, className){
         if (!oEmpty) {
             this.$getNewContext("empty");
-            
+
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
-            
+
             oEmpty = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
         }
         else {
             this.oInt.appendChild(oEmpty);
         }
-        
+
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
-        
+
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
-            
+
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
     };
-    
+
     this.$updateClearMessage = function(msg, className) {
         if (!oEmpty || oEmpty.parentNode != this.oInt
-          || oEmpty.className.indexOf(className) == -1) 
+          || oEmpty.className.indexOf(className) == -1)
             return;
 
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
     }
-    
+
     this.$removeClearMessage = function(){
         if (!oEmpty)
             oEmpty = document.getElementById("empty" + this.uniqueId);

@@ -37,55 +37,55 @@ var __MULTILANG__ = 1 << 16;
  * the language file. Two buttons provide a means to switch the language of the
  * application, using the language symbols from the model.
  * <code>
- *   <j:model id="mdlLang"> 
- *       <groups> 
- *           <!-- For French --> 
- *           <french id="sub"> 
- *               <group id="main"> 
- *                   <key id="tab1">Textuele</key> 
- *                   <key id="tab2">Arte</key> 
- *                   <key id="title">Bonjour</key> 
- *                   <key id="1">Adresse de courrier electronique *</key> 
+ *   <j:model id="mdlLang">
+ *       <groups>
+ *           <!-- For French -->
+ *           <french id="sub">
+ *               <group id="main">
+ *                   <key id="tab1">Textuele</key>
+ *                   <key id="tab2">Arte</key>
+ *                   <key id="title">Bonjour</key>
+ *                   <key id="1">Adresse de courrier electronique *</key>
  *                   ...
- *               </group> 
- *           </french> 
- *            
- *           <!-- For English --> 
- *           <english id="sub"> 
- *               <group id="main"> 
- *                   <key id="tab1">Text</key> 
- *                   <key id="tab2">Art</key> 
+ *               </group>
+ *           </french>
+ *
+ *           <!-- For English -->
+ *           <english id="sub">
+ *               <group id="main">
+ *                   <key id="tab1">Text</key>
+ *                   <key id="tab2">Art</key>
  *                   <key id="title">Hello</key>
- *                   <key id="1">E-mail *</key> 
+ *                   <key id="1">E-mail *</key>
  *                   ...
- *               </group> 
- *           </english> 
- *       </groups> 
- *   </j:model> 
+ *               </group>
+ *           </english>
+ *       </groups>
+ *   </j:model>
  *
  *   <j:appsettings language="mdlLang:english" />
  *
- *   <j:window title="$sub.main.title$"> 
- *       <j:tab> 
- *           <j:page caption="$sub.main.tab0$"> 
+ *   <j:window title="$sub.main.title$">
+ *       <j:tab>
+ *           <j:page caption="$sub.main.tab0$">
  *               <j:label>$sub.main.1$</j:label>
- *               <j:textbox /> 
- *               <j:button>$sub.main.2$</j:button> 
- *           </j:page> 
- *           <j:page caption="$sub.main.tab2$"> 
- *               <j:picture src="$sub.main.3$" /> 
- *           </j:page> 
- *       </j:tab> 
- *   </j:window> 
- *   
- *   <j:button icon="us.gif" 
+ *               <j:textbox />
+ *               <j:button>$sub.main.2$</j:button>
+ *           </j:page>
+ *           <j:page caption="$sub.main.tab2$">
+ *               <j:picture src="$sub.main.3$" />
+ *           </j:page>
+ *       </j:tab>
+ *   </j:window>
+ *
+ *   <j:button icon="us.gif"
  *     onclick="jpf.language.loadFrom('mdlLang:english');">
  *        English
- *   </j:button> 
- *   <j:button icon="fr.gif" 
+ *   </j:button>
+ *   <j:button icon="fr.gif"
  *     onclick="jpf.language.loadFrom('mdlLang:french');">
  *        French
- *   </j:button> 
+ *   </j:button>
  * </code>
  *
  * @default_private
@@ -93,7 +93,7 @@ var __MULTILANG__ = 1 << 16;
  */
 jpf.language = {
     /**
-     * {Boolean} wether read strings are tried to match themselves if no key
+     * {Boolean} whether read strings are tried to match themselves if no key
      * was gives.
      */
     automatch : false,
@@ -106,18 +106,18 @@ jpf.language = {
     texts     : {},
     elements  : {},
     count     :  0,
-    
+
     /**
      * Loads the symbol list from an xml node.
      * @param {XMLElement} xmlNode   the root of the symbol tree for the choosen language.
      * @param {String}     [prefix]  the prefix that overrides the default prefix.
      */
     loadXml   : function(xmlNode, prefix){
-        if (typeof xmlNode == "string") 
+        if (typeof xmlNode == "string")
             xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
     },
-    
+
     /**
      * Loads the symbol list using a {@link datainstruction 'data instruction'}
      * @param {String} instruction  the {@link datainstruction 'data instruction'} to load the symbol xml from.
@@ -126,22 +126,22 @@ jpf.language = {
         jpf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) return;
-                
+
                 //#ifdef __DEBUG
                 if (!xmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null, 
-                        "Loading language", 
+                    throw new Error(jpf.formatErrorString(0, null,
+                        "Loading language",
                         "Could not find language symbols using processing \
                          instruction: '" + instruction + "'"));
 
                     return;
                 }
                 //#endif
-                
+
                 jpf.language.loadXml(xmlNode);
                 this.isLoaded = true;
             },
-            
+
             setModel: function(model, xpath){
                 if (typeof model == "string")
                     model = jpf.nameserver.get("model", model);
@@ -149,26 +149,26 @@ jpf.language = {
             }
         });
     },
-    
+
     parseSection: function(xmlNode, prefix){
-        if (!prefix) 
+        if (!prefix)
             prefix = "";
-        
+
         if (xmlNode.tagName == "key") {
             prefix += "." + xmlNode.getAttribute("id");
             this.update(prefix, xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "");
             return;
         }
-        
+
         //if(xmlNode.tagName == "lang") prefix = xmlNode.getAttribute("id");
-        if (xmlNode.tagName == "group") 
+        if (xmlNode.tagName == "group")
             prefix += (prefix ? "." : "") + xmlNode.getAttribute("id");
-        
+
         var nodes = xmlNode.childNodes;
-        for (var i = 0; i < nodes.length; i++) 
+        for (var i = 0; i < nodes.length; i++)
             this.parseSection(nodes[i], prefix);
     },
-    
+
     /**
      * Updates a key with the value specified and reflects this immediately in
      * the user interface of the applications.
@@ -177,22 +177,22 @@ jpf.language = {
      */
     update: function(key, value){
         this.words[key] = value;
-        if (!this.elements[key]) 
+        if (!this.elements[key])
             return;
-        
+
         for (var i = 0; i < this.elements[key].length; i++) {
-            if (this.elements[key][i].htmlNode.nodeType == 1) 
+            if (this.elements[key][i].htmlNode.nodeType == 1)
                 this.elements[key][i].htmlNode.innerHTML = value;
-            else 
+            else
                 this.elements[key][i].htmlNode.nodeValue = value;
         }
     },
-    
-    /* 
+
+    /*
     #ifdef __WITH_EDITMODE
-    
+
     exportXml : function(doTest){
-        //var re = new RegExp("^" + this.prefix.replace(/\./g, "\\.")), 
+        //var re = new RegExp("^" + this.prefix.replace(/\./g, "\\.")),
         //    str = ["<lang id='EN'><group id='main'>"];
         var lut = {};
         for (key in this.words) {
@@ -204,7 +204,7 @@ jpf.language = {
             //lut[nKey[0]][nKey[1]].push("<key id='", nKey[2], "'><![CDATA[", doTest ? "aaaaa" : this.words[key], "]]></key>");
             lut[nKey[0]].push("<key id='", nKey[1], "'><![CDATA[", doTest ? "aaaaa" : this.words[key], "]]></key>");
         }
-        
+
         var str = ["<app>"];
         //for (var lang in lut) {
         str.push("<lang id='" + this.lang + "'>");
@@ -216,12 +216,12 @@ jpf.language = {
         }
         str.push("</lang>");
         //}
-        
+
         var result = str.join("") + "</app>";
-        
+
         return result;
     },
-    
+
     addWord : function(str, key, oEl){
         if (this.automatch && !key && this.texts[str])
             key = this.texts[str];
@@ -233,10 +233,10 @@ jpf.language = {
             this.elements[key] = [];
         if (oEl)
             this.elements[key].push(oEl);
-        
+
         return key;
     },
-     
+
     getNewKey : function(){
        var key = this.prefix + this.count++;
        while (this.words[key] !== undefined) {
@@ -244,24 +244,24 @@ jpf.language = {
         }
         return key;
     },
-    
+
     removeElement : function(key, oEl){
         if (!this.elements[key]) return;
         this.elements[key].remove(oEl);
     },
-    
+
     #endif
     */
     addElement: function(key, oEl){
-        if (!this.elements[key]) 
+        if (!this.elements[key])
             this.elements[key] = [];
         return this.elements[key].push(oEl) - 1;
     },
-    
+
     removeElement: function(key, id){
         this.elements[key].removeIndex(id);
     },
-    
+
     getWord: function(key){
         return this.words[key];
     }
@@ -273,28 +273,28 @@ jpf.language = {
 EditServer = {
     data : [],
     edit : null,
-    
+
     init : function(){
         this.edit = document.createElement("dt");
         this.setStyle(0);
         this.edit.onmouseover = function(){ event.cancelBubble = true; };
         this.edit.onmouseout  = function(){ event.cancelBubble = true; };
         this.edit.onmouseup   = function(){ EditServer.startEdit(this.parentNode.editId); };
-        
+
         this.edit.onkeydown = function(e){
             var key = (e || event).keyCode;
-            
+
             if (key == 27)
                 EditServer.stopEdit(this.parentNode.editId, true);
             else if (key == 13)
                 EditServer.stopEdit(this.parentNode.editId);
         }
-        
+
         this.edit.onblur = function(){
             EditServer.stopEdit(this.parentNode.editId);
         }
     },
-    
+
     setStyle : function(type){
         if (type == 0) {
             this.edit.style.backgroundColor = "blue";
@@ -316,10 +316,10 @@ EditServer = {
             this.edit.style.margin = "-1px";
         }
     },
-    
+
     register : function(data){
-        var xmlNode = data.config 
-            ? xmldb.selectSingleNode(data.config[data.counter][1], data.jmlNode) 
+        var xmlNode = data.config
+            ? xmldb.selectSingleNode(data.config[data.counter][1], data.jmlNode)
             : xmldb.getTextNode(data.jmlNode);
         if (!xmlNode)
             xmlNode = jpf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
@@ -329,64 +329,64 @@ EditServer = {
             xmlNode.nodeValue = "$" + key + "$";
         }
         data.key = key;
-        
+
         this.setEvents(data.htmlNode);
         return (data.htmlNode.editId = this.data.push(data) - 1);
     },
-    
+
     setEvents : function(htmlNode){
         htmlNode.onselectstart = function(){event.cancelBubble=true;}
         htmlNode.onmouseover = function(){
             if (EditServer.isEditing || EditServer.edit.parentNode == this) return;
-            
+
             if (EditServer.edit.innerHTML)
                 EditServer.edit.parentNode.onmouseout({});
-            
+
             EditServer.edit.innerHTML = this.innerHTML;
             this.innerHTML            = "";
             this.appendChild(EditServer.edit);
         }
-        
+
         htmlNode.onmouseout = function(e){
-            if (EditServer.isEditing || EditServer.edit.parentNode != this 
+            if (EditServer.isEditing || EditServer.edit.parentNode != this
                 || (e || event).toElement == EditServer.edit) return;
-            
+
             this.innerHTML            = EditServer.edit.innerHTML;
             EditServer.edit.innerHTML = "";
         }
     },
-    
+
     startEdit : function(id){
         if (this.isEditing) return;
         this.isEditing = true;
         var data       = this.data[id];
-        
+
         EditServer.setStyle(1);
         this.edit.contentEditable = true;
-        
+
         //var r = document.selection.createRange();
         //r.moveToElementText(this.edit);
         //r.select();
-        
+
         this.edit.focus();
         if (data.jmlObject) {
             data.jmlObject.$KH       = data.jmlObject.keyHandler;
             data.jmlObject.keyHandler = null;
         }
     },
-    
+
     stopEdit : function(id, isCancel){
         var data = this.data[id];
-        
+
         EditServer.setStyle(0);
-        
+
         this.edit.contentEditable = false;
-        
+
         if (data.jmlObject) {
             data.jmlObject.keyHandler = data.jmlObject.$KH;
             data.jmlObject.$KH       = null;
         }
-        
+
         if (!isCancel) {
             var word = jpf.xmldb.getTextNode(this.edit).nodeValue;
             jpf.language.addWord(word, data.key);
@@ -396,16 +396,16 @@ EditServer = {
         else {
             this.edit.firstChild.nodeValue = jpf.language.getWord(data.key);
         }
-        
+
         var r = document.selection.createRange();
         try{r.moveToElementText(this.edit);}catch(e){}
         r.collapse();
         r.select();
-        
+
         if(this.edit.parentNode)
             this.edit.parentNode.innerHTML = this.edit.innerHTML;
         this.edit.innerHTML = "";
-        
+
         this.isEditing = false;
     }
 }
@@ -413,28 +413,28 @@ EditServer.init();
 function EditMode(){
     this.$regbase = this.$regbase|__EDITMODE__;
     this.$regbase = this.$regbase|__MULTILANG__;
-    
+
     this.enableEditing = function(){
         this.editable = true;
     }
-    
+
     this.disableEditing = function(){
         this.editable = false;
     }
-    
+
     this.$makeEditable = function(type, htmlNode, jmlNode){
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
             var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
             if (!subNode) continue;
-            
+
             //get ElementNode
-            subNode = subNode.nodeType == 1 
-                ? subNode 
-                : (subNode.nodeType == 3 || subNode.nodeType == 4 
-                    ? subNode.parentNode 
+            subNode = subNode.nodeType == 1
+                ? subNode
+                : (subNode.nodeType == 3 || subNode.nodeType == 4
+                    ? subNode.parentNode
                     : subNode.ownerElement || subNode.selectSinglesubNode(".."));
-            
+
             var data = {
                 jmlNode  : jmlNode,
                 jmlObject: this,
@@ -443,7 +443,7 @@ function EditMode(){
                 counter  : i,
                 config   : config
             }
-            
+
             EditServer.register(data);
         }
     }
@@ -469,23 +469,23 @@ function EditMode(){
  */
 jpf.MultiLang = function(){
     this.$regbase = this.$regbase | __MULTILANG__;
-    
+
     var reggedItems = [];
     this.$makeEditable = function(type, htmlNode, jmlNode){
-        if (jmlNode.prefix != "j") 
+        if (jmlNode.prefix != "j")
             return;//using a non-xml format is unsupported
 
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
             var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
-            if (!subNode) 
+            if (!subNode)
                 continue;
-            
+
             var xmlNode = config
                 ? jpf.xmldb.selectSingleNode(config[i][1], jmlNode)
                 : jpf.xmldb.getTextNode(jmlNode);
 
-            if (!xmlNode) 
+            if (!xmlNode)
                 continue;//xmlNode = jpf.xmldb.createNodeFromXpath(jmlNode, config[i][1]);
 
             var key = xmlNode.nodeValue.match(/^\$(.*)\$$/); // is this not conflicting?
@@ -501,15 +501,15 @@ jpf.MultiLang = function(){
             }
         }
     };
-    
+
     this.$removeEditable = function(){
         for (var i = 0; i < reggedItems.length; i++) {
             jpf.language.removeElement(reggedItems[i][0], reggedItems[i][1]);
         }
-        
+
         reggedItems = [];
     };
-    
+
     this.$jmlDestroyers.push(function(){
         this.$removeEditable();
     });

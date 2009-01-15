@@ -70,7 +70,7 @@ var __DRAGDROP__ = 1 << 5;
  * @allowchild allow-drop, allow-drag
  * @define allow-drag   Specifies when nodes can be dragged from this element.
  * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} copy-condition  a javascript expression that determines wether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
+ * @attribute {String} copy-condition  a javascript expression that determines whether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
  * @define allow-drop   Specifies when nodes can be dropped into this element.
  * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
  * @attribute {String} target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
@@ -79,7 +79,7 @@ var __DRAGDROP__ = 1 << 5;
  *   tree-append    Appends the xml data element to the element it's dropped on.
  *   list-append    Appends the xml data element to the root element of this element.
  *   insert-before  Inserts the xml data element before the elements it's dropped on.
- * @attribute {String} copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
+ * @attribute {String} copy-condition  a javascript expression that determines whether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
  */
 /**
  * @constructor
@@ -133,7 +133,7 @@ jpf.DragDrop = function(){
     };
 
     /**
-     * Determines wether the user is allowed to drag the passed XML node.
+     * Determines whether the user is allowed to drag the passed XML node.
      *
      * @param  {XMLElement} the xml data element subject to the test.
      * @return {Boolean} result of the test
@@ -165,7 +165,7 @@ jpf.DragDrop = function(){
     };
 
     /**
-     * Determines wether the user is allowed to dropped the passed XML node.
+     * Determines whether the user is allowed to dropped the passed XML node.
      *
      * @param  {XMLElement} xmlNode the xml data element subject to the test.
      * @return {Boolean} result of the test
@@ -380,7 +380,7 @@ jpf.DragDrop = function(){
     this.$supportedProperties.push("dropenabled", "dragenabled", "dragmoveenabled");
 
     /**
-     * @attribute  {Boolean}  dragEnabled       wether the element allows dragging of it's items.
+     * @attribute  {Boolean}  dragEnabled       whether the element allows dragging of it's items.
      * Example:
      * <code>
      *  <j:list dragEnabled="true">
@@ -389,7 +389,7 @@ jpf.DragDrop = function(){
      *      <j:item>item 3</j:item>
      *  </j:list>
      * </code>
-     * @attribute  {Boolean}  dragMoveEnabled   wether dragged items are moved or copied when holding the Ctrl key.
+     * @attribute  {Boolean}  dragMoveEnabled   whether dragged items are moved or copied when holding the Ctrl key.
      * Example:
      * <code>
      *  <j:list dragMoveEnabled="true">
@@ -398,7 +398,7 @@ jpf.DragDrop = function(){
      *      <j:item>item 3</j:item>
      *  </j:list>
      * </code>
-     * @attribute  {Boolean}  dropEnabled       wether the element allows items to be dropped.
+     * @attribute  {Boolean}  dropEnabled       whether the element allows items to be dropped.
      * Example:
      * <code>
      *  <j:list dropEnabled="true">

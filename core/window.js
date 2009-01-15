@@ -96,9 +96,9 @@ jpf.windowManager = {
  *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   wether the ctrl key was pressed.
- *   {Boolean} shiftKey  wether the shift key was pressed.
- *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @event mousescroll                Fires when the user scrolls the mouse
  *   cancellable: Prevents the container to scroll
@@ -109,18 +109,18 @@ jpf.windowManager = {
  *   cancellable: Prevents the default hotkey behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   wether the ctrl key was pressed.
- *   {Boolean} shiftKey  wether the shift key was pressed.
- *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @event keydown                        Fires when the user presses a key
  *   bubbles: yes
  *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   wether the ctrl key was pressed.
- *   {Boolean} shiftKey  wether the shift key was pressed.
- *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @constructor
  * @jpfclass
@@ -485,7 +485,7 @@ jpf.WindowImplementation = function(){
     this.$blur = function(jmlNode){
         if (this.focussed != jmlNode)
             return false;
-        
+
         //#ifdef __DEBUG
         jpf.console.info(this.focussed.tagName + " ["
             + (this.focussed.name || "") + "] was blurred.");
@@ -631,9 +631,9 @@ jpf.WindowImplementation = function(){
     /**** Focus API ****/
 
     /**
-     * Determines wether a given jml element has the focus.
+     * Determines whether a given jml element has the focus.
      * @param {JMLElement} the element to check
-     * @returns {Boolean} wether the element has focus.
+     * @returns {Boolean} whether the element has focus.
      */
     this.hasFocus = function(jmlNode){
         return this.focussed == jmlNode;
@@ -934,7 +934,7 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left
-        if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false) 
+        if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false)
           && jpf.appsettings.allowBlur) {
             lastFocusParent = null;
             if (jpf.window.focussed)
@@ -974,7 +974,7 @@ jpf.WindowImplementation = function(){
         }
         //#endif
         //#endif
-        
+
         jpf.dispatchEvent("mousedown", {
             htmlEvent : e,
             jmlNode   : jmlNode

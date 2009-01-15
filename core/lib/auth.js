@@ -28,18 +28,18 @@
  * in a complex undefined state. This object makes sure the state is never
  * undefined. It gets signalled 'authentication is required' and gives off
  * appropriate events to display a login box. It can automatically retry logging
- * in to one or more services using in memory stored username/password 
- * combinations. it will queue all requests that require authentication until 
+ * in to one or more services using in memory stored username/password
+ * combinations. it will queue all requests that require authentication until
  * we're logged in again and will then empty the queue.
  * Example:
  * <code>
  * <j:appsettings>
  *     <j:auth>
- *          <j:service name   = "my-backend" 
- *                     login  = "rpc:comm.login(username, password)" 
+ *          <j:service name   = "my-backend"
+ *                     login  = "rpc:comm.login(username, password)"
  *                     logout = "rpc:comm.logout()" />
- *          <j:service name   = "my-jabber-server" 
- *                     login  = "xmpp:login(username, password, domain)" 
+ *          <j:service name   = "my-jabber-server"
+ *                     login  = "xmpp:login(username, password, domain)"
  *                     logout = "xmpp:logout()" />
  *     </j:auth>
  * </j:appsettings>
@@ -48,39 +48,39 @@
  * A login window with different states managed by j:auth
  * <code>
  *  <j:appsettings>
- *      <j:auth login  = "xmpp:login(username, password)" 
- *              logout = "xmpp:logout()" 
- *              autostart    = "true" 
- *              window        = "winLogin" 
- *              fail-state    = "stFail" 
- *              error-state   = "stError" 
- *              login-state   = "stIdle" 
+ *      <j:auth login  = "xmpp:login(username, password)"
+ *              logout = "xmpp:logout()"
+ *              autostart    = "true"
+ *              window        = "winLogin"
+ *              fail-state    = "stFail"
+ *              error-state   = "stError"
+ *              login-state   = "stIdle"
  *              waiting-state = "stLoggingIn" />
  *  </j:appsettings>
  *
- *  <j:state-group 
- *    loginMsg.visible  = "false" 
+ *  <j:state-group
+ *    loginMsg.visible  = "false"
  *    winLogin.disabled = "false">
- *      <j:state id="stFail" 
- *          loginMsg.value   = "Username or password incorrect" 
+ *      <j:state id="stFail"
+ *          loginMsg.value   = "Username or password incorrect"
  *          loginMsg.visible = "true" />
- *      <j:state id="stError" 
- *          loginMsg.value   = "An error has occurred. Please check your network." 
+ *      <j:state id="stError"
+ *          loginMsg.value   = "An error has occurred. Please check your network."
  *          loginMsg.visible = "true" />
- *      <j:state id="stLoggingIn" 
- *          loginMsg.value    = "Please wait whilst logging in..." 
- *          loginMsg.visible  = "true" 
+ *      <j:state id="stLoggingIn"
+ *          loginMsg.value    = "Please wait whilst logging in..."
+ *          loginMsg.visible  = "true"
  *          winLogin.disabled = "true" />
  *      <j:state id="stIdle" />
  *  </j:state-group>
- *  
+ *
  *  <j:window id="winLogin">
  *      <j:label>Username</j:label>
  *      <j:textbox type="username" />
  *
  *      <j:label>Password</j:label>
  *      <j:textbox type="password" />
- *      
+ *
  *      <j:text id="loginMsg" />
  *      <j:button action="login">Log in</j:button>
  *  </j:window>
@@ -109,7 +109,7 @@
  *
  * @attribute {String}  login           the datainstruction on how to log in to a service.
  * @attribute {String}  logout          the datainstruction on how to log out of a service.
- * @attribute {Boolean} autostart      wether to fire authrequired at startup.
+ * @attribute {Boolean} autostart      whether to fire authrequired at startup.
  * @attribute {String}  window          the id of the window element that offers a log in form to the user.
  * @attribute {String}  fail-state      the id of the state element which is activated when logging in failed because the credentials where incorrect.
  * @attribute {String}  error-state     the id of the state element which is activated when logging in failed because of an error (i.e. network disconnected).
@@ -131,8 +131,8 @@ jpf.auth = {
     loggedIn   : false,
     needsLogin : false,
     autoStart  : true,
-    
-    /** 
+
+    /**
      * Indicates the state of the log in process.
      * Possible values:
      * 0 idle
@@ -141,22 +141,22 @@ jpf.auth = {
      * @private
      */
     inProcess  : 0,
-    
+
     init : function(jml){
         jpf.makeClass(this);
-        
+
         this.$jml = jml;
         if (jml.getAttribute("login")) {
             this.services["default"] = jml;
             this.needsLogin          = true;
         }
-        
+
         if (jml.getAttribute("retry"))
             this.retry = jpf.isTrue(jml.getAttribute("retry"));
-        
+
         if (jml.getAttribute("autostart"))
             this.autoStart = jpf.isTrue(jml.getAttribute("autostart"));
-        
+
         //Handling
         var loginWindow  = jml.getAttribute("window");
         var waitingState = jml.getAttribute("waiting-state");
@@ -165,7 +165,7 @@ jpf.auth = {
         var errorState   = jml.getAttribute("error-state");
         var logoutState  = jml.getAttribute("logout-state");
         var modelLogin   = jml.getAttribute("model");
-        
+
         if (loginWindow || loginState || failState || logoutState) {
             this.addEventListener("authrequired", function(){
                 if (loginWindow) {
@@ -176,19 +176,19 @@ jpf.auth = {
                     }
                 }
             });
-            
+
             this.addEventListener("beforelogin", function(){
                 if (waitingState) {
                     var state = self[waitingState];
                     if (state) state.activate();
                 }
             });
-            
+
             function failFunction(e){
                 var st = (e.state == jpf.TIMEOUT
                     ? errorState
                     : failState) || failState
-                
+
                 if (st) {
                     var state = self[st];
                     if (state) {
@@ -199,32 +199,32 @@ jpf.auth = {
             }
             this.addEventListener("loginfail", failFunction);
             this.addEventListener("logoutfail", failFunction);
-            
+
             this.addEventListener("logoutsuccess", function(){
                 if (logoutState) {
                     var state = self[logoutState];
                     if (state) state.activate();
                 }
             });
-            
+
             this.addEventListener("loginsuccess", function(e){
                 if (loginWindow) {
                     var win = self[loginWindow];
                     if (win) win.hide();
                 }
-                
+
                 if (loginState) {
                     var state = self[loginState];
                     if (state) state.activate();
                 }
-                
+
                 if (e.data && modelLogin) {
                     var model = jpf.nameserver.get("model", modelLogin);
                     if (model) model.load(e.data);
                 }
             });
         }
-        
+
         var i, nodes = jml.childNodes;
         for (i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1)
@@ -241,7 +241,7 @@ jpf.auth = {
             this.services[nodes[i].getAttribute("name")] = nodes[i];
             this.needsLogin = true;
         }
-        
+
         //Events
         var attr = jml.attributes;
         for (i = 0; i < attr.length; i++) {
@@ -249,14 +249,14 @@ jpf.auth = {
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
         }
-        
+
         if (this.autoStart) {
             jpf.addEventListener("load", function(){
                 jpf.auth.authRequired();
             });
         }
     },
-    
+
     /**
      * Log in to one or more services
      * @param {String}   username   the username portion of the credentials used to log in with
@@ -269,28 +269,28 @@ jpf.auth = {
      */
     login : function(username, password, callback, options){
         if (!options) options = {};
-        
+
         options.username = username;
         options.password = password;
-        
+
         if (this.dispatchEvent("beforelogin", options) === false)
             return false;
-        
+
         this.inProcess = 1; //Logging in
-        
+
         var pos = 0, len = 0;
         var doneCallback = function (){
             if (len != ++pos)
                 return;
-                
+
             jpf.auth.inProcess = 0; //Idle
             jpf.auth.loggedIn  = true;
             jpf.auth.clearQueue();
-            
+
             if (callback)
                 callback();
         }
-        
+
         if (!options.service) {
             var s = options.services || this.services;
             for (var name in s) {
@@ -303,7 +303,7 @@ jpf.auth = {
             this.$do(options.service, options, "in", null, doneCallback);
         }
     },
-    
+
     relogin : function(){
         if (this.dispatchEvent("beforerelogin") === false)
             return false;
@@ -311,9 +311,9 @@ jpf.auth = {
         //#ifdef __DEBUG
         jpf.console.info("Retrying login...", "auth");
         //#endif
-        
+
         //@todo shouldn't I be using inProces here?
-        
+
         var pos = 0, len = 0;
         var doneCallback = function (){
             if (len != ++pos)
@@ -323,77 +323,77 @@ jpf.auth = {
             jpf.auth.loggedIn  = true;
             jpf.auth.clearQueue();
         }
-        
+
         for (var name in this.services) {
             if (!this.cache[name])
                 return false;
             len++;
             this.$do(name, this.cache[name], "in", true, doneCallback);
         }
-        
+
         return true;
     },
-    
+
     $do : function(service, options, type, isRelogin, callback){
         var xmlNode = this.services[service];
         var _self   = options.userdata = this;
-        
+
         //#ifdef __WITH_OFFLINE
         options.ignoreOffline = true; //We don't want to be cached by jpf.offline
         //#endif
-        
+
         //#ifdef __DEBUG
-        jpf.console.info("Logging " + type + " on service '" 
+        jpf.console.info("Logging " + type + " on service '"
             + service + "'", "auth");
         //#endif
 
         //Execute login call
         jpf.saveData(xmlNode.getAttribute("log" + type), null, options,
           function(data, state, extra){
-            if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries) 
+            if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
-            
+
             /*
-                Login is sometimes very complex, so this check is 
+                Login is sometimes very complex, so this check is
                 here to test the data for login information
             */
-            var result = _self.dispatchEvent("log" + type + "check", 
+            var result = _self.dispatchEvent("log" + type + "check",
                 jpf.extend({
                     state   : state,
                     data    : data,
                     bubbles : true
                 }, extra));
-            
+
             var loginFailed = typeof result == "boolean"
                 ? !result
                 : state != jpf.SUCCESS;
-            
+
             if (loginFailed) {
                 jpf.auth.inProcess = 0; //Idle
-                
+
                 if (isRelogin) //If we're retrying then we'll step out here
                     return _self.authRequired();
-                
+
                 //#ifdef __DEBUG
-                jpf.console.info("Log " + type + " failure for service '" 
+                jpf.console.info("Log " + type + " failure for service '"
                     + service + "'", "auth");
                 //#endif
-                
-                var commError = new Error(jpf.formatErrorString(0, null, 
+
+                var commError = new Error(jpf.formatErrorString(0, null,
                     "Logging " + type, "Error logging in: " + extra.message));
 
                 if (_self.dispatchEvent("log" + type + "fail", jpf.extend({
                     error   : commError,
                     state   : state,
                     bubbles : true
-                }, extra)) !== false) 
+                }, extra)) !== false)
                     throw commError; //@todo ouch, too harsh?
 
                 //@todo Call auth required again??
 
                 return;
             }
-            
+
             if (type == "in") {
                 //If we use retry, cache the login information
                 if (!isRelogin && _self.retry) {
@@ -410,47 +410,47 @@ jpf.auth = {
                 if (_self.cache[service || "default"])
                      _self.cache[service || "default"] = null;
             }
-            
+
             if (callback)
                 callback();
-            
+
             _self.dispatchEvent("log" + type + "success", jpf.extend({
                 state   : state,
                 data    : data,
                 bubbles : true
             }, extra));
-            
+
             //#ifdef __DEBUG
-            jpf.console.info("Log " + type + " success for service '" 
+            jpf.console.info("Log " + type + " success for service '"
                 + service + "'", "auth");
             //#endif
         });
     },
-    
+
     clearQueue : function(){
         if (!this.loggedIn) //Queue should only be cleared when we're logged in
             return;
-        
-        var queue = this.queue.slice(); 
+
+        var queue = this.queue.slice();
         this.queue.length = 0;
-        
+
         for (var i = 0; i < queue.length; i++) {
             var qItem = queue[i];
-            
+
             //We might be logged out somewhere in this process (think sync)
             if (!this.loggedIn) {
                 this.queue.push(qItem);
                 continue;
             }
-            
+
              //Specialty retry (protocol specific)
             if (qItem.retry)
                 qItem.retry.call(qItem.object);
-            
+
             //Standard TelePort Module retry
             else if (qItem.id)
                 qItem.tpModule.retry(qItem.id);
-            
+
             //#ifdef __DEBUG
             //Dunno what's up, lets tell the developer
             else
@@ -459,12 +459,12 @@ jpf.auth = {
                     the message doesn't allow it.");
             //#endif
         }
-        
+
         //The queue might be filled somehow
         if (this.queue.length)
             this.clearQueue();
     },
-    
+
     /**
      * Log out of one or more services
      * @param {Function} [callback] code to be called when the application succeeds or fails logging out
@@ -475,12 +475,12 @@ jpf.auth = {
      */
     logout : function(callback, options){
         if (!options) options = {};
-        
+
         if (this.dispatchEvent("beforelogout", options) === false)
             return;
-        
+
         this.loggedIn = false;
-        
+
         if (!options.service) {
             for (var name in this.services) {
                 this.$do(name, options, "out", null, callback);
@@ -489,7 +489,7 @@ jpf.auth = {
         else if (options.service)
             this.$do(options.service, options, "out", null, callback);
     },
-    
+
     /**
      * Signals services that a log in is required and fires authrequired event
      * @param {Object}   [options]  information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
@@ -498,14 +498,14 @@ jpf.auth = {
         // If we're already logging in return
         if (options && options.userdata == this)
             return;
-        
+
         // If we're supposed to be logged in we'll try to log in automatically
         if (this.loggedIn && this.retry && this.relogin()) {
             var result = false;
         }
         else if (this.inProcess != 1) { //If we're not already logging in
             /*
-                Apparently our credentials aren't valid anymore, 
+                Apparently our credentials aren't valid anymore,
                 or retry is turned off. If this event returns false
                 the developer will call jpf.auth.login() at a later date.
             */
@@ -513,13 +513,13 @@ jpf.auth = {
                 bubbles : true
             }, options));
         }
-        
+
         this.loggedIn = false;
-        
+
         if (result === false) {
             if (options) //Add communication to queue for later processing
                 this.queue.push(options);
-            
+
             return true; //cancels error state in protocol
         }
     }

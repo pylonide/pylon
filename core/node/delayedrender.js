@@ -49,7 +49,7 @@ var __DELAYEDRENDER__ = 1 << 11
  *   cancellable: Prevents rendering of the childNodes
  * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
  *
- * @attribute {String}  render  
+ * @attribute {String}  render
  *   Possible values:
  *   init     elements are rendered during init of the application.
  *   runtime  elements are rendered when the user requests them.
@@ -67,55 +67,55 @@ var __DELAYEDRENDER__ = 1 << 11
 jpf.DelayedRender = function(){
     this.$regbase   = this.$regbase | __DELAYEDRENDER__;
     this.isRendered = false;
-    
+
     var withheld    = false;
-    
+
     this.$checkDelay = function(x){
         if (x.getAttribute("render") == "runtime") {
             x.setAttribute("render-status", "withheld");
-            if (!jpf.JmlParser.renderWithheld) 
+            if (!jpf.JmlParser.renderWithheld)
                 jpf.JmlParser.renderWithheld = [];
             jpf.JmlParser.renderWithheld.push(this);
-            
+
             withheld = true;
             return true;
         }
-        
+
         this.isRendered = true;
         return false;
     };
-    
+
     /**
      * Renders the children of this element.
      *
-     * @param {Boolean} [usedelay] wether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
+     * @param {Boolean} [usedelay] whether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */
     this.$render = function(usedelay){
-        if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld") 
+        if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld")
             return;
         this.dispatchEvent("beforerender");
-        
-        if (jpf.isNull(this.usedelay)) 
+
+        if (jpf.isNull(this.usedelay))
             this.usedelay = jpf.xmldb.getInheritedAttribute(this.$jml,
                 "use-render-delay") == "true";
-        
-        if (this.usedelay || usedelay) 
+
+        if (this.usedelay || usedelay)
             setTimeout("jpf.lookup(" + this.uniqueId + ").$renderparse()", 10);
-        else 
+        else
             this.$renderparse();
     };
-    
+
     this.$renderparse = function(){
-        if (this.isRendered) 
+        if (this.isRendered)
             return;
 
         jpf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
-        
+
         this.$jml.setAttribute("render-status", "done");
         this.$jml.removeAttribute("render"); //Experimental
         this.isRendered = true;
         withheld = false;
-        
+
         this.dispatchEvent("afterrender");
     };
 };

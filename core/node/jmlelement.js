@@ -254,8 +254,8 @@ jpf.JmlElement = function(){
             };
 
             /**
-             * Determines wether this element has the focus
-             * @returns {Boolean} indicating wether this element has the focus
+             * Determines whether this element has the focus
+             * @returns {Boolean} indicating whether this element has the focus
              */
             this.hasFocus = function(){
                 return jpf.window.focussed == this || this.isWindowContainer
@@ -403,7 +403,7 @@ jpf.JmlElement = function(){
                     });
                 }
                 //#endif
-                
+
                 if (a.nodeName.indexOf("on") === 0) {
                     this.addEventListener(name, new Function('event', value));
                     continue;
@@ -772,7 +772,7 @@ jpf.JmlElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} focussable wether this element can receive the focus.
+     * @attribute {Boolean} focussable whether this element can receive the focus.
      * The focussed element receives keyboard event.s
      */
     "focussable": function(value){
@@ -797,7 +797,7 @@ jpf.JmlElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} visible wether this element is shown.
+     * @attribute {Boolean} visible whether this element is shown.
      */
     "visible": function(value){
         if(this.tagName == "modalwindow") return; // temp fix
@@ -822,7 +822,7 @@ jpf.JmlElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} disabled wether this element's functions are active.
+     * @attribute {Boolean} disabled whether this element's functions are active.
      * For elements that can contain other jpf.NODE_VISIBLE elements this
      * attribute applies to all it's children.
      */
@@ -896,7 +896,7 @@ jpf.JmlElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} disable-keyboard wether this element receives
+     * @attribute {Boolean} disable-keyboard whether this element receives
      * keyboard input. This allows you to disable keyboard independently from
      * focus handling.
      */

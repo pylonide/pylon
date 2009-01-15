@@ -22,12 +22,12 @@
 // #ifdef __WITH_CSS
 
 /**
- * This method sets a single css rule 
+ * This method sets a single css rule
  * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
  * @param {String} type         the css property to change.
  * @param {String} value        the css value of the property.
  * @param {String} [stylesheet] the name of the stylesheet to change.
- */ 
+ */
 jpf.setStyleRule = function(name, type, value, stylesheet, win){
     var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
     for (var i = 0; i < rules.length; i++) {
@@ -36,7 +36,7 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
             return true;
         }
     }
-    
+
     return false;
 };
 
@@ -46,9 +46,9 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
  * @param {String}      className    the name of the css class to apply.
  * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
  * @returns {HTMLElement}
- */ 
+ */
 jpf.setStyleClass = function(oHtml, className, exclusion, special){
-    if (!oHtml || this.disabled) 
+    if (!oHtml || this.disabled)
         return;
 
     if (!className) className = " ";
@@ -64,7 +64,7 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
 
     //#ifdef __DEBUG
     if (oHtml.nodeFunc) {
-        throw new Error(jpf.formatErrorString(0, this, 
+        throw new Error(jpf.formatErrorString(0, this,
             "Setting style class",
             "Trying to set style class on jml node. Only xml or html nodes can \
              be passed to this function"));
@@ -72,7 +72,7 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
     //#endif
 
     //Set new class
-    oHtml.className != null 
+    oHtml.className != null
         ? (oHtml.className = oHtml.className.replace(re, " ") + " " + className)
         : oHtml.setAttribute("class", (oHtml.getAttribute("class") || "")
             .replace(re, " ") + " " + className);
@@ -81,9 +81,9 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
 };
 
 /**
- * This method imports a css stylesheet from a string 
+ * This method imports a css stylesheet from a string
  * @param {Object} doc        the reference to the document where the css is applied on
- * @param {String} cssString  the css definition 
+ * @param {String} cssString  the css definition
  * @param {String} media      the media to which this css applies (i.e. 'print' or 'screen')
  */
 jpf.importCssString = function(doc, cssString, media){
@@ -91,7 +91,7 @@ jpf.importCssString = function(doc, cssString, media){
 
     //#ifdef __WITH_OPACITY_RUNTIME_FIX
     if (!jpf.supportOpacity) {
-        cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g, 
+        cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g,
             function(m, m1){
                 return "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=" + (m1*100) + ")";
             });
@@ -107,7 +107,7 @@ jpf.importCssString = function(doc, cssString, media){
     else {
         htmlNode.insertAdjacentHTML("beforeend", ".<style media='"
          + (media || "all") + "'>" + cssString + "</style>");
-        
+
         /*if(document.body){
             document.body.style.height = "100%";
             setTimeout('document.body.style.height = "auto"');
@@ -118,7 +118,7 @@ jpf.importCssString = function(doc, cssString, media){
 /**
  * This method retrieves the current value of a property on a HTML element
  * @param {HTMLElement} el    the element to read the property from
- * @param {String}      prop  the property to read 
+ * @param {String}      prop  the property to read
  * @returns {String}
  */
 jpf.getStyle = function(el, prop) {
@@ -132,7 +132,7 @@ jpf.getStyle = function(el, prop) {
  * recursively. If the style isn't found on the element itself, it's parent is
  * checked.
  * @param {HTMLElement} el    the element to read the property from
- * @param {String}      prop  the property to read 
+ * @param {String}      prop  the property to read
  * @returns {String}
  */
 jpf.getStyleRecur = function(el, prop) {
@@ -159,7 +159,7 @@ jpf.getStyleRecur = function(el, prop) {
 jpf.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
     if (x < pos[0] || y < pos[1] || x > oHtml.offsetWidth + pos[0] - 10
-      || y > oHtml.offsetHeight + pos[1] - 10) 
+      || y > oHtml.offsetHeight + pos[1] - 10)
         return false;
     return true;
 };
@@ -173,7 +173,7 @@ jpf.isInRect = function(oHtml, x, y){
  */
 jpf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
-    
+
     o = o.offsetParent;
     while (o && (this.getStyle(o, "overflow") != "hidden"
       || "absolute|relative".indexOf(this.getStyle(o, "position")) == -1)) {
@@ -183,7 +183,7 @@ jpf.getOverflowParent = function(o){
 };
 
 /**
- * Retrieves the first parent element which has a position absolute or 
+ * Retrieves the first parent element which has a position absolute or
  * relative set.
  * @param {HTMLElement} o  the element to check
  * @returns {HTMLElement}
@@ -198,11 +198,11 @@ jpf.getPositionedParent = function(o){
 };
 
 /**
- * Retrieves the absolute x and y coordinates, relative to the browsers 
+ * Retrieves the absolute x and y coordinates, relative to the browsers
  * drawing area or the specified refParent.
  * @param {HTMLElement} oHtml       the element to check
  * @param {HTMLElement} [refParent] the reference parent
- * @param {Boolean}     [inclSelf]  wether to include the position of the element to check in the return value.
+ * @param {Boolean}     [inclSelf]  whether to include the position of the element to check in the return value.
  * @returns {Array} the x and y coordinate of oHtml.
  */
 jpf.getAbsolutePosition = function(o, refParent, inclSelf){
@@ -210,33 +210,33 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     o = inclSelf ? o : o.offsetParent;
 
     var bw, bh;
-    while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html" 
-        bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+    while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
+        bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderLeftWidth" : "border-left-width");
-        
-        wt += (jpf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium" 
-            ? 2 
+
+        wt += (jpf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
+            ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
-        
-        bh = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+
+        bh = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderTopWidth" : "border-top-width");
-        ht += (jpf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium" 
-            ? 2 
+        ht += (jpf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
+            ? 2
             : parseInt(bh) || 0) + o.offsetTop;
-        
+
         if (o.tagName.toLowerCase() == "table") {
             ht -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0);
             wt -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0) * 2;
         }
         else if (o.tagName.toLowerCase() == "tr") {
             ht -= (cp = parseInt(o.parentNode.parentNode.cellSpacing));
-            while (o.previousSibling) 
+            while (o.previousSibling)
                 ht -= (o = o.previousSibling).offsetHeight + cp;
         }
-        
+
         o = o.offsetParent;
     }
-    
+
     return [wt, ht];
 };
 

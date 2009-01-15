@@ -24,14 +24,14 @@ var __RENAME__ = 1 << 10;
 // #ifdef __WITH_RENAME
 
 /**
- * Baseclass adding rename features to this element. Rename is triggered by 
+ * Baseclass adding rename features to this element. Rename is triggered by
  * pressing F2 on an item or by clicking once on an already selected item. This
  * will show an input element in place where the user can change the name of the
- * item to a new one. When the caption is changed the xml data element is 
+ * item to a new one. When the caption is changed the xml data element is
  * changed accordingly.
  * Example:
- * This example shows a list containing products. Only products that have the 
- * editable attribute set to 1 can be renamed by the user. 
+ * This example shows a list containing products. Only products that have the
+ * editable attribute set to 1 can be renamed by the user.
  * <code>
  *  <j:list model="url:/cgi-bin/products.cgi">
  *      <j:bindings>
@@ -39,8 +39,8 @@ var __RENAME__ = 1 << 10;
  *          <j:traverse select="product" />
  *      </j:bindings>
  *      <j:actions>
- *          <j:rename 
- *            select = "product[@editable='1']" 
+ *          <j:rename
+ *            select = "product[@editable='1']"
  *            set    = "rpc:comm.update('product', {@id}, {@name})" />
  *      </j:actions>
  *  </j:list>
@@ -58,15 +58,15 @@ jpf.Rename = function(){
     this.canrename    = true;
     var renameSubject = null;
     var renameTimer   = null;
-    
+
     /**
-     * @attribute  {Boolean}  rename  wether the user can rename items in this element.
+     * @attribute  {Boolean}  rename  whether the user can rename items in this element.
      */
     this.$booleanProperties["canrename"] = true;
     this.$supportedProperties.push("canrename");
-    
+
     /**
-     * Changes the data presented as the caption of a specified xml data element. 
+     * Changes the data presented as the caption of a specified xml data element.
      * If none is specified the indicated node is used.
      *
      * @action
@@ -78,32 +78,32 @@ jpf.Rename = function(){
             xmlNode = this.indicator || this.selected;
 
         if (!xmlNode) return;
-        
+
         this.executeActionByRuleSet("rename", "caption", xmlNode, value);
     };
-    
+
     /**
-     * Starts the rename process with a delay, allowing for cancellation when 
-     * necesary. Cancellation is necesary for instance, when double click was 
+     * Starts the rename process with a delay, allowing for cancellation when
+     * necesary. Cancellation is necesary for instance, when double click was
      * intended or a dragdrop operation.
      *
      */
     this.startDelayedRename = function(e, time){
-        if (e.button == 2 || e.ctrlKey || e.shiftKey) 
+        if (e.button == 2 || e.ctrlKey || e.shiftKey)
             return;
 
         clearTimeout(renameTimer);
         renameTimer = setTimeout('jpf.lookup('
             + this.uniqueId + ').startRename()', time || 400);
     };
-    
+
     /**
      * Starts the rename process by displaying an input box at the position
      * of the item that can be renamed by the user.
      *
      */
     this.startRename  = function(force, startEmpty){
-        if(!force && (!this.canrename || !this.$startAction("rename", 
+        if(!force && (!this.canrename || !this.$startAction("rename",
           this.indicator || this.selected, this.stopRename)))
             return false;
 
@@ -111,10 +111,10 @@ jpf.Rename = function(){
             this.focus(null, null, true);
 
         clearTimeout(renameTimer);
-        
+
         this.renaming = true;
         renameSubject = this.indicator || this.selected;
-        
+
         var elCaption = this.$getCaptionElement
             ? this.$getCaptionElement()
             : this.$indicator || this.$selected;
@@ -124,7 +124,7 @@ jpf.Rename = function(){
         var wdt = elCaption.offsetWidth;
         elCaption.style.cursor = "text"; //@todo previous value should be remembered
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
-        
+
         if (this.$getOption("main", "scalerename")) {
             var diff = jpf.getWidthDiff(this.oTxt);
             this.oTxt.style.width = (wdt - diff) + "px";
@@ -145,12 +145,12 @@ jpf.Rename = function(){
 
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
-        
+
         //this.oTxt.focus();
         this.oTxt.focus();
         this.oTxt.select();
     };
-    
+
     /**
      * Stop renaming process and change the data according to the set value.
      * Cancel the renaming process without changing data.
@@ -161,40 +161,40 @@ jpf.Rename = function(){
 
         if (!this.renaming || contextXml && contextXml != renameSubject)
             return false;
-        
+
         if (this.oTxt.parentNode)
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
-        
+
         this.renaming = false;
-        
+
         this.replacedNode.style.cursor = ""; //@todo this should be remembered
-        
+
         if (!success) {
             this.dispatchEvent("stoprename");
             this.$stopAction("rename");
         }
         else {
-            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable 
-                ? "innerHTML" 
+            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable
+                ? "innerHTML"
                 : "value"];
-            
+
              //this.$selected.innerHTML = this.oTxt.innerHTML;
-            this.rename(renameSubject, 
+            this.rename(renameSubject,
                 this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
                 .replace(/<.*?nobr>/gi, ""));
         }
-        
+
         renameSubject         = null;
         this.replacedNode     = null;
         this.oTxt.style.width = "";
-        
+
         return true;
     };
-    
-    //#ifdef __WITH_KEYBOARD    
+
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key = e.keyCode;
-        
+
         if (this.renaming) {
             if (key == 27 || key == 13)
                 this.stopRename(null, key == 13);
@@ -206,7 +206,7 @@ jpf.Rename = function(){
         if (key == 113) {
             if (this.$tempsel)
                 this.selectTemp();
-            
+
             if (this.indicator != this.selected) {
                 if (this.multiselect || this.isSelected(this.indicator)) {
                     this.selected  = this.indicator;
@@ -215,14 +215,14 @@ jpf.Rename = function(){
                 else
                     this.select(this.indicator, true);
             }
-            
+
             this.startRename();
 
             return false;
         }
     }, true);
     //#endif
-    
+
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {
             this.oTxt = this.pHtmlDoc.createElement("DIV");
@@ -236,7 +236,7 @@ jpf.Rename = function(){
             this.oTxt.id           = "txt_rename";
             this.oTxt.autocomplete = false;
         }
-        
+
         this.oTxt.refCount         = 0;
         this.oTxt.id               = "txt_rename";
         this.oTxt.style.whiteSpace = "nowrap";
@@ -244,19 +244,19 @@ jpf.Rename = function(){
             (e || event).cancelBubble = true;
         };
         //this.oTxt.host = this;
-        
-        this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu = 
+
+        this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
-        
+
         this.oTxt.select = function(){
             if (!jpf.hasMsRangeObject)
                 return this.focus();
-            
+
             var r = document.selection.createRange();
             //r.moveEnd("character", this.oExt.innerText.length);
             try {
                 r.moveToElementText(this);
-                
+
                 if (typeof this.host.$renameStartCollapse != "undefined")
                     r.collapse(this.host.$renameStartCollapse);
             } catch(e) {} //BUG!!!!
@@ -283,16 +283,16 @@ jpf.Rename = function(){
         };
     }
     this.oTxt.refCount++;
-    
+
     this.$jmlDestroyers.push(function(){
         this.oTxt.refCount--;
-        
+
         if (!this.oTxt.refCount) {
-            this.oTxt.host        = 
-            this.oTxt.onmouseover = 
-            this.oTxt.onmousedown = 
-            this.oTxt.select      = 
-            this.oTxt.onfocus     = 
+            this.oTxt.host        =
+            this.oTxt.onmouseover =
+            this.oTxt.onmousedown =
+            this.oTxt.select      =
+            this.oTxt.onfocus     =
             this.oTxt.onblur      = null;
         }
     });

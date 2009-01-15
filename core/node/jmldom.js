@@ -272,12 +272,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.removeNode = function(doOnlyAdmin){
         //#ifdef __DEBUG
         if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(jpf.formatErrorString(0, this,
                 "Removing node from parent",
                 "Invalid DOM Call. removeNode() does not take any arguments."));
         }
         //#endif
-        
+
         if (!this.parentNode || !this.parentNode.childNodes)
             return;
 
@@ -339,12 +339,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.removeChild = function(childNode) {
         //#ifdef __DEBUG
         if (!childNode || !childNode.nodeFunc) {
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(jpf.formatErrorString(0, this,
                 "Removing a child node",
                 "Invalid Argument. removeChild() requires one argument of type JMLElement."));
         }
         //#endif
-        
+
         childNode.removeNode();
     };
 
@@ -371,7 +371,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Clones this element, creating an exact copy of it but does not insert
      * it in the document hierarchy.
-     * @param {Boolean} deep wether the element's are cloned recursively.
+     * @param {Boolean} deep whether the element's are cloned recursively.
      * @return {JmlNode} the cloned element.
      */
     this.cloneNode = function(deep){

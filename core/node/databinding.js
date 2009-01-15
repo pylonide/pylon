@@ -84,7 +84,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Checks wether this element is completely bound.
+     * Checks whether this element is completely bound.
      *
      * @return  {Boolean}
      */
@@ -455,7 +455,7 @@ jpf.DataBinding = function(){
      * @param {Array}       args          the arguments to the function specified in <code>atAction</code>.
      * @param {String}      action        the name of the action rule defined in j:actions for this element.
      * @param {XMLElement}  xmlNode       the context for the action rules.
-     * @param {Boolean}     [noevent]     wether or not to call events.
+     * @param {Boolean}     [noevent]     whether or not to call events.
      * @param {XMLElement}  [contextNode] the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
      * @see  SmartBinding
@@ -549,7 +549,7 @@ jpf.DataBinding = function(){
                     : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
         }
         else {
-            if (!this.createModel) 
+            if (!this.createModel)
                 return false;
 
             atAction = "setValueByXpath";
@@ -580,7 +580,7 @@ jpf.DataBinding = function(){
      * to push data from this element to the other element. Whenever this
      * element loads data, (a selection of) the data is pushed to the other
      * element. For elements inheriting from MultiSelect data is pushed
-     * when a selection occurs. 
+     * when a selection occurs.
      * Example:
      * This is how it's achieved using the javeline markup language.
      * <code>
@@ -1017,7 +1017,7 @@ jpf.DataBinding = function(){
      * Gets the model to which this element is connected.
      * This is the model which acts as a datasource for this element.
      *
-     * @param {Boolean} doRecur wether the model should be searched recursively up the data tree.
+     * @param {Boolean} doRecur whether the model should be searched recursively up the data tree.
      * @returns  {Model}  The model this element is connected to.
      * @see  SmartBinding
      */
@@ -1048,9 +1048,9 @@ jpf.DataBinding = function(){
      *
      * @param {String}      setname       the name of the binding/action rule set.
      * @param {XMLElement}  cnode         the xml element to which the binding rules are applied.
-     * @param {Boolean}     [isAction]    wether search is for an action rule.
-     * @param {Boolean}     [getRule]     wether search is for a binding rule.
-     * @param {Boolean}     [createNode]  wether the xml data elementis created when it doesn't exist.
+     * @param {Boolean}     [isAction]    whether search is for an action rule.
+     * @param {Boolean}     [getRule]     whether search is for a binding rule.
+     * @param {Boolean}     [createNode]  whether the xml data elementis created when it doesn't exist.
      * @returns  {XMLElement}  the requested node.
      * @see  SmartBinding
      */
@@ -1161,7 +1161,7 @@ jpf.DataBinding = function(){
      *   {String}      an xml string which is loaded in this element.
      *   {Null         null clears this element from it's data {@link Cache#clear}.
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
-     * @param {Boolean} [forceNoCache]  wether cache is checked before loading the data.
+     * @param {Boolean} [forceNoCache]  whether cache is checked before loading the data.
      * @event beforeload  Fires before loading data in this element.
      *   cancellable: Prevents the data from being loaded.
      * @event afterload   Fires after loading data in this element.
@@ -1214,7 +1214,7 @@ jpf.DataBinding = function(){
         jpf.console.info("Loading XML data in "
             + this.tagName + "[" + (this.name || '') + "]");
         //#endif
-        
+
         var disabled = this.disabled;
         this.disabled = false;
 
@@ -1247,7 +1247,7 @@ jpf.DataBinding = function(){
         if (this.caching && !forceNoCache && (fromCache = this.getCache(cacheID, xmlRootNode))) {
             if (fromCache == -1)
                 return;
-            
+
             if (!this.hasFeature(__MULTISELECT__))
                 this.setConnections(this.xmlRoot, "select");
             else {
@@ -1482,7 +1482,7 @@ jpf.DataBinding = function(){
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
-            if (this.traverse && (sb && !sb.model 
+            if (this.traverse && (sb && !sb.model
               || !sb && this.hasFeature(__MULTISELECT__))
               || !initModelId[0] && sb) {
                 initModelId = findModel(x);
@@ -1528,7 +1528,7 @@ jpf.DataBinding = function(){
     });
 
     /**
-     * @attribute {Boolean} render-root wether the xml element loaded into this
+     * @attribute {Boolean} render-root whether the xml element loaded into this
      * element is rendered as well. Default is false.
      * Example:
      * This example shows a tree which also renders the root element.
@@ -1553,7 +1553,7 @@ jpf.DataBinding = function(){
     this.$propHandlers["render-root"] = function(value){
         this.renderRoot = value;
     }
-    
+
     /**
      * @attribute {String} empty-message the message displayed by this element
      * when it contains no data. This property is inherited from parent nodes.
@@ -1624,7 +1624,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * @attribute {Boolean} create-model wether the model this element connects
+     * @attribute {Boolean} create-model whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
      * Example:
      * In this example a model is extended when the user enters information in
@@ -2242,7 +2242,7 @@ jpf.StandardBinding = function(){
  */
 jpf.MultiselectBinding = function(){
     this.length = 0;
-    
+
     /**
      * @define bindings
      * @allowchild traverse
@@ -2310,7 +2310,7 @@ jpf.MultiselectBinding = function(){
      *   Possible values:
      *   ascending  Default sorting order
      *   descending Reverses the default sorting order.
-     * @attribute {String} case-order   wether upper case characters have preference above lower case characters.
+     * @attribute {String} case-order   whether upper case characters have preference above lower case characters.
      *   Possible values:
      *   upper-first    Upper case characters are higher.
      *   lower-first    Lower case characters are higher.
@@ -2469,10 +2469,10 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines wether an xml data element is a traverse node (see {@link binding#traverse})
+     * Determines whether an xml data element is a traverse node (see {@link binding#traverse})
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
-     * @return  {Boolean}  wether the xml element is a traverse node.
+     * @return  {Boolean}  whether the xml element is a traverse node.
      * @see  binding#traverse
      */
     this.isTraverseNode = function(xmlNode){
@@ -3187,7 +3187,7 @@ jpf.MultiselectBinding = function(){
     this.$propHandlers["tooltip"]  =
 
     /**
-     * @attribute {String} select the xpath statement that determines wether
+     * @attribute {String} select the xpath statement that determines whether
      * this node is selectable.
      * Example:
      * <code>

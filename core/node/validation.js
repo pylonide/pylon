@@ -33,7 +33,7 @@ var __VALIDATION__ = 1 << 6;
  *      <j:textbox required="true" invalidmsg="Invalid Entry;Please enter your name" minlength="3" />
  *      <j:label>Message</j:label>
  *      <j:textarea required="true" invalidmsg="Invalid Message;Please enter a message!" />
- *  		<j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
+ *          <j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
  *  </j:bar>
  *
  * @constructor
@@ -45,12 +45,12 @@ var __VALIDATION__ = 1 << 6;
 jpf.Validation = function(){
     this.isActive = true;
     this.$regbase = this.$regbase | __VALIDATION__;
-    
+
     /**
      * Checks if this element's value is valid.
      *
-     * @param  {Boolean} [checkRequired] wether this check also adheres to the 'required' ruled.
-     * @return  {Boolean} specifying wether the value is valid
+     * @param  {Boolean} [checkRequired] whether this check also adheres to the 'required' ruled.
+     * @return  {Boolean} specifying whether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
      */
@@ -64,7 +64,7 @@ jpf.Validation = function(){
                 this.validityState.valueMissing = true;
                 this.dispatchEvent("invalid", this.validityState);
                 //#endif
-                
+
                 return false;
             }
         }
@@ -82,10 +82,10 @@ jpf.Validation = function(){
         }
         /*#else
         var isValid = (vRules.length
-            ? eval("!value || (" + vRules.join(") && (") + ")") 
+            ? eval("!value || (" + vRules.join(") && (") + ")")
             : true);
         //#endif
-        
+
         /* #ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
         #endif*/
@@ -97,10 +97,10 @@ jpf.Validation = function(){
             isValid = true;
         }
         //#endif
-        
+
         return isValid;
     };
-    
+
     //#ifdef __WITH_HTML5
     this.validityState = {
         valueMissing    : false,
@@ -131,14 +131,14 @@ jpf.Validation = function(){
                 case "notnull"     : this.typeMismatch    = true; break;
                 case "checkequal"  : this.typeMismatch    = true; break;
             };
-        }       
+        }
     }
-    
+
     this.setCustomValidity = function(message){
         //do stuff
     }
     //#endif
-    
+
     /**
      * @private
      * @todo This method should also scroll the element into view
@@ -151,19 +151,19 @@ jpf.Validation = function(){
             p = p.parentNode;
         }
     };
-    
+
     /**
-     * Puts this element in the error state, optionally showing the 
+     * Puts this element in the error state, optionally showing the
      * error box if this element's is invalid.
      *
-     * @param  {Boolean} [force] wether this element in the error state and don't check if the element's value is invalid.
-     * @return  {Boolean}  boolean specifying wether the value is valid
+     * @param  {Boolean} [force] whether this element in the error state and don't check if the element's value is invalid.
+     * @return  {Boolean}  boolean specifying whether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
      * @method
      */
     // #ifdef __WITH_HTML5
-    this.checkValidity = 
+    this.checkValidity =
     //#endif
     this.validate = function(force, checkRequired){
         //if (!this.$validgroup) return this.isValid();
@@ -177,31 +177,31 @@ jpf.Validation = function(){
             this.clearError();
             return false;
         }
-        
+
         return !hasError;
     };
-    
+
     /**
-     *	@private
+     *    @private
      */
     this.setError = function(value){
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
-        
+
         if (!this.$validgroup)
             this.$propHandlers["validgroup"].call(this, "vg" + this.parentNode.uniqueId);
-            
+
         var errBox = this.$validgroup.getErrorBox(this);
-        
+
         if (!this.$validgroup.allowMultipleErrors)
             this.$validgroup.hideAllErrors();
-        
+
         errBox.setMessage(this.invalidmsg);
         this.showMe();
-        
+
         if (this.$validgroup) {
             this.oExt.parentNode.insertBefore(errBox.oExt,
                 this.oExt.nextSibling);
-            
+
             if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
                 var pos = jpf.getAbsolutePosition(this.oExt,
                     jpf.getPositionedParent(this.oExt));
@@ -211,44 +211,44 @@ jpf.Validation = function(){
             errBox.host = this;
         }
         errBox.show();
-        
+
         if (jpf.window.focussed && jpf.window.focussed != this)
             this.focus(null, {mouse:true}); //arguable...
     };
-    
+
     /**
-     *	@private
+     *    @private
      */
     this.clearError = function(value){
         if (this.$setStyleClass)
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
-        
+
         if (this.$validgroup) {
             var errBox = this.$validgroup.getErrorBox(null, true);
             if (!errBox || errBox.host != this)
                 return;
-                
+
             errBox.hide();
         }
     };
-    
+
     this.$jmlDestroyers.push(function(){
         if (this.$validgroup)
             this.$validgroup.remove(this);
     });
-    
+
     var vRules = ["true"];
     var vIds   = {};
     this.addValidationRule = function(rule){
         vRules.push(rule);
     };
-    
+
     /**
      *
-     * @attribute  {Boolean}  required     wether a valid value for this element is required.
+     * @attribute  {Boolean}  required     whether a valid value for this element is required.
      * @attribute  {RegExp}   pattern      the pattern tested against the value of this element to determine it's validity.
      * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any
-     * 	 of a set of predefined types, or a simple type created by an XML Schema definition.
+     *      of a set of predefined types, or a simple type created by an XML Schema definition.
      *   Possible values:
      *   xsd:dateTime
      *   xsd:time
@@ -287,12 +287,12 @@ jpf.Validation = function(){
      *   jpf:phonenumber
      *   jpf:faxnumber
      *   jpf:mobile
-     * @attribute  {Integer}  min  			   the minimal value for which the value of this element is valid.
-     * @attribute  {Integer}  max				   the maximum value for which the value of this element is valid.
+     * @attribute  {Integer}  min                 the minimal value for which the value of this element is valid.
+     * @attribute  {Integer}  max                   the maximum value for which the value of this element is valid.
      * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
      * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull  		 same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}   checkequal   String specifying the id of the element to check if it has the same value as this element. 
+     * @attribute  {Boolean}  notnull           same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
+     * @attribute  {String}   checkequal   String specifying the id of the element to check if it has the same value as this element.
      * @attribute  {String}   invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
      * @attribute  {String}   validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
      */
@@ -312,7 +312,7 @@ jpf.Validation = function(){
             }
             while (y && y.tagName && !y.tagName.match(/submitform|xforms$/)
               && y.parentNode && y.parentNode.nodeType != 9);
-            
+
             if (y && y.tagName && y.tagName.match(/submitform|xforms$/)) {
                 // #ifdef __DEBUG
                 if (!y.tagName.match(/submitform|xforms$/))
@@ -320,31 +320,31 @@ jpf.Validation = function(){
                 if (!y.getAttribute("id"))
                     throw new Error(jpf.formatErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
                 // #endif
-                
+
                 this.form = eval(y.getAttribute("id"));
                 this.form.addInput(this);
             }
         }
-        
+
         // validgroup
         if (!this.form && !x.getAttribute("validgroup")) {
             var vgroup = jpf.xmldb.getInheritedAttribute(x, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
-    });	
-    
+    });
+
     this.$booleanProperties["required"] = true;
-    this.$supportedProperties.push("validgroup", "required", "datatype", 
-        "pattern", "min", "max", "maxlength", "minlength", 
+    this.$supportedProperties.push("validgroup", "required", "datatype",
+        "pattern", "min", "max", "maxlength", "minlength",
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
-    
+
     function fValidate(){ this.validate(); }
     this.$propHandlers["validgroup"] = function(value){
         this.removeEventListener("blur", fValidate);
         if (value) {
             this.addEventListener("blur", fValidate);
-            
+
             var vgroup;
             if (typeof value != "string") {
                 this.$validgroup = value.name;
@@ -356,9 +356,9 @@ jpf.Validation = function(){
 
             this.$validgroup = vgroup || new jpf.ValidationGroup(value);
             this.$validgroup.add(this);
-            
+
             /*
-                @todo What about children, when created after start 
+                @todo What about children, when created after start
                 See button login action
             */
         }
@@ -367,79 +367,79 @@ jpf.Validation = function(){
             this.$validgroup = null;
         }
     };
-    
+
     function setRule(type, rule){
         var vId = vIds[type];
-        
+
         if (!rule) {
             if (vId)
                 vRules[vId] = "";
             return;
         }
-        
+
         if (!vId)
             vIds[type] = vRules.push(rule) - 1;
-        else 
+        else
             vRules[vId] = rule;
     }
     this.$setRule = setRule;
-    
+
     //#ifdef __WITH_XSD
     this.$propHandlers["datatype"] = function(value){
         if (!value)
             return setRule("datatype");
-        
+
         setRule("datatype", this.multiselect
-            ? "this.xmlRoot && jpf.XSDParser.checkType('" 
+            ? "this.xmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.getTraverseNodes())"
             : "this.xmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.xmlRoot) || !this.xmlRoot && jpf.XSDParser.matchType('"
                 + value + "', value)");
     };
     //#endif
-    
+
     this.$propHandlers["pattern"] = function(value){
         if (!value)
             return setRule("pattern");
-        
+
         if (value.match(/^\/.*\/(?:[gim]+)?$/))
             this.reValidation = eval(value);
-        
+
         setRule("pattern", this.reValidation
             ? "this.getValue().match(this.reValidation)" //RegExp
             : "(" + validation + ")"); //JavaScript
     };
-    
+
     this.$propHandlers["min"] = function(value){
         setRule("min", value
             ? "parseInt(value) >= " + value
             : null);
     };
-    
+
     this.$propHandlers["max"] = function(value){
         setRule("max", value
             ? "parseInt(value) <= " + value
             : null);
     };
-    
+
     this.$propHandlers["maxlength"] = function(value){
         setRule("maxlength", value
             ? "value.toString().length <= " + value
             : null);
     };
-    
+
     this.$propHandlers["minlength"] = function(value){
         setRule("minlength", value
             ? "value.toString().length >= " + value
             : null);
     };
-    
+
     this.$propHandlers["notnull"] = function(value){
         setRule("notnull", value
             ? "value.toString().length > 0"
             : null);
     };
-    
+
     this.$propHandlers["checkequal"] = function(value){
         setRule("checkequal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
@@ -454,13 +454,13 @@ jpf.Validation = function(){
  *  <j:bar validgroup="vgForm">
  *      <j:label>Phone number</j:label>
  *      <j:textbox id="txtPhone"
- *          required   = "true" 
- *          pattern    = "(\d{3}) \d{4} \d{4}" 
+ *          required   = "true"
+ *          pattern    = "(\d{3}) \d{4} \d{4}"
  *          invalidmsg = "Incorrect phone number entered" />
  *
  *      <j:label>Password</j:label>
- *      <j:textbox 
- *          required   = "true" 
+ *      <j:textbox
+ *          required   = "true"
  *          mask       = "password"
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
@@ -472,12 +472,12 @@ jpf.Validation = function(){
  * can be done using the following code:
  * <code>
  *  txtPhone.validate();
- * 
+ *
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
  * </code>
  *
- * To check for the entire group of elements use the validation group. For only 
+ * To check for the entire group of elements use the validation group. For only
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
  * <code>
@@ -492,27 +492,27 @@ jpf.Validation = function(){
  */
 jpf.ValidationGroup = function(name){
     jpf.makeClass(this);
-    
+
     this.validateVisibleOnly = false;
     this.allowMultipleErrors = false;
-    
+
     this.childNodes = [];
     this.add        = function(o){ this.childNodes.push(o); };
     this.remove     = function(o){ this.childNodes.remove(o); };
-    
+
     if (name)
         jpf.setReference(name, this);
-    
+
     this.name = name || "validgroup" + this.uniqueId;
     jpf.nameserver.register("validgroup", this.name, this);
-    
+
     /**
      * Returns a string representation of this object.
      */
     this.toString = function(){
         return "[Javeline Validation Group]";
     };
-    
+
     var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
      * Gets the {@link Errorbox} element used for a specified element.
@@ -529,16 +529,16 @@ jpf.ValidationGroup = function(name){
         }
         return errbox;
     };
-    
+
     /**
      * Hide all Errorboxes for the elements using this element as it's validation group.
      *
      */
     this.hideAllErrors = function(){
         if (errbox && errbox.host)
-            errbox.host.clearError();       
+            errbox.host.clearError();
     };
-    
+
     function checkValidChildren(oParent, ignoreReq, nosetError){
         var found;
         //Per Element
@@ -572,22 +572,22 @@ jpf.ValidationGroup = function(name){
         }
         return found;
     }
-    
+
     /**
      * Checks if (part of) the set of element's registered to this element are
      * valid. When an element is found with an invalid value the error state can
-     * be set for that element. 
+     * be set for that element.
      *
-     * @param  {Boolean}    [ignoreReq]  wether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  wether to not set the error state of the element with an invalid value
-     * @param  {JMLElement} [page]  		 the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying wether the checked elements are valid.
+     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
+     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
     // #ifdef __WITH_HTML5
-    this.checkValidity = 
+    this.checkValidity =
     //#endif
-    this.validate = 
+    this.validate =
     this.isValid = function(ignoreReq, nosetError, page){
         var found = checkValidChildren.call(this, page || this, ignoreReq,
             nosetError);
@@ -602,19 +602,19 @@ jpf.ValidationGroup = function(name){
                 }
             //#ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Validating Page", 
-                    "Error in javascript validation string of page: '" 
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Validating Page",
+                    "Error in javascript validation string of page: '"
                     + page.validation + "'", page.$jml));
             }
             //#endif
         }
-        
+
         //Global Rules
         //
         if (!found)
             found = this.dispatchEvent("validation");
-        
+
         return !found;
     };
 };

@@ -175,7 +175,7 @@ jpf.layout = {
     },
 
     /**
-     * Determines wether an xmlNode is of the layout that's currently loaded
+     * Determines whether an xmlNode is of the layout that's currently loaded
      * @param {XMLElement} xmlNode the xml layout description node.
      */
     isLoadedXml : function(xmlNode){
@@ -512,7 +512,7 @@ jpf.layout = {
                             this.oHtml.style.display = "block";
                     }
                 }
-                
+
                 this.hidden  = false;
                 this.hidepos = null;
             },
@@ -1096,14 +1096,14 @@ jpf.layout = {
                                 break;
                             }
                         }
-                        
+
                         if (found && !found.children.length) {
                             n.remove(found);
                             for(var i = 0; i < n.length; i++)
                                 n[i].stackId = i;
                         }
                     }
-                    
+
                     n.unshift(col);
                     for (var i = 0; i < n.length; i++)
                         n[i].stackId = i;
@@ -1117,17 +1117,17 @@ jpf.layout = {
                                 break;
                             }
                         }
-                        
+
                         //create middle layer if none is specified
                         if (!found) {
                             ncol = jpf.layout.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
                             ncol.parent = hbox;
                             ncol.template = "middle";
-                            
+
                             ncol.stackId = n.push(ncol) - 1;
                         }
                     }
-                    
+
                     col.stackId = n.push(col) - 1;
                 }
                 else if (align == "middle") {
@@ -1148,7 +1148,7 @@ jpf.layout = {
 
             a.stackId = col.children.push(a) - 1;
             a.parent = col;
-            
+
             if (col.hidden) {
                 col.preshow(true);
             }

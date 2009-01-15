@@ -231,7 +231,7 @@ jpf.JmlParser = {
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
-        if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length 
+        if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length
           && jmlParent != jpf.document.documentElement)
             return pHtmlNode;
 
@@ -509,7 +509,7 @@ jpf.JmlParser = {
 
             //#ifdef __DEBUG
             if (!pHtmlNode) {
-                throw new Error(jpf.formatErrorString(0, jmlParent, 
+                throw new Error(jpf.formatErrorString(0, jmlParent,
                     "Parsing html elements",
                     "Unexpected HTML found", x));
             }
@@ -989,7 +989,7 @@ jpf.JmlParser = {
          *  </j:list>
          * </code>
          * @attribute {String} menu   the id of the menu element.
-         * @attribute {String} select the xpath executed on the selected element of the databound element which determines wether this contextmenu is shown.
+         * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
          */
         "contextmenu" : function(q, jmlParent){
             if (!jmlParent)
