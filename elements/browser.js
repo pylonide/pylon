@@ -45,41 +45,41 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     this.getURL = function(){
         return this.oInt.src;
     };
-    
+
     /**
      * Browses to the previous page
      */
     this.back = function(){
         this.oInt.contentWindow.history.back();
     };
-    
+
     /**
      * Browses to the next page
      */
     this.forward = function(){
         this.oInt.contentWindow.history.forward();
     };
-    
+
     /**
      * Reload the current page
      */
     this.reload = function(){
-        this.oInt.src = this.oInt.src;	
+        this.oInt.src = this.oInt.src;
     };
-    
+
     /**
      * Print the currently displayed page
      */
     this.print = function(){
         this.oInt.contentWindow.print();
     };
-    
+
     /**
      * Execute a string of javascript on the page. This is subject to browser
-     * security and will most likely only work when the browsed page is loaded 
+     * security and will most likely only work when the browsed page is loaded
      * from the same domain.
      * @param {String}  str     javascript string to be executed.
-     * @param {Boolean} noError wether the execution can throw an exception. Defaults to false.
+     * @param {Boolean} noError whether the execution can throw an exception. Defaults to false.
      */
     this.runCode = function(str, noError){
         if (noError)
@@ -89,12 +89,12 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
         else
             this.oInt.contentWindow.eval(str);
     };
-    
+
     /**
      * @attribute {String} src   the url to be displayed in this element
      */
     this.$supportedProperties.push("value", "src");
-    this.$propHandlers["src"]   = 
+    this.$propHandlers["src"]   =
     this.$propHandlers["value"] = function(value, force){
         try {
             this.oInt.src = value || "about:blank";
@@ -102,12 +102,12 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.src = "about:blank";
         }
     };
-    
+
     this.$draw = function(parentNode){
         if (!parentNode)
             parentNode = this.pHtmlNode;
-        
-        //Build Main Skin 
+
+        //Build Main Skin
         if (jpf.cannotSizeIframe) {
             this.oExt = parentNode.appendChild(document.createElement("DIV"))
                 .appendChild(document.createElement("iframe")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
@@ -125,12 +125,12 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt              = this.oExt;
             //this.oExt.style.border = "2px inset white";
         }
-        
+
         //this.oInt = this.oExt.contentWindow.document.body;
         this.oExt.host = this;
         //this.oInt.host = this;
     };
-    
+
     this.$loadJml = function(x){};
 }).implement(
     // #ifdef __WITH_VALIDATION || __WITH_XFORMS

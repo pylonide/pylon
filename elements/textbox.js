@@ -95,7 +95,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String} mask a complex input pattern that the user should
      * adhere to. This is a string which is a combination of special and normal
      * characters. Then comma seperated it has two options. The first option
-     * specifies wether the non input characters (the chars not typed by the
+     * specifies whether the non input characters (the chars not typed by the
      * user) are in the value of this element. The second option specifies the
      * character that is displayed when the user hasn't yet filled in a
      * character.
@@ -180,7 +180,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @attribute {Boolean} realtime wether the value of the bound data is
+     * @attribute {Boolean} realtime whether the value of the bound data is
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
@@ -191,7 +191,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @attribute {Boolean} focusselect wether the text in this element is
+     * @attribute {Boolean} focusselect whether the text in this element is
      * selected when this element receives focus.
      */
     this.$propHandlers["focusselect"] = function(value){

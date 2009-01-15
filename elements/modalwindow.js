@@ -28,16 +28,16 @@
 jpf.WinServer = {
     count : 9000,
     wins  : [],
-    
+
     setTop : function(win){
         this.count += 2;
-        
+
         win.setProperty("zindex", this.count);
         this.wins.remove(win);
         this.wins.push(win);
         return win;
     },
-    
+
     setNext : function(){
         if (this.wins.length < 2) return;
         var nwin, start = this.wins.shift();
@@ -47,7 +47,7 @@ jpf.WinServer = {
             nwin = this.wins.shift();
         } while (start != nwin);
     },
-    
+
     setPrevious : function(){
         if (this.wins.length < 2) return;
         this.wins.unshift(this.wins.pop());
@@ -58,9 +58,9 @@ jpf.WinServer = {
             nwin = this.wins.pop();
         } while (start != nwin);
     },
-    
+
     remove : function(win){
-        this.wins.remove(win);	
+        this.wins.remove(win);
     }
 }
 
@@ -71,14 +71,14 @@ jpf.WinServer = {
  * docking in an alignment layout.
  * Example:
  * <code>
- *  <j:window id="winMail" 
- *    modal       = "false" 
- *    buttons     = "min|max|close" 
- *    title       = "Mail message" 
+ *  <j:window id="winMail"
+ *    modal       = "false"
+ *    buttons     = "min|max|close"
+ *    title       = "Mail message"
  *    icon        = "icoMail.gif"
- *    visible     = "true" 
- *    resizable   = "true" 
- *    minwidth    = "300" 
+ *    visible     = "true"
+ *    resizable   = "true"
+ *    minwidth    = "300"
  *    minheight   = "290">
  *      ...
  *  </j:window>
@@ -93,7 +93,7 @@ jpf.WinServer = {
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation 
+ * @inherits jpf.Presentation
  * @inherits jpf.DelayedRender
  * @inherits jpf.Dockings
  */
@@ -107,13 +107,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.state             = "normal";
     this.edit              = false;
     var _self              = this;
-    
+
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["title","@title"]]};
     // #endif
 
     /**** Public Methods ****/
-    
+
     /**
      * Sets the title of the window.
      * @param {String} caption the text of the title.
@@ -121,7 +121,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setTitle = function(caption){
         this.setProperty("title", caption);
     };
-    
+
     /**
      * Sets the icon of the window.
      * @param {String} icon the location of the image.
@@ -129,7 +129,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setIcon = function(icon){
         this.setProperty("icon", icon);
     };
-    
+
     /**
      * Close the window. It can be reopened by using {@link show}
      * @todo show should unset closed
@@ -140,7 +140,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Minimize the window. The window will become the height of the title of 
+     * Minimize the window. The window will become the height of the title of
      * the window.
      */
     this.minimize = function(){
@@ -162,7 +162,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Restore the size of the window. The window will become the width and 
+     * Restore the size of the window. The window will become the width and
      * height it had before it was minimized or maximized.
      */
     this.restore = function(){
@@ -191,7 +191,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.bringToFront = function(){
         jpf.WinServer.setTop(this);
     };
-    
+
     var actions  = {
         "min"   : ["minimized", "minimize", "restore"],
         "max"   : ["maximized", "maximize", "restore"],
@@ -203,7 +203,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         var c = actions[type][0];
         this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
     };
-    
+
     //#ifdef __WITH_ALIGNMENT
     /**
      * @todo change this to use setProperty
@@ -223,20 +223,20 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     //#endif
-    
+
     /**** Properties and Attributes ****/
-    
+
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
     this.$booleanProperties["hideselects"]  = true;
     this.$booleanProperties["animate"]      = true;
     this.$booleanProperties["showdragging"] = true;
-    this.$supportedProperties.push("title", "icon", "modal", "minwidth", 
+    this.$supportedProperties.push("title", "icon", "modal", "minwidth",
         "minheight", "hideselects", "center", "buttons", "state",
         "maxwidth", "maxheight", "animate", "showdragging");
-    
+
     /**
-     * @attribute {Boolean} modal wether the window prevents access to the 
+     * @attribute {Boolean} modal whether the window prevents access to the
      * layout below it.
      */
     this.$propHandlers["modal"] = function(value){
@@ -244,14 +244,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             var oCover = this.$getLayoutNode("cover");
             if (oCover) {
                 this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
-                
+
                 if (!this.visible)
                     this.oCover.style.display = "none";
-                
+
                 this.oCover.style.zIndex = this.zindex;
             }
         }
-        
+
         if (!value && this.oCover) {
             this.oCover.style.display = "none";
         }
@@ -261,7 +261,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {Boolean} center centers the window relative to it's parent's
      * containing rect when shown.
      */
-    this.$propHandlers["center"] = function(value){        
+    this.$propHandlers["center"] = function(value){
         this.oExt.style.position = "absolute"; //@todo no unset
     };
 
@@ -277,45 +277,45 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
-        
+
         this.oIcon.style.display = value ? "block" : "none";
         jpf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
-    
+
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
         if (jpf.isTrue(value)){
             //if (!x && !y && !center) center = true;
-    
+
             // #ifdef __WITH_DELAYEDRENDER
             this.$render();
             // #endif
-            
-            if (this.oCover){ 
+
+            if (this.oCover){
                 /*this.oCover.style.height = Math.max(document.body.scrollHeight,
                     document.documentElement.offsetHeight) + 'px';
                 this.oCover.style.width  = Math.max(document.body.scrollWidth,
                     document.documentElement.offsetWidth) + 'px';*/
                 this.oCover.style.display = "block";
             }
-            
+
             this.state = this.state.split("|").remove("closed").join("|");
-            
+
             this.oExt.style.display = "block"; //Some form of inheritance detection
-            
-            //!jpf.isIE && 
+
+            //!jpf.isIE &&
             if (jpf.layout && this.oInt)
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
 
             if (this.center) {
                 this.oExt.style.left = Math.max(0, ((
-                    (jpf.isIE 
-                        ? document.documentElement.offsetWidth 
+                    (jpf.isIE
+                        ? document.documentElement.offsetWidth
                         : window.innerWidth)
                     - this.oExt.offsetWidth)/2)) + "px";
                 this.oExt.style.top  = Math.max(0, ((
-                    (jpf.isIE 
-                        ? document.documentElement.offsetHeight 
+                    (jpf.isIE
+                        ? document.documentElement.offsetHeight
                         : window.innerHeight)
                     - this.oExt.offsetHeight)/3)) + "px";
             }
@@ -351,43 +351,43 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             //this.setProperty("visible", false);
             if (this.oCover)
                 this.oCover.style.display = "none";
-            
+
             this.oExt.style.display = "none";
-            
+
             if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
                 for (var i = 0; i < hEls.length; i++) {
                     hEls[i][0].style.display = hEls[i][1];
                 }
             }
-            
+
             if (this.$hide)
                 this.$hide();
-            
+
             if (this.hasFocus())
                 jpf.window.moveNext(null, this, true)
-            
+
             this.dispatchEvent("close");
         }
-        
+
         wasVisible = value;
     };
-        
+
     this.$propHandlers["zindex"] = function(value){
         this.oExt.style.zIndex = value + 1;
         if (this.oCover)
             this.oCover.style.zIndex = value;
     };
-    
+
     var lastheight = null;
     var lastpos    = null;
     var lastzindex = 0;
     var lastState  = {"normal":1};
-    
+
     /**
      * @attribute {String} state the state of the window. The state can be a
      * combination of multiple states seperated by a pipe '|' character.
      *   Possible values:
-     *   minimized  The window is minimized. 
+     *   minimized  The window is minimized.
      *   maximized  The window is maximized.
      *   normal     The window has it's normal size and position.
      *   edit       The window is in the edit state.
@@ -399,26 +399,26 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             o[s[i]] = true;
 
         var styleClass = [];
-        
+
         if (!o.maximized && !o.minimized)
             o.normal = true;
-        
+
         //Closed state
         if (o.closed == this.visible) {//change detected
             this.setProperty("visible", !o["closed"]);
             //@todo difference is, we're not clearing the other states, check the docking example
         }
-        
+
         //Restore state
-        if (o.normal != lastState.normal 
-          || !o.normal && (o.minimized != lastState.minimized 
+        if (o.normal != lastState.normal
+          || !o.normal && (o.minimized != lastState.minimized
             || o.maximized != lastState.maximized)) {
-            
+
             if (lastheight) { // this.aData && this.aData.hidden == 3 ??
-                this.oExt.style.height = (lastheight 
+                this.oExt.style.height = (lastheight
                     - jpf.getHeightDiff(this.oExt)) + "px";
             }
-            
+
             if (lastpos) {
                 if (this.animate && !noanim) {
                     //Pre remove paused event because of not having onresize
@@ -442,7 +442,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                             _self.$propHandlers["state"].call(_self, value, true);
                         }
                     });
-                    
+
                     return;
                 }
 
@@ -450,50 +450,50 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oExt.style.top    = lastpos[1] + "px";
                 this.oExt.style.width  = lastpos[2] + "px";
                 this.oExt.style.height = lastpos[3] + "px";
-                
-                var pNode = (this.oExt.parentNode == document.body 
-                    ? document.documentElement 
+
+                var pNode = (this.oExt.parentNode == document.body
+                    ? document.documentElement
                     : this.oExt.parentNode);
                 pNode.style.overflow = lastpos[4];
             }
-            
+
             //#ifdef __WITH_ALIGNMENT
             if (this.aData && this.aData.restore)
                 this.aData.restore();
-            
+
             jpf.layout.play(this.pHtmlNode);
             //#endif
-            
+
             if (lastzindex)
                 this.oExt.style.zIndex = lastzindex
-            
+
             lastheight = lastpos = lastzindex = null;
-            
+
             if (o.normal)
                 styleClass.push("",
-                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Max",
                     this.baseCSSname + "Min");
         }
-        
+
         if (o.minimized != lastState.minimized) {
             if (o.minimized) {
                 styleClass.unshift(
-                    this.baseCSSname + "Min", 
-                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Min",
+                    this.baseCSSname + "Max",
                     this.baseCSSname + "Edit");
-                
+
                 //#ifdef __WITH_ALIGNMENT
                 if (this.aData && this.aData.minimize)
                     this.aData.minimize(this.collapsedHeight);
                 //#endif
-                
+
                 if (!this.aData || !this.aData.minimize) {
                     lastheight = this.oExt.offsetHeight;
-                    
-                    this.oExt.style.height = Math.max(0, this.collapsedHeight 
+
+                    this.oExt.style.height = Math.max(0, this.collapsedHeight
                         - jpf.getHeightDiff(this.oExt)) + "px";
                 }
-                
+
                 if (this.hasFocus())
                     jpf.window.moveNext(null, this, true);
                 //else if(jpf.window.focussed)
@@ -501,28 +501,28 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else {
                 styleClass.push(this.baseCSSname + "Min");
-                
+
                 setTimeout(function(){
                     jpf.window.$focusLast(_self);
                 });
             }
         }
-        
+
         if (o.maximized != lastState.maximized) {
             if (o.maximized) {
                 styleClass.unshift(
-                    this.baseCSSname + "Max", 
-                    this.baseCSSname + "Min", 
+                    this.baseCSSname + "Max",
+                    this.baseCSSname + "Min",
                     this.baseCSSname + "Edit");
 
-                var pNode = (this.oExt.parentNode == document.body 
-                    ? document.documentElement 
+                var pNode = (this.oExt.parentNode == document.body
+                    ? document.documentElement
                     : this.oExt.parentNode);
-    
-                lastpos = [this.oExt.offsetLeft, this.oExt.offsetTop, 
-                           this.oExt.offsetWidth - hordiff, this.oExt.offsetHeight - verdiff, 
+
+                lastpos = [this.oExt.offsetLeft, this.oExt.offsetTop,
+                           this.oExt.offsetWidth - hordiff, this.oExt.offsetHeight - verdiff,
                            pNode.style.overflow];
-                
+
                 pNode.style.overflow = "hidden";
 
                 var animstate = 0, hasAnimated = false, htmlNode = this.oExt;
@@ -530,11 +530,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     var w = !jpf.isIE && pNode == document.documentElement
                         ? window.innerWidth
                         : pNode.offsetWidth;
-                    
+
                     var h = !jpf.isIE && pNode == document.documentElement
                         ? window.innerHeight
                         : pNode.offsetHeight;
-                    
+
                     if (_self.animate && !hasAnimated) {
                         animstate = 1;
                         hasAnimated = true;
@@ -559,18 +559,18 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     else if (!animstate) {
                         htmlNode.style.left = (-1 * marginBox[3]) + "px";
                         htmlNode.style.top  = (-1 * marginBox[0]) + "px";
-                        
-                        htmlNode.style.width  = (w 
+
+                        htmlNode.style.width  = (w
                             - hordiff + marginBox[1] + marginBox[3]) + "px";
-                        htmlNode.style.height = (h 
+                        htmlNode.style.height = (h
                             - verdiff + marginBox[0] + marginBox[2]) + "px";
                     }
                 }
-                
+
                 //#ifdef __WITH_ALIGNMENT
                 jpf.layout.pause(this.pHtmlNode, setMax);
                 //#endif
-                
+
                 lastzindex = this.oExt.style.zIndex;
                 this.oExt.style.zIndex = jpf.WinServer.count + 1;
                 //jpf.WinServer.setTop(this);
@@ -579,23 +579,23 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 styleClass.push(this.baseCSSname + "Max");
             }
         }
-        
+
         if (o.edit != lastState.edit) {
             if (o.edit) {
                 styleClass.unshift(
                     this.baseCSSname + "Edit",
-                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Max",
                     this.baseCSSname + "Min");
-                    
+
                 if (this.btnedit)
                     oButtons.edit.innerHTML = "close"; //hack
-                
+
                 this.dispatchEvent('editstart');
             }
             else {
                 if (this.dispatchEvent('editstop') === false)
                     return false;
-                
+
                 styleClass.push(this.baseCSSname + "Edit");
                 if (styleClass.length == 1)
                     styleClass.unshift("");
@@ -604,26 +604,26 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     oButtons.edit.innerHTML = "edit"; //hack
             }
         }
-        
+
         if (styleClass.length) {
             this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
-            
+
             this.dispatchEvent('statechange', o);
             lastState = o;
-            
+
             //#ifdef __WITH_ALIGNMENT
             if (this.aData && !o.maximized) { //@todo is this the most optimal position?
                 this.purgeAlignment();
             }
             //#endif
-            
+
             if (!this.animate && jpf.hasSingleRszEvent)
                 jpf.layout.forceResize(_self.oInt);
         }
     };
-    
+
     var oButtons = {}
-    /** 
+    /**
      * @attribute {String} buttons the buttons that the window displays. This
      * can be multiple values seperated by a pipe '|' character.
      *   Possible values:
@@ -643,53 +643,53 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1)
                 continue;
-            
+
             if (!nodes[i].className || !nodes[i].className.match(re)) {
                 nodes[i].style.display = "none";
                 this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
                 idleNodes.push(nodes[i]);
             }
-            else 
+            else
                 found[RegExp.$1] = nodes[i];
         }
-        
+
         //Create new buttons if needed
         for (i = 0; i < buttons.length; i++) {
             if (found[buttons[i]]) {
                 this.oButtons.insertBefore(found[buttons[i]], this.oButtons.firstChild);
                 continue;
             }
-            
+
             var btn = idleNodes.pop();
             if (!btn) {
-                this.$getNewContext("button"); 
+                this.$getNewContext("button");
                 btn = this.$getLayoutNode("button");
                 setButtonEvents(btn);
                 btn = jpf.xmldb.htmlImport(btn, this.oButtons);
             }
-            
+
             this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
-            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").$toggle('" 
+            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").$toggle('"
                                        + buttons[i] + "')");
             btn.style.display = "block";
             oButtons[buttons[i]] = btn;
             this.oButtons.insertBefore(btn, this.oButtons.firstChild);
         }
     };
-    
+
     /**** Keyboard ****/
-    
+
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        
+
         if (key > 36 && key < 41) {
             if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
                 _self.disableAnchoring();
         }
-        
+
         switch (key) {
             case 27:
                 if (this.buttons.indexOf("close") > -1 && !this.aData)
@@ -703,63 +703,63 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;*/
             case 38:
             //UP
-                if (shiftKey && this.resizable) 
-                    this.setProperty("height", Math.max(this.minheight || 0, 
+                if (shiftKey && this.resizable)
+                    this.setProperty("height", Math.max(this.minheight || 0,
                         this.oExt.offsetHeight - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
-                    this.setProperty("top", 
+                    this.setProperty("top",
                         this.oExt.offsetTop - (ctrlKey ? 50 : 10));
                 break;
             case 37:
             //LEFT
-                if (shiftKey && this.resizable) 
-                    this.setProperty("width", Math.max(this.minwidth || 0, 
+                if (shiftKey && this.resizable)
+                    this.setProperty("width", Math.max(this.minwidth || 0,
                         this.oExt.offsetWidth - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
-                    this.setProperty("left", 
+                    this.setProperty("left",
                         this.oExt.offsetLeft - (ctrlKey ? 50 : 10));
                 break;
             case 39:
             //RIGHT
-                if (shiftKey && this.resizable) 
-                    this.setProperty("width", Math.min(this.maxwidth || 10000, 
+                if (shiftKey && this.resizable)
+                    this.setProperty("width", Math.min(this.maxwidth || 10000,
                         this.oExt.offsetWidth + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
-                    this.setProperty("left", 
+                    this.setProperty("left",
                         this.oExt.offsetLeft + (ctrlKey ? 50 : 10));
                 break;
             case 40:
             //DOWN
-                if (shiftKey && this.resizable) 
-                    this.setProperty("height", Math.min(this.maxheight || 10000, 
+                if (shiftKey && this.resizable)
+                    this.setProperty("height", Math.min(this.maxheight || 10000,
                         this.oExt.offsetHeight + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
-                    this.setProperty("top", 
+                    this.setProperty("top",
                         this.oExt.offsetTop + (ctrlKey ? 50 : 10));
                 break;
             default:
                 return;
         }
-        
+
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(this.oInt);
     }, true);
     //#endif
-    
+
     function setButtonEvents(btn){
-        btn.setAttribute("onmousedown", 
+        btn.setAttribute("onmousedown",
             "jpf.setStyleClass(this, 'down');\
              event.cancelBubble = true; \
              jpf.findHost(this).oExt.onmousedown(event);\
              document.onmousedown(event);");
-        btn.setAttribute("onmouseup",   
+        btn.setAttribute("onmouseup",
             "jpf.setStyleClass(this, '', ['down'])");
-        btn.setAttribute("onmouseover", 
+        btn.setAttribute("onmouseover",
             "jpf.setStyleClass(this, 'hover')");
-        btn.setAttribute("onmouseout",  
+        btn.setAttribute("onmouseout",
             "jpf.setStyleClass(this, '', ['hover', 'down'])");
     }
-    
+
     /**** Init ****/
 
     var marginBox, hordiff, verdiff;
@@ -767,13 +767,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         this.popout = jpf.isTrue(this.$jml.getAttribute("popout"));
         if (this.popout)
             this.pHtmlNode = document.body;
-        
+
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-            
+
             var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {
-                this.$getNewContext("button"); 
+                this.$getNewContext("button");
                 btn = oButtons.appendChild(this.$getLayoutNode("button"));
                 setButtonEvents(btn);
             }
@@ -783,7 +783,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag    = this.$getLayoutNode("main", "drag",  this.oExt);
         this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
         this.oDrag.host = this;
-        
+
         if (this.oIcon)
             this.oIcon.style.display = "none";
 
@@ -800,14 +800,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
-            
+
             //because of some issue I don't understand oExt.onmousedown is not called
             if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
                 jpf.WinServer.setTop(_self);
-            
+
             if (lastState.maximized)
                 return false;
-            
+
             //#ifdef __WITH_ALIGNMENT
             if (_self.aData) {
                 if (lastState.normal) //@todo
@@ -816,12 +816,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //#endif
         };
-        
+
         this.oExt.onmousedown = function(){
             //Set ZIndex on oExt mousedown
             if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
                 jpf.WinServer.setTop(_self);
-            
+
             if (!lastState.normal)
                 return false;
         }
@@ -839,35 +839,35 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.hasFeature(__MULTILANG__))
             this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
-        
-        if (!this.hasFeature(__DATABINDING__) 
-          && (this.$jml.getAttribute("smartbinding") 
+
+        if (!this.hasFeature(__DATABINDING__)
+          && (this.$jml.getAttribute("smartbinding")
           || this.$jml.getAttribute("actions"))) {
-            /** 
+            /**
              * @inherits jpf.DataBinding
              * @inherits jpf.Transaction
              * @inherits jpf.EditTransaction
              */
             this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
         }
-        
+
         /*var v;
         if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
             this.$jml.setAttribute("visible", "{" + jpf.isTrue(v) + "}");
         }*/
     };
-    
+
     this.$loadJml = function(x){
         jpf.WinServer.setTop(this);
-        
+
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
-            
-        this.oInt = this.oInt 
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
+
+        this.oInt = this.oInt
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
 
         if (this.draggable === undefined) {
-            (this.$propHandlers.draggable 
+            (this.$propHandlers.draggable
                 || jpf.JmlElement.propHandlers.draggable).call(this, true);
             this.draggable = true;
         }
@@ -876,15 +876,15 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$propHandlers.modal.call(this, true);
             this.modal = true;
         }
-        
+
         //Set default visible hidden
         if (!this.visible) {
             this.oExt.style.display = "none";
-            
+
             if (this.oCover)
                 this.oCover.style.display = "none";
         }
-        
+
         this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
         if (this.minwidth === undefined)
@@ -895,27 +895,27 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.maxwidth  = this.$getOption("Main", "max-width");
         if (this.maxheight === undefined)
             this.maxheight = this.$getOption("Main", "max-height");
-        
+
         if (this.center && this.visible) {
             this.visible = false;
             jpf.JmlParser.stateStack.push({
-                node  : this, 
-                name  : "visible", 
+                node  : this,
+                name  : "visible",
                 value : "true"
             });
         }
     };
-    
+
     //#ifdef __WITH_SKIN_CHANGE
     this.$skinchange = function(){
         if (this.title)
             this.$propHandlers["title"].call(this, this.title);
-            
+
         if (this.icon)
             this.$propHandlers["icon"].call(this, this.icon);
     }
     //#endif
-    
+
     this.$destroy = function(skinChange){
         if (this.oDrag) {
             this.oDrag.host = null;
@@ -925,11 +925,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         this.oTitle =  this.oIcon = this.oCover = null;
-        
+
         for (var name in oButtons) {
             oButtons[name].onclick = null;
         }
-        
+
         if (this.oExt && !skinChange) {
             this.oExt.onmousedown = null;
             this.oExt.onmousemove = null;

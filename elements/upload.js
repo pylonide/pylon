@@ -28,15 +28,15 @@
  * the skin.
  * Example:
  * This example shows an upload element that pushes an image to the server. The
- * asp script returns an xml string which is added to the list of images on a 
+ * asp script returns an xml string which is added to the list of images on a
  * successfull upload.
  * <code>
  *  <j:list id="lstImages" smartbinding="..." model="..." />
  *
  *  <j:upload id="flLogoUpload"
- *    target    = "../api/UploadPicture.asp" 
- *    ontimeout = "alert('It seems the server went away')" 
- *    oncancel  = "alert('Could not upload logo')" 
+ *    target    = "../api/UploadPicture.asp"
+ *    ontimeout = "alert('It seems the server went away')"
+ *    oncancel  = "alert('Could not upload logo')"
  *    onreceive = "lstImages.add(arguments[0])" />
  * </code>
  *
@@ -61,17 +61,17 @@
 jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     var _self = this;
-    
+
     /**** Properties and attributes ****/
-    
+
     this.timeout = 100000;
-    
+
     /**
      * @attribute {String}  value      the path of the file to uploaded, or the online path after upload.
      * @attribute {Number}  !progress  the position of the progressbar indicating the position in the upload process.
-     * @attribute {Boolean} !uploading wether this upload element is uploading.
+     * @attribute {Boolean} !uploading whether this upload element is uploading.
      * Example:
-     * When the skin doesn't have a progressbar you can use property binding to 
+     * When the skin doesn't have a progressbar you can use property binding to
      * update a seperate or central progressbar.
      * <code>
      *  <j:upload id="upExample" />
@@ -81,20 +81,20 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("value", "progress", "uploading");
 
     this.$propHandlers["value"] = function(value){
-        if (!this.value) 
+        if (!this.value)
             this.old_value = value;
         this.value = value;
-        
-        if (this.oLabel.nodeType == 1) 
+
+        if (this.oLabel.nodeType == 1)
             this.oLabel.innerHTML = value;
-        else 
+        else
             this.oLabel.nodeValue = value;
     };
-    
+
     /**** Public methods ****/
-    
+
     //#ifdef __WITH_CONVENIENCE_API
-    
+
     /**
      * Sets the icon of the button
      * @param {String} url the location of the image to be used as an icon
@@ -102,7 +102,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setIcon = function(url){
         this.setProperty("icon", url);
     };
-    
+
     /**
      * Sets the caption of the button
      * @param {String} value the text displayed on the button
@@ -110,9 +110,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setCaption = function(value){
         this.setProperty("caption", value);
     };
-    
+
     //#endif
-    
+
     /**
      * @ref global#getValue
      * @todo set these global descriptions
@@ -120,7 +120,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.getValue = function(){
         return this.value;
     };
-    
+
     /**
      * @ref global#setValue
      * @todo set these global descriptions
@@ -128,29 +128,29 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.setValue = function(value){
         this.setProperty("value", value);
     };
-    
+
     /**
      * Opens the browse window which allows the user to choose a file to upload.
      */
     this.browse = function(){
-        if (this.disabled) 
+        if (this.disabled)
             return;
-        
+
         this.inpFile.click();
         //this.$startUpload();
     };
-    
+
     this.upload = function(){
-        if (this.value == this.inpFile.value || !this.inpFile.value) 
+        if (this.value == this.inpFile.value || !this.inpFile.value)
             return;
-        
+
         this.old_value = this.value;
         this.value = this.inpFile.value;
         this.setValue(this.value);
-        
+
         this.$upload();
     };
-    
+
     /**
      * Cancels the upload process
      * @param {String} msg the reason why the process was cancelled.
@@ -158,7 +158,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.cancel = function(msg){
         return this.$cancel(msg);
     }
-    
+
     /**
      * Sets the target frame to which the form is posted
      * @param {String} target the name of the frame receiving the form post.
@@ -167,28 +167,28 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         this.target = target;
         this.$initForm();
     };
-    
+
     /**** Private state handling methods ****/
-    
+
     this.$updateProgress = function(){
         //@todo use getDiff here
-        this.setProperty("progress", 
+        this.setProperty("progress",
             this.oSlider.offsetWidth / this.oSlider.parentNode.offsetWith);
     };
-    
+
     this.$upload = function(){
         this.$uploading = true;
-        
+
         this.$disableEvents();
         this.oCaption.nodeValue = "Uploading...";
         this.setProperty("uploading", true);
-        
+
         //@todo ass possibility for real progress indication
         this.timer = setInterval('jpf.lookup(' + this.uniqueId + ').$updateProgress()', 800);
         this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').$timeout()', this.timeout);
         this.form.submit();
     };
-    
+
     /**
      * @event receive Fires when the upload succeeded
      */
@@ -196,22 +196,22 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);
         window.setTimeout('jpf.lookup(' + this.uniqueId + ').$clearProgress()', 300);
-        
-        if (value) 
+
+        if (value)
             this.setValue(value);
         this.old_value = null;
-        
-        //if(caption) 
+
+        //if(caption)
         this.setCaption(this.lastCaption);
-        
+
         this.dispatchEvent("receive", {
             returnValue: value
         });
-        
+
         this.$initForm();
         this.$uploading = false;
     };
-    
+
     /**
      * @event receive Fires when the upload was cancelled or failed.
      */
@@ -219,114 +219,114 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);
         this.$clearProgress();
-        
+
         this.setCaption(this.lastCaption);
-        if (this.old_value) 
+        if (this.old_value)
             this.setValue(this.old_value);
         this.old_value = null;
-        
+
         this.dispatchEvent("cancel", {
             returnValue: value
         });
-        
+
         this.$initForm();
         this.$uploading = false;
     };
-    
+
     /**
      * @event timeout Fires when the upload timed out.
      */
     this.$timeout = function(){
         clearInterval(this.timer);
-        
-        this.oCaption.nodeValue = this.$jml.firstChild 
-            ? this.$jml.firstChild.nodeValue 
+
+        this.oCaption.nodeValue = this.$jml.firstChild
+            ? this.$jml.firstChild.nodeValue
             : "";
         this.$clearProgress();
-        
-        if (this.old_value) 
+
+        if (this.old_value)
             this.setValue(this.old_value);
         this.old_value = null;
-        
+
         this.$initForm();
         this.$uploading = false;
-        
+
         this.dispatchEvent("timeout");
     };
-    
+
     this.$clearProgress = function(){
         this.setProperty("progress", 0);
         this.setProperty("uploading", false);
     };
-    
+
     /**** Event handling ****/
-    
+
     this.$initForm = function(){
         if (jpf.isIE) {
             this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"), 
+            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"),
                 this.oFrame.contentWindow.document.body);
         }
-        
+
         //this.form = this.$getLayoutNode("main", "form", this.oExt);
         this.form.setAttribute("action", this.target);
         this.form.setAttribute("target", "upload" + this.uniqueId);
         this.$getLayoutNode("form", "inp_uid", this.form)
             .setAttribute("value", this.uniqueId);
         this.inpFile = this.$getLayoutNode("form", "inp_file", this.form);
-        
+
         var jmlNode = this;
         this.inpFile.onchange = function(){
             _self.dispatchEvent("afterbrowse", {value: this.value});
             //jmlNode.$startUpload();
         }
-        
+
         if (jpf.isGecko) {
             this.inpFile.onmouseover = function(e){
-                if (jmlNode.oBtn.onmouseover) 
+                if (jmlNode.oBtn.onmouseover)
                     jmlNode.oBtn.onmouseover(e);
             }
             this.inpFile.onmouseout = function(e){
-                if (jmlNode.oBtn.onmouseout) 
+                if (jmlNode.oBtn.onmouseout)
                     jmlNode.oBtn.onmouseout(e);
             }
         }
-        
+
         if (jpf.debug == 2) {
             this.oFrame.style.visibility = "visible";
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
         }
     };
-    
+
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal("main", null, function(oExt){
             oExt.appendChild(oExt.ownerDocument.createElement("iframe"))
                 .setAttribute("name", "upload" + this.uniqueId);
         });
-        
+
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
-        
+
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
-        if (!jpf.isIE) 
-            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"), 
+        if (!jpf.isIE)
+            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"),
                 this.oExt);
     };
-    
+
     this.$loadJml = function(x){
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
             this.$getLayoutNode("main", "background", this.oExt)
-                .style.backgroundImage = "url(" + this.mediaPath 
+                .style.backgroundImage = "url(" + this.mediaPath
                 + x.getAttribute("bgswitch") + ")";
             this.$getLayoutNode("main", "background", this.oExt)
                 .style.backgroundRepeat = "no-repeat";
         }
-        
+
         this.$initForm();
     };
-    
+
     this.$destroy = function(){
     };
 }).implement(

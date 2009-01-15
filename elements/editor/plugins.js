@@ -36,6 +36,8 @@ jpf.editor.plugins = function(coll, editor) {
     this.collTypes = {};
     this.collKeys  = [];
 
+    this.active    = null;
+
     /**
      * Add a plugin to the collection IF an implementation actually exists.
      *
@@ -87,6 +89,26 @@ jpf.editor.plugins = function(coll, editor) {
      */
     this.isPlugin = function(name) {
         return this.coll[name] ? true : false;
+    };
+
+    /**
+     * Check if a plugin is currently active, or being executed.
+     *
+     * @param {String}  name
+     * @type  {Boolean}
+     */
+    this.isActive = function(name) {
+        var o = this.get(name);
+        if (!o) return false;
+
+        var res = false;
+        if (jpf.isArray(this.active)) {
+            for (i = this.active.length - 1; i >= 0 && !res; i--)
+                res = (this.active[i] === o);
+        }
+        else
+            res = (this.active === o);
+        return res;
     };
 
     /**
@@ -162,6 +184,7 @@ jpf.editor.plugins = function(coll, editor) {
             if (!coll[i].busy && coll[i].execute)
                 res.push(coll[i].execute(this.editor, e));
         }
+        this.active = res.length ? res : res[0];
         return res;
     };
 
@@ -179,6 +202,7 @@ jpf.editor.plugins = function(coll, editor) {
         var coll = this.collKeys[hash];
         for (var i = 0, j = coll.length; i < j; i++)
             coll[i].execute(this.editor, arguments);
+        this.active = coll.length ? coll : coll[0];
 
         return true;
     };

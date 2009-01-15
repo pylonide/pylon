@@ -66,7 +66,7 @@ jpf.actiontracker = function(parentNode){
     /**
      * @attribute {Number}  !undolength the length of the undo stack.
      * @attribute {Number}  !redolength the length of the redo stack.
-     * @attribute {Boolean} realtime    wether changes are immediately send to
+     * @attribute {Boolean} realtime    whether changes are immediately send to
      * the datastore, or held back until purge() is called.
      */
     this.$supportedProperties = ["realtime", "undolength", "redolength"];

@@ -55,8 +55,8 @@
  * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
  * @attribute  {String}  session      the data instruction on how to store the session data from this model.
  * @attribute  {String}  schema       not implemented.
- * @attribute  {Boolean} init         wether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} saveoriginal wether to save the original state of the data. This enables the use of the reset() call.
+ * @attribute  {Boolean} init         whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
+ * @attribute  {Boolean} saveoriginal whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link remote} element to use for data synchronization between multiple clients.
  * @define instance
  * @attribute  {String}  src          the url to retrieve the data from.
@@ -265,7 +265,7 @@ jpf.model = function(data, caching){
     this.appendXml = function(xmlNode){
         if (typeof xmlNode == "string")
             xmlNode = jpf.getXml(xmlNode);
-        
+
         xmlNode = !model.nodeType //Check if a model was passed
             ? model.getXml()
             : jpf.xmldb.copyNode(xmlNode);

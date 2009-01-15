@@ -875,7 +875,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     };
 
     /**
-     * @attribute {Boolean} fake wether this page actually contains elements or
+     * @attribute {Boolean} fake whether this page actually contains elements or
      * only provides a button in the paged parent element.
      */
     this.$propHandlers["fake"] = function(value){

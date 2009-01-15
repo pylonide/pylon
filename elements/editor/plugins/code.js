@@ -40,22 +40,35 @@ jpf.editor.plugin('code', function() {
             drawPreview(editor);
 
         if (oPreview.style.display == "none") {
+            // remember the selection for IE
+            editor.selection.cache();
+
             // update the contents of the hidden textarea
             oPreview.value = format.call(this, editor.getValue());
+
+            editor.plugins.active = this;
             // disable the editor...
-            editor.$propHandlers['state'].call(editor, jpf.editor.DISABLED);
+            editor.setProperty('state', jpf.editor.DISABLED);
+
             // show the textarea and position it correctly...
             setSize(editor);
             oPreview.style.display = "";
+
+            oPreview.focus();
         }
         else {
             oPreview.style.display = "none";
             if (editor.parseHTML(oPreview.value.replace(/\n/g, '')) != editor.getValue())
                 editor.setHTML(oPreview.value.replace(/\n/g, ''));
-            editor.$propHandlers['state'].call(editor, jpf.editor.OFF);
-            editor.$focus();
+            editor.plugins.active = null;
+            editor.setProperty('state', jpf.editor.OFF);
+
+            setTimeout(function() {
+                editor.selection.set();
+                editor.$visualFocus();
+            });
         }
-        editor.notify('code', this.queryState());
+        editor.notify('code', this.queryState(editor));
     };
 
     function drawPreview(editor) {
@@ -69,8 +82,8 @@ jpf.editor.plugin('code', function() {
 
     function setSize(editor) {
         if (!oPreview || !editor) return;
-        oPreview.style.width    = editor.oExt.offsetWidth - 2 + "px";
-        oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
+        oPreview.style.width  = editor.oExt.offsetWidth - 2 + "px";
+        oPreview.style.height = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
     }
 
     function protect(outer, opener, data, closer) {
@@ -131,9 +144,9 @@ jpf.editor.plugin('code', function() {
     }
 
     this.queryState = function(editor) {
-        if (!oPreview || oPreview.style.display == "none")
-            return jpf.editor.OFF;
-        return jpf.editor.ON;
+        if (editor.plugins.active == this)
+            return jpf.editor.ON;
+        return jpf.editor.OFF;
     };
 });
 

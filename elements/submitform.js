@@ -31,9 +31,9 @@
  * xform compatible strategies with relation to submitting the form's data.
  * This element also offers form paging, including validation between
  * and over pages. Buttons placed inside this element can contain an action
- * attribute specifying wether they behave as next, previous or finish(submit)
+ * attribute specifying whether they behave as next, previous or finish(submit)
  * buttons. This element is <u>not</u> necesary for simple forms. like the
- * normal html webforms (see {@link validation}). 
+ * normal html webforms (see {@link validation}).
  *
  * @constructor
  * @define submitform, xforms
@@ -51,11 +51,11 @@
  * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
  */
 
-jpf.xforms     = 
+jpf.xforms     =
 jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
-    
+
     this.elements = {};
     var buttons = {
         "next"     : [],
@@ -63,10 +63,10 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         "submit"   : [],
         "follow"   : []
     };
-    
+
     this.$focussable = false;
     //this.allowMultipleErrors = true;
-    
+
     this.inputs        = [];
     this.errorEl       = {};
     this.cq            = {};
@@ -76,40 +76,40 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.loadValueDeps = {};
     this.loadValues    = {};
-    
+
     this.listsHeldBack = {};
     this.nextHeldBack  = {};
-    
+
     this.activepagenr    = 0;
     this.zCount        = 1000000;
-    
+
     this.clear = function(){};
-    
+
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
-    
+
     this.showLoader = function(checked, nr){
         if (checked) {
             var page = nr ? this.getPage(nr) : this.getNextPage();
             if (!page || page.isRendered) return;
         }
-        
+
         if (this.loadState) {
             this.loadState.style.display = "block";
-            
+
             var message = this.getPage().$jml.getAttribute("loadmessage");
             if (message)
                 (jpf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
         }
     };
-    
+
     this.hideLoader = function(){
         if (this.loadState)
             this.loadState.style.display = "none";
     };
-    
+
     var nextpagenr;
     this.getNextPage = function(){
         var nextpage, pageNr = this.activepagenr;
@@ -117,61 +117,61 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             nextpage = this.getPage(++pageNr);
         }
         while(nextpage && !this.testCondition(nextpage.condition));
-        
+
         nextpagenr = pageNr;
         return nextpage;
     };
-    
+
     this.next = function(no_error){
         if (!this.testing && !this.isValid(null, null, this.getPage())) {
             this.hideLoader();
             return;//checkRequired
         }
-        
+
         //var nextpage = nextpagenr ? this.getPage(nextpagenr) : this.getNextPage();
         //if(this.dispatchEvent("beforeswitch", nextpagenr) === false)return false;
 
         //this.getPage().hide();
         this.set(this.activepagenr + 1);//nextpagenr
         //this.activepagenr = nextpagenr;
-        
+
         //if(!no_error && !nextpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
-        
+
         //nextpage.show();
         //if(nextpage.isRendered) this.hideLoader();
         //else nextpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
-        
+
         for (var prop in buttons) {
             if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
         }
-        
+
         nextpagenr = null;
-        
+
         /*var jmlNode = this;
         setTimeout(function(){
             jmlNode.dispatchEvent("afterswitch", jmlNode.activepagenr, nextpage);
         }, 1);*/
     };
-    
+
     this.previous = function(){
         //var active = this.activepagenr;
         //do{var prevpage = this.getPage(--active);}
         //while(prevpage && !this.testCondition(prevpage.condition));
-        
+
         //if(this.dispatchEvent("beforeswitch", active) === false) return false;
-        
+
         this.set(this.activepagenr - 1);
         //this.getPage().hide();
         //this.activepagenr = active;
 
         //if(!prevpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
-        
+
         //prevpage.show();
-        
+
         //if(prevpage.isRendered) this.hideLoader();
         //else prevpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
-        
+
         for (var prop in buttons) {
             if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
@@ -179,15 +179,15 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //this.dispatchEvent("afterswitch", this.activepagenr);
     };
-    
+
     this.$enable = function(){
         forbuttons('enable');
     };
-    
+
     this.$disable = function(){
         forbuttons('disable');
     };
-    
+
     function forbuttons(feat){
         var arr = ["next", "previous", "submit", "follow"];
         for (var k = 0; k < arr.length; k++) {
@@ -196,7 +196,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
     }
-    
+
     this.processValueChange = function(oFormEl){
         if (this.conditionDeps[oFormEl.name]) {
             var c = this.conditionDeps[oFormEl.name];
@@ -207,7 +207,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                     c[i].setInactive();
             }
         }
-        
+
         for (var prop in buttons) {
             if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
@@ -215,11 +215,11 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.setLoadValues(oFormEl.name);
     };
-    
+
     /* ***********************
                 Actions
     ************************/
-    
+
     /* ********************************************************************
                                         PRIVATE METHODS
     *********************************************************************/
@@ -246,7 +246,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 objEl.labelEl = this.cq[name][i][0];
             }
         }
-        
+
         if (objEl.$jml.getAttribute("dependson")) {
             var o = self[objEl.$jml.getAttribute("dependson")];
             if (!this.depends[o.name])
@@ -254,10 +254,10 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             this.depends[o.name].push(objEl);
             objEl.setInactive();
         }
-        
+
         if (objEl.nodeFunc == jpf.NODE_VISIBLE)
             objEl.setZIndex(--this.zCount);
-        
+
         if (this.listsHeldBack[name]) {
             var ld = this.listsHeldBack[name];
             this.loadLists(ld[0], ld[1], ld[2]);
@@ -270,30 +270,30 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 objEl.prevEl = this.lastEl;
             }
             this.lastEl = objEl;
-            
-            if (objEl.prevEl && objEl.$jml.getAttribute("show") != "true" 
+
+            if (objEl.prevEl && objEl.$jml.getAttribute("show") != "true"
               && !this.nextHeldBack[name] && !objHasValue(objEl))
                 objEl.setInactive(true);
             else if (this.condActiveCheck[objEl.name])
                 this.condActiveCheck[objEl.name].setActive();
-            
+
             //terrible code, but what the heck
             if (this.condActiveCheck[objEl.name]) {
                 objEl.container = this.condActiveCheck[objEl.name];
-                
+
                 function activateHandler(){
                     if (this.form.hasActiveElement(this.container))
                         this.container.setActive();
                     else
                         this.container.setInactive();
                 }
-                
+
                 objEl.addEventListener("activate", activateHandler);
                 objEl.addEventListener("deactivate", activateHandler);
             }
         }
     };
-    
+
     this.hasActiveElement = function(objEl){
         var nodes = objEl.$jml.getElementsByTagName("*");
         for (var i = 0; i < nodes.length; i++) {
@@ -302,49 +302,49 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             if (comp && comp.form == this && comp.isActive)
                 return true;
         }
-        
+
         return false;
     };
-    
+
     this.condActiveCheck = {};
-    
+
     this.getButtons      = function(action){
         return buttons[action];
     };
-    
+
     this.registerButton = function(action, oBtn){
         buttons[action].push(oBtn);
-        
+
         if (oBtn.condition)
             this.parseCondition(oBtn, oBtn.condition);
         this.updateButtons(action, oBtn);
-        
+
         if (action == "follow") return;
-        
+
         var jmlNode = this;
         oBtn.onclick = function(){
             jmlNode.showLoader(true);
             setTimeout(function(){ jmlNode[action](); }, 10);
         };
-        
+
         /*
             new Function(
                 "jpf.lookup(" + this.uniqueId + ").showLoader(true);setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
-        
+
             action == "previous" ?
                 "jpf.lookup(" + this.uniqueId + ")." + action + "()" :
                 "jpf.lookup(" + this.uniqueId + ").showLoader();setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
         */
     };
-    
+
     //refactor to give buttons classes, so they can decide what to do when inactive
     this.updateButtons = function(action, singleBtn){
         return false;//
-        
+
         if (!buttons[action]) return false;
-        
+
         var result = true;
         if (action == "previous" && this.activepagenr == 0)
             result = false;
@@ -366,7 +366,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var buttons = singleBtn ? [singleBtn] : buttons[action];
         for (var i = 0; i < buttons.length; i++) {
-            if (result && (!buttons[i].condition || this.testCondition(buttons[i].condition))) 
+            if (result && (!buttons[i].condition || this.testCondition(buttons[i].condition)))
                 buttons[i].setActive();
             else
                 buttons[i].setInactive();
@@ -374,7 +374,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         return true;
     };
-    
+
     this.setLoadValues = function(item, clearElements, noload){
         var lvDep = this.loadValueDeps[item];
         if (!lvDep) return;
@@ -396,7 +396,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                     /*else if(lvDep[i][0].getAttribute("lid")){
                         var lid = lvDep[i][0].getAttribute("lid");
                         var nodes = this.xmlRoot.selectSingleNode("node()[@lid='" + lid + "']");
-                        
+
                         for(var i=0;i<nodes.length;i++){
                             jpf.xmldb.removeNode(nodes[i]);
                         }
@@ -404,9 +404,9 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 continue;
             }
-            
+
             if (noload) continue;
-            
+
             if (lvDep[i][0].getAttribute("runonrequest") != "true") {
                 this.processLoadRule(lvDep[i][0], lvDep[i][2], lvDep[i]);
             }
@@ -417,13 +417,13 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
         }
     };
-    
+
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
         if (!jpf.teleport.hasLoadRule(xmlCommNode)) return;
-        
+
         this.dispatchEvent(isList ? "beforeloadlist" : "beforeloadvalue");
-        
+
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!
         if (nodes.length) {
@@ -439,12 +439,12 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                     var xpath = el.getMainBindXpath();
                     var xNode = jpf.xmldb.createNodeFromXpath(this.xmlRoot, xpath);
                     var nType = xNode.nodeType;
-                    (arr || arg)[nodes[j].getAttribute("argnr") || j] = 
+                    (arr || arg)[nodes[j].getAttribute("argnr") || j] =
                         "xpath:" + xpath + (nType == 1 ? "/text()" : "");
                 }
                 else
                     if(nodes[j].getAttribute("argtype") == "xpath") {
-                        (arr || arg)[nodes[j].getAttribute("argnr") || j] = 
+                        (arr || arg)[nodes[j].getAttribute("argnr") || j] =
                             "xpath:" + nodes[j].getAttribute("select");//jpf.getXmlValue(this.xmlRoot, );
                     }
             }
@@ -458,53 +458,53 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //this.xmlRoot.firstChild
         //if(confirm("do you want to debug?")) throw new Error();
-        
+
         var jNode = self[xmlCommNode.getAttribute("element")];
         if (jNode && jNode.nodeFunc == jpf.NODE_VISIBLE)
             jNode.$setStyleClass(jNode.oExt, "loading", ["loaded"]);
-        
+
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
         jpf.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
             Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId
-                + ').' + (isList ? 'loadLists' : 'loadValues') 
+                + ').' + (isList ? 'loadLists' : 'loadValues')
                 + '(data, state, extra)'), null, data);
     };
-    
+
     this.registerCondition = function(objEl, strCondition, no_parse){
-        if (!no_parse) 
+        if (!no_parse)
             this.parseCondition(objEl, strCondition);
-        
+
         var forceActive = false;
         if (objEl.onlyWhenActive) {
             var nodes = objEl.$jml.getElementsByTagName("*");
             for (var i = 0; i < nodes.length; i++) {
                 if (!nodes[i].getAttribute("id")) continue;
-                
+
                 if (this.nextHeldBack[nodes[i].getAttribute("id")])
                     forceActive = true;
                 else
-                    if (nodes[i].getAttribute("ref") && this.xmlRoot 
+                    if (nodes[i].getAttribute("ref") && this.xmlRoot
                       && jpf.xmldb.getNodeValue(this.xmlRoot
                       .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
                         forceActive = true;
                         nodes[i].setAttribute("show", "true");
                     }
-                
+
                 this.condActiveCheck[nodes[i].getAttribute("id")] = objEl;
             }
         }
 
-        if (forceActive || this.testCondition(objEl.condition) 
+        if (forceActive || this.testCondition(objEl.condition)
           && (!objEl.onlyWhenActive || this.hasActiveElement(objEl, true)))
             objEl.setActive();
         else
             objEl.setInactive();
-        
+
         var matches = !no_parse
             ? strCondition.match(/(\W|^)(\w+)(?:\=|\!\=)/g)
             : strCondition.match(/(\b|^)([\w\.]+)/g);
         if (!matches) return;
-        
+
         for (var i = 0; i < matches.length; i++) {
             if (!no_parse) {
                 var m = matches[i].replace(/(?:\=|\!\=)$/, "").replace(/(^\s+|\s+$)/g, "");
@@ -514,13 +514,13 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (m.length < 2) continue;
                 m = m[0];
             }
-            
+
             if (!this.conditionDeps[m])
                 this.conditionDeps[m] = Array();
             this.conditionDeps[m].push(objEl);
         }
     };
-    
+
     this.testCondition = function(strCondition){
         //somename='somestr' and (sothername='que' or iets='niets') and test=15
 
@@ -532,7 +532,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             //throw new Error(jpf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
     };
-    
+
     this.loadValues = function(data, state, extra){
         if (state != jpf.SUCCESS) {
             if (extra.retries < jpf.maxHttpRetries)
@@ -558,18 +558,18 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             for (var i = nodes.length - 1; i >= 0; i--) {
                 var xmlNode = nodes[i];
                 var unique  = strUnique ? xmlNode.selectSingleNode(strUnique) : false;
-                
-                var node = unique 
-                    ? this.xmlRoot.selectSingleNode("node()[" + strUnique 
-                        + " = '" + unique.nodeValue + "']") 
+
+                var node = unique
+                    ? this.xmlRoot.selectSingleNode("node()[" + strUnique
+                        + " = '" + unique.nodeValue + "']")
                     : null;
                 if (node) {
                     //Move all this into the xmldb
                     jpf.xmldb.copyConnections(node, xmlNode);
                     jpf.xmldb.notifyListeners(xmlNode);
-                    
+
                     //node.setAttribute("lid", data.getAttribute("lid"));
-                    
+
                     //hack!! - should be recursive
                     var valueNode = xmlNode.selectSingleNode("value");
                     if (valueNode) {
@@ -578,7 +578,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                         jpf.xmldb.notifyListeners(valueNode);
                     }
                 }
-                
+
                 this.xmlRoot.insertBefore(xmlNode, node); //consider using replaceChild here
                 if (node)
                     this.xmlRoot.removeChild(node);
@@ -588,7 +588,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.dispatchEvent("afterloadvalue");
     };
-    
+
     this.loadLists = function(data, state, extra){
         if (state != jpf.SUCCESS){
             if (extra.retries < jpf.maxHttpRetries)
@@ -596,11 +596,11 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             else
                 throw new Error(jpf.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
         }
-        
+
         if (!self[extra.userdata[0].getAttribute("element")])
             return this.listsHeldBack[extra.userdata[0].getAttribute("element")] =
                 [data, state, extra];
-        
+
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
         if (jNode && jNode.nodeFunc == jpf.NODE_VISIBLE) {
@@ -614,108 +614,108 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             //this.setLoadValues(jNode.name, true);
             this.clearNextQuestionDepencies(jNode, true);
         }
-        
+
         //load xml in element
         jNode.load(data);
         //if(!jNode.value){
             //this.clearNextQuestionDepencies(jNode, true);
         //}
-        
+
         this.dispatchEvent("afterloadlist");
     };
-    
+
     /*this.isValid = function(checkReq, setError, page){
         if(!page) page = this.getPage() || this;
         var found = checkValidChildren(page, checkReq, setError);
-        
+
         //Global Rules
         //
-        
+
         return !found;
     }
-    
+
     this.validate = function(){
         if(!this.isValid()){
-            
+
         }
     }*/
-    
+
     //HACK!
     this.reset = function(){
       //Clear all error states
         for (name in this.elements) {
             var el = this.elements[name];
-            
+
             //Hack!!! maybe traverse
             if (el.length) {
                 throw new Error(jpf.formatErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
-            
+
             el.clearError();
             if (this.errorEl[name])
                 this.errorEl[name].hide();
-            
+
             if (el.hasFeature(__MULTIBINDING__))
                 el.$getMultiBind().clear();
             else
                 el.clear();
         }
     };
-    
+
     /* ***********************
             Databinding
     ************************/
-    
+
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //this.setConnections(this.xmlRoot, "select");
         //if(confirm("debug? " + this.toString())) debugger;
         this.dispatchEvent("xmlupdate");
     };
-    
+
     this.smartBinding = {};
-    
+
     this.$load = function(XMLRoot, id){
         jpf.xmldb.addNodeListener(XMLRoot, this);
-        //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");	
-        //this.setConnections(XMLRoot, "select");	
+        //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");
+        //this.setConnections(XMLRoot, "select");
     };
-    
+
     function objHasValue(objEl){
-        var oCheck = objEl.hasFeature(__MULTISELECT__) 
-            ? objEl.$getMultiBind() 
+        var oCheck = objEl.hasFeature(__MULTISELECT__)
+            ? objEl.$getMultiBind()
             : objEl;
         if (!oCheck)
             return false;
         return oCheck.applyRuleSetOnNode(oCheck.mainBind,
             oCheck.xmlRoot, null, true);
     }
-    
+
     //Reset form
     function onafterload(){
         //Clear all error states
         for (name in this.elements) {
-            if (jpf.isSafari && (!this.elements[name] 
+            if (jpf.isSafari && (!this.elements[name]
               || !this.elements[name].$jmlLoaders))
                 continue;
-            
+
             //Hack!!! maybe traverse
             if (this.elements[name].length) {
                 throw new Error(jpf.formatErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
             }
-            
+
             this.elements[name].clearError();
             if(this.errorEl[name])
                 this.errorEl[name].hide();
         }
-        
+
         if (this.nQuest) {
             //Show all controls and labels which are in the nquest stack
             for (name in this.elements) {
-                
+
                 var objEl = this.elements[name];
-                
+
                 if (objEl.$jml.getAttribute("checknext") == "true") {
-                    if (objHasValue(objEl)) {//oCheck.value || 
+                    if (objHasValue(objEl)) {//oCheck.value ||
                         objEl.setActive();
                         if (this.condActiveCheck[name])
                             this.condActiveCheck[name].setActive();
@@ -746,35 +746,35 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     this.addEventListener("afterload", onafterload);
     this.addEventListener("afterinsert", onafterload);
-    
+
     this.addEventListener("beforeload", function(){
         if (!this.smartBinding || !this.smartBinding.actions) return;
         var nodes = this.smartBinding.actions.LoadList;
         if (nodes) {
             for (var objEl, i = 0; i < nodes.length; i++) {
-                if (!nodes[i].getAttribute("element") 
+                if (!nodes[i].getAttribute("element")
                   || !(objEl = this.elements[nodes[i].getAttribute("element")]))
                     continue;
                 objEl.clear();
             }
         }
-        
+
         var nodes = this.smartBinding.actions.NextQuestion;
         if (nodes) {
             for (var objEl, i = 0; i < nodes.length; i++) {
-                if (!nodes[i].getAttribute("final") 
+                if (!nodes[i].getAttribute("final")
                   || !(objEl = this.elements[nodes[i].getAttribute("element")]))
                     continue;
                 objEl.clear();
             }
         }
     });
-    
+
     /* *********
         INIT
     **********/
     this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-    
+
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
             var htmlNode   = jpf.getFirstElement(oJml);
@@ -782,20 +782,20 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             this.loadState.style.display = "none";
         }
     };
-    
+
     this.$draw = function(){
         //Build Main Skin
-        this.oPages = this.oExt = this.$getExternal(); 
+        this.oPages = this.oExt = this.$getExternal();
         this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
         this.oExt.host = this;
     };
-    
+
     /**
      * Submit this form
      * Example:
-     *  <j:submitform 
+     *  <j:submitform
      *    [action="url" method="get|post|urlencoded-post" [ref="/"] ]
-     *    [submit="<save_data>"] 
+     *    [submit="<save_data>"]
      *    [submittype="json|xml|native"]
      *    [useelements="boolean"]
      *    [model="id"]
@@ -806,21 +806,21 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     this.submit = function(submissionId){
         if(!this.isValid()) return;
         if(!this.$model)     return; //error?
-        
-        var type = this.method == "urlencoded-post" 
-            ? "native" 
+
+        var type = this.method == "urlencoded-post"
+            ? "native"
             : (this.type || "xml");
-        var instruction = submissionId || this.action 
-            ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action) 
+        var instruction = submissionId || this.action
+            ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action)
             : "";
-        
+
         this.$model.submit(instruction, type, this.useComponents, this.ref);
     };
-    
+
     this.setModel = function(model, xpath){
         this.$model = model;
     };
-    
+
     this.$loadJml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
@@ -829,17 +829,17 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         this.type          = this.$jml.getAttribute("submittype") || "native";
         this.method        = (this.$jml.getAttribute("method") || "get").toLowerCase();
         this.useComponents = this.$jml.getAttribute("usecomponents") || true;
-        
+
         jpf.setModel(x.getAttribute("model"), this);
-        
+
         this.$loadChildren(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });
     };
 }).implement(
-    jpf.DataBinding, 
-    jpf.BaseTab, 
+    jpf.DataBinding,
+    jpf.BaseTab,
     jpf.ValidationGroup
 );
 

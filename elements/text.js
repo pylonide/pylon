@@ -47,13 +47,13 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
 
     /**
-     * @attribute {Boolean} scrolldown  wether this elements viewport is always scrolled down. This is especially useful when this element is used to displayed streaming content such as a chat conversation.
-     * @attribute {Boolean} secure      wether the content loaded in this element should be filtered in order for it to not be able to execute javascript. This is especially useful when the content does not come from a trusted source, like a web service or xmpp feed.
+     * @attribute {Boolean} scrolldown  whether this elements viewport is always scrolled down. This is especially useful when this element is used to displayed streaming content such as a chat conversation.
+     * @attribute {Boolean} secure      whether the content loaded in this element should be filtered in order for it to not be able to execute javascript. This is especially useful when the content does not come from a trusted source, like a web service or xmpp feed.
      */
     this.$booleanProperties["scrolldown"] = true;
     this.$booleanProperties["secure"]     = true;
     this.$supportedProperties.push("behavior", "scrolldown", "secure", "value");
-    
+
     /**
      * @attribute {String} behaviour specifying how this elements handles new values
      *   Possible values
@@ -63,7 +63,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["behavior"] = function(value){
         this.addOnly = value == "addonly";
     }
-    
+
     /**
      * @attribute {String} value the contents of this element. This can be text or html or xhtml.
      */
@@ -72,7 +72,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (typeof value != "string")
             value = value ? value.toString() : "";
-        
+
         if (this.secure) {
             value = value.replace(/<a /gi, "<a target='_blank' ")
             .replace(/<object.*?\/object>/g, "")
@@ -88,7 +88,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-        
+
             //var win = window.open();
             //win.document.write(value);
             if (cacheObj)
@@ -96,7 +96,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             else
                 this.oInt.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
-        
+
         //Iframe bug fix for IE (leaves screen white);
         if (jpf.cannotSizeIframe && this.oIframe)
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
@@ -104,31 +104,31 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.scrolldown && this.$scrolldown)
             this.oScroll.scrollTop = this.oScroll.scrollHeight;
     };
-    
+
     /**** Public methods ****/
-    
+
     /**
      * @copy Widget#setValue
      */
     this.setValue = function(value){
         this.setProperty("value", value);
     };
-    
+
     /**
      * @copy Widget#getValue
      */
     this.getValue = function(){
         return this.oInt.innerHTML;
     };
-    
+
     /**** Keyboard Support ****/
-    
+
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        
+
         switch (key) {
             case 33:
                 //PGUP
@@ -155,36 +155,36 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             default:
                 return;
         }
-        
+
         return false;
     }, true);
     //#endif
-    
+
     /**** Private methods ****/
-    
+
     // #ifdef __WITH_DATABINDING
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.addOnly && action != "add") return;
-        
+
         //Action Tracker Support
         if (UndoObj)
             UndoObj.xmlNode = this.addOnly ? xmlNode : this.xmlRoot;//(contents ? contents.xmlRoot : this.xmlRoot);
-        
+
         //Refresh Properties
         if (this.addOnly) {
             jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
             var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
                 + "|" + this.uniqueId);
 
-            this.$propHandlers["value"].call(this, 
+            this.$propHandlers["value"].call(this,
                 this.applyRuleSetOnNode("value", xmlNode) || "");
         }
         else {
-            this.$propHandlers["value"].call(this, 
+            this.$propHandlers["value"].call(this,
                 this.applyRuleSetOnNode("value", this.xmlRoot) || "");
         }
     };
-    
+
     this.$load = function(node){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(node, this);
@@ -203,7 +203,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$propHandlers["value"].call(this, "");
     };
     // #endif
-    
+
     // #ifdef __WITH_CACHE
     this.$getCurrentFragment = function(){
         return {
@@ -211,7 +211,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             contents : this.oInt.innerHTML
         }
     };
-    
+
     this.$setCurrentFragment = function(fragment){
         this.oInt.innerHTML = fragment.contents;
         if (this.scrolldown)
@@ -220,45 +220,45 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$findNode = function(cacheNode, id){
         id = id.split("\|");
-        
+
         if ((cacheNode ? cacheNode : this).xmlRoot
-          .selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']")) 
+          .selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']"))
             return (cacheNode ? cacheNode : null);
 
         return false;
     };
-    
+
     this.$setClearMessage = function(msg){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
         this.oInt.innerHTML = msg;
     };
-    
+
     this.$removeClearMessage = function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
         this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
-    
+
     this.$clear = function(){
         //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
     };
-    
+
     this.caching = false; //Fix for now
     // #endif
-    
+
     /**** Init ****/
-    
+
     this.$draw = function(){
-        this.oExt = this.$getExternal(); 
+        this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        
+
         if (jpf.hasCssUpdateScrollbarBug && !jpf.getStyle(this.oInt, "padding"))
             this.$fixScrollBug();
-        
+
         this.oScroll = this.oFocus ? this.oFocus.parentNode : this.oInt;
-        
+
         this.$scrolldown = true;
         this.oScroll.onscroll = function(){
-            _self.$scrolldown = this.scrollTop >= this.scrollHeight 
+            _self.$scrolldown = this.scrollTop >= this.scrollHeight
                 - this.offsetHeight + jpf.getVerBorders(this);
         }
         setInterval(function(){
@@ -266,7 +266,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.oScroll.scrollTop = _self.oScroll.scrollHeight;
             }
         }, 60);
-        
+
         if (this.oInt.tagName.toLowerCase() == "iframe") {
             if (jpf.isIE) {
                 this.oIframe = this.oInt;
@@ -299,19 +299,19 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.onselectstart = function(e){
                 (e ? e : event).cancelBubble = true;
             }
-            
+
             this.oInt.oncontextmenu = function(e){
                 if (!this.host.contextmenus)
                     (e ? e : event).cancelBubble = true;
             }
-            
+
             this.oInt.style.cursor = "";
-        
+
             this.oInt.onmouseover = function(e){
                 if (!self.STATUSBAR) return;
                 if (!e)
                     e = event;
-                
+
                 if (e.srcElement.tagName.toLowerCase() == "a") {
                     if (!this.lastStatus)
                         this.lastStatus = STATUSBAR.getStatus();
@@ -327,16 +327,16 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$loadJml = function(x){
         this.caching = false;// hack
-        
+
         if (this.emptyMsg)
             this.$setClearMessage(this.emptyMsg);
-        
+
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
-    
+
     this.$destroy = function(){
         jpf.removeNode(this.oDrag);
         this.oDrag   = null;
@@ -347,7 +347,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     // #ifdef __WITH_CACHE
-    jpf.Cache, 
+    jpf.Cache,
     // #endif
     jpf.BaseSimple
 );

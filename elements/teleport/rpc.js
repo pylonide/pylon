@@ -226,11 +226,11 @@ jpf.rpc = function(){
      *
      * @attribute {String}  url              the location of the server that is recipient of the rpc messages.
      * @attribute {String}  protocol         the name of the plugin that is used to provide the messages.
-     * @attribute {Boolean} [multicall]      wether the call is stacked until purge() is called.
+     * @attribute {Boolean} [multicall]      whether the call is stacked until purge() is called.
      * @attribute {Number}  [timeout]        the number of milliseconds after which the call is considered timed out.
-     * @attribute {Boolean} [autoroute]      wether the call should be routed through a proxy when a permission error occurs due to the same domein policy.
-     * @attribute {Boolean} [async]          wether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
-     * @attribute {Boolean} [caching]        wether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
+     * @attribute {Boolean} [autoroute]      whether the call should be routed through a proxy when a permission error occurs due to the same domein policy.
+     * @attribute {Boolean} [async]          whether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
+     * @attribute {Boolean} [caching]        whether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
      * @define method   element specifying a method available within the rpc element.
      * @allowchild variable
      * @attribute {String}  name             the name of the method. This name will be available on the rpc object as a javascript method.
@@ -248,7 +248,7 @@ jpf.rpc = function(){
      * </code>
      * @attribute {String}  [url]            the location of the server that is recipient of the rpc message.
      * @attribute {String}  [callback]       the name of the method that handles the return of the call.
-     * @attribute {Boolean} [ignore-offline] wether the method should not be stored for later execution when offline.
+     * @attribute {Boolean} [ignore-offline] whether the method should not be stored for later execution when offline.
      * @define variable element specifying an argument of a method in an rpc element.
      * @attribute {String}  name             the argument name.
      * @attribute {String}  [value]          the value of the argument.

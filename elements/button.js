@@ -62,7 +62,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * @attribute {String}  icon     the url from which the icon image is loaded.
-     * @attribute {Boolean} state    wether this boolean is a multi state button.
+     * @attribute {Boolean} state    whether this boolean is a multi state button.
      * @attribute {String}  value    the initial value of a state button.
      * @attribute {String}  tooltip  the text displayed when a user hovers with the mouse over the element.
      * @attribute {String}  color    the text color of the caption of this element.
@@ -81,7 +81,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   apply    Executes a commitTransaction() on the target element.
      *   close    Closes the target element.
      * @attribute {String}  target   id of the element to apply the action to. Defaults to the parent container.
-     * @attribute {String}  default  wether this button is the default action for the containing window.
+     * @attribute {String}  default  whether this button is the default action for the containing window.
      * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
      */
     this.$booleanProperties["default"] = true;
@@ -134,7 +134,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
         else
             this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
-        
+
         if (this.oCaption)
             this.oCaption.nodeValue = (value || "").trim();
     };
@@ -459,12 +459,12 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
         if (typeof this.focussable == "undefined") {
-            if (this.parentNode.parentNode 
+            if (this.parentNode.parentNode
               && this.parentNode.parentNode.tagName == "toolbar"
               && !this.$jml.getAttribute("focussable"))
                 this.focussable = false;
         }
-        
+
         var skinName;
         if (this.parentNode && (skinName = this.parentNode.$getOption
           && this.parentNode.$getOption("main", "button-skin"))) {
@@ -495,7 +495,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.action = "submit";
         else if (this.tagName == "reset")
             this.action = "reset";
-            
+
         this.$setupEvents();
     };
 
@@ -743,7 +743,7 @@ jpf.button.actions = {
     //#ifdef __WITH_MODEL
     "submit" : function(doReset){
         var vg, model;
-        
+
         var parent = this.target && self[this.target]
             ? self[this.target]
             : this.parentNode;
@@ -756,39 +756,39 @@ jpf.button.actions = {
                     ? self[parent.validgroup]
                     : new jpf.ValidationGroup();
             }
-            
+
             vg = parent.$validgroup;
             if (!vg.childNodes.length)
                 vg.childNodes = parent.childNodes.slice();
-    
+
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
-                    
+
                     if (node.getModel) {
                         model = node.getModel();
                         if (model)
                             return false;
                     }
-                    
+
                     if (node.childNodes.length)
                         if (loopChildren(node.childNodes) === false)
                             return false;
                 }
             }
             loopChildren(parent.childNodes);
-            
+
             if (!model) {
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Finding a model to submit", 
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Finding a model to submit",
                     "Could not find a model to submit."));
                 //#endif
-                
+
                 return;
             }
         }
-        
+
         if (doReset) {
             model.reset();
             return;
@@ -799,12 +799,12 @@ jpf.button.actions = {
 
         model.submit();
     },
-    
+
     "reset" : function(){
         jpf.button.actions["submit"].call(this, true);
     },
     //#endif
-    
+
     //#ifdef __WITH_TRANSACTION
     "ok" : function(){
         var node;

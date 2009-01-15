@@ -119,6 +119,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["state"] = function(value){
         // the state has changed, update the button look/ feel
         this.notifyAll(value);
+        this.notify('code', this.plugins.isActive('code')
+            ? jpf.editor.SELECTED
+            : value);
     };
 
     this.$propHandlers["plugins"] = function(value){
@@ -126,7 +129,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * @attribute {Boolean} realtime wether the value of the bound data is
+     * @attribute {Boolean} realtime whether the value of the bound data is
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
@@ -666,14 +669,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.$visualFocus = function(bNotify) {
-        if (jpf.window.focussed == this) {
+        // setting focus to the iframe content, upsets the 'code' plugin
+        var bCode = this.plugins.isActive('code');
+        if (jpf.window.focussed == this && !bCode) {
             try {
                 _self.oWin.focus();
             }
             catch(e) {};
         }
 
-        if (bNotify)
+        if (bCode) {
+            _self.notifyAll(jpf.editor.DISABLED);
+            _self.notify('code', jpf.editor.ON);
+        }
+        else if (bNotify)
             _self.notifyAll();
     };
 
@@ -688,7 +697,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.oExt || this.oExt.disabled)
             return;
 
-        this.setProperty('state', jpf.editor.ON);
+        this.setProperty('state', this.plugins.isActive('code')
+            ? jpf.editor.DISABLED
+            : jpf.editor.OFF);
 
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
@@ -858,8 +869,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             if (!e._bogus) {
-                if (e.isPlugin)
-                    _self.plugins.get(item).execute(_self);
+                if (e.isPlugin) {
+                    var o = _self.plugins.active = _self.plugins.get(item);
+                    o.execute(_self);
+                }
                 else
                     _self.executeCommand(item);
                 e.state = getState(item, e.isPlugin);
@@ -953,9 +966,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.notifyAll = function(state) {
-        for (var item in oButtons) {
+        for (var item in oButtons)
             this.notify(item, state);
-        }
     };
 
     /**** Init ****/
