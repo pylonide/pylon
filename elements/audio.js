@@ -346,11 +346,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$loadJml = function(x){
-        if (this.setSource()) {
+        if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
-
-            //jpf.JmlParser.parseChildren(this.$jml, null, this);
-        }
+        else
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(bRuntime) {

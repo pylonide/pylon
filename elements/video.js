@@ -510,11 +510,10 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         this.width  = parseInt(this.width)  || null;
         this.height = parseInt(this.height) || null;
 
-        if (this.setSource()) {
+        if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
-
-            //jpf.JmlParser.parseChildren(this.$jml, null, this);
-        }
+        else
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(bRuntime) {
