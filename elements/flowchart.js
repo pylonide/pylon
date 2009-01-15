@@ -22,7 +22,7 @@
 // #ifdef __JFLOWCHART || __INC_ALL
 /**
  * Element is implementing adding and removing block elements.
- * Every block could be rotated, fliped, resized, renamed, locked and moved.
+ * Every block could be rotated, flipped, resized, renamed, locked and moved.
  * It's possible to add connections between them.
  *
  * Example:
@@ -98,12 +98,12 @@
  *     true    block element is locked
  * @binding fliph   whether to mirror the block over the horizontal axis, default is false
  *     Possible values:
- *     true    block element is fliped
- *     false   block element is not fliped
+ *     true    block element is flipped
+ *     false   block element is not flipped
  * @binding flipv   whether to mirror the block over the vertical axis, default is false
  *     Possible values:
- *     true    block element is fliped
- *     false   block element is not fliped
+ *     true    block element is flipped
+ *     false   block element is not flipped
  * @binding rotation   the rotation in degrees clockwise, default is 0
  *     Possible values:
  *     0     0   degrees rotation
@@ -458,8 +458,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipV  new flip value, default is false
      *     Possible values:
-     *     true    block element is fliped
-     *     false   block element is not fliped
+     *     true    block element is flipped
+     *     false   block element is not flipped
      */
     this.flipVertical = function(xmlNode, newFlipV) {
         var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
@@ -484,8 +484,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipV  new flip value, default is false
      *     Possible values:
-     *     true    block element is fliped
-     *     false   block element is not fliped
+     *     true    block element is flipped
+     *     false   block element is not flipped
      */
     this.flipHorizontal = function(xmlNode, newFlipH) {
         var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
