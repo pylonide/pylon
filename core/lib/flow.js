@@ -191,14 +191,14 @@ jpf.flow.canvas = function(htmlElement) {
  *        Possible values:
  *        false   block element is unlocled
  *        true    block element is locked
- *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is fliped automaticly, default is false
+ *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is flipped automaticly, default is false
  *        Possible values:
- *        true    block element is fliped
- *        false   block element is not fliped
- *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is fliped automaticly. default is false
+ *        true    block element is flipped
+ *        false   block element is not flipped
+ *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is flipped automaticly. default is false
  *        Possible values:
- *        true    block element is fliped
- *        false   block element is not fliped
+ *        true    block element is flipped
+ *        false   block element is not flipped
  *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, default is 0
  *        Possible values:
  *        0     0   degrees rotation
@@ -424,14 +424,14 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     90    90  degrees rotation
      *     180   180 degrees rotation
      *     270   270 degrees rotation
-     * @param {Boolean}   fliph      whether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+     * @param {Boolean}   fliph      whether to mirror the block over the vertical axis, background image is flipped automaticly. Default is false.
      *     Possible values:
-     *     true    block element is fliped
-     *     false   block element is not fliped
-     * @param {Boolean}   flipv      whether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+     *     true    block element is flipped
+     *     false   block element is not flipped
+     * @param {Boolean}   flipv      whether to mirror the block over the horizontal axis, background image is flipped automaticly. Default is false.
      *    Possible values:
-     *    true    block element is fliped
-     *    false   block element is not fliped
+     *    true    block element is flipped
+     *    false   block element is not flipped
      * @param {Boolean}   init
      */
     this.changeRotation = function(rotation, fliph, flipv, init) {
@@ -459,9 +459,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *
      * @param {String}   flip    whether to mirror the image over the vertical or horizontal axis
      *     Possible values:
-     *     none         image is not fliped
-     *     horizontal   image is fliped horizontal
-     *     vertical     image is fliped vertical
+     *     none         image is not flipped
+     *     horizontal   image is flipped horizontal
+     *     vertical     image is flipped vertical
      * @param {Number}   angle   degrees angle
      *     Possible values:
      *     0     0   degrees angle
@@ -576,7 +576,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Calculate new input position if block is resized, fliped or rotated.
+     * Calculate new input position if block is resized, flipped or rotated.
      * Base on default informations about block element from template.
      *
      * @param {Object}   input   object representation of input element
@@ -1614,14 +1614,14 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *        Possible values:
  *        false   block element is unlocled
  *        true    block element is locked
- *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+ *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is flipped automaticly. Default is false.
  *        Possible values:
- *        true    block element is fliped
- *        false   block element is not fliped
- *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+ *        true    block element is flipped
+ *        false   block element is not flipped
+ *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is flipped automaticly. Default is false.
  *        Possible values:
- *        true    block element is fliped
- *        false   block element is not fliped
+ *        true    block element is flipped
+ *        false   block element is not flipped
  *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
  *        Possible values:
  *        0     0   degrees rotation
