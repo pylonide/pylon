@@ -117,10 +117,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["state"] = function(value){
-        var bChanged = (this.state != value);
-        this.state = value;
-        if (bChanged) // if state has changed, update the button look/ feel
-            this.notifyAll(value);
+        // the state has changed, update the button look/ feel
+        this.notifyAll(value);
     };
 
     this.$propHandlers["plugins"] = function(value){
@@ -302,7 +300,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             this.notifyAll();
             setTimeout(function() {
-                if (jpf.isIE)
+                if (jpf.isIE && cmdName != "SelectAll")
                     _self.selection.set();
                 _self.$visualFocus();
             });
@@ -690,6 +688,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.oExt || this.oExt.disabled)
             return;
 
+        this.setProperty('state', jpf.editor.ON);
+
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
         function delay(){
@@ -744,6 +744,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (!this.realtime)
             this.change(this.getValue());
+
+        this.setProperty('state', jpf.editor.DISABLED);
 
         /*if (jpf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
@@ -1181,8 +1183,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
         //this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         //this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
-        if (!jpf.isIE)
-            this.iframe.style.marginTop = this.oToolbar.offsetHeight + 'px';
+        //if (!jpf.isIE)
+        //    this.iframe.style.marginTop = this.oToolbar.offsetHeight + 'px';
 
         //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
         //jpf.console.log('use iframe? ', this.useIframe);

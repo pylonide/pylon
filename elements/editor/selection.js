@@ -611,7 +611,7 @@ jpf.editor.selection = function(editor) {
     this.collapse = function(toEnd) {
         var range = this.getRange(), n;
 
-        // Control range on IE
+        // 'Control' range on IE
         if (range.item) {
             n = range.item(0);
             range = this.editor.oDoc.body.createTextRange();

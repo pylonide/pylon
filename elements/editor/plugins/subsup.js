@@ -31,23 +31,13 @@ jpf.editor.subSupCommand = function(sName) {
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
-        if (jpf.isGecko)
-            editor.executeCommand(this.name == "sub" ? 'subscript' : 'superscript');
-        else {
-            // @todo build support for IE on this one...
-        }
+        editor.executeCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
     };
 
     this.queryState = function(editor) {
-        if (jpf.isGecko) {
-            return editor.getCommandState(this.name == "sub"
-                ? 'subscript'
-                : 'superscript');
-        }
-        else {
-            // @todo build support for IE on this one...
-        }
-        return this.state;
+        return editor.getCommandState(this.name == "sub"
+            ? 'subscript'
+            : 'superscript');
     };
 }
 jpf.editor.plugin('sub', jpf.editor.subSupCommand);

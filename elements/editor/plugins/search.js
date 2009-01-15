@@ -70,10 +70,10 @@ jpf.editor.searchPlugin = function(sName) {
 
         if (jpf.isIE)
             this.editor.selection.set();
-        this.editor.$visualFocus();
-
-        this.editor.executeCommand('SelectAll');
+        //this.editor.oDoc.execCommand('SelectAll');
+        //this.editor.executeCommand('SelectAll');
         this.editor.selection.collapse(false);
+        this.editor.$visualFocus();
 
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
@@ -87,7 +87,8 @@ jpf.editor.searchPlugin = function(sName) {
                 range.select();
                 found = true;
             }
-            this.storeSelection();
+            //this.storeSelection();
+            this.editor.selection.cache();
         }
         else {
             if (this.editor.oWin.find(val, bMatchCase, false, true, false, false, false))
@@ -98,31 +99,33 @@ jpf.editor.searchPlugin = function(sName) {
         if (this.oReplBtn)
             this.oReplBtn[!found ? "disable" : "enable"]();
 
-        if (!found)
+        if (!found) {
+            if (this.oReplBtn)
+                this.oReplBtn.disable();
             alert("No occurences found for '" + val + "'");
+        }
+        else if (this.oReplBtn)
+            this.oReplBtn.enable();
 
         e.cancelBubble = true;
         return false;
     };
 
-    function onDoReplClick(e) {
+    this.onDoReplClick = function(e) {
         if (!this.editor.selection.isCollapsed())
             this.replace();
-    }
+    };
 
-    function onReplAllClick(e) {
+    this.onReplAllClick = function(e) {
         var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0,
             ed  = this.editor;
         if (!val)
             return;
 
-        if (jpf.isIE)
-            this.editor.selection.set();
-        this.editor.$visualFocus();
-
         // Move caret to beginning of text
         this.editor.executeCommand('SelectAll');
         this.editor.selection.collapse(true);
+        this.editor.$visualFocus();
 
         var range = this.editor.selection.getRange(), found = 0;
 
@@ -150,7 +153,7 @@ jpf.editor.searchPlugin = function(sName) {
             alert(found + " occurences found and replaced with '" + this.oReplace.value + "'");
         else
             alert("No occurences found for '" + val + "'");
-    }
+    };
 
     this.replace = function() {
         var sRepl = this.oReplace.value;
@@ -161,7 +164,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.editor.selection.getRange().duplicate().pasteHTML(sRepl);
         }
         else
-            this.editor.SoDoc.execCommand('InsertHTML', false, sRepl);
+            this.editor.oDoc.execCommand('InsertHTML', false, sRepl);
     };
 
     this.createPanelBody = function() {
