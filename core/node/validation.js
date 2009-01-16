@@ -130,7 +130,7 @@ jpf.Validation = function(){
                 case "datatype"    : this.typeMismatch    = true; break;
                 case "notnull"     : this.typeMismatch    = true; break;
                 case "checkequal"  : this.typeMismatch    = true; break;
-            };
+            }
         }
     }
 
@@ -517,7 +517,8 @@ jpf.ValidationGroup = function(name){
     /**
      * Gets the {@link Errorbox} element used for a specified element.
      *
-     * @param  {JmlNode}  oElement  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
+     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
+     * @param  {Boolean}  no_create
      * @return  {Errorbox}  the found or created Errorbox;
      */
     this.getErrorBox = function(o, no_create){

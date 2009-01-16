@@ -127,8 +127,10 @@ jpf.runIE = function(){
     if (jpf.XmlDatabase) {
         //#ifdef __WITH_XMLDATABASE
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
+            var id;
             if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = [], i = 0, l = xmlNode.length; i < l; i++)
+                var str, i, l;
+                for (str = [], i = 0, l = xmlNode.length; i < l; i++)
                     str.push(xmlNode[i].xml);
                 str = str.join("");
 
@@ -151,7 +153,7 @@ jpf.runIE = function(){
                     document.body.insertAdjacentHTML("beforeend", "<table><tr>"
                         + str + "</tr></table>");
                     var x = document.body.lastChild.firstChild.firstChild;
-                    for (var i = x.childNodes.length - 1; i >= 0; i--)
+                    for (i = x.childNodes.length - 1; i >= 0; i--)
                         htmlNode.appendChild(x.childNodes[jpf.hasDynamicItemList ? 0 : i]);
                 }
 
@@ -159,10 +161,10 @@ jpf.runIE = function(){
                 if (!this.nodes)
                     this.nodes = [];
 
-                var id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
+                id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
                 setTimeout('jpf.xmldb.doNodes(' + id + ')');
 
-                return;
+                return null;
             }
 
             //== ??? OR !=
@@ -174,7 +176,7 @@ jpf.runIE = function(){
             var strHTML = jpf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
             var pNode = (beforeNode || htmlNode);
             if (pNode.nodeType == 11) {
-                var id = xmlNode.getAttribute("id");
+                id = xmlNode.getAttribute("id");
                 if (!id)
                     throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
 

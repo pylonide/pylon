@@ -294,15 +294,16 @@ jpf.runNonIe = function (){
     };
 
     jpf.getXmlDom = function(message, noError){
+        var xmlParser;
         if (message) {
-            var xmlParser = new DOMParser();
+            xmlParser = new DOMParser();
             xmlParser     = xmlParser.parseFromString(message, "text/xml");
 
             if (!noError)
                 this.xmlParseError(xmlParser);
         }
         else {
-            var xmlParser = document.implementation.createDocument("", "", null);
+            xmlParser = document.implementation.createDocument("", "", null);
         }
         
         return xmlParser;
@@ -341,7 +342,7 @@ jpf.runNonIe = function (){
                     ? "beforebegin" 
                     : "beforeend", str);
 
-                return;
+                return null;
             }
     
             if (htmlNode.ownerDocument && htmlNode.ownerDocument != document

@@ -207,6 +207,7 @@ jpf.subnode = function(nodeFunc, oBase) {
          * 
          * @param {Object} pHtmlNode
          * @param {Object} sName
+         * @param {Object} parentNode
          * @type void
          */
         fC.prototype.$init = function(pHtmlNode, sName, parentNode){

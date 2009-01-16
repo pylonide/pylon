@@ -115,8 +115,8 @@ jpf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var nodes = $xmlns(xmlNode, "style", jpf.ns.jml), tnode, node;
-        for (var i = 0, l = nodes.length; i < l; i++) {
+        var i, l, nodes = $xmlns(xmlNode, "style", jpf.ns.jml), tnode, node;
+        for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
 
             if (node.getAttribute("src"))
@@ -125,7 +125,7 @@ jpf.skins = {
                 var test = true;
                 if (node.getAttribute("condition")) {
                     try {
-                        var test = eval(node.getAttribute("condition"));
+                        test = eval(node.getAttribute("condition"));
                     }
                     catch (e) {
                         test = false;
@@ -146,8 +146,8 @@ jpf.skins = {
             }
         }
 
-        var nodes = xmlNode.selectNodes("alias");
-        for (var i = 0; i < nodes.length; i++) {
+        nodes = xmlNode.selectNodes("alias");
+        for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].firstChild)
                 continue;
             this.skins[name].templates[nodes[i].firstChild.nodeValue.toLowerCase()] = xmlNode;
@@ -270,7 +270,7 @@ jpf.skins = {
                 if (node)
                     node = node.nextSibling;
             }
-        };
+        }
     },
 
     //#ifdef __WITH_ICONMAP
@@ -454,9 +454,9 @@ jpf.Presentation = function(){
             this.oExt.parentNode.insertBefore(this.oExt, beforeNode);
 
         //Copy classes
-        var l, newclasses = [],
+        var i, l, newclasses = [],
                classes    = (oExt.className || "").splitSafe("\s+");
-        for (var i = 0; i < classes; i++) {
+        for (i = 0; i < classes; i++) {
             if (classes[i] && classes[i] != oldBase)
                 newclasses.push(classes[i].replace(oldBase, this.baseCSSname));
         }
@@ -530,7 +530,7 @@ jpf.Presentation = function(){
                 this.pData.pHtml = this.oInt;
 
                 var nodes = this.pData.childNodes;
-                for (var i = 0; i < nodes.length; i++) {
+                for (i = 0; i < nodes.length; i++) {
                     nodes[i].pHtml = this.oInt; //Should this be recursive??
                 }
             }

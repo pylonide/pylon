@@ -54,6 +54,7 @@ jpf.Cache = function(){
      * representation is loaded from cache and set active.
      *
      * @param  {String} id  the id of the cache element which is looked up.
+     * @param  {Object} xmlNode
      * @return {Boolean}
      *   Possible values:
      *   true   the cache element is found and set active
@@ -148,9 +149,9 @@ jpf.Cache = function(){
         var node = this.$findNode(null, id);
         if (node) return node;
 
-        for (prop in cache) {
+        for (var prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
-                var node = this.$findNode(cache[prop], id);
+                node = this.$findNode(cache[prop], id);
                 if (node) return node;
             }
         }
@@ -168,7 +169,7 @@ jpf.Cache = function(){
     /**
      * Finds HTML presentation element in cache by xmlNode or xml id
      *
-     * @param {mixed} id  the xmlNode or id of the xmlNode that is represented by the HTMLElement which is looked up.
+     * @param {mixed} xmlNode the xmlNode or id of the xmlNode that is represented by the HTMLElement which is looked up.
      * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
      */
     this.getNodeByXml = function(xmlNode){
@@ -191,7 +192,7 @@ jpf.Cache = function(){
 
         for (var prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
-                var node = this.$findNode(cache[prop], id);
+                node = this.$findNode(cache[prop], id);
                 if (node) return cache[prop];
             }
         }

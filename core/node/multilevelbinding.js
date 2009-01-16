@@ -76,11 +76,12 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.changeSelection = function(list){
-        var xmlNode, selNodes = this.getSelectionNodes();
-        var traverseNodes     = jmlNode.getTraverseNodes();
+        var i, k, addList, removeList, xmlNode,
+            selNodes      = this.getSelectionNodes(),
+            traverseNodes = jmlNode.getTraverseNodes();
         //Find nodes that are removed from the selection
-        for (var removeList = [], i = 0; i < selNodes.length; i++) {
-            for (var k = 0; k < traverseNodes.length; k++) {
+        for (removeList = [], i = 0; i < selNodes.length; i++) {
+            for (k = 0; k < traverseNodes.length; k++) {
                 xmlNode = null;
                 if (this.compareNodes(selNodes[i], traverseNodes[k])) {
                     xmlNode = traverseNodes[k];
@@ -93,8 +94,9 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         
         //Find nodes that are added to the selection
-        for (var addList = [], i = 0; i < list.length; i++) {
-            for (var found = false, k = 0; k < selNodes.length; k++) {
+        for (addList = [], i = 0; i < list.length; i++) {
+            var found = false;
+            for (k = 0; k < selNodes.length; k++) {
                 if (this.compareNodes(selNodes[k], list[i])) {
                     found = true;
                     break;
@@ -164,14 +166,15 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.$updateSelection = function(){
         if (!jmlNode.xmlRoot || !mlNode.xmlRoot) 
             return;
-        
+
+        var i, k, xmlNode;
         if (jmlNode.multiselect) {
-            var xmlNode, selNodes = this.getSelectionNodes();
+            var selNodes = this.getSelectionNodes();
             var traverseNodes     = jmlNode.getTraverseNodes();
             
             //Check if a selected node is not selected yet
-            for (var i = 0; i < selNodes.length; i++) {
-                for (var k = 0; k < traverseNodes.length; k++) {
+            for (i = 0; i < selNodes.length; i++) {
+                for (k = 0; k < traverseNodes.length; k++) {
                     xmlNode = null;
                     if (this.compareNodes(selNodes[i], traverseNodes[k])) {
                         xmlNode = traverseNodes[k];
@@ -185,8 +188,8 @@ jpf.MultiLevelBinding = function(jmlNode){
             
             //Check if a currently selected item should be deselected
             var jSelNodes = jmlNode.getSelection();
-            for (var i = 0; i < jSelNodes.length; i++) {
-                for (var k = 0; k < selNodes.length; k++) {
+            for (i = 0; i < jSelNodes.length; i++) {
+                for (k = 0; k < selNodes.length; k++) {
                     xmlNode = false;
                     if (this.compareNodes(selNodes[k], jSelNodes[i])) {
                         xmlNode = true;
@@ -208,7 +211,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 return;
             }
             
-            var xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.xmlRoot));
+            xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.xmlRoot));
             if (xmlNode) {
                 if (jmlNode.$showSelection) 
                     jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
@@ -305,7 +308,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             else 
                 if (jmlNode.clearOnNoSelection) {
                     //This seems cumbersome... check abstraction
-                    var xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
+                    xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                         mlNode.xmlRoot, null, null, true);
                     jpf.xmldb.setNodeValue(xmlNode, "");
                     if (this.$updateOtherBindings) 

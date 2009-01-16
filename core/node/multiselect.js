@@ -373,6 +373,7 @@ jpf.MultiSelect = function(){
          * selection is cleared.
          *
          * @param  {String}  value  the new value for this element.
+         * @param  {Boolean} disable_event
          * @see #getValue
          */
         this.setValue = function(value, disable_event){
@@ -551,7 +552,7 @@ jpf.MultiSelect = function(){
         else {
             var id = (htmlNode = xmlNode).getAttribute(jpf.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
-                var id = (htmlNode = htmlNode.parentNode).getAttribute(
+                id = (htmlNode = htmlNode.parentNode).getAttribute(
                     jpf.xmldb.htmlIdTag);
 
             xmlNode = jpf.xmldb.getNodeById(id, this.xmlRoot);
@@ -718,8 +719,9 @@ jpf.MultiSelect = function(){
           }) === false)
             return false;
 
+        var htmlNode;
         if (this.selected) {
-            var htmlNode = this.caching
+            htmlNode = this.caching
                 ? this.getNodeFromCache(this.selected.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.selected.getAttribute(
@@ -732,7 +734,7 @@ jpf.MultiSelect = function(){
 
         if (!singleNode) {
             for (var i = valueList.length - 1; i >= 0; i--) {
-                var htmlNode = this.caching
+                htmlNode = this.caching
                     ? this.getNodeFromCache(valueList[i].getAttribute(
                         jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                     : document.getElementById(valueList[i].getAttribute(
@@ -745,7 +747,7 @@ jpf.MultiSelect = function(){
         }
 
         if (this.indicator) {
-            var htmlNode = this.caching
+            htmlNode = this.caching
                 ? this.getNodeFromCache(this.indicator.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.indicator.getAttribute(
@@ -846,6 +848,7 @@ jpf.MultiSelect = function(){
         }
 
         /* **** Type Detection *****/
+        var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = jpf.xmldb.getNodeById(xmlNode);
         if (!xmlNode.style)
@@ -857,7 +860,7 @@ jpf.MultiSelect = function(){
         else {
             var id = (htmlNode = xmlNode).getAttribute(jpf.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
-                var id = (htmlNode = htmlNode.parentNode).getAttribute(
+                id = (htmlNode = htmlNode.parentNode).getAttribute(
                     jpf.xmldb.htmlIdTag);
 
             xmlNode = jpf.xmldb.getNodeById(id);
@@ -940,16 +943,17 @@ jpf.MultiSelect = function(){
      * @return {mixed} the selection of this element.
      */
     this.getSelection = function(xmldoc){
+        var i, r;
         if (xmldoc) {
-            var r = this.xmlRoot
+            r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
                 : jpf.getXmlDom().createDocumentFragment();
-            for (var i = 0; i < valueList.length; i++)
+            for (i = 0; i < valueList.length; i++)
                 jpf.xmldb.clearConnections(r.appendChild(
                     valueList[i].cloneNode(true)));
         }
         else
-            for (var r = [], i = 0; i < valueList.length; i++)
+            for (r = [], i = 0; i < valueList.length; i++)
                 r.push(valueList[i]);
 
         return r;
@@ -959,6 +963,7 @@ jpf.MultiSelect = function(){
      * Selects the next xml data element to be selected.
      *
      * @param  {XMLElement}  xmlNode  the context data element.
+     * @param  {Boolean}     isTree
      */
     this.defaultSelectNext = function(xmlNode, isTree){
         var next = this.getNextTraverseSelected(xmlNode);

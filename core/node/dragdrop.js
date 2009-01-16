@@ -113,6 +113,7 @@ jpf.DragDrop = function(){
         if (exec !== false)
             return xmlNode;
 
+        return false;
     };
 
     /**
@@ -129,13 +130,13 @@ jpf.DragDrop = function(){
             [pNode, xmlNode, beforeNode], "move", xmlNode);
         if (exec !== false)
             return xmlNode;
-
+        return false;
     };
 
     /**
      * Determines whether the user is allowed to drag the passed XML node.
      *
-     * @param  {XMLElement} the xml data element subject to the test.
+     * @param  {XMLElement} x the xml data element subject to the test.
      * @return {Boolean} result of the test
      */
     this.isDragAllowed = function(x){
@@ -167,7 +168,8 @@ jpf.DragDrop = function(){
     /**
      * Determines whether the user is allowed to dropped the passed XML node.
      *
-     * @param  {XMLElement} xmlNode the xml data element subject to the test.
+     * @param  {XMLElement} x the xml data element subject to the test.
+     * @param  {Object} target
      * @return {Boolean} result of the test
      */
     this.isDropAllowed = function(x, target){
@@ -179,14 +181,16 @@ jpf.DragDrop = function(){
         if (this.disabled || !x || !target)
             return false;
 
+        var data, tgt;
+
         if (this.dropenabled) {
-            var data = x.selectSingleNode("true".indexOf(this.dropenabled) == -1
+            data = x.selectSingleNode("true".indexOf(this.dropenabled) == -1
                 ? this.dropenabled
                 : (this.hasFeature(__MULTISELECT__)
                     ? "self::" + this.traverse.split("|").join("|self::")
                     : "."));
 
-            var tgt = target || target == this.xmlRoot && target || null;
+            tgt = target || target == this.xmlRoot && target || null;
 
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, null];
@@ -197,7 +201,6 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
 
-        var data, tgt;
         for (var i = 0; i < rules.length; i++) {
             data = x.selectSingleNode("self::" +
                 jpf.parseExpression(rules[i].getAttribute("select"))
@@ -235,20 +238,20 @@ jpf.DragDrop = function(){
               && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
-        var actRule = ifcopy ? 'copy' : 'move';
+        var sNode, actRule = ifcopy ? 'copy' : 'move';
 
         switch (action) {
             case "list-append":
-                var sNode = this[actRule](xmlNode,
+                sNode = this[actRule](xmlNode,
                     isParent ? xmlReceiver : xmlReceiver.parentNode);
                 break;
             case "insert-before":
-                var sNode = isParent
+                sNode = isParent
                     ? this[actRule](xmlNode, xmlReceiver)
                     : this[actRule](xmlNode, xmlReceiver.parentNode, xmlReceiver);
                 break;
             case "tree-append":
-                var sNode = this[actRule](xmlNode, xmlReceiver);
+                sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
         }
 
@@ -267,7 +270,7 @@ jpf.DragDrop = function(){
      * Loads the dragdrop rules from the j:dragdrop element
      *
      * @param  {Array}      rules     the rules array created using {@link jpf#getRules(XMLElement)}
-     * @param  {XMLElement} [xmlNode] the reference to the j:dragdrop element
+     * @param  {XMLElement} [node] the reference to the j:dragdrop element
      * @see  SmartBinding
      */
     this.loadDragDrop = function(rules, node){
