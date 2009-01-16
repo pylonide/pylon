@@ -22,13 +22,14 @@
 // #ifdef __WITH_COMPONENT || __INC_ALL
 
 /**
- * This function tries to simplify the development of new elements for 3rd party
- * developers. Creating a new element for JPF may now be as easy as:
+ * This function tries to simplify the development of new JML elements.
+ * Creating a new element for JPF may now be as easy as:
  * Example:
  * <code language="javascript">
- * jpf.newComponent = jpf.component(jpf.NODE_VISIBLE, {
+ * // create a new JML component: <j:foo />
+ * jpf.foo = jpf.component(jpf.NODE_VISIBLE, {
  *     // component body (method and property declaration)
- * }).implement(jpf.Something);
+ * }).implement(jpf.barInterface);
  * </code>
  * 
  * @classDescription         This class serves as a baseclass for new elements
@@ -41,7 +42,7 @@
  * Note: we REALLY don't care about execution speed for this one! It will be
  * optimized by reformatting it using Jaw (compile-time), like C-style macros.
  * *sigh* don't worry, this implementation is still blazing fast and has been
- * profiled in all major browsers.
+ * profiled and optimized in all major browsers.
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%
