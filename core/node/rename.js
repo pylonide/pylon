@@ -58,7 +58,8 @@ jpf.Rename = function(){
     this.canrename    = true;
     var renameSubject = null;
     var renameTimer   = null;
-
+    var lastCursor;
+    
     /**
      * @attribute  {Boolean}  rename  whether the user can rename items in this element.
      */
@@ -119,10 +120,12 @@ jpf.Rename = function(){
             ? this.$getCaptionElement()
             : this.$indicator || this.$selected;
 
-        if (!elCaption) return;
+        if (!elCaption) 
+            return this.stopRename();
 
         var wdt = elCaption.offsetWidth;
-        elCaption.style.cursor = "text"; //@todo previous value should be remembered
+        lastCursor = elCaption.style.cursor;
+        elCaption.style.cursor = "text";
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
 
         if (this.$getOption("main", "scalerename")) {
@@ -162,12 +165,13 @@ jpf.Rename = function(){
         if (!this.renaming || contextXml && contextXml != renameSubject)
             return false;
 
-        if (this.oTxt.parentNode)
+        if (this.oTxt.parentNode.nodeType == 1)
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
 
         this.renaming = false;
 
-        this.replacedNode.style.cursor = ""; //@todo this should be remembered
+        if (this.replacedNode)
+            this.replacedNode.style.cursor = lastCursor || "";
 
         if (!success) {
             this.dispatchEvent("stoprename");

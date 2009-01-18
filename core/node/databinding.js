@@ -133,11 +133,11 @@ jpf.DataBinding = function(){
         jpf.console.info("Initializing Bindings for " + this.tagName + "[" + (this.name || '') + "]");
         //#endif
 
-        if (this.bindingRules["traverse"])
-            this.parseTraverse(this.bindingRules["traverse"][0]);
-
         if (this.$loaddatabinding)
             this.$loaddatabinding();
+
+        if (this.bindingRules["traverse"])
+            this.parseTraverse(this.bindingRules["traverse"][0]);
 
         this.$checkLoadQueue();
     };
@@ -1170,7 +1170,8 @@ jpf.DataBinding = function(){
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
-        jpf.popup.forceHide(); //This should be put in a more general position
+        if (jpf.popup.isShowing(this.uniqueId))
+            jpf.popup.forceHide(); //This should be put in a more general position
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call
@@ -1908,7 +1909,10 @@ jpf.DataBinding = function(){
 
         if (modelId) {
             //Reconstructing modelId with new valuePath
-            if (valuePath) {
+            if (modelId == "@default") {
+                valueSelect = strBindRef;
+            }
+            else if (valuePath) {
                 var modelIdParts = modelId.split(":", 3);
 
                 modelId = modelIdParts.shift();

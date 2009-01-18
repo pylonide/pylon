@@ -30,7 +30,7 @@
  * information. Grid columns can be reordered and resized.
  *
  * @constructor
- * @define datagrid, spreadsheet
+ * @define datagrid, spreadsheet, propedit
  * @addnode elements
  *
  * @author      Ruben Daniels
@@ -42,7 +42,10 @@
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
  * @inherits jpf.DragDrop
+ *
+ * @todo add the right ifdefs
  */
+jpf.propedit = 
 jpf.spreadsheet = 
 jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable  = true; // This object can get the focus
@@ -57,6 +60,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var colspan    = 0;
     var totalWidth = 0;
     var _self      = this;
+    var curBtn;
     
     this.headings = [];
     
@@ -525,6 +529,46 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //Set Up Headings
         var heads = this.bindingRules.column;
         
+        if (this.namevalue && !heads) {
+            this.bindingRules.column = heads = [];
+            
+            var xml = 
+              jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
+                <j:column caption="Property" width="50%" select="@caption" />\
+                <j:column caption="Value" width="50%"><![CDATA[[\
+                    var dg = jpf.lookup(' + this.uniqueId + ');\
+                    var select = $"@select";\
+                    var type = $"@type";\
+                    if (type != "custom") {\
+                        if (type == "dropdown") {\
+                            var v = jpf.getXmlValue(dg.xmlData, select);\
+                            %value("item[@value=\'" + v + "\']");\
+                        }\
+                        else {\
+                            %jpf.getXmlValue(dg.xmlData, select);\
+                        }\
+                    }\
+                    else {\
+                        var sep = $"@seperator" || "";\
+                        var output = [];\
+                        foreach("field"){\
+                            output.push(jpf.getXmlValue(dg.xmlData, $"@select"));\
+                        }\
+                        if ($"@mask")\
+                            output.push($"@mask");\
+                        else if (!output.length && select)\
+                            output.push(jpf.getXmlValue(dg.xmlData, select));\
+                        %output.join(sep);\
+                    }\
+                ]]]></j:column>\
+                <j:traverse select="property" />\
+              </j:root>');
+
+            heads.push(xml.childNodes[0]);
+            heads.push(xml.childNodes[1]);
+            this.bindingRules.traverse = [xml.childNodes[2]];
+        }
+        
         //#ifdef __DEBUG
         if (!heads) {
             throw new Error(jpf.formatErrorString(0, this,
@@ -538,7 +582,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             xml     = heads[i];
             width   = xml.getAttribute("width") || defaultwidth;
             options = xml.getAttribute("options") || this.options || 
-                (_self.tagName == "spreadsheet"
+                ("spreadsheet|propedit".indexOf(_self.tagName) > -1
                     ? "size"
                     : "sort|size|move");
 
@@ -674,10 +718,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
         Row.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
             o.select(this, event.ctrlKey, event.shiftKey);'
-            + (this.cellselect ? 'o.selectCell(event, this);' : ''));//, true;o.dragging=1;
+            + (this.cellselect || this.namevalue ? 'o.selectCell(event, this);' : ''));//, true;o.dragging=1;
         Row.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
-            + (this.celledit ? 'o.startRename();' : ''));//, true;o.dragging=1;
+            + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
         //Row.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
         
         //Build the Cells
@@ -812,7 +856,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.select(XMLRoot.selectSingleNode(this.traverse));
     }
     
-    var lastcell, lastcol = 0;
+    var lastcell, lastcol = 0, lastrow;
     this.selectCell = function(e, rowHtml){
         var htmlNode = e.srcElement || e.target;
         if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
@@ -820,20 +864,58 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         while(htmlNode.parentNode != rowHtml)
             htmlNode = htmlNode.parentNode;
-            
+        
+        if (this.namevalue && lastcell 
+          && lastcell.parentNode == htmlNode.parentNode 
+          && htmlNode == htmlNode.parentNode.lastChild) {
+            lastcell = htmlNode;
+            lastcol  = 1;
+            this.startDelayedRename(e, 1);
+            return;
+        }
+        
         if (lastcell == htmlNode)
             return;
             
-        if (lastcell)
-            jpf.setStyleClass(lastcell, "", ["cellselected"]);
-            
+        if (lastcell) {
+            if (this.namevalue) {
+                jpf.setStyleClass(lastcell.parentNode.childNodes[0], "", ["celllabel"]);
+                jpf.setStyleClass(lastcell.parentNode.childNodes[1], "", ["cellselected"]);
+            }
+            else {
+                jpf.setStyleClass(lastcell, "", ["cellselected"]);
+            }
+        }
+
         var col = jpf.xmldb.getChildNumber(htmlNode);
         var h   = headings[this.oHead.childNodes[col].getAttribute("hid")];
         
-        jpf.setStyleClass(htmlNode, "cellselected");
+        if (this.namevalue) {
+            jpf.setStyleClass(htmlNode.parentNode.childNodes[0], "celllabel");
+            jpf.setStyleClass(htmlNode.parentNode.childNodes[1], "cellselected");
+            
+            if (jpf.popup.isShowing(this.uniqueId))
+                jpf.popup.forceHide();
+            
+            if (curBtn)
+                curBtn.parentNode.removeChild(curBtn);
+            
+            var type = this.selected.getAttribute("type");
+            if (type) {
+                curBtn = editors[type];
+                if (curBtn) {
+                    htmlNode.parentNode.appendChild(curBtn);
+                    curBtn.style.display = "block";
+                }
+            }
+        }
+        else {
+            jpf.setStyleClass(htmlNode, "cellselected");
+        }
         
         lastcell = htmlNode;
         lastcol  = col;
+        lastrow  = rowHtml;
     }
 
     /**** Drag & Drop ****/
@@ -858,7 +940,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top  = (e.clientY+15) + "px";// - this.oDrag.startY
+        this.oDrag.style.top  = (e.clientY + 15) + "px";// - this.oDrag.startY
     }
 
     this.$initDragDrop = function(){
@@ -879,12 +961,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Rename ****/
     
     this.$getCaptionElement = function(){
-        var node = this.$getLayoutNode("cell", "caption", lastcell);
+        if (this.namevalue) {
+            var type = this.selected.getAttribute("type");
+            if (type && type != "text")
+                return;
+        }
+        
+        var node = this.$getLayoutNode("cell", "caption", this.namevalue
+            ? lastcell.parentNode.childNodes[1]
+            : lastcell);
         return node.nodeType == 1 && node || node.parentNode;
     }
     
     var lastCaptionCol = null;
     this.$getCaptionXml = function(xmlNode){
+        if (this.namevalue)
+            return this.xmlData.selectSingleNode(this.selected.getAttribute("select"));
+        
         var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
         lastCaptionCol = lastcol || 0;
         return xmlNode.selectSingleNode(h.select || ".");
@@ -893,6 +986,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var $getSelectFromRule = this.getSelectFromRule;
     this.getSelectFromRule = function(setname, cnode){ 
         if (setname == "caption") {
+            if (this.namevalue)
+                return [cnode.getAttribute("select"), this.xmlData.selectSingleNode(cnode.getAttribute("select"))];
+            
             var h = headings[this.oHead.childNodes[lastCaptionCol !== null 
                 ? lastCaptionCol 
                 : (lastcol || 0)].getAttribute("hid")];
@@ -968,9 +1064,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     //@todo optimize but bringing down the string concats
     this.resizeColumn = function(nr, newsize){
         var hN, h = headings[nr];
-        
+
         if (h.isPercentage) {
-            var ratio  = newsize / (h.htmlNode.offsetWidth - 7); //div 0 ??
+            var ratio  = newsize / (h.htmlNode.offsetWidth - (widthdiff - 3)); //div 0 ??
             var next  = [];
             var total = 0;
             var node  = h.htmlNode.nextSibling;
@@ -992,12 +1088,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 n = next[i];
                 n.width *= diffRatio;
                 jpf.setStyleRule("." + this.baseCSSname + " .headings ." + n.className, "width", n.width + "%"); //Set
-                jpf.setStyleRule("." + this.baseCSSname + " .records ." + n.className, "width", n.width + "%"); //Set
+                jpf.setStyleRule("." + this.baseCSSname + " .records ." + n.className, "width", n.width + "%", null, this.oWin); //Set
             }
             
             h.width = newPerc;
             jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "width", h.width + "%"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", h.width + "%"); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", h.width + "%", null, this.oWin); //Set
         }
         else {
             var diff = newsize - h.width;
@@ -1027,14 +1123,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.hideColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "hidden");
+        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "hidden", null, this.oWin);
         
         //Change percentages here
     }
     
     this.showColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "visible");
+        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "visible", null, this.oWin);
         
         //Change percentages here
     }
@@ -1074,6 +1170,72 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "marginLeft", vLeft); //Set
         }*/
     }
+    
+    /**** Buttons ****/
+
+    this.$btndown = function(oHtml, e){
+        this.$setStyleClass(oHtml, "down");
+        
+        var type = oHtml.getAttribute("type");
+        if (type == "dropdown") {
+            if (jpf.popup.isShowing(this.uniqueId)){
+                jpf.popup.forceHide();
+            }
+            else {
+                var oContainer = editors["dropdown_container"];
+                var mirrorNode = oHtml.parentNode.childNodes[1];
+                this.$setStyleClass(oContainer, mirrorNode.className);
+                
+                str = [];
+                var s = this.selected.selectNodes("item");
+                for (var i = 0, l = s.length; i < l; i++) {
+                    str.push("<div tag='", s[i].getAttribute("value"), "'>",
+                        s[i].firstChild.nodeValue, "</div>");
+                }
+                oContainer.innerHTML = str.join("");
+                
+                jpf.popup.show(this.uniqueId, {
+                    x       : 0,
+                    y       : mirrorNode.offsetHeight + 1,
+                    animate : true,
+                    ref     : mirrorNode,
+                    width   : mirrorNode.offsetWidth - this.widthdiff,
+                    height  : s.length * this.itemHeight
+                    /*,
+                    callback: function(container){
+                        container.style[jpf.supportOverflowComponent 
+                            ? "overflowY"
+                            : "overflow"] = "auto";
+                    }*/
+                });
+            }
+        }
+    }
+    
+    this.$btnup = function(oHtml, force){
+        var type = oHtml.getAttribute("type");
+        if (type == "custom" && oHtml.className.indexOf("down") > -1) {
+            var form = self[this.selected.getAttribute("form")];
+            form.show();
+            form.bringToFront();
+        }
+        
+        if (force || oHtml.getAttribute("type") != "dropdown" 
+          || !jpf.popup.isShowing(this.uniqueId))
+            this.$setStyleClass(oHtml, "", ["down"]);
+    }
+    
+    this.$btnout = function(oHtml, force){
+        if (force || oHtml.getAttribute("type") != "dropdown" 
+          || !jpf.popup.isShowing(this.uniqueId))
+            this.$setStyleClass(oHtml, "", ["down"]);
+    }
+    
+    this.addEventListener("popuphide", function(){
+        this.$btnup(curBtn, true);
+    });
+
+    /**** Init ****/
 
     var widthdiff, defaultwidth, useiframe;
     this.$draw = function(){
@@ -1082,6 +1244,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt  = this.$getLayoutNode("main", "body", this.oExt);
         this.oHead = this.$getLayoutNode("main", "head", this.oExt);
         this.oPointer = this.$getLayoutNode("main", "pointer", this.oExt);
+
         if (this.oHead.firstChild)
             this.oHead.removeChild(this.oHead.firstChild);
         if (this.oInt.firstChild)
@@ -1375,14 +1538,143 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     }
     
+    var editors = {};
     this.$loadJml = function(x){
         if(x.getAttribute("message")) this.clearMessage = x.getAttribute("message");
         
         //@todo add options attribute
         
-        if (this.tagName == "spreadsheet") {
+        if (this.tagName == "spreadsheet" || this.tagName == "propedit") {
             this.celledit   = true;
             this.cellselect = true;
+            
+            if (this.tagName == "propedit")
+                this.namevalue    = true;
+        }
+        
+        //@todo move this to the handler of the namevalue attribute
+        if (this.namevalue) {
+            var edits = ["dropdown", "custom", "dropdown_container"];
+            
+            for (var c, i = 0; i < edits.length; i++) {
+                c = this.$getLayoutNode(edits[i]);
+                
+                if (i < edits.length - 1) {
+                    c.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId + ").$btndown(this, event);");
+                    c.setAttribute("onmouseup", "jpf.lookup(" + this.uniqueId + ").$btnup(this)");
+                    c.setAttribute("onmouseout", "jpf.lookup(" + this.uniqueId + ").$btnout(this)");
+                    c.setAttribute("type", edits[i]);
+                    
+                    editors[edits[i]] = jpf.xmldb.htmlImport(c, this.oInt)
+                }
+                else {
+                    editors[edits[i]] = c = jpf.xmldb.htmlImport(c, this.oExt)
+                    
+                    this.itemHeight = this.$getOption("dropdown_container", "item-height") || 18.5;
+                    this.widthdiff  = this.$getOption("dropdown_container", "width-diff") || 0;
+                    
+                    jpf.popup.setContent(this.uniqueId, editors[edits[i]],
+                        jpf.skins.getCssString(this.skinName));
+                        
+                    c.onmouseover = function(e){
+                        if (!e) e = event;
+                        var target = e.srcElement || e.target;
+                        
+                        if (target == this) return;
+                        
+                        while (target.parentNode != this)
+                            target = target.parentNode;
+                        
+                        jpf.setStyleClass(target, "hover");
+                    }
+                    
+                    c.onmouseout = function(e){
+                        if (!e) e = event;
+                        var target = e.srcElement || e.target;
+                        
+                        if (target == this) return;
+                        
+                        while (target.parentNode != this)
+                            target = target.parentNode;
+                        
+                        jpf.setStyleClass(target, "", ["hover"]);
+                    }
+                    
+                    c.onmousedown = function(e){
+                        if (!e) e = event;
+                        var target = e.srcElement || e.target;
+                        
+                        if (target == this) return;
+                        
+                        while (target.parentNode != this)
+                            target = target.parentNode;
+                        
+                        _self.rename(_self.selected, target.getAttribute("tag"));
+                        jpf.popup.forceHide();
+                    }
+                }
+            }
+            
+            this.$_load = this.load;
+            this.load = function(xmlRoot, cacheId){
+                var template = this.applyRuleSetOnNode("template", xmlRoot) || this.template;
+                
+                if (template) {
+                    this.xmlData = xmlRoot;
+                    
+                    if (!this.isCached(cacheId)) {
+                        var o = {
+                            $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
+                                var nodes = _self.getTraverseNodes();
+                                for (var s, i = 0, l = nodes.length; i < l; i++) {
+                                    s = nodes[i].getAttribute("select");
+                                    if (s) {
+                                        if (jpf.xmldb.isChildOf(xmlNode, 
+                                          _self.xmlData.selectSingleNode(s), true)){
+                                            _self.$updateNode(nodes[i], 
+                                              jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                        }
+                                    }
+                                    else {
+                                        var children = nodes[i].selectNodes("field");
+                                        for (var j = 0; j < children.length; j++) {
+                                            s = children[j].getAttribute("select");
+                                            if (s) {
+                                                if (jpf.xmldb.isChildOf(xmlNode, 
+                                                  _self.xmlData.selectSingleNode(s), true)){
+                                                    _self.$updateNode(nodes[i], 
+                                                      jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                        o.uniqueId = jpf.all.push(o) - 1;
+                        
+                        jpf.xmldb.addNodeListener(xmlRoot, o);
+                    }
+                    
+                    jpf.setModel(template, {
+                        load: function(xmlNode){
+                            if (!xmlNode || this.isLoaded)
+                                return;
+
+                            _self.$_load(xmlNode);
+                            this.isLoaded = true; //@todo how about cleanup?
+                        },
+        
+                        setModel: function(model, xpath){
+                            model.register(this, xpath);
+                        }
+                    });
+                }
+                else {
+                    this.$_load.apply(this, arguments);
+                }
+            }
         }
         
         if (this.cellselect) {
@@ -1390,13 +1682,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.bufferselect = false;
             
             this.addEventListener("onafterselect", function(e){
-                this.selectCell({target:this.$selected.childNodes[lastcol || 0]}, 
-                    this.$selected);
+                if (lastrow != this.$selected)
+                    this.selectCell({target:this.$selected.childNodes[lastcol || 0]}, 
+                        this.$selected);
             });
         }
     }
     
     this.$destroy = function(){
+        jpf.popup.removeContent(this.uniqueId);
+        
+        if (editors["dropdown_container"]) {
+            editors["dropdown_container"].onmouseout = 
+            editors["dropdown_container"].onmouseover = null;
+        }
+        
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
         this.oExt.onclick = null;

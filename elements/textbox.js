@@ -569,7 +569,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
-        else
+        else if (!ac)
             jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
 

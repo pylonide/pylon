@@ -121,6 +121,10 @@ jpf.XmlDatabase = function(){
     this.isChildOf = function(pNode, childnode, orItself){
         if (!pNode || !childnode)
             return false;
+        
+        if (childnode.nodeType == 2)
+            childnode = childnode.selectSingleNode("..");
+        
         if (orItself && pNode == childnode)
             return true;
 
