@@ -583,20 +583,27 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
             if (state & HAS_CHILD) {
                 //@todo please rewrite this to a normal way of doing this
-                this.$getLayoutNode("item", "openclose", htmlNode)
-                    .onmousedown = new Function('e', "if(!e) e = event;\
+                var elOpenClose = this.$getLayoutNode("item", "openclose", htmlNode);
+                if (elOpenClose) {
+                    elOpenClose.onmousedown = new Function('e', "if(!e) e = event;\
                         if (e.button == 2) return;\
                         var o = jpf.lookup(" + this.uniqueId + ");\
                         o.slideToggle(this);\
                         if (o.onmousedown) o.onmousedown(e, this);\
                         jpf.cancelBubble(e, o);");
-                this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"]
-                    = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
-                    //#ifdef __WITH_RENAME
-                    "o.stopRename();" + 
-                    //#endif
-                    " o.slideToggle(this);\
-                    o.choose();");
+                }
+                
+                var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
+                if (elIcon) {
+                    elIcon[this.opencloseaction || "ondblclick"]
+                        = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
+                        //#ifdef __WITH_RENAME
+                        "o.stopRename();" + 
+                        //#endif
+                        " o.slideToggle(this);\
+                        o.choose();");
+                }
+                
                 this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"]
                     = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
                     //#ifdef __WITH_RENAME
@@ -616,6 +623,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     //This can be optimized by NOT using getLayoutNode all the time
+    //@todo please upgrade all the event calls to the 21st century, it hurts my eyes.
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
@@ -642,27 +650,30 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         //this.$setStyleClass(oItem, xmlNode.tagName)
         var elOpenClose = this.$getLayoutNode("item", "openclose");
-        if (hasChildren)
+        if (hasChildren && elOpenClose) {
             elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
                 "var o = jpf.lookup(" + this.uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\
                 jpf.cancelBubble(event, o);");
+        }
         
         //Icon interaction
         var elIcon = this.$getLayoutNode("item", "icon");
-        if (hasChildren) {
-            var strFunc = "var o = jpf.lookup(" + this.uniqueId + ");\
-                o.choose()" + 
-                //#ifdef __WITH_RENAME
-                "o.stopRename();" + 
-                //#endif
-                "o.slideToggle(this);\
-                jpf.cancelBubble(event,o);;";
-            if (this.opencloseaction != "onmousedown")
-                elIcon.setAttribute(this.opencloseaction || "ondblclick", strFunc);
-        }
         if (elIcon) {
+            if (hasChildren) {
+                var strFunc = "var o = jpf.lookup(" + this.uniqueId + ");\
+                    o.choose()" + 
+                    //#ifdef __WITH_RENAME
+                    "o.stopRename();" + 
+                    //#endif
+                    "o.slideToggle(this);\
+                    jpf.cancelBubble(event,o);";
+                
+                if (this.opencloseaction != "onmousedown")
+                    elIcon.setAttribute(this.opencloseaction || "ondblclick", strFunc);
+            }
+
             elIcon.setAttribute("onmousedown", 
                 "jpf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);" 
                 + (strFunc && this.opencloseaction == "onmousedown" ? strFunc : ""));
@@ -698,7 +709,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                  this.dorename = true;\
              o.select(this, event.ctrlKey, event.shiftKey);\
              if (o.onmousedown)\
-             o.onmousedown(event, this);" 
+                o.onmousedown(event, this);" 
              + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
 
         if (!elSelect.getAttribute("ondblclick"))

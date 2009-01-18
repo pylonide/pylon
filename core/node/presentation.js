@@ -798,10 +798,10 @@ jpf.Presentation = function(){
     }
 
     /**** Caching ****/
-
+    /*
     this.$setClearMessage    = function(msg){};
     this.$updateClearMessage = function(){}
-    this.$removeClearMessage = function(){};
+    this.$removeClearMessage = function(){};*/
 };
 
 // #endif

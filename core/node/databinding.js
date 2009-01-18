@@ -678,8 +678,11 @@ jpf.DataBinding = function(){
         //User action - Select || Choice
         var ar = (!type || type == "select") ? cXmlSelect : cXmlChoice; //This should be both when there is no arg set
 
-        this.signalXmlUpdate[o.uniqueId] = null;
-        delete this.signalXmlUpdate[o.uniqueId];
+        if (this.signalXmlUpdate) {
+            this.signalXmlUpdate[o.uniqueId] = null;
+            delete this.signalXmlUpdate[o.uniqueId];
+        }
+        
         o.dataParent = null;
 
         //CAN BE OPTIMIZED IF NEEDED TO ONLY SET TO null

@@ -1150,7 +1150,7 @@ jpf.XmlDatabase = function(){
         for (var addedNode, isAdding = false, i = 0; i < paths.length - 1; i++) {
             if (!isAdding && contextNode.selectSingleNode(foundpath
               + (i != 0 ? "/" : "") + paths[i])) {
-                foundpath += (i != 0 ? "/" : "") + paths[i];
+                foundpath += (i != 0 ? "/" : "") + paths[i] + "/";
                 continue;
             }
 
@@ -1264,7 +1264,7 @@ jpf.XmlDatabase = function(){
             return filled ? result : jpf.getXmlValue(xml, "text()");
         },
 
-        "cgivars": function(xml, basename){
+        "cgivars": function(xml, basename, isArray){
             var str = [], value, nodes = xml.childNodes, done = {};
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1)
@@ -1279,7 +1279,7 @@ jpf.XmlDatabase = function(){
                     done[name] = true;
                     for (var j = 0; j < sameNodes.length; j++) {
                         value = this.cgivars(sameNodes[j],
-                            (basename ? basename + "" : "") + name + "[" + j + "]");
+                            (basename ? basename + "" : "") + name + "[" + j + "]", true);
                         if (value)
                             str.push(value);
                     }
@@ -1294,17 +1294,24 @@ jpf.XmlDatabase = function(){
 
             var attr = xml.attributes;
             for (i = 0; i < attr.length; i++) {
-                if (attr[i].nodeValue)
-                    str.push(basename + "[" + attr[i].nodeName + "]="
-                        + encodeURIComponent(attr[i].nodeValue));
+                if (attr[i].nodeValue) {
+                    if (isArray) {
+                        str.push(basename + "[" + attr[i].nodeName + "]="
+                          + encodeURIComponent(attr[i].nodeValue));
+                    }
+                    else {
+                        str.push(basename + "_" + attr[i].nodeName + "="
+                          + encodeURIComponent(attr[i].nodeValue));
+                    }
+                }
             }
-
-            if (str.length)
-                return str.join("&");
 
             value = jpf.getXmlValue(xml, "text()");
             if (value)
-                return (basename || "") + "=" + encodeURIComponent(value);
+                str.push((basename || "") + "=" + encodeURIComponent(value));
+            
+            if (str.length)
+                return str.join("&");
         }
     };
 
