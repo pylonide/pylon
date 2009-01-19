@@ -1192,6 +1192,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.iframe || !this.iframe.parentNode) return;
         this.iframe.parentNode.style.height = (this.oExt.offsetHeight
             - this.oToolbar.offsetHeight - 2) + "px";
+
+        //TODO: check if any buttons from the toolbar became invisible/ visible again...
     };
 
     /**
@@ -1211,15 +1213,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
-
-        //jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
-        //this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
-        //this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
-        //if (!jpf.isIE)
-        //    this.iframe.style.marginTop = this.oToolbar.offsetHeight + 'px';
-
-        //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
-        //jpf.console.log('use iframe? ', this.useIframe);
     };
 
     this.$destroy = function() {
