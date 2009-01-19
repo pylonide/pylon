@@ -416,7 +416,7 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
             var o = xmlNode ? xmlNode.selectSingleNode(xpath) : null;
 
             if (!o)
-                return "";
+                return null;
             else if (o.nodeType >= 2 && o.nodeType <= 4)
                 return o.nodeValue;
             else if (jpf.xmldb.isOnlyChild(o.firstChild, [3, 4]))

@@ -103,20 +103,42 @@ jpf.DataBinding = function(){
      * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
      * @return {String} value of the selected XML Node
      */
-    this.query = function(xpath){
-        return jpf.getXmlValue(this.xmlRoot, xpath );
+    this.queryValue = function(xpath, type){
+        return jpf.getXmlValue(this[type||'xmlRoot'], xpath );
     };
-
-    /**
+	/**
      * Queries the bound data for an array of string values
      *
      * @param {String} xpath the xpath statement which queries on the data this element is bound on.
      * @return {String} value of the selected XML Node
      */
-    this.queryArray = function(xpath){
-        return jpf.getXmlValues(this.xmlRoot, xpath );
+    this.queryValues = function(xpath, type){
+        return jpf.getXmlValues(this[type||'xmlRoot'], xpath );
+    };
+	
+    /**
+     * Executes an xpath statement on the data of this model
+     *
+     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     */
+    this.queryNode = function(xpath, type){
+        var n = this[type||'xmlRoot'];
+		return n?n.selectSingleNode(xpath):null;
     };
 
+
+    /**
+     * Executes an xpath statement on the data of this model
+     *
+     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     */
+    this.queryNodes = function(xpath, type){
+        var n = this[type||'xmlRoot'];
+		return n?n.selectNodes(xpath):null;
+    };
+	
     /**
      * Loads the binding rules from the j:bindings element
      *

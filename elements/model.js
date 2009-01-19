@@ -244,18 +244,34 @@ jpf.model = function(data, caching){
     this.queryValue = function(xpath){
         return jpf.getXmlValue(this.data, xpath);
     };
-
+	
+    /**
+     * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
+     *
+     * @param  {String}  xpath  the xpath used to select a XMLNode.
+     * @return  {String}  value of the XMLNode
+     */	
+    this.queryValues = function(xpath){
+        return jpf.getXmlValue(this.data, xpath);
+    };
+	
     /**
      * Executes an xpath statement on the data of this model
      *
      * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @param  {Boolean}  [single] Wether a maximum of one nodes is returned.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
-    this.query = function(xpath, single){
-        return single
-            ? this.data.selectSingleNode(xpath)
-            : this.data.selectNodes(xpath);
+    this.queryNode = function(xpath){
+        return this.data.selectSingleNode(xpath)
+    };
+    /**
+     * Executes an xpath statement on the data of this model
+     *
+     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     */
+    this.queryNodes = function(xpath){
+        return this.data.selectNodes(xpath);
     };
 
     /**
