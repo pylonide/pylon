@@ -329,6 +329,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             xmlNodeArray = [xmlNodeArray];
         }
 //jpf.flow.alert_r(xmlNodeArray[0])
+
         var props = changes = [];
         var setNames = ["top", "left"];
 
@@ -702,26 +703,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$dragdrop = function(el, dragdata, candrop) {
-        var pos = jpf.getAbsolutePosition(el);
-        var diff;
-jpf.console.info("DRAGDROP");
-
-//alert("this.$dragdrop function");
-//jpf.flow.alert_r(dragdata.xmlNode)
-        /* Dropped block have some padding and margin */
-        for(var i=0, c = dragdata.indicator.childNodes; i<c.length; i++) {
-            if (c[i].tagName.toLowerCase() == "blockquote")  {
-                var _temp = jpf.getDiff(c[i])
-                diff = [_temp[0]/2, _temp[1]/2];
-            }
-        }
+        var blockPos  = jpf.getAbsolutePosition(dragdata.indicator);
+        var canvasPos = jpf.getAbsolutePosition(_self.objCanvas.htmlElement);
 
         this.moveTo(
             [dragdata.xmlNode],
-            (dragdata.x - pos[0] - dragdata.indicator.startX
-             + diff[0] + _self.objCanvas.htmlElement.scrollLeft),
-            (dragdata.y - pos[1] - dragdata.indicator.startY
-             + diff[1] + _self.objCanvas.htmlElement.scrollTop)
+            blockPos[0] - canvasPos[0],
+            blockPos[1] - canvasPos[1]
         );
     }
 

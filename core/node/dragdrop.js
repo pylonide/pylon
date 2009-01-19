@@ -651,7 +651,9 @@ jpf.DragServer = {
                 dragdata.host.$dragstart(null, dragdata);
             dragdata.started = true;
         }
-
+        
+        var storeIndicatorTopPos = dragdata.indicator.style.top;
+        
         //get Element at x, y
         dragdata.indicator.style.display = "block";
         if (dragdata.indicator)
@@ -661,6 +663,8 @@ jpf.DragServer = {
         jpf.DragServer.dragdata.y = e.clientY + document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
+
+        jpf.DragServer.dragdata.indicator.style.top = storeIndicatorTopPos;
 
         //Set Indicator
         dragdata.host.$moveDragIndicator(e);
@@ -688,6 +692,9 @@ jpf.DragServer = {
 
         //get Element at x, y
         var indicator = jpf.DragServer.dragdata.indicator;
+
+        var storeIndicatorTopPos = indicator.style.top;
+
         if (indicator)
             indicator.style.top = "10000px";
 
@@ -695,6 +702,8 @@ jpf.DragServer = {
         jpf.DragServer.dragdata.y = e.clientY+document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
+
+        jpf.DragServer.dragdata.indicator.style.top = storeIndicatorTopPos;
 
         //get element and call events
         var host = jpf.findHost(el);
