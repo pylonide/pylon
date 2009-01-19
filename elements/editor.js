@@ -45,6 +45,8 @@
  *
  * @inherits jpf.Validation
  * @inherits jpf.XForms
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Presentation
  */
 
 jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
@@ -616,7 +618,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onKeyup(e) {
         this.selection.cache();
         if (keyupTimer != null)
-            return true;
+            return;
 
         function keyupHandler() {
             clearTimeout(keyupTimer);
@@ -980,7 +982,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function drawToolbars(oParent) {
-        var tb, l, k, i, j, z, node, buttons, bIsPlugin;
+        var tb, l, k, i, j, z, x, node, buttons, bIsPlugin;
         var item, bNode, oNode = this.$getOption('toolbars');
         var plugin, oButton, plugins = this.plugins;
 
@@ -1019,7 +1021,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$getNewContext("toolbar");
             tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
 
-            for (z = 0; z < buttons.length; z++) {
+            for (z = 0, x = buttons.length; z < x; z++) {
                 item = buttons[z];
 
                 if (item == "|") { //seperator!
@@ -1097,7 +1099,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         // fetch the DOM references of all toolbar buttons and let the
         // respective plugins finish initialization
         var btns = this.oToolbar.getElementsByTagName("div");
-        for (var item, plugin, i = 0; i < btns.length; i++) {
+        for (var item, plugin, i = 0, j = btns.length; i < j; i++) {
             item = btns[i].getAttribute("type");
 
             oButtons[item] = btns[i];
@@ -1170,8 +1172,26 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.sanitizeTextbox(this.oDoc.body);
         //#endif
 
+        // setup layout rules:
+        jpf.layout.setRules(this.oExt, this.uniqueId + "_editor",
+            "jpf.all[" + this.uniqueId + "].$resize()");
+        jpf.layout.activateRules(this.oExt);
+
         // do the magic, make the editor editable.
         this.makeEditable();
+    };
+
+    /**
+     * Takes care of setting the proper size of the editor after a resize event
+     * was fired through the JPF layout manager
+     * @see jpf.layout
+     * 
+     * @type {void}
+     */
+    this.$resize = function() {
+        if (!this.iframe || !this.iframe.parentNode) return;
+        this.iframe.parentNode.style.height = (this.oExt.offsetHeight
+            - this.oToolbar.offsetHeight - 2) + "px";
     };
 
     /**
@@ -1192,7 +1212,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
 
-        jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
+        //jpf.console.warn("Editor doesnt set toolbar margins and paddings in IE. Disabled by Ruben");
         //this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         //this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
         //if (!jpf.isIE)
