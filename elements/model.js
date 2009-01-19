@@ -992,7 +992,7 @@ jpf.model = function(data, caching){
      * @todo: PUT ??
      * @todo: build in instruction support
      */
-    this.submit = function(instruction, type, useComponents, xSelectSubTree){
+    this.submit = function(instruction, xmlNode, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
         if (!this.isValid()) {
             //#ifdef __WITH_XFORMS
@@ -1005,6 +1005,8 @@ jpf.model = function(data, caching){
 
         if (!instruction && !defSubmission)
             return false;
+        if (!xmlNode)
+            xmlNode = this.data;
         if (!instruction && typeof defSubmission == "string")
             instruction = defSubmission;
 
@@ -1119,15 +1121,15 @@ jpf.model = function(data, caching){
         if (type == "array" || type == "xml") {
             var data = type == "array"
                 ? this.getJsonObject()
-                : jpf.xmldb.serializeNode(this.data);
+                : jpf.xmldb.serializeNode(xmlNode);
 
-            jpf.saveData(instruction, this.data, {args : [data]}, cbFunc);
+            jpf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
         else
             if (type == "native") {
                 var data = useComponents
                     ? this.getCgiString()
-                    : jpf.xmldb.convertXml(this.getXml(), "cgivars");
+                    : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), "cgivars");
 
                 if (instruction.match(/^rpc\:/)) {
                     rpc = rpc.split(".");
@@ -1141,7 +1143,7 @@ jpf.model = function(data, caching){
                     if (instruction.match(/^url/))
                         instruction += (instruction.match(/\?/) ? "&" : "?") + data;
 
-                    jpf.saveData(instruction, this.data, null, cbFunc);
+                    jpf.saveData(instruction, xmlNode, null, cbFunc);
                 }
             }
 
