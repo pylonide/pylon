@@ -1617,7 +1617,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.$_load = this.load;
             this.load = function(xmlRoot, cacheId){
-                var template = this.applyRuleSetOnNode("template", xmlRoot) || this.template;
+                var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
                 
                 if (template) {
                     this.xmlData = xmlRoot;

@@ -2929,12 +2929,12 @@ jpf.MultiselectBinding = function(){
 
             if (!testNode) {
                 //Set Component in listening state until data becomes available again.
-                var model = this.getModel();
+                var model = this.getModel(true);
 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(this,
-                        "Setting change notifier on componet",
+                    throw new Error(jpf.formatErrorString(0, this,
+                        "Setting change notifier on component",
                         "Component without a model is listening for changes",
                         this.$jml));
                 //#endif
