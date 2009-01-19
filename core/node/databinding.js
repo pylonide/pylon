@@ -1267,6 +1267,12 @@ jpf.DataBinding = function(){
                     this.$setClearMessage(this.emptyMsg, "empty");
             }
 
+            //#ifdef __WITH_PROPERTY_BINDING
+            //@todo move this to getCache??
+            if (this.hasFeature(__MULTISELECT__) && nodes.length != this.length)
+                this.setProperty("length", nodes.length);
+            //#endif
+
             this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
             return;
         }

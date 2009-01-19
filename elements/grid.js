@@ -260,7 +260,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else if(typeof rowheight[row] != "string") {
                 rowheight[row] = Math.max(rowheight[row] || 0, 
-                    (cellInfo.height || this.cellheight) 
+                    parseFloat(cellInfo.height || this.cellheight) 
                     + cellInfo.m[0] + cellInfo.m[2]);
             }
         }
