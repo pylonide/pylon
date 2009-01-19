@@ -102,6 +102,9 @@ jpf.BaseList = function(){
                 if (this.$tempsel)
                     this.selectTemp();
 
+                if (this.ctrlselect == "enter")
+                    this.select(this.indicator, true);
+
                 this.choose(selHtml);
                 break;
             case 32:
@@ -117,7 +120,7 @@ jpf.BaseList = function(){
                 if (this.$tempsel)
                     this.selectTemp();
 
-                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
+                this.remove(this.mode != "normal" ? this.indicator : null); //this.mode != "check"
                 break;
             case 36:
                 //HOME

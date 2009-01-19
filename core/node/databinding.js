@@ -2191,7 +2191,7 @@ jpf.StandardBinding = function(){
 
             if (!testNode) {
                 //Set Component in listening state untill data becomes available again.
-                var model = this.getModel();
+                var model = this.getModel(true);
 
                 //#ifdef __DEBUG
                 if (!model)
@@ -2710,8 +2710,14 @@ jpf.MultiselectBinding = function(){
         if (!listenNode)
             listenNode = this.xmlRoot;
 
-        if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
-            xmlNode = lastParent;
+        if (action == "redo-remove") {
+            lastParent.appendChild(xmlNode); //ahum, i'm not proud of this one
+            var traverseNode = this.isTraverseNode(xmlNode);
+            lastParent.removeChild(xmlNode);
+            
+            if (!traverseNode)
+                xmlNode = lastParent;
+        }
 
         //Get First ParentNode connected
         do {

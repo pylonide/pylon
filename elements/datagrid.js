@@ -1682,7 +1682,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.bufferselect = false;
             
             this.addEventListener("onafterselect", function(e){
-                if (lastrow != this.$selected)
+                if (lastrow != this.$selected && this.$selected)
                     this.selectCell({target:this.$selected.childNodes[lastcol || 0]}, 
                         this.$selected);
             });

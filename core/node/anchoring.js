@@ -248,7 +248,7 @@ jpf.Anchoring = function(){
      * @macro
      */
     function setPercentage(expr, value){
-        return expr.replace(jpf.percentageMatch, "((" + value + " * $1)/100)");
+        return String(expr).replace(jpf.percentageMatch, "((" + value + " * $1)/100)");
     }
 
     this.$updateLayout = function(){

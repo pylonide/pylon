@@ -265,7 +265,8 @@ jpf.Cache = function(){
         this.documentId = this.xmlRoot = this.cacheID = null;
 
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", 0);
+        if (!nomsg) //@todo this is all wrong
+            this.setProperty("length", 0);
         //#endif
     };
 
