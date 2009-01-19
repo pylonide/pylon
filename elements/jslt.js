@@ -84,6 +84,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt = this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(this.$jml)
             ? this.pHtmlNode 
             : this.pHtmlNode.appendChild(document.createElement("div"));
+        this.oExt.host = this;
 
         if (this.$jml.getAttribute("class")) 
             this.oExt.className = this.$jml.getAttribute("class");

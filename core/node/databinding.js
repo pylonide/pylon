@@ -102,9 +102,13 @@ jpf.DataBinding = function(){
      *
      * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
      * @return {String} value of the selected XML Node
+     * @todo
+     *  lstRev.query('revision/text()', 'selected');
+     *  lstRev.query('revision/text()', 'xmlRoot');
+     *  lstRev.query('revision/text()', 'indicator');
      */
     this.queryValue = function(xpath, type){
-        return jpf.getXmlValue(this[type||'xmlRoot'], xpath );
+        return jpf.getXmlValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
@@ -113,7 +117,7 @@ jpf.DataBinding = function(){
      * @return {String} value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
-        return jpf.getXmlValues(this[type||'xmlRoot'], xpath );
+        return jpf.getXmlValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
