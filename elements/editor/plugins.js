@@ -46,26 +46,34 @@ jpf.editor.plugins = function(coll, editor) {
      */
     this.add = function(sPlugin) {
         if (!jpf.editor.plugin[sPlugin]) return null;
+        // yay, plugin does exist, so we can instantiate it for the editor
         var plugin = new jpf.editor.plugin[sPlugin](sPlugin);
+        // add it to main plugin collection
         this.coll[plugin.name] = plugin;
 
         if (plugin.type) {
+            // a type prop is set, push it up the type-collection
             if (!this.collTypes[plugin.type])
                 this.collTypes[plugin.type] = [];
             this.collTypes[plugin.type].push(plugin);
         }
         if (plugin.subType) {
+            // a subType prop is set, push it up the type-collection
             if (!this.collTypes[plugin.subType])
                 this.collTypes[plugin.subType] = [];
             this.collTypes[plugin.subType].push(plugin);
         }
-        if (plugin.hook)
+        if (plugin.hook) {
+            // a hook prop is set, push it up the event hooks-collection
             plugin.hook = plugin.hook.toLowerCase();
             if (!this.collHooks[plugin.hook])
                 this.collHooks[plugin.hook] = [];
             this.collHooks[plugin.hook].push(plugin);
+        }
 
         if (typeof plugin.keyBinding == "string") {
+            // a keyBinding prop has been set, parse it and push it up the
+            // keys-collection
             plugin.keyBinding = {
                 meta   : (plugin.keyBinding.indexOf('meta')  > -1),
                 control: (plugin.keyBinding.indexOf('ctrl')  > -1),
@@ -133,7 +141,7 @@ jpf.editor.plugins = function(coll, editor) {
      * API; Get all plugins matching a specific plugin-type
      *
      * @param {String} type
-     * @type Array
+     * @type  {Array}
      */
     this.getByType = function(type) {
         if (this.collTypes[type] && this.collTypes[type].length)
@@ -306,8 +314,17 @@ jpf.editor.plugin = function(sName, fExec) {
                 this.editor.selection.moveToBookmark(this.bookmark);
         };
 
+        /**
+         * Appends a new JML element - in its string representation - to an
+         * existing JML node. A new JML node will be created as specified by the
+         * contents of sNode and appended to oParent.
+         *
+         * @param {String}  sNode
+         * @param {JmlNode} oParent
+         * @type  {JmlNode}
+         */
         this.appendJmlNode = function(sNode, oParent) {
-            if (!sNode) return;
+            if (!sNode) return null;
 
             var oNode = jpf.document.createElement(sNode);
             jpf.document.documentElement.appendChild(oNode);

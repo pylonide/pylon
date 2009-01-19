@@ -44,7 +44,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 265);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 270);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         this.oArea.focus();
@@ -79,7 +79,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             var bull   = String.fromCharCode(8226);
             var middot = String.fromCharCode(183);
             // convert headers to strong typed character (BOLD)
-            sContent   = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
+            sContent = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
                 .replace(new RegExp('tab-stops: list [0-9]+.0pt">', 'gi'), '">' + "--list--")
                 .replace(new RegExp(bull + "(.*?)<BR>", "gi"), "<p>" + middot + "$1</p>")
                 .replace(new RegExp('<SPAN style="mso-list: Ignore">', 'gi'), "<span>" + bull) // Covert to bull list
@@ -97,8 +97,7 @@ jpf.editor.clipboardPlugin = function(sName) {
                 .replace(/<\/?\w+:[^>]*>/gi, "")
                 .replace(/-- page break --\s*<p>&nbsp;<\/p>/gi, "") // Remove pagebreaks
                 .replace(/-- page break --/gi, "") // Remove pagebreaks
-                .replace('', '' ,'gi')
-                .replace('</p>', '<br /><br />' ,'gi') //convert <p> newlines to <br> ones
+                .replace(/<\/p>/gi, "<br /><br />") //convert <p> newlines to <br> ones
                 .replace(/<\/?p[^>]*>/gi, "")
                 .replace(/<\/?div[^>]*>/gi, "");
                 //.replace(/\/?&nbsp;*/gi, ""); &nbsp;
@@ -213,7 +212,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         this.oArea = document.getElementById(idArea);
         jpf.sanitizeTextbox(this.oArea);
         this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
-            caption="Insert" bottom="0" right="6" \
+            caption="Insert" bottom="4" right="6" \
             onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', panelBody);
 
         setTimeout(function() {
