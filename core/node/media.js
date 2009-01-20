@@ -43,7 +43,7 @@ jpf.Media = function(){
     this.$booleanProperties["seeking"]    = true;
     this.$booleanProperties["autoplay"]   = true;
     this.$booleanProperties["controls"]   = true;
-    this.$booleanProperties["ready"]      = false;
+    this.$booleanProperties["ready"]      = true;
 
     this.$supportedProperties.push("position", "networkState", "readyState",
         "progress", "buffered", "bufferedBytes", "totalBytes", "currentTime",

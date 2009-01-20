@@ -169,6 +169,7 @@ jpf.JmlElement = function(){
         /**
          * Moves this element to the lowest z ordered level.
          */
+        this.sendToBack    =
         this.sentToBack    = function(){
             this.setProperty("zindex", 0);
         };
@@ -183,6 +184,7 @@ jpf.JmlElement = function(){
         /**
          * Moves this element one z order level deeper.
          */
+        this.sendBackwards =
         this.sentBackwards = function(){
             this.setProperty("zindex", this.zindex - 1);
         };
