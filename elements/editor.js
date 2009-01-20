@@ -74,11 +74,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     //this.useIframe         = false;
     this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
 
-    this.$booleanProperties["realtime"]     = false;
-    this.$booleanProperties["imagehandles"] = false;
-    this.$booleanProperties["tablehandles"] = false;
-    this.$supportedProperties.push("value", "imagehandles", "tablehandles",
-        "plugins", "output", "state");
+    this.$booleanProperties["realtime"]     = true;
+    this.$booleanProperties["imagehandles"] = true;
+    this.$booleanProperties["tablehandles"] = true;
+    this.$supportedProperties.push("value", "realtime", "imagehandles", 
+        "tablehandles", "plugins", "output", "state");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -182,7 +182,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * @type   {Object}
     */
     this.getViewPort = function() {
-        var doc = (!this.oWin.document.compatMode || this.oWin.document.compatMode == 'CSS1Compat')
+        var doc = (!this.oWin.document.compatMode
+          || this.oWin.document.compatMode == 'CSS1Compat')
             ? this.oWin.document.html || this.oWin.document.documentElement //documentElement for an iframe
             : this.oWin.document.body;
 
@@ -355,30 +356,34 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         //this.selection.cache();
-
-        jpf.popup.show(sCacheId, {
-            x        : 0,
-            y        : 22,
-            animate  : false,
-            ref      : oRef,
-            width    : iWidth,
-            height   : iHeight,
-            callback : function(oPopup) {
-                if (oPopup.onkeydown) return;
-                oPopup.onkeydown = function(e) {
-                    e = e || window.event;
-                    var key = e.which || e.keyCode;
-                    if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
-                        oPlugin.submit(new jpf.AbstractEvent(e));
-                }
-            }
-        });
-
-        this.$visualFocus();
         this.selection.set();
+        this.$visualFocus();
 
         oPlugin.state = jpf.editor.ON;
         this.notify(oPlugin.name, jpf.editor.ON);
+
+        // using setTimeout here, because I want the popup to be shown AFTER the
+        // event bubbling is complete. Another click handler further up the DOM
+        // tree may call a jpf.popup.forceHide();
+        setTimeout(function() {
+            jpf.popup.show(sCacheId, {
+                x        : 0,
+                y        : 22,
+                animate  : false,
+                ref      : oRef,
+                width    : iWidth,
+                height   : iHeight,
+                callback : function(oPopup) {
+                    if (oPopup.onkeydown) return;
+                    oPopup.onkeydown = function(e) {
+                        e = e || window.event;
+                        var key = e.which || e.keyCode;
+                        if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
+                            oPlugin.submit(new jpf.AbstractEvent(e));
+                    }
+                }
+            });
+        });
     };
 
     /**
@@ -441,7 +446,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onContextmenu(e) {
         //if (jpf.isIE)
         //    this.$visualFocus(true);
-        var ret = this.plugins.notifyAll('oncontext', e);
+        var ret = this.plugins.notifyAll('context', e);
     }
 
     var keydownTimer = null;
@@ -491,7 +496,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 oNode.parentNode.appendChild(oDiv);
                         }
                         else
-                            _self.insertHTML(jpf.editor.ALTP.start + jpf.editor.ALTP.text + jpf.editor.ALTP.end, true);
+                            _self.insertHTML(jpf.editor.ALTP.start
+                                + jpf.editor.ALTP.text + jpf.editor.ALTP.end, true);
                         var _select = jpf.appsettings.allowSelect;
                         jpf.appsettings.allowSelect = true;
                         _self.selection.collapse(true);
@@ -624,11 +630,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             clearTimeout(keyupTimer);
             _self.notifyAll();
             _self.dispatchEvent('typing', {editor: _self, event: e});
-            _self.plugins.notifyAll('onTyping', e.code);
+            _self.plugins.notifyAll('typing', e.code);
             keyupTimer = null;
         }
 
-        keyupTimer = window.setTimeout(keyupHandler, 100);
+        keyupTimer = window.setTimeout(keyupHandler, 200);
         //keyHandler();
         document.onkeyup(e);
     }
@@ -787,7 +793,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(e){
             this.selection.cache();
             jpf.popup.forceHide();
-            this.notifyAll();
+            //this.notifyAll();
             document.onmousedown(e.event);
         }).bindWithEvent(this));
 
@@ -1118,19 +1124,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.iframe.setAttribute('border', '0');
         this.iframe.setAttribute('marginwidth', '0');
         this.iframe.setAttribute('marginheight', '0');
-        //this.iframe.className = oEditor.className;
-        //oEditor.parentNode.replaceChild(this.iframe, oEditor);
         oEditor.appendChild(this.iframe);
         this.oWin = this.iframe.contentWindow;
         this.oDoc = this.oWin.document;
-        this.oDoc.open();
-        this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
-            <html>\
-            <head>\
-                <title></title>\
-                <style type="text/css">\
+
+        // get the document style (CSS) from the skin:
+        // see: jpf.presentation.getCssString(), where the following statement
+        // is derived from.
+        var sCss = jpf.getXmlValue($xmlns(jpf.skins.skins[this.skinName.split(":")[0]].xml,
+            "docstyle", jpf.ns.jml)[0], "text()");
+        if (!sCss) {
+            sCss = "\
                 html{\
-                    cursor : text;\
+                    cursor: text;\
                     border: 0;\
                 }\
                 body\
@@ -1138,30 +1144,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     margin: 8px;\
                     padding: 0;\
                     border: 0;\
-                    color: Black;\
+                    color: #000;\
                     font-family: Verdana,Arial,Helvetica,sans-serif;\
                     font-size: 10pt;\
-                    background:#fff;\
+                    background: #fff;\
                     word-wrap: break-word;\
-                }\
-                .itemAnchor\
-                {\
-                    background:url(images/editor/items.gif) no-repeat left bottom;\
-                    line-height:6px;\
-                    overflow:hidden;\
-                    padding-left:12px;\
-                    width:12px;\
-                }\
-                .visualAid table,\
-                .visualAid table td\
-                {\
-                    border: 1px dashed #bbb;\
-                }\
-                .visualAid table td\
-                {\
-                    margin: 8px;\
-                }\
-                </style>\
+                }";
+        }
+
+        this.oDoc.open();
+        this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
+            <html>\
+            <head>\
+                <title></title>\
+                <style type="text/css">' + sCss + '</style>\
             </head>\
             <body class="visualAid"></body>\
             </html>');
@@ -1194,6 +1190,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             - this.oToolbar.offsetHeight - 2) + "px";
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
+        this.plugins.notifyAll("resize");
     };
 
     /**
