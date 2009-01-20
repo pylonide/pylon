@@ -35,7 +35,7 @@ jpf.editor.plugin('fontstyle', function() {
     function getStyles(editor) {
         if (!oStyles) {
             // parse font styles from skin definition
-            var node, aCss, oNode = editor.$getOption('fontstyles');
+            var node, aCss, bCss, oNode = editor.$getOption('fontstyles');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(jpf.formatErrorString(0, this,
@@ -54,6 +54,7 @@ jpf.editor.plugin('fontstyle', function() {
                     // #endif
                     oStyles = {};
                     aCss    = [];
+                    bCss    = [];
                     for (var cname, k = 0, l = s.length; k < l; k += 6) {
                         if (!s[k] || !s[k + 5]) continue; // check if the first and last key are present
                         cname = s[k + 2].replace(/\.([\w]+)/, "$1");
@@ -65,12 +66,17 @@ jpf.editor.plugin('fontstyle', function() {
                             node   : null
                         }
                         aCss.push(oStyles[cname].css);
+                        bCss.push(".editor_fontstyle " + oStyles[cname].css);
                     }
                 }
             }
 
-            if (aCss.length)
+            if (aCss.length) {
+                // insert resulting CSS into container document AND inside the
+                // document of the editor's iframe
+                jpf.importCssString(window.document, bCss.join(""));
                 jpf.importCssString(editor.oDoc, aCss.join(""));
+            }
         }
         return oStyles;
     }
@@ -176,7 +182,6 @@ jpf.editor.plugin('fontstyle', function() {
         return panelBody;
     };
 });
-
 
 //##############################################################################
 

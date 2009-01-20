@@ -212,7 +212,7 @@ jpf.editor.plugin('tablewizard', function() {
     this.name        = 'tablewizard';
     this.icon        = 'tablewizard';
     this.type        = jpf.editor.CONTEXTPANEL;
-    this.hook        = 'oncontext';
+    this.hook        = 'context';
     this.state       = jpf.editor.OFF;
     this.oTable      = null;
     this.oRow        = null;
