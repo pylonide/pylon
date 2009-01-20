@@ -532,10 +532,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.namevalue && !heads) {
             this.bindingRules.column = heads = [];
             
+            var cols = (this.columns || "50%,50%").splitSafe(",");
+            
             var xml = 
               jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
-                <j:column caption="Property" width="50%" select="@caption" />\
-                <j:column caption="Value" width="50%"><![CDATA[[\
+                <j:column caption="Property" width="' + cols[0] + '" select="@caption" />\
+                <j:column caption="Value" width="' + cols[1] + '"><![CDATA[[\
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
@@ -1232,7 +1234,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     this.addEventListener("popuphide", function(){
-        this.$btnup(curBtn, true);
+        if (curBtn)
+            this.$btnup(curBtn, true);
     });
 
     /**** Init ****/
@@ -1569,6 +1572,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 else {
                     editors[edits[i]] = c = jpf.xmldb.htmlImport(c, this.oExt)
+                    editors[edits[i]].style.zIndex = 100000;
                     
                     this.itemHeight = this.$getOption("dropdown_container", "item-height") || 18.5;
                     this.widthdiff  = this.$getOption("dropdown_container", "width-diff") || 0;
@@ -1618,51 +1622,67 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$_load = this.load;
             this.load = function(xmlRoot, cacheId){
                 var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
-                
+
                 if (template) {
                     this.xmlData = xmlRoot;
-                    
-                    if (!this.isCached(cacheId)) {
-                        var o = {
-                            $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
-                                var nodes = _self.getTraverseNodes();
-                                for (var s, i = 0, l = nodes.length; i < l; i++) {
-                                    s = nodes[i].getAttribute("select");
-                                    if (s) {
-                                        if (jpf.xmldb.isChildOf(xmlNode, 
-                                          _self.xmlData.selectSingleNode(s), true)){
-                                            _self.$updateNode(nodes[i], 
-                                              jpf.xmldb.findHTMLNode(nodes[i], _self));
-                                        }
-                                    }
-                                    else {
-                                        var children = nodes[i].selectNodes("field");
-                                        for (var j = 0; j < children.length; j++) {
-                                            s = children[j].getAttribute("select");
+
+                    jpf.setModel(template, {
+                        load: function(xmlNode){
+                            if (!xmlNode || this.isLoaded)
+                                return;
+                                
+                            // retrieve the cacheId
+                            if (!cacheId) {
+                                cacheId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag) ||
+                                    jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode);
+                            }
+
+                            if (!_self.isCached(cacheId)) {
+                                var o = {
+                                    $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
+                                        var nodes = _self.getTraverseNodes();
+                                        for (var s, i = 0, l = nodes.length; i < l; i++) {
+                                            s = nodes[i].getAttribute("select");
                                             if (s) {
                                                 if (jpf.xmldb.isChildOf(xmlNode, 
                                                   _self.xmlData.selectSingleNode(s), true)){
                                                     _self.$updateNode(nodes[i], 
                                                       jpf.xmldb.findHTMLNode(nodes[i], _self));
-                                                    break;
+                                                }
+                                            }
+                                            else {
+                                                var children = nodes[i].selectNodes("field");
+                                                for (var j = 0; j < children.length; j++) {
+                                                    s = children[j].getAttribute("select");
+                                                    if (s) {
+                                                        if (jpf.xmldb.isChildOf(xmlNode, 
+                                                          _self.xmlData.selectSingleNode(s), true)){
+                                                            _self.$updateNode(nodes[i], 
+                                                              jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                                            break;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                };
+                                o.uniqueId = jpf.all.push(o) - 1;
+                                
+                                //@todo This is never removed
+                                jpf.xmldb.addNodeListener(xmlRoot, o);
+                                
+                                _self.$_load(xmlNode);
+                            }
+                            else {
+                                _self.$_load(xmlNode);
+                                
+                                var nodes = _self.getTraverseNodes();
+                                for (var s, i = 0, l = nodes.length; i < l; i++) {
+                                    _self.$updateNode(nodes[i], jpf.xmldb.findHTMLNode(nodes[i], _self));
                                 }
                             }
-                        };
-                        o.uniqueId = jpf.all.push(o) - 1;
-                        
-                        jpf.xmldb.addNodeListener(xmlRoot, o);
-                    }
-                    
-                    jpf.setModel(template, {
-                        load: function(xmlNode){
-                            if (!xmlNode || this.isLoaded)
-                                return;
 
-                            _self.$_load(xmlNode);
                             this.isLoaded = true; //@todo how about cleanup?
                         },
         
@@ -1694,7 +1714,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (editors["dropdown_container"]) {
             editors["dropdown_container"].onmouseout = 
-            editors["dropdown_container"].onmouseover = null;
+            editors["dropdown_container"].onmouseover = 
+            editors["dropdown_container"].onmousedown = null;
         }
         
         jpf.removeNode(this.oDrag);

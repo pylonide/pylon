@@ -818,7 +818,7 @@ jpf.MultiSelect = function(){
         if (!noEvent) {
             this.dispatchEvent("afterselect", {
                 list    : valueList,
-                xmlNode : selected
+                xmlNode : this.selected
             });
         }
     };

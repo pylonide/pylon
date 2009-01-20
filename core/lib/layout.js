@@ -647,9 +647,9 @@ jpf.layout = {
             aData.splitter = x.getAttribute("splitter")
                 || (x.getAttribute("edge") == "splitter" ? 5 : false);
         if (x.getAttribute("width"))
-            aData.fwidth = x.getAttribute("width");
+            aData.fwidth = String(jpf.parseExpression(x.getAttribute("width")));
         if (x.getAttribute("height"))
-            aData.fheight = x.getAttribute("height");
+            aData.fheight = String(jpf.parseExpression(x.getAttribute("height")));
         if (x.getAttribute("minwidth"))
             aData.minwidth = x.getAttribute("minwidth");
         //@todo calculate inner minheight en minwidth
@@ -672,6 +672,7 @@ jpf.layout = {
         if (x.getAttribute("size"))
             aData.size = x.getAttribute("size").split(",");
 
+        //@todo Amazing hackery, can we please try to be consistent across all layout methods
         if (aData.fwidth && aData.fwidth.indexOf("/") > -1) {//match(/[\(\)\+\-=\/\*]/)){
             aData.fwidth = eval(aData.fwidth);
             if (aData.fwidth <= 1)

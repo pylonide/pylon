@@ -327,7 +327,7 @@ jpf.Cache = function(){
      * @see DataBinding#clearCacheItem
      */
     this.isCached = function(id){
-        return cache[id] ? true : false;
+        return cache[id] || this.cacheID == id ? true : false;
     }
 
     /* ********************************************************************

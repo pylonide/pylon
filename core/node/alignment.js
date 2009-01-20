@@ -245,7 +245,7 @@ jpf.Alignment = function(){
 
         this.$propHandlers["height"] = function(value){
             this.height = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
-            this.aData.fheight = value || false;
+            this.aData.fheight = String(value) || false;
 
             if (this.aData.fheight && this.aData.fheight.indexOf("/") > -1) {
                 this.aData.fheight = eval(this.aData.fheight);
