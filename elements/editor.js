@@ -1185,7 +1185,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$resize = function() {
-        if (!this.iframe || !this.iframe.parentNode) return;
+        if (!this.iframe || !this.iframe.parentNode || !this.oExt.offsetHeight) return;
         this.iframe.parentNode.style.height = (this.oExt.offsetHeight
             - this.oToolbar.offsetHeight - 2) + "px";
 
