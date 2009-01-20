@@ -45,7 +45,7 @@ jpf.Class = function(){
 
     this.$regbase         = 0;
     this.hasFeature       = function(test){
-        return this.$regbase&test
+        return this.$regbase&test;
     };
 
     /* ***********************
@@ -56,8 +56,8 @@ jpf.Class = function(){
 
     var boundObjects       = {};
     var myBoundPlaces      = {};
-    this.$handlePropSet     = function(prop, value){
-        this[prop] = value
+    this.$handlePropSet    = function(prop, value){
+        this[prop] = value;
     };
 
     /*
