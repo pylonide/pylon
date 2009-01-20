@@ -11,30 +11,189 @@ jpf.uirecorder = {
 
         jpf.uirecorder.inited = true;
 
-        var dEvents = [
-            "onclick", "onmousedown", "onmouseup", "onmousemove", "onmouseover", "onmouseout", "ondblclick", 
-            "onkeydown", "onkeyup", "onkeypress",
-            "onselect", "onchange", "onsubmit", "onreset", "onfocus", "onblur"];
-
-        var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
-            "DOMNodeInsertedIntoDocument", "DOMAttrModified", "DOMCharacterDataModified", "DOMActivate"];
-
         /* Support for various events listed in dEvents array */
-        for (var i = 0, l = dEvents.length; i < l; i++) {
+        /*for (var i = 0, l = dEvents.length; i < l; i++) {
             document.documentElement[dEvents[i]] = function(e) {
                 if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
                     return;
 
                 e = e || event;
-
+                
                 jpf.uirecorder.actionStack.push([new Date().getTime(), dEvents[i],
                     e.srcElement || e.target, jpf.extend({}, e)]);
             }
+        }*/
+       
+        /* Form events support */
+        document.documentElement.onselect = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onselect",
+                e.srcElement || e.target, jpf.extend({}, e)]);
         }
+        
+        document.documentElement.onchange = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onchange",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onsubmit = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onsubmit",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onreset = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onreset",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+       
+        /* User interface events support */
+        document.documentElement.onfocus = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onfocus",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+
+        document.documentElement.onblur = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onblur",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+
+        /* Mouse events support */
+        document.documentElement.onclick = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onclick",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.ondblclick = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            alert("ondblclick")
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "ondblclick",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onmousedown = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousedown",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onmouseup = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseup",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onmousemove = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+            
+            e = e || event;
+
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousemove",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onmouseover = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseover",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onmouseout = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseout",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+
+        /* Keyboard events support for all browsers */
+        document.documentElement.onkeyup = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeyup",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onkeydown = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeydown",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+        
+        document.documentElement.onkeypress = function(e) {
+            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                return;
+
+            e = e || event;
+            
+            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeypress",
+                e.srcElement || e.target, jpf.extend({}, e)]);
+        }
+
+        var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
+            "DOMNodeInsertedIntoDocument", "DOMAttrModified", "DOMCharacterDataModified", "DOMActivate"];
 
         /* ============== Mutation Events ============== */
         /* Support for Mutation Events in FF */
-        if(jpf.isGecko) {
+        /*if(jpf.isGecko) {
             for (var i = 0, l = mEvents.length; i < l; i++) {
                 document.addEventListener(mEvents[i], function(e) {
                     if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
@@ -45,10 +204,9 @@ jpf.uirecorder = {
                     jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, jpf.extend({}, e)]);
                 }, false);
             }
-        }
-
+        }*/
         /* Support for Mutation events in IE */
-        if(jpf.isIE) {
+        /*else if(jpf.isIE) {
             for (var i = 0, l = mEvents.length; i < l; i++) {
                 document.attachEvent(mEvents[i], function(e) {
                     if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
@@ -59,7 +217,7 @@ jpf.uirecorder = {
                     jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, jpf.extend({}, e)]);
                 });
             }
-        }
+        }*/
 
         /* Support for Mouse Scroll event */
         if(document.addEventListener) {
@@ -98,8 +256,8 @@ jpf.uirecorder = {
 
                 jpf.uirecorder.actionStack.push([
                     new Date().getTime(),
-                    "DOMMouseScroll",
-                    e.srcElement || e.target,
+                    "onmousewheel",
+                    e.srcElement,
                     jpf.extend({}, jpf.uirecorder.createMouseWheelEvent(e))
                 ]);
             };
@@ -122,7 +280,7 @@ jpf.uirecorder = {
             delta = -e.detail / 3;
 
         return {
-            type : "DOMMouseScroll",
+            type : jpf.isGecko ? "DOMMouseScroll" : (jpf.isIE ? "mousewheel" : "DOMMouseScroll"),
             delta : delta
         }
     },
@@ -143,7 +301,8 @@ jpf.uirecorder = {
         jpf.uirecorder.isPlaying   = true;
         jpf.uirecorder.playStack   = jpf.uirecorder.actionStack.slice(0);
 
-        playFrame();
+        if (jpf.uirecorder.playStack.length)
+            playFrame();
     },
 
     /**
@@ -174,22 +333,31 @@ function playFrame() {
 
     var lastTime = frame[0];
     var simulate = false;
+    var src = frame[3], e;
 
     if (jpf.isIE) {
-        var e = document.createEventObject();
+        e = document.createEventObject();
         
         for (prop in frame[3]) {
-            if (frame[3][prop])
+            if (frame[3][prop]) {
                 e[prop] = frame[3][prop];
+            }
         }
 
-        e.srcElement = e.target = frame[2];//orginalnie byl tylko e.target
+        e.target = frame[2];
 
-        frame[2].fireEvent(frame[1], e);
+        jpf.console.info("type: "+src.type);
+        switch (src.type) {
+            case "mousewheel":
+                fireScroll(frame);
+                break;
+            default:
+                frame[2].fireEvent(frame[1], e);
+                break;
+        }
+        
     }
     else {
-        var src = frame[3], e;
-
         switch(src.type) {
             case "mousemove":
             case "mouseup":
@@ -199,18 +367,19 @@ function playFrame() {
             case "mouseover":
             case "mouseout":
                 e = document.createEvent("MouseEvents");
-                e.initMouseEvent(src.type, src.bubbles, true, window, 1, src.screenX,
-                  src.screenY, src.clientX, src.clientY, src.ctrlKey, src.altKey,
-                  src.shiftKey, src.metaKey, src.button, src.target
+                e.initMouseEvent(src.type, src.bubbles, src.cancelable, src.view, src.detail, src.screenX,
+                    src.screenY, src.clientX, src.clientY, src.ctrlKey, src.altKey,
+                    src.shiftKey, src.metaKey, src.button, src.relatedTarget
                 );
+                jpf.console.info("playing: "+src.clientX+" "+src.clientY);
                 break;
             case "keyup":
             case "keydown":
             case "keypress":
                 e = document.createEvent("KeyboardEvent");
                 e.initKeyEvent(src.type, src.bubbles, true, window, 
-                        src.ctrlKey, src.altKey, src.shiftKey, src.metaKey, 
-                        src.keyCode, src.charCode); 
+                    src.ctrlKey, src.altKey, src.shiftKey, src.metaKey, 
+                    src.keyCode, src.charCode); 
                 break;
             case "select":
             case "change":
@@ -226,7 +395,7 @@ function playFrame() {
                 e = document.createEvent("UIEvents");
                 e.initUIEvent(src.type, src.bubbles, src.cancelable, e.view, e.detail);
                 break;
-            case "DOMAttrModified":
+            /*case "DOMAttrModified":
             case "DOMCharacterDataModified":
             case "DOMNodeInsertedIntoDocument":
             case "DOMNodeRemovedFromDocument":
@@ -235,7 +404,7 @@ function playFrame() {
             case "DOMSubtreeModified":
                 e = document.createEvent("MutationEvents");
                 e.initMutationEvent(src.type, src.bubbles, src.cancelable, src.relatedNode, src.prevValue, src.newValue, src.attrName, src.attrChange);
-                break;
+                break;*/
             case "DOMMouseScroll": //mouse scroll
                 fireScroll(frame);
                 simulate = true;
@@ -251,13 +420,13 @@ function playFrame() {
         }
     }
 
-    if (jpf.uirecorder.playStack.length) {
+    if (jpf.uirecorder.playStack.length && jpf.uirecorder.isPlaying) {
         timeout = setTimeout(function() {
             playFrame();
         }, jpf.uirecorder.playStack[0][0] - lastTime);
     }
     else {
-        jpf.uirecorder.isPlaying = false;
+        jpf.uirecorder.stop();
         clearInterval(timeout);
     }
 };
@@ -275,6 +444,13 @@ function fireScroll(frame) {
     }
 
     // FF - 39
+    // IE - el.offsetHeight / ~(6,7 - 6,8)
     // Chrome - 120
-    el.scrollTop = el.scrollTop - (jpf.isGecko ? 39 : (jpf.isChrome ? 120 : 20))*frame[3].delta;
+    el.scrollTop = el.scrollTop - (jpf.isGecko
+        ? 39
+        : (jpf.isChrome
+            ? 120
+            : (jpf.isIE
+                ? Math.round(el.offsetHeight / 6.73)
+                : 20))) * frame[3].delta;
 }
