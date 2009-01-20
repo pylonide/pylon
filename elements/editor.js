@@ -89,7 +89,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         html = this.parseHTML(html);
 
+        // If HTML the string is the same as the contents of the iframe document,
+        // don't do anything...
+        if (this.parseHTML(this.oDoc.body.innerHTML) == html)
+            return;
+
+
         this.oDoc.body.innerHTML = html;
+
         if (jpf.isGecko) {
             var oNode, oParent = this.oDoc.body;
             while (oParent.childNodes.length) {
@@ -120,10 +127,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$propHandlers["state"] = function(value){
         // the state has changed, update the button look/ feel
-        this.notifyAll(value);
-        this.notify('code', this.plugins.isActive('code')
-            ? jpf.editor.SELECTED
-            : value);
+        this.notifyAll(parseInt(value));
+        if (this.plugins.isActive('code'))
+            this.notify('code', jpf.editor.SELECTED);
     };
 
     this.$propHandlers["plugins"] = function(value){
@@ -419,7 +425,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onClick(e) {
         if (oBookmark && jpf.isGecko) {
             var oNewBm = this.selection.getBookmark();
-            //window.console.dir(this.selection.getRange());
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
                 //this.selection.moveToBookmark(oBookmark);
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
@@ -688,7 +693,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (bCode) {
             _self.notifyAll(jpf.editor.DISABLED);
-            _self.notify('code', jpf.editor.ON);
+            _self.notify('code', jpf.editor.SELECTED);
         }
         else if (bNotify)
             _self.notifyAll();
@@ -928,7 +933,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         var oPlugin = this.plugins.get(item);
-        if (typeof state == "undefined") {
+        if (typeof state == "undefined" || state === null) {
             if (oPlugin && oPlugin.queryState)
                 state = oPlugin.queryState(this);
             else
@@ -1069,8 +1074,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         oButton.setAttribute("title", item);
                     }
 
-                    oButton.setAttribute("onmousedown",
-                        "jpf.findHost(this).$buttonClick(event, this);");
+                    oButton.setAttribute("onmousedown", "jpf.all["
+                        + _self.uniqueId + "].$buttonClick(event, this);");
                     oButton.setAttribute("onmouseover", "jpf.setStyleClass(this, 'hover');");
                     oButton.setAttribute("onmouseout", "jpf.setStyleClass(this, '', ['hover']);");
 
@@ -1104,14 +1109,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // fetch the DOM references of all toolbar buttons and let the
         // respective plugins finish initialization
-        var btns = this.oToolbar.getElementsByTagName("div");
+        var btns = Array.prototype.slice.call(this.oToolbar.getElementsByTagName("div"));
         for (var item, plugin, i = 0, j = btns.length; i < j; i++) {
             item = btns[i].getAttribute("type");
+            if (!item) continue;
 
             oButtons[item] = btns[i];
             plugin = this.plugins.coll[item];
-            if (!plugin)
-                continue;
+            if (!plugin) continue;
 
             plugin.buttonNode = btns[i];
 
