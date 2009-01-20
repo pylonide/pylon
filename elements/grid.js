@@ -74,7 +74,6 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-
 jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     var id;
     var update  = false;
@@ -113,6 +112,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("columns", "padding", "margin", 
         "cellheight", "span");
     
+    var jmlHideShow                  =
     this.$updateTrigger              =
     this.$propHandlers["columns"]    =
     this.$propHandlers["padding"]    =
@@ -132,6 +132,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         jmlNode.$propHandlers["width"]  = 
         jmlNode.$propHandlers["height"] = 
         jmlNode.$propHandlers["span"]   = null;
+        
+        jmlNode.$hide = jmlNode.$_hide;
+        jmlNode.$show = jmlNode.$_show;
         
         /* Removing is probably not a good idea, because we're not sure if the node is reparented
         //#ifdef __WITH_ALIGNMENT
@@ -168,15 +171,20 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
          * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
          * @attribute {String} width
          * Remarks:
-         * When used as a child of a grid element the width can also be set as '*'. This has the meaning of filling the rest space.
+         * When used as a child of a grid element the width can also be set as '*'. This will fill the rest space.
          * @attribute {String} height   
          * Remarks:
-         * When used as a child of a grid element the height can also be set as '*'. This has the meaning of filling the rest space.
+         * When used as a child of a grid element the height can also be set as '*'. This will fill the rest space.
          */
         
         jmlNode.$propHandlers["width"]  = 
         jmlNode.$propHandlers["height"] = 
         jmlNode.$propHandlers["span"]   = updateTrigger;
+        
+        jmlNode.$_hide = jmlNode.$hide;
+        jmlNode.$_show = jmlNode.$show;
+        jmlNode.$hide = jmlHideShow;
+        jmlNode.$show = jmlHideShow;
         
         l.queue(this.oExt, updater);
         update = true;
@@ -212,7 +220,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         var span, jNode, jNodes = this.childNodes;
         for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
             jNode = jNodes[i];
-            if (jNode.nodeFunc != jpf.NODE_VISIBLE)
+            if (jNode.nodeFunc != jpf.NODE_VISIBLE || !jNode.visible)
                 continue;
             
             //#ifdef __WITH_ANCHORING
@@ -232,6 +240,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                 oExt.style.position = "absolute"; //Expensive
             
             span = jNode.getAttribute("span");
+            
             cellInfo = {
                 span    : span == "*" ? collength : parseInt(span) || 1,
                 m       : m,
@@ -410,7 +419,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             else {
                 if (parseFloat(cellInfo.width) == cellInfo.width
                     || typeof cols[col] == "number")
-                    cellInfo.oHtml.style.width = (cellInfo.width || cols[col] 
+                    cellInfo.oHtml.style.width = ((cellInfo.width || cols[col]) 
                         - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 else
                     rule.push(id + ".style.width = (" 
@@ -418,11 +427,11 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                         + (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff) 
                         + ") + 'px'");
             }
-            
+
             //Height
             if (parseFloat(cellInfo.height) == cellInfo.height
                 || typeof rowheight[row] == "number")
-                cellInfo.oHtml.style.height = (cellInfo.height || rowheight[row] 
+                cellInfo.oHtml.style.height = ((cellInfo.height || rowheight[row]) 
                     - (cellInfo.m[0] + cellInfo.m[2] + cellInfo.verdiff)) + "px";
             else
                 rule.push(id + ".style.height = (" 
@@ -466,6 +475,15 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
+        
+        var jmlNode, nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            jmlNode = nodes[i];
+            jmlNode.$_hide = jmlNode.$hide;
+            jmlNode.$_show = jmlNode.$show;
+            jmlNode.$hide = jmlHideShow;
+            jmlNode.$show = jmlHideShow;
+        }
         
         this.$updateGrid();
     };
