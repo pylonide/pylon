@@ -126,8 +126,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["state"] = function(value){
+        this.state = parseInt(value); // make sure it's an int
         // the state has changed, update the button look/ feel
-        this.notifyAll(parseInt(value));
+        this.notifyAll(value);
         if (this.plugins.isActive('code'))
             this.notify('code', jpf.editor.SELECTED);
     };
@@ -292,7 +293,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.executeCommand = function(cmdName, cmdParam) {
-        if (!this.plugins.isPlugin(cmdName) && inited && complete) {
+        if (!this.plugins.isPlugin(cmdName) && inited && complete
+          && this.state != jpf.editor.DISABLED) {
             if (jpf.isIE) {
                 if (!this.oDoc.body.innerHTML)
                     return commandQueue.push([cmdName, cmdParam]);
@@ -449,6 +451,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
+        if (this.state == jpf.editor.DISABLED) return;
         //if (jpf.isIE)
         //    this.$visualFocus(true);
         var ret = this.plugins.notifyAll('context', e);
@@ -633,6 +636,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         function keyupHandler() {
             clearTimeout(keyupTimer);
+            if (this.state == jpf.editor.DISABLED) return;
             _self.notifyAll();
             _self.dispatchEvent('typing', {editor: _self, event: e});
             _self.plugins.notifyAll('typing', e.code);
@@ -1180,6 +1184,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // do the magic, make the editor editable.
         this.makeEditable();
+
+        setTimeout(function() {
+            _self.setProperty('state', jpf.editor.DISABLED);
+        })
     };
 
     /**
@@ -1190,7 +1198,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$resize = function() {
-        if (!this.iframe || !this.iframe.parentNode || !this.oExt.offsetHeight) return;
+        if (!this.iframe || !this.iframe.parentNode || !this.oExt.offsetHeight)
+            return;
         this.iframe.parentNode.style.height = (this.oExt.offsetHeight
             - this.oToolbar.offsetHeight - 2) + "px";
 
