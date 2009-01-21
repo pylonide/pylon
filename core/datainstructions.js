@@ -236,6 +236,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
             if (typeof data == "string")
                 data = jpf.xmldb.getXml(data);
 
+            extra.data = data;
             data = data.selectSingleNode(operators[0]);
 
             //Change this to warning?

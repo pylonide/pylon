@@ -890,7 +890,7 @@ jpf.model = function(data, caching){
             }, options));
 
             if (callback)
-                callback.call(this, data);
+                callback.call(this, extra.data);
         });
     };
 

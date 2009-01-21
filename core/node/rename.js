@@ -165,7 +165,7 @@ jpf.Rename = function(){
         if (!this.renaming || contextXml && contextXml != renameSubject)
             return false;
 
-        if (this.oTxt.parentNode.nodeType == 1)
+        if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1)
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
 
         this.renaming = false;

@@ -719,8 +719,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         Row.setAttribute("id", Lid);
         Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
         Row.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
+            var wasSelected = o.$selected == this;\
             o.select(this, event.ctrlKey, event.shiftKey);'
-            + (this.cellselect || this.namevalue ? 'o.selectCell(event, this);' : ''));//, true;o.dragging=1;
+            + (this.cellselect || this.namevalue ? 'if (wasSelected) o.selectCell(event, this);' : ''));//, true;o.dragging=1;
         Row.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
             + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
@@ -866,7 +867,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         while(htmlNode.parentNode != rowHtml)
             htmlNode = htmlNode.parentNode;
-        
+
         if (this.namevalue && lastcell 
           && lastcell.parentNode == htmlNode.parentNode 
           && htmlNode == htmlNode.parentNode.lastChild) {
@@ -1701,11 +1702,28 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.multiselect = false;
             this.bufferselect = false;
             
-            this.addEventListener("onafterselect", function(e){
+            this.$select = function(o, xmlNode){
+                //#ifdef __WITH_RENAME
+                if (this.renaming)
+                    this.stopRename(null, true);
+                //#endif
+
+                if (!o || !o.style)
+                    return;
+
+                if (lastrow != o) {
+                    this.selected = xmlNode;
+                    this.selectCell({target:o.childNodes[lastcol || 0]}, o);
+                }
+
+                return this.$setStyleClass(o, "selected");
+            };
+            
+            /*this.addEventListener("onafterselect", function(e){
                 if (lastrow != this.$selected && this.$selected)
                     this.selectCell({target:this.$selected.childNodes[lastcol || 0]}, 
                         this.$selected);
-            });
+            });*/
         }
     }
     
