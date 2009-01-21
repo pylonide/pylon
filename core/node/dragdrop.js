@@ -325,8 +325,8 @@ jpf.DragDrop = function(){
 
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
-                    offsetX    : e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX,
-                    offsetY    : e.layerY ? e.layerY - srcEl.offsetTop  : e.offsetY,
+                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX) || jpf.event.layerX - srcEl.offsetLeft,
+                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : e.offsetY) || jpf.event.layerY - srcEl.offsetTop,
                     clientX    : e.clientX,
                     clientY    : e.clientY
                 };
@@ -652,8 +652,11 @@ jpf.DragServer = {
             dragdata.started = true;
         }
         
-        var storeIndicatorTopPos = dragdata.indicator.style.top;
+        //dragdata.indicator.style.top = e.clientY+"px";
+        //dragdata.indicator.style.left = e.clientX+"px";
         
+        var storeIndicatorTopPos = dragdata.indicator.style.top;
+        //jpf.console.info("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
         //get Element at x, y
         dragdata.indicator.style.display = "block";
         if (dragdata.indicator)
@@ -664,8 +667,8 @@ jpf.DragServer = {
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
-        jpf.DragServer.dragdata.indicator.style.top = storeIndicatorTopPos;
-
+        dragdata.indicator.style.top = storeIndicatorTopPos;
+        //jpf.console.info("INDICATOR AFTER: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left+" "+jpf.DragServer.dragdata.x+" "+jpf.DragServer.dragdata.y);
         //Set Indicator
         dragdata.host.$moveDragIndicator(e);
 
@@ -694,7 +697,7 @@ jpf.DragServer = {
         var indicator = jpf.DragServer.dragdata.indicator;
 
         var storeIndicatorTopPos = indicator.style.top;
-
+        //jpf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
         if (indicator)
             indicator.style.top = "10000px";
 
@@ -703,7 +706,8 @@ jpf.DragServer = {
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
-        jpf.DragServer.dragdata.indicator.style.top = storeIndicatorTopPos;
+        indicator.style.top = storeIndicatorTopPos;
+        //jpf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
 
         //get element and call events
         var host = jpf.findHost(el);

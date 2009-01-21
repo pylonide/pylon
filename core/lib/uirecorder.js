@@ -92,7 +92,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-            
+//jpf.console.info("recording... onclick - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onclick",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -102,7 +102,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-            alert("ondblclick")
+//jpf.console.info("recording... ondblclick - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "ondblclick",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -112,7 +112,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-
+//jpf.console.info("recording... onmousedown - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousedown",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -122,7 +122,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-
+//jpf.console.info("recording... onmouseup - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseup",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -132,7 +132,7 @@ jpf.uirecorder = {
                 return;
             
             e = e || event;
-
+//jpf.console.info("recording... onmousemove - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousemove",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -142,7 +142,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-            
+//jpf.console.info("recording... onmouseover - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseover",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -152,7 +152,7 @@ jpf.uirecorder = {
                 return;
 
             e = e || event;
-            
+//jpf.console.info("recording... onmouseout - "+e.clientX+" "+e.clientY);
             jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseout",
                 e.srcElement || e.target, jpf.extend({}, e)]);
         }
@@ -346,12 +346,13 @@ function playFrame() {
 
         e.target = frame[2];
 
-        jpf.console.info("type: "+src.type);
+        
         switch (src.type) {
             case "mousewheel":
                 fireScroll(frame);
                 break;
             default:
+                //jpf.console.info("playing... "+src.type+" - "+src.clientX+" "+src.clientY);
                 frame[2].fireEvent(frame[1], e);
                 break;
         }
@@ -371,7 +372,9 @@ function playFrame() {
                     src.screenY, src.clientX, src.clientY, src.ctrlKey, src.altKey,
                     src.shiftKey, src.metaKey, src.button, src.relatedTarget
                 );
-                jpf.console.info("playing: "+src.clientX+" "+src.clientY);
+                /* Little workaround - that values are important for drag&drop (dragdrop.js) */
+                jpf.event.layerX = src.layerX
+                jpf.event.layerY = src.layerY
                 break;
             case "keyup":
             case "keydown":
