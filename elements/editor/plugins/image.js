@@ -89,7 +89,7 @@ jpf.editor.plugin('image', function(){
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug)
-            jpf.sanitizeTextbox(this.oSearch);
+            jpf.sanitizeTextbox(this.oUrl);
         //#endif
 
         setTimeout(function() {
@@ -113,7 +113,7 @@ jpf.editor.plugin('imagespecial', function() {
     this.execute = function(editor) {
         if (!winHandle) {
             // get window handle from editor JML attribute
-            var s = editor.$jml.getAttribute('uploadwindow');
+            var s = (editor.$jml.getAttribute('imagewindow') || "").trim();
             if (s)
                 winHandle = eval(s);
         }

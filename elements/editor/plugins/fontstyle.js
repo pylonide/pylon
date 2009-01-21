@@ -38,7 +38,7 @@ jpf.editor.plugin('fontstyle', function() {
             var node, aCss, bCss, oNode = editor.$getOption('fontstyles');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(jpf.formatErrorString(0, editor,
                     "Initializing plugin: fontstyle",
                     "No fontstyle block found in skin definition"));
             // #endif
@@ -48,7 +48,7 @@ jpf.editor.plugin('fontstyle', function() {
                     var s = node.nodeValue.splitSafe("(=|\{|\})");
                     // #ifdef __DEBUG
                     if (s[3] != "{" || s[5] != "}")
-                        throw new Error(jpf.formatErrorString(0, this,
+                        throw new Error(jpf.formatErrorString(0, editor,
                             "Initializing plugin: fontstyle",
                             "Invalid fontstyle block, please check if formatting rules have been applied"));
                     // #endif
@@ -66,7 +66,7 @@ jpf.editor.plugin('fontstyle', function() {
                             node   : null
                         }
                         aCss.push(oStyles[cname].css);
-                        bCss.push(".editor_fontstyle " + oStyles[cname].css);
+                        bCss.push(".editor_fontstyle" + oStyles[cname].css);
                     }
                 }
             }
@@ -76,6 +76,15 @@ jpf.editor.plugin('fontstyle', function() {
                 // document of the editor's iframe
                 jpf.importCssString(window.document, bCss.join(""));
                 jpf.importCssString(editor.oDoc, aCss.join(""));
+                if (jpf.isIE) {
+                    var nodes = editor.oDoc.getElementsByTagName('head')[0].childNodes;
+                    var cnt   = nodes.length -  1;
+                    while (cnt) {
+                        if (nodes[cnt].nodeType == 3) //text
+                            nodes[cnt].parentNode.removeChild(nodes[cnt]);
+                        cnt--;
+                    }
+                }
             }
         }
         return oStyles;
@@ -222,7 +231,7 @@ jpf.editor.plugin('paragraph', function() {
             var i, j, node, oNode = editor.$getOption('blockformats');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(jpf.formatErrorString(0, editor,
                     "Initializing plugin: Paragraph (blockformats)",
                     "No block formats found in skin definition"));
             // #endif
