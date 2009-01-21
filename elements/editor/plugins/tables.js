@@ -182,6 +182,8 @@ jpf.editor.plugin('table', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup editor_tablepopup";
+        panelBody.style.visibility = "hidden";
+
         var idTableCont = 'editor_' + this.editor.uniqueId + '_tablecont';
         var idTableSel  = 'editor_' + this.editor.uniqueId + '_tablesel';
         var idTable     = 'editor_' + this.editor.uniqueId + '_table';
@@ -204,6 +206,10 @@ jpf.editor.plugin('table', function() {
         oStatus.onmousedown = statusClick.bindWithEvent(this);
         panelBody.onselectstart = function() { return false; };
         resetTableMorph();
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
         return panelBody;
     };
 });

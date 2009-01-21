@@ -169,6 +169,7 @@ jpf.editor.plugin('fontstyle', function() {
     this.createPanelBody = function(editor) {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
 
         getStyles(editor);
         var aHtml = [];
@@ -179,6 +180,10 @@ jpf.editor.plugin('fontstyle', function() {
                 oStyles[i].caption, '</span></a>')
         }
         panelBody.innerHTML = aHtml.join('');
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
         return panelBody;
     };
 });
@@ -296,6 +301,7 @@ jpf.editor.plugin('paragraph', function() {
     this.createPanelBody = function(editor) {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
 
         var aHtml = [],
             aFormats = getFormats(editor);
@@ -306,6 +312,10 @@ jpf.editor.plugin('paragraph', function() {
                 blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
         }
         panelBody.innerHTML = aHtml.join('');
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
         return panelBody;
     };
 });

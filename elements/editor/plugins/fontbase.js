@@ -104,6 +104,7 @@ jpf.editor.plugin('fonts', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
         var aHtml = [];
 
         for (var i in this.fontNames) {
@@ -113,6 +114,10 @@ jpf.editor.plugin('fonts', function() {
                 ').submit(event);">', i, '</a>');
         }
         panelBody.innerHTML = aHtml.join('');
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
         return panelBody;
     };
 });
@@ -206,6 +211,7 @@ jpf.editor.plugin('fontsize', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
+        panelBody.style.visibility = "hidden";
         var aHtml = [];
 
         var aSizes = this.fontSizes;
@@ -217,6 +223,10 @@ jpf.editor.plugin('fontsize', function() {
                 ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
         }
         panelBody.innerHTML = aHtml.join('');
+
+        setTimeout(function() {
+            panelBody.style.visibility = "visible";
+        });
         return panelBody;
     };
 });

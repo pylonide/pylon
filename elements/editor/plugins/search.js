@@ -173,10 +173,10 @@ jpf.editor.searchPlugin = function(sName) {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         panelBody.style.visibility = "hidden";
-        var idSearch  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
-        var idReplace = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replace';
-        var idCase    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_case';
-        var idBtns    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_btns';
+        var idSearch  = 'editor_' + this.uniqueId + '_input';
+        var idReplace = 'editor_' + this.uniqueId + '_replace';
+        var idCase    = 'editor_' + this.uniqueId + '_case';
+        var idBtns    = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
@@ -195,7 +195,7 @@ jpf.editor.searchPlugin = function(sName) {
         this.oSearch = document.getElementById(idSearch);
         this.oCase   = document.getElementById(idCase);
         var oBtns    = document.getElementById(idBtns);
-        var oFind    = this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml
+        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml
             + '" caption="Find next" bottom="0" ' +
             (this.name == "search" ? 'right="6"' : 'left="2"')
             + ' onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', oBtns);
