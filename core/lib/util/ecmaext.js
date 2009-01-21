@@ -717,7 +717,7 @@ var _oldSplit = String.prototype.split;
  * @param {mixed} s        Seperator pattern can be either a String or RegExp
  * @param {Number} [limit] Limit the result set of the split action to a specific number
  * @type  {Array}
- */
+ 
 String.prototype.split = function(s, limit) {
     // if separator is not a regex, use the native split method
     if (!(s instanceof RegExp))
@@ -766,7 +766,7 @@ String.prototype.split = function(s, limit) {
         (limit ? output : output.concat(this.slice(lastLastIndex)));
     s.lastIndex = origLastIndex; // only needed if s.global, else we're working with a copy of the regex
     return output;
-};
+};*/
 
 /**
  * Appends a random number with a specified length to this String instance.
