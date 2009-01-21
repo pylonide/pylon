@@ -174,7 +174,7 @@ jpf.Sort = function(xmlNode){
                         return this.v;
                     },
                     xmlNode : n[i],
-                    v       : settings.method(v || "", args, n[i])
+                    v       : (settings.method || sort_methods.alpha)(v || "", args, n[i])
                 };
         }
         
