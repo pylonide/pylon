@@ -128,9 +128,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["state"] = function(value){
         this.state = parseInt(value); // make sure it's an int
         // the state has changed, update the button look/ feel
-        this.notifyAll(value);
-        if (this.plugins.isActive('code'))
-            this.notify('code', jpf.editor.SELECTED);
+        setTimeout(function() {
+            _self.notifyAll(value);
+            if (_self.plugins.isActive('code'))
+                _self.notify('code', jpf.editor.SELECTED);
+        });
     };
 
     this.$propHandlers["plugins"] = function(value){
