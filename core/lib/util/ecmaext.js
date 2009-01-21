@@ -22,7 +22,7 @@
 // #ifdef __WITH_ECMAEXT
 
 // start closure:
-(function(){
+//(function(){
 
 if (typeof isFinite == "undefined") {
     function isFinite(val){
@@ -819,6 +819,6 @@ String.prototype.sprintf = function() {
     return str;
 };
 
-})(); //end closure
+//})(); //end closure
 
 // #endif
