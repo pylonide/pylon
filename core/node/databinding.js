@@ -1066,9 +1066,13 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.setModel = function(model, xpath){
+        if (this.$model)
+            this.$model.unregister(this);
+        
         if (typeof model == "string")
             model = jpf.nameserver.get("model", model);
 
+        this.$model = model;
         model.register(this, xpath);
     };
 

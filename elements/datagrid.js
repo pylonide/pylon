@@ -1671,7 +1671,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 o.uniqueId = jpf.all.push(o) - 1;
                                 
                                 //@todo This is never removed
-                                jpf.xmldb.addNodeListener(xmlRoot, o);
+                                if (xmlRoot)
+                                    jpf.xmldb.addNodeListener(xmlRoot, o);
                                 
                                 _self.$_load(xmlNode);
                             }
