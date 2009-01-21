@@ -1113,8 +1113,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // fetch the DOM references of all toolbar buttons and let the
         // respective plugins finish initialization
-        var btns = Array.prototype.slice.call(this.oToolbar.getElementsByTagName("div"));
-        for (var item, plugin, i = 0, j = btns.length; i < j; i++) {
+        var btns = this.oToolbar.getElementsByTagName("div");
+        for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
             item = btns[i].getAttribute("type");
             if (!item) continue;
 
