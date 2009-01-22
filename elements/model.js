@@ -56,7 +56,7 @@
  * @attribute  {String}  session      the data instruction on how to store the session data from this model.
  * @attribute  {String}  schema       not implemented.
  * @attribute  {Boolean} init         whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} saveoriginal whether to save the original state of the data. This enables the use of the reset() call.
+ * @attribute  {Boolean} save-original whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link remote} element to use for data synchronization between multiple clients.
  * @define instance
  * @attribute  {String}  src          the url to retrieve the data from.
@@ -415,7 +415,7 @@ jpf.model = function(data, caching){
      * model. The reset() method returns the model to this point.
      */
     this.savePoint = function(){
-        this.copy = this.data.cloneNode(true);
+        this.copy = jpf.xmldb.copyNode(this.data);
     };
 
 
@@ -810,7 +810,7 @@ jpf.model = function(data, caching){
                 jpf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
             if (!nocopy && this.saveOriginal)
-                this.copy = xmlNode.cloneNode(true);
+                this.copy = jpf.xmldb.copyNode(xmlNode);
         }
 
         this.data = xmlNode;
