@@ -96,7 +96,6 @@ jpf.cgi = function(){
     // Create message to send
     this.serialize = function(functionName, args){
         var vars    = [];
-        var restful = this.useRestResources;
 
         function recur(o, stack){
             if (o && o.dataType == "array") {
@@ -117,12 +116,12 @@ jpf.cgi = function(){
             }
             else {
                 if (typeof o != "undefined" && o !== null) 
-                    vars.push(stack + (restful ? "/" : "=") + encodeURIComponent(o));
+                    vars.push(stack + "=" + encodeURIComponent(o));
             }
         };
 
         if (this.multicall) {
-            vars.push("func" + (restful ? "/" : "=") + this.mcallname);
+            vars.push("func" + "=" + this.mcallname);
             for (var i = 0; i < args[0].length; i++)
                 recur(args[0][i], "f%5B" + i + "%5D");
         }
@@ -145,12 +144,10 @@ jpf.cgi = function(){
             : this.baseUrl;
 
         if (this.method != "GET")
-            return restFul ? vars.join("/") : vars.join("&");
+            return vars.join("&");
 
         this.url = this.url + (vars.length
-            ? restful
-                ? (this.url.lastIndexOf("/") != this.url.length - 1 ? "/" : "") + vars.join("/")
-                : (this.url.indexOf("?") > -1 ? "&" : "?") + vars.join("&")
+            ? (this.url.indexOf("?") > -1 ? "&" : "?") + vars.join("&")
             : "");
 
         return "";
@@ -161,7 +158,6 @@ jpf.cgi = function(){
         this.contentType = this.method == "GET"
             ? null
             : "application/x-www-form-urlencoded";
-        this.useRestResources = jpf.isTrue(x.getAttribute("restful"));
 
         if (x.getAttribute("method-name")) {
             var mName = x.getAttribute("method-name");
@@ -203,21 +199,19 @@ jpf.cgi = function(){
                 for (j = 0; j < form.elements[i].options.length; j++) {
                     if (form.elements[i].options[j].selected)
                         args.push(form.elements[i].name
-                            + (this.useRestResources ? "/" : "=")
+                            + "="
                             + encodeURIComponent(form.elements[i].options[j].value));
                 }
             }
             else {
                 args.push(form.elements[i].name
-                    + (this.useRestResources ? "/" : "=")
+                    + "="
                     + encodeURIComponent(form.elements[i].value));
             }
         }
 
         var loc               = (form.action || location.href);
-        this.urls['postform'] = this.useRestResources
-            ? loc + (loc.lastIndexOf("/") != loc.length - 1 ? "/" : "") + args.join("/")
-            : loc + (loc.indexOf("?") > -1 ? "&" : "?") + args.join("&");
+        this.urls['postform'] = loc + (loc.indexOf("?") > -1 ? "&" : "?") + args.join("&");
         this['postform'].call(this);
 
         return false;

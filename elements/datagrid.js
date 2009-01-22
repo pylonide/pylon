@@ -721,7 +721,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         Row.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
             var wasSelected = o.$selected == this;\
             o.select(this, event.ctrlKey, event.shiftKey);'
-            + (this.cellselect || this.namevalue ? 'if (wasSelected) o.selectCell(event, this);' : ''));//, true;o.dragging=1;
+            + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));//, true;o.dragging=1;
         Row.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
             + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
@@ -860,7 +860,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     var lastcell, lastcol = 0, lastrow;
-    this.selectCell = function(e, rowHtml){
+    this.selectCell = function(e, rowHtml, wasSelected){
         var htmlNode = e.srcElement || e.target;
         if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
             return; //this is probably not good
@@ -868,7 +868,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         while(htmlNode.parentNode != rowHtml)
             htmlNode = htmlNode.parentNode;
 
-        if (this.namevalue && lastcell 
+        if (this.namevalue && wasSelected && lastcell 
           && lastcell.parentNode == htmlNode.parentNode 
           && htmlNode == htmlNode.parentNode.lastChild) {
             lastcell = htmlNode;

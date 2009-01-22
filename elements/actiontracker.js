@@ -50,7 +50,7 @@ jpf.actiontracker = function(parentNode){
     var _self       = this;
     var stackDone   = [];
     var stackUndone = [];
-    var stackRPC    = [];
+    this.stackRPC    = [];
     var execStack   = [];
 
     this.realtime   = true;
@@ -94,7 +94,7 @@ jpf.actiontracker = function(parentNode){
      * @return {ActionTracker} Returns the parent actiontracker
      */
     this.getParent = function(){
-        return this.parentNode
+        return this.parentNode && this.parentNode.getActionTracker
             ? this.parentNode.getActionTracker(true)
             : (jpf.window.$at != this
                 ? jpf.window.$at
@@ -164,13 +164,14 @@ jpf.actiontracker = function(parentNode){
      * still used, for instance for jpf.Transactions. please think
      * about it.
      */
-    this.purge = function(nogrouping, forcegrouping){
-        var parent = this.getParent();
+    this.purge = function(nogrouping, forcegrouping){//@todo, maybe add noReset argument
+        //var parent = this.getParent();
 
-        if (nogrouping && parent) {
+        //@todo Check if this still works together with transactions
+        if (true) {//nogrouping && parent
             //Execute RPC calls through multicall or queued calling
-            for (var i = 0; i < stackRPC.length; i++)
-                var o = this.$addToQueue(stackRPC[i]);
+            for (var i = 0; i < this.stackRPC.length; i++)
+                var o = this.$addToQueue(this.stackRPC[i]);
         }
         else if (parent) {
             /*
@@ -189,7 +190,8 @@ jpf.actiontracker = function(parentNode){
      * or redo will not do anything.
      */
     this.reset = function(){
-        stackDone.length = stackUndone.length = stackRPC.length = 0;
+        stackDone.length = stackUndone.length;
+        this.stackRPC.length = 0;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
@@ -722,8 +724,9 @@ jpf.UndoData = function(settings, at){
     };
 
     this.saveChange = function(undo, at, callback){
-        //if (at && !at.realtime) //@todo this won't work, needs to preparse
-            //return at.stackRPC.push(this);
+        //@todo realtime is broken, please fix
+        if (at && !at.realtime) //@todo this won't work, needs to preparse
+            return at.stackRPC.push(this);
 
         //Grouped undo/redo support
         if (this.action == "group") {
@@ -951,21 +954,14 @@ jpf.actiontracker.actions = {
         var q = UndoObj.args;//xmlNode, value, xpath
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            /*if (UndoObj.extra.newNode) {
-                var xmlNode = q[0].appendChild(UndoObj.extra.newNode);
-            }
-            else {*/
-                var newNodes = [];
-                var xmlNode = jpf.xmldb.createNodeFromXpath(q[0],
-                    q[2], newNodes);
-                var node = newNodes[0] || xmlNode;
-
-                UndoObj.extra.newNode     = newNodes[0];
-                UndoObj.extra.appliedNode = xmlNode;
-                UndoObj.extra.oldValue = jpf.getXmlValue(q[0], q[2]);
-            //}
-
-            jpf.xmldb.setNodeValue(xmlNode, q[1], true, UndoObj);
+            var newNodes = [];
+            jpf.xmldb.setNodeValue(q[0], q[1], true, {
+                undoObj  : UndoObj,
+                xpath    : q[2],
+                newNodes : newNodes
+            });
+            
+            UndoObj.newNode = newNodes[0];
         }
         // Undo Setting NodeValue
         else {

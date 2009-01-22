@@ -479,7 +479,21 @@ jpf.XmlDatabase = function(){
      * @param {Boolean}    applyChanges  whether the changes are propagated to the databound elements.
      * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
      */
-    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, undoObj){
+    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
+        var undoObj, xpath, newNodes;
+        if (options) {
+            undoObj  = options.undoObj;
+            xpath    = options.xpath;
+            newNodes = options.newNodes;
+            
+            undoObj.xmlNode = xmlNode;
+            if (xpath)
+                xmlNode = jpf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes);
+
+            undoObj.extra.appliedNode = xmlNode;
+            undoObj.extra.oldValue = jpf.getXmlValue(xmlNode, xpath);
+        }
+        
         if (xmlNode.nodeType == 1) {
             if (!xmlNode.firstChild)
                 xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
@@ -895,7 +909,8 @@ jpf.XmlDatabase = function(){
         }
 
         if (undoObj) {
-            undoObj.xmlNode = xmlNode;
+            if (!undoObj.xmlNode) //@todo are we sure about this?
+                undoObj.xmlNode = xmlNode;
 
             //Ok this was an action let's not delay execution
             jpf.xmldb.notifyQueued();
