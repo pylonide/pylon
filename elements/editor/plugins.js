@@ -231,7 +231,7 @@ jpf.editor.plugins = function(coll, editor) {
             |  (keyMap.key || "").charCodeAt(0);
     }
 
-    this.destroyAll = function() {
+    this.$destroy = function() {
         for (var i in this.coll) {
             this.coll[i].$destroy();
             this.coll[i] = null;
