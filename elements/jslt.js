@@ -46,10 +46,25 @@
  */
 jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.mainBind = "contents";
-    this.$focussable = false;
+    this.focussable = false;
     
     this.parse = function(code){
         this.setProperty("value", code);
+    };
+    
+    /**** Focus ****/
+    this.$focus = function(){
+        if (!this.oExt)
+            return;
+
+        jpf.setStyleClass(this.oExt, this.baseCSSname + "Focus");
+    };
+
+    this.$blur = function(){
+        if (!this.oExt)
+            return;
+
+        jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
     /**

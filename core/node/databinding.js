@@ -683,7 +683,7 @@ jpf.DataBinding = function(){
             else {
                 if (o.clear && !o.hasFeature(__MULTIBINDING__))
                     o.clear(); //adding o.hasFeature(__MULTIBINDING__) is a quick fix. should be only with the bind="" level
-                if (o.disable)
+                if (o.disable && o.createModel)
                     o.disable();
             }
         }
