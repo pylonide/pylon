@@ -66,6 +66,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             'paste', 'outdent', 'indent', 'undo', 'redo'];
     this.$classToolbar   = 'editor_Toolbar';
 
+    this.oDoc = this.oWin = null;
+
     /**** Properties and Attributes ****/
 
     //this.forceVScrollIE       = true;
@@ -1229,7 +1231,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$destroy = function() {
-        this.plugins.destroyAll();
+        this.plugins.$destroy();
+        this.selection.$destroy();
         this.plugins = this.selection = this.oDoc.host = null;
         this.oToobar = this.oDoc = this.oWin = this.iframe = null;
     };
