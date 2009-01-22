@@ -170,15 +170,19 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
     options.instrData = instruction.split(":");
     options.instrType = options.instrData.shift();
 
+    var instrType = options.instrType.indexOf("url.") == 0
+        ? "url"
+        : options.instrType;
+
     //#ifdef __DEBUG
     options.instruction = instruction;
-    if (!this.datainstr[options.instrType])
+    if (!this.datainstr[instrType])
         throw new Error(jpf.formatErrorString(0, null,
             "Processing a data instruction",
-            "Unknown data instruction format: " + options.instrType));
+            "Unknown data instruction format: " + instrType));
     //#endif
 
-    this.datainstr[options.instrType].call(this, xmlContext, options, callback);
+    this.datainstr[instrType].call(this, xmlContext, options, callback);
 };
 
 /**

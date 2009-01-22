@@ -1236,14 +1236,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (this.selected.getAttribute("exec")) {
                 //#ifdef __DEBUG
                 try{
-                    var selected = _self.xmlRoot;
+                    var selected = _self.xmlData;
                     eval(this.selected.getAttribute("exec"));
                 }
                 catch(e){
                     throw new Error(jpf.formatErrorString(0, _self,
                         "Executing the code inside the exec propery",
                         "Could not find exec by name '" + this.selected.getAttribute("exec")
-                        + "'", this.selected));
+                        + "'", this.selected+ e.message));
                 }
                 /* #else
                 eval(this.selected.getAttribute("exec"));

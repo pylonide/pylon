@@ -1141,29 +1141,28 @@ jpf.model = function(data, caching){
 
             jpf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
-        else
-            if (type == "native") {
-                var data = useComponents
-                    ? this.getCgiString()
-                    : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), "cgivars");
+        else if (type == "native") {
+            var data = useComponents
+                ? this.getCgiString()
+                : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), "cgivars");
 
-                if (instruction.match(/^rpc\:/)) {
-                    rpc = rpc.split(".");
-                    var oRpc = self[rpc[0]];
-                    oRpc.callWithString(rpc[1], data, cbFunc);
-                    //Loop throught vars
-                    //Find components with the same name
-                    //Set arguments and call method
-                }
-                else {
-                    if (instruction.match(/^url/))
-                        instruction += (instruction.match(/\?/) ? "&" : "?") + data;
-
-                    jpf.saveData(instruction, xmlNode, null, cbFunc);
-                }
+            if (instruction.match(/^rpc\:/)) {
+                rpc = rpc.split(".");
+                var oRpc = self[rpc[0]];
+                oRpc.callWithString(rpc[1], data, cbFunc);
+                //Loop throught vars
+                //Find components with the same name
+                //Set arguments and call method
             }
+            else {
+                if (instruction.match(/^url/))
+                    instruction += (instruction.match(/\?/) ? "&" : "?") + data;
 
-        this.dispatchEvent("aftersubmit")
+                jpf.saveData(instruction, xmlNode, null, cbFunc);
+            }
+        }
+
+        this.dispatchEvent("aftersubmit");
     };
 
     this.$destroy = function(){
