@@ -84,7 +84,7 @@ jpf.editor.selection = function(editor) {
         if (!jpf.isIE) return;
         var oSel = _self.editor.oDoc.selection;
         _self.current      = oSel.createRange();
-        _self.current.type = oSel.selection.type;
+        _self.current.type = oSel.type;
 
         if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
             csLock = setTimeout(_self.cache, 0);
