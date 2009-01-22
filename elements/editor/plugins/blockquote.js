@@ -33,6 +33,8 @@ jpf.editor.plugin('blockquote', function(){
 
     this.execute = function(editor) {
         editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {

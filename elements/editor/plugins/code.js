@@ -69,6 +69,8 @@ jpf.editor.plugin('code', function() {
             });
         }
         editor.notify('code', this.queryState(editor));
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     function drawPreview(editor) {
@@ -145,7 +147,7 @@ jpf.editor.plugin('code', function() {
 
     this.queryState = function(editor) {
         if (editor.plugins.active == this)
-            return jpf.editor.ON;
+            return jpf.editor.SELECTED;
         return jpf.editor.OFF;
     };
 

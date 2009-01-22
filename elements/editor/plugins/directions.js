@@ -31,6 +31,7 @@ jpf.editor.directionPlugin = function(sName) {
 
     this.execute = function(editor) {
         // @todo: implement this baby
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {

@@ -32,6 +32,7 @@ jpf.editor.plugin('help', function(){
 
     this.execute = function(editor) {
         // @todo: implement this plugin
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {

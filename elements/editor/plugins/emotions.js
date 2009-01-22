@@ -56,6 +56,9 @@ jpf.editor.plugin('emotions', function() {
 
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 123, 110);
         //return button id, icon and action:
         return {

@@ -45,6 +45,8 @@ jpf.editor.searchPlugin = function(sName) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
         this.editor.showPopup(this, this.uniqueId, this.buttonNode,
             this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
         // prefill search box with selected text

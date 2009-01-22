@@ -44,6 +44,9 @@ jpf.editor.clipboardPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 270);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";

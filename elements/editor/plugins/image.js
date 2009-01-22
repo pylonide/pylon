@@ -44,6 +44,9 @@ jpf.editor.plugin('image', function(){
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
+        
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
         // @todo: auto-fill input with currently selected image url
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 200, 58);
         //return button id, icon and action:
@@ -121,11 +124,13 @@ jpf.editor.plugin('imagespecial', function() {
             // get window handle from editor JML attribute
             var s = (editor.$jml.getAttribute('imagewindow') || "").trim();
             if (s)
-                winHandle = eval(s);
+                winHandle = self[s];
         }
 
         if (winHandle && winHandle.show)
             winHandle.show();
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {

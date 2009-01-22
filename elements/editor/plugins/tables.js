@@ -52,6 +52,9 @@ jpf.editor.plugin('table', function() {
             resetTableMorph();
 
         this.storeSelection();
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
         this.editor.showPopup(this, this.uniqueId, this.buttonNode);
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
@@ -265,6 +268,9 @@ jpf.editor.plugin('tablewizard', function() {
         jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1]);
 
         e.stop();
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+        
         return false;
     };
 

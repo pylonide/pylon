@@ -35,6 +35,8 @@ jpf.editor.plugin('hr', function(){
             editor.insertHTML('<hr />');
         else
             editor.executeCommand('InsertHorizontalRule');
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {

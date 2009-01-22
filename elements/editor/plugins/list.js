@@ -41,6 +41,8 @@ jpf.editor.listPlugin = function(sName) {
 
         this.correctLists(editor);
         editor.$visualFocus();
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     function moveListItems(from, to) {

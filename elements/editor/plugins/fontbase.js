@@ -62,6 +62,9 @@ jpf.editor.plugin('fonts', function() {
         if (!panelBody) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
+
+        this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+        
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 120);
         //return button id, icon and action:
 

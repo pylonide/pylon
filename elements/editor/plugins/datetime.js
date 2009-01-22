@@ -65,6 +65,8 @@ jpf.editor.dateTimePlugin = function(sName) {
                  .replace("%%", "%");
 
         editor.insertHTML(fmt);
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function() {

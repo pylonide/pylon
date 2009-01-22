@@ -33,6 +33,8 @@ jpf.editor.plugin('print', function(){
     this.execute = function(editor) {
         if (jpf.print)
             jpf.print(editor.getValue());
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function() {
@@ -52,6 +54,8 @@ jpf.editor.plugin('preview', function(){
     this.execute = function(editor) {
         if (jpf.printer)
             jpf.printer.preview(editor.getValue());
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function() {

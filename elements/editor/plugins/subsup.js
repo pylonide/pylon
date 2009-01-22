@@ -32,6 +32,8 @@ jpf.editor.subSupCommand = function(sName) {
 
     this.execute = function(editor) {
         editor.executeCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
