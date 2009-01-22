@@ -36,8 +36,8 @@ jpf.editor.selection = function(editor) {
     this.editor  = editor;
     this.current = null;
 
-    var csLock;
-    var _self = this;
+    var csLock,
+        _self = this;
 
     /**
      * Get the selection of the editable area
@@ -51,6 +51,14 @@ jpf.editor.selection = function(editor) {
             : this.editor.oWin.getSelection()
     };
 
+    /**
+     * Set or move the current selection to the cached one.
+     * At the moment, this function is very IE specific and is used to make sure
+     * that there's a correct selection object available at all times.
+     * @see jpf.editor.selection.cache
+     * 
+     * @type {Range}
+     */
     this.set = function() {
         if (!jpf.isIE || !this.current) return;
 
@@ -64,6 +72,14 @@ jpf.editor.selection = function(editor) {
         return this.current;
     };
 
+    /**
+     * Save the selection object/ current range into a global variable to cache
+     * it for later use.
+     * At the moment, this function is very IE specific and is used to make sure
+     * that there's a correct selection object available at all times.
+     *
+     * @type {void}
+     */
     this.cache = function() {
         if (!jpf.isIE) return;
         _self.current = _self.editor.oDoc.selection.createRange();
@@ -80,8 +96,9 @@ jpf.editor.selection = function(editor) {
 
     /**
      * Retrieve the active Range object of the current document selection.
-     * Internet Explorer returns a controlRange when a control (e.g. image, object tag) is
-     * selected or a textRange when a set of characters is selected.
+     * Internet Explorer returns a controlRange when a control (e.g. image,
+     * object tag) is selected or a textRange when a set of characters is
+     * selected.
      *
      * @type {Range}
      */
@@ -100,8 +117,8 @@ jpf.editor.selection = function(editor) {
         catch (ex) {}
 
         // No range found then create an empty one
-        // This can occur when the editor is placed in a hidden container element on Gecko
-        // Or on IE when there was an exception
+        // This can occur when the editor is placed in a hidden container
+        // element on Gecko. Or on IE when there was an exception
         if (!range)
             range = jpf.isIE
                 ? this.editor.oDoc.body.createTextRange()
@@ -111,8 +128,8 @@ jpf.editor.selection = function(editor) {
     };
 
     /**
-     * Set the active range of the current selection inside the editable document to a
-     * specified range.
+     * Set the active range of the current selection inside the editable
+     * document to a specified range.
      *
      * @param {Range} range
      * @type {void}
@@ -136,8 +153,9 @@ jpf.editor.selection = function(editor) {
     };
 
     /**
-     * Returns a bookmark location for the current selection. This bookmark object
-     * can then be used to restore the selection after some content modification to the document.
+     * Returns a bookmark location for the current selection. This bookmark
+     * object can then be used to restore the selection after some content
+     * modification to the document.
      *
      * @param {bool}    type Optional State if the bookmark should be simple or not. Default is complex.
      * @return {Object} Bookmark object, use moveToBookmark with this object to restore the selection.
@@ -300,7 +318,8 @@ jpf.editor.selection = function(editor) {
                 }
             }
             else {
-                // Try/catch needed since this operation breaks when TinyMCE is placed in hidden divs/tabs
+                // Try/catch needed since this operation breaks when the editor
+                // is placed in hidden divs/tabs
                 try {
                     // Incorrect bookmark
                     if (bmark.start < 0)
@@ -318,7 +337,7 @@ jpf.editor.selection = function(editor) {
             try {
                 range.select();
             }
-            catch (ex) {} // Needed for some odd IE bug #1843306
+            catch (ex) {} // Needed for some odd IE bug
             return true;
         }
 
@@ -377,7 +396,8 @@ jpf.editor.selection = function(editor) {
     }
 
     /**
-     * Retrieve the contents of the currently active selection/ range as a string of HTML.
+     * Retrieve the contents of the currently active selection/ range as a
+     * string of HTML.
      *
      * @type {String}
      */
@@ -412,8 +432,8 @@ jpf.editor.selection = function(editor) {
     }
 
     /**
-     * Alter the content of the current selection/ active range by setting its contents with
-     * some other specified HTML
+     * Alter the content of the current selection/ active range by setting its
+     * contents with some other specified HTML
      *
      * @param {String} html
      * @type {void}
@@ -425,7 +445,8 @@ jpf.editor.selection = function(editor) {
         html = this.editor.parseHTML(html);
 
         if (range.insertNode) {
-            // Make caret marker since insertNode places the caret in the beginning of text after insert
+            // Make caret marker since insertNode places the caret in the
+            // beginning of text after insert
             html += '<span id="__caret">_</span>';
 
             // Delete and insert new node
@@ -435,13 +456,15 @@ jpf.editor.selection = function(editor) {
             // Move to caret marker
             var oCaret = oDoc.getElementById('__caret');
 
-            // Make sure we wrap it completely, Opera fails with a simple select call
+            // Make sure we wrap it completely, Opera fails with a simple
+            // select call
             range = oDoc.createRange();
             range.setStartBefore(oCaret);
             range.setEndAfter(oCaret);
             this.setRange(range);
 
-            // Delete the marker, and hopefully the caret gets placed in the right location
+            // Delete the marker, and hopefully the caret gets placed in the
+            // right location
             oDoc.execCommand('Delete', false, null);
 
             // In case it's still there
@@ -515,9 +538,11 @@ jpf.editor.selection = function(editor) {
 
             var sel = this.get(), oNode = range.commonAncestorContainer;
 
-            // Handle selection as image or other control like element such as anchors
+            // Handle selection as image or other control like element such
+            // as anchors
             if (!range.collapsed) {
-                // If the anchor node is an element instead of a text node then return this element
+                // If the anchor node is an element instead of a text node then
+                // return this element
                 if (jpf.isSafari && sel.anchorNode && sel.anchorNode.nodeType == 1)
                     return sel.anchorNode.childNodes[sel.anchorOffset];
 
@@ -529,9 +554,9 @@ jpf.editor.selection = function(editor) {
                 }
             }
 
-//            oNode = oNode.parentNode;
-//            while (oNode && oNode.parentNode && oNode.nodeType != 1)
-//                oNode = oNode.parentNode;
+            //oNode = oNode.parentNode;
+            //while (oNode && oNode.parentNode && oNode.nodeType != 1)
+            //    oNode = oNode.parentNode;
             return oNode;
         }
 
@@ -539,7 +564,8 @@ jpf.editor.selection = function(editor) {
     };
 
     /**
-     * Retrieve the parent node of the currently selected element from the editable area
+     * Retrieve the parent node of the currently selected element from the
+     * editable area
      *
      * @type DOMObject
      */
@@ -637,8 +663,8 @@ jpf.editor.selection = function(editor) {
     };
 
     /**
-     * Check if the currently selected element has any parent node(s) with the specified
-     * tagname
+     * Check if the currently selected element has any parent node(s) with the
+     * specified tagname
      *
      * @param {String} nodeTagName
      * @type  {Boolean}
@@ -670,8 +696,8 @@ jpf.editor.selection = function(editor) {
     };
 
     /**
-     * Move the selection to a parent element of the currently selected node with the
-     * specified tagname
+     * Move the selection to a parent element of the currently selected node
+     * with the specified tagname
      *
      * @param {String} nodeTagName
      * @type  {void}

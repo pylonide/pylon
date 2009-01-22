@@ -294,6 +294,7 @@ jpf.editor.plugin = function(sName, fExec) {
         /**
          * Save the selection - i.e. create a bookmark of the current selection - for
          * (re)use later.
+         * @deprecated
          *
          * @see restoreSelection
          * @type {void}
@@ -305,6 +306,7 @@ jpf.editor.plugin = function(sName, fExec) {
 
         /**
          * Set the current selection/ active range to the bookmark that was saved earlier.
+         * @deprecated
          *
          * @see storeSelection
          * @type {void}
@@ -355,6 +357,8 @@ jpf.editor.plugin = function(sName, fExec) {
         this.$destroy = function() {
             jpf.popup.forceHide(); // @todo should we keep this, or does jpf.Popup destroy itself? what if we removeNode() the editor?
             this.buttonNode = this.editor = null;
+            delete this.buttonNode;
+            delete this.editor;
             if (this.destroy)
                this.destroy();
         }
