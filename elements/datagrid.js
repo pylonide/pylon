@@ -1218,9 +1218,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$btnup = function(oHtml, force){
         var type = oHtml.getAttribute("type");
         if (type == "custom" && oHtml.className.indexOf("down") > -1) {
-            var form = self[this.selected.getAttribute("form")];
-            form.show();
-            form.bringToFront();
+            if (this.selected.getAttribute("form")) {
+                var form = self[this.selected.getAttribute("form")];
+                form.show();
+                form.bringToFront();
+            }
+            else if (this.selected.getAttribute("exec")) {
+                var exec = this.selected.getAttribute("exec");
+                eval(exec);
+            }
         }
         
         if (force || oHtml.getAttribute("type") != "dropdown" 
