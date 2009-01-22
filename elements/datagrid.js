@@ -1220,11 +1220,31 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (type == "custom" && oHtml.className.indexOf("down") > -1) {
             if (this.selected.getAttribute("form")) {
                 var form = self[this.selected.getAttribute("form")];
+
+                //#ifdef __DEBUG
+                if (!form) {
+                    throw new Error(jpf.formatErrorString(0, _self,
+                        "Showing form connected to property",
+                        "Could not find form by name '" + this.selected.getAttribute("form")
+                        + "'", this.selected));
+                }
+                //#endif
+                
                 form.show();
                 form.bringToFront();
             }
             else if (this.selected.getAttribute("exec")) {
-                eval(this.selected.getAttribute("exec"));
+                //#ifdef __DEBUG
+                try{
+                    eval(this.selected.getAttribute("exec"));
+                }
+                catch(e){
+                    throw new Error(jpf.formatErrorString(0, _self,
+                        "Executing the code inside the exec propery",
+                        "Could not find exec by name '" + this.selected.getAttribute("exec")
+                        + "'", this.selected));
+                }
+                //#endif
             }
         }
         
