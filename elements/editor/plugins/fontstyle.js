@@ -45,29 +45,33 @@ jpf.editor.plugin('fontstyle', function() {
             for (var i = 0, j = oNode.childNodes.length; i < j && !oStyles; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4) {
-                    var s = node.nodeValue.splitSafe("(=|\{|\})");
-                    // #ifdef __DEBUG
-                    if (s[3] != "{" || s[5] != "}")
-                        throw new Error(jpf.formatErrorString(0, editor,
-                            "Initializing plugin: fontstyle",
-                            "Invalid fontstyle block, please check if formatting rules have been applied"));
-                    // #endif
                     oStyles = {};
                     aCss    = [];
                     bCss    = [];
-                    for (var cname, k = 0, l = s.length; k < l; k += 6) {
-                        if (!s[k] || !s[k + 5]) continue; // check if the first and last key are present
-                        cname = s[k + 2].replace(/\.([\w]+)/, "$1");
-                        oStyles[cname] = {
-                            caption: s[k],
-                            cname  : cname,
-                            css    : "." + cname + s[k + 3]
-                                     + s[k + 4].replace(/\s+/g, '') + s[k + 5],
-                            node   : null
+
+                    var cname;
+                    node.nodeValue.replace(/([\w ]+)\s*=\s*(([^\{]+?)\s*\{[\s\S]*?\})\s*/g,
+                        function(m, caption, css, className){
+                            // #ifdef __DEBUG
+                            if (!css || css.charAt(css.length - 1) != "}")
+                                throw new Error(jpf.formatErrorString(0, editor,
+                                    "Initializing plugin: fontstyle",
+                                    "Invalid fontstyle block, please check if formatting rules have been applied"));
+                            // #endif
+                            if (css.charAt(0) != ".")
+                                css = "." + css;
+                            css = css.trim().replace(/[\s]+/g, "");
+                            className = className.trim().replace(/\./, "");
+                            oStyles[className] = {
+                                caption: caption.trim(),
+                                cname  : className,
+                                css    : css,
+                                node   : null
+                            };
+                            aCss.push(css);
+                            bCss.push(".editor_fontstyle " + css);
                         }
-                        aCss.push(oStyles[cname].css);
-                        bCss.push(".editor_fontstyle" + oStyles[cname].css);
-                    }
+                    );
                 }
             }
 
@@ -77,6 +81,8 @@ jpf.editor.plugin('fontstyle', function() {
                 jpf.importCssString(window.document, bCss.join(""));
                 jpf.importCssString(editor.oDoc, aCss.join(""));
                 if (jpf.isIE) {
+                    // removing text nodes from the HEAD section, which are added
+                    // by IE in some cases.
                     var nodes = editor.oDoc.getElementsByTagName('head')[0].childNodes;
                     var cnt   = nodes.length -  1;
                     while (cnt) {
@@ -194,6 +200,12 @@ jpf.editor.plugin('fontstyle', function() {
             panelBody.style.visibility = "visible";
         });
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.stylePreview = null;
+        delete panelBody;
+        delete this.stylePreview;
     };
 });
 
@@ -326,6 +338,12 @@ jpf.editor.plugin('paragraph', function() {
             panelBody.style.visibility = "visible";
         });
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.blockPreview = null;
+        delete panelBody;
+        delete this.blockPreview;
     };
 });
 

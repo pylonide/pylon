@@ -148,6 +148,12 @@ jpf.editor.plugin('code', function() {
             return jpf.editor.ON;
         return jpf.editor.OFF;
     };
+
+    this.destroy = function() {
+        oPreview = this.regex = null;
+        delete oPreview;
+        delete this.regex;
+    };
 });
 
 // #endif

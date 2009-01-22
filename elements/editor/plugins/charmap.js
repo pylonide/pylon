@@ -121,6 +121,11 @@ jpf.editor.plugin('charmap', function() {
         });
         return panelBody;
     };
+
+    this.destroy = function() {
+        panelBody = null;
+        delete panelBody;
+    };
 });
 
 // #endif

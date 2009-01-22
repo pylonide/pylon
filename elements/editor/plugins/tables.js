@@ -184,10 +184,10 @@ jpf.editor.plugin('table', function() {
         panelBody.className = "editor_popup editor_tablepopup";
         panelBody.style.visibility = "hidden";
 
-        var idTableCont = 'editor_' + this.editor.uniqueId + '_tablecont';
-        var idTableSel  = 'editor_' + this.editor.uniqueId + '_tablesel';
-        var idTable     = 'editor_' + this.editor.uniqueId + '_table';
-        var idStatus    = 'editor_' + this.editor.uniqueId + '_table_status';
+        var idTableCont = 'editor_' + this.uniqueId + '_tablecont';
+        var idTableSel  = 'editor_' + this.uniqueId + '_tablesel';
+        var idTable     = 'editor_' + this.uniqueId + '_table';
+        var idStatus    = 'editor_' + this.uniqueId + '_table_status';
         panelBody.innerHTML =
            '<div id="' + idTableCont + '" class="editor_paneltable_cont">\
                 <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
@@ -211,6 +211,19 @@ jpf.editor.plugin('table', function() {
             panelBody.style.visibility = "visible";
         });
         return panelBody;
+    };
+
+    this.destroy = function() {
+        //oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc
+        panelBody = oTableCont = oTableSel = oTable = oStatus = oTablePos
+            = oDoc = null;
+        delete panelBody;
+        delete oTableCont;
+        delete oTableSel;
+        delete oTable;
+        delete oStatus;
+        delete oTablePos;
+        delete oDoc;
     };
 });
 

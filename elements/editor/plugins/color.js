@@ -180,6 +180,12 @@ jpf.editor.colorPlugin = function(sName) {
         });
         return panelBody;
     }
+
+    this.destroy = function() {
+        panelBody = this.colorPreview = null;
+        delete panelBody;
+        delete this.colorPreview;
+    };
 };
 jpf.editor.colorPlugin.palette = null;
 

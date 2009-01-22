@@ -227,6 +227,19 @@ jpf.editor.searchPlugin = function(sName) {
 
         return panelBody;
     };
+
+    this.destroy = function() {
+        panelBody = this.oSearch = this.oCase = null;
+        delete panelBody;
+        delete this.oSearch;
+        delete this.oCase;
+        if (this.oReplace) {
+            this.oReplace = this.oReplBtn = this.oReplAllBtn = null;
+            delete this.oReplace;
+            delete this.oReplBtn;
+            delete this.oReplAllBtn;
+        }
+    };
 };
 
 jpf.editor.plugin('search',  jpf.editor.searchPlugin);

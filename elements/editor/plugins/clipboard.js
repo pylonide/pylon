@@ -200,8 +200,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         panelBody.style.visibility = "hidden";
-        var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
-        var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
+        var idArea   = 'editor_' + this.uniqueId + '_' + this.name + '_input';
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
            'Use %s on your keyboard to paste the text into the window.'.sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
@@ -220,6 +219,12 @@ jpf.editor.clipboardPlugin = function(sName) {
         });
 
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.oArea = null;
+        delete panelBody;
+        delete this.oArea;
     };
 };
 

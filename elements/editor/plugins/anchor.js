@@ -79,8 +79,8 @@ jpf.editor.plugin('anchor', function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         panelBody.style.visibility = "hidden";
-        var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
-        var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
+        var idName   = 'editor_' + this.uniqueId + '_anchor_url';
+        var idButton = 'editor_' + this.uniqueId + '_anchor_button';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idName + '">Anchor name</label>\
@@ -100,6 +100,12 @@ jpf.editor.plugin('anchor', function() {
         });
 
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.oName = null;
+        delete panelBody;
+        delete this.oName;
     };
 });
 

@@ -108,6 +108,11 @@ jpf.editor.plugin('emotions', function() {
         });
         return panelBody;
     };
+
+    this.destroy = function() {
+        panelBody = null;
+        delete panelBody;
+    };
 });
 
 // #endif

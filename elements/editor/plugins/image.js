@@ -58,14 +58,14 @@ jpf.editor.plugin('image', function(){
     };
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
         var sUrl = this.oUrl.value;
-        //@todo: more url validation!
         if (sUrl) {
             jpf.popup.forceHide();
-            this.editor.insertHTML('</img src="' + Url + '" border="0" />');
+            var oUrl = new jpf.url(sUrl);
+            if (!oUrl.protocol || !oUrl.host || !oUrl.file) 
+                alert("Please enter a valid URL");
+            else
+                this.editor.insertHTML('<img src="' + sUrl + '" border="0" />');
         }
     };
 
@@ -97,11 +97,17 @@ jpf.editor.plugin('image', function(){
         });
         return panelBody;
     };
+
+    this.destroy = function() {
+        panelBody = this.oUrl = null;
+        delete panelBody;
+        delete this.oUrl;
+    };
 });
 
 jpf.editor.plugin('imagespecial', function() {
     this.name        = 'imagespecial';
-    this.icon        = 'imagespecial';
+    this.icon        = 'image';
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';

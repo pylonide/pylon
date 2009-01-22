@@ -120,6 +120,12 @@ jpf.editor.plugin('fonts', function() {
         });
         return panelBody;
     };
+
+    this.destroy = function() {
+        panelBody = this.fontPreview = null;
+        delete panelBody;
+        delete this.fontPreview;
+    };
 });
 
 jpf.editor.plugin('fontsize', function() {
@@ -228,6 +234,12 @@ jpf.editor.plugin('fontsize', function() {
             panelBody.style.visibility = "visible";
         });
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.sizePreview = null;
+        delete panelBody;
+        delete this.sizePreview;
     };
 });
 

@@ -86,10 +86,10 @@ jpf.editor.plugin('link', function(){
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         panelBody.style.visibility = "hidden";
-        var idUrl    = 'editor_' + this.editor.uniqueId + '_link_url';
-        var idTarget = 'editor_' + this.editor.uniqueId + '_link_target';
-        var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
-        var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
+        var idUrl    = 'editor_' + this.uniqueId + '_link_url';
+        var idTarget = 'editor_' + this.uniqueId + '_link_target';
+        var idTitle  = 'editor_' + this.uniqueId + '_link_title';
+        var idButton = 'editor_' + this.uniqueId + '_link_button';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idUrl + '">Link URL</label>\
@@ -125,6 +125,14 @@ jpf.editor.plugin('link', function(){
         });
 
         return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.oUrl = this.oTarget = this.oTitle = null;
+        delete panelBody;
+        delete this.oUrl;
+        delete this.oTarget;
+        delete this.oTitle;
     };
 });
 
