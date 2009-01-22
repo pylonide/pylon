@@ -1224,8 +1224,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 form.bringToFront();
             }
             else if (this.selected.getAttribute("exec")) {
-                var exec = this.selected.getAttribute("exec");
-                eval(exec);
+                eval(this.selected.getAttribute("exec"));
             }
         }
         
