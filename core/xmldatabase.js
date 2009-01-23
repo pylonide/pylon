@@ -487,12 +487,12 @@ jpf.XmlDatabase = function(){
             xpath    = options.xpath;
             newNodes = options.newNodes;
             
-            undoObj.xmlNode = xmlNode;
+            undoObj.extra.oldValue = jpf.getXmlValue(xmlNode, xpath);
+            undoObj.xmlNode        = xmlNode;
             if (xpath)
                 xmlNode = jpf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes);
 
             undoObj.extra.appliedNode = xmlNode;
-            undoObj.extra.oldValue = jpf.getXmlValue(xmlNode, xpath);
         }
         
         if (xmlNode.nodeType == 1) {

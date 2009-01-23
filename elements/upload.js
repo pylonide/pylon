@@ -143,7 +143,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.inpFile.value != this.value) {
             this.setProperty("value", this.inpFile.value);
-            _self.dispatchEvent("afterbrowse", {value: this.value});
+            this.dispatchEvent("afterbrowse", {value: this.value});
         }
     };
 
