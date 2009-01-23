@@ -2859,6 +2859,11 @@ jpf.MultiselectBinding = function(){
             if (this.hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
 
+            if (this.oInt.firstChild && !jpf.xmldb.getNode(this.oInt.firstChild)) {
+                //Appearantly the content was cleared
+                this.oInt.innerHTML = "";
+            }
+
             result = this.$addNodes(xmlNode, (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
                 : htmlNode), true, false);//this.isTreeArch??

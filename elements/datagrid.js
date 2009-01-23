@@ -1658,33 +1658,30 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                 }
             }
-            
+
             var changeListener = {
                 $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
-                    var nodes = _self.getTraverseNodes();
-                    for (var s, i = 0, l = nodes.length; i < l; i++) {
-                        s = nodes[i].getAttribute("select");
-                        if (s) {
-                            if (jpf.xmldb.isChildOf(xmlNode, 
-                              _self.xmlData.selectSingleNode(s), true)){
-                                _self.$updateNode(nodes[i], 
-                                  jpf.xmldb.findHTMLNode(nodes[i], _self));
-                            }
+                    if (action == "redo-remove")
+                        oParent.appendChild(xmlNode);
+                    
+                    var lstUpdate = [], nodes = _self.xmlRoot.selectNodes("//node()[@select]");
+                    for (var node, s, i = 0, l = nodes.length; i < l; i++) {
+                        node = nodes[i];
+                        s = node.getAttribute("select");
+                        if (jpf.xmldb.isChildOf(xmlNode, 
+                          _self.xmlData.selectSingleNode(s), true)){
+                            lstUpdate.pushUnique(node.tagName == "field"
+                                ? node.parentNode
+                                : node);
                         }
-                        else {
-                            var children = nodes[i].selectNodes("field");
-                            for (var j = 0; j < children.length; j++) {
-                                s = children[j].getAttribute("select");
-                                if (s) {
-                                    if (jpf.xmldb.isChildOf(xmlNode, 
-                                      _self.xmlData.selectSingleNode(s), true)){
-                                        _self.$updateNode(nodes[i], 
-                                          jpf.xmldb.findHTMLNode(nodes[i], _self));
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    }
+                    
+                    if (action == "redo-remove")
+                        oParent.removeChild(xmlNode);
+                    
+                    for (var i = 0, l = lstUpdate.length; i < l; i++) {
+                        _self.$updateNode(lstUpdate[i], 
+                            jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
                     }
                 }
             };

@@ -108,6 +108,14 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
         
+        //Events
+        var a, i, attr = x.attributes;
+        for (i = 0; i < attr.length; i++) {
+            a = attr[i];
+            if (a.nodeName.indexOf("on") == 0)
+                this.addEventListener(a.nodeName, new Function(a.nodeValue));
+        }
+        
         if (x.firstChild) {
             var bind = x.getAttribute("ref") || ".";
             x.removeAttribute("ref");

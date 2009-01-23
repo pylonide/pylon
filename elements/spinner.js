@@ -92,7 +92,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
 
     this.setValue = function(value) {
-       this.change(value);
+       this.setProperty("value", value);
     };
 
     this.getValue = function() {
