@@ -84,11 +84,13 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.value)
             this.old_value = value;
         this.value = value;
-
+        
+        /*
         if (this.oLabel.nodeType == 1)
             this.oLabel.innerHTML = value;
         else
             this.oLabel.nodeValue = value;
+        */
     };
 
     /**** Public methods ****/
@@ -138,6 +140,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.inpFile.click();
         //this.$startUpload();
+        
+        if (this.inpFile.value)
+            this.setProperty("value", this.inpFile.value);
     };
 
     this.upload = function(){
