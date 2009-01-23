@@ -1247,8 +1247,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (this.selected.getAttribute("exec")) {
                 //#ifdef __DEBUG
                 try{
+                //#endif
                     var selected = _self.xmlData;
                     eval(this.selected.getAttribute("exec"));
+                //#ifdef __DEBUG
                 }
                 catch(e){
                     throw new Error(jpf.formatErrorString(0, _self,
@@ -1256,9 +1258,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         "Could not find exec by name '" + this.selected.getAttribute("exec")
                         + "'", this.selected+ e.message));
                 }
-                /* #else
-                eval(this.selected.getAttribute("exec"));
-                #endif */
+                // #endif
             }
         }
         

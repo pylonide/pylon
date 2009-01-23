@@ -151,7 +151,7 @@ jpf.Elements = [
     "video/type_flv",
     "video/type_qt",
     "video/type_silverlight",
-    "video/type_vlc",
+    //"video/type_vlc",
     "video/type_wmp"
 ];
 jpf.KernelModules = [

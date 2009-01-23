@@ -171,9 +171,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      *
      * @param {String} sVideo
      * @type {Object}
-     
-    var dbLoad = this.load;
-    this.load = function() {
+     */
+    //var dbLoad = this.load;
+    this.loadMedia = function() {
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);
@@ -186,7 +186,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         return this;
-    };*/
+    };
 
     /**
      * Seek the video to a specific position.
@@ -339,7 +339,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$initHook = function() {
-        this.load();
+        this.loadMedia();
     };
 
     /**

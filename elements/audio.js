@@ -49,7 +49,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {Object}
      */
     var dbLoad = this.load;
-    this.load = function() {
+    this.loadMedia = function() {
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);

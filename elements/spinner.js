@@ -220,7 +220,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 var value = parseInt(_self.oInput.value);
 
                 if (value != _self.value) {
-                    _self.setValue(value);
+                    _self.change(value);
                 }
                 document.onmousemove = null;
             };
@@ -275,7 +275,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             var value = parseInt(_self.oInput.value);
 
             if (value != _self.value) {
-                _self.setValue(value);
+                _self.change(value);
             }
             jpf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
 
@@ -291,7 +291,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             var value = parseInt(_self.oInput.value);
 
             if (value != _self.value) {
-                _self.setValue(value);
+                _self.change(value);
             }
             jpf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
 
@@ -332,7 +332,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             if (value != _self.value) {
-                _self.setValue(value);
+                _self.change(value);
             }
         };
 
@@ -357,7 +357,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
 
             if (value != _self.value) {
-                _self.setValue(value);
+                _self.change(value);
             }
         };
 

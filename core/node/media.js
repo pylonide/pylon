@@ -183,7 +183,7 @@ jpf.Media = function(){
             var type = this.$guessType(this.src);
             if (type == this.type) {
                 reset.call(this);
-                this.load();
+                this.loadMedia();
             }
             else {
                 this.type = type;
@@ -282,7 +282,7 @@ jpf.Media = function(){
     this.totalBytes         = 0;
     this.volume             = 100;
 
-    this.load = function() {
+    this.loadMedia = function() {
         //must be overridden by the component
     };
 
