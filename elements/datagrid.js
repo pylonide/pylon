@@ -1659,18 +1659,55 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
             
+            var changeListener = {
+                $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
+                    var nodes = _self.getTraverseNodes();
+                    for (var s, i = 0, l = nodes.length; i < l; i++) {
+                        s = nodes[i].getAttribute("select");
+                        if (s) {
+                            if (jpf.xmldb.isChildOf(xmlNode, 
+                              _self.xmlData.selectSingleNode(s), true)){
+                                _self.$updateNode(nodes[i], 
+                                  jpf.xmldb.findHTMLNode(nodes[i], _self));
+                            }
+                        }
+                        else {
+                            var children = nodes[i].selectNodes("field");
+                            for (var j = 0; j < children.length; j++) {
+                                s = children[j].getAttribute("select");
+                                if (s) {
+                                    if (jpf.xmldb.isChildOf(xmlNode, 
+                                      _self.xmlData.selectSingleNode(s), true)){
+                                        _self.$updateNode(nodes[i], 
+                                          jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            changeListener.uniqueId = jpf.all.push(changeListener) - 1;
+            
             this.$_load = this.load;
             this.load = function(xmlRoot, cacheId){
                 var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
 
+                //@todo need caching of the template
+
                 if (template) {
                     this.xmlData = xmlRoot;
+                    
+                    //@todo This is never removed
+                    if (xmlRoot)
+                        jpf.xmldb.addNodeListener(xmlRoot, changeListener);
 
                     jpf.setModel(template, {
                         load: function(xmlNode){
                             if (!xmlNode || this.isLoaded)
                                 return;
-                                
+
                             // retrieve the cacheId
                             if (!cacheId) {
                                 cacheId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag) ||
@@ -1678,41 +1715,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             }
 
                             if (!_self.isCached(cacheId)) {
-                                var o = {
-                                    $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
-                                        var nodes = _self.getTraverseNodes();
-                                        for (var s, i = 0, l = nodes.length; i < l; i++) {
-                                            s = nodes[i].getAttribute("select");
-                                            if (s) {
-                                                if (jpf.xmldb.isChildOf(xmlNode, 
-                                                  _self.xmlData.selectSingleNode(s), true)){
-                                                    _self.$updateNode(nodes[i], 
-                                                      jpf.xmldb.findHTMLNode(nodes[i], _self));
-                                                }
-                                            }
-                                            else {
-                                                var children = nodes[i].selectNodes("field");
-                                                for (var j = 0; j < children.length; j++) {
-                                                    s = children[j].getAttribute("select");
-                                                    if (s) {
-                                                        if (jpf.xmldb.isChildOf(xmlNode, 
-                                                          _self.xmlData.selectSingleNode(s), true)){
-                                                            _self.$updateNode(nodes[i], 
-                                                              jpf.xmldb.findHTMLNode(nodes[i], _self));
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                };
-                                o.uniqueId = jpf.all.push(o) - 1;
-                                
-                                //@todo This is never removed
-                                if (xmlRoot)
-                                    jpf.xmldb.addNodeListener(xmlRoot, o);
-
                                 _self.$_load(xmlNode);
                             }
                             else {

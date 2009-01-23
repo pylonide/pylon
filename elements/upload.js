@@ -141,8 +141,10 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         this.inpFile.click();
         //this.$startUpload();
         
-        if (this.inpFile.value)
+        if (this.inpFile.value != this.value) {
             this.setProperty("value", this.inpFile.value);
+            _self.dispatchEvent("afterbrowse", {value: this.value});
+        }
     };
 
     this.upload = function(){
@@ -282,7 +284,6 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var jmlNode = this;
         this.inpFile.onchange = function(){
-            _self.dispatchEvent("afterbrowse", {value: this.value});
             //jmlNode.$startUpload();
         }
 
