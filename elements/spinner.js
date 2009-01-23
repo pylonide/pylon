@@ -48,27 +48,43 @@
  * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.max     = 64000;
-    this.min     = -64000;
-    this.value   = 0;
-    this.focused = false;
-
-    var _self    = this;
+    this.max       = 64000;
+    this.min       = -64000;
+    this.focused   = false;
+    this.value     = 0;
+    
+    var lastvalue = 0;
+    var _self     = this;
 
     this.$supportedProperties.push("width", "value", "max", "min");
 
     this.$propHandlers["value"] = function(value) {
-        this.value = this.oInput.value = parseInt(value) || 0;
+        value = parseInt(value) || 0;
+        
+        if (/^(0|[\-]?[1-9][0-9]*)$/.test(value) && (value || value == 0) && value <= _self.max && value >= _self.min) {
+            this.value = this.oInput.value = lastvalue =  value;
+        }
+        else {
+            this.value = this.oInput.value = lastvalue;
+        }
     };
 
     this.$propHandlers["min"] = function(value) {
-        if (parseInt(value))
+        if (parseInt(value)) {
             this.min = parseInt(value);
+            if (value > this.value) {
+                this.change(value);
+            }
+        }
     };
 
     this.$propHandlers["max"] = function(value) {
-        if (parseInt(value))
+        if (parseInt(value)) {
             this.max = parseInt(value);
+            if(value < this.value) {
+                this.change(value);
+            }
+        }
     };
 
     /* ********************************************************************
@@ -76,16 +92,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
 
     this.setValue = function(value) {
-        value = parseInt(value) || 0;
-
-        if (/^(0|[\-]?[1-9][0-9]*)$/.test(value) 
-            && (value || value == 0) && value <= _self.max
-            && value >= _self.min) {
-            this.setProperty("value", value);
-        }
-        else {
-            this.oInput.value = this.value;
-        }
+       this.change(value);
     };
 
     this.getValue = function() {
@@ -164,6 +171,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
 
         var timer, z = 0;
+
+        /* Setting start value */
+        this.oInput.value = this.value;
 
         this.oInput.onmousedown = function(e) {
             e = e || window.event;
