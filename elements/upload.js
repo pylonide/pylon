@@ -78,7 +78,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
      *  <j:progressbar value="{upExample.progress}" />
      * </code>
      */
-    this.$supportedProperties.push("value", "progress", "uploading");
+    this.$supportedProperties.push("value", "target", "progress", "uploading");
 
     this.$propHandlers["value"] = function(value){
         if (!this.value)
@@ -92,6 +92,11 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oLabel.nodeValue = value;
         */
     };
+
+    this.$propHandlers["target"] = function(value){
+        if (this.form)
+            this.form.setAttribute("action", value);
+    }
 
     /**** Public methods ****/
 
@@ -148,7 +153,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.upload = function(){
-        if (this.value == this.inpFile.value || !this.inpFile.value)
+        if (this.value != this.inpFile.value || !this.inpFile.value)
             return;
 
         this.old_value = this.value;
@@ -179,15 +184,15 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$updateProgress = function(){
         //@todo use getDiff here
-        this.setProperty("progress",
-            this.oSlider.offsetWidth / this.oSlider.parentNode.offsetWith);
+        /*this.setProperty("progress",
+            this.oSlider.offsetWidth / this.oSlider.parentNode.offsetWith);*/
     };
 
     this.$upload = function(){
         this.$uploading = true;
 
-        this.$disableEvents();
-        this.oCaption.nodeValue = "Uploading...";
+        //this.$disableEvents();
+        //this.oCaption.nodeValue = "Uploading...";
         this.setProperty("uploading", true);
 
         //@todo ass possibility for real progress indication
@@ -199,20 +204,20 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @event receive Fires when the upload succeeded
      */
-    this.$done = function(value, caption){
+    this.$done = function(data){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);
         window.setTimeout('jpf.lookup(' + this.uniqueId + ').$clearProgress()', 300);
 
-        if (value)
-            this.setValue(value);
+        //if (value)
+        //    this.setValue(value);
         this.old_value = null;
 
         //if(caption)
-        this.setCaption(this.lastCaption);
+        //this.setCaption(this.lastCaption);
 
         this.dispatchEvent("receive", {
-            returnValue: value
+            data: data
         });
 
         this.$initForm();
@@ -227,7 +232,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         window.clearInterval(this.timeout_timer);
         this.$clearProgress();
 
-        this.setCaption(this.lastCaption);
+        //this.setCaption(this.lastCaption);
         if (this.old_value)
             this.setValue(this.old_value);
         this.old_value = null;
@@ -246,9 +251,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$timeout = function(){
         clearInterval(this.timer);
 
-        this.oCaption.nodeValue = this.$jml.firstChild
+        /*this.oCaption.nodeValue = this.$jml.firstChild
             ? this.$jml.firstChild.nodeValue
-            : "";
+            : "";*/
         this.$clearProgress();
 
         if (this.old_value)
@@ -298,7 +303,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        if (jpf.debug == 2) {
+        if (jpf.debug == 2 || true) {
             this.oFrame.style.visibility = "visible";
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
@@ -312,9 +317,37 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 .setAttribute("name", "upload" + this.uniqueId);
         });
 
-        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
+        //this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
 
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
+        jpf.AbstractEvent.addListener(this.oFrame, "load", function(){
+            if (!_self.uploading)
+                return;
+
+            var data = "";
+            try{
+                data = this.contentWindow.document.body.innerHTML;
+            }
+            catch(e){}
+
+            var hasFailed = _self.dispatchEvent("beforereceive", {
+                data  : data,
+                frame : this
+            } === false);
+
+            if (hasFailed)
+                _self.$cancel();
+            else
+                _self.$done(data);
+        });
+
+        jpf.AbstractEvent.addListener(this.oFrame, "error", function(){
+            if (!_self.uploading)
+                return;
+
+            _self.$cancel();
+        });
+
         if (!jpf.isIE)
             this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"),
                 this.oExt);
@@ -334,6 +367,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
+        this.oFrame.onload = null;
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
