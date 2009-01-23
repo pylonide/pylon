@@ -303,7 +303,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        if (jpf.debug == 2 || true) {
+        if (jpf.debug == 2) {
             this.oFrame.style.visibility = "visible";
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
