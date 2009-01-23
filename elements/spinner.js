@@ -78,11 +78,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.setValue = function(value) {
         value = parseInt(value) || 0;
 
-        if (/^[\-]?[0-9]*$/.test(this.oInput.value) 
+        if (/^(0|[\-]?[1-9][0-9]*)$/.test(value) 
             && (value || value == 0) && value <= _self.max
             && value >= _self.min) {
             this.setProperty("value", value);
-            this.value = value;
         }
         else {
             this.oInput.value = this.value;
@@ -211,8 +210,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 var value = parseInt(_self.oInput.value);
 
                 if (value != _self.value) {
-                    _self.value = value;
-                    _self.change(value);
+                    _self.setValue(value);
                 }
                 document.onmousemove = null;
             };
@@ -267,8 +265,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             var value = parseInt(_self.oInput.value);
 
             if (value != _self.value) {
-                _self.value = value;
-                _self.change(value);
+                _self.setValue(value);
             }
             jpf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
 
@@ -284,8 +281,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             var value = parseInt(_self.oInput.value);
 
             if (value != _self.value) {
-                _self.value = value;
-                _self.change(value);
+                _self.setValue(value);
             }
             jpf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
 
@@ -297,13 +293,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmouseover = function(e) {
             jpf.setStyleClass(_self.oButtonMinus, "minusHover");
             jpf.setStyleClass(_self.oButtonPlus, "plusFocus");
-            jpf.setStyleClass(_self.oInput, "focus");
+            //jpf.setStyleClass(_self.oInput, "focus");
         };
 
         this.oButtonPlus.onmouseover  = function(e) {
             jpf.setStyleClass(_self.oButtonPlus, "plusHover");
             jpf.setStyleClass(_self.oButtonMinus, "minusFocus");
-            jpf.setStyleClass(_self.oInput, "focus");
+            //jpf.setStyleClass(_self.oInput, "focus");
         };
 
         this.oButtonPlus.onmouseup = function(e) {
@@ -326,8 +322,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             if (value != _self.value) {
-                _self.value = value;
-                _self.change(value);
+                _self.setValue(value);
             }
         };
 
@@ -352,9 +347,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
 
             if (value != _self.value) {
-                _self.value = value;
-                _self.change(value);
-                _self.oInput.value = value;
+                _self.setValue(value);
             }
         };
 
