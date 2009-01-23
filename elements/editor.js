@@ -120,7 +120,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.dispatchEvent('sethtml', {editor: this});
 
-        this.$visualFocus(true);
+        //this.$visualFocus(true);
     };
 
     this.$propHandlers["output"] = function(value){
@@ -165,7 +165,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             inited = justinited = true;
         }
         if (jpf.isIE) {
-            this.oDoc.body.contentEditable = true;
+            setTimeout(function() {
+                _self.oDoc.body.contentEditable = true;
+            });
         }
         else {
             try {
@@ -180,7 +182,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             catch (e) {};
         }
         if (justinited) {
-            this.$propHandlers["value"].call(this, "");
+            //this.$propHandlers["value"].call(this, "");
             this.dispatchEvent('complete', {editor: this});
             complete = true;
         }
