@@ -755,8 +755,7 @@ jpf.model = function(data, caching){
 
                 //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(1032,
-                    null, "Inserting xml data", "Could not load data for \
-                    control " + this.name + "[" + this.tagName + "] \n\
+                    _self, "Inserting xml data", "Could not load data \
                     Instruction:" + instruction + "\n\
                     Url: " + extra.url + "\n\
                     Info: " + extra.message + "\n\n" + data));
@@ -859,8 +858,7 @@ jpf.model = function(data, caching){
 
                 //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(1032,
-                    null, "Inserting xml data", "Could not insert data for \
-                    control " + this.name + "[" + this.tagName + "] \n\
+                    _self, "Inserting xml data", "Could not insert data for \
                     Instruction:" + instruction + "\n\
                     Url: " + extra.url + "\n\
                     Info: " + extra.message + "\n\n" + data));

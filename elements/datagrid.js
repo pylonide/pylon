@@ -74,9 +74,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$booleanProperties["cellselect"] = true;
     this.$booleanProperties["celledit"]   = true;
+    this.$booleanProperties["iframe"]     = true;
 
-    /*this.$propHandlers["fill"] = function(value){
-    }*/
+    this.$propHandlers["template"] = function(value){
+        this.smartBinding = value ? true : false;
+        this.namevalue    = true;
+        
+        this.$loaddatabinding();
+        
+        if (this.bindingRules["traverse"])
+            this.parseTraverse(this.bindingRules["traverse"][0]);
+    }
 
     /**
      * This method imports a stylesheet defined in a multidimensional array 
@@ -526,6 +534,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     var headings = [], cssRules = []; //@todo Needs to be reset
     this.$loaddatabinding = function(){
+        if (!this.bindingRules)
+            this.bindingRules = {};
+        
         //Set Up Headings
         var heads = this.bindingRules.column;
         
@@ -563,7 +574,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         %output.join(sep);\
                     }\
                 ]]]></j:column>\
-                <j:traverse select="property" />\
+                <j:traverse select="property|prop" />\
               </j:root>');
 
             heads.push(xml.childNodes[0]);
@@ -1284,7 +1295,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         widthdiff    = this.$getOption("main", "widthdiff") || 0;
         defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        useiframe    = jpf.isTrue(this.$getOption("main", "iframe"));
+        useiframe    = jpf.isTrue(this.$getOption("main", "iframe")) || this.iframe;
 
         jpf.JmlParser.parseChildren(this.$jml, null, this);
         
@@ -1701,18 +1712,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 //@todo This is never removed
                                 if (xmlRoot)
                                     jpf.xmldb.addNodeListener(xmlRoot, o);
-                                
+
                                 _self.$_load(xmlNode);
                             }
                             else {
+                                //this.xmlRoot = null;
                                 _self.$_load(xmlNode);
                                 
                                 var nodes = _self.getTraverseNodes();
-                                for (var s, i = 0, l = nodes.length; i < l; i++) {
-                                    _self.$updateNode(nodes[i], jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                for (var s, i = 0, htmlNode, l = nodes.length; i < l; i++) {
+                                    htmlNode = jpf.xmldb.findHTMLNode(nodes[i], _self);
+                                    if (!htmlNode) 
+                                        break;
+
+                                    _self.$updateNode(nodes[i], htmlNode);
                                 }
                             }
-
+                            
                             this.isLoaded = true; //@todo how about cleanup?
                         },
         

@@ -2772,7 +2772,7 @@ jpf.MultiselectBinding = function(){
                     action = "update";
 
                 if (xmlNode == listenNode) {
-                    if (xmlNode == this.xmlRoot)
+                    if (xmlNode == this.xmlRoot && action != "insert")
                         return;
                     break;
                 }
