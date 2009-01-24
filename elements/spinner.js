@@ -140,9 +140,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         var key = e.keyCode;
 
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
-        var keyAccess = (key < 8 || (key > 8 && key < 37)
+        /*var keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
                       || (key > 40 && key < 46) || (key > 46 && key < 48)
-                      || (key > 57 && key < 109) || (key > 109 && key !== 189));
+                      || (key > 57 && key < 109) || (key > 109 && key !== 189));*/
+        /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE, NUM_NUMBERS */
+        var keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
+                      || (key > 40 && key < 46) || (key > 46 && key < 48)
+                      || (key > 57 && key < 96) || (key > 105 && key < 109) || (key > 109 && key !== 189));
 
        if (keyAccess)
            return false;
@@ -302,13 +306,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oButtonMinus.onmouseover = function(e) {
             jpf.setStyleClass(_self.oButtonMinus, "minusHover");
-            jpf.setStyleClass(_self.oButtonPlus, "plusFocus");
+            //jpf.setStyleClass(_self.oButtonPlus, "plusFocus");
             //jpf.setStyleClass(_self.oInput, "focus");
         };
 
         this.oButtonPlus.onmouseover  = function(e) {
             jpf.setStyleClass(_self.oButtonPlus, "plusHover");
-            jpf.setStyleClass(_self.oButtonMinus, "minusFocus");
+            //jpf.setStyleClass(_self.oButtonMinus, "minusFocus");
             //jpf.setStyleClass(_self.oInput, "focus");
         };
 
