@@ -201,7 +201,7 @@ jpf.Rename = function(){
 
         if (this.renaming) {
             if (key == 27 || key == 13)
-                this.stopRename(null, key == 13);
+                this.stopRename(null, key == 13 && !this.$autocomplete);
 
             return;
         }
@@ -252,6 +252,15 @@ jpf.Rename = function(){
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
 
+        //#ifdef __WITH_RENAME_AUTOCOMPLETE
+        this.oTxt.onkeydown = function(){
+            if (!this.host.$autocomplete)
+                return;
+            
+            this.host.$lookup(this[jpf.hasContentEditable ? "innerHTML" : "value"]);
+        }
+        //#endif
+
         this.oTxt.select = function(){
             if (!jpf.hasMsRangeObject)
                 return this.focus();
@@ -276,13 +285,17 @@ jpf.Rename = function(){
         //#endif
 
         this.oTxt.onblur = function(){
-            if (jpf.isGecko) return; //bug in firefox calling onblur too much
+            if (jpf.isGecko) 
+                return; //bug in firefox calling onblur too much
 
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug)
                 jpf.window.$blurfix();
             //#endif
 
+            if (this.host.$autocomplete)
+                return;
+                
             this.host.stopRename(null, true);
         };
     }

@@ -104,6 +104,7 @@ jpf.Elements = [
     "submitform",
     "tab",
     "teleport",
+    "template",
     "text",
     "textbox",
     "toc",

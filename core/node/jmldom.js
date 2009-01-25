@@ -116,43 +116,54 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.ownerDocument = jpf.document;
 
     if (tagName) {
-        //#ifdef __USE_TOSTRING
-        /**
-         * Returns a string representation of this object.
-         */
-        this.toString = function(){
-            return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName
-                + " /> : " + (this.name || this.uniqueId || "") + "]";
-        };
-        //#endif
-
-        /**
-         * {JmlNode} the parent in the tree of this element.
-         */
-        this.parentNode = parentNode;
-        this.$jml        = jml;
-        /**
-         * {Number} nodeFunc the function of this element
-         * Possible values:
-         * jpf.NODE_VISIBLE     this element has a gui representation
-         * jpf.NODE_HIDDEN      this element does not display a gui
-         */
-        this.nodeFunc   = nodeFunc;
-
-        /**
-         * {String} tagName the name of the class of this element
-         */
-        this.tagName    = tagName;
-
-        /**
-         * {String} name the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
-         */
-        this.name       = jml && jml.getAttribute("id");
-
-        /**
-         * {mixed} content special content for this object
-         */
-        this.content    = content;
+        if (typeof tagName == "number") {
+            if (tagName == jpf.NODE_DOCUMENT_FRAGMENT) {
+                this.nodeType = jpf.NODE_DOCUMENT_FRAGMENT;
+                
+                this.hasFeature = function(){
+                    return false;
+                }
+            }
+        }
+        else {
+            //#ifdef __USE_TOSTRING
+            /**
+             * Returns a string representation of this object.
+             */
+            this.toString = function(){
+                return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName
+                    + " /> : " + (this.name || this.uniqueId || "") + "]";
+            };
+            //#endif
+    
+            /**
+             * {JmlNode} the parent in the tree of this element.
+             */
+            this.parentNode = parentNode;
+            this.$jml        = jml;
+            /**
+             * {Number} nodeFunc the function of this element
+             * Possible values:
+             * jpf.NODE_VISIBLE     this element has a gui representation
+             * jpf.NODE_HIDDEN      this element does not display a gui
+             */
+            this.nodeFunc   = nodeFunc;
+    
+            /**
+             * {String} tagName the name of the class of this element
+             */
+            this.tagName    = tagName;
+    
+            /**
+             * {String} name the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
+             */
+            this.name       = jml && jml.getAttribute("id");
+    
+            /**
+             * {mixed} content special content for this object
+             */
+            this.content    = content;
+        }
     }
 
     /**
@@ -183,6 +194,14 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 "Invalid argument passed. Expecting a JMLElement."));
         }
         //#endif
+        
+        if (jmlNode.nodeType == jpf.NODE_DOCUMENT_FRAGMENT) {
+            var nodes = jmlNode.childNodes.slice(0);
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                this.insertBefore(nodes[i], beforeNode);
+            }
+            return;
+        }
 
         var isMoveWithinParent = jmlNode.parentNode == this;
         var oldParentHtmlNode  = jmlNode.pHtmlNode;

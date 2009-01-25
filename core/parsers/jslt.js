@@ -102,7 +102,7 @@ jpf.JsltImplementation = function(){
     }
     
     function jloc(n, f, p){
-        if (!n) 
+        if (!n || !p) 
             return;
         n = isString(p) ? n.selectSingleNode(p) : p;
         if (!n) 

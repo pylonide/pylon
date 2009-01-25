@@ -357,7 +357,7 @@ jpf.MultiSelect = function(){
             //#endif
 
             if (node.getAttribute("get"))
-                return jpf.getData(node.getAttribute("get"), node, null, callback)
+                return jpf.getData(node.getAttribute("get"), this.selected, null, callback)
             else if (node.firstChild)
                 return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
         }

@@ -772,6 +772,9 @@ jpf.model = function(data, caching){
                     return _self.loadFrom(loadProcInstr);
             }
             else {
+                if (options.cancel)
+                    return;
+
                 _self.load(data);
                 _self.dispatchEvent("receive", {
                     data: data

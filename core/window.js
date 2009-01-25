@@ -1556,6 +1556,10 @@ jpf.DocumentImplementation = function(){
 
         return o;
     };
+    
+    this.createDocumentFragment = function(){
+        return new jpf.JmlDom(jpf.NODE_DOCUMENT_FRAGMENT)
+    }
     //#endif
 
     //#ifdef __WITH_JMLDOM_W3C_XPATH

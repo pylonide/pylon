@@ -1511,6 +1511,7 @@ jpf.DataBinding = function(){
     var initModelId = [];
     this.$addJmlLoader(function(x){
         //, this.ref && this.hasFeature(__MULTISELECT__)
+        
         if (initModelId[0])
             jpf.setModel(initModelId[0], this);
         if (initModelId[1])
@@ -2742,7 +2743,7 @@ jpf.MultiselectBinding = function(){
         if (!this.xmlRoot)
             return; //@todo think about purging cache when xmlroot is removed
 
-        var result, startNode = xmlNode;
+        var result, startNode = xmlNode, length;
         if (!listenNode)
             listenNode = this.xmlRoot;
 
@@ -2862,6 +2863,12 @@ jpf.MultiselectBinding = function(){
             if (this.oInt.firstChild && !jpf.xmldb.getNode(this.oInt.firstChild)) {
                 //Appearantly the content was cleared
                 this.oInt.innerHTML = "";
+
+                if (!this.renderRoot) {
+                    length = this.getTraverseNodes().length;
+                    if (!length)
+                        this.clearAllTraverse();
+                }
             }
 
             result = this.$addNodes(xmlNode, (this.$getParentNode
@@ -2876,7 +2883,8 @@ jpf.MultiselectBinding = function(){
                                  + this.name + " [" + this.tagName + "]\n\
                                   Traverse Rule : " + this.traverse);
             // #endif
-            if (this.selectable && !this.xmlRoot.selectSingleNode(this.traverse))
+
+            if (this.selectable && (!length || !this.xmlRoot.selectSingleNode(this.traverse)))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
@@ -2986,9 +2994,10 @@ jpf.MultiselectBinding = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
-            var l = this.xmlRoot.selectNodes(this.traverse).length;
-            if (l != this.length)
-                this.setProperty("length", l);
+            if (!length)
+                length = this.xmlRoot.selectNodes(this.traverse).length;
+            if (length != this.length)
+                this.setProperty("length", length);
         }
         //#endif
 

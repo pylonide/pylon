@@ -934,7 +934,7 @@ jpf.XmlDatabase = function(){
         for (var uId in notifyQueue) {
             var q = notifyQueue[uId];
             jmlNode = jpf.lookup(uId);
-            if (!jmlNode)
+            if (!jmlNode || !q)
                 continue;
 
             //Check if component is just waiting for data to become available
