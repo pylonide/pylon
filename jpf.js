@@ -917,9 +917,11 @@ var jpf = {
             str.push(outputname + ": " + output);
         if (jmlContext)
             str.push("\n===\n" + jmlStr);
-
-        return str.join("\n");
-        //#endif
+        
+        return (jpf.lastErrorMessage = str.join("\n"));
+        /*#else
+        jpf.lastErrorMessage = message;
+        #endif */
     },
 
     /* Init */
