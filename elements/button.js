@@ -140,7 +140,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     //@todo reparenting
+    var forceFocus;
     this.$propHandlers["default"] = function(value){
+        if (!this.focussable && value || forceFocus)
+            this.setAttribute("focussable", forceFocus = value);
+        
         this.parentNode.removeEventListener("focus", setDefault);
         this.parentNode.removeEventListener("blur", removeDefault);
 

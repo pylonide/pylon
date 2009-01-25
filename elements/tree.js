@@ -266,7 +266,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @private
      */
-    this.slideOpen = function(container, xmlNode){
+    this.slideOpen = function(container, xmlNode, immediate){
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -281,6 +281,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         container.style.display = "block";
+        
+        if (immediate) {
+            container.style.height = "auto";
+            return;
+        }
 
         jpf.tween.single(container, {
             type    : 'scrollheight', 
@@ -499,7 +504,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             if (htmlParentNode.style) {
                 if (!startClosed && this.openOnAdd && htmlParentNode != this.oInt 
                   && htmlParentNode.style.display != "block") 
-                    this.slideOpen(htmlParentNode, xmlParentNode);
+                    this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
                 //this.$fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
                 this.$fixItem(xmlParentNode, jpf.xmldb.findHTMLNode(xmlParentNode, this));
@@ -817,7 +822,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setClearMessage(oPHtmlNode);
         
         if (this.openOnAdd && pHtmlNode != this.oInt && pContainer.style.display != "block") 
-            this.slideOpen(pContainer, pHtmlNode);
+            this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
@@ -933,7 +938,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode) return;
         if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
-            this.slideOpen(container, e.xmlNode);
+            this.slideOpen(container, e.xmlNode, true);
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);

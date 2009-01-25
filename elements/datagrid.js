@@ -815,6 +815,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     this.$updateNode = function(xmlNode, htmlNode){
+        if (!htmlNode) return;
+        
         var nodes = this.oHead.childNodes;
         var htmlNodes = htmlNode.childNodes;
         var node;
