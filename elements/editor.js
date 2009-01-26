@@ -501,7 +501,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         _self.selection.collapse(true);
                         /*var oNode = _self.selection.moveToAncestorNode('div'), found = false;
                         if (false) {//oNode && oNode.getAttribute('_jpf_placeholder')) {
-                            jpf.console.log('apparently found parent node...');
                             found = true;
                             var oDiv = _self.oDoc.createElement('div');
                             oDiv.setAttribute('_jpf_placeholder', '1');
