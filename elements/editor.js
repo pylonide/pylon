@@ -394,7 +394,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         e = e || window.event;
                         var key = e.which || e.keyCode;
                         if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
-                            oPlugin.submit(new jpf.AbstractEvent(e));
+                            return oPlugin.submit(new jpf.AbstractEvent(e));
                     }
                 }
             });
