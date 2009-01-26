@@ -77,6 +77,12 @@ jpf.editor.plugin('code', function() {
         oPreview = editor.oExt.appendChild(document.createElement('textarea'));
         oPreview.rows = 15;
         oPreview.cols = 10;
+        // make selections in IE possible.
+        if (jpf.isIE)
+            oPreview.onselectstart = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
         setSize(editor);
         oPreview.style.display  = "none";
         jpf.sanitizeTextbox(oPreview);

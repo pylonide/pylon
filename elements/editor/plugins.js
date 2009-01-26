@@ -328,6 +328,7 @@ jpf.editor.plugin = function(sName, fExec) {
         this.appendJmlNode = function(sNode, oParent) {
             if (!sNode) return null;
 
+            //TODO: make this happen in a hidden div...
             var oNode = jpf.document.createElement(sNode);
             jpf.document.documentElement.appendChild(oNode);
 
