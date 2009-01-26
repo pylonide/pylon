@@ -48,7 +48,7 @@ jpf.editor.plugin('image', function(){
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
         // @todo: auto-fill input with currently selected image url
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 200, 58);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
         var _self = this;
         setTimeout(function() {
             _self.oUrl.focus();
@@ -89,10 +89,12 @@ jpf.editor.plugin('image', function(){
             </div>\
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oUrl = document.getElementById(idUrl);
-        var oBtns = document.getElementById(idBtns);
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml
-            + '" caption="Insert" bottom="0" right="6" onclick="jpf.lookup('
-            + this.uniqueId + ').submit(event)" />', oBtns);
+        this.appendJmlNode(
+            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+             <j:button caption="Insert"\
+               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+             </j:bar></j:toolbar>',
+          document.getElementById(idBtns));
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug)

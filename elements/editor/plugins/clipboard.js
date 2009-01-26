@@ -206,13 +206,15 @@ jpf.editor.clipboardPlugin = function(sName) {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idArea   = 'editor_' + this.uniqueId + '_' + this.name + '_input';
+        var idArea = 'editor_' + this.uniqueId + '_input';
+        var idBtns = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
            'Use %s on your keyboard to paste the text into the window.'.sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
-              cols="60" rows="10" class="editor_textarea"></textarea>';
+              cols="60" rows="10" class="editor_textarea"></textarea>\
+            <div class="editor_panelrow" style="position:absolute;bottom:0;width:100%" id="' + idBtns + '"></div>';
 
         this.oArea = document.getElementById(idArea);
         jpf.sanitizeTextbox(this.oArea);
@@ -221,9 +223,12 @@ jpf.editor.clipboardPlugin = function(sName) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
-            caption="Insert" bottom="4" right="6" \
-            onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', panelBody);
+        this.appendJmlNode(
+           '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+            <j:button caption="Insert"\
+              onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+            </j:bar></j:toolbar>',
+          document.getElementById(idBtns));
 
         return panelBody;
     };

@@ -47,8 +47,8 @@ jpf.editor.searchPlugin = function(sName) {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode,
-            this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218,
+            this.name == "search" ? 71 : 95);
         // prefill search box with selected text
         this.oSearch.value = this.editor.selection.getContent();
         var _self = this;
@@ -112,7 +112,20 @@ jpf.editor.searchPlugin = function(sName) {
         else if (this.oReplBtn)
             this.oReplBtn.enable();
 
-        e.cancelBubble = true;
+        if (e.stop)
+            e.stop();
+        else
+            e.cancelBubble = true;
+
+        if (!jpf.isIE) {
+            // IE cannot show the selection anywhere else then where the cursor
+            // is, so no show for them users...
+            var _self = this;
+            setTimeout(function() {
+                _self.oSearch.focus();
+            });
+        }
+
         return false;
     };
 
@@ -199,24 +212,26 @@ jpf.editor.searchPlugin = function(sName) {
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oSearch = document.getElementById(idSearch);
         this.oCase   = document.getElementById(idCase);
-        var oBtns    = document.getElementById(idBtns);
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml
-            + '" caption="Find next" bottom="0" ' +
-            (this.name == "search" ? 'right="6"' : 'left="2"')
-            + ' onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', oBtns);
+        
+        var aJml = [
+            '<j:toolbar xmlns:j="', jpf.ns.jml, '"><j:bar>\
+             <j:button caption="Find next"\
+               onclick="jpf.lookup(', this.uniqueId, ').submit(event)" />'];
+        if (this.name == "replace") {
+            this.oReplace = document.getElementById(idReplace);
+            aJml.push(
+                '<j:button caption="Replace"\
+                  onclick="jpf.lookup(', this.uniqueId, ').onDoReplClick(event)"\
+                  id="', idReplBtn, '" />\
+                <j:button caption="Replace all"\
+                  onclick="jpf.lookup(', this.uniqueId, ').onReplAllClick(event)"\
+                  id="', idReplAllBtn, '" />');
+        }
+        aJml.push('</j:bar></j:toolbar>');
+
+        this.appendJmlNode(aJml.join(""), document.getElementById(idBtns));
 
         if (this.name == "replace") {
-            this.oReplace    = document.getElementById(idReplace);
-            this.appendJmlNode('<j:button xmlns:j="'
-                + jpf.ns.jml + '" caption="Replace" bottom="0" right="6" \
-                onclick="jpf.lookup(' + this.uniqueId + ').onDoReplClick(event)"\
-                id="' + idReplBtn + '" />',
-                oBtns);
-            this.appendJmlNode('<j:button xmlns:j="'
-                + jpf.ns.jml + '" caption="Replace all" bottom="0" right="106" \
-                onclick="jpf.lookup(' + this.uniqueId + ').onReplAllClick(event)"\
-                id="' + idReplAllBtn + '" />',
-                oBtns);
             this.oReplBtn    = self[idReplBtn];
             this.oReplAllBtn = self[idReplAllBtn];
             this.oReplBtn.disable();

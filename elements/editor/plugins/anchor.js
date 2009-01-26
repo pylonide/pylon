@@ -47,7 +47,7 @@ jpf.editor.plugin('anchor', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 215, 56);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
@@ -94,10 +94,12 @@ jpf.editor.plugin('anchor', function() {
             </div>\
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jml + '" \
-            caption="Insert" bottom="0" right="6" \
-            onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />',
-            document.getElementById(idButton));
+        this.appendJmlNode(
+            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+             <j:button caption="Insert"\
+               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+             </j:bar></j:toolbar>',
+          document.getElementById(idButton));
         this.oName = document.getElementById(idName);
         jpf.sanitizeTextbox(this.oName);
 

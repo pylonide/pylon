@@ -47,7 +47,7 @@ jpf.editor.plugin('link', function(){
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 200 : 193);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 95);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
@@ -95,7 +95,7 @@ jpf.editor.plugin('link', function(){
         var idUrl    = 'editor_' + this.uniqueId + '_link_url';
         var idTarget = 'editor_' + this.uniqueId + '_link_target';
         var idTitle  = 'editor_' + this.uniqueId + '_link_title';
-        var idButton = 'editor_' + this.uniqueId + '_link_button';
+        var idBtns   = 'editor_' + this.uniqueId + '_link_btns';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idUrl + '">Link URL</label>\
@@ -114,17 +114,22 @@ jpf.editor.plugin('link', function(){
                 <label for="' + idTitle + '">Title</label>\
                 <input type="text" id="' + idTitle + '" name="' + idTitle + '" class="editor_input" value="" />\
             </div>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <button id="' + idButton + '">Insert</button>\
-            </div>';
+            <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        document.getElementById(idButton).onmousedown = this.submit.bindWithEvent(this);
+        //document.getElementById(idButton).onmousedown = this.submit.bindWithEvent(this);
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
         jpf.sanitizeTextbox(this.oUrl);
         jpf.sanitizeTextbox(this.oTarget);
-        jpf.sanitizeTextbox(this.oTitle);
+        jpf.sanitizeTextbox(this.oTitle)
+
+        this.appendJmlNode(
+            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+             <j:button caption="Insert"\
+               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+             </j:bar></j:toolbar>',
+          document.getElementById(idBtns))
 
         return panelBody;
     };

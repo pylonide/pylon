@@ -38,8 +38,8 @@ jpf.editor.subSupCommand = function(sName) {
 
     this.queryState = function(editor) {
         return editor.getCommandState(this.name == "sub"
-            ? 'subscript'
-            : 'superscript');
+            ? 'Subscript'
+            : 'Superscript');
     };
 }
 jpf.editor.plugin('sub', jpf.editor.subSupCommand);
