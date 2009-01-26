@@ -266,7 +266,8 @@ jpf.editor.selection = function(editor) {
                 scrollY: viewport.y,
                 begin  : oSel.anchorOffset - wb == 0
             };
-        } else {
+        }
+        else {
             oEl = getPos(range.startContainer, range.endContainer);
             if (!oEl)
                 return {scrollX : viewport.x, scrollY : viewport.y};
@@ -282,11 +283,11 @@ jpf.editor.selection = function(editor) {
     }
 
     /**
-    * Restores the selection to the specified bookmark.
-    *
-    * @param {Object} bookmark Bookmark to restore selection from.
-    * @return {Boolean} true/false if it was successful or not.
-    */
+     * Restores the selection to the specified bookmark.
+     *
+     * @param {Object} bookmark Bookmark to restore selection from.
+     * @return {Boolean} true/false if it was successful or not.
+     */
     this.moveToBookmark = function(bmark) {
         var range = this.getRange(), oSel = this.get(), sd, nvl, nv;
 
@@ -484,16 +485,16 @@ jpf.editor.selection = function(editor) {
     }
 
     var styleObjNodes = {
-        img: 1,
-        hr: 1,
-        li: 1,
-        table: 1,
-        tr: 1,
-        td: 1,
-        embed: 1,
+        img   : 1,
+        hr    : 1,
+        li    : 1,
+        table : 1,
+        tr    : 1,
+        td    : 1,
+        embed : 1,
         object: 1,
-        ol: 1,
-        ul: 1
+        ol    : 1,
+        ul    : 1
     };
 
     /**
@@ -623,7 +624,7 @@ jpf.editor.selection = function(editor) {
         else {
             range = this.getRange();
             range.selectNode(node);
-            oSel   = this.get();
+            oSel  = this.get();
             oSel.removeAllRanges();
             oSel.addRange(range);
         }
@@ -688,8 +689,8 @@ jpf.editor.selection = function(editor) {
             if (jpf.isIE)
                 if (oContainer.tagName == nodeTagName)
                     return true;
-                else
-                if (oContainer.nodeType == 1 && oContainer.tagName == nodeTagName)
+                else if (oContainer.nodeType == 1
+                  && oContainer.tagName == nodeTagName)
                     return true;
             oContainer = oContainer.parentNode;
         }
