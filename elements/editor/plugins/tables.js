@@ -51,7 +51,7 @@ jpf.editor.plugin('table', function() {
         else
             resetTableMorph();
 
-        this.storeSelection();
+        //this.storeSelection();
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
@@ -185,7 +185,7 @@ jpf.editor.plugin('table', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup editor_tablepopup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
 
         var idTableCont = 'editor_' + this.uniqueId + '_tablecont';
         var idTableSel  = 'editor_' + this.uniqueId + '_tablesel';
@@ -210,9 +210,6 @@ jpf.editor.plugin('table', function() {
         panelBody.onselectstart = function() { return false; };
         resetTableMorph();
 
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
         return panelBody;
     };
 

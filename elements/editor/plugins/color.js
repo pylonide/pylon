@@ -158,7 +158,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
         var aHtml = [];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
@@ -178,9 +178,6 @@ jpf.editor.colorPlugin = function(sName) {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
         return panelBody;
     }
 

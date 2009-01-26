@@ -88,7 +88,7 @@ jpf.editor.plugin('emotions', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
         var aHtml    = [];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
@@ -106,9 +106,6 @@ jpf.editor.plugin('emotions', function() {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
         return panelBody;
     };
 

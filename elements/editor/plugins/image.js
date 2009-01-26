@@ -49,6 +49,10 @@ jpf.editor.plugin('image', function(){
 
         // @todo: auto-fill input with currently selected image url
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 200, 58);
+        var _self = this;
+        setTimeout(function() {
+            _self.oUrl.focus();
+        });
         //return button id, icon and action:
         return {
             id: this.name,
@@ -75,7 +79,7 @@ jpf.editor.plugin('image', function(){
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
         var idUrl  = 'editor_' + this.uniqueId + '_input';
         var idBtns = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
@@ -95,9 +99,6 @@ jpf.editor.plugin('image', function(){
             jpf.sanitizeTextbox(this.oUrl);
         //#endif
 
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
         return panelBody;
     };
 

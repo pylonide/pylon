@@ -103,7 +103,7 @@ jpf.editor.plugin('charmap', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
         var aHtml  = [];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
@@ -118,10 +118,6 @@ jpf.editor.plugin('charmap', function() {
                 aHtml.push('</div>');
         }
         panelBody.innerHTML = aHtml.join('');
-        
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
         return panelBody;
     };
 

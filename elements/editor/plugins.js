@@ -328,14 +328,8 @@ jpf.editor.plugin = function(sName, fExec) {
         this.appendJmlNode = function(sNode, oParent) {
             if (!sNode) return null;
 
-            //TODO: make this happen in a hidden div...
-            var oNode = jpf.document.createElement(sNode);
-            jpf.document.documentElement.appendChild(oNode);
-
-            if (oParent && oNode.oExt)
-                oParent.appendChild(oNode.oExt);
-
-            return oNode;
+            var jml = jpf.getXml("<tempnode>" + sNode + "</tempnode>");
+            return jpf.JmlParser.parseMoreJml(jml, oParent, this.editor, true);
         };
 
         this.dispatchEvent = function() {

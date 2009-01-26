@@ -51,9 +51,10 @@ jpf.editor.searchPlugin = function(sName) {
             this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
         // prefill search box with selected text
         this.oSearch.value = this.editor.selection.getContent();
-        if (panelBody.style.visibility == "hidden")
-            panelBody.style.visibility = "visible";
-        this.oSearch.focus();
+        var _self = this;
+        setTimeout(function() {
+            _self.oSearch.focus();
+        });
         //return button id, icon and action:
 
         return {
@@ -174,11 +175,13 @@ jpf.editor.searchPlugin = function(sName) {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
-        var idSearch  = 'editor_' + this.uniqueId + '_input';
-        var idReplace = 'editor_' + this.uniqueId + '_replace';
-        var idCase    = 'editor_' + this.uniqueId + '_case';
-        var idBtns    = 'editor_' + this.uniqueId + '_btns';
+        panelBody.style.display = "none";
+        var idSearch     = 'editor_' + this.uniqueId + '_input';
+        var idReplace    = 'editor_' + this.uniqueId + '_replace';
+        var idReplBtn    = 'editor_' + this.uniqueId + '_replbtn';
+        var idReplAllBtn = 'editor_' + this.uniqueId + '_replallbtn';
+        var idCase       = 'editor_' + this.uniqueId + '_case';
+        var idBtns       = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
@@ -204,14 +207,18 @@ jpf.editor.searchPlugin = function(sName) {
 
         if (this.name == "replace") {
             this.oReplace    = document.getElementById(idReplace);
-            this.oReplBtn    = this.appendJmlNode('<j:button xmlns:j="'
+            this.appendJmlNode('<j:button xmlns:j="'
                 + jpf.ns.jml + '" caption="Replace" bottom="0" right="6" \
-                onclick="jpf.lookup(' + this.uniqueId + ').onDoReplClick(event)" />',
+                onclick="jpf.lookup(' + this.uniqueId + ').onDoReplClick(event)"\
+                id="' + idReplBtn + '" />',
                 oBtns);
-            this.oReplAllBtn = this.appendJmlNode('<j:button xmlns:j="'
+            this.appendJmlNode('<j:button xmlns:j="'
                 + jpf.ns.jml + '" caption="Replace all" bottom="0" right="106" \
-                onclick="jpf.lookup(' + this.uniqueId + ').onReplAllClick(event)" />',
+                onclick="jpf.lookup(' + this.uniqueId + ').onReplAllClick(event)"\
+                id="' + idReplAllBtn + '" />',
                 oBtns);
+            this.oReplBtn    = self[idReplBtn];
+            this.oReplAllBtn = self[idReplAllBtn];
             this.oReplBtn.disable();
         }
 
@@ -222,10 +229,6 @@ jpf.editor.searchPlugin = function(sName) {
                 jpf.sanitizeTextbox(this.oReplace);
         }
         //#endif
-
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
 
         return panelBody;
     };

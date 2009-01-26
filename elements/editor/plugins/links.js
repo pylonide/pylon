@@ -50,7 +50,10 @@ jpf.editor.plugin('link', function(){
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 200 : 193);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
-        this.oUrl.focus();
+        var _self = this;
+        setTimeout(function() {
+            _self.oUrl.focus();
+        });
         //return button id, icon and action:
         return {
             id: this.name,
@@ -88,7 +91,7 @@ jpf.editor.plugin('link', function(){
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        panelBody.style.visibility = "hidden";
+        panelBody.style.display = "none";
         var idUrl    = 'editor_' + this.uniqueId + '_link_url';
         var idTarget = 'editor_' + this.uniqueId + '_link_target';
         var idTitle  = 'editor_' + this.uniqueId + '_link_title';
@@ -122,10 +125,6 @@ jpf.editor.plugin('link', function(){
         jpf.sanitizeTextbox(this.oUrl);
         jpf.sanitizeTextbox(this.oTarget);
         jpf.sanitizeTextbox(this.oTitle);
-
-        setTimeout(function() {
-            panelBody.style.visibility = "visible";
-        });
 
         return panelBody;
     };
