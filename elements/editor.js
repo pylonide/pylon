@@ -377,6 +377,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         oPlugin.state = jpf.editor.ON;
         this.notify(oPlugin.name, jpf.editor.ON);
 
+        if (jpf.popup.isShowing(sCacheId))
+            return;
+
         // using setTimeout here, because I want the popup to be shown AFTER the
         // event bubbling is complete. Another click handler further up the DOM
         // tree may call a jpf.popup.forceHide();
