@@ -410,12 +410,11 @@ jpf.layout = {
                     return this.hide(true);
 
                 //Check if parent is empty
-
                 var nodes, child, c = 0, i, l, sets = ["children", "hiddenChildren"];
                 while(sets.length) {
                     nodes = this.parent[sets.pop()];
                     for (i = 0, l = nodes.length; i < l; i++) {
-                        child = this.parent.children[i];
+                        child = nodes[i];
                         if (child != this && !child.hidden) { // || jpf.layout.dlist.contains(child)
                             c = 1;
                             break;
