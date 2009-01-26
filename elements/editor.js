@@ -319,8 +319,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
                 }
             }
-            this.notifyAll();
             setTimeout(function() {
+                _self.notifyAll();
                 if (jpf.isIE && cmdName != "SelectAll")
                     _self.selection.set();
                 _self.$visualFocus();
@@ -469,8 +469,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var ret = _self.plugins.notifyAll('context', e);
     }
 
-    var keydownTimer = null;
-
     /**
      * Event handler; fired when the user pressed a key inside the editor IFRAME.
      * For IE, we apply some necessary behavior correction and for other browsers, like
@@ -480,7 +478,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {Boolean}
      * @private
      */
-    function keydownHandler(e) {
+    function onKeydown(e) {
         e = e || window.event;
         var i, found, code = e.which || e.keyCode;
         if (jpf.isIE) {
@@ -617,22 +615,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         document.onkeydown(e);
         keydownTimer = null;
-    }
-
-    /**
-     * Event handler; fired when the user presses a key inside the editable area
-     *
-     * @see jpf.AbstractEvent
-     * @param {Event} e
-     * @type  {void}
-     * @private
-     */
-    function onKeydown(e) {
-        this.selection.cache();
-        if (keydownTimer === null)
-            return keydownHandler(e);
-
-        return true;
     }
 
     var keyupTimer = null;
@@ -790,17 +772,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.change(this.getValue());
 
         this.setProperty('state', jpf.editor.DISABLED);
-
-        /*if (jpf.hasMsRangeObject) {
-            var r = this.oInt.createTextRange();
-            r.collapse();
-            r.select();
-        }
-        try {
-            //if (jpf.isIE || !e || e.srcElement != jpf.window)
-                //this.oWin.blur();
-        }
-        catch(e) {}*/
     };
 
     /**
@@ -814,7 +785,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup);
-        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', keydownHandler);
+        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown);
         jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(e){
             this.selection.cache();
             jpf.popup.forceHide();
