@@ -76,7 +76,7 @@ jpf.editor.plugin('table', function() {
         for (i = 0, j = oSize[0]; i < j; i++) {
             aOut.push('<tr>');
             for (k = 0, l = oSize[1]; k < l; k++)
-                aOut.push('<td>', (jpf.isIE ? '' : '<br _jpf_placeholder="1" />'),'</td>');
+                aOut.push('<td>', (jpf.isIE ? '' : '&nbsp;<br _jpf_placeholder="1" />'),'</td>');
             aOut.push('</tr>')
         }
         aOut.push('</table>')
@@ -262,6 +262,8 @@ jpf.editor.plugin('tablewizard', function() {
         jpf.editor.oMenu.tablePlugin = this;
 
         var pos = jpf.getAbsolutePosition(editor.iframe);
+        if (!e.client)
+            e = new jpf.AbstractEvent(e);
         jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1]);
 
         e.stop();
@@ -361,8 +363,9 @@ jpf.editor.plugin('tablewizard', function() {
     }
 
     this.createContextMenu = function(){
-        var oMenu = jpf.editor.oMenu = this.appendJmlNode('\
-            <j:menu xmlns:j="' + jpf.ns.jml + '">\
+        var idMenu = "editor_" + this.uniqueId + "_menu";
+        this.appendJmlNode('\
+            <j:menu xmlns:j="' + jpf.ns.jml + '" id="' + idMenu + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
                 <j:item value="deleterow">Delete row</j:item>\
@@ -376,7 +379,8 @@ jpf.editor.plugin('tablewizard', function() {
                 <j:divider />\
                 <j:item value="rowprops">Table row properties</j:item>\
                 <j:item value="colprops">Table column properties</j:item>\
-            </j:menu>');
+            </j:menu>', document.body);
+        var oMenu = jpf.editor.oMenu = self[idMenu];
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
                 return;
@@ -405,7 +409,7 @@ jpf.editor.plugin('tablewizard', function() {
                         oRow.insertCell(0);
                     break;
                 case "deleterow":
-                    if (!_self.oRow.parentNode) return;
+                    if (!_self.oRow || !_self.oRow.parentNode) return;
                     _self.oRow.parentNode.removeChild(_self.oRow);
                     break;
                 case "colbefore":
