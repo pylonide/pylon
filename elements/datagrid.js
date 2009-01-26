@@ -577,7 +577,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         var vs = $"@value-select";\
                         if ($"@multiple" == "single")\
                             vs = "node()/" + vs;\
-                        %jpf.getXmlValue(dg.xmlData, select + "/" + vs);\
+                        %jpf.getXmlValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
                     }\
                     else if (type == "custom") {\
                         var sep = $"@seperator" || "";\
@@ -1061,16 +1061,25 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }) === false)
             return;
         
-        var oContainer = editors["jml_container"];
+        var oContainer = editors["dropdown_container"];
+        if (self[this.lookupjml].childNodes.length && self[this.lookupjml].childNodes[0].parentNode != oContainer) {
+            self[this.lookupjml].detach();
+            oContainer.innerHTML = "";
+        }
+        
         var lookupJml = self[this.lookupjml].render(oContainer); //@need to implement template
         
         if (!jpf.popup.isShowing(this.uniqueId)) {
             var mirrorNode = oHtml;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             //oContainer.style.height = "auto";
+            oContainer.className = "ddjmlcontainer";
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
+            oContainer.style[jpf.supportOverflowComponent 
+                ? "overflowY"
+                : "overflow"] = "hidden";
 
             var widthdiff = jpf.getWidthDiff(oContainer);
             jpf.popup.show(this.uniqueId, {
@@ -1335,8 +1344,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else {
                 var oContainer = editors["dropdown_container"];
+                
+                if (self[this.lookupjml]) 
+                    self[this.lookupjml].detach();
+                
                 var mirrorNode = oHtml.parentNode.childNodes[1];
-                this.$setStyleClass(oContainer, mirrorNode.className);
+                //this.$setStyleClass(oContainer, mirrorNode.className);
+                oContainer.className = "ddpropeditcontainer";
+                oContainer.style[jpf.supportOverflowComponent 
+                    ? "overflowY"
+                    : "overflow"] = "hidden";
                 
                 str = [];
                 var s = this.selected.selectNodes("item");
@@ -1344,7 +1361,47 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     str.push("<div tag='", s[i].getAttribute("value"), "'>",
                         s[i].firstChild.nodeValue, "</div>");
                 }
-                oContainer.innerHTML = str.join("");
+                oContainer.innerHTML = "<blockquote style='margin:0'>" + str.join("") + "</blockquote>";
+
+                oContainer.firstChild.onmouseover = function(e){
+                    if (!e) e = event;
+                    var target = e.srcElement || e.target;
+                    
+                    if (target == this) 
+                        return;
+                    
+                    while (target.parentNode != this)
+                        target = target.parentNode;
+                    
+                    jpf.setStyleClass(target, "hover");
+                }
+                
+                oContainer.firstChild.onmouseout = function(e){
+                    if (!e) e = event;
+                    var target = e.srcElement || e.target;
+                    
+                    if (target == this) 
+                        return;
+                    
+                    while (target.parentNode != this)
+                        target = target.parentNode;
+                    
+                    jpf.setStyleClass(target, "", ["hover"]);
+                }
+                
+               oContainer.firstChild.onmousedown = function(e){
+                    if (!e) e = event;
+                    var target = e.srcElement || e.target;
+                    
+                    if (target == this) 
+                        return;
+                    
+                    while (target.parentNode != this)
+                        target = target.parentNode;
+                    
+                    _self.rename(_self.selected, target.getAttribute("tag"));
+                    jpf.popup.forceHide();
+                }
                 
                 jpf.popup.show(this.uniqueId, {
                     x       : 0,
@@ -1748,13 +1805,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //@todo move this to the handler of the namevalue attribute
         if (this.namevalue) {
-            var edits = ["dropdown", "custom", "dropdown_container", "jml_container"];
+            var edits = ["dropdown", "custom", "dropdown_container"];
             
             for (var edit, c, i = 0; i < edits.length; i++) {
                 c = this.$getLayoutNode(edits[i]);
                 edit = edits[i];
                 
-                if (i < edits.length - 2) {
+                if (i < edits.length - 1) {
                     c.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId + ").$btndown(this, event);");
                     c.setAttribute("onmouseup", "jpf.lookup(" + this.uniqueId + ").$btnup(this)");
                     c.setAttribute("onmouseout", "jpf.lookup(" + this.uniqueId + ").$btnout(this)");
@@ -1769,48 +1826,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     jpf.popup.setContent(this.uniqueId, editors[edit],
                         jpf.skins.getCssString(this.skinName));
                     
-                    if (jpf.isTrue(this.$getOption(edit, "jml")))
-                        continue;
+                    //if (jpf.isTrue(this.$getOption(edit, "jml")))
+                        //continue;
                     
                     this.itemHeight = this.$getOption(edit, "item-height") || 18.5;
                     this.widthdiff  = this.$getOption(edit, "width-diff") || 0;
-
-                    c.onmouseover = function(e){
-                        if (!e) e = event;
-                        var target = e.srcElement || e.target;
-                        
-                        if (target == this) return;
-                        
-                        while (target.parentNode != this)
-                            target = target.parentNode;
-                        
-                        jpf.setStyleClass(target, "hover");
-                    }
-                    
-                    c.onmouseout = function(e){
-                        if (!e) e = event;
-                        var target = e.srcElement || e.target;
-                        
-                        if (target == this) return;
-                        
-                        while (target.parentNode != this)
-                            target = target.parentNode;
-                        
-                        jpf.setStyleClass(target, "", ["hover"]);
-                    }
-                    
-                    c.onmousedown = function(e){
-                        if (!e) e = event;
-                        var target = e.srcElement || e.target;
-                        
-                        if (target == this) return;
-                        
-                        while (target.parentNode != this)
-                            target = target.parentNode;
-                        
-                        _self.rename(_self.selected, target.getAttribute("tag"));
-                        jpf.popup.forceHide();
-                    }
                 }
             }
 

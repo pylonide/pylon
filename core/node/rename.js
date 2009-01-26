@@ -254,9 +254,10 @@ jpf.Rename = function(){
 
         //#ifdef __WITH_RENAME_AUTOCOMPLETE
         this.oTxt.onkeydown = function(){
+            document.title = this.host.$autocomplete;
             if (!this.host.$autocomplete)
                 return;
-            
+
             this.host.$lookup(this[jpf.hasContentEditable ? "innerHTML" : "value"]);
         }
         //#endif

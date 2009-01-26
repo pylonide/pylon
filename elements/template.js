@@ -61,16 +61,22 @@ jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
         return this.childNodes;
     }
     
+    this.detach = function(){
+        var nodes = this.childNodes;
+        var p = nodes[0].oExt.parentNode;
+        if (p.nodeType != 1)
+            return;
+
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            p.removeChild(nodes[i].oExt);
+        }
+    }
+    
     //this.$draw = function(pHtmlNode){};
     this.$loadJml = function(x){
         if (this.autoinit) {
             jpf.JmlParser.parseChildren(this.$jml, document.body, this);
-            
-            var nodes = this.childNodes;
-            var p = nodes[0].oExt.parentNode;
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                p.removeChild(nodes[i].oExt);
-            }
+            this.detach();
             
             instances.push(this.childNodes);
         }

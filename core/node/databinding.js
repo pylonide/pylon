@@ -2884,7 +2884,7 @@ jpf.MultiselectBinding = function(){
                                   Traverse Rule : " + this.traverse);
             // #endif
 
-            if (this.selectable && (!length || !this.xmlRoot.selectSingleNode(this.traverse)))
+            if (this.selectable && (length === 0 || !this.xmlRoot.selectSingleNode(this.traverse)))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
