@@ -73,11 +73,14 @@ Function.prototype.extend = function() {
  * @see jpf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this, args = Array.prototype.slice.call(arguments), o = args.shift();
+    var __method = this, args = Array.prototype.slice.call(arguments), 
+        o  = args.shift(),
+        ev = args.shift();
     return function(event) {
         if (!event) event = window.event;
         // #ifdef __WITH_ABSTRACTEVENT
-        event = new jpf.AbstractEvent(event, window);
+        if (ev !== false)
+            event = new jpf.AbstractEvent(event, window);
         // #endif
         return __method.apply(o, [event].concat(args)
             .concat(Array.prototype.slice.call(arguments)));

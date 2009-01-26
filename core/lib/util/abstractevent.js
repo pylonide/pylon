@@ -125,6 +125,10 @@ jpf.AbstractEvent.KEYS = {
     }
 };
 
+jpf.AbstractEvent.stop = function(event) {
+    return (new jpf.AbstractEvent(event)).stop();
+};
+
 jpf.AbstractEvent.addListener = function(el, type, fn){
     if (el.addEventListener)
         el.addEventListener(type, fn, false);
