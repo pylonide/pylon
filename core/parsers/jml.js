@@ -130,7 +130,7 @@ jpf.JmlParser = {
 
         var prefix = jpf.findPrefix(xmlNode, jpf.ns.jml);
         if (prefix) prefix += ":";
-        var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
+        var nodes  = jpf.xmldb.selectNodes(".//" + prefix + sel.join("|.//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
         var i, o, name, tagName, x, l;

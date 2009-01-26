@@ -1314,11 +1314,12 @@ jpf.layout = {
      */
     activateRules : function(oHtml, no_exec){
         if (!oHtml) { //!jpf.hasSingleRszEvent &&
-            var prop;
-            for( prop in this.rules) {
-                if (document.getElementById(prop).onresize) // || this.onresize[prop]
+            var prop, obj;
+            for(prop in this.rules) {
+                obj = document.getElementById(prop);
+                if (!obj || obj.onresize) // || this.onresize[prop]
                     continue;
-                this.activateRules(document.getElementById(prop));
+                this.activateRules(obj);
             }
 
              if (jpf.hasSingleRszEvent && window.onresize)

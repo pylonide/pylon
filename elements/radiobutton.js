@@ -221,13 +221,16 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
 
             this.radiogroup = rg;
         }
-
+        
         if (this.oInput) {
             this.oInput.setAttribute("name", this.group
                 || "radio" + this.radiogroup.uniqueId);
         }
 
         this.radiogroup.addRadio(this);
+        
+        if (this.checked)
+            this.radiogroup.setValue(this.value);
     };
     
     this.$propHandlers["tooltip"] = function(value){

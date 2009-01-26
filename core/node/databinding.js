@@ -643,7 +643,9 @@ jpf.DataBinding = function(){
         if (dataOnly) {
             // #ifdef __DEBUG
             if (!xpath && !this.selected) {
-                throw new Error(jpf.formatErrorString(1056, null, "Connecting", "Illegal XPATH statement specified: '" + xpath + "'"));
+                throw new Error(jpf.formatErrorString(1056, null, 
+                    "Connecting", 
+                    "Illegal XPATH statement specified: '" + xpath + "'"));
             }
             // #endif
 
@@ -1389,10 +1391,10 @@ jpf.DataBinding = function(){
 
             var jmlNode = this;
             if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
-                    insertPoint : this.xmlRoot,
+                    insertPoint : xmlRootNode, //this.xmlRoot,
                     jmlNode     : this
                 }, function(){
-                    jmlNode.setConnections(jmlNode.xmlRoot);
+                    jmlNode.setConnections(xmlRootNode);//jmlNode.xmlRoot);
                 }) === false
             ) {
                 this.clear(true);
@@ -1511,7 +1513,6 @@ jpf.DataBinding = function(){
     var initModelId = [];
     this.$addJmlLoader(function(x){
         //, this.ref && this.hasFeature(__MULTISELECT__)
-        
         if (initModelId[0])
             jpf.setModel(initModelId[0], this);
         if (initModelId[1])
@@ -1589,10 +1590,55 @@ jpf.DataBinding = function(){
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",
         "offline-message", "render-root", "smartbinding", "create-model",
-        "bindings", "actions", "dragdrop");
+        "bindings", "actions", "dragdrop", "connectgroup");
 
     this.$propHandlers["render-root"] = function(value){
         this.renderRoot = value;
+    }
+    
+    this.$propHandlers["connectgroup"] = function(value){
+        if (!value) //@todo think about wether this has more meaning
+            return;
+
+        var cg = jpf.nameserver.get("connectgroup", value);
+        if (!cg) {
+            cg = jpf.nameserver.register("connectgroup", value, {
+                data : [],
+                connect : function(o, dataOnly, xpath, type, noselect){
+                    this.data.push([o, dataOnly, xpath, type, noselect]);
+                    
+                    if (this.active)
+                        this.active.connect(o, dataOnly, xpath, type, noselect);
+                },
+                
+                disconnect : function(o, type){
+                    for (var data, i = 0, l = this.data.length; i < l; i++) {
+                        if (this.data[i][0] == o && this.data[i][3] == type)
+                            this.data.removeIndex(i);
+                    }
+                    
+                    if (this.active)
+                        this.active.disconnect(o, type);
+                },
+                
+                set : function(jmlNode){
+                    if (this.active) {
+                        for (var i = 0, l = this.data.length; i < l; i++)
+                            this.active.disconnect(this.data[i][0], this.data[i][3]);
+                        
+                        this.active.setProperty("connectgroup", false);
+                    }
+                    
+                    this.active = jmlNode;
+                    
+                    for (var i = 0, l = this.data.length; i < l; i++)
+                        this.active.connect.apply(this.active, this.data[i]);
+                }
+            });
+            jpf.setReference(value, cg);
+        }
+        
+        cg.set(this);
     }
 
     /**
@@ -1775,7 +1821,7 @@ jpf.DataBinding = function(){
         else
             sb = value;
 
-        if (this.smartBinding)
+        if (this.smartBinding && this.smartBinding.deinitialize)
             this.smartBinding.deinitialize(this)
 
         if (jpf.isParsing) {

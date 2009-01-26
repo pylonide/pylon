@@ -944,7 +944,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 curBtn.parentNode.removeChild(curBtn);
             
             var type = this.selected.getAttribute("type");
-            if (type) {
+            if (type && type != "text") {
                 var multiple = this.selected.getAttribute("multiple") == "multiple";
                 if (type == "lookup" && multiple) 
                     type = "custom";
@@ -952,7 +952,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     curBtn = editors[type] || editors["custom"];
                     if (curBtn) {
                         htmlNode.parentNode.appendChild(curBtn);
-                        curBtn.style.display = "block";
+                        curBtn.style.display = "block"; //@todo see why only showing this onfocus doesnt work in IE
                     }
                 }
             }
@@ -1422,6 +1422,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     this.$btnup = function(oHtml, force){
+        if (!this.selected)
+            return;
+        
         //var type = oHtml.getAttribute("type");
         var type = this.selected.getAttribute("type");//oHtml.getAttribute("type");
         if (type == "custom" && oHtml.className.indexOf("down") > -1) {
@@ -1843,7 +1846,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     for (var node, s, i = 0, l = nodes.length; i < l; i++) {
                         node = nodes[i];
                         s = node.getAttribute("select");
-                        if (jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
+                        if (action == "insert"
+                            ? jpf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true)
+                            : jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
                             lstUpdate.pushUnique(node.tagName == "field"
                                 ? node.parentNode
                                 : node);
@@ -1857,6 +1862,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         _self.$updateNode(lstUpdate[i], 
                             jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
                     }
+                    
+                    _self.dispatchEvent("xmlupdate", {
+                        action : action,
+                        xmlNode: xmlNode
+                    });
                 }
             };
             changeListener.uniqueId = jpf.all.push(changeListener) - 1;
@@ -1869,6 +1879,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 if (template) {
                     this.xmlData = xmlRoot;
+                    if (xmlRoot)
+                        this.$loadSubData(xmlRoot);
                     
                     //@todo This is never removed
                     if (xmlRoot)
