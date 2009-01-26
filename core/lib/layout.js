@@ -409,19 +409,28 @@ jpf.layout = {
                 if (adminOnly)
                     return this.hide(true);
 
-                jpf.layout.dlist.pushUnique(this);
-
                 //Check if parent is empty
 
-                for (var child, c = 0, i = 0; i < this.parent.children.length; i++) {
-                    child = this.parent.children[i];
-                    if (child != this && (!child.hidden || jpf.layout.dlist.contains(child))) {
-                        c = 1;
-                        break;
+                var nodes, child, c = 0, i, l, sets = ["children", "hiddenChildren"];
+                while(sets.length) {
+                    nodes = this.parent[sets.pop()];
+                    for (i = 0, l = nodes.length; i < l; i++) {
+                        child = this.parent.children[i];
+                        if (child != this && !child.hidden) { // || jpf.layout.dlist.contains(child)
+                            c = 1;
+                            break;
+                        }
                     }
                 }
                 if (!c)
                     this.parent.prehide();
+                
+                if (jpf.layout.dlist.contains(this)) {
+                    jpf.layout.dlist.remove(this);
+                    return false;
+                }
+                else
+                    jpf.layout.dlist.pushUnique(this);
             },
             preshow : function(adminOnly){
                 if (!this.hidden)
@@ -433,7 +442,7 @@ jpf.layout = {
                     return this.show(true);
 
                 //Check if parent is shown
-                if (this.parent.hidden || jpf.layout.dlist.contains(this.parent))
+                if (this.parent.hidden) // || jpf.layout.dlist.contains(this.parent) @todo please make hidden a 4 state property
                     this.parent.preshow();
 
                 if (jpf.layout.dlist.contains(this)) {
@@ -469,14 +478,14 @@ jpf.layout = {
                 //Check if position is still available
                 var nodes = this.parent.children;
                 if (this.hidepos.prev && this.hidepos.prev.parent == this.parent
-                  && !this.hidepos.prev.hidden) {
+                  && !this.hidepos.prev.hidden && !jpf.layout.dlist.contains(this.hidepos.prev)) { //@todo please make hidden a 4 state property
                     if (nodes.length < this.hidepos.prev.stackId+ 1 )
                         nodes.push(this);
                     else
                         nodes.insertIndex(this, this.hidepos.prev.stackId + 1);
                 }
                 else if (this.hidepos.next && this.hidepos.next.parent == this.parent
-                  && !this.hidepos.next.hidden) {
+                  && !this.hidepos.next.hidden && !jpf.layout.dlist.contains(this.hidepos.next)) { //@todo please make hidden a 4 state property
                     if (this.hidepos.next.stackId == 0)
                         nodes.unshift(this);
                     else if (nodes.length < this.hidepos.next.stackId - 1)
