@@ -234,22 +234,28 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             case "wmv":
                 type = "video/wmv";
                 break;
-            case "3gp":
-            case "3gpp":
-            case "3g2":
+            case "3gp"  :
+            case "3gpp" :
+            case "3g2"  :
             case "3gpp2":
-            case "divx":
-            case "mp4":
-            case "mpg4":
-            case "mpg":
-            case "mpeg":
-            case "mpe":
-            case "ogg":
-            case "vob":
+            case "divx" :
+            case "mp4"  :
+            case "mpg4" :
+            case "mpg"  :
+            case "mpeg" :
+            case "mpe"  :
+            case "ogg"  :
+            case "vob"  :
                 type = "video/vlc";
+                break;
         }
+        // mpeg video is better to be played by native players
+        if (ext == "mpg" || ext == "mpeg" || ext == "mpe")
+            type = jpf.isMac ? "video/quicktime" : "video/wmv";
+        // default to VLC on *NIX machines
         if (!jpf.isWin && !jpf.isMac && type == "video/wmv")
             type = "video/vlc";
+
         return type;
     };
 
