@@ -93,9 +93,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // If HTML the string is the same as the contents of the iframe document,
         // don't do anything...
-        if (this.parseHTML(this.oDoc.body.innerHTML) == html)
+        if (this.parseHTML(this.oDoc.body.innerHTML).replace(/\r/g, "") == html)
             return;
-
 
         this.oDoc.body.innerHTML = html;
 
@@ -256,7 +255,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.insertHTML = function(html, bNoParse, bNoFocus) {
         if (inited && complete) {
-            this.selection.set();
+            //this.selection.set();
             this.$visualFocus(true);
             this.selection.setContent(bNoParse ? html : this.parseHTML(html));
             if (bNoFocus) return;
@@ -319,8 +318,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
                 }
             }
+            _self.notifyAll();
             setTimeout(function() {
-                _self.notifyAll();
+                //_self.notifyAll(); // @todo This causes pain, find out why
                 if (jpf.isIE && cmdName != "SelectAll")
                     _self.selection.set();
                 _self.$visualFocus();

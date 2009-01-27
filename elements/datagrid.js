@@ -786,7 +786,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else {
                 jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
                     Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
-                    (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || " "); //@todo for IE but seems not a good idea
+                    (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""); //@todo for IE but seems not a good idea
             }
         }
         
@@ -862,7 +862,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         + ")";
             }
             else {
-                node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || " "; //@todo for IE but seems not a good idea
+                node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""; //@todo for IE but seems not a good idea
                 //jpf.xmldb.setNodeValue(node, 
                     //this.applyRuleSetOnNode([h.xml], xmlNode));
             }
