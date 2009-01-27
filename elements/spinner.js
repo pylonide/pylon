@@ -91,20 +91,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      PUBLIC METHODS
      *********************************************************************/
 
-    /*this.getCustomMessage = function() {
-        this.getCustomMessage = (this["custom-message"] || "").replace(/\$(v|min|max)/g, function(str) {
-            switch(str) {
-                case "$v":
-                    return _self.value;
-                case "$min":
-                    return _self.min;
-                case "$max":
-                    return _self.max;
-            }
-        });
-        this.setProperty("message", this.getCustomMessage);
-    }*/
-    
     this.setValue = function(value) {
        this.setProperty("value", value);
     };
@@ -115,10 +101,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$enable = function() {
         this.oInput.disabled = false;
+        this.$setStyleClass(this.oInput, "", ["inputDisabled"]);
     };
 
     this.$disable = function() {
         this.oInput.disabled = true;
+        this.$setStyleClass(this.oInput, "inputDisabled");
     };
 
     this.$focus = function(e) {
@@ -153,11 +141,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("keydown", function(e) {
         var key = e.keyCode;
 
-        /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
-        /*var keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
-                      || (key > 40 && key < 46) || (key > 46 && key < 48)
-                      || (key > 57 && key < 109) || (key > 109 && key !== 189));*/
-        /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE, NUM_NUMBERS */
         var keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
                       || (key > 40 && key < 46) || (key > 46 && key < 48)
                       || (key > 57 && key < 96) || (key > 105 && key < 109) || (key > 109 && key !== 189));
@@ -171,6 +154,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.setValue(this.oInput.value);
     }, true);
     //#endif
+    
 
     this.$draw = function() {
         //Build Main Skin
@@ -194,6 +178,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oInput.value = this.value;
 
         this.oInput.onmousedown = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             e = e || window.event;
 
             var value = parseInt(this.value) || 0, step = 0,
@@ -247,6 +234,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Fix for mousedown for IE */
         var buttonDown = false;
         this.oButtonPlus.onmousedown = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             e = e || window.event;
             buttonDown = true;
 
@@ -267,6 +257,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.oButtonMinus.onmousedown = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             e = e || window.event;
             buttonDown = true;
 
@@ -287,6 +280,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.oButtonMinus.onmouseout = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             window.clearInterval(timer);
             z = 0;
 
@@ -303,6 +299,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.oButtonPlus.onmouseout  = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             window.clearInterval(timer);
             z = 0;
 
@@ -319,18 +318,23 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.oButtonMinus.onmouseover = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+                
             jpf.setStyleClass(_self.oButtonMinus, "minusHover");
-            //jpf.setStyleClass(_self.oButtonPlus, "plusFocus");
-            //jpf.setStyleClass(_self.oInput, "focus");
         };
 
         this.oButtonPlus.onmouseover  = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+                
             jpf.setStyleClass(_self.oButtonPlus, "plusHover");
-            //jpf.setStyleClass(_self.oButtonMinus, "minusFocus");
-            //jpf.setStyleClass(_self.oInput, "focus");
         };
 
         this.oButtonPlus.onmouseup = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             e = e || event;
             e.cancelBubble = true;
 
@@ -355,6 +359,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.oButtonMinus.onmouseup = function(e) {
+            if (!this.oExt || this.oExt.disabled)
+                return;
+            
             e = e || event;
             e.cancelBubble = true;
 
