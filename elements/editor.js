@@ -255,7 +255,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.insertHTML = function(html, bNoParse, bNoFocus) {
         if (inited && complete) {
-            //this.selection.set();
+            if (!bNoFocus)
+                this.selection.set();
             this.$visualFocus(true);
             this.selection.setContent(bNoParse ? html : this.parseHTML(html));
             if (bNoFocus) return;
