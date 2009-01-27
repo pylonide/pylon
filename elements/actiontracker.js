@@ -305,7 +305,7 @@ jpf.actiontracker = function(parentNode){
 
         if (state != jpf.SUCCESS) {
             //Tell anyone that wants to hear about our failure :(
-            if (this.dispatchEvent("actionfailed", jpf.extend(extra, {
+            if (this.dispatchEvent("actionfail", jpf.extend(extra, {
                 state   : state,
                 message : "Could not sent Action RPC request for control "
                             + this.name
@@ -339,8 +339,25 @@ jpf.actiontracker = function(parentNode){
             if (callback)
                 callback(!extra.userdata);
 
-            if (!extra.userdata)
+            if (!extra.userdata) {
+                /*
+                    Clearing the execStack, none of the changes will be send to
+                    the server. This seems the best way right now and is related
+                    to the todo item above.
+                    
+                    @todo: Think about adding ignore-fail to settings and 
+                           actiontracker.
+                */
+                execStack = [];
+                
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Executing action",
+                    "Error sending action to the server:\n"
+                    + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
+                    + extra.message));
+                
                 return;
+            }
         }
         else {
             //Tell anyone that wants to hear about our success

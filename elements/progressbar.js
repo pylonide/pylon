@@ -64,6 +64,11 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["value"] = function(value){
         this.value = parseInt(value) || 0;
 
+        if (this.value == this.max)
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
+        else
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Complete"]);
+
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
 
         /*Math.max(0,
@@ -107,7 +112,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
 
         clearInterval(this.timer);
         this.setValue(this.min);
-        this.oSlider.style.display = "none";
+        //this.oSlider.style.display = "none";
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
 
         if(restart)
@@ -126,7 +131,11 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
             this.show();
 
         clearInterval(this.timer);
-        this.oSlider.style.display = "block";
+        
+        if (this.value == this.max)
+            this.setValue(this.min + (this.max - this.min) * 0.5);
+        
+        //this.oSlider.style.display = "block";
         this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()",
             time || 1000);
         this.$setStyleClass(this.oExt, this.baseCSSname + "Running");

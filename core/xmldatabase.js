@@ -290,7 +290,10 @@ jpf.XmlDatabase = function(){
     this.addNodeListener = function(xmlNode, o){
         // #ifdef __DEBUG
         if (!o.$xmlUpdate)
-            throw new Error(jpf.formatErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
+            throw new Error(jpf.formatErrorString(1040, null, 
+                "Adding Node listener", 
+                "Cannot attach this listener because it doesn't support the \
+                 correct interface (this.$xmlUpdate)."));
         // #endif
 
         var listen = xmlNode.getAttribute(this.xmlListenTag);
@@ -1166,30 +1169,47 @@ jpf.XmlDatabase = function(){
         for (var addedNode, isAdding = false, i = 0; i < paths.length - 1; i++) {
             if (!isAdding && contextNode.selectSingleNode(foundpath
               + (i != 0 ? "/" : "") + paths[i])) {
-                foundpath += (i != 0 ? "/" : "") + paths[i] + "/";
+                foundpath += (i != 0 ? "/" : "") + paths[i];// + "/";
                 continue;
             }
-
-            //    #ifdef __DEBUG
-            if (paths[i].match(/\@|\[.*\]|\(.*\)/))
-                throw new Error(jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
-            if (paths[i].match(/\/\//))
-                throw new Error(jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
+            
+            //Temp hack 
+            var isAddId = paths[i].match(/(\w+)\[@id=(\w+)\]/);
+            // #ifdef __DEBUG
+            if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
+                throw new Error(jpf.formatErrorString(1041, this, 
+                    "Select via xPath", 
+                    "Could not use xPath to create xmlNode: " + xPath));
+            }
+            if (!isAddId && paths[i].match(/\/\//)) {
+                throw new Error(jpf.formatErrorString(1041, this, 
+                    "Select via xPath", 
+                    "Could not use xPath to create xmlNode: " + xPath));
+            }
             // #endif
+
+            if (isAddId)
+                paths[i] = isAddId[1];
 
             isAdding = true;
             addedNode = contextNode.selectSingleNode(foundpath || ".")
                 .appendChild(contextNode.ownerDocument.createElement(paths[i]));
 
+            if (isAddId) {
+                addedNode.setAttribute("id", isAddId[2]);
+                foundpath += "/" + isAddId[0];// + "/";
+            }
+            else
+                foundpath += "/" + paths[i];// + "/";
+
             if (addedNodes)
                 addedNodes.push(addedNode);
-            foundpath += paths[i] + "/";
         }
 
         if (!foundpath)
             foundpath = ".";
-        else
-            foundpath = foundpath.substr(0, foundpath.length-1);
+        //else
+            //foundpath = foundpath.substr(0, foundpath.length-1);
 
         var lastpath = paths[paths.length - 1];
         if (lastpath.match(/^\@(.*)$/)) {
@@ -1280,52 +1300,49 @@ jpf.XmlDatabase = function(){
             return filled ? result : jpf.getXmlValue(xml, "text()");
         },
 
-        "cgivars": function(xml, basename, isArray){
+        "cgivars": function(xml, basename, isSub){
+            if (!basename)
+                basename = "";
+            
             var str = [], value, nodes = xml.childNodes, done = {};
             for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1)
-                    continue;
-                var name = nodes[i].tagName;
-                if (done[name])
+                var node = nodes[i];
+                if (node.nodeType != 1)
                     continue;
 
+                var name        = node.tagName;
+                var isOnlyChild = jpf.xmldb.isOnlyChild(node.firstChild, [3,4]);
+                var count       = 0;
+
                 //array
-                var sameNodes = xml.selectNodes(name);
-                if (sameNodes.length > 1) {
-                    done[name] = true;
-                    for (var j = 0; j < sameNodes.length; j++) {
-                        value = this.cgivars(sameNodes[j],
-                            (basename ? basename + "" : "") + name + "[" + j + "]", true);
+                if (!node.attributes.length && !isOnlyChild) {
+                    var lnodes = node.childNodes;
+                    for (var j = 0, l = lnodes.length; j < l; j++) {
+                        value = this.cgivars(lnodes[j], basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + ++count + "]", true);
                         if (value)
                             str.push(value);
                     }
                 }
-                else { //single value
-                    value = this.cgivars(nodes[i],
-                        (basename ? basename + "" : "") + name);
-                    if (value)
-                        str.push(value);
-                }
-            }
-
-            var attr = xml.attributes;
-            for (i = 0; i < attr.length; i++) {
-                if (attr[i].nodeValue) {
-                    if (isArray) {
-                        str.push(basename + "[" + attr[i].nodeName + "]="
-                          + encodeURIComponent(attr[i].nodeValue));
-                    }
-                    else {
-                        str.push(basename + "_" + attr[i].nodeName + "="
-                          + encodeURIComponent(attr[i].nodeValue));
+                //single value
+                else {
+                    if (isOnlyChild)
+                        str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "=" 
+                            + encodeURIComponent(node.firstChild.nodeValue));
+                    
+                    var a, attr = node.attributes;
+                    for (j = 0; j < attr.length; j++) {
+                        if (!(a = attr[j]).nodeValue)
+                            continue;
+                        
+                        str.push(basename + (isSub ? "[" : "") + name + "_" + a.nodeName + (isSub ? "]" : "") + "=" 
+                            + encodeURIComponent(a.nodeValue));
                     }
                 }
             }
-
-            value = jpf.getXmlValue(xml, "text()");
-            if (value)
-                str.push((basename || "") + "=" + encodeURIComponent(value));
             
+            if (!isSub && xml.getAttribute("id"))
+                str.push("id=" + encodeURIComponent(xml.getAttribute("id")));
+
             if (str.length)
                 return str.join("&");
         }

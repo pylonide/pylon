@@ -164,7 +164,7 @@ jpf.MultiSelect = function(){
         else {
             for (var i = 0; i < nodeList.length; i++) {
                 rValue = this.executeAction("removeNode",
-                    [nodeList[i]], "remove", nodeList[i]);
+                    [nodeList[i]], "remove", nodeList[i], i != 0);
             }
         }
 
@@ -290,7 +290,8 @@ jpf.MultiSelect = function(){
         if (!jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
             return false;
         //#endif
-
+        
+        var refNode  = this.isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
         var jmlNode  = this; //PROCINSTR
         var callback = function(addXmlNode, state, extra){
             if (state != jpf.SUCCESS) {
@@ -357,7 +358,7 @@ jpf.MultiSelect = function(){
             //#endif
 
             if (node.getAttribute("get"))
-                return jpf.getData(node.getAttribute("get"), this.selected, null, callback)
+                return jpf.getData(node.getAttribute("get"), refNode, null, callback)
             else if (node.firstChild)
                 return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
         }

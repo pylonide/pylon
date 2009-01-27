@@ -553,7 +553,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
-                    if (type == "dropdown") {\
+                    if (type == "dropdown" || type == "set") {\
                         var v = jpf.getXmlValue(dg.xmlData, select);\
                         %value("item[@value=\'" + v + "\']");\
                     }\
@@ -948,6 +948,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 var multiple = this.selected.getAttribute("multiple") == "multiple";
                 if (type == "lookup" && multiple) 
                     type = "custom";
+                if (type == "set") 
+                    type = "dropdown";
                 if (type != "lookup") {
                     curBtn = editors[type] || editors["custom"];
                     if (curBtn) {
@@ -1147,8 +1149,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var $getSelectFromRule = this.getSelectFromRule;
     this.getSelectFromRule = function(setname, cnode){ 
         if (setname == "caption") {
-            if (this.namevalue)
-                return [cnode.getAttribute("select"), this.xmlData.selectSingleNode(cnode.getAttribute("select"))];
+            if (this.namevalue) {
+                var sel = cnode.getAttribute("select");
+                return [sel, this.createModel
+                    ? jpf.xmldb.createNodeFromXpath(this.xmlData, sel)
+                    : this.xmlData.selectSingleNode(sel)];
+            }
             
             var h = headings[this.oHead.childNodes[lastCaptionCol !== null 
                 ? lastCaptionCol 
@@ -1338,7 +1344,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(oHtml, "down");
         
         var type = this.selected.getAttribute("type");//oHtml.getAttribute("type");
-        if (type == "dropdown") {
+        if (type == "dropdown" || type == "set") {
             if (jpf.popup.isShowing(this.uniqueId)){
                 jpf.popup.forceHide();
             }
@@ -1398,7 +1404,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     while (target.parentNode != this)
                         target = target.parentNode;
-                    
+
                     _self.rename(_self.selected, target.getAttribute("tag"));
                     jpf.popup.forceHide();
                 }
@@ -1470,13 +1476,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             });
         }
         
-        if (force || oHtml.getAttribute("type") != "dropdown" 
+        if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1 
           || !jpf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
     }
     
     this.$btnout = function(oHtml, force){
-        if (force || oHtml.getAttribute("type") != "dropdown" 
+        if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1
           || !jpf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
     }
@@ -1839,14 +1845,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var changeListener = {
                 $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
+                    if (!_self.xmlRoot)
+                        return;
+                    
                     if (action == "redo-remove")
                         oParent.appendChild(xmlNode);
                     
-                    var lstUpdate = [], nodes = _self.xmlRoot.selectNodes("//node()[@select]");
+                    var lstUpdate = [], nodes = _self.xmlRoot.selectNodes("node()[@select]|node()/field[@select]");
                     for (var node, s, i = 0, l = nodes.length; i < l; i++) {
                         node = nodes[i];
                         s = node.getAttribute("select");
-                        if (action == "insert"
+                        if (action == "insert" || action == "update"
                             ? jpf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true)
                             : jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
                             lstUpdate.pushUnique(node.tagName == "field"
@@ -1887,6 +1896,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         jpf.xmldb.addNodeListener(xmlRoot, changeListener);
 
                     jpf.setModel(template, {
+                        $xmlUpdate : function(){
+                            debugger;
+                        },
+                        
                         load: function(xmlNode){
                             if (!xmlNode || this.isLoaded)
                                 return;

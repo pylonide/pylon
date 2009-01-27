@@ -910,7 +910,9 @@ jpf.JsltImplementation = function(){
         }
         
         //Execute JSLT
+        /* #ifndef __DEBUG
         try {
+        #endif */
             if (!xmlNode) 
                 return '';
             
@@ -922,11 +924,13 @@ jpf.JsltImplementation = function(){
             /* #else
              return jsltFunc[0](xmlNode);
              #endif */
+        /* #ifndef __DEBUG
         }
         catch (e) {
             jpf.console.info(jpf.formatJS(jsltFunc[1]));
             throw new Error(jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
+        #endif */
     };
 };
 jpf.JsltInstance = new jpf.JsltImplementation();
