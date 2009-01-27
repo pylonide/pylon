@@ -1197,10 +1197,10 @@ jpf.XmlDatabase = function(){
 
             if (isAddId) {
                 addedNode.setAttribute("id", isAddId[2]);
-                foundpath += "/" + isAddId[0];// + "/";
+                foundpath += (foundpath ? "/" : "") + isAddId[0];// + "/";
             }
             else
-                foundpath += "/" + paths[i];// + "/";
+                foundpath += (foundpath ? "/" : "") + paths[i];// + "/";
 
             if (addedNodes)
                 addedNodes.push(addedNode);
