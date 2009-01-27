@@ -356,6 +356,12 @@ jpf.JsltImplementation = function(){
         }
     }
     
+    function joff(n){
+      for (var p = n.parentNode.childNodes, i = p.length-1; i>=0; i--)
+            if (p[i] == n)
+                return i;
+      return '';
+    }
     
     //------------------------------------------------------------------------------------
     
@@ -366,6 +372,7 @@ jpf.JsltImplementation = function(){
     var func = {
         'last'    : [0, '(i==len-1)'],
         'first'   : [0, '(i==0)'],
+        'offset'  : [0, 'joff(n)'],
         'out'     : [0, 's[s.length]'],
         'apply'   : [1, ';japl(s,n,ma,', ');'],
         'copy'    : [1, ';jcpy(s,n,', ');'],
