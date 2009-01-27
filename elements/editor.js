@@ -1025,7 +1025,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 continue;
 
             this.$getNewContext("toolbar");
-            tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
+            tb = oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
                 item = buttons[z];
