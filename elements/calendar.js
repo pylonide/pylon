@@ -71,7 +71,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
-    this.outputFormat  = "yyyy-mm-dd";
+    this.outputFormat  = null;
 
     var _day          = null,
         _month        = null,
@@ -82,11 +82,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentMonth = null,
         _currentYear  = null,
         _numberOfDays = null,
-        _dayNumber    = null;
+        _dayNumber    = null,
+        _temp         = null;
 
     var _width = null;
-
-    var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
@@ -110,16 +109,27 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("disableremove", "initial-message", 
         "output-format", "default");
 
+    jpf.onload = function() {
+        _self.redraw(_month, _year);
+    }
+
     this.$propHandlers["output-format"] = function(value) {
-        if (this.value)
+        if (this.value) {
             this.setProperty("value", new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.outputFormat = value));
-        else 
+               _minutes, _seconds).format(this.outputFormat = value));
+        }
+        else
             this.outputFormat = value;
     }
 
     this.$propHandlers["value"] = function(value) {
+        if (!this.outputFormat) {
+            _temp = value;
+            return;
+        }
+
         var date = Date.parse(value, this.outputFormat);
+
         //#ifdef __DEBUG
         if (!date) {
             throw new Error(jpf.formErrorString(this, "Parsing date",
@@ -127,10 +137,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         //#endif
 
-        _day   = date.getDate();
-        _month = date.getMonth();
-        _year  = date.getFullYear();
+        _day     = date.getDate();
+        _month   = date.getMonth();
+        _year    = date.getFullYear();
+        _hours   = date.getHours();
+        _minutes = date.getMinutes();
+        _seconds = date.getSeconds();
 
+        this.value = value;
         this.redraw(_month, _year);
     }
 
@@ -138,20 +152,6 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.setValue = function(value) {
         this.setProperty("value", value);
-    };
-
-    /**** Private methods and event handlers ****/
-
-    this.$blur = function() {
-    };
-
-    this.$focus = function() {
-    }
-
-    this.$setClearMessage = function(msg) {
-    };
-
-    this.$removeClearMessage = function() {
     };
 
     /**** Keyboard Support ****/
@@ -202,7 +202,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.selectDay(_day - 7);
                 }
                 break;
- 
+
             case 39: /* right arrow */
                 if (ctrlKey)
                     this.nextMonth();
@@ -225,6 +225,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     }, true);
     //#endif
 
+    this.$blur = function() {
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+    };
+
+    this.$focus = function(){
+        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+    }
+
     var isLeapYear = function(year) {
         return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0)
             ? true
@@ -235,10 +243,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentMonth = month;
         _currentYear  = year;
 
-        _width = this.oExt.offsetWidth >= minWidth
-            ? this.oExt.offsetWidth
-            : minWidth;
-        _width = this.width || _width;
+        _width = this.oExt.offsetWidth;
 
         this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
             - jpf.getDiff(this.oNavigation)[0]) + "px";
@@ -547,15 +552,25 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     break;
                 default :
                     var date =  new Date();
-                    _day   = 0;
+                    _day   = date.getDate();
                     _month = date.getMonth();
                     _year  = date.getFullYear();
 
-                    this.redraw(_month, _year);
+                    if (!this.selected && this.initialMsg)
+                        this.$setLabel();
                     break;
             }
         }
+        else {
+            var date = Date.parse(_temp || this.value, this.outputFormat);
+            _day   = date.getDate();
+            _month = date.getMonth();
+            _year  = date.getFullYear();
+
+            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat));
+        }
     };
+
     
     this.$destroy = function() {
         jpf.popup.removeContent(this.uniqueId);
