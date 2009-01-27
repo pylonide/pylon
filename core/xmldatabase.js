@@ -1317,10 +1317,20 @@ jpf.XmlDatabase = function(){
                 //array
                 if (!node.attributes.length && !isOnlyChild) {
                     var lnodes = node.childNodes;
-                    for (var j = 0, l = lnodes.length; j < l; j++) {
-                        value = this.cgivars(lnodes[j], basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + ++count + "]", true);
+                    for (var nm, j = 0, l = lnodes.length; j < l; j++) {
+                        nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + ++count + "]";
+                        value = this.cgivars(lnodes[j], nm, true);
                         if (value)
                             str.push(value);
+                        
+                        var a, attr = lnodes[j].attributes;
+                        for (k = 0; k < attr.length; k++) {
+                            if (!(a = attr[k]).nodeValue)
+                                continue;
+                            
+                            str.push(nm + "[" + a.nodeName + "]=" 
+                                + encodeURIComponent(a.nodeValue));
+                        }
                     }
                 }
                 //single value

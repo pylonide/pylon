@@ -920,7 +920,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (lastcell == htmlNode)
             return;
             
-        if (lastcell) {
+        if (lastcell && lastcell.parentNode && lastcell.parentNode.nodeType == 1) {
             if (this.namevalue) {
                 jpf.setStyleClass(lastcell.parentNode.childNodes[0], "", ["celllabel"]);
                 jpf.setStyleClass(lastcell.parentNode.childNodes[1], "", ["cellselected"]);
@@ -940,7 +940,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.popup.isShowing(this.uniqueId))
                 jpf.popup.forceHide();
             
-            if (curBtn)
+            if (curBtn && curBtn.parentNode)
                 curBtn.parentNode.removeChild(curBtn);
             
             var type = this.selected.getAttribute("type");
