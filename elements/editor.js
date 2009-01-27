@@ -309,16 +309,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             this.$visualFocus();
+
             this.oDoc.execCommand(cmdName, false, cmdParam);
-            if (jpf.isIE) {
-                //this.selection.collapse(true);
-                // make sure that the command didn't leave any <P> tags behind...cleanup
-                if ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
-                  && this.getCommandState(cmdName) == jpf.editor.OFF) {
-                    this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
-                }
+
+            // make sure that the command didn't leave any <P> tags behind (cleanup)
+            if (jpf.isIE 
+             && ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
+               && this.getCommandState(cmdName) == jpf.editor.OFF)) {
+                this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
             }
-            _self.notifyAll();
+
+            this.notifyAll();
+            this.change(this.getValue());
+            
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
                 if (jpf.isIE && cmdName != "SelectAll")
