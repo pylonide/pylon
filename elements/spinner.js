@@ -48,15 +48,15 @@
  * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.max       = 64000;
-    this.min       = -64000;
-    this.focused   = false;
-    this.value     = 0;
+    this.max           = 64000;
+    this.min           = -64000;
+    this.focused       = false;
+    this.value         = 0;
     
     var lastvalue = 0;
     var _self     = this;
 
-    this.$supportedProperties.push("width", "value", "max", "min");
+    this.$supportedProperties.push("width", "value", "max", "min", "caption");
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
@@ -91,6 +91,20 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      PUBLIC METHODS
      *********************************************************************/
 
+    /*this.getCustomMessage = function() {
+        this.getCustomMessage = (this["custom-message"] || "").replace(/\$(v|min|max)/g, function(str) {
+            switch(str) {
+                case "$v":
+                    return _self.value;
+                case "$min":
+                    return _self.min;
+                case "$max":
+                    return _self.max;
+            }
+        });
+        this.setProperty("message", this.getCustomMessage);
+    }*/
+    
     this.setValue = function(value) {
        this.setProperty("value", value);
     };
