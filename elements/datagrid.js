@@ -1430,10 +1430,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$btnup = function(oHtml, force){
         if (!this.selected)
             return;
-        
+
         //var type = oHtml.getAttribute("type");
         var type = this.selected.getAttribute("type");//oHtml.getAttribute("type");
-        if (type == "custom" && oHtml.className.indexOf("down") > -1) {
+        if (!force && type == "custom" && oHtml.className.indexOf("down") > -1) {
             if (this.selected.getAttribute("form")) {
                 var form = self[this.selected.getAttribute("form")];
 
@@ -1466,7 +1466,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 // #endif
             }
         }
-        else if (type == "children") {
+        else if (!force && type == "children") {
             var select = this.selected.getAttribute("select");
             var xmlNode = jpf.xmldb.createNodeFromXpath(this.xmlData, select);//newNodes
             
