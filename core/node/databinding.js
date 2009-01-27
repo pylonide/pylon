@@ -957,7 +957,7 @@ jpf.DataBinding = function(){
                 else {
                     if (o.nodeType == 1) {
                         if (!o.firstChild || o.firstChild.nodeType == 1 || o.firstChild.nodeType > 4)
-                            return "�";
+                            return "";
                         //(!o.firstChild || o.firstChild.nodeType == 1 && o.firstChild.nodeType > 4) ? o.appendChild(o.ownerDocument.createTextNode("")) :
 
                         o = o.firstChild;

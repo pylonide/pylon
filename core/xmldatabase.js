@@ -1311,11 +1311,14 @@ jpf.XmlDatabase = function(){
                     continue;
 
                 var name        = node.tagName;
+                if (name == "revision")
+                    continue;
+
                 var isOnlyChild = jpf.xmldb.isOnlyChild(node.firstChild, [3,4]);
                 var count       = 0;
 
                 //array
-                if (!node.attributes.length && !isOnlyChild) {
+                if (!node.attributes.length&& !isOnlyChild) {
                     var lnodes = node.childNodes;
                     for (var nm, j = 0, l = lnodes.length; j < l; j++) {
                         nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + ++count + "]";
