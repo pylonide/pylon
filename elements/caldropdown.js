@@ -723,14 +723,14 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
-                oButton.setAttribute("onclick", 'jpf.lookup('
+                oButton.setAttribute("onmouseup", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
 
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
-                oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
+                oLabel.parentNode.setAttribute("onmouseup", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
