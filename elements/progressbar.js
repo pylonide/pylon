@@ -62,15 +62,15 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
     this.$propHandlers["value"] = function(value){
-        this.value = parseInt(value) || 0;
+        this.value = parseInt(value) || this.min;
 
-        if (this.value == this.max)
+        if (this.value >= this.max)
             this.$setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Complete"]);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
-
+        
         /*Math.max(0,
             Math.round((this.oExt.offsetWidth - 5)
             * (this.value / (this.max - this.min)))) + "px";*/
@@ -132,8 +132,8 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
 
         clearInterval(this.timer);
         
-        if (this.value == this.max)
-            this.setValue(this.min + (this.max - this.min) * 0.5);
+        //if (this.value == this.max)
+            //this.setValue(this.min + (this.max - this.min) * 0.5);
         
         //this.oSlider.style.display = "block";
         this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()",
@@ -162,7 +162,9 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Private methods ****/
 
     this.$step = function(){
-        if (this.value == this.max) return;
+        if (this.value == this.max) 
+            return;
+        
         this.setValue(this.value + 1);
     };
 

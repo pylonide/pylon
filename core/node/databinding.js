@@ -2275,11 +2275,19 @@ jpf.StandardBinding = function(){
             if (!testNode) {
                 //Set Component in listening state untill data becomes available again.
                 var model = this.getModel(true);
-
-                //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.$jml));
-                //#endif
+                    return;
+                    
+                /*#ifdef __DEBUG
+                //RLD: Disabled because sometimes indeed components do not 
+                //have a model when their xmlRoot is removed.
+                if (!model) {
+                    throw new Error(jpf.formatErrorString(0, this, 
+                        "Setting change notifier on component", 
+                        "Component without a model is listening for changes", 
+                        this.$jml));
+                }
+                #endif*/
 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
             }

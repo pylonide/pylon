@@ -1160,6 +1160,7 @@ jpf.XmlDatabase = function(){
      * @param {String}  xPath        the xpath query.
      * @param {Array}   [addedNodes] this array is filled with the nodes added.
      * @return {DOMNode} the last element found.
+     * @todo generalize this to include attributes in if format []
      */
     this.createNodeFromXpath = function(contextNode, xPath, addedNodes){
         var xmlNode, foundpath = "", paths = xPath.split("\|")[0].split("/");
@@ -1220,9 +1221,15 @@ jpf.XmlDatabase = function(){
         else if (lastpath.trim() == "text()")
             return contextNode.selectSingleNode(foundpath)
                 .appendChild(contextNode.ownerDocument.createTextNode(""));
-        else
-            return contextNode.selectSingleNode(foundpath)
+        else {
+            var hasId = lastpath.match(/(\w+)\[@id=(\w+)\]/);
+            if (hasId) lastpath = hasId[1];
+            var newNode = contextNode.selectSingleNode(foundpath || ".")
                 .appendChild(contextNode.ownerDocument.createElement(lastpath));
+            if (hasId)
+                newNode.setAttribute("id", hasId[2]);
+            return newNode;
+        }
     };
 
     /**

@@ -72,8 +72,8 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$clear = function(a, b){
         if (b == true) {
-            this.oInt.innerHTML = "";//alert(a+"-"+b);
             this.setProperty("value", "");
+            this.oInt.innerHTML = this.emptyMsg || "";//alert(a+"-"+b);
         }
     };
     

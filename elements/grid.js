@@ -350,7 +350,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         if (!needcalc)
-            this.oExt.style.height = (total + (rowheight.length * this.padding) + margin[0] + margin[2]) + "px";
+            this.oExt.style.height = (total + ((rowheight.length-1) * this.padding) + margin[0] + margin[2]) + "px";
         
         //Set column start position
         var rowstart = [margin[0]];
@@ -404,21 +404,23 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                         cTotal += this.padding;
                 }
                 
+                var spanPadding = (cellInfo.span - 1) * this.padding;
                 if (cTotal > 0) {
-                    cellInfo.oHtml.style.width = (cTotal - (cellInfo.m[1] 
-                        + cellInfo.m[3] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
+                    cellInfo.oHtml.style.width = (cTotal + spanPadding 
+                        - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.m[3] 
+                        + cellInfo.hordiff)) + "px";
                 }
                 else {
                     if (cTotal > -1000000)
                         combCol.push(cTotal + 1000000);
                     rule.push(id + ".style.width = (" + combCol.join(" + ") 
-                        + " - " + (cellInfo.m[1] + cellInfo.m[3] 
+                        + " + " + spanPadding + " - " + (cellInfo.m[1] + cellInfo.m[3] 
                         + cellInfo.hordiff) + ") + 'px'");
                 }
             }
             else {
                 if (parseFloat(cellInfo.width) == cellInfo.width
-                    || typeof cols[col] == "number")
+                  || typeof cols[col] == "number")
                     cellInfo.oHtml.style.width = ((cellInfo.width || cols[col]) 
                         - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 else

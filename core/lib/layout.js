@@ -1364,8 +1364,7 @@ jpf.layout = {
                 strRules.push(rules[id]);
             }
 
-            //jpf.console.info(strRules.join("\n"));
-            this.onresize[htmlId] = new Function(strRules.join("\n"));
+            this.onresize[htmlId] = new Function(strRules.join("\n"));//.replace(/try\{/g, "").replace(/}catch\(e\)\{\s*\}/g, "\n")
             if (!no_exec)
                 this.onresize[htmlId]();
 
