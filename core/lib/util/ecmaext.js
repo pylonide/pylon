@@ -38,6 +38,76 @@ String.prototype.dataType   = "string";
 RegExp.prototype.dataType   = "regexp";
 Function.prototype.dataType = "function";
 
+jpf.getCgiString = function(args, multicall, mcallname){
+    var vars = [];
+
+    function recur(o, stack) {
+        if (jpf.isArray(o)) {
+            for (var j = 0; j < o.length; j++)
+                recur(o[j], stack + "%5B%5D");//" + j + "
+        } 
+        else if (typeof o == "object") {
+            for (prop in o) {
+                if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                    continue;
+
+                if (typeof o[prop] == "function")
+                    continue;
+                recur(o[prop], stack + "%5B" + encodeURIComponent(prop) + "%5D");
+            }
+        }
+        else
+            vars.push(stack + "=" + encodeURIComponent(o));
+    };
+
+    if (multicall) {
+        vars.push("func=" + mcallname);
+        for (var i = 0; i < args[0].length; i++)
+            recur(args[0][i], "f%5B" + i + "%5D");
+    } else {
+        for (prop in args) {
+            if (jpf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+                continue;
+
+            recur(args[prop], prop);
+        }
+    }
+
+    return vars.join("&");
+}
+
+jpf.fromCgiString = function(args) {
+    if (!args)
+        return false;
+
+    var obj = {};
+    args = args.split("&");
+    for (var data, i = 0; i < args.length; i++) {
+        data = args[i].split("=");
+        data[0] = decodeURIComponent(data[0]);
+        var path = data[0].replace(/\]/g, "").split("[");
+
+        var spare = obj;
+        for (var j = 0; j < path.length; j++) {
+            if (spare[path[j]])
+                spare = spare[path[j]];
+            else if (path.length == j+1) {
+                if (path[j])
+                    spare[path[j]] = decodeURIComponent(data[1]);
+                else
+                    spare.push(decodeURIComponent(data[1]));
+                break; //assuming last
+            }
+            else{
+                spare[path[j]] = !path[j+1] ? [] : {};
+                spare = spare[path[j]];
+            }
+        }
+    }
+
+    return obj;
+}
+
 //#ifdef __DEPRECATED
 //Mac workaround...
 Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, arg3){
