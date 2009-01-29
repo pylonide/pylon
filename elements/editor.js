@@ -237,7 +237,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
             .replace(/(<([a-zA-Z]+).*?>)|(<\/([a-zA-Z]+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
                 if (tagstart == "P")
-                    return m;
+                    return "";
                 if (tagend == "P")
                     return "<br />";
                 if (fullstart){
