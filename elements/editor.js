@@ -532,6 +532,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var ret = _self.plugins.notifyAll('context', e);
     }
 
+    var changeTimer = null;
+
     /**
      * Event handler; fired when the user pressed a key inside the editor IFRAME.
      * For IE, we apply some necessary behavior correction and for other browsers, like
@@ -679,10 +681,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else if (code == 8 || code == 46) //backspace or del
             listBehavior.call(_self, e, true); //correct lists, if any
 
-        if (_self.realtime) {
-            setTimeout(function() {
+        if (_self.realtime && changeTimer === null) {
+            changeTimer = setTimeout(function() {
+                clearTimeout(changeTimer);
                 _self.change(_self.getValue());
-            });
+                changeTimer = null;
+            }, 500);
         }
 
         document.onkeydown(e);
