@@ -288,7 +288,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @type {void}
      */
-    this.clear = function() {
+    this.$clear = function() {
         this.value = "";
         return this.$propHandlers["value"].call(this, "");
     };
@@ -572,16 +572,43 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         //_self.selection.collapse(true);
                         //_self.insertHTML("<br />", true, true);
                         //_self.selection.collapse(true);
-                        var oNode = _self.selection.moveToAncestorNode('div'), found = false;
-                        if (oNode && oNode.getAttribute('_jpf_placeholder')) {
-                            found = true;
-                            var oDiv;
-                            if (!jpf.editor.ALTP.node) {
-                                oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
-                                oDiv.setAttribute('_jpf_placeholder', '1');
-                                oDiv.style.display    = "block";
-                                oDiv.style.visibility = "hidden";
+                        var r = _self.selection.getRange();
+                        // start detection of what KIND of linebreak we need...
+                        var bStartLine = false;
+                        var bEndLine   = false;
+                        var bEndText   = false;
+                        r.moveStart('character', -1);
+                        if (!r.htmlText.length) {
+                            r.moveEnd('character', 1);
+                            if (r.htmlText.length)
+                                bStartLine = true;
+                            else
+                                bEndText = true;
+                        }
+                        else {
+                            r.moveStart('character', 1)
+                            r.moveEnd('character', 2);
+                            if (r.htmlText.indexOf('_jpf_placeholder="1"') > -1) {
+                                bEndLine = true;
                             }
+                            else {
+                                r.moveStart('character', -1);
+                                r.moveEnd('character', 2)
+                                if (r.htmlText.length < 2 || r.htmlText.indexOf('_jpf_placeholder="1"') > -1)
+                                    bEndText = true;
+                                // else the insertion point is 'inline' (and not 'endtext')
+                            }
+                        }
+                        var oDiv, oNode = _self.selection.moveToAncestorNode('div'), found = false;
+                        if (!jpf.editor.ALTP.node) {
+                            oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
+                            oDiv.setAttribute('_jpf_placeholder', '1');
+                            oDiv.style.display    = "block";
+                            oDiv.style.visibility = "hidden";
+                        }
+                        if (oNode && oNode.getAttribute('_jpf_placeholder')
+                          && (bStartLine || bEndLine || bEndText)) {
+                            found = true;
                             oDiv           = jpf.editor.ALTP.node.cloneNode();
                             oDiv.innerHTML = jpf.editor.ALTP.text;
                             if (oNode.nextSibling)
@@ -590,16 +617,26 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 oNode.parentNode.appendChild(oDiv);
                         }
                         else {
-                            _self.insertHTML(jpf.editor.ALTP.start
-                                + jpf.editor.ALTP.text
-                                + jpf.editor.ALTP.end, true, true);
+                            if (bEndText) {
+                                oDiv           = jpf.editor.ALTP.node.cloneNode();
+                                oDiv.innerHTML = jpf.editor.ALTP.text;
+                                _self.oDoc.body.appendChild(oDiv);
+                            }
+                            else {
+                                _self.insertHTML(jpf.editor.ALTP.start
+                                    + jpf.editor.ALTP.text
+                                    + jpf.editor.ALTP.end, true, true);
+                            }
                         }
                         _self.selection.collapse(true);
 
                         var _select = jpf.appsettings.allowSelect;
                         jpf.appsettings.allowSelect = true;
                         var range = _self.selection.getRange();
-                        range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
+                        // find and select the placeholder text again to make
+                        // sure that the cursor will be inside the DIV
+                        if (!range.findText(jpf.editor.ALTP.text, 1, 0))
+                            range.findText(jpf.editor.ALTP.text, -1, 0);
                         range.select();
                         _self.selection.remove();
                         jpf.appsettings.allowSelect = _select;
