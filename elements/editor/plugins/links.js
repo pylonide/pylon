@@ -121,9 +121,19 @@ jpf.editor.plugin('link', function(){
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
-        jpf.sanitizeTextbox(this.oUrl);
-        jpf.sanitizeTextbox(this.oTarget);
-        jpf.sanitizeTextbox(this.oTitle)
+
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (jpf.hasFocusBug) {
+            jpf.sanitizeTextbox(this.oUrl);
+            jpf.sanitizeTextbox(this.oTarget);
+            jpf.sanitizeTextbox(this.oTitle);
+            this.oUrl.onselectstart   = this.oTarget.onselectstart =
+            this.oTitle.onselectstart = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
+        }
+        //#endif
 
         this.appendJmlNode(
             '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\

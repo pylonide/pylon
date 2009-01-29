@@ -218,11 +218,12 @@ jpf.editor.clipboardPlugin = function(sName) {
 
         this.oArea = document.getElementById(idArea);
         jpf.sanitizeTextbox(this.oArea);
-        if (jpf.isIE)
-            this.oArea.onselectstart = function(e) {
+        if (jpf.isIE) {
+            this.oArea.onselectstart = this.oArea.onpaste = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
+        }
         this.appendJmlNode(
            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
             <j:button caption="Insert"\

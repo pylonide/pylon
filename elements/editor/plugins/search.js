@@ -239,9 +239,16 @@ jpf.editor.searchPlugin = function(sName) {
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug) {
+            var fSel = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
             jpf.sanitizeTextbox(this.oSearch);
-            if (this.oReplace)
+            this.oSearch.onselectstart = fSel;
+            if (this.oReplace) {
                 jpf.sanitizeTextbox(this.oReplace);
+                this.oReplace.onselectstart = fSel;
+            }
         }
         //#endif
 

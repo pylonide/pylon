@@ -97,8 +97,13 @@ jpf.editor.plugin('image', function(){
           document.getElementById(idBtns));
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
+        if (jpf.hasFocusBug) {
             jpf.sanitizeTextbox(this.oUrl);
+            this.oUrl.onselectstart = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
+        }
         //#endif
 
         return panelBody;
