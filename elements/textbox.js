@@ -233,7 +233,8 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @copy Widget#getValue
      */
     this.getValue = function(){
-        return this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
+        var v = this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
+        return v == this.initialMsg ? "" : v;
     };
 
     /**

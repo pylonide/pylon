@@ -509,7 +509,7 @@ jpf.BaseList = function(){
                 this.doJmlParsing = true;
             //#endif
         }
-        Item.setAttribute("title", this.applyRuleSetOnNode("title", xmlNode) || "");
+        Item.setAttribute("title", this.applyRuleSetOnNode("tooltip", xmlNode) || "");
 
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);

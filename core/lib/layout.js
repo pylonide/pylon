@@ -406,9 +406,6 @@ jpf.layout = {
 
                 this.hidden = true;
 
-                if (adminOnly)
-                    return this.hide(true);
-
                 //Check if parent is empty
                 var nodes, child, c = 0, i, l, sets = ["children", "hiddenChildren"];
                 while(sets.length) {
@@ -422,7 +419,10 @@ jpf.layout = {
                     }
                 }
                 if (!c)
-                    this.parent.prehide();
+                    this.parent.prehide(adminOnly);
+                
+                if (adminOnly)
+                    return this.hide(true);
                 
                 if (jpf.layout.dlist.contains(this)) {
                     jpf.layout.dlist.remove(this);

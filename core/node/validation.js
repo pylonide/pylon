@@ -298,10 +298,11 @@ jpf.Validation = function(){
      */
     this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
+        /* Temp disabled, because I don't understand it (RLD)
         this.addEventListener("beforechange", function(){
             if (this.xmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
-        });
+        });*/
 
         // Submitform
         if (!this.form) {

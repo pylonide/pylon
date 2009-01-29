@@ -1328,7 +1328,10 @@ jpf.XmlDatabase = function(){
                 if (!node.attributes.length&& !isOnlyChild) {
                     var lnodes = node.childNodes;
                     for (var nm, j = 0, l = lnodes.length; j < l; j++) {
-                        nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + ++count + "]";
+                        if (lnodes[j].nodeType != 1)
+                            continue;
+                        
+                        nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + count++ + "]";
                         value = this.cgivars(lnodes[j], nm, true);
                         if (value)
                             str.push(value);

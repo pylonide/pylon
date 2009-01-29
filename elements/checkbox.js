@@ -138,6 +138,10 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**** Private state handling methods ****/
 
+    this.$clear = function(){
+        this.setProperty("value", this.$values[1]);
+    }
+
     this.$enable = function(){
         if (this.oInt) this.oInt.disabled = false;
         this.$doBgSwitch(1);
