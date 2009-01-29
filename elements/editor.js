@@ -96,6 +96,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (this.prepareHtml(this.getValue()).replace(/\r/g, "") == html)
             return;
 
+        this.value = html;
         this.oDoc.body.innerHTML = html;
 
         if (jpf.isGecko) {
@@ -230,10 +231,38 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function() {
-        return this.getXHTML('text')
-            .replace(/<DIV[^>]*_jpf_placeholder="1">(.*)<\/DIV>/gi, '$1<br/>')
+        var depth = -1, stack = [];
+        this.value = this.getXHTML('text')
             .replace(/<br\/><\/li>/gi, '</li>')
-            .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '');
+            .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
+            .replace(/(\<(\w+).*?\>)|(\<\/(\w+?)\s*\>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+                   if (fullstart){
+                       depth++;
+                       if (fullstart.indexOf("_jpf_placeholder") > -1) {
+                           stack.push([tagstart, true]);
+                           return "";
+                       }
+                       else {
+                           stack.push([tagstart, false]);
+                           return fullstart;
+                       }
+                   }
+                   else if (fullend) {
+                       depth--;
+                       var startItem = stack.pop();
+
+                       //#ifdef __DEBUG
+                       if (tagend != startItem[0]) {
+                           throw new Error(jpf.formatErrorString(0, _self,
+                               "Mismatch with start '" + startItem[0]
+                               + "' and end '" + tagend + "'"));
+                       }
+                       //#endif
+
+                       return startItem[1] ? "<br />" : fullend;
+                   }
+                });
+        return this.value;
     };
 
     /**
@@ -333,16 +362,25 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             // make sure that the command didn't leave any <P> tags behind (cleanup)
             cmdName    = cmdName.toLowerCase();
             var bNoSel = (cmdName == "SelectAll");
-            if (jpf.isIE
-             && ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist"
-               || cmdName == "outdent")
-             && this.getCommandState(cmdName) == jpf.editor.OFF)) {
-                this.oDoc.body.innerHTML = this.prepareHtml(this.oDoc.body.innerHTML);
-                bNoSel = true;
+            if (jpf.isIE) {
+                if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
+                  && this.getCommandState(cmdName) == jpf.editor.OFF) {
+                    bNoSel = true;
+                }
+                if (cmdName == "outdent") {
+                    var pLists = this.plugins.get('bullist', 'numlist');
+                    if (pLists.length) {
+                        if (pLists[0].queryState(_self) != jpf.editor.OFF
+                          && pLists[1].queryState(_self) != jpf.editor.OFF)
+                           bNoSel = true;
+                    }
+                }
+                if (bNoSel)
+                    this.oDoc.body.innerHTML = this.prepareHtml(this.oDoc.body.innerHTML);
             }
 
             this.notifyAll();
-            //this.change(this.getValue());
+            this.change(this.getValue());
 
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
