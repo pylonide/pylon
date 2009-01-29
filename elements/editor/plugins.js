@@ -316,6 +316,32 @@ jpf.editor.plugin = function(sName, fExec) {
                 this.editor.selection.moveToBookmark(this.bookmark);
         };
 
+        this.insertBlock = function(sStart, sEnd) {
+            if (!this.editor) return;
+
+            var sel   = this.editor.selection;
+            var sText = sel.isCollapsed() ? "" : sel.getRange().htmlText;
+            this.editor.$visualFocus();
+            sel.set();
+
+            this.editor.insertHTML((sStart || "") + sText + jpf.editor.ALTP.text
+                + (sEnd || ""), true);
+            sel.collapse(true);
+            
+            var r = sel.getRange();
+            r.findText(jpf.editor.ALTP.text, -1);
+            r.select();
+            sel.remove();
+            sel.collapse(true);
+            sel.cache();
+            var oParent = r.parentElement();
+            if (oParent && oParent.parentNode) {
+                oParent = oParent.parentNode;
+                if (oParent.nextSibling && oParent.nextSibling.tagName == "BR")
+                    oParent.parentNode.removeChild(oParent.nextSibling);
+            }
+        };
+
         /**
          * Appends a new JML element - in its string representation - to an
          * existing JML node. A new JML node will be created as specified by the

@@ -58,8 +58,8 @@ jpf.editor.plugin('code', function() {
         }
         else {
             oPreview.style.display = "none";
-            if (editor.parseHTML(oPreview.value.replace(/\n/g, '')) != editor.getValue())
-                editor.setHTML(oPreview.value.replace(/\n/g, ''));
+            if (editor.prepareHtml(oPreview.value.replace(/[\n\r\s]*/g, '')) != editor.getValue().replace(/[\n\r\s]*/gi, ''))
+                editor.setValue(oPreview.value.replace(/\n/g, ''));
             editor.plugins.active = null;
             editor.setProperty('state', jpf.editor.OFF);
 

@@ -35,9 +35,9 @@ jpf.editor.listPlugin = function(sName) {
         : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
-        editor.executeCommand(this.name == "bullist"
-            ? 'InsertUnorderedList'
-            : 'InsertOrderedList');
+            editor.executeCommand(this.name == "bullist"
+                ? 'InsertUnorderedList'
+                : 'InsertOrderedList');
 
         this.correctLists(editor);
         editor.$visualFocus();
