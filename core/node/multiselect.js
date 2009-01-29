@@ -447,6 +447,10 @@ jpf.MultiSelect = function(){
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
     };
 
+    this.getMultibinding = function(){
+        return selSmartbinding;
+    }
+
     /**
      * Gets the second level SmartBinding for Multilevel Databinding.
      * For more information see {@link MultiLevelBinding}

@@ -1743,6 +1743,10 @@ jpf.DataBinding = function(){
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !jpf.isFalse(
             jpf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
+            
+        var mb;
+        if (this.getMultibinding && (mb = this.getMultibinding()))
+            mb.createModel = this.createModel;
     };
 
     /**
@@ -3222,6 +3226,9 @@ jpf.MultiselectBinding = function(){
         #endif */
 
         var prefix = jpf.findPrefix(x, jpf.ns.jml);
+
+        x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
+            + prefix + "='" + jpf.ns.jpf + "'");
     
         //@todo think about using setProperty for this, for consistency (at the price of speed)
         this.icon      = "@icon";

@@ -77,6 +77,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
+    this.$booleanProperties["selectable"] = true;
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         if (this.createJml) {
@@ -92,6 +93,14 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             this.oInt.innerHTML = value;
         }
+    };
+    
+    this.$propHandlers["selectable"] = function(value){
+        this.oExt.onselectstart = value 
+          ? function(){
+              event.cancelBubble = true;
+            }
+          : null;
     };
     
     this.$draw = function(){

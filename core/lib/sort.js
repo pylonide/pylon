@@ -141,6 +141,10 @@ jpf.Sort = function(xmlNode){
         },
 
         "date" : function (t, args){
+            var sort_dateFormat = settings.dateFormat;
+            var sort_dateReplace = settings.dateReplace;
+            var sort_dateFmtStr = settings.sort_dateFmtStr;
+            
             if (!sort_dateFormat || (args && sort_dateFmtStr != args[0])) 
                 sort_dateFmt(args ? args[0] : "*");
             

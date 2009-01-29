@@ -66,7 +66,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     jpf.makeClass(this);
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    this.createModel      = jmlNode.createModel; //This should be read dynamically..
+
     this.getActionTracker = function(ignoreMe){
         return jmlNode.getActionTracker(ignoreMe);
     };
@@ -169,8 +169,8 @@ jpf.MultiLevelBinding = function(jmlNode){
 
         var i, k, xmlNode;
         if (jmlNode.multiselect) {
-            var selNodes = this.getSelectionNodes();
-            var traverseNodes     = jmlNode.getTraverseNodes();
+            var selNodes      = this.getSelectionNodes();
+            var traverseNodes = jmlNode.getTraverseNodes();
             
             //Check if a selected node is not selected yet
             for (i = 0; i < selNodes.length; i++) {
