@@ -237,6 +237,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
             .replace(/(\<(\w+).*?\>)|(\<\/(\w+?)\s*\>)/gi, function(m, fullstart, tagstart, fullend, tagend){
                    if (fullstart){
+                       if (tagstart == "LI" || tagstart == "BR")
+                           return fullstart;
                        depth++;
                        if (fullstart.indexOf("_jpf_placeholder") > -1) {
                            stack.push([tagstart, true]);
