@@ -444,7 +444,7 @@ jpf.editor.selection = function(editor) {
         var range = this.getRange();
         var oDoc  = this.editor.oDoc;
 
-        html = this.editor.parseHTML(html);
+        html = this.editor.prepareHtml(html);
 
         if (range.insertNode) {
             // Make caret marker since insertNode places the caret in the
