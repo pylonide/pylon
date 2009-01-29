@@ -569,17 +569,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                               || pLists[1].queryState(_self) == jpf.editor.ON)
                                return; //allow default behavior
                         }
-                        //_self.selection.collapse(true);
-                        //_self.insertHTML("<br />", true, true);
-                        //_self.selection.collapse(true);
+
                         var r = _self.selection.getRange();
                         // start detection of what KIND of linebreak we need...
                         var bStartLine = false;
                         var bEndLine   = false;
                         var bEndText   = false;
                         r.moveStart('character', -1);
+                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
                         if (!r.htmlText.length) {
                             r.moveEnd('character', 1);
+                            //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
                             if (r.htmlText.length)
                                 bStartLine = true;
                             else
@@ -588,17 +588,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         else {
                             r.moveStart('character', 1)
                             r.moveEnd('character', 2);
+                            //jpf.console.log('sel HTML2: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
                             if (r.htmlText.indexOf('_jpf_placeholder="1"') > -1) {
                                 bEndLine = true;
                             }
                             else {
                                 r.moveStart('character', -1);
                                 r.moveEnd('character', 2)
-                                if (r.htmlText.length < 2 || r.htmlText.indexOf('_jpf_placeholder="1"') > -1)
+                                //jpf.console.log('sel HTML3: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
+                                if (r.htmlText.length < 2 || (r.htmlText.length == 85
+                                  && r.htmlText.indexOf('_jpf_placeholder="1"') > -1))
                                     bEndText = true;
                                 // else the insertion point is 'inline' (and not 'endtext')
                             }
                         }
+                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
+                        //r.moveStart('character', -1);
+                        //jpf.console.log('sel HTML2: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
                         var oDiv, oNode = _self.selection.moveToAncestorNode('div'), found = false;
                         if (!jpf.editor.ALTP.node) {
                             oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
