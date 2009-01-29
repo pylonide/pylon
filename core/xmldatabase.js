@@ -372,7 +372,7 @@ jpf.XmlDatabase = function(){
         if (typeof parentNode != "object")
             parentNode = getElementById(parentNode);
 
-        if (options.clearContents) {
+        if (options && options.clearContents) {
             //clean parent
             var nodes = parentNode.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--)
@@ -380,7 +380,7 @@ jpf.XmlDatabase = function(){
         }
 
         // #ifdef __WITH_VIRTUALVIEWPORT
-        if (options.start) { //Assuming each node is in count
+        if (options && options.start) { //Assuming each node is in count
             var reserved, beforeNode, nodes, doc, i, l, marker = options.marker;
             if (!marker){
                 //optionally find marker
@@ -443,7 +443,7 @@ jpf.XmlDatabase = function(){
                     parentNode.insertBefore(nodes[0], beforeNode);
         }
 
-        if (options.copyAttributes) {
+        if (options && options.copyAttributes) {
             var attr = XMLRoot.attributes;
             for (i = 0; i < attr.length; i++)
                 if (attr[i].nodeName != this.xmlIdTag)

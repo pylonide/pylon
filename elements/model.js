@@ -549,7 +549,7 @@ jpf.model = function(data, caching){
 
         //Find load string
         var instanceNode;
-        loadProcInstr = x.getAttribute("load") || x.getAttribute("get");
+        loadProcInstr = jpf.parseExpression(x.getAttribute("load") || x.getAttribute("get"));
         if (!loadProcInstr) {
             var prefix = jpf.findPrefix(x, jpf.ns.jml);
             if (!jpf.supportNamespaces)
