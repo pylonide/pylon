@@ -565,7 +565,7 @@ jpf.ValidationGroup = function(name){
                 else if (!this.allowMultipleErrors)
                     return true;
             }
-            if (oEl.childNodes.length) {
+            if (oEl.canHaveChildren && oEl.childNodes.length) {
                 found = checkValidChildren.call(this, oEl, ignoreReq, nosetError) || found;
                 if (found && !this.allowMultipleErrors)
                     return true; //Added (again)

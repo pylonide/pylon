@@ -160,6 +160,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             _minutes, _seconds).format(this.captionFormat));
         this.redraw(_month, _year);
     }
+    
+    this.getValue = function(){
+        return this.value;
+    }
+    
+    this.setValue = function(value){
+        this.setProperty("value", value);
+    }
+    
+    /**** Keyboard Handling ****/
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {

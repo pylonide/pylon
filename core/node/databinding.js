@@ -812,6 +812,7 @@ jpf.DataBinding = function(){
 
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
+            if (setname == "value") setname = "valuerule";
             return typeof this[setname] == "string" && setname != "value"
                     && jpf.getXmlValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
@@ -1094,6 +1095,7 @@ jpf.DataBinding = function(){
         var rules = ((isAction ? this.actionRules : this.bindingRules) || {})[setname];
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
+            if (setname == "value") setname = "valuerule";
             if (!isAction && !getRule && typeof this[setname] == "string") {
                 return cnode.selectSingleNode(this[setname]) || (createNode
                     ? jpf.xmldb.createNodeFromXpath(cnode, this[setname])
@@ -1139,6 +1141,7 @@ jpf.DataBinding = function(){
         var rules = this.bindingRules && this.bindingRules[setname];
         if (!rules || !rules.length) {
             //#ifdef __WITH_INLINE_DATABINDING
+            if (setname == "value") setname = "valuerule";
             return typeof this[setname] == "string" && [this[setname]] || ["."];
             /* #else
             return ["."];
@@ -3219,12 +3222,13 @@ jpf.MultiselectBinding = function(){
         #endif */
 
         var prefix = jpf.findPrefix(x, jpf.ns.jml);
-
-        this.icon     = "@icon";
-        this.image    = "@image";
-        this.caption  = "label/text()|text()|@caption";//|@value
-        //this.value    = "value/text()|@value|text()";
-        this.traverse = prefix + ":item";
+    
+        //@todo think about using setProperty for this, for consistency (at the price of speed)
+        this.icon      = "@icon";
+        this.image     = "@image";
+        this.caption   = "label/text()|text()|@caption";//|@value
+        this.valuerule = "value/text()|@value|text()";
+        this.traverse  = prefix + ":item";
 
         this.load(x);
     };
@@ -3280,6 +3284,17 @@ jpf.MultiselectBinding = function(){
      * @see  binding#caption
      */
     this.$propHandlers["caption"]  =
+    
+    /**
+     * @attribute {String} valuerule the xpath statement that determines from
+     * which xml node the value is retrieved.
+     * Example:
+     * <code>
+     *  <j:list valuerule="@value" traverse="item" />
+     * </code>
+     * @see  binding#value
+     */
+    this.$propHandlers["valuerule"]  =
 
     /**
      * @attribute {String} icon the xpath statement that determines from

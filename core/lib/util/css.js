@@ -209,7 +209,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;
 
-    var bw, bh, foundPosRel = 0;
+    var z, bw, bh, foundPosRel = 0;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //@todo this should be done recursive until the next abs positioned element
         if (jpf.isIE && this.getStyle(o, "position") == "relative" && ++foundPosRel == 2) {

@@ -1191,8 +1191,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$resize = function() {
         if (!this.iframe || !this.iframe.parentNode || !this.oExt.offsetHeight)
             return;
-        this.iframe.parentNode.style.height = (this.oExt.offsetHeight
-            - this.oToolbar.offsetHeight - 2) + "px";
+            
+        var h = (this.oExt.offsetHeight - this.oToolbar.offsetHeight - 2);
+        if (!h || h < 0) h = 0;
+            
+        this.iframe.parentNode.style.height = h + "px";
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
         this.plugins.notifyAll("resize");

@@ -408,10 +408,11 @@ jpf.MultiSelect = function(){
          * @see #setValue
          */
         this.getValue = function(xmlNode){
-            if (!this.bindingRules) return false;
+            if (!this.bindingRules && !this.caption) 
+                return false;
 
             // #ifdef __DEBUG
-            if (!this.bindingRules[this.mainBind] && !this.bindingRules["caption"])
+            if (!this.caption && !this.bindingRules[this.mainBind] && !this.bindingRules["caption"])
                 throw new Error(jpf.formatErrorString(1074, this,
                     "getValue Method",
                     "Could not find default value bind rule for this control."));
