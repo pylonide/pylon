@@ -35,23 +35,12 @@
  * @constructor
  * @addnode elements:calendar
  *
- * @attribute {String}   output-format   It's a style of displaying date,
- *                                     default is yyyy-mm-dd
+ * @attribute {String}   output-format    style of returned date
+ * @attribute {String}   default          name which represent some date
  *     Possible values:
- *     ddd mmm dd yyyy HH:MM:ss        (Thu Nov 06 2008 14:27:46), It's a very long date format
- *     m/d/yy                          (11/6/08), It's a short date format
- *     mmm d, yyyy                     (Nov 6, 2008), It's a medium date format
- *     mmmm d, yyyy                    (November 6, 2008), It's a long date format
- *     dddd, mmmm d, yyyy              (Thursday, November 6, 2008), It's a full date format
- *     h:MM TT                         (2:31 PM), It's a short time format
- *     h:MM:ss TT                      (2:32:23 PM), It's a medium time format
- *     h:MM:ss TT Z                    (2:35:06 PM GMT+01000), It's a long time format
- *     yyyy-mm-dd                      (2008-11-06), It's a iso date format
- *     HH:MM:ss                        (14:36:13), It's a iso time format
- * @attribute {String}   value         It's a date wrote in allowed format.
- *                                     If value propertie is set at begining,
- *                                     calendar will be showing this date, if
- *                                     not, current date.
+ *     today   calendar is set on today's date
+ * @attribute {String}   value   the date returned by calendar; should be in the 
+ *                               same format as output-format
  * 
  * @classDescription    This class creates a new calendar
  * @return {Calendar}   Returns a new calendar
@@ -152,6 +141,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.setValue = function(value) {
         this.setProperty("value", value);
+    };
+    
+    this.getValue = function() {
+        return this.value;
     };
 
     /**** Keyboard Support ****/
