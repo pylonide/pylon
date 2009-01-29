@@ -235,35 +235,36 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.value = this.getXHTML('text')
             .replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
-            .replace(/(\<(\w+).*?\>)|(\<\/(\w+?)\s*\>)/gi, function(m, fullstart, tagstart, fullend, tagend){
-                   if (tagstart == "LI" || tagstart == "BR")
-                       return m;
-                   if (fullstart){
-                       depth++;
-                       if (fullstart.indexOf("_jpf_placeholder") > -1) {
-                           stack.push([tagstart, true]);
-                           return "";
-                       }
-                       else {
-                           stack.push([tagstart, false]);
-                           return fullstart;
-                       }
-                   }
-                   else if (fullend) {
-                       depth--;
-                       var startItem = stack.pop();
+            .replace(/(<([a-zA-Z]+).*?>)|(<\/([a-zA-Z]+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+                if (tagstart == "P")
+                    return m;
+                if (tagend == "P")
+                    return "<br />";
+                if (fullstart){
+                    depth++;
+                    if (fullstart.indexOf("_jpf_placeholder") > -1) {
+                        stack.push([tagstart, true]);
+                        return "";
+                    }
+                    else {
+                        stack.push([tagstart, false]);
+                        return fullstart;
+                    }
+                }
+                else if (fullend) {
+                    depth--;
+                    var startItem = stack.pop();
+                    //#ifdef __DEBUG
+                    if (tagend != startItem[0]) {
+                        throw new Error(jpf.formatErrorString(0, _self,
+                            "Mismatch with start '" + startItem[0]
+                            + "' and end '" + tagend + "'"));
+                    }
+                    //#endif
 
-                       //#ifdef __DEBUG
-                       if (tagend != startItem[0]) {
-                           throw new Error(jpf.formatErrorString(0, _self,
-                               "Mismatch with start '" + startItem[0]
-                               + "' and end '" + tagend + "'"));
-                       }
-                       //#endif
-
-                       return startItem[1] ? "<br />" : fullend;
-                   }
-                });
+                    return startItem[1] ? "<br />" : fullend;
+                }
+             });
         return this.value;
     };
 
