@@ -1134,9 +1134,6 @@ jpf.console.info("FILL");
         if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml);
 
-        if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value"))
-            this.setValue(x.getAttribute("value"));
-
         /* Loading template */
         jpf.getData(this.$jml.getAttribute("template"), null, null,
                     function(data, state, extra) {
