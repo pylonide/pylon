@@ -221,9 +221,8 @@ jpf.MultiLevelBinding = function(jmlNode){
                     jmlNode.setConnections(xmlNode);
                 }
             }
-            else 
-                if (jmlNode.clearOnNoSelection) 
-                    jmlNode.clearSelection(null, true);
+            else if (jmlNode.clearOnNoSelection) 
+                jmlNode.clearSelection(null, true);
         }
     };
     
@@ -280,13 +279,11 @@ jpf.MultiLevelBinding = function(jmlNode){
     jmlNode.addEventListener("afterselect", function(e){
         if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) 
             return;
-        
-        if (this.multiselect) {
+
+        if (this.multiselect)
             mlNode.changeSelection(e.list);
-        }
-        else {
+        else
             mlNode.change(this.applyRuleSetOnNode(this.mainBind, e.xmlNode));
-        }
     });
     
     //jmlNode.addEventListener("xmlupdate", function(action, xmlNode){

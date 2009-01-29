@@ -227,11 +227,12 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
 
             jmlNode[parts[part]](this[part], this["xml" + part]);
         }
-        
-        if (this.$model)
+
+        if (this.$model) {
             this.$model.register(jmlNode, this.$modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
+        }
         else if (jmlNode.$model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
             jmlNode.$model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
         

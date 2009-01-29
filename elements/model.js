@@ -161,7 +161,7 @@ jpf.model = function(data, caching){
                 this.connect.node.connect(jmlNode, true, this.connect.select);
         }
         else {
-            jmlNode.$model = this;
+            //jmlNode.$model = this;
 
             if (this.data)
                 this.loadInJmlNode(jmlNode, xpath);

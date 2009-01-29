@@ -1522,7 +1522,7 @@ jpf.DataBinding = function(){
             jpf.setModel(initModelId[1], this, true);
 
         //Set the model for normal smartbinding
-        if (!this.ref || this.hasFeature(__MULTISELECT__)) {
+        if (!this.ref || this.hasFeature(__MULTISELECT__) && !this.xmlRoot) {
             var sb = jpf.JmlParser.sbInit[this.uniqueId]
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 
@@ -3224,6 +3224,18 @@ jpf.MultiselectBinding = function(){
         /* #else
         var parent = x;
         #endif */
+
+        //#ifdef __DEBUG
+        
+        if (x.getAttribute("model")) {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Loading inline data",
+                "Found model attribute set. This will conflict with loading\
+                the inline data. Please remove it. If you would like to set\
+                the model to receive the selection value, please set the \
+                select-model attribute.", x));
+        }
+        //#endif
 
         var prefix = jpf.findPrefix(x, jpf.ns.jml);
 

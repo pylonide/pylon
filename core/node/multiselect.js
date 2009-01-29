@@ -393,7 +393,7 @@ jpf.MultiSelect = function(){
         var nodes = this.getTraverseNodes();
         var bindSet = this.bindingRules && this.bindingRules[this.mainBind]
             ? this.mainBind
-            : "caption";
+            : (this.valuerule ? "value" : "caption");
 
         for (var i = 0; i < nodes.length; i++) {
             if (this.applyRuleSetOnNode(bindSet, nodes[i]) == value)
