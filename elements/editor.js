@@ -232,14 +232,18 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.getValue = function() {
         var depth = -1, stack = [];
+        //jpf.console.log('now parsing text: ' + this.getXHTML('text').escapeHTML());
         this.value = this.getXHTML('text')
             .replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
-            .replace(/(<([a-zA-Z]+).*?>)|(<\/([a-zA-Z]+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+            .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+                //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
+                if (tagstart == "BR")
+                    return m;
                 if (tagstart == "P")
                     return "";
                 if (tagend == "P")
-                    return "<br />";
+                    return "<BR />";
                 if (fullstart){
                     depth++;
                     if (fullstart.indexOf("_jpf_placeholder") > -1) {
@@ -262,7 +266,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     //#endif
 
-                    return startItem[1] ? "<br />" : fullend;
+                    return startItem[1] ? "<BR />" : fullend;
                 }
              });
         return this.value;
@@ -329,7 +333,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        // <BR>'s need to be replaced to be properly handled as
                        // block elements by IE - because they're not converted
                        // when an editor command is executed
-                       .replace(/([\s\S]*?)<br[^>]*>/gi, jpf.editor.ALTP.start
+                       .replace(/([^>]*?)<br[^>]*>/gi, jpf.editor.ALTP.start
                            + "$1" + jpf.editor.ALTP.end);
         }
 
