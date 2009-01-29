@@ -72,7 +72,6 @@ jpf.editor.plugin('link', function(){
 
         if (!this.oUrl.value) return;
 
-        e = new jpf.AbstractEvent(e || window.event);
         this.editor.executeCommand('CreateLink', 'javascript:jpftmp(0);');
         var oLink, aLinks = this.editor.oDoc.getElementsByTagName('a');
         for (var i = 0; i < aLinks.length && !oLink; i++)
@@ -85,7 +84,8 @@ jpf.editor.plugin('link', function(){
         }
         this.editor.selection.collapse(false);
 
-        e.stop();
+        if (e.stop)
+            e.stop();
         return false;
     };
 
