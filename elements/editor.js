@@ -86,14 +86,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!inited || !complete)
             return;
 
-        if (typeof html == "undefined")
+        if (typeof html != "string")
             html = "";
 
-        html = this.parseHTML(html);
+        html = this.prepareHtml(html);
 
-        // If HTML the string is the same as the contents of the iframe document,
+        // If the HTML string is the same as the contents of the iframe document,
         // don't do anything...
-        if (this.parseHTML(this.oDoc.body.innerHTML).replace(/\r/g, "") == html)
+        if (this.prepareHtml(this.getValue()).replace(/\r/g, "") == html)
             return;
 
         this.oDoc.body.innerHTML = html;
@@ -230,7 +230,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function() {
-        return this.parseHTML(this.getXHTML('text'))//.replace(/<br\/?>/gi, '<br/>')
+        return this.getXHTML('text')
             .replace(/<DIV[^>]*_jpf_placeholder="1">(.*)<\/DIV>/gi, '$1<br/>')
             .replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '');
@@ -248,6 +248,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
+     * Invoked by the Databinding layer when a model is reset/ cleared.
+     * 
+     * @type {void}
+     */
+    this.clear = function() {
+        this.value = "";
+        return this.$propHandlers["value"].call(this, "");
+    };
+
+    /**
      * API; insert any given text (or HTML) at cursor position into the Editor
      *
      * @param {String} html
@@ -258,7 +268,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if (!bNoFocus)
                 this.selection.set();
             this.$visualFocus(true);
-            this.selection.setContent(bNoParse ? html : this.parseHTML(html));
+            this.selection.setContent(bNoParse ? html : this.prepareHtml(html));
             if (bNoFocus) return;
             setTimeout(function() {
                 _self.selection.set();
@@ -269,25 +279,32 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Processes, sanitizes and cleanses a string of raw html that originates
-     * from a contentEditable area.
+     * from outside a contentEditable area, so that the inner workings of the
+     * editor are less likely to be affected.
      *
      * @param  {String} html
-     * @return The sanitized string, valid to store and use in external content
+     * @return The sanitized string, valid to store and use in the editor
      * @type   {String}
      */
-    this.parseHTML = function(html) {
+    this.prepareHtml = function(html) {
         // Convert strong and em to b and i in FF since it can't handle them
         if (jpf.isGecko) {
             html = html.replace(/<(\/?)strong>|<strong( [^>]+)>/gi, '<$1b$2>')
                        .replace(/<(\/?)em>|<em( [^>]+)>/gi, '<$1i$2>');
         }
-        else if (jpf.isIE)
-            html = html.replace(/&apos;/g, '&#39;'); // IE can't handle apos
+        else if (jpf.isIE) {
+            html = html.replace(/&apos;/g, '&#39;') // IE can't handle apos
+                       // <BR>'s need to be replaced to be properly handled as
+                       // block elements by IE - because they're not converted
+                       // when an editor command is executed
+                       .replace(/([\s\S]*?)<br[^>]*>/gi, jpf.editor.ALTP.start
+                           + "$1" + jpf.editor.ALTP.end);
+        }
 
         // Fix some issues
         html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>')
-                   .replace(/<p([^>]+)>/gi, jpf.editor.ALTP.start)
-                   .replace(/<\/p>/gi, jpf.editor.ALTP.end);
+                   .replace(/<p[^>]*>([^<]*)?<\/p>/gi, jpf.editor.ALTP.start
+                       + "$1" + jpf.editor.ALTP.end);
 
         return html;
     };
@@ -314,19 +331,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oDoc.execCommand(cmdName, false, cmdParam);
 
             // make sure that the command didn't leave any <P> tags behind (cleanup)
-            if (jpf.isIE 
-             && ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
-               && this.getCommandState(cmdName) == jpf.editor.OFF)) {
-                this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
+            cmdName    = cmdName.toLowerCase();
+            var bNoSel = (cmdName == "SelectAll");
+            if (jpf.isIE
+             && ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist"
+               || cmdName == "outdent")
+             && this.getCommandState(cmdName) == jpf.editor.OFF)) {
+                this.oDoc.body.innerHTML = this.prepareHtml(this.oDoc.body.innerHTML);
+                bNoSel = true;
             }
 
             this.notifyAll();
-            this.change(this.getValue());
-            
+            //this.change(this.getValue());
+
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
-                if (jpf.isIE && cmdName != "SelectAll")
-                    _self.selection.set();
+                if (jpf.isIE && !bNoSel)
+                   _self.selection.set();
                 _self.$visualFocus();
             });
         }
@@ -501,31 +522,40 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                               || pLists[1].queryState(_self) == jpf.editor.ON)
                                return; //allow default behavior
                         }
-                        _self.selection.collapse(true);
-                        _self.insertHTML("<br />", true, true);
-                        _self.selection.collapse(true);
-                        /*var oNode = _self.selection.moveToAncestorNode('div'), found = false;
-                        if (false) {//oNode && oNode.getAttribute('_jpf_placeholder')) {
+                        //_self.selection.collapse(true);
+                        //_self.insertHTML("<br />", true, true);
+                        //_self.selection.collapse(true);
+                        var oNode = _self.selection.moveToAncestorNode('div'), found = false;
+                        if (oNode && oNode.getAttribute('_jpf_placeholder')) {
                             found = true;
-                            var oDiv = _self.oDoc.createElement('div');
-                            oDiv.setAttribute('_jpf_placeholder', '1');
-                            oDiv.style.display    = "block";
-                            oDiv.style.visibility = "hidden";
-                            oDiv.innerHTML        = jpf.editor.ALTP.text;
+                            var oDiv;
+                            if (!jpf.editor.ALTP.node) {
+                                oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
+                                oDiv.setAttribute('_jpf_placeholder', '1');
+                                oDiv.style.display    = "block";
+                                oDiv.style.visibility = "hidden";
+                            }
+                            oDiv           = jpf.editor.ALTP.node.cloneNode();
+                            oDiv.innerHTML = jpf.editor.ALTP.text;
                             if (oNode.nextSibling)
                                 oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
                             else
                                 oNode.parentNode.appendChild(oDiv);
                         }
-                        else
-                            _self.insertHTML("<br />", true, true);
+                        else {
+                            _self.insertHTML(jpf.editor.ALTP.start
+                                + jpf.editor.ALTP.text
+                                + jpf.editor.ALTP.end, true, true);
+                        }
+                        _self.selection.collapse(true);
+
                         var _select = jpf.appsettings.allowSelect;
                         jpf.appsettings.allowSelect = true;
                         var range = _self.selection.getRange();
                         range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
                         range.select();
-                        _self.selection.remove();*/
-                        //jpf.appsettings.allowSelect = _select;
+                        _self.selection.remove();
+                        jpf.appsettings.allowSelect = _select;
 
                         e.cancelBubble = true;
                         _self.dispatchEvent('keyenter', {editor: _self});
@@ -1223,6 +1253,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
         this.plugins.$destroy();
         this.selection.$destroy();
+        jpf.editor.ALTP.node = null;
         this.plugins = this.selection = this.oDoc.host = null;
         this.oToobar = this.oDoc = this.oWin = this.iframe = null;
     };
@@ -1248,7 +1279,8 @@ jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
     start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
     end  : '</div>',
-    text : '{jpf_placeholder}'
+    text : '{jpf_placeholder}',
+    node : null
 };
 
 // #endif
