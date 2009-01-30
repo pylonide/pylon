@@ -387,7 +387,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             this.notifyAll();
-            this.change(this.getValue(true));
+            this.change(this.getValue());
 
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
@@ -597,10 +597,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
                             //jump: <DIV style="DISPLAY: block; VISIBILITY: hidden" _jpf_placeholder="1">E</DIV>, length: 76, text length: 3
                             if (r.htmlText.length) {
-                                if (r.text)
+                                if (r.text) {
                                     bInline    = true;
-                                else
+                                    r.moveStart('character', 1);
+                                    r.moveEnd('character', -1);
+                                }
+                                else {
                                     bStartLine = true;
+                                }
                             }
                             else
                                 bEndText = true;
@@ -619,8 +623,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 if (r.htmlText.length < 2 || (r.htmlText.length == 85
                                   && r.htmlText.indexOf('_jpf_placeholder="1"') > -1))
                                     bEndText = true;
-                                else
+                                else {
                                     bInline  = true;
+                                    r.moveStart('character', 1);
+                                    r.moveEnd('character', -4);
+                                }
                             }
                         }
                         var oDiv,
@@ -633,7 +640,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             oDiv.style.visibility = "hidden";
                         }
 
-                        if (oNode && oNode.getAttribute('_jpf_placeholder')
+                        if (bInline) {
+                            r.pasteHTML("<BR />");
+                        }
+                        else if (oNode && oNode.getAttribute('_jpf_placeholder')
                           && (bStartLine || bEndLine || bEndText)) {
                             oDiv           = oAltP.node.cloneNode();
                             oDiv.innerHTML = oAltP.text;
@@ -909,7 +919,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
         if (!this.realtime)
-            this.change(this.getValue(true));
+            this.change(this.getValue());
 
         this.setProperty('state', jpf.editor.DISABLED);
     };
