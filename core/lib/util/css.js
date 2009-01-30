@@ -211,21 +211,6 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
 
     var z, bw, bh, foundPosRel = 0;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
-        //@todo this should be done recursive until the next abs positioned element
-        if (jpf.isIE && this.getStyle(o, "position") == "relative" && ++foundPosRel == 2) {
-            //Margin - Left
-            //wt -= parseFloat(this.getStyle(o, jpf.descPropJs ? "marginLeft" : "margin-left")) || 0;
-            
-            //Margin - Top
-            //ht -= parseFloat(this.getStyle(o, jpf.descPropJs ? "marginTop" : "margin-top")) || 0;
-
-            //Padding - Left
-            wt -= parseFloat(this.getStyle(o.parentNode, jpf.descPropJs ? "paddingLeft" : "padding-left")) || 0;
-            
-            //Padding - Top
-            //ht -= parseFloat(this.getStyle(o.parentNode, jpf.descPropJs ? "paddingTop" : "padding-top")) || 0;
-        }
-        
         //Border - Left
         bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderLeftWidth" : "border-left-width");

@@ -1332,7 +1332,6 @@ jpf.XmlDatabase = function(){
                 ? str.join("&")
                 : (basename || "") + "=" + encodeURIComponent(
                     jpf.getXmlValue(xml, "text()"));
-            }
         },
 
         "cgiobjects": function(xml, basename, isSub){
