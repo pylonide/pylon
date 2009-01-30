@@ -230,7 +230,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @return The string of (X)HTML that is inside the editor.
      * @type {String}
      */
-    this.getValue = function() {
+    this.getValue = function(bStrict) {
         var depth = -1, stack = [];
         //jpf.console.log('now parsing text: ' + this.getXHTML('text').escapeHTML());
         this.value = this.getXHTML('text')
@@ -238,17 +238,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
             .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
                 //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
-                if (tagstart == "BR")
-                    return m;
-                if (tagstart == "P")
-                    return "";
-                if (tagend == "P")
-                    return "<BR />";
+                //if (tagstart == "BR")
+                //    return m;
                 if (fullstart){
                     depth++;
                     if (fullstart.indexOf("_jpf_placeholder") > -1) {
                         stack.push([tagstart, true]);
                         return "";
+                    }
+                    else if (fullstart.indexOf("/") > -1) { // self-closing
+                        depth--;
+                        return m;
                     }
                     else {
                         stack.push([tagstart, false]);
@@ -259,7 +259,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     depth--;
                     var startItem = stack.pop();
                     //#ifdef __DEBUG
-                    if (tagend != startItem[0]) {
+                    if (bStrict && tagend != startItem[0]) {
                         throw new Error(jpf.formatErrorString(0, _self,
                             "Mismatch with start '" + startItem[0]
                             + "' and end '" + tagend + "'"));
@@ -387,7 +387,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             this.notifyAll();
-            this.change(this.getValue());
+            this.change(this.getValue(true));
 
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
@@ -572,16 +572,22 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
                         var r = _self.selection.getRange();
                         // start detection of what KIND of linebreak we need...
-                        var bStartLine = false;
-                        var bEndLine   = false;
-                        var bEndText   = false;
+                        var bStartLine = false,
+                            bEndLine   = false,
+                            bEndText   = false,
+                            bInline    = false;
                         r.moveStart('character', -1);
-                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
+                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
                         if (!r.htmlText.length) {
                             r.moveEnd('character', 1);
-                            //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
-                            if (r.htmlText.length)
-                                bStartLine = true;
+                            //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
+                            //jump: <DIV style="DISPLAY: block; VISIBILITY: hidden" _jpf_placeholder="1">E</DIV>, length: 76, text length: 3
+                            if (r.htmlText.length) {
+                                if (r.text)
+                                    bInline    = true;
+                                else
+                                    bStartLine = true;
+                            }
                             else
                                 bEndText = true;
                         }
@@ -599,12 +605,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 if (r.htmlText.length < 2 || (r.htmlText.length == 85
                                   && r.htmlText.indexOf('_jpf_placeholder="1"') > -1))
                                     bEndText = true;
-                                // else the insertion point is 'inline' (and not 'endtext')
+                                else
+                                    bInline  = true;
                             }
                         }
-                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
-                        //r.moveStart('character', -1);
-                        //jpf.console.log('sel HTML2: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
                         var oDiv, oNode = _self.selection.moveToAncestorNode('div'), found = false;
                         if (!jpf.editor.ALTP.node) {
                             oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
@@ -614,7 +618,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                         if (oNode && oNode.getAttribute('_jpf_placeholder')
                           && (bStartLine || bEndLine || bEndText)) {
-                            found = true;
                             oDiv           = jpf.editor.ALTP.node.cloneNode();
                             oDiv.innerHTML = jpf.editor.ALTP.text;
                             if (oNode.nextSibling)
@@ -895,7 +898,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
         if (!this.realtime)
-            this.change(this.getValue());
+            this.change(this.getValue(true));
 
         this.setProperty('state', jpf.editor.DISABLED);
     };
