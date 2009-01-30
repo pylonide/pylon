@@ -1307,7 +1307,35 @@ jpf.XmlDatabase = function(){
             return filled ? result : jpf.getXmlValue(xml, "text()");
         },
 
-        "cgivars": function(xml, basename, isSub){
+        "cgivars": function(xml, basename){
+            var str = [], filled = false, nodes = xml.childNodes;
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType != 1) 
+                    continue;
+                    
+                var name = nodes[i].tagName;
+                filled = true;
+                
+                //array
+                var sameNodes = xml.selectNodes(name);
+                if (sameNodes.length > 1) {
+                    for (var j = 0; j < sameNodes.length; j++) {
+                        str.push(this.cgivars(sameNodes[j],
+                            (basename ? basename + "." : "") + name + "[" + j + "]"));
+                    }
+                } else //single value
+                    str.push(this.cgivars(nodes[i],
+                        (basename ? basename + "." : "") + name));
+            }
+            
+            return filled
+                ? str.join("&")
+                : (basename || "") + "=" + encodeURIComponent(
+                    jpf.getXmlValue(xml, "text()"));
+            }
+        },
+
+        "cgiobjects": function(xml, basename, isSub){
             if (!basename)
                 basename = "";
             
@@ -1325,7 +1353,7 @@ jpf.XmlDatabase = function(){
                 var count       = 0;
 
                 //array
-                if (!node.attributes.length&& !isOnlyChild) {
+                if (!node.attributes.length && !isOnlyChild) {
                     var lnodes = node.childNodes;
                     for (var nm, j = 0, l = lnodes.length; j < l; j++) {
                         if (lnodes[j].nodeType != 1)

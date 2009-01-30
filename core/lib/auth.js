@@ -115,6 +115,7 @@
  * @attribute {String}  error-state     the id of the state element which is activated when logging in failed because of an error (i.e. network disconnected).
  * @attribute {String}  login-state     the id of the state element which is activated when logging in succeeded.
  * @attribute {String}  waiting-state   the id of the state element which is activated when the user is waiting while the application is logging in.
+ * @attribute {String}  logout-state    the id of the state element which is activated when the user is logged out.
  * @allowchild service
  * @define service
  * @attribute {String} name     the unique identifier of the service
