@@ -328,7 +328,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var data = "";
             try{
-                data = jpf.html_entity_decode(_self.oFrame.contentWindow.document.body.innerHTML.replace(/<PRE>|</PRE>/g, ""));
+                data = jpf.html_entity_decode(_self.oFrame.contentWindow.document.body.innerHTML.replace(/<PRE>|<\/PRE>/g, ""));
             }
             catch(e){}
 
