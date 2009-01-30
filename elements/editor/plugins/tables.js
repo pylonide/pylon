@@ -376,10 +376,11 @@ jpf.editor.plugin('tablewizard', function() {
                 <j:divider />\
                 <j:item value="splitcells">Split merged table cells</j:item>\
                 <j:item value="mergecells">Merge table cells</j:item>\
-                <j:divider />\
-                <j:item value="rowprops">Table row properties</j:item>\
-                <j:item value="colprops">Table column properties</j:item>\
             </j:menu>', document.body);
+        //nodes disabled:
+        // <j:divider />\
+        // <j:item value="rowprops">Table row properties</j:item>\
+        // <j:item value="colprops">Table column properties</j:item>\
         var oMenu = jpf.editor.oMenu = self[idMenu];
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
