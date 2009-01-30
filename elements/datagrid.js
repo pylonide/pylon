@@ -558,7 +558,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         %value("item[@value=\'" + v + "\']");\
                     }\
                     else if (type == "children" || type == "lookup" && $"@multiple" == "multiple") {\
-                        var vs = $"@value-select";\
+                        var vs = $"@descfield";\
                         if (vs) {\
                             local(dg.xmlData.selectSingleNode(select)){\
                                 foreach("node()"){]\
@@ -574,16 +574,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         }\
                     }\
                     else if (type == "lookup") {\
-                        var vs = $"@value-select";\
+                        var vs = $"@descfield";\
                         if ($"@multiple" == "single")\
                             vs = "node()/" + vs;\
                         %jpf.getXmlValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
                     }\
                     else if (type == "custom") {\
-                        var sep = $"@seperator" || "";\
-                        var output = [];\
+                        var sep = $"@separator" || "";\
+                        var v, output = [];\
                         foreach("field"){\
-                            output.push(jpf.getXmlValue(dg.xmlData, $"@select"));\
+                            v = jpf.getXmlValue(dg.xmlData, $"@select");\
+                            if (v) output.push(v);\
                         }\
                         if ($"@mask")\
                             output.push($"@mask");\
@@ -1011,7 +1012,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Lookup ****/
 
     /*
-        <prop select="author" value-select="name" datatype="lookupkey" 
+        <prop select="author" descfield="name" datatype="lookupkey" 
           caption="Author" description="Author id" overview="overview" 
           maxlength="10" type="lookup" foreign_table="author" />
     */
@@ -1855,9 +1856,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     for (var node, s, i = 0, l = nodes.length; i < l; i++) {
                         node = nodes[i];
                         s = node.getAttribute("select");
-                        if (action == "insert" || action == "update"
-                            ? jpf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true)
-                            : jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
+                        //action == "insert" || action == "update"
+                        if (jpf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true) ||
+                            jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
                             lstUpdate.pushUnique(node.tagName == "field"
                                 ? node.parentNode
                                 : node);

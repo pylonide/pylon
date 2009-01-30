@@ -1175,7 +1175,7 @@ jpf.XmlDatabase = function(){
             }
             
             //Temp hack 
-            var isAddId = paths[i].match(/(\w+)\[@id=(\w+)\]/);
+            var isAddId = paths[i].match(/(\w+)\[@property_id=(\w+)\]/);
             // #ifdef __DEBUG
             if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
                 throw new Error(jpf.formatErrorString(1041, this, 
@@ -1197,7 +1197,7 @@ jpf.XmlDatabase = function(){
                 .appendChild(contextNode.ownerDocument.createElement(paths[i]));
 
             if (isAddId) {
-                addedNode.setAttribute("id", isAddId[2]);
+                addedNode.setAttribute("property_id", isAddId[2]);
                 foundpath += (foundpath ? "/" : "") + isAddId[0];// + "/";
             }
             else
@@ -1222,12 +1222,12 @@ jpf.XmlDatabase = function(){
             return contextNode.selectSingleNode(foundpath)
                 .appendChild(contextNode.ownerDocument.createTextNode(""));
         else {
-            var hasId = lastpath.match(/(\w+)\[@id=(\w+)\]/);
+            var hasId = lastpath.match(/(\w+)\[@property_id=(\w+)\]/);
             if (hasId) lastpath = hasId[1];
             var newNode = contextNode.selectSingleNode(foundpath || ".")
                 .appendChild(contextNode.ownerDocument.createElement(lastpath));
             if (hasId)
-                newNode.setAttribute("id", hasId[2]);
+                newNode.setAttribute("property_id", hasId[2]);
             return newNode;
         }
     };
