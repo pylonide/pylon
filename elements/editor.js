@@ -375,15 +375,22 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     bNoSel = true;
                 }
                 if (cmdName == "outdent") {
+                    bNoSel = true;
                     var pLists = this.plugins.get('bullist', 'numlist');
                     if (pLists.length) {
                         if (pLists[0].queryState(_self) != jpf.editor.OFF
                           && pLists[1].queryState(_self) != jpf.editor.OFF)
-                           bNoSel = true;
+                           bNoSel = false;
                     }
+                    var oNode = this.selection.getSelectedNode();
+                    if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
+                        bNoSel = false;
                 }
                 if (bNoSel)
                     this.oDoc.body.innerHTML = this.prepareHtml(this.oDoc.body.innerHTML);
+                var r = this.selection.getRange();
+                if (r)
+                    r.scrollIntoView();
             }
 
             this.notifyAll();
