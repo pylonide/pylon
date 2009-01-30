@@ -167,15 +167,20 @@ jpf.editor.plugin('unlink', function(){
         if (this.queryState(editor) == jpf.editor.DISABLED)
             return;
 
-        var sel = editor.selection;
-        sel.set();
-        var oNode = sel.getSelectedNode();
-        if (oNode.tagName == "A") {
-            var txt = oNode.innerHTML;
-            sel.selectNode(oNode);
-            sel.remove();
-            sel.collapse();
-            editor.insertHTML(txt);
+        if (jpf.isIE) {
+            editor.executeCommand('Unlink');
+        }
+        else {
+            var sel = editor.selection;
+            sel.set();
+            var oNode = sel.getSelectedNode();
+            if (oNode.tagName == "A") {
+                var txt = oNode.innerHTML;
+                sel.selectNode(oNode);
+                sel.remove();
+                sel.collapse();
+                editor.insertHTML(txt);
+            }
         }
     };
 
