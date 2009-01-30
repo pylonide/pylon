@@ -328,13 +328,13 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var data = "";
             try{
-                data = this.contentWindow.document.body.innerHTML;
+                data = _self.oFrame.contentWindow.document.body.innerHTML;
             }
             catch(e){}
 
             var hasFailed = _self.dispatchEvent("beforereceive", {
                 data  : data,
-                frame : this
+                frame : _self.oFrame
             } === false);
 
             if (hasFailed)
