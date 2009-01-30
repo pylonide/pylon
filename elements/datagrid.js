@@ -1849,7 +1849,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     if (!_self.xmlRoot)
                         return;
                     
-                    if (action == "redo-remove")
+                    /*if (action == "redo-remove")
                         oParent.appendChild(xmlNode);
                     
                     var lstUpdate = [], nodes = _self.xmlRoot.selectNodes("node()[@select]|node()/field[@select]");
@@ -1871,6 +1871,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     for (var i = 0, l = lstUpdate.length; i < l; i++) {
                         _self.$updateNode(lstUpdate[i], 
                             jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
+                    }*/
+                    
+                    var nodes = _self.getTraverseNodes();
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        _self.$updateNode(nodes[i], 
+                            jpf.xmldb.findHTMLNode(nodes[i], _self));
                     }
                     
                     _self.dispatchEvent("xmlupdate", {

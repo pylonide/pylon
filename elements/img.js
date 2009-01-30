@@ -122,7 +122,7 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.oImg.offsetWidth > this.oExt.offsetWidth)
             wratio = this.oImg.offsetWidth / (this.oExt.offsetWidth - diff[0]);
-        else if (this.oImg.offsetHeight > this.oExt.offsetHeight)
+        if (this.oImg.offsetHeight > this.oExt.offsetHeight)
             hratio = this.oImg.offsetHeight / (this.oExt.offsetHeight - diff[1]);
 
         if (wratio > hratio && wratio > 1)

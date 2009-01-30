@@ -1142,10 +1142,10 @@ jpf.model = function(data, caching){
 
             jpf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
-        else if (type == "native") {
+        else {
             var data = useComponents
                 ? this.getCgiString()
-                : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), "cgivars");
+                : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), type != "native" ? type : "cgivars");
 
             if (instruction.match(/^rpc\:/)) {
                 rpc = rpc.split(".");
