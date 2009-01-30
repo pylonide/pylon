@@ -585,6 +585,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         
                         var sel = _self.selection;
                         var r   = sel.getRange();
+                        var bm  = r.getBookmark();
                         // start detection of what KIND of linebreak we need...
                         var bStartLine = false,
                             bEndLine   = false,
@@ -597,14 +598,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
                             //jump: <DIV style="DISPLAY: block; VISIBILITY: hidden" _jpf_placeholder="1">E</DIV>, length: 76, text length: 3
                             if (r.htmlText.length) {
-                                if (r.text) {
+                                if (r.text) 
                                     bInline    = true;
-                                    r.moveStart('character', 1);
-                                    r.moveEnd('character', -1);
-                                }
-                                else {
+                                else
                                     bStartLine = true;
-                                }
                             }
                             else
                                 bEndText = true;
@@ -623,11 +620,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 if (r.htmlText.length < 2 || (r.htmlText.length == 85
                                   && r.htmlText.indexOf('_jpf_placeholder="1"') > -1))
                                     bEndText = true;
-                                else {
+                                else
                                     bInline  = true;
-                                    r.moveStart('character', 1);
-                                    r.moveEnd('character', -4);
-                                }
                             }
                         }
                         var oDiv,
@@ -641,6 +635,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
 
                         if (bInline) {
+                            r.moveToBookmark(bm);
                             r.pasteHTML("<BR />");
                         }
                         else if (oNode && oNode.getAttribute('_jpf_placeholder')
