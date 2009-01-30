@@ -266,7 +266,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     //#endif
 
-                    return startItem[1] ? "<BR />" : fullend;
+                    return startItem && startItem[1] ? "<BR />" : fullend;
                 }
              });
         return this.value;
@@ -540,6 +540,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     var changeTimer = null;
+    
+    function resumeChangeTimer() {
+        if (_self.realtime && changeTimer === null) {
+            changeTimer = setTimeout(function() {
+                clearTimeout(changeTimer);
+                _self.change(_self.getValue());
+                changeTimer = null;
+            }, 200);
+        }
+    }
 
     /**
      * Event handler; fired when the user pressed a key inside the editor IFRAME.
@@ -570,7 +580,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                return; //allow default behavior
                         }
 
-                        var r = _self.selection.getRange();
+                        var _select = jpf.appsettings.allowSelect;
+                        jpf.appsettings.allowSelect = true;
+                        
+                        var sel = _self.selection;
+                        var r   = sel.getRange();
                         // start detection of what KIND of linebreak we need...
                         var bStartLine = false,
                             bEndLine   = false,
@@ -609,17 +623,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                     bInline  = true;
                             }
                         }
-                        var oDiv, oNode = _self.selection.moveToAncestorNode('div'), found = false;
-                        if (!jpf.editor.ALTP.node) {
-                            oDiv = jpf.editor.ALTP.node = _self.oDoc.createElement('div');
+                        var oDiv,
+                            oNode = sel.moveToAncestorNode('div'),
+                            oAltP  = jpf.editor.ALTP;
+                        if (!oAltP.node) {
+                            oDiv = oAltP.node = _self.oDoc.createElement('div');
                             oDiv.setAttribute('_jpf_placeholder', '1');
                             oDiv.style.display    = "block";
                             oDiv.style.visibility = "hidden";
                         }
+
                         if (oNode && oNode.getAttribute('_jpf_placeholder')
                           && (bStartLine || bEndLine || bEndText)) {
-                            oDiv           = jpf.editor.ALTP.node.cloneNode();
-                            oDiv.innerHTML = jpf.editor.ALTP.text;
+                            oDiv           = oAltP.node.cloneNode();
+                            oDiv.innerHTML = oAltP.text;
                             if (oNode.nextSibling)
                                 oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
                             else
@@ -627,31 +644,31 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                         else {
                             if (bEndText) {
-                                oDiv           = jpf.editor.ALTP.node.cloneNode();
-                                oDiv.innerHTML = jpf.editor.ALTP.text;
+                                oDiv           = oAltP.node.cloneNode();
+                                oDiv.innerHTML = oAltP.text;
                                 _self.oDoc.body.appendChild(oDiv);
                             }
                             else {
-                                _self.insertHTML(jpf.editor.ALTP.start
-                                    + jpf.editor.ALTP.text
-                                    + jpf.editor.ALTP.end, true, true);
+                                _self.insertHTML(oAltP.start
+                                    + oAltP.text
+                                    + oAltP.end, true, true);
                             }
                         }
-                        _self.selection.collapse(true);
+                        sel.collapse(true);
 
-                        var _select = jpf.appsettings.allowSelect;
-                        jpf.appsettings.allowSelect = true;
-                        var range = _self.selection.getRange();
+                        var range = sel.getRange();
                         // find and select the placeholder text again to make
                         // sure that the cursor will be inside the DIV
-                        if (!range.findText(jpf.editor.ALTP.text, 1, 0))
-                            range.findText(jpf.editor.ALTP.text, -1, 0);
+                        if (!range.findText(oAltP.text, 1, 0))
+                            range.findText(oAltP.text, -1, 0);
                         range.select();
-                        _self.selection.remove();
+                        sel.remove();
                         jpf.appsettings.allowSelect = _select;
 
                         e.cancelBubble = true;
                         _self.dispatchEvent('keyenter', {editor: _self});
+
+                        resumeChangeTimer();
                         return false;
                     }
                     break;
@@ -734,13 +751,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else if (code == 8 || code == 46) //backspace or del
             listBehavior.call(_self, e, true); //correct lists, if any
 
-        if (_self.realtime && changeTimer === null) {
-            changeTimer = setTimeout(function() {
-                clearTimeout(changeTimer);
-                _self.change(_self.getValue());
-                changeTimer = null;
-            }, 500);
-        }
+        resumeChangeTimer();
 
         document.onkeydown(e);
         keydownTimer = null;
