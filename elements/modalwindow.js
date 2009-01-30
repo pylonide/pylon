@@ -898,6 +898,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.center && this.visible) {
             this.visible = false;
+            this.oExt.style.display = "none"; /* @todo temp done for project */
             jpf.JmlParser.stateStack.push({
                 node  : this,
                 name  : "visible",
