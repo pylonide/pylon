@@ -216,6 +216,8 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         //if(caption)
         //this.setCaption(this.lastCaption);
 
+        this.data = data;
+
         this.dispatchEvent("receive", {
             data: data
         });
