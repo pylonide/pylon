@@ -139,7 +139,7 @@ jpf.component = function(nodeFunc, oBase) {
                     //#endif
                     "focussable", "zindex", "disabled", "tabindex",
                     "disable-keyboard", "contextmenu", "visible", "autosize", 
-                    "loadjml", "actiontracker"];
+                    "loadjml", "actiontracker", "alias"];
             } 
             else {
                 this.$booleanProperties   = {}; //@todo fix this in each component

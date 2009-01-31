@@ -298,9 +298,10 @@ jpf.XmlDatabase = function(){
 
         var listen = xmlNode.getAttribute(this.xmlListenTag);
         var nodes  = (listen ? listen.split(";") : []);
+        var id = String(o.uniqueId);
 
-        if (!nodes.contains(o.uniqueId)) {
-            nodes.push(o.uniqueId);
+        if (!nodes.contains(id)) {
+            nodes.push(id);
             xmlNode.setAttribute(this.xmlListenTag, nodes.join(";"));
         }
 

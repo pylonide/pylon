@@ -58,6 +58,7 @@ jpf.actiontracker = function(parentNode){
     this.redolength = 0;
 
     //#ifdef __WITH_JMLDOM_FULL
+    this.tagName    = "actiontracker";
     if (parentNode)
         this.parentNode = parentNode;
     this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
@@ -69,15 +70,35 @@ jpf.actiontracker = function(parentNode){
      * @attribute {Boolean} realtime    whether changes are immediately send to
      * the datastore, or held back until purge() is called.
      */
-    this.$supportedProperties = ["realtime", "undolength", "redolength"];
+    this.$supportedProperties = ["realtime", "undolength", "redolength", "alias"];
     this.$handlePropSet = function(prop, value, force){
         //Read only properties
 
-        if(prop == "undolength")
-            this.undolength = stackDone.length;
-        else if(prop == "redolength")
-            this.redolength = stackUndone.length;
+        switch (prop) {
+            case "undolength":
+                this.undolength = stackDone.length;
+                break;
+            case "redolength":
+                this.redolength = stackUndone.length;
+                break;
+            case "alias":
+                jpf.JmlElement.propHandlers.alias.call(this, value);
+        }
     };
+    
+    this.loadJml = function(x){
+        this.$jml = x;
+        
+        //Events
+        var a, i, attr = x.attributes;
+        for (i = 0; i < attr.length; i++) {
+            a = attr[i];
+            if (a.nodeName.indexOf("on") == 0)
+                this.addEventListener(a.nodeName, new Function(a.nodeValue));
+            else
+                this.setProperty(a.nodeName, a.nodeValue);
+        }
+    }
 
     /**
      * Adds a new action handler which can be used by any actiontracker.

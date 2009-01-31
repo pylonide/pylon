@@ -554,7 +554,7 @@ var jpf = {
                 //#endif
                 "focussable", "zindex", "disabled", "tabindex",
                 "disable-keyboard", "contextmenu", "visible", "autosize",
-                "loadjml", "actiontracker"];
+                "loadjml", "actiontracker", "alias"];
         }
         else {
             o.$booleanProperties = {}; //@todo fix this in each component

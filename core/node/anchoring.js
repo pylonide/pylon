@@ -160,11 +160,17 @@ jpf.Anchoring = function(){
         this.$domHandlers["reparent"].push(reparent);
 
         this.$hide = function(){
+            if (!(rule_header || rule_v || rule_h))
+                return;
+
             l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
             l.queue(this.pHtmlNode)
         };
 
         this.$show = function(){
+            if (!(rule_header || rule_v || rule_h))
+                return;
+            
             //@todo
             if (rule_v || rule_h) {
                 rules = rule_header + "\n" + rule_v + "\n" + rule_h;

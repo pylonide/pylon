@@ -809,7 +809,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 return false;
 
             //#ifdef __WITH_ALIGNMENT
-            if (_self.aData) {
+            if (_self.aData && _self.dockable) {
                 if (lastState.normal) //@todo
                     _self.startDocking(e);
                 return false;
@@ -872,7 +872,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.draggable = true;
         }
 
-        if (this.modal === undefined) {
+        if (this.modal === undefined && this.oCover) {
             this.$propHandlers.modal.call(this, true);
             this.modal = true;
         }

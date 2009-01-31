@@ -31,6 +31,13 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @event propertychagne Fires when a property changes.
+ *   object:
+ *     {String} name          the name of the changed property
+ *     {Mixed}  originalvalue the value it had before the change
+ *     {Mixed}  value         the value it has after the change
+ *
  */
 jpf.Class = function(){
     this.$jmlLoaders   = [];
@@ -56,10 +63,13 @@ jpf.Class = function(){
 
     var boundObjects       = {};
     var myBoundPlaces      = {};
-    this.$handlePropSet    = function(prop, value){
-        this[prop] = value;
-    };
-
+    
+    if (!this.$handlePropSet) {
+        this.$handlePropSet    = function(prop, value){
+            this[prop] = value;
+        };
+    }
+    
     /*
     for (var i = 0; i < this.$supportedProperties.length;i++) {
         var p = uCaseFirst(this.$supportedProperties[i]);
@@ -293,10 +303,17 @@ jpf.Class = function(){
                 this[prop] = oldvalue;
                 return false;
             }
+            
+            if (this["onpropertychange"] || events_stack["propertychange"]) {
+                this.dispatchEvent("propertychange", {
+                    name          : prop,
+                    value         : value,
+                    originalvalue : oldvalue
+                });
+            }
         }
-
+        
         //#ifdef __WITH_PROPERTY_BINDING
-
         var nodes = boundObjects[prop];
         if (!nodes) return;
 

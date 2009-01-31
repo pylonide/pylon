@@ -60,9 +60,11 @@ jpf.Alignment = function(){
     /**
      * @attribute {Boolean} docking whether this element can function as a dockable section of the layout.
      */
-    this.dock = true;
-    this.$booleanProperties["docking"] = true;
-    this.$supportedProperties.push("docking");
+    this.dock = false;
+    this.dockable = false;
+    this.$booleanProperties["dock"] = true;
+    this.$booleanProperties["dockable"] = true;
+    this.$supportedProperties.push("dock", "dockable");
 
     this.$propHandlers["width"]  =
     this.$propHandlers["height"] = function(value){};

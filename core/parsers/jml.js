@@ -964,7 +964,8 @@ jpf.JmlParser = {
         // #ifdef __WITH_ACTIONTRACKER
         "actiontracker" : function(q, jmlParent){
             var at = new jpf.actiontracker(jmlParent);
-
+            at.loadJml(q);
+            
             if (jmlParent)
                 jmlParent.$at = at;
 
