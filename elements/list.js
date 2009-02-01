@@ -305,9 +305,51 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag.style.display  = "none";
     };
     
-    this.$dragout  = 
-    this.$dragover = 
-    this.$dragdrop = function(){};
+    this.findValueNode = function(el){
+        if (!el) return null;
+
+        while(el && el.nodeType == 1 
+          && !el.getAttribute(jpf.xmldb.htmlIdTag)) {
+            el = el.parentNode;
+        }
+
+        return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
+            ? el 
+            : null;
+    };
+    
+    this.$dragout = function(dragdata){
+        if (this.lastel)
+            this.$setStyleClass(this.lastel, "", ["dragDenied", "dragInsert",
+                "dragAppend", "selected", "indicate"]);
+        this.$setStyleClass(this.$selected, "selected", ["dragDenied",
+            "dragInsert", "dragAppend", "indicate"]);
+        
+        this.lastel = null;
+    };
+
+    this.$dragover = function(el, dragdata, extra){
+        if(el == this.oExt) return;
+
+        this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
+            "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        this.$setStyleClass(this.lastel = this.findValueNode(el), extra 
+            ? (extra[1] && extra[1].getAttribute("operation") == "insert-before" 
+                ? "dragInsert" 
+                : "dragAppend") 
+            : "dragDenied");
+    };
+
+    this.$dragdrop = function(el, dragdata, extra){
+        this.$setStyleClass(this.lastel || this.$selected,
+            !this.lastel && (this.$selected || this.lastel == this.$selected) 
+                ? "selected" 
+                : "", 
+                ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        this.lastel = null;
+    };
     // #endif
     
     /**** Init ****/

@@ -540,9 +540,11 @@ jpf.DataBinding = function(){
 
                 //Call ActionTracker and return ID of Action in Tracker
                 var UndoObj = this.getActionTracker().execute(options);
+                options.xmlNode = UndoObj.xmlNode;
+                options.undoObj = UndoObj;
 
                 //Call After Event
-                this.dispatchEvent("after" + action.toLowerCase());
+                this.dispatchEvent("after" + action.toLowerCase(), options);
 
                 return UndoObj;
             }

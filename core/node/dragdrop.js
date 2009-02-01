@@ -187,7 +187,7 @@ jpf.DragDrop = function(){
             data = x.selectSingleNode("true".indexOf(this.dropenabled) == -1
                 ? this.dropenabled
                 : (this.hasFeature(__MULTISELECT__)
-                    ? "self::" + this.traverse.split("|").join("|self::")
+                    ? "self::" + this.traverse.replace(/.*?\/([^\/]+)(\||$)/g, "$1$2").split("|").join("|self::")
                     : "."));
 
             tgt = target || target == this.xmlRoot && target || null;
@@ -201,16 +201,23 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
 
-        for (var i = 0; i < rules.length; i++) {
+        for (var op, strTgt, i = 0; i < rules.length; i++) {
             data = x.selectSingleNode("self::" +
                 jpf.parseExpression(rules[i].getAttribute("select"))
                 .split("|").join("|self::"));
-
-            if (!rules[i].getAttribute("target"))
-                tgt = target == this.xmlRoot ? target : null;
+                
+            if (!data)
+                continue;
+                
+            strTgt = rules[i].getAttribute("target");
+            if (!strTgt || strTgt == ".") {
+                op = rules[i].getAttribute("operation");
+                tgt = (op == "list-append" || target == this.xmlRoot
+                  ? this.xmlRoot
+                  : null);
+            }
             else
-                tgt = target.selectSingleNode("self::"
-                    + rules[i].getAttribute("target"));
+                tgt = target.selectSingleNode("self::" + strTgt);
 
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
@@ -220,7 +227,8 @@ jpf.DragDrop = function(){
     };
 
     this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
-        if (action == "tree-append" && isParent) return false;
+        if (action == "tree-append" && isParent) 
+            return false;
 
         /*
             Possibilities:
@@ -230,6 +238,13 @@ jpf.DragDrop = function(){
             insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
         */
         var action = rule && rule.getAttribute("operation") || defaction;
+        
+        //copy-condition convenience variables
+        var internal = jpf.DragServer.dragdata.host == this;
+        var ctrlKey  = event.ctrlKey;
+        var keyCode  = event.keyCode;
+
+        //jpf.parseExpression
         var ifcopy = rule && rule.getAttribute("copy-condition")
             ? eval(rule.getAttribute("copy-condition"))
             : this.dragmoveenabled;
@@ -238,12 +253,18 @@ jpf.DragDrop = function(){
               && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
+
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 
+        var parentXpath = rule.getAttribute("parent");
         switch (action) {
             case "list-append":
-                sNode = this[actRule](xmlNode,
-                    isParent ? xmlReceiver : xmlReceiver.parentNode);
+                xmlReceiver = (isParent 
+                  ? xmlReceiver
+                  : this.getTraverseParent(xmlReceiver));
+                if (parentXpath)
+                    xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
             case "insert-before":
                 sNode = isParent
@@ -251,6 +272,8 @@ jpf.DragDrop = function(){
                     : this[actRule](xmlNode, xmlReceiver.parentNode, xmlReceiver);
                 break;
             case "tree-append":
+                if (parentXpath)
+                    xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
                 sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
         }
@@ -546,7 +569,7 @@ jpf.DragServer = {
             ? jpf.xmldb.getNode(fEl)
             : jpf.xmldb.findXMLNode(el));
         var candrop = o.isDropAllowed
-            ? o.isDropAllowed(this.dragdata.selection, elSel)
+            ? o.isDropAllowed(this.dragdata.selection, elSel || o.xmlRoot)
             : false;
         //EVENT - cancellable: ondragover
         if (o.dispatchEvent("dragover") === false)
@@ -589,8 +612,8 @@ jpf.DragServer = {
         var elSel   = (o.findValueNode
             ? jpf.xmldb.getNode(o.findValueNode(el))
             : jpf.xmldb.findXMLNode(el));
-        var candrop = (elSel && o.isDropAllowed)
-            ? o.isDropAllowed(this.dragdata.data, elSel)
+        var candrop = (o.isDropAllowed)//elSel && 
+            ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
             : false;
 
         //EVENT - cancellable: ondragdrop
@@ -615,7 +638,7 @@ jpf.DragServer = {
 
         //Move XML
         var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
-            action, (candrop[0] == o.xmlRoot),
+            action, (candrop[0] == o.xmlRoot), // || !o.isTraverseNode(candrop[0])
             srcO.isDragAllowed(this.dragdata.selection), e);
         this.dragdata.resultNode = rNode;
 

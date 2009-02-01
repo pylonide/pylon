@@ -1026,7 +1026,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
           + (multiple == "single" ? "/node()" : ""));
         var newNode = jpf.xmldb.copyNode(dataNode);
         if(oldNode && multiple != "multiple"){
-            jpf.window.getActionTracker().execute({
+            this.getActionTracker().execute({
               action : "replaceNode",
               args : [oldNode, newNode]
             });
@@ -1044,7 +1044,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else
                 pNode = this.xmlData;
     
-            jpf.window.getActionTracker().execute({
+            this.getActionTracker().execute({
               action : "appendChild",
               args : [pNode, newNode]
             });
