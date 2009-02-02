@@ -417,13 +417,14 @@ jpf.draw.vml = {
             return this.statefunc.apply(this.statethis,a);
         }
         var s=["if((_t=",state,")&0x36EC0000){",
-                    "if((t=(n-",time,")*(_sp[_t]||100000))>1){",
+                 //   "document.title=(",time,")+' - '+n;",
+                    "if((t=(n-(",time,"))*(_sp[_t]||100000))>1){",
                         "_t=",state,"=_st[_t],",time,"=n,t=0;",
                     "}",
                 "}"];
         for(i = 2, j = arguments.length;i<j;i++){
             a.push(t="_s"+(i-1));
-            s.push( t,"=",arguments[i],";");
+            s.push( t,"=",arguments[i],(i!=j-1)?",":";");
         }
 
         t = a.join(',');

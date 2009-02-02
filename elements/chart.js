@@ -809,16 +809,16 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.mouseMove = function(dx,dy,bt,ox,oy,lx,ly){
         var m = this.m;m.x = lx*this.ds, m.y = ly*this.ds;
         var o = this.$draw( this, this.parentNode, this.m), l;
-        var t = (new Date()).getTime();
+        var t = (new Date()).getTime()*0.001;
         if(o!=(l=this.lastOver)){
             // we should remove the over-state from the last
-            if(l>=0){
+           /* if(l>=0){
                 // put the last one in hover-out state
                 this.v_state[l] = this.v_state[l] & 0xff;
                 this.v_time[l] = t;
-            }
+            }*/
             if(o>=0){
-                this.v_state[o] = this.v_state[o] | jpf.draw.stateBit['select'];
+                this.v_state[o] = this.v_state[o] | jpf.draw.stateBit['hover-in'];
                 this.v_time[o] = t;
              }
             this.lastOver = o;
@@ -867,14 +867,14 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 }
             }
         }
-        
+/*        
 this.v_state[1] = 0x00000002;
 this.v_state[2] = 0x00000003;
 this.v_state[3] = 0x00000004;
 this.v_state[5] = 0x00000005;
 this.v_state[6] = 0x00000002;
 this.v_state[7] = 0x00000003;
-
+*/
         /*      
         this.v_state[4] = 0x20000003;
         this.v_state[5] = 0x20000004;
@@ -926,7 +926,6 @@ this.v_state[7] = 0x00000003;
 });
 
 jpf.chart.graph.draw = {
-   
     // #ifdef __ENABLE_CHART_LINE2D
    _line2D: {
         steps : 100,
@@ -1077,13 +1076,14 @@ jpf.chart.graph.draw = {
             weight : 1,
             fill : 'red',
         $:0}
-    },    
+    },
     pie2D : function(l,d){
         var e = jpf.draw, s = l.style, g = jpf.visualize;
         var c = e.optimize([
+            "/*------ pie2D Init ------*/\n",
             e.beginLayer2D(l),
             d.vars,d.stats,
-            "var x1=",d.vx1,",x2=",d.vx2,",xw=x2-x1,",
+           "var x1=",d.vx1,",x2=",d.vx2,",xw=x2-x1,",
                 "idx=1,sum=1/(",d.sum,"),rx=0,",
                 "xp=(",s.left,")*tw+tx,",
                 "yp=(",s.top,")*th+ty,",
@@ -1092,6 +1092,7 @@ jpf.chart.graph.draw = {
                 "wq=0.5*wp, hq = 0.5*hp,",
                 "xc=xp+wq, yc=yp+hq;",
             d.seek,
+            "\n\n/*------ pie2D Mousecode ------ */\n",
             "if(m){",
                 e.beginMouseState(s.chart,e,e.drawPart,6),
                 "for(rx=0,x=x1;x<x2",d.forx,";x+=idx",d.incx,")",d.ifx,"{",
@@ -1100,6 +1101,7 @@ jpf.chart.graph.draw = {
                 "};",
                 "return -1;",
             "}",
+            "\n\n/*------ pie2D Drawcode ------ */\n",
             e.clear(),
             e.beginState(s.chart,e,e.drawPart,6),
             "for(rx=0,x=x1;x<x2",d.forx,";x+=idx",d.incx,")",d.ifx,"{",
@@ -1107,10 +1109,13 @@ jpf.chart.graph.draw = {
                             "rx","-rx+(rx+=("+d.y+")*sum)"),*/
                 e.drawState(d.state,d.time,"xc","yc","wq","hq","rx","-rx+(rx+=("+d.y+")*sum)"),
             "};",
+            "\n\n/*------ pie2D End ------ */\n",
             e.endLayer2D()]);
             //alert(c);
         // lets return a mouse tracking function too.
         try{
+            c = jpf.formatJS(c);
+            logw(jpf.highlightCode2(c));
             return new Function('l','v','m',c);
         }catch(x){
             alert(x.message+"\nFailed to compile:\n"+c);return 0;

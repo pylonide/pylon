@@ -43,12 +43,12 @@ jpf.vardump = function(obj, depth, recur,endless){
             return "Date[" + new Date() + "]";
         case "array":
             for (var i = 0; i < obj.length; i++) {
-                str += "     ".repeat(depth+1) + i + " => "
+                str += "\t".repeat(depth+1) + i + " => "
                 + (!recur && depth > 0
                     ? typeof obj[i]
                     : jpf.vardump(obj[i], depth + 1, recur,endless)) + "\n";
             }
-            str += "     ".repeat(depth) + "}";
+            str += "\t".repeat(depth) + "}";
 
             return str;
         default:
@@ -68,15 +68,15 @@ jpf.vardump = function(obj, depth, recur,endless){
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
             for (var prop in obj) {
                 try {
-                    str += "     ".repeat(depth+1) + prop + " => "
+                    str += "\t".repeat(depth+1) + prop + " => "
                     + (!recur && depth > 0
                         ? typeof obj[prop]
                         : jpf.vardump(obj[prop], depth + 1, recur,endless)) + "\n";
                 } catch(e) {
-                    str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
+                    str += "\t".repeat(depth+1) + prop + " => [ERROR]\n";
                 }
             }
-            str += "     ".repeat(depth) + "}";
+            str += "\t".repeat(depth-1) + "}";
 
             return str;
     }

@@ -91,26 +91,47 @@ jpf.highlightCode = function(strCode){
        .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
 }
 
+jpf.highlightCode2 = function(strCode){
+  var comment=[];
+  return strCode
+        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})        
+        .replace(/(\<)|(\>)/g,function(a,b){ return "<span stylecolorwhite>"+(a?'@lt@':'@gt@')+"</span>"})
+         .replace(/(\'.*?\'|\".*?\")/g, "<span stylecolorgray>$1</span>")
+         .replace(/(\W)-?([\d\.]+)(\W)/g, "$1<span stylecolor#127ac6>$2</span>$3")
+         .replace(/([\|\&\=\;\,\:\?\+\*\-]+)/g, "<span stylecolorwhite>$1</span>")
+         .replace(/(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/g,
+    "$1<span stylecolorgreen>$2</span>$3")
+         
+         .replace(/([\(\)\{\}\[\]])/g, "<span stylecoloryellow>$1</span>")
+         .replace(/###n(\d+)###/g,function(a,b){ return "<span stylecolorpurple>"+comment[b]+"</span>"; } )
+         .replace(/stylecolor(.*?)\>/g,"style='color:$1'>")
+         .replace(/@(.*?)@/g,"&$1;");
+}
+
 /**
  * Formats a javascript string with good indentation. Also known as pretty printing.
  * @param {String} strJs the javascript to format.
  * @return {String} the formatted string.
  */
 jpf.formatJS = function(strJs){
-    var d = 0;
-    return strJs.replace(/;+/g, ';').replace(/;}/g, '}').replace(/{;/g, '{').replace(/({)|(})|(;)/g,
-        function(m, a, b, c){
-            if (a) d++;
-            if (b) d--;
+    var d = 0, r = 0;
+    var comment=[];
+    return strJs
+        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})    
+        .replace(/;+/g, ';').replace(/{;/g, '{').replace(/({)|(})|(\()|(\))|(;)/g,
+        function(m, co, cc, ro, rc, e){
+            if (co) d++;
+            if (cc) d--;
+            if (ro){ r++; return ro;}
+            if (rc){ r--; return rc;}
 
             var o = '';
             for (var i = 0; i < d; i++)
-                o += '\t\t';
-
-            if (a) return '{\n' + o;
-            if (b) return '\n' + o + '}';
-            if (c) return ';\n' + o;
-        }).replace(/\>/g, '&gt;').replace(/\</g, '&lt;');
+                o += '\t';
+            if (co) return '{\n' + o;
+            if (cc) return '\n' + o + '}';
+            if (e) return (r>0)?e:(';\n' + o);
+        }).replace(/;\s*\n\s*\n/g, ';\n').replace(/}var/g, '}\nvar').replace(/([\n\s]*)###n(\d+)###[\n\s]*/g,function(a,b,c){ return b+comment[c]+b; } );
 };
 
 /**

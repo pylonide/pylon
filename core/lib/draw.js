@@ -176,9 +176,7 @@ jpf.draw = {
     },
     
     //----------------------------------------------------------------------
-    
     // Style parsing
-    
     //----------------------------------------------------------------------
      
     parseStyle : function( style, str, err ) {
@@ -347,6 +345,8 @@ jpf.draw = {
                             shadow.$statelist = v.$statelist,shadow.$statehash = v.$statehash;
                             shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
                         }
+                        // lets dump this shite
+                        
                     }
                     styleinit(v);
                 }
@@ -968,17 +968,18 @@ jpf.draw = {
         s = ["t=(n-",time,")*(_sp[_t=_sh[",state,"]]||100000);"];
         for(i = 2, j = arguments.length;i<j;i++){
             a.push( t = "_s"+(i-1) );
-            s.push( t,"=",arguments[i],";");
+            s.push( t,"=",arguments[i],(i!=j-1)?",":";");
         }
         a.push(true);
         
         s.push("switch(_t?_t._mid:0){" );
         for(i = 0, j = v.length;i<j;i++){
             style = v[i]; 
+            //alert(jpf.vardump(style).replace(/\t/g,'@').replace(/\n/g,'#'));
             this.style = style;
             if(v[i].active)
                 s[s.length]=[
-                "case ",style._mid,":{",
+                "case ",style._mid,":{","/*"+jpf.vardump(style,0,1)+"*/\n",
                      this.mousefunc.apply(this.mousethis,a),
                 "}break;"].join('');
         }
