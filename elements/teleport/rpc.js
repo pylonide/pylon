@@ -338,7 +338,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     if (!obj)
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
             "Could not find RPC object by name '" + q[0] + "' in data \
-            options.instruction '" + instruction + "'"));
+            '" + options.instruction + "'"));
     //#endif
 
     //force multicall if needed;

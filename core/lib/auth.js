@@ -146,7 +146,11 @@ jpf.auth = {
     init : function(jml){
         jpf.makeClass(this);
 
-        this.$jml = jml;
+        this.inited = true;
+        if (!jml)
+            return;
+        
+        this.$jml   = jml;
         if (jml.getAttribute("login")) {
             this.services["default"] = jml;
             this.needsLogin          = true;
@@ -496,6 +500,9 @@ jpf.auth = {
      * @param {Object}   [options]  information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
      */
     authRequired : function(options){
+        if (!this.inited)
+            this.init();
+
         // If we're already logging in return
         if (options && options.userdata == this)
             return;

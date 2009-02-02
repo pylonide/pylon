@@ -311,7 +311,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.parentNode.childNodes.remove(this);
 
         //If we're not loaded yet, just remove us from the jml to be parsed
-        if (this.$jmlLoaded) {
+        if (this.$jmlLoaded && !jpf.isDestroying) {
             //this.parentNode.$jml.removeChild(this.$jml);
 
             if (this.oExt && this.oExt.parentNode)

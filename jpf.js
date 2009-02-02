@@ -2036,6 +2036,8 @@ var jpf = {
         jpf.console.info("Initiating self destruct...");
         //#endif
 
+        this.isDestroying = true;
+
         //#ifdef __WITH_XFORMS
         var i, models = jpf.nameserver.getAll("model");
         for (i = 0; i < models.length; i++)
@@ -2063,6 +2065,8 @@ var jpf = {
         if (jpf.xmldb)
             jpf.xmldb.unbind(jpf.window);
         //#endif
+
+        this.isDestroying = false;
     }
 };
 
