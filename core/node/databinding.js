@@ -486,7 +486,7 @@ jpf.DataBinding = function(){
      * @return {Boolean} specifies success or failure
      * @see  SmartBinding
      */
-    this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode){
+    this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         if (this.disabled) return; //hack
 
         //#ifdef __DEBUG
@@ -517,34 +517,39 @@ jpf.DataBinding = function(){
             if (!rules[i] || !rules[i].getAttribute("select")
                 || xmlNode.selectSingleNode(rules[i].getAttribute("select"))) {
 
-                var options = {
+                var ev = new jpf.Event("before" + action.toLowerCase(), {
                     action        : atAction,
                     args          : args,
                     xmlActionNode : rules[i],
                     jmlNode       : this,
-                    selNode       : contextNode
+                    selNode       : contextNode,
+                    multiple      : multiple || false
                     //#ifdef __WITH_LOCKING
                     ,timestamp    : curLock
                                       ? curLock.start
                                       : new Date().getTime()
                     //#endif
-                };
+                });
 
                 //Call Event and cancel if it returns false
                 if (!noevent) {
                     //Allow the action and arguments to be changed by the event
-                    if (this.dispatchEvent("before" + action.toLowerCase(),
-                      options) === false)
+                    if (this.dispatchEvent(ev.name, null, ev) === false)
                         return false;
                 }
 
                 //Call ActionTracker and return ID of Action in Tracker
-                var UndoObj = this.getActionTracker().execute(options);
-                options.xmlNode = UndoObj.xmlNode;
-                options.undoObj = UndoObj;
+                var UndoObj = this.getActionTracker().execute(ev);
+                ev.xmlNode = UndoObj.xmlNode;
+                ev.undoObj = UndoObj;
 
                 //Call After Event
-                this.dispatchEvent("after" + action.toLowerCase(), options);
+                if (!noevent) {
+                    ev.name         = "after" + action.toLowerCase();
+                    ev.cancelBubble = false;
+                    delete ev.returnValue;
+                    this.dispatchEvent(ev.name, null, ev);
+                }
 
                 return UndoObj;
             }

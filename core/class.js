@@ -303,14 +303,15 @@ jpf.Class = function(){
                 this[prop] = oldvalue;
                 return false;
             }
-            
-            if (this["onpropertychange"] || events_stack["propertychange"]) {
-                this.dispatchEvent("propertychange", {
-                    name          : prop,
-                    value         : value,
-                    originalvalue : oldvalue
-                });
-            }
+        }
+        
+        // @todo place ifdef here
+        if (this["onpropertychange"] || events_stack["propertychange"]) {
+            this.dispatchEvent("propertychange", {
+                name          : prop,
+                value         : value,
+                originalvalue : oldvalue
+            });
         }
         
         //#ifdef __WITH_PROPERTY_BINDING

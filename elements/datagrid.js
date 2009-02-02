@@ -882,7 +882,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         
-        return; //@todo fake optimization
+        //return; //@todo fake optimization
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);

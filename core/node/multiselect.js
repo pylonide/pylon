@@ -164,7 +164,9 @@ jpf.MultiSelect = function(){
         else {
             for (var i = 0; i < nodeList.length; i++) {
                 rValue = this.executeAction("removeNode",
-                    [nodeList[i]], "remove", nodeList[i], i != 0);
+                    [nodeList[i]], "remove", nodeList[i], null, null, true);
+                if (rValue === false)
+                    return false;
             }
         }
 

@@ -522,6 +522,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         if (!this.caption && x.firstChild)
             this.setProperty("caption", x.firstChild.nodeValue);
+        else if (typeof this.caption == "undefined")
+            this.$propHandlers["caption"].call(this, "");
 
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
