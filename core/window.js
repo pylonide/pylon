@@ -1015,7 +1015,7 @@ jpf.WindowImplementation = function(){
                 ctrlKey  : e.ctrlKey,
                 shiftKey : e.shiftKey,
                 altKey   : e.altkey,
-                htmlEvent : e
+                htmlEvent: e
             }) === false) {
             return false;
         }
@@ -1148,12 +1148,15 @@ jpf.WindowImplementation = function(){
             keys.push("Ctrl");
         if (e.shiftKey)
             keys.push("Shift");
+        if (e.metaKey)
+            keys.push("Meta");
 
         if (keyNames[e.keyCode])
             keys.push(keyNames[e.keyCode]);
 
         if (keys.length) {
-            if (e.keyCode > 46) keys.push(String.fromCharCode(e.keyCode));
+            if (e.keyCode > 46)
+                keys.push(String.fromCharCode(e.keyCode));
             jpf.setProperty("hotkey", keys.join("-"));
         }
         //#endif
@@ -1250,7 +1253,7 @@ jpf.WindowImplementation = function(){
 
     //#ifdef __WITH_HOTKEY
     //@todo maybe generalize this to pub/sub event system??
-    var hotkeys = {}, keyMods = {"ctrl":1, "alt":2, "shift": 4};
+    var hotkeys = {}, keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
 
     /**
      * Registers a hotkey handler to a key combination.
@@ -1267,13 +1270,23 @@ jpf.WindowImplementation = function(){
     jpf.registerHotkey = function(hotkey, handler){
         var hashId = 0, key;
 
-        var keys = hotkey.splitSafe("\\-|\\+| ", null, true);
+        var keys = hotkey.splitSafe("\\-|\\+| ", null, true),
+            bHasCtrl = false,
+            bHasMeta = false;
         for (var i = 0; i < keys.length; i++) {
-            if (keyMods[keys[i]])
+            if (keyMods[keys[i]]) {
                 hashId = hashId | keyMods[keys[i]];
+                if (jpf.isMac) {
+                    bHasCtrl = (keyMods[keys[i]] === keyMods["ctrl"]);
+                    bHasMeta = (keyMods[keys[i]] === keyMods["meta"]);
+                }
+            }
             else
                 key = keys[i];
         }
+
+        if (bHasCtrl && !bHasMeta) //for improved Mac hotkey support
+            hashId = hashId | keyMods["meta"];
 
         //#ifdef __DEBUG
         if (!key) {
@@ -1293,8 +1306,11 @@ jpf.WindowImplementation = function(){
     };
 
     jpf.addEventListener("hotkey", function(e){
+        // enable meta-hotkey support for macs, like for Apple-Z, Apple-C, etc.
+        if (jpf.isMac && e.metaKey)
+            e.ctrlKey = true;
         var hashId = 0 | (e.ctrlKey ? 1 : 0)
-            | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0);
+            | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
 
         var key = keyNames[e.keyCode];
         if (!hashId && !key) //Hotkeys should always have one of the modifiers
