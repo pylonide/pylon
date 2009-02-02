@@ -1376,7 +1376,7 @@ jpf.XmlDatabase = function(){
                             continue;
                         
                         nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + count++ + "]";
-                        value = this.cgivars(lnodes[j], nm, true);
+                        value = this.cgiobjects(lnodes[j], nm, true);
                         if (value)
                             str.push(value);
                         
@@ -1421,8 +1421,9 @@ jpf.XmlDatabase = function(){
      * @param {XMLElement} xml  the xml element to convert.
      * @param {String}     to   the format to convert the xml to.
      *   Possible values:
-     *   json     converts to a json string
-     *   cgivars  converts to cgi string.
+     *   json       converts to a json string
+     *   cgivars    converts to cgi string.
+     *   cgiobjects converts to cgi objects
      * @return {String} the result of the conversion.
      */
     this.convertXml = function(xml, to){

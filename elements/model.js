@@ -107,9 +107,7 @@ jpf.model = function(data, caching){
     if (!jpf.globalModel)
         jpf.globalModel = this;
 
-    //#ifdef __WITH_XFORMS
     this.saveOriginal = true;
-    //#endif
 
     //#ifdef __DEBUG
     jpf.console.info("Creating Model");

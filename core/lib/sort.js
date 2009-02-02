@@ -76,12 +76,12 @@ jpf.Sort = function(xmlNode){
             if (result) {
                 for (var pos = {}, i = 0; i < result.length; i++) 
                     pos[result[i].substr(0, 1)] = i + 1;
-                settings.dateFormat = new RegExp(str.replace(/[^\sDYMhms]/g, '\\$1')
+                settings.dateFormat = new RegExp(str.replace(/([^\sDYMhms])/g, '\\$1')
                     .replace(/YYYY/, "(\\d\\d\\d\\d)")
                     .replace(/(DD|YY|MM|hh|mm|ss)/g, "(\\d\\d)"));
                 settings.dateReplace = "$" + pos["M"] + "/$" + pos["D"] + "/$" + pos["Y"];
                 if (pos["h"]) 
-                    settings.dateReplace += " - $" + pos["h"] + ":$" + pos["m"] + ":$" + pos["s"];
+                    settings.dateReplace += " $" + pos["h"] + ":$" + pos["m"] + ":$" + pos["s"];
             }
         }
     };

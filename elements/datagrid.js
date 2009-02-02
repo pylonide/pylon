@@ -1099,9 +1099,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
-            oContainer.style[jpf.supportOverflowComponent 
+            /*oContainer.style[jpf.supportOverflowComponent 
                 ? "overflowY"
-                : "overflow"] = "hidden";
+                : "overflow"] = "hidden";*/
 
             var widthdiff = jpf.getWidthDiff(oContainer);
             jpf.popup.show(this.uniqueId, {
@@ -1113,9 +1113,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
-                    oContainer.style[jpf.supportOverflowComponent 
+                    /*oContainer.style[jpf.supportOverflowComponent 
                         ? "overflowY"
-                        : "overflow"] = "auto";
+                        : "overflow"] = "auto";*/
                 }
             });
         }

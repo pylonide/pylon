@@ -2748,8 +2748,8 @@ jpf.MultiselectBinding = function(){
         "remove"      : 47, //0101111
         "redo-remove" : 79, //1001111
         "synchronize" : 127,//1111111
-        "move-away"   : 104,//1101000
-        "move"        : 76  //1001100
+        "move-away"   : 105,//1101001
+        "move"        : 77  //1001101
     };
 
     /**
