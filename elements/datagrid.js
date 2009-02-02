@@ -45,7 +45,7 @@
  *
  * @todo add the right ifdefs
  */
-jpf.propedit = 
+jpf.propedit    =
 jpf.spreadsheet = 
 jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable  = true; // This object can get the focus
@@ -57,12 +57,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animSteps    = 3;
     this.animSpeed    = 20;
 
-    var colspan    = 0;
-    var totalWidth = 0;
-    var _self      = this;
-    var curBtn;
+    var colspan    = 0, //@todo unused?
+        totalWidth = 0, //@todo unused?
+        _self      = this,
+        curBtn;
     
-    this.headings = [];
+    this.headings  = [];
     
     //#ifdef __WITH_RENAME
     this.$renameStartCollapse = false;
@@ -84,7 +84,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.bindingRules["traverse"])
             this.parseTraverse(this.bindingRules["traverse"][0]);
-    }
+    };
 
     /**
      * This method imports a stylesheet defined in a multidimensional array 
@@ -94,13 +94,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @deprecated
      */    
     function importStylesheet(def, win){
-        for(var i=0;i<def.length;i++){
-            if (def[i][1]) {
-                if( jpf.isIE)
-                    (win || window).document.styleSheets[0].addRule(def[i][0], def[i][1]);
-                else
-                    (win || window).document.styleSheets[0].insertRule(def[i][0] + " {" + def[i][1] + "}", 0);
-            }
+        for (var i = 0; i < def.length; i++) {
+            if (!def[i][1]) continue;
+            
+            if (jpf.isIE)
+                (win || window).document.styleSheets[0].addRule(def[i][0],
+                    def[i][1]);
+            else
+                (win || window).document.styleSheets[0].insertRule(def[i][0]
+                    + " {" + def[i][1] + "}", 0);
         }
     }
     
@@ -421,17 +423,20 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if(nodes[i] == xmlEndNode) f = false;
         }
         
-        if(!r.length || f){
+        if (!r.length || f) {
             r = [];
-            for(var f=false,i=nodes.length-1;i>=0;i--){
-                if(nodes[i] == xmlStartNode) f = true;
-                if(f) r.push(nodes[i]);
-                if(nodes[i] == xmlEndNode) f = false;
+            for (var f = false, i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i] == xmlStartNode)
+                    f = true;
+                if (f)
+                    r.push(nodes[i]);
+                if (nodes[i] == xmlEndNode)
+                    f = false;
             }
         }
         
         return r;
-    }
+    };
     
     /**** Sliding functions ****/
     
@@ -441,11 +446,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.slideToggle = function(htmlNode, force){
         if (this.noCollapse) return;
         
-        var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
+        //var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag); // unused?
         var container = htmlNode.nextSibling;
         
         if (jpf.getStyle(container, "display") == "block") {
-            if(force == 1) return;
+            if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.slideClose(container, jpf.xmldb.getNode(htmlNode));
         }
@@ -467,7 +472,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p     = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -528,7 +533,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$findContainer = function(htmlNode) {
         return htmlNode.nextSibling;
-    }
+    };
     
     /**** Databinding ****/
     
@@ -543,7 +548,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.namevalue && !heads) {
             this.bindingRules.column = heads = [];
 
-            var cols = (this.columns || this.$jml.getAttribute("columns") || "50%,50%").splitSafe(",");
+            var cols = (this.columns || this.$jml.getAttribute("columns")
+                || "50%,50%").splitSafe(",");
             
             //@todo ask rik how this can be cached
             var xml = 
@@ -606,7 +612,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var nodes = xml.childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 var tagName = nodes[i][jpf.TAGNAME];
-                (this.bindingRules[tagName] || (this.bindingRules[tagName] = [])).push(nodes[i]);
+                (this.bindingRules[tagName]
+                    || (this.bindingRules[tagName] = [])).push(nodes[i]);
             }
         }
         
@@ -627,7 +634,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     ? "size"
                     : "sort|size|move");
 
-            h     = {
+            h = {
                 width        : parseFloat(width),
                 isPercentage : width.indexOf("%") > -1,
                 xml          : xml, //possibly optimize by recording select attribute only
@@ -718,7 +725,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (useiframe)
             importStylesheet(cssRules, this.oWin);
-    }
+    };
     
     this.$unloaddatabinding = function(){
         //@todo
@@ -748,23 +755,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         headParent.innerHTML = "";
         totalWidth = 0;
         this.headings = [];*/
-    }
+    };
 
     this.nodes = [];
-    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, sLid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Row
         this.$getNewContext("row");
-        var Row = this.$getLayoutNode("row");
-        Row.setAttribute("id", Lid);
-        Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
-        Row.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
+        var oRow = this.$getLayoutNode("row");
+        oRow.setAttribute("id", sLid);
+        oRow.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
+        oRow.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
             var wasSelected = o.$selected == this;\
             o.select(this, event.ctrlKey, event.shiftKey);'
             + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));//, true;o.dragging=1;
-        Row.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
+        oRow.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
             + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
-        //Row.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
+        //oRow.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
         
         //Build the Cells
         for(var c, h, i = 0; i < headings.length; i++){
@@ -774,7 +781,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             if (h.type == "icon"){
                 var node = this.$getLayoutNode("cell", "caption",
-                    Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), 
+                    oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"),
                     h.className)));
                 jpf.xmldb.setNodeValue(node, "&nbsp;");
                 (node.nodeType == 1 && node || node.parentNode)
@@ -786,36 +793,41 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else {
                 jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
-                    Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
+                    oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))),
                     (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""); //@todo for IE but seems not a good idea
             }
         }
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
-        if(cssClass){
-            this.$setStyleClass(Row, cssClass);
-            if(cssClass) this.dynCssClasses.push(cssClass);
+        if (cssClass) {
+            this.$setStyleClass(oRow, cssClass);
+            if (cssClass)
+                this.dynCssClasses.push(cssClass);
         }
         // #endif
 
-        //return jpf.xmldb.htmlImport(Row, htmlParentNode || this.oInt, beforeNode);
-        if(htmlParentNode) jpf.xmldb.htmlImport(Row, htmlParentNode, beforeNode);
-        else this.nodes.push(Row);
+        //return jpf.xmldb.htmlImport(oRow, htmlParentNode || this.oInt, beforeNode);
+        if (htmlParentNode)
+            jpf.xmldb.htmlImport(oRow, htmlParentNode, beforeNode);
+        else
+            this.nodes.push(oRow);
         
         if (this.$withContainer) {
             var desc = this.applyRuleSetOnNode("description", xmlNode);
             this.$getNewContext("container");
             var oDesc = this.$getLayoutNode("container");
-            jpf.xmldb.setNodeValue(this.$getLayoutNode("container", "container", oDesc), desc);
-            oDesc.setAttribute("class", (oDesc.getAttribute("class") || "") + " row" + this.uniqueId);
+            jpf.xmldb.setNodeValue(this.$getLayoutNode("container", "container",
+                oDesc), desc);
+            oDesc.setAttribute("class", (oDesc.getAttribute("class") || "")
+                + " row" + this.uniqueId);
             
             if(htmlParentNode) 
                 jpf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
             else 
                 this.nodes.push(oDesc);
         }
-    }
+    };
     
     var useTable = false;
     this.$fill = function(nodes){
@@ -832,7 +844,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         this.nodes.length = 0;
-    }
+    };
 
     this.$deInitNode = function(xmlNode, htmlNode){
         if (this.$withContainer)
@@ -840,22 +852,22 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
-    }
+    };
     
     this.$updateNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
         
-        var nodes = this.oHead.childNodes;
-        var htmlNodes = htmlNode.childNodes;
-        var node;
+        var nodes     = this.oHead.childNodes,
+            htmlNodes = htmlNode.childNodes,
+            node;
         
-        for(var i = 0, l = nodes.length; i < l; i++){
+        for (var i = 0, l = nodes.length; i < l; i++) {
             h = headings[nodes[i].getAttribute("hid")];
             
             //@todo fake optimization
             node = this.$getLayoutNode("cell", "caption", htmlNodes[i]) || htmlNodes[i];//htmlNodes[i].firstChild || 
             
-            if (h.type == "icon"){
+            if (h.type == "icon") {
                 (node.nodeType == 1 && node || node.parentNode)
                     .style.backgroundImage = "url(" 
                         + jpf.getAbsolutePath(this.iconPath, 
@@ -863,7 +875,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         + ")";
             }
             else {
-                node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""; //@todo for IE but seems not a good idea
+                node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode)
+                    || "").trim() || ""; //@todo for IE but seems not a good idea
                 //jpf.xmldb.setNodeValue(node, 
                     //this.applyRuleSetOnNode([h.xml], xmlNode));
             }
@@ -873,9 +886,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
-        if(cssClass || this.dynCssClasses.length){
+        if (cssClass || this.dynCssClasses.length) {
             this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if(cssClass && !this.dynCssClasses.contains(cssClass)) 
+            if (cssClass && !this.dynCssClasses.contains(cssClass))
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
@@ -884,29 +897,31 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             htmlNode.nextSibling.innerHTML 
                 = this.applyRuleSetOnNode("description", xmlNode) || "";
         }
-    }
+    };
     
     this.$moveNode = function(xmlNode, htmlNode){
-        if(!htmlNode) return;
+        if (!htmlNode) return;
         var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
+        var beforeNode = xmlNode.nextSibling 
+            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
+            : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
         
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
-    }
+    };
     
     this.$selectDefault = function(XMLRoot){
         this.select(XMLRoot.selectSingleNode(this.traverse));
-    }
+    };
     
     var lastcell, lastcol = 0, lastrow;
-    this.selectCell = function(e, rowHtml, wasSelected){
+    this.selectCell = function(e, rowHtml, wasSelected) {
         var htmlNode = e.srcElement || e.target;
         if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
             return; //this is probably not good
         
-        while(htmlNode.parentNode != rowHtml)
+        while (htmlNode.parentNode != rowHtml)
             htmlNode = htmlNode.parentNode;
 
         if (this.namevalue && wasSelected && lastcell 
@@ -967,7 +982,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastcell = htmlNode;
         lastcol  = col;
         lastrow  = rowHtml;
-    }
+    };
 
     /**** Drag & Drop ****/
     
@@ -983,26 +998,28 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.$updateNode(this.selected, this.oDrag); // Solution should be found to have this on conditionally
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX) + "px";// - this.oDrag.startX
         this.oDrag.style.top  = (e.clientY + 15) + "px";// - this.oDrag.startY
-    }
+    };
 
     this.$initDragDrop = function(){
-        if(!this.$hasLayoutNode("dragindicator")) return;
-        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"), document.body);
+        if (!this.$hasLayoutNode("dragindicator")) return;
+
+        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"),
+            document.body);
         
         this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
-    }
+    };
 
     this.$dragout  = 
     this.$dragover = 
@@ -1019,40 +1036,41 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.stopLookup = function(propNode, dataNode){
         this.stopRename();
         
-        var multiple = propNode.getAttribute("multiple");
-        var select = propNode.getAttribute("select");
+        var multiple = propNode.getAttribute("multiple"),
+            select   = propNode.getAttribute("select");
             
         var oldNode = this.xmlData.selectSingleNode(select 
-          + (multiple == "single" ? "/node()" : ""));
-        var newNode = jpf.xmldb.copyNode(dataNode);
-        if(oldNode && multiple != "multiple"){
+          + (multiple == "single" ? "/node()" : "")),
+            newNode = jpf.xmldb.copyNode(dataNode);
+
+        if (oldNode && multiple != "multiple") {
             this.getActionTracker().execute({
-              action : "replaceNode",
-              args : [oldNode, newNode]
+                action : "replaceNode",
+                args   : [oldNode, newNode]
             });
         }
         else {
             if (multiple) {
                 var pNode = this.xmlData.selectSingleNode(select);
                 if (!pNode) {
-                    pNode = this.xmlData;
+                    pNode        = this.xmlData;
                     var tempNode = this.xmlData.ownerDocument.createElement(select);
                     tempNode.appendChild(newNode);
-                    newNode = tempNode;
+                    newNode      = tempNode;
                 }
             }
             else
                 pNode = this.xmlData;
     
             this.getActionTracker().execute({
-              action : "appendChild",
-              args : [pNode, newNode]
+                action : "appendChild",
+                args   : [pNode, newNode]
             });
         }
         
         if (jpf.popup.isShowing(this.uniqueId))
             jpf.popup.hide();
-    }
+    };
 
     this.$lookup = function(value){
         var oHtml = this.$selected.childNodes[this.namevalue ? 1 : lastcol];
@@ -1065,7 +1083,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         
         var oContainer = editors["dropdown_container"];
-        if (self[this.lookupjml].childNodes.length && self[this.lookupjml].childNodes[0].parentNode != oContainer) {
+        if (self[this.lookupjml].childNodes.length
+          && self[this.lookupjml].childNodes[0].parentNode != oContainer) {
             self[this.lookupjml].detach();
             oContainer.innerHTML = "";
         }
@@ -1076,7 +1095,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var mirrorNode = oHtml;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             //oContainer.style.height = "auto";
-            oContainer.className = "ddjmlcontainer";
+            oContainer.className     = "ddjmlcontainer";
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
@@ -1109,7 +1128,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             htmlNode : oHtml,
             nodes    : lookupJml
         });
-    }
+    };
 
     /**** Rename ****/
     
@@ -1133,22 +1152,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             ? lastcell.parentNode.childNodes[1]
             : lastcell);
         return node.nodeType == 1 && node || node.parentNode;
-    }
+    };
     
     var lastCaptionCol = null;
     this.$getCaptionXml = function(xmlNode){
-        if (this.namevalue)
+        if (this.namevalue) {
             return this.createModel
                 ? jpf.xmldb.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
                 : this.xmlData.selectSingleNode(this.selected.getAttribute("select"));
+        }
         
         var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
         lastCaptionCol = lastcol || 0;
         return xmlNode.selectSingleNode(h.select || ".");
-    }
+    };
     
     var $getSelectFromRule = this.getSelectFromRule;
-    this.getSelectFromRule = function(setname, cnode){ 
+    this.getSelectFromRule = function(setname, cnode){
         if (setname == "caption") {
             if (this.namevalue) {
                 var sel = cnode.getAttribute("select");
@@ -1165,7 +1185,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         return $getSelectFromRule.apply(this, arguments);
-    }
+    };
     
     //#ifndef __PACKAGED
     if (this.tagName == "spreadsheet") {
@@ -1185,14 +1205,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     if (!htmlCol)
                         throw new Error();
 
-                    return b + parseFloat(_self.$getLayoutNode("cell", "caption", htmlCol).nodeValue);
+                    return b + parseFloat(_self.$getLayoutNode("cell", "caption",
+                        htmlCol).nodeValue);
                 });
                 
                 return eval(value.substr(1));
             }
             
             return value;
-        }
+        };
     }
     //#endif
     
@@ -1227,14 +1248,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         });
         
         lastSorted = hid;
-    }
+    };
     
     //@todo optimize but bringing down the string concats
     this.resizeColumn = function(nr, newsize){
         var hN, h = headings[nr];
 
         if (h.isPercentage) {
-            var ratio  = newsize / (h.htmlNode.offsetWidth - (widthdiff - 3)); //div 0 ??
+            var ratio = newsize / (h.htmlNode.offsetWidth - (widthdiff - 3)); //div 0 ??
             var next  = [];
             var total = 0;
             var node  = h.htmlNode.nextSibling;
@@ -1255,13 +1276,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             for (var n, i = 0; i < next.length; i++) {
                 n = next[i];
                 n.width *= diffRatio;
-                jpf.setStyleRule("." + this.baseCSSname + " .headings ." + n.className, "width", n.width + "%"); //Set
-                jpf.setStyleRule("." + this.baseCSSname + " .records ." + n.className, "width", n.width + "%", null, this.oWin); //Set
+                jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                    + n.className, "width", n.width + "%"); //Set
+                jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                    + n.className, "width", n.width + "%", null, this.oWin); //Set
             }
             
             h.width = newPerc;
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "width", h.width + "%"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", h.width + "%", null, this.oWin); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                + h.className, "width", h.width + "%"); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                + h.className, "width", h.width + "%", null, this.oWin); //Set
         }
         else {
             var diff = newsize - h.width;
@@ -1269,8 +1294,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.isIE && this.oIframe)
                 h.htmlNode.style.width = newsize + "px";
             else
-                jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "width", newsize + "px"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "width", newsize + "px", null, this.oWin); //Set
+                jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                    + h.className, "width", newsize + "px"); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                + h.className, "width", newsize + "px", null, this.oWin); //Set
             
             var hFirst = headings[this.$first];
             this.$fixed += diff;
@@ -1287,21 +1314,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oHead.style.paddingRight = vLeft;
             }
         }
-    }
+    };
 
     this.hideColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "hidden", null, this.oWin);
+        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
+            "visibility", "hidden", null, this.oWin);
         
         //Change percentages here
-    }
+    };
     
     this.showColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "visibility", "visible", null, this.oWin);
+        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
+            "visibility", "visible", null, this.oWin);
         
         //Change percentages here
-    }
+    };
     
     this.moveColumn = function(from, to){
         if (to && from == to) 
@@ -1327,15 +1356,19 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
             
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ." + hReset.className, "marginLeft", "-5px"); //Reset
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + hReset.className, "marginLeft", "-5px"); //Reset
+            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                + hReset.className, "marginLeft", "-5px"); //Reset
+            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                + hReset.className, "marginLeft", "-5px"); //Reset
             
             this.$first = this.oHead.firstChild.getAttribute("hid");
             var h = headings[this.$first];
             var vLeft = "-" + (this.$fixed + 5) + "px";
 
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ." + h.className, "marginLeft", vLeft); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "marginLeft", vLeft); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                + h.className, "marginLeft", vLeft); //Set
+            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                + h.className, "marginLeft", vLeft); //Set
         }*/
     }
     
@@ -1362,13 +1395,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     ? "overflowY"
                     : "overflow"] = "hidden";
                 
-                str = [];
+                str   = [];
                 var s = this.selected.selectNodes("item");
                 for (var i = 0, l = s.length; i < l; i++) {
                     str.push("<div tag='", s[i].getAttribute("value"), "'>",
                         s[i].firstChild.nodeValue, "</div>");
                 }
-                oContainer.innerHTML = "<blockquote style='margin:0'>" + str.join("") + "</blockquote>";
+                oContainer.innerHTML = "<blockquote style='margin:0'>"
+                    + str.join("") + "</blockquote>";
 
                 oContainer.firstChild.onmouseover = function(e){
                     if (!e) e = event;
@@ -1381,7 +1415,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         target = target.parentNode;
                     
                     jpf.setStyleClass(target, "hover");
-                }
+                };
                 
                 oContainer.firstChild.onmouseout = function(e){
                     if (!e) e = event;
@@ -1394,7 +1428,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         target = target.parentNode;
                     
                     jpf.setStyleClass(target, "", ["hover"]);
-                }
+                };
                 
                oContainer.firstChild.onmousedown = function(e){
                     if (!e) e = event;
@@ -1408,7 +1442,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                     _self.rename(_self.selected, target.getAttribute("tag"));
                     jpf.popup.forceHide();
-                }
+                };
                 
                 jpf.popup.show(this.uniqueId, {
                     x       : 0,
@@ -1426,7 +1460,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 });
             }
         }
-    }
+    };
     
     this.$btnup = function(oHtml, force){
         if (!this.selected)
@@ -1452,7 +1486,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else if (this.selected.getAttribute("exec")) {
                 //#ifdef __DEBUG
-                try{
+                try {
                 //#endif
                     var selected = _self.xmlData;
                     eval(this.selected.getAttribute("exec"));
@@ -1468,7 +1502,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         else if (!force && type == "children") {
-            var select = this.selected.getAttribute("select");
+            var select  = this.selected.getAttribute("select");
             var xmlNode = jpf.xmldb.createNodeFromXpath(this.xmlData, select);//newNodes
             
             this.dispatchEvent("multiedit", {
@@ -1480,13 +1514,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1 
           || !jpf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
-    }
+    };
     
     this.$btnout = function(oHtml, force){
         if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1
           || !jpf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
-    }
+    };
     
     this.addEventListener("popuphide", function(){
         if (curBtn)
@@ -1500,9 +1534,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var widthdiff, defaultwidth, useiframe;
     this.$draw = function(){
         //Build Main Skin
-        this.oExt  = this.$getExternal(); 
-        this.oInt  = this.$getLayoutNode("main", "body", this.oExt);
-        this.oHead = this.$getLayoutNode("main", "head", this.oExt);
+        this.oExt     = this.$getExternal();
+        this.oInt     = this.$getLayoutNode("main", "body", this.oExt);
+        this.oHead    = this.$getLayoutNode("main", "head", this.oExt);
         this.oPointer = this.$getLayoutNode("main", "pointer", this.oExt);
 
         if (this.oHead.firstChild)
@@ -1520,7 +1554,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (useiframe && !this.oIframe) {
             //this.oInt.style.overflow = "hidden";
             //var sInt = this.oInt.outerHTML 
-            var sClass = this.oInt.className;
+            var sClass   = this.oInt.className;
             //this.oInt.parentNode.removeChild(this.oInt);
             this.oIframe = this.oInt.appendChild(document.createElement(jpf.isIE 
                 ? "<iframe frameborder='0'></iframe>"
@@ -1573,10 +1607,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 (e || _self.oWin.event).cancelBubble = true; 
             };
 
-            this.oTxt.onfocus = t.onfocus;
-            this.oTxt.onblur = t.onblur;
+            this.oTxt.onfocus   = t.onfocus;
+            this.oTxt.onblur    = t.onblur;
             this.oTxt.onkeydown = t.onkeydown;
-            this.oTxt.refCount = 1;
+            this.oTxt.refCount  = 1;
             // #endif
             
             this.oDoc.documentElement.onscroll = 
@@ -1605,7 +1639,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 target = target.parentNode;
 
             jpf.setStyleClass(target, "hover", ["down"]);
-        }
+        };
         
         this.oHead.onmouseup = function(e){
             if (!e) e = event;
@@ -1621,7 +1655,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (headings[target.getAttribute("hid")].sortable)
                 _self.sortColumn(parseInt(target.getAttribute("hid")));
-        }
+        };
         
         this.oHead.onmousedown = function(e){
             if (!e) e = event;
@@ -1635,9 +1669,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             dragging = target;
             
             //Resizing
-            var pos = jpf.getAbsolutePosition(target);
-            var sLeft = _self.oHead.scrollLeft;
-            var d = e.clientX - pos[0] + sLeft;
+            var pos   = jpf.getAbsolutePosition(target),
+                sLeft = _self.oHead.scrollLeft;
+            var d     = e.clientX - pos[0] + sLeft;
             if (d < 4 || target.offsetWidth - d - 8 < 3) {
                 var t = d < 4 && target.previousSibling || target;
                 
@@ -1645,8 +1679,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     pos   = jpf.getAbsolutePosition(t);
                     jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
                     _self.oPointer.style.display = "block";
-                    _self.oPointer.style.left = (t.offsetLeft - sLeft - 1) + "px";
-                    _self.oPointer.style.width = (t.offsetWidth - widthdiff + 1) + "px";
+                    _self.oPointer.style.left    = (t.offsetLeft - sLeft - 1) + "px";
+                    _self.oPointer.style.width   = (t.offsetWidth - widthdiff + 1) + "px";
                     
                     jpf.plane.show(_self.oPointer, null, true);
                     
@@ -1657,19 +1691,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         document.onmouseup = 
                         document.onmousemove = null;
                         
-                        _self.resizeColumn(t.getAttribute("hid"), _self.oPointer.offsetWidth);
+                        _self.resizeColumn(t.getAttribute("hid"),
+                            _self.oPointer.offsetWidth);
                         
                         dragging = false;
                         _self.oPointer.style.display = "none";
                         
                         jpf.plane.hide();
-                    }
+                    };
                     
                     document.onmousemove = function(e){
                         if (!e) e = event;
                         
-                        _self.oPointer.style.width = Math.max(10, e.clientX - pos[0] - 1 + sLeft) + "px";
-                    }
+                        _self.oPointer.style.width = Math.max(10, e.clientX
+                            - pos[0] - 1 + sLeft) + "px";
+                    };
                     
                     return;
                 }
@@ -1682,21 +1718,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 document.onmouseup = function(e){
                     document.onmouseup = null;
                     dragging = false;
-                }
+                };
                 
                 return;
             }
             
             jpf.setStyleClass(_self.oPointer, "move_pointer", ["size_pointer"]);
             
-            var x = e.clientX - target.offsetLeft, sX = e.clientX;
-            var y = e.clientY - target.offsetTop, sY = e.clientY;
-            var copy;
+            var x = e.clientX - target.offsetLeft, sX = e.clientX,
+                y = e.clientY - target.offsetTop,  sY = e.clientY,
+                copy;
             
             document.onmouseup = function(e){
                 if (!e) e = event;
                 
-                document.onmouseup = 
+                document.onmouseup   =
                 document.onmousemove = null;
                 
                 dragging = false;
@@ -1719,7 +1755,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 
                 jpf.removeNode(copy);
-            }
+            };
 
             document.onmousemove = function(e){
                 if (!e) e = event;
@@ -1731,17 +1767,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     copy = target.cloneNode(true);
                     copy.style.position = "absolute";
                     var diff = jpf.getWidthDiff(target);
-                    copy.style.width = (target.offsetWidth - diff - widthdiff + 2) + "px";
-                    copy.style.left = target.offsetLeft;
-                    copy.style.top = target.offsetTop;
-                    copy.style.margin = 0;
+                    copy.style.width    = (target.offsetWidth - diff
+                        - widthdiff + 2) + "px";
+                    copy.style.left     = target.offsetLeft;
+                    copy.style.top      = target.offsetTop;
+                    copy.style.margin   = 0;
                     copy.removeAttribute("hid")
                     
                     jpf.setStyleClass(copy, "drag", ["ascending", "descending"]);
                     target.parentNode.appendChild(copy);
                 }
                 
-                copy.style.top = "-100px";
+                copy.style.top               = "-100px";
                 _self.oPointer.style.display = "none";
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
@@ -1755,9 +1792,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 
                 copy.style.left = (e.clientX - x) + 'px';
-                copy.style.top = (e.clientY - y) + 'px';
-            }
-        }
+                copy.style.top  = (e.clientY - y) + 'px';
+            };
+        };
         
         this.oHead.onmouseout = function(e){
             if (!e) e = event;
@@ -1769,13 +1806,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 target = target.parentNode;
             
             jpf.setStyleClass(target, "", ["hover", "down"]);
-        }
+        };
         
         this.oHead.onmousemove = function(e){
             if (dragging)
                 return;
             
-            if (!e) e = event;
+            if (!e)
+                e = event;
             var target = e.srcElement || e.target;
             
             if (target == this) return;
@@ -1783,8 +1821,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             while (target.parentNode != this)
                 target = target.parentNode;
             
-            var pos = jpf.getAbsolutePosition(target);
-            var sLeft = _self.oHead.scrollLeft;
+            var pos   = jpf.getAbsolutePosition(target),
+                sLeft = _self.oHead.scrollLeft;
             var d = e.clientX - pos[0] + sLeft;
 
             if (d < 4 || target.offsetWidth - d - widthdiff < 3) {
@@ -1796,12 +1834,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else {
                 this.style.cursor = "default";
             }
-        }
-    }
+        };
+    };
     
     var editors = {};
     this.$loadJml = function(x){
-        if(x.getAttribute("message")) this.clearMessage = x.getAttribute("message");
+        if (x.getAttribute("message"))
+            this.clearMessage = x.getAttribute("message");
         
         //@todo add options attribute
         
@@ -1810,7 +1849,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.cellselect = true;
             
             if (this.tagName == "propedit")
-                this.namevalue    = true;
+                this.namevalue = true;
         }
         
         //@todo move this to the handler of the namevalue attribute
@@ -1822,9 +1861,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 edit = edits[i];
                 
                 if (i < edits.length - 1) {
-                    c.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId + ").$btndown(this, event);");
-                    c.setAttribute("onmouseup", "jpf.lookup(" + this.uniqueId + ").$btnup(this)");
-                    c.setAttribute("onmouseout", "jpf.lookup(" + this.uniqueId + ").$btnout(this)");
+                    c.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId
+                        + ").$btndown(this, event);");
+                    c.setAttribute("onmouseup", "jpf.lookup(" + this.uniqueId
+                        + ").$btnup(this)");
+                    c.setAttribute("onmouseout", "jpf.lookup(" + this.uniqueId
+                        + ").$btnout(this)");
                     c.setAttribute("type", edit);
                     
                     editors[edit] = jpf.xmldb.htmlImport(c, this.oInt)
@@ -1888,7 +1930,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             changeListener.uniqueId = jpf.all.push(changeListener) - 1;
             
             this.$_load = this.load;
-            this.load = function(xmlRoot, cacheId){
+            this.load   = function(xmlRoot, cacheId){
                 var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
 
                 //@todo need caching of the template
@@ -1975,25 +2017,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         this.$selected);
             });*/
         }
-    }
+    };
     
     this.$destroy = function(){
         jpf.popup.removeContent(this.uniqueId);
         
         if (editors["dropdown_container"]) {
-            editors["dropdown_container"].onmouseout = 
+            editors["dropdown_container"].onmouseout  =
             editors["dropdown_container"].onmouseover = 
             editors["dropdown_container"].onmousedown = null;
         }
         
         jpf.removeNode(this.oDrag);
-        this.oDrag = null;
-        this.oExt.onclick = null;
-        this.oInt.onresize = null;
+        this.oDrag = this.oExt.onclick = this.oInt.onresize = null;
         
         jpf.layout.removeRule(this.oInt, "dg" + this.uniqueId);
         jpf.layout.activateRules(this.oInt);
-    }
+    };
     
     this.counter = 0;
 }).implement(
@@ -2018,106 +2058,119 @@ jpf.convertIframe = function(iframe, preventSelect){
     var pos;
     
     doc.onkeydown = function(e){
-        if(!e) e = win.event;
+        if (!e) e = win.event;
 
         if (document.onkeydown) 
             return document.onkeydown.call(document, e);
         //return false;
-    }
+    };
     
     doc.onmousedown = function(e){
-        if(!e) e = win.event;
+        if (!e) e = win.event;
         
-        q = {
-            offsetX : e.offsetX,
-            offsetY : e.offsetY,
-            x : e.x + pos[0],
-            y : e.y + pos[1],
-            button : e.button,
-            clientX : e.x + pos[0],
-            clientY : e.y + pos[1],
-            srcElement : iframe,
-            target : iframe,
+        var q = {
+            offsetX       : e.offsetX,
+            offsetY       : e.offsetY,
+            x             : e.x + pos[0],
+            y             : e.y + pos[1],
+            button        : e.button,
+            clientX       : e.x + pos[0],
+            clientY       : e.y + pos[1],
+            srcElement    : iframe,
+            target        : iframe,
             targetElement : iframe
         }
         
-        if(document.body.onmousedown) document.body.onmousedown(q);
-        if(document.onmousedown) document.onmousedown(q);
+        if (document.body.onmousedown)
+            document.body.onmousedown(q);
+        if (document.onmousedown)
+            document.onmousedown(q);
         
         if (preventSelect && !jpf.isIE)
             return false;
-    }
+    };
     
     if (preventSelect) {
         doc.onselectstart = function(e){
             return false;
-        }
+        };
     }
     
     doc.onmouseup = function(e){
-        if(!e) e = win.event;
-        if(document.body.onmouseup) document.body.onmouseup(e);
-        if(document.onmouseup) document.onmouseup(e);
-    }
+        if (!e) e = win.event;
+        if (document.body.onmouseup)
+            document.body.onmouseup(e);
+        if (document.onmouseup)
+            document.onmouseup(e);
+    };
     
     doc.onclick = function(e){
-        if(!e) e = win.event;
-        if(document.body.onclick) document.body.onclick(e);
-        if(document.onclick) document.onclick(e);
-    }
+        if (!e) e = win.event;
+        if (document.body.onclick)
+            document.body.onclick(e);
+        if (document.onclick)
+            document.onclick(e);
+    };
     
     //all these events should actually be piped to the events of the container....
     doc.documentElement.oncontextmenu = function(e){
-        if(!e) e = win.event;
-        if(!pos) pos = jpf.getAbsolutePosition(iframe);
+        if (!e) e = win.event;
+        if (!pos)
+            pos = jpf.getAbsolutePosition(iframe);
         
-        q = {
-            offsetX : e.offsetX,
-            offsetY : e.offsetY,
-            x : e.x + pos[0],
-            y : e.y + pos[1],
-            button : e.button,
-            clientX : e.x + pos[0],
-            clientY : e.y + pos[1],
-            srcElement : e.srcElement,
-            target : e.target,
+        var q = {
+            offsetX       : e.offsetX,
+            offsetY       : e.offsetY,
+            x             : e.x + pos[0],
+            y             : e.y + pos[1],
+            button        : e.button,
+            clientX       : e.x + pos[0],
+            clientY       : e.y + pos[1],
+            srcElement    : e.srcElement,
+            target        : e.target,
             targetElement : e.targetElement
-        }
+        };
 
         //if(this.host && this.host.oncontextmenu) this.host.oncontextmenu(q);
-        if(document.body.oncontextmenu) document.body.oncontextmenu(q);
-        if(document.oncontextmenu) document.oncontextmenu(q);
+        if (document.body.oncontextmenu)
+            document.body.oncontextmenu(q);
+        if (document.oncontextmenu)
+            document.oncontextmenu(q);
         
         return false;
-    }
+    };
 
     doc.documentElement.onmouseover = function(e){
         pos = jpf.getAbsolutePosition(iframe);
-    }
+    };
 
     doc.documentElement.onmousemove = function(e){
-        if(!e) e = win.event;
-        if(!pos) pos = jpf.getAbsolutePosition(iframe);
+        if (!e) e = win.event;
+        if (!pos)
+            pos = jpf.getAbsolutePosition(iframe);
     
-        q = {
-            offsetX : e.offsetX,
-            offsetY : e.offsetY,
-            x : e.x + pos[0],
-            y : e.y + pos[1],
-            button : e.button,
-            clientX : e.x + pos[0],
-            clientY : e.y + pos[1],
-            srcElement : e.srcElement,
-            target : e.target,
+        var q = {
+            offsetX       : e.offsetX,
+            offsetY       : e.offsetY,
+            x             : e.x + pos[0],
+            y             : e.y + pos[1],
+            button        : e.button,
+            clientX       : e.x + pos[0],
+            clientY       : e.y + pos[1],
+            srcElement    : e.srcElement,
+            target        : e.target,
             targetElement : e.targetElement
         }
 
-        if(iframe.onmousemove) iframe.onmousemove(q);
-        if(document.body.onmousemove) document.body.onmousemove(q);            
-        if(document.onmousemove) document.onmousemove(q);
+        if (iframe.onmousemove)
+            iframe.onmousemove(q);
+        if (document.body.onmousemove)
+            document.body.onmousemove(q);
+        if (document.onmousemove)
+            document.onmousemove(q);
         
         return e.returnValue;
-    }
+    };
     
     return doc;
-}
+};

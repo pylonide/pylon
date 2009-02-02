@@ -547,15 +547,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     var changeTimer = null;
-    
+    /**
+     * Firing change(), when the editor is databound, subsequently after each
+     * keystroke, can have a VERY large impact on editor performance. That's why
+     * we delay the change() call.
+     *
+     * @type {void}
+     */
     function resumeChangeTimer() {
-        if (_self.realtime && changeTimer === null) {
-            changeTimer = setTimeout(function() {
-                clearTimeout(changeTimer);
-                _self.change(_self.getValue());
-                changeTimer = null;
-            }, 200);
-        }
+        if (!_self.realtime || changeTimer !== null) return;
+        changeTimer = setTimeout(function() {
+            clearTimeout(changeTimer);
+            _self.change(_self.getValue());
+            changeTimer = null;
+        }, 200);
     }
 
     /**
