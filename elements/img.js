@@ -90,6 +90,7 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         //@todo resize should become a generic thing
         if (this.oImage.nodeType == 2 && !this.$resize.done) {
             this.oImg = this.oInt.getElementsByTagName("img")[0];
+            
             jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
                 "jpf.all[" + this.uniqueId + "].$resize()");
             jpf.layout.activateRules(this.pHtmlNode);
@@ -100,7 +101,15 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.$resize.done = true;
         }
+        
+        if (this.oImg)
+            this.oImg.style.display = value ? "block" : "none";
     };
+    
+    this.$clear = function(){
+        if (this.oImg)
+            this.oImg.style.display = "none";
+    }
     
     /**** Init ****/
     

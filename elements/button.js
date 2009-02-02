@@ -96,7 +96,6 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.oIcon) return;
         #endif */
 
-
         if (value)
             this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
         else
@@ -369,6 +368,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             setDefault({});
             if (jpf.window.focussed)
                 jpf.window.focussed.focus(true);
+        }
+        if (this.state && this.value) {
+            this.$setState("Down", {});
         }
 
         this.$doBgSwitch(1);

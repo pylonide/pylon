@@ -279,7 +279,11 @@ jpf.Cache = function(){
 
         this.oInt.innerHTML = "";
         this.$setClearMessage(msg || this.emptyMsg, className || "empty");
-        this.dataset = {set: {}, seq: []};
+        this.setConnections();
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", 0);
+        //#endif
     };
 
     /**
@@ -364,15 +368,12 @@ jpf.MultiselectCache = function(){
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);
         }
-        fragment.dataset = this.dataset;
 
         return fragment;
     };
 
     this.$setCurrentFragment = function(fragment){
         this.oInt.appendChild(fragment);
-
-        this.dataset = fragment.dataset;
 
         if (!jpf.window.hasFocus(this))
             this.blur();
