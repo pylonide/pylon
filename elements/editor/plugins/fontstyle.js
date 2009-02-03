@@ -220,10 +220,10 @@ jpf.editor.plugin('paragraph', function() {
     this.buttonNode   = null;
     this.state        = jpf.editor.OFF;
 
-    var panelBody;
+    var panelBody,
 
     // this hashmap maps font size number to it's equivalent in points (pt)
-    var blocksMap = {
+    blocksMap = {
         'p'       : 'Paragraph',
         'pre'     : 'Preformatted',
         'address' : 'Address',
@@ -233,9 +233,8 @@ jpf.editor.plugin('paragraph', function() {
         'h4'      : 'Header 4',
         'h5'      : 'Header 5',
         'h6'      : 'Header 6'
-    };
-
-    var blockFormats = null;
+    },
+    blocksRE, blocksRE2, blockFormats;
 
     function getFormats(editor) {
         if (!blockFormats) {
@@ -252,6 +251,10 @@ jpf.editor.plugin('paragraph', function() {
                 if (node.nodeType == 3 || node.nodeType == 4)
                     blockFormats = node.nodeValue.splitSafe(",");
             }
+
+            var sJoin = "(" + blockFormats.join("|") + ")";
+            blocksRE  = new RegExp(sJoin, "gi");
+            blocksRE2 = new RegExp("<\\/?" + sJoin + ">", "gi");
         }
         return blockFormats;
     }
@@ -279,15 +282,17 @@ jpf.editor.plugin('paragraph', function() {
     };
 
     this.queryState = function(editor) {
-        var oNode    = editor.selection.getSelectedNode();
-        var aFormats = getFormats(editor);
-        var bCurrent = (oNode && oNode.nodeType == 1 && aFormats.contains(oNode.tagName.toLowerCase()));
-        var bParent  = (oNode && oNode.parentNode && oNode.parentNode.nodeType == 1
-              && aFormats.contains(oNode.parentNode.tagName.toLowerCase()));
+        var oNode    = editor.selection.getSelectedNode(),
+            aFormats = getFormats(editor),
+            bCurrent = (oNode && oNode.nodeType == 1
+                && aFormats.contains(oNode.tagName.toLowerCase())),
+            bParent  = (oNode && oNode.parentNode && oNode.parentNode.nodeType == 1
+                && aFormats.contains(oNode.parentNode.tagName.toLowerCase()));
         if (bCurrent || bParent) {
             var sBlock = blocksMap[
                 (bParent ? oNode.parentNode.tagName : oNode.tagName).toLowerCase()
             ];
+            jpf.console.log('BlockFormat command value: ' + editor.oDoc.queryCommandValue('FontName') + ' our own - queried - value: ' + sBlock);
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
             this.state = jpf.editor.ON;
@@ -314,8 +319,21 @@ jpf.editor.plugin('paragraph', function() {
             var s = sel.getContent();
             if (sel.isCollapsed() || s.trim() == "")
                 this.editor.executeCommand('FormatBlock', sBlock);
-            else
-                sel.setContent('<' + sBlock + '>' + s + '</' + sBlock + '>');
+            else {
+                var oNode = this.editor.selection.getSelectedNode();
+                while (oNode.nodeType != 1)
+                    oNode = oNode.parentNode;
+                if (oNode.tagName.match(blocksRE)) {
+                    var p = this.editor.oDoc.createElement(sBlock);
+                    p.innerHTML = oNode.innerHTML;
+                    oNode.parentNode.insertBefore(p, oNode);
+                    oNode.parentNode.removeChild(oNode);
+                }
+                else {
+                    sel.setContent('<' + sBlock + '>' + s.replace(blocksRE2, '')
+                        + '</' + sBlock + '>');
+                }
+            }
         }
     };
 
