@@ -830,6 +830,17 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
+        _self.oBody.style.display = "block";
+            
+        jpf.tween.single(_self.oCurtain, {
+            steps    : 3, 
+            type     : "fade",
+            from     : 0,
+            to       : 0.7,
+            onfinish : function() {
+                _self.oInt.style.display = "block";
+            }
+        });
         this.$refresh();
     }
 
