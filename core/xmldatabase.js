@@ -1354,8 +1354,8 @@ jpf.XmlDatabase = function(){
                 return str.join("&");
 
             value = jpf.getXmlValue(xml, "text()");
-            if (value)
-                return (basename || "") + "=" + encodeURIComponent(value);
+            if (basename && value)
+                return basename + "=" + encodeURIComponent(value);
         },
 
         "cgiobjects": function(xml, basename, isSub){
