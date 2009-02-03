@@ -42,7 +42,10 @@ jpf.BaseTab = function(){
      * Sets the current page of this element.
      * @param {mixed} page the name of numer of the page which is made active.
      */
-    this.set = function(page){
+    this.set = function(page, noEvent){
+        if (noEvent)
+            return this.$propHandlers["activepage"].call(this, page, noEvent);
+            
         return this.setProperty("activepage", page);
     }
 

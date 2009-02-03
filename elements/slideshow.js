@@ -624,6 +624,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* mouse wheel */
         var timer4, SafariChromeFix = false;
         onmousescroll_ = function(e) {
+            if (!_self.xmlRoot)
+                return;
+            
             e = e || event;
             if (jpf.isChrome || jpf.isSafari) {
                 SafariChromeFix = SafariChromeFix ? false : true;
@@ -791,7 +794,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$load = function(xmlRoot) {
         jpf.xmldb.addNodeListener(xmlRoot, this);
-        var nodes = xmlRoot.selectNodes("picture"),
+        var nodes = this.getTraverseNodes(),
             length = nodes.length;
 
         for (var i = 0, img, thumb; i < length; i++) {

@@ -85,8 +85,9 @@ jpf.history = {
                 function checkUrl(){\
                     var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
                     top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
-                    lastURL = document.body.scrollTop;}\
-                    checkUrl();\
+                    lastURL = document.body.scrollTop;\
+                }\
+                checkUrl();\
                 </script>";
 
             if (top == self) {
@@ -114,7 +115,8 @@ jpf.history = {
                     return;
 
                 jpf.history.lastUrl = location.href;
-                var page            = location.href.replace(/^.*#(.*)$/, "$1")
+                //var page            = location.href.replace(/^.*#(.*)$/, "$1")
+                var page = location.hash.replace("#", "");//.replace(/^.*#(.*)$/,"$1");
                 jpf.history.hasChanged(decodeURI(page));
             }, 20);
         }
