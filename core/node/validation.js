@@ -446,6 +446,54 @@ jpf.Validation = function(){
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
     };
+    
+    this.$propHandlers["valid-test"] = function(value){
+        var _self = this, rvCache = {};
+        this.removeValidationCache = function(){
+            rvCache = {};
+        }
+        
+        this.$checkRemoteValidation = function(){
+            var value = this.getValue();
+            if(typeof rvCache[value] == "boolean") return rvCache[value];
+            if(rvCache[value] == -1) return true;
+            rvCache[value] = -1;
+            
+            var instr = this.$jml.getAttribute('valid-test').split("==");
+            jpf.getData(instr[0], this.XMLRoot, null,
+              function(data, state, extra){
+                  if (state != jpf.SUCCESS) {
+                      if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                          return extra.tpModule.retry(extra.id);
+                      else {
+                          var commError = new Error(jpf.formatErrorString(0, _self, 
+                            "Validating entry at remote source", 
+                            "Communication error: \n\n" + extra.message));
+
+                          if (_self.dispatchEvent("error", jpf.extend({
+                            error : commError, 
+                            state : status
+                          }, extra)) !== false)
+                              throw commError;
+                          return;
+                      }
+                  }
+
+                  rvCache[value] = instr[1] ? data == instr[1] : jpf.isTrue(data);
+                  
+                  if(!rvCache[value]) _self.setError();
+                  else _self.clearError();
+              });
+            
+            return true;
+        }
+        
+        this.addValidationRule("!this.getValue() || this.__checkRemoteValidation()");
+        
+        setRule("valid-test", value
+            ? "this.$checkRemoteValidation()"
+            : null);
+    };
 };
 
 /**
