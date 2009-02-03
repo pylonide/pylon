@@ -50,8 +50,8 @@ jpf.actiontracker = function(parentNode){
     var _self       = this;
     var stackDone   = [];
     var stackUndone = [];
-    this.stackRPC    = [];
     var execStack   = [];
+    var lastExecStackItem;
 
     this.realtime   = true;
     this.undolength = 0;
@@ -70,10 +70,11 @@ jpf.actiontracker = function(parentNode){
      * @attribute {Boolean} realtime    whether changes are immediately send to
      * the datastore, or held back until purge() is called.
      */
+    this.$booleanProperties = {};
+    this.$booleanProperties["realtime"] = true;
     this.$supportedProperties = ["realtime", "undolength", "redolength", "alias"];
     this.$handlePropSet = function(prop, value, force){
         //Read only properties
-
         switch (prop) {
             case "undolength":
                 this.undolength = stackDone.length;
@@ -83,20 +84,28 @@ jpf.actiontracker = function(parentNode){
                 break;
             case "alias":
                 jpf.JmlElement.propHandlers.alias.call(this, value);
+            default:
+                this[prop] = value;
         }
     };
+    
     
     this.loadJml = function(x){
         this.$jml = x;
         
         //Events
-        var a, i, attr = x.attributes;
+        var value, a, i, attr = x.attributes;
         for (i = 0; i < attr.length; i++) {
             a = attr[i];
-            if (a.nodeName.indexOf("on") == 0)
+            if (a.nodeName.indexOf("on") == 0) {
                 this.addEventListener(a.nodeName, new Function(a.nodeValue));
-            else
-                this.setProperty(a.nodeName, a.nodeValue);
+            }
+            else {
+                value = this.$booleanProperties[a.nodeName]
+                  ? jpf.isTrue(a.nodeValue)
+                  : a.nodeValue;
+                this.setProperty(a.nodeName, value);
+            }
         }
     }
 
@@ -190,16 +199,17 @@ jpf.actiontracker = function(parentNode){
 
         //@todo Check if this still works together with transactions
         if (true) {//nogrouping && parent
-            //Execute RPC calls through multicall or queued calling
-            for (var i = 0; i < this.stackRPC.length; i++)
-                var o = this.$addToQueue(this.stackRPC[i]);
+            if (execStack.length) {
+                execStack[0].undoObj.saveChange(execStack[0].undo, this);
+                lastExecStackItem = execStack[execStack.length - 1];
+            }
         }
         else if (parent) {
             /*
                 Copy Stacked Actions as a single
                 grouped action to parent ActionTracker
             */
-            parent.$addActionGroup(stackDone, stackRPC);
+            //parent.$addActionGroup(stackDone, stackRPC);
         }
 
         //Reset Stacks
@@ -212,7 +222,6 @@ jpf.actiontracker = function(parentNode){
      */
     this.reset = function(){
         stackDone.length = stackUndone.length;
-        this.stackRPC.length = 0;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
@@ -444,7 +453,7 @@ jpf.actiontracker = function(parentNode){
         //#endif
 
         //The queue was empty, yay! we're gonna exec immediately
-        if (execStack.length == 1)
+        if (execStack.length == 1 && this.realtime)
             UndoObj.saveChange(undo, this);
     };
 
@@ -464,7 +473,7 @@ jpf.actiontracker = function(parentNode){
         UndoObj.state = null;
 
         //Remove the action item from the stack
-        execStack.shift();
+        var lastItem = execStack.shift();
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
@@ -472,7 +481,7 @@ jpf.actiontracker = function(parentNode){
         //#endif
 
         //Check if there is a new action to execute;
-        if (!execStack[0])
+        if (!execStack[0] || lastItem == lastExecStackItem)
             return;
 
         // @todo you could optimize this process by using multicall, but too much for now
@@ -762,10 +771,6 @@ jpf.UndoData = function(settings, at){
     };
 
     this.saveChange = function(undo, at, callback){
-        //@todo realtime is broken, please fix
-        if (at && !at.realtime) //@todo this won't work, needs to preparse
-            return at.stackRPC.push(this);
-
         //Grouped undo/redo support
         if (this.action == "group") {
             var rpcNodes = this.args[1];
