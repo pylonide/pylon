@@ -150,22 +150,22 @@ jpf.editor.plugin('fontstyle', function() {
         var sStyle = e.target.getAttribute('rel');
         if (sStyle) {
             jpf.popup.forceHide();
+            var sel = this.editor.selection;
 
-            this.editor.selection.set();
+            sel.set();
             this.editor.$visualFocus();
 
             var o = getCurrentStyle(this.editor);
-            if (o && o.node == this.editor.getSelectedNode()) {
+            if (o && o.node == sel.getSelectedNode()) {
                 if (o.cname == sStyle) return;
                 jpf.setStyleClass(o.node, sStyle, [o.cname]);
             }
             else {
-                var s = this.editor.selection.getContent();
+                var s = sel.getContent();
                 if (s.trim() == "") return;
-                this.editor.selection.setContent('<span class="' + sStyle + '">'
+                sel.setContent('<span class="' + sStyle + '">'
                     + s + '</span>');
             }
-
         }
     };
 
