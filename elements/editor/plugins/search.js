@@ -249,6 +249,8 @@ jpf.editor.searchPlugin = function(sName) {
                 jpf.sanitizeTextbox(this.oReplace);
                 this.oReplace.onselectstart = fSel;
             }
+            // checkboxes also need the focus fix:
+            jpf.sanitizeTextbox(this.oCase);
         }
         //#endif
 
