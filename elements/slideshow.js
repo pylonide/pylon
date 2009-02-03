@@ -660,16 +660,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* end of mouse wheel */
 
         this.oClose.onclick = function() {
-            _self.oBody.style.display = "none";
-            jpf.tween.single(_self.oCurtain, {
-                steps    : 3, 
-                type     : "fade",
-                from     : 0.7,
-                to       : 0,
-                onfinish : function() {
-                    _self.oInt.style.display = "none";
-                }
-            });
+            _self.hide();
         };
 
         /* image move */
@@ -831,6 +822,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$show = function() {
         _self.oBody.style.display = "block";
+        _self.oExt.style.display = "block";
             
         jpf.tween.single(_self.oCurtain, {
             steps    : 3, 
@@ -842,6 +834,19 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         });
         this.$refresh();
+    }
+    
+    this.$hide = function () {
+        jpf.tween.single(_self.oCurtain, {
+            steps    : 3, 
+            type     : "fade",
+            from     : 0.7,
+            to       : 0,
+            onfinish : function() {
+                _self.oInt.style.display = "none";
+                _self.oBody.style.display = "none";
+            }
+        });
     }
 
     this.$destroy = function() {
