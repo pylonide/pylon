@@ -828,6 +828,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.paint();
     }
+    
+    this.show = function() {
+        this.$refresh();
+    }
 
     this.$destroy = function() {
         this.otNext.onmouseover =
