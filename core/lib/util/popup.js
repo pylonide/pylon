@@ -45,7 +45,7 @@ jpf.popup = {
             
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug 
-              && "INPUT|TEXAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && "INPUT|TEXTAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
             }
             //#endif
@@ -207,7 +207,7 @@ jpf.popup = {
             
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug
-              && "INPUT|TEXAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && "INPUT|TEXTAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
             }
             //#endif
