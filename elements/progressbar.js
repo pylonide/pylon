@@ -113,7 +113,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         clearInterval(this.timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Running", this.baseCSSname + "Complete"]);
 
         if(restart)
             this.timer = setInterval("jpf.lookup(" + this.uniqueId

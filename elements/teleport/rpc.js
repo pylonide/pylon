@@ -162,7 +162,8 @@ jpf.rpc = function(){
         }
 
         // Sent the request
-        var info = this.get(this.url, pCallback, jpf.extend({
+        var url  = jpf.getAbsolutePath(this.baseurl, this.url);
+        var info = this.get(url, pCallback, jpf.extend({
             async    : this[name].async,
             userdata : this[name].userdata,
             nocache  : true,
@@ -186,7 +187,7 @@ jpf.rpc = function(){
 
         // Get Data
         var data = this.serialize("multicall", [this.stack[this.url]]); //function of module
-        var url = this.url;
+        var url  = jpf.getAbsolutePath(this.baseurl, this.url);
         if (extradata) {
             for (var vars = [], i = 0; i < extradata.length; i++) {
                 vars.push(encodeURIComponent(extradata[i][0]) + "="
@@ -258,6 +259,9 @@ jpf.rpc = function(){
         this.$jml       = x;
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.url       = jpf.parseExpression(x.getAttribute("url"))
+        this.baseurl   = jpf.parseExpression(
+                             jpf.xmldb.getInheritedAttribute(
+                                this.$jml, "baseurl")) || "";
         this.multicall = x.getAttribute("multicall") == "true";
         this.autoroute = x.getAttribute("autoroute") == "true";
 
