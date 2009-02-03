@@ -1309,6 +1309,9 @@ jpf.XmlDatabase = function(){
         },
 
         "cgivars": function(xml, basename){
+            if (!basename) 
+                basename = "";
+            
             var str = [], value, nodes = xml.childNodes, done = {};
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1)
@@ -1323,14 +1326,13 @@ jpf.XmlDatabase = function(){
                     done[name] = true;
                     for (var j = 0; j < sameNodes.length; j++) {
                         value = this.cgivars(sameNodes[j],
-                            (basename ? basename + "" : "") + name + "[" + j + "]");
+                            basename + name + "[" + j + "]");
                         if (value)
                             str.push(value);
                     }
                 }
                 else { //single value
-                    value = this.cgivars(nodes[i],
-                        (basename ? basename + "" : "") + name);
+                    value = this.cgivars(nodes[i], basename + name);
                     if (value)
                         str.push(value);
                 }
@@ -1338,9 +1340,14 @@ jpf.XmlDatabase = function(){
 
             var attr = xml.attributes;
             for (i = 0; i < attr.length; i++) {
-                if (attr[i].nodeValue)
-                    str.push(basename + "[" + attr[i].nodeName + "]="
-                        + encodeURIComponent(attr[i].nodeValue));
+                if (attr[i].nodeValue) {
+                    if (basename) 
+                        str.push(basename + "[" + attr[i].nodeName + "]="
+                            + encodeURIComponent(attr[i].nodeValue));
+                    else
+                        str.push(attr[i].nodeName + "="
+                            + encodeURIComponent(attr[i].nodeValue));
+                }
             }
 
             if (str.length)
