@@ -1529,7 +1529,7 @@ jpf.DataBinding = function(){
             jpf.setModel(initModelId[1], this, true);
 
         //Set the model for normal smartbinding
-        if (!this.ref || this.hasFeature(__MULTISELECT__) && !this.xmlRoot) {
+        if ((!this.ref || this.hasFeature(__MULTISELECT__)) && !this.xmlRoot) {
             var sb = jpf.JmlParser.sbInit[this.uniqueId]
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 

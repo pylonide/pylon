@@ -607,7 +607,7 @@ jpf.JmlParser = {
             }
              //#endif
 
-            if ((jpf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName != "IFRAME")
+            if ((jpf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName.toUpperCase() != "IFRAME")
                 this.parseChildren(x, o, jmlParent);
             else {
                 //#ifdef __DEBUG
