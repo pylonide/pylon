@@ -829,7 +829,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.paint();
     }
     
-    this.show = function() {
+    this.$show = function() {
         this.$refresh();
     }
 
