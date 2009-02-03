@@ -210,10 +210,10 @@ jpf.actiontracker = function(parentNode){
                 grouped action to parent ActionTracker
             */
             //parent.$addActionGroup(stackDone, stackRPC);
+            
+            //Reset Stacks
+            this.reset();
         }
-
-        //Reset Stacks
-        this.reset();
     };
 
     /**
