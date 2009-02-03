@@ -53,7 +53,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         var _self = this;
         setTimeout(function() {
             _self.oArea.focus();
-        });
+        }, 100); // 100ms, because of the $focusfix code...
         //return button id, icon and action:
         return {
             id: this.name,
