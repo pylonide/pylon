@@ -306,9 +306,9 @@ jpf.tween = {
                 return;
             }
 
-            //try {
+            try {
                info.method(oHtml, steps[step], info);
-            //} catch (e) {}
+            } catch (e) {}
 
             if (info.oneach)
                 info.oneach(oHtml, info.userdata);
