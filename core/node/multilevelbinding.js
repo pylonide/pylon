@@ -275,6 +275,11 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
     };
     
+    this.addEventListener("afterload", function(e){
+        if (!this.createModel && this.disabled != jmlNode.disabled)
+            jmlNode.setProperty("disabled", this.disabled);
+    });
+    
     var mlNode = this;
     jmlNode.addEventListener("afterselect", function(e){
         if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) 
@@ -302,17 +307,16 @@ jpf.MultiLevelBinding = function(jmlNode){
                 jmlNode.select(xmlNode, null, null, null, null, true);
                 jmlNode.setConnections(xmlNode);
             }
-            else 
-                if (jmlNode.clearOnNoSelection) {
-                    //This seems cumbersome... check abstraction
-                    xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
-                        mlNode.xmlRoot, null, null, true);
-                    jpf.xmldb.setNodeValue(xmlNode, "");
-                    if (this.$updateOtherBindings) 
-                        this.$updateOtherBindings();
-                    if (this.$showSelection) 
-                        this.$showSelection();
-                }
+            else if (jmlNode.clearOnNoSelection) {
+                //This seems cumbersome... check abstraction
+                xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
+                    mlNode.xmlRoot, null, null, true);
+                jpf.xmldb.setNodeValue(xmlNode, "");
+                if (this.$updateOtherBindings) 
+                    this.$updateOtherBindings();
+                if (this.$showSelection) 
+                    this.$showSelection();
+            }
         }
     });
     

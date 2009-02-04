@@ -730,7 +730,7 @@ jpf.model = function(data, caching){
                     connect databinding: '" + instrType + "'", dataNode))
             }
 
-            this.setConnection(eval(instrType), data[0], data[1]);
+            this.setConnection(eval(instrType), data[0] || "select", data[1]);
 
             return this;
         }

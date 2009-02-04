@@ -332,7 +332,8 @@ jpf.DataBinding = function(){
             return false;
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true);
-        if (this.actionRules && !actionRule)
+        if (jpf.appsettings.autoDisableActions && !this.actionRules 
+          || this.actionRules && !actionRule)
             return false;
 
         //#ifdef __WITH_OFFLINE
@@ -568,7 +569,7 @@ jpf.DataBinding = function(){
      */
     this.executeActionByRuleSet = function(atName, setName, xmlNode, value){
         var xpath, args, selInfo = this.getSelectFromRule(setName, xmlNode);
-        var atAction, node = selInfo[1];
+        var shouldLoad = false, atAction, node = selInfo[1];
 
         if (node) {
             if (jpf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
@@ -591,14 +592,22 @@ jpf.DataBinding = function(){
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
                 var model   = this.getModel();
-                if (!model)
-                    return false;
-                if (!model.data)
-                    model.load("<data />");
+                if (model) {
+                    if (!model.data)
+                        model.load("<data />");
+    
+                    xpath   = (model.getXpathByJmlNode(this) || ".")
+                        + (xpath && xpath != "." ? "/" + xpath : "");
+                    xmlNode = model.data;
+                }
+                else {
+                    if (!this.dataParent)
+                        return false;
 
-                xpath   = (model.getXpathByJmlNode(this) || ".")
-                    + (xpath && xpath != "." ? "/" + xpath : "");
-                xmlNode = model.data;
+                    xmlNode = this.dataParent.parent.selected;
+                    xpath = this.dataParent.xpath;
+                    shouldLoad = true;
+                }
             }
 
             args = [xmlNode, value, xpath];
@@ -606,6 +615,9 @@ jpf.DataBinding = function(){
 
         //Use Action Tracker
         this.executeAction(atAction, args, atName, xmlNode);
+        
+        if (shouldLoad)
+            this.load(xmlNode.selectSingleNode(xpath));
     };
 
     /**
@@ -749,10 +761,14 @@ jpf.DataBinding = function(){
             : (type == "choice" ? cXmlChoice : cXmlSelect);
 
         //Call Load of objects
-        for (var i = 0; i < a.length; i++) {
-            a[i].o.load((a[i].xpath && xmlNode)
-                ? xmlNode.selectSingleNode(a[i].xpath)
+        for (var x, o, i = 0; i < a.length; i++) {
+            o     = a[i].o;
+            xpath = a[i].xpath;
+            o.load((xpath && xmlNode)
+                ? xmlNode.selectSingleNode(xpath)
                 : xmlNode);
+            if (o.disabled && o.createModel)
+                o.enable();
         }
 
         //Set Onload Connections only Once
@@ -930,6 +946,7 @@ jpf.DataBinding = function(){
                         try{eval(rules[i].getAttribute("method"));
                     }
                     catch(e) {
+                        jpf.console.warn("Method not available (yet): '" + rules[i].getAttribute("method") + "'");
                         return false;//throw new Error("---- Javeline Error ----\nMessage : Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML.")
                     }
                     //#endif
@@ -942,7 +959,8 @@ jpf.DataBinding = function(){
                 else if(rules[i].getAttribute("method")){
                     if(!self[rules[i].getAttribute("method")]){
                         // #ifdef __DEBUG
-                        throw new Error(jpf.formatErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
+                        jpf.console.warn("Method not available (yet): '" + rules[i].getAttribute("method") + "'");
+                        //throw new Error(jpf.formatErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
                         // #endif
 
                         return false;
