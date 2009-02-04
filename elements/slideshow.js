@@ -101,6 +101,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         vSpace      = 210,
         hSpace      = 150;
     var lastChoose = [];
+    
+    /* this.$hide and this.$show function are not overwritten */
+    this.$positioning = "basic";
 
     this.$propHandlers["thumbheight"] = function(value) {
         if (parseInt(value))
@@ -154,6 +157,23 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         next     = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous = temp_p ? temp_p : _self.getLastTraverseNode();
+    }
+    
+    /**
+     * Selects image by image number or its xml representation
+     * 
+     * @param {Number|XMLElement}   badge  picture number or its xml representation
+     */
+    this.select = function(badge) {
+        var firstNode  = _self.getFirstTraverseNode();
+        
+        current = parseInt(badge) > 0
+            ? (badge > 1 && badge <= _self.getTraverseNodes().length
+                ? _self.getNextTraverse(firstNode, false, badge - 1)
+                : firstNode)
+            : badge;
+        
+        this.$refresh();
     }
 
     /**
@@ -821,30 +841,53 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
-        _self.oBody.style.display = "block";
+        alert("Show")
         _self.oExt.style.display = "block";
             
         jpf.tween.single(_self.oCurtain, {
-            steps    : 3, 
+            steps    : 10, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
                 _self.oInt.style.display = "block";
+                
+                jpf.tween.single(_self.oBody, {
+                    steps    : 5, 
+                    type     : "fade",
+                    from     : 0,
+                    to       : 1,
+                    onfinish : function() {
+                        _self.oBody.style.display = "block";
+                    }
+                });
             }
         });
         this.$refresh();
     }
     
     this.$hide = function () {
-        jpf.tween.single(_self.oCurtain, {
-            steps    : 3, 
+        _self.oExt.style.display = "block";
+        
+        jpf.tween.single(_self.oBody, {
+            steps    : 5, 
             type     : "fade",
-            from     : 0.7,
+            from     : 1,
             to       : 0,
             onfinish : function() {
-                _self.oInt.style.display = "none";
                 _self.oBody.style.display = "none";
+                
+                jpf.tween.single(_self.oCurtain, {
+                    steps    : 10, 
+                    type     : "fade",
+                    from     : 0.7,
+                    to       : 0,
+                    onfinish : function() {
+                        _self.oInt.style.display  = "none";
+                        _self.oBody.style.display = "none";
+                        _self.oExt.style.display  = "none";
+                    }
+                });
             }
         });
     }
