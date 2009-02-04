@@ -758,7 +758,7 @@ jpf.JmlParser = {
                 node.setAttribute("group", name);
 
                 //Create Object en Reference and load JML
-                new jpf.state(jmlParent.pHtmlNode, "state", node)
+                new jpf.state(jmlParent ? jmlParent.pHtmlNode : document.body, "state", node)
                     .loadJml(node, pState);
             }
 
