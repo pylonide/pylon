@@ -192,6 +192,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oLoading.innerHTML    = current || this.defaultimage
                                        ? this.loadmsg
                                        : "";
+        /* Removes window scrollbars */
+        this.lastOverflow = document.documentElement.style.overflow;                               
+        document.documentElement.style.overflow = "hidden";
 
         if (current) {
             this.addSelection();
@@ -644,7 +647,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* mouse wheel */
         var timer4, SafariChromeFix = false;
         onmousescroll_ = function(e) {
-            if (!_self.xmlRoot)
+            if (!_self.xmlRoot || _self.oExt.style.display == "none")
                 return;
             
             e = e || event;
@@ -841,7 +844,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
-        alert("Show")
+        /* Removes window scrollbars */
+        this.lastOverflow = document.documentElement.style.overflow;
+        document.documentElement.style.overflow = "hidden";
+        
         _self.oExt.style.display = "block";
             
         jpf.tween.single(_self.oCurtain, {
@@ -867,6 +873,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$hide = function () {
+        /* Restores window scrollbars */
+        document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
         
         jpf.tween.single(_self.oBody, {
