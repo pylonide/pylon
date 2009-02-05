@@ -1190,6 +1190,10 @@ jpf.layout = {
             delete this.qlist[htmlId];
     },
 
+    // #endif
+    
+    // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING 
+    
     queue : function(oHtml, obj, compile){
         if (this.qlist[oHtml.getAttribute("id")]) {
             if (obj)
@@ -1241,8 +1245,8 @@ jpf.layout = {
         this.dlist = [];
         //#endif
     },
-
-    // #endif
+    
+    //#endif
 
     rules     : {},
     onresize  : {},
