@@ -775,7 +775,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$xmlUpdate = function() {
     };
-
+    
+    /**
      * It's called when browser window is resizing. Keeps proportion of each
      * element, depends on browser window size.
      */
