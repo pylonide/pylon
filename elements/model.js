@@ -865,7 +865,11 @@ jpf.model = function(data, caching){
                     Info: " + extra.message + "\n\n" + data));
                 //#endif
 
-                if (extra.tpModule.retryTimeout(extra, state, jmlNode || _self, oError) === true)
+                if (extra.tpModule.retryTimeout(extra, state, 
+                  //#ifdef __DEBUG
+                  jmlNode || 
+                  //#endif
+                  _self, oError) === true)
                     return true;
 
                 throw oError;
