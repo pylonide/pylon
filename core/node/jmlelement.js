@@ -802,11 +802,12 @@ jpf.JmlElement.propHandlers = {
      * @attribute {Boolean} visible whether this element is shown.
      */
     "visible": function(value){
-        if(this.tagName == "modalwindow") return; // temp fix
+        if (this.tagName == "modalwindow") 
+            return; // temp fix
 
-        if (jpf.isFalse(value) || value === undefined) {
+        if (jpf.isFalse(value) || typeof value == "undefined") {
             this.oExt.style.display = "none";
-
+            
             if (this.$hide && !this.$noAlignUpdate)
                 this.$hide();
 
@@ -815,7 +816,7 @@ jpf.JmlElement.propHandlers = {
               && jpf.xmldb.isChildOf(this, jpf.window.focussed, false))
                 jpf.window.moveNext();
         }
-        else if(jpf.isTrue(value)) {
+        else if (jpf.isTrue(value)) {
             this.oExt.style.display = "block"; //Some form of inheritance detection
 
             if (this.$show && !this.$noAlignUpdate)

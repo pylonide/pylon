@@ -401,7 +401,8 @@ jpf.Presentation = function(){
      * @attribute {String} style css style properties applied to the this element.
      */
     this.$propHandlers["style"] = function(value){
-        this.oExt.setAttribute("style", value);
+        if (!jpf.isParsing)
+            this.oExt.setAttribute("style", value);
     }
 
     var oldClass;
