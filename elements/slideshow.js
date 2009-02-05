@@ -84,10 +84,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.defaultimage   = null;
     this.defaulttitle   = "No description";
     this.delay          = 5;
+    this.scalewidth     = false;
 
     this.$supportedProperties.push("model", "thumbheight", "title", "loadmsg",
                                    "defaultthumb", "defaulttitle",
-                                   "defaultimage");
+                                   "defaultimage", "scalewidth");
     var _self = this;
 
     var previous, next, current, last;
@@ -104,6 +105,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     
     /* this.$hide and this.$show function are not overwritten */
     this.$positioning = "basic";
+    
+    this.$booleanProperties["scalewidth"] = true;
 
     this.$propHandlers["thumbheight"] = function(value) {
         if (parseInt(value))
@@ -165,16 +168,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number|XMLElement}   badge  picture number or its xml representation
      */
     this.select = function(badge) {
-        /*var firstNode  = _self.getFirstTraverseNode();
-
-        current = badge > 0
-            ? (badge > 1 && badge <= _self.getTraverseNodes().length
-                ? _self.getNextTraverse(firstNode, false, badge - 1)
-                : firstNode)
-            : badge;*/
         current = badge;
-        
-        //this.$refresh();
     }
 
     /**
@@ -190,9 +184,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oImage.src            = "about:blank";
         this.oBody.style.height    = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
-        this.oLoading.innerHTML    = current || this.defaultimage
-                                       ? this.loadmsg
-                                       : "";
+        this.oLoading.innerHTML    = this.loadmsg;
         /* Removes window scrollbars */
         this.lastOverflow = document.documentElement.style.overflow;                               
         document.documentElement.style.overflow = "hidden";
@@ -301,6 +293,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             _self.oTitle.style.visibility = "visible";
                             _self.oConsole.style.visibility = "visible";
 
+                            _self.checkThumbSize();
+
                             if (thumbnails) {
                                 _self.oThumbnails.style.visibility = "visible";
                             }
@@ -339,9 +333,43 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }, 30);
                 };
-
+    
                 _self.oImage.src = (_self.applyRuleSetOnNode("src", current)
                                     || _self.defaultimage || "about:blank");
+                
+                /* When image is unavailable and defaultImage is set, but not exist */
+                
+                jpf.console.info("Ready state: "+_self.oImage.readyState+" "+window.document.readyState)
+                if(_self.oImage && _self.oImage.readyState) {
+                    if(_self.oImage.readyState == "loading") {
+                        _self.oTitle.style.visibility = "visible";
+                        _self.oConsole.style.visibility = "visible";
+
+                        if (thumbnails) {
+                            _self.oThumbnails.style.height = _self.thumbheight + "px";
+                            _self.oThumbnails.style.visibility = "visible";
+                        }
+                        
+                        _self.oImage.style.display = "block";
+                        
+                        jpf.tween.single(_self.oImage, {
+                            steps : 5,
+                            type  : "fade",
+                            from  : 0,
+                            to    : 1
+                        });
+
+                        jpf.tween.single(_self.oTitle, {
+                            steps : 10,
+                            type  : "fade",
+                            from  : 0,
+                            to    : 1
+                        });
+
+                        onuse = false;
+                    }
+                }
+                
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
@@ -398,9 +426,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         if (this.$selected)
-            this.$selected.className = "picture";
+            this.$selected.className = "pictureBox";
         if (htmlElement)
-            htmlElement.className = "picture selected";
+            htmlElement.className = "pictureBox selected";
 
         this.$selected = htmlElement;
     };
@@ -462,6 +490,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * When xml representation of new image is set, function initiate redrawing
      */
     this.$refresh = function() {
+        /* Fix for situation when image not exist */
+        if(_self.oImage && _self.oImage.readyState) {
+            if(_self.oImage.readyState == "loading") {
+                onuse = false;
+            }
+        }
+
         if (onuse) {
             lastChoose.push(current);
             this.showLast();
@@ -741,19 +776,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$xmlUpdate = function() {
     };
 
-    /**
-     * It's called when thumbnail has been clicked.
-     * Adds selection to thumbnail and shows new image.
-     * 
-     * @param {HTMLElement}   oThumb   html representation of thumbnail element
-     */
-    this.clickThumb = function(oThumb) {
-        current = jpf.xmldb.getNode(oThumb);
-        this.addSelection();
-        this.$refresh();
-    }
-
-    /**
      * It's called when browser window is resizing. Keeps proportion of each
      * element, depends on browser window size.
      */
@@ -807,31 +829,98 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
        img.style.top  = "0px";
     }
 
+    /**
+     * It's called when thumbnail has been clicked.
+     * Adds selection to thumbnail and shows new image.
+     * 
+     * @param {HTMLElement}   oThumb   html representation of thumbnail element
+     */
+    this.clickThumb = function(oThumb) {
+        current = jpf.xmldb.getNode(oThumb);
+        this.addSelection();
+        this.$refresh();
+    }
+    
+    this.checkThumbSize = function() {
+        if(parseInt(this.otBody.childNodes[0].style.width) > 0) {
+            return;
+        }
+
+        var nodes = this.getTraverseNodes(), length = nodes.length;
+        
+        for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
+            pictureBox = this.otBody.childNodes[i];
+            thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+
+            diff = jpf.getDiff(pictureBox);
+            
+            bh = this.thumbheight - 10 - diff[1];
+            
+            img = new Image();
+            document.body.appendChild(img);
+            img.src = thumb ? thumb : this.defaultthumb;
+            
+            if (this.scalewidth) {
+                h = bh;
+                if (img.height < bh) {
+                    w = img.width;
+                }
+                else {
+                    img.setAttribute("height", bh);
+                    w = img.width;
+                }
+            }
+            else {
+                h = w = bh;
+            }
+
+            document.body.removeChild(img);
+            pictureBox.style.width = w + "px";
+        }
+    }
+
     this.$load = function(xmlRoot) {
         jpf.xmldb.addNodeListener(xmlRoot, this);
         var nodes = this.getTraverseNodes(),
             length = nodes.length;
 
-        for (var i = 0, img, thumb; i < length; i++) {
-            img = new Image();
-            this.otBody.appendChild(img);
-
+        for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
+            pictureBox = this.otBody.appendChild(document.createElement("div"));
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+            pictureBox.style.backgroundImage = 'url(' + (thumb ? thumb : this.defaultthumb) +  ')';
+
+            this.$setStyleClass(pictureBox, "pictureBox");
+            diff = jpf.getDiff(pictureBox);
+            
+            bh = this.thumbheight - 10 - diff[1];
+            
+            img = new Image();
+            document.body.appendChild(img);
             img.src = thumb ? thumb : this.defaultthumb;
-            this.$setStyleClass(img, "picture");
+            
+            if (this.scalewidth) {
+                h = bh;
+                if (img.height < bh) {
+                    w = img.width;
+                }
+                else {
+                    img.setAttribute("height", bh);
+                    w = img.width;
+                }
+            }
+            else {
+                h = w = bh;
+            }
+            jpf.console.info(w+" "+h+" - "+img.style.height)
+            document.body.removeChild(img);
 
-            var diff = jpf.getDiff(img);
+            pictureBox.style.height = h + "px";
+            pictureBox.style.width = w + "px";
+            pictureBox.style.marginTop = pictureBox.style.marginBottom = "5px";
 
-            img.setAttribute("height", this.thumbheight - 15);
+            jpf.xmldb.nodeConnect(this.documentId, nodes[i], pictureBox, this);
 
-            var temp_margin = 
-                Math.floor((this.thumbheight - img.height - diff[1]) / 2);
-
-            img.style.marginTop = (temp_margin < 5 ? 5 : temp_margin) + "px";
-
-            jpf.xmldb.nodeConnect(this.documentId, nodes[i], img, this);
-
-            img.onclick = function(e) {
+            pictureBox.onclick = function(e) {
                 _self.clickThumb(this);
             }
         }
@@ -845,10 +934,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
-        /* Removes window scrollbars */
-        this.lastOverflow = document.documentElement.style.overflow;
-        document.documentElement.style.overflow = "hidden";
-        
         _self.oExt.style.display = "block";
         _self.oInt.style.display = "block";
         _self.oBody.style.display = "block";
@@ -859,6 +944,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             from     : 0,
             to       : 0.7,
             onfinish : function() {
+
             }
         });
         this.$refresh();
