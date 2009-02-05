@@ -502,9 +502,9 @@ jpf.WindowImplementation = function(){
         jmlNode.dispatchEvent("DOMFocusOut");
         //#endif
     };
-
-    //#ifdef __WITH_WINDOW_FOCUS
+    
     var lastFocusParent;
+    //#ifdef __WITH_WINDOW_FOCUS
     this.addEventListener("focus", function(e){
         if (!jpf.window.focussed && lastFocusParent) {
             jpf.window.$focusLast(lastFocusParent);
