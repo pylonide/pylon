@@ -165,15 +165,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number|XMLElement}   badge  picture number or its xml representation
      */
     this.select = function(badge) {
-        var firstNode  = _self.getFirstTraverseNode();
-        
-        current = parseInt(badge) > 0
+        /*var firstNode  = _self.getFirstTraverseNode();
+
+        current = badge > 0
             ? (badge > 1 && badge <= _self.getTraverseNodes().length
                 ? _self.getNextTraverse(firstNode, false, badge - 1)
                 : firstNode)
-            : badge;
+            : badge;*/
+        current = badge;
         
-        this.$refresh();
+        //this.$refresh();
     }
 
     /**
@@ -849,24 +850,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         document.documentElement.style.overflow = "hidden";
         
         _self.oExt.style.display = "block";
-            
+        _self.oInt.style.display = "block";
+        _self.oBody.style.display = "block";
+        
         jpf.tween.single(_self.oCurtain, {
             steps    : 10, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
-                _self.oInt.style.display = "block";
-                
-                jpf.tween.single(_self.oBody, {
-                    steps    : 5, 
-                    type     : "fade",
-                    from     : 0,
-                    to       : 1,
-                    onfinish : function() {
-                        _self.oBody.style.display = "block";
-                    }
-                });
             }
         });
         this.$refresh();
@@ -876,26 +868,17 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Restores window scrollbars */
         document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
-        
-        jpf.tween.single(_self.oBody, {
-            steps    : 5, 
+
+        jpf.tween.single(_self.oCurtain, {
+            steps    : 10, 
             type     : "fade",
-            from     : 1,
+            from     : 0.7,
             to       : 0,
             onfinish : function() {
+                _self.oInt.style.display  = "none";
                 _self.oBody.style.display = "none";
-                
-                jpf.tween.single(_self.oCurtain, {
-                    steps    : 10, 
-                    type     : "fade",
-                    from     : 0.7,
-                    to       : 0,
-                    onfinish : function() {
-                        _self.oInt.style.display  = "none";
-                        _self.oBody.style.display = "none";
-                        _self.oExt.style.display  = "none";
-                    }
-                });
+                _self.oExt.style.display  = "none";
+                _self.oBody.style.display = "none";
             }
         });
     }
