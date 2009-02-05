@@ -71,7 +71,7 @@ jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
 
-        // #ifdef __WITH_TABSCROLL
+        // #ifdef __ENABLE_TABSCROLL
         if (!bSkinChange)
             jpf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
                 "jpf.all[" + this.uniqueId + "].correctScrollState()");

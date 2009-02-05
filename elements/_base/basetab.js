@@ -233,7 +233,7 @@ jpf.BaseTab = function(){
             page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
-        // #ifdef __WITH_TABSCROLL
+        // #ifdef __ENABLE_TABSCROLL
         this.scrollIntoView(page);
         // #endif
         return page;
@@ -250,13 +250,13 @@ jpf.BaseTab = function(){
             return false;
 
         page.removeNode();
-        // #ifdef __WITH_TABSCROLL
+        // #ifdef __ENABLE_TABSCROLL
         this.setScrollerState();
         // #endif
         return page;
     };
 
-    // #ifdef __WITH_TABSCROLL
+    // #ifdef __ENABLE_TABSCROLL
     
     var SCROLLANIM_INIT = {
         scrollOn: false,
@@ -516,7 +516,7 @@ jpf.BaseTab = function(){
             if (jmlNode.nextSibling || jmlNode.previousSibling)
                 this.set(jmlNode.nextSibling || jmlNode.previousSibling);
             else {
-                // #ifdef __WITH_TABSCROLL
+                // #ifdef __ENABLE_TABSCROLL
                 this.setScrollerState();
                 // #endif
                 this.$activepage  =
@@ -661,7 +661,7 @@ jpf.BaseTab = function(){
 
         this.oPages = this.$getLayoutNode("main", "pages", this.oExt);
 
-        // #ifdef __WITH_TABSCROLL
+        // #ifdef __ENABLE_TABSCROLL
         // add scroller node(s)
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
@@ -716,7 +716,7 @@ jpf.BaseTab = function(){
             //Let's not parse our children, when we've already have them
             if (this.childNodes.length) {
                 ready = true;
-                // #ifdef __WITH_TABSCROLL
+                // #ifdef __ENABLE_TABSCROLL
                 this.setScrollerState();
                 // #endif
                 return;
@@ -772,7 +772,7 @@ jpf.BaseTab = function(){
         }
 
         ready = true;
-        // #ifdef __WITH_TABSCROLL
+        // #ifdef __ENABLE_TABSCROLL
         window.setTimeout(function() {
             _self.setScrollerState();
         }, 0);
@@ -780,7 +780,7 @@ jpf.BaseTab = function(){
     };
 };
 
-// #ifdef __WITH_TABSCROLL
+// #ifdef __ENABLE_TABSCROLL
 jpf.BaseTab.SCROLL_LEFT  = 0x0001;
 jpf.BaseTab.SCROLL_RIGHT = 0x0002;
 jpf.BaseTab.SCROLL_BOTH  = 0x0004;
