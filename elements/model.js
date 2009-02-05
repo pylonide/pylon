@@ -225,7 +225,7 @@ jpf.model = function(data, caching){
      * @return  {XMLNode}  the changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
-        var node = this.data.selectSingleNode(xpath);
+        var node = jpf.xmldb.createNodeFromXpath(this.data, xpath);
         if (!node)
             return null;
 
