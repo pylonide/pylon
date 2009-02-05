@@ -487,9 +487,7 @@ jpf.Validation = function(){
             
             return true;
         }
-        
-        this.addValidationRule("!this.getValue() || this.__checkRemoteValidation()");
-        
+              
         setRule("valid-test", value
             ? "this.$checkRemoteValidation()"
             : null);
