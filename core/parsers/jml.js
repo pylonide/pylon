@@ -112,11 +112,14 @@ jpf.JmlParser = {
         jpf.console.info("Parse First Pass");
         // #endif
 
+        //@todo fix inline skin parsing collision
+        //"presentation", 
         for (var i = 0; i < xmlDocs.length; i++)
-            this.preLoadRef(xmlDocs[i], ["teleport", "presentation", "settings",
+            this.preLoadRef(xmlDocs[i], ["teleport", "settings",
                 "skin[not(@j_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
+        //"style", 
         for (var i = 0; i < xmlDocs.length; i++)
-            this.preLoadRef(xmlDocs[i], ["style", "model[@id]",
+            this.preLoadRef(xmlDocs[i], ["model[@id]",
                 "smartbinding[@id]", "iconmap"], true);
     },
 
