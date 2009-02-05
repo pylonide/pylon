@@ -233,7 +233,9 @@ jpf.BaseTab = function(){
             page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
+        // #ifdef __WITH_TABSCROLL
         this.scrollIntoView(page);
+        // #endif
         return page;
     };
 
@@ -248,10 +250,14 @@ jpf.BaseTab = function(){
             return false;
 
         page.removeNode();
+        // #ifdef __WITH_TABSCROLL
         this.setScrollerState();
+        // #endif
         return page;
     };
 
+    // #ifdef __WITH_TABSCROLL
+    
     var SCROLLANIM_INIT = {
         scrollOn: false,
         steps   : 15,
@@ -493,6 +499,8 @@ jpf.BaseTab = function(){
             bAnimating = false;
     };
 
+    // #endif
+
     /**** DOM Hooks ****/
 
     this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
@@ -508,7 +516,9 @@ jpf.BaseTab = function(){
             if (jmlNode.nextSibling || jmlNode.previousSibling)
                 this.set(jmlNode.nextSibling || jmlNode.previousSibling);
             else {
+                // #ifdef __WITH_TABSCROLL
                 this.setScrollerState();
+                // #endif
                 this.$activepage  =
                 this.activepage   =
                 this.activepagenr = null;
@@ -651,6 +661,7 @@ jpf.BaseTab = function(){
 
         this.oPages = this.$getLayoutNode("main", "pages", this.oExt);
 
+        // #ifdef __WITH_TABSCROLL
         // add scroller node(s)
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
@@ -683,6 +694,7 @@ jpf.BaseTab = function(){
                     o.$setStyleClass(this, "", ["click"]);');
             });
         }
+        // #endif
 
         //Skin changing support
         if (this.oInt) {
@@ -704,7 +716,9 @@ jpf.BaseTab = function(){
             //Let's not parse our children, when we've already have them
             if (this.childNodes.length) {
                 ready = true;
+                // #ifdef __WITH_TABSCROLL
                 this.setScrollerState();
+                // #endif
                 return;
             }
 
@@ -758,15 +772,19 @@ jpf.BaseTab = function(){
         }
 
         ready = true;
+        // #ifdef __WITH_TABSCROLL
         window.setTimeout(function() {
             _self.setScrollerState();
         }, 0);
+        // #endif
     };
 };
 
+// #ifdef __WITH_TABSCROLL
 jpf.BaseTab.SCROLL_LEFT  = 0x0001;
 jpf.BaseTab.SCROLL_RIGHT = 0x0002;
 jpf.BaseTab.SCROLL_BOTH  = 0x0004;
+// #endif
 
 /**
  * A page in a paged element. {i.e. a page in a {@link tab} element}
