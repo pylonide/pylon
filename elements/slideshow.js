@@ -426,9 +426,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         if (this.$selected)
-            this.$selected.className = "pictureBox";
+            this.$selected.className = "sspictureBox";
         if (htmlElement)
-            htmlElement.className = "pictureBox selected";
+            htmlElement.className = "sspictureBox ssselected";
 
         this.$selected = htmlElement;
     };
@@ -615,9 +615,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {
-            if ((this.className || "").indexOf("previous") != -1)
+            if ((this.className || "").indexOf("ssprevious") != -1)
                 _self.$Previous();
-            else if ((this.className || "").indexOf("next") != -1)
+            else if ((this.className || "").indexOf("ssnext") != -1)
                 _self.$Next();
         };
 
@@ -635,34 +635,34 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.otNext.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otNext, "nhover");
+            _self.$setStyleClass(_self.otNext, "ssnhover");
         };
 
         this.otPrevious.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "phover");
+            _self.$setStyleClass(_self.otPrevious, "ssphover");
         }
 
         this.otNext.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otNext, "", ["nhover"]);
+            _self.$setStyleClass(_self.otNext, "", ["ssnhover"]);
         };
 
         this.otPrevious.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "", ["phover"]);
+            _self.$setStyleClass(_self.otPrevious, "", ["ssphover"]);
         };
 
         this.oPlay.onclick = function(e) {
             if (timer7) {
                 _self.$stop();
-                _self.$setStyleClass(_self.oPlay, "", ["stop"]);
-                _self.$setStyleClass(_self.oPlay, "play");
+                _self.$setStyleClass(_self.oPlay, "", ["ssstop"]);
+                _self.$setStyleClass(_self.oPlay, "ssplay");
                 _self.oNext.style.visibility     = "visible";
                 _self.oPrevious.style.visibility = "visible";
                 _self.oThumbnails.style.display  = "block";
             }
             else {
                  _self.$play();
-                 _self.$setStyleClass(_self.oPlay, "", ["play"]);
-                 _self.$setStyleClass(_self.oPlay, "stop");
+                 _self.$setStyleClass(_self.oPlay, "", ["ssplay"]);
+                 _self.$setStyleClass(_self.oPlay, "ssstop");
                  _self.oNext.style.visibility     = "hidden";
                  _self.oPrevious.style.visibility = "hidden";
                  _self.oThumbnails.style.display  = "none";
@@ -890,7 +890,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
             pictureBox.style.backgroundImage = 'url(' + (thumb ? thumb : this.defaultthumb) +  ')';
 
-            this.$setStyleClass(pictureBox, "pictureBox");
+            this.$setStyleClass(pictureBox, "sspictureBox");
             diff = jpf.getDiff(pictureBox);
             
             bh = this.thumbheight - 10 - diff[1];
@@ -1009,7 +1009,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         oEmpty.style.display = "block";
         oEmpty.style.left = ((ww - ew) / 2 - bp - bn) + "px";
-        jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
+        jpf.setStyleClass(oEmpty, className, ["ssloading", "ssempty", "offline"]);
     };
 
     this.$removeClearMessage = function() {
