@@ -2001,7 +2001,7 @@ jpf.DataBinding = function(){
                     .replace(/\/\/+/, "/");
             }
 
-            if (jpf.isParsing)
+            if (jpf.isParsing && initModelId)
                 initModelId[isSelection] = modelId
             else
                 setModelQueue(modelId, isSelection);
