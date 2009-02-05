@@ -79,7 +79,7 @@ jpf.runNonIe = function (){
         if (!HTMLElement.prototype.insertAdjacentHTML) {
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
-                r.setStartBefore(document.body);//jpf.isSafari ? document.body : this);
+                r.setStartBefore(self.document ? document.body : this);//jpf.isSafari ? document.body : this);
                 var parsedHTML = r.createContextualFragment(htmlStr);
                 this.insertAdjacentElement(where,parsedHTML);
             };

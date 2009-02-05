@@ -25,8 +25,8 @@
  * @private
  */
 jpf.runGecko = function(){
-    //jpf.importClass(jpf.runNonIe, true, self);
-    jpf.runNonIe();
+    if (jpf.runNonIe)
+        jpf.runNonIe();
 
     /* ***************************************************************************
      XSLT

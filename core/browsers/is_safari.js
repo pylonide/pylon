@@ -88,7 +88,9 @@ jpf.runSafari = function(){
 
     // #endif
     
-    jpf.importClass(jpf.runNonIe, true, self);
+    if (jpf.runNonIe)
+        jpf.runNonIe();
+    //jpf.importClass(jpf.runNonIe, true, self);
 }
 
 // #endif

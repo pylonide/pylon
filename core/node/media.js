@@ -163,7 +163,7 @@ jpf.Media = function(){
     };
 
     this.$propHandlers["src"] = function(value){
-        if (loadTimer) return;
+        if (loadTimer || !value) return; //@todo for mike: please check if this is the best behaviour for setting an empty value
 
         var oUrl = new jpf.url(value);
         this.src = oUrl.uri;

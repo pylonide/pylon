@@ -300,8 +300,6 @@ var jpf = {
             jpf.runGecko();
             //this.importClass(jpf.runGecko, true, self);
         // #endif
-        //runGecko = runOpera = runSafari = runIE = runXpath
-            //= runNonIe = runXslt = undefined;
 
         //#ifdef __PARSE_GET_VARS
         for (var i, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++)

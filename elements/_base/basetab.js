@@ -123,6 +123,15 @@ jpf.BaseTab = function(){
 
             return false;
         }
+        
+        if (!page.visible || page.disabled) {
+            //#ifdef __DEBUG
+            jpf.console.warn("Setting active page on page component which \
+                              is not visible or disabled. Cancelling.");
+            //#endif
+
+            return false;
+        }
 
         //If page is given as first argument, let's use its position
         if (next.tagName) {

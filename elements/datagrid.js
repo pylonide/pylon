@@ -1585,9 +1585,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.isIE) //@todo this can be removed when focussing is fixed for this component
                 this.$setStyleClass(this.oDoc.documentElement, this.baseCSSname + "Focus");
             
-            if (!jpf.isIE)
-                jpf.importClass(jpf.runNonIe, true, this.oWin);
-
             jpf.convertIframe(this.oIframe, true);
 
             // #ifdef __WITH_RENAME
@@ -2051,11 +2048,27 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
 //#endif
 
-
 jpf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
+    debugger;
+    if (!jpf.isIE)
+        jpf.importClass(jpf.runNonIe, true, win);
+        
+    //Load Browser Specific Code
+    // #ifdef __SUPPORT_SAFARI
+    if (this.isSafari) 
+        this.importClass(jpf.runSafari, true, win);
+    // #endif
+    // #ifdef __SUPPORT_OPERA
+    if (this.isOpera) 
+        this.importClass(jpf.runOpera, true, win);
+    // #endif
+    // #ifdef __SUPPORT_GECKO
+    if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
+        this.importClass(jpf.runGecko, true, win);
+    // #endif
     
     doc.onkeydown = function(e){
         if (!e) e = win.event;
