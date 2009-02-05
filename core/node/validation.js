@@ -460,8 +460,9 @@ jpf.Validation = function(){
             rvCache[value] = -1;
             
             var instr = this.$jml.getAttribute('valid-test').split("==");
-            jpf.getData(instr[0], this.XMLRoot, null,
-              function(data, state, extra){
+            jpf.getData(instr[0], this.xmlRoot, {
+               value : this.getValue() 
+            }, function(data, state, extra){
                   if (state != jpf.SUCCESS) {
                       if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
                           return extra.tpModule.retry(extra.id);
@@ -481,7 +482,10 @@ jpf.Validation = function(){
 
                   rvCache[value] = instr[1] ? data == instr[1] : jpf.isTrue(data);
                   
-                  if(!rvCache[value]) _self.setError();
+                  if(!rvCache[value]){
+                    if (!_self.hasFocus())
+                        _self.setError();
+                  }
                   else _self.clearError();
               });
             
