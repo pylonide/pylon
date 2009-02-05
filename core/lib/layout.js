@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
+// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID || __WITH_LAYOUT
 
 /**
  * Takes care of the spatial order of elements withing the display area
