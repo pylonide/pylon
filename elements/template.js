@@ -64,7 +64,7 @@ jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
     this.detach = function(){
         var nodes = this.childNodes;
         var p = nodes[0].oExt.parentNode;
-        if (p.nodeType != 1)
+        if (!p || p.nodeType != 1)
             return;
 
         for (var i = 0, l = nodes.length; i < l; i++) {

@@ -174,9 +174,9 @@ jpf.Cache = function(){
      */
     this.getNodeByXml = function(xmlNode){
         return xmlNode
-            ? this.getNodeFromCache((typeof xmlNode == "object"
+            ? (this.getNodeFromCache((typeof xmlNode == "object"
                 ? xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
-                : xmlNode) + "|" + this.uniqueId)
+                : xmlNode) + "|" + this.uniqueId))
             : null;
     };
 
