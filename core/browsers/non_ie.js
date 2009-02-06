@@ -84,6 +84,8 @@ jpf.runNonIe = function (){
                 this.insertAdjacentElement(where,parsedHTML);
             };
         }
+        
+        document.body.constructor.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
     
         if (!HTMLElement.prototype.insertAdjacentText) {
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
