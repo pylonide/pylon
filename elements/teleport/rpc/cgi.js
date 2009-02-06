@@ -226,45 +226,46 @@ jpf.datainstr["url.delete"] =
 jpf.datainstr["url.put"]    =
 jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
     if (!options.parsed) {
-        var query = options.instrData.join(":").split("?");
-        var url   = query.shift();
-
-        //@todo change this parser to support {} and []
-        query = query.join("?").replace(/\=(xpath|eval)\:([^\&]*)\&/g,
-          function(m, type, content){
-            if (type == "xpath") {
-                var o = xmlNode.selectSingleNode(RegExp.$1);
-                var retvalue = o
+        var url = options.instrData.join(":");
+        
+        if (xmlContext) {
+            //Xpath
+            url = url.replace(/\{(.*?)\}/g,
+              function(m, xpath){
+                var o = xmlContext.selectSingleNode(xpath);
+                return o
                     ? (o.nodeType >= 2 && o.nodeType <= 4
                         ? o.nodeValue
-                        : o.xml || o.serialize())
+                        : jpf.xmldb.convertXml(o, "cgivars"))
                     : ""
-            }
-            else if(type == "eval") {
-                try {
-                    //Safely set options
-                    var retvalue = (function(){
-                        //Please optimize this
-                        if(options)
-                            for(var prop in options)
-                                eval("var " + prop + " = options[prop]");
-
-                        return eval(content);//RegExp.$1);
-                    })();
+            });
+            
+            //Javascript
+            url = url.replace(/\[(.*?)\]/g,
+              function(m, js){
+                var o;
+                
+                try{
+                    with (options) {
+                        o = eval(js);
+                    }
                 }
                 catch(e){
                     //#ifdef __DEBUG
                     throw new Error(jpf.formatErrorString(0, null,
                         "Saving/Loading data", "Could not execute javascript \
-                        code in process instruction '" + content
+                        code in process instruction '" + js
                         + "' with error " + e.message));
                     //#endif
                 }
-            }
-
-            return "=" + retvalue + "&";
-        });
-
+                
+                return o || "";
+            });
+        }
+        
+        var split    = url.split("?");
+            url      = split.shift();
+        var query    = split.join("?");
         var args     = options.args;
         var httpBody = (args && args.length)
             ? (args[0].nodeType
