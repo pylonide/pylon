@@ -833,7 +833,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$fill = function(nodes){
         if (useiframe)
             this.pHtmlDoc = this.oDoc;
-        
+
         if (useTable) {
             jpf.xmldb.htmlImport(this.nodes, this.oInt, null,
                  "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
@@ -1564,7 +1564,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oDoc = this.oWin.document;
             this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
                 <html xmlns="http://www.w3.org/1999/xhtml">\
-                    <head><script>jpf = {\
+                    <head><script>\
+                        jpf = {\
                             lookup : function(uid){\
                                 return window.parent.jpf.lookup(uid);\
                             },\
@@ -2052,7 +2053,7 @@ jpf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
-    //debugger;
+
     if (!jpf.isIE)
         jpf.importClass(jpf.runNonIe, true, win);
         

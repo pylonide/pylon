@@ -37,7 +37,7 @@ jpf.runGecko = function(){
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
         var oResult = this.evaluate(sExpr, (contextNode || this),
             this.createNSResolver(this.documentElement),
-            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
         var nodeList = new Array(oResult.snapshotLength);
         nodeList.expr = sExpr;
         for (var i = 0; i < nodeList.length; i++) 

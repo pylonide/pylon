@@ -349,10 +349,11 @@ jpf.runNonIe = function (){
               && xmlNode.ownerDocument == htmlNode.ownerDocument)
                 return htmlNode.insertBefore(xmlNode, beforeNode);
             
-            var strHTML = (xmlNode.outerHTML
-                || (xmlNode.nodeType == 1 ? xmlNode.xml || xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
+            //var strHTML = (xmlNode.outerHTML
+                //|| (xmlNode.nodeType == 1 ? xmlNode.xml || xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
                 //.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                
+            
+            var strHTML = jpf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
             var pNode = (beforeNode || htmlNode);
             if (pNode.nodeType == 11){
                 var id = xmlNode.getAttribute("id");

@@ -55,4 +55,6 @@ jpf.dragmode = {
 };
 
 jpf.Init.run('jpf.dragmode');
-//#endif
+/*#else
+jpf.dragmode = {};
+#endif */
