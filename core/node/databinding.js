@@ -1194,7 +1194,12 @@ jpf.DataBinding = function(){
      *
      */
     this.reload = function(){
-        this.load(this.xmlRoot, this.cacheID, true);
+        var sb = this.getSmartBinding();
+        if (sb && sb.$isMarkedForUpdate(this)) {
+            sb.$updateMarkedItems();
+        }
+        else
+            this.load(this.xmlRoot, this.cacheID, true);
     };
 
     /**

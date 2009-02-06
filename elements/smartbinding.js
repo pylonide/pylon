@@ -286,8 +286,14 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         return this;
     };
     
+    this.$isMarkedForUpdate = function(jmlNode){
+        return queue[jmlNode.uniqueId] ? true : false;
+    }
+    
     this.$updateMarkedItems = function(){
-        var jmlNode, q = queue; timer = null; queue = {}
+        clearTimeout(timer);
+        
+        var jmlNode, model, q = queue; timer = null; queue = {}
         for (var id in q) {
             //We're only processing nodes that are registered here
             if (!this.jmlNodes[id])
@@ -300,7 +306,12 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
                     if (!this[part]) continue;
                     jmlNode[parts[part]](this[part], this["xml" + part]);
                 }
-                jmlNode.reload();
+                
+                model = jmlNode.getModel();
+                if (model)
+                    model.reloadJmlNode(jmlNode.uniqueId);
+                else
+                    jmlNode.reload();
             }
             else {
                 for (part in q[id]) {
