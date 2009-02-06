@@ -338,8 +338,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                     || _self.defaultimage || "about:blank");
                 
                 /* When image is unavailable and defaultImage is set, but not exist */
-                
-                jpf.console.info("Ready state: "+_self.oImage.readyState+" "+window.document.readyState)
                 if(_self.oImage && _self.oImage.readyState) {
                     if(_self.oImage.readyState == "loading") {
                         _self.oTitle.style.visibility = "visible";
@@ -912,7 +910,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             else {
                 h = w = bh;
             }
-            jpf.console.info(w+" "+h+" - "+img.style.height)
+
             document.body.removeChild(img);
 
             pictureBox.style.height = h + "px";
@@ -949,16 +947,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             from     : 0,
             to       : 0.7,
             onfinish : function() {
-
             }
         });
         this.$refresh();
     }
-    
+
     this.$hide = function () {
         /* Restores window scrollbars */
         document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
+        _self.oBody.style.display = "none";
 
         jpf.tween.single(_self.oCurtain, {
             steps    : 10, 
@@ -967,7 +965,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             to       : 0,
             onfinish : function() {
                 _self.oInt.style.display  = "none";
-                _self.oBody.style.display = "none";
                 _self.oExt.style.display  = "none";
                 _self.oBody.style.display = "none";
             }
