@@ -186,7 +186,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
         this.oLoading.innerHTML    = this.loadmsg;
         /* Removes window scrollbars */
-        this.lastOverflow = document.documentElement.style.overflow;                               
+        this.lastOverflow = document.documentElement.style.overflow;
         document.documentElement.style.overflow = "hidden";
 
         if (current) {
@@ -935,6 +935,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
+        /* Removes window scrollbars */
+        this.lastOverflow = document.documentElement.style.overflow;
+        document.documentElement.style.overflow = "hidden";
+        
         _self.oExt.style.display = "block";
         _self.oInt.style.display = "block";
         _self.oBody.style.display = "block";
