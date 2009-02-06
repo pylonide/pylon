@@ -1174,13 +1174,6 @@ jpf.layout = {
         l.layout.reset();
     },
 
-    timer : null,
-    qlist : {},
-    //@todo incorrect assumption that its only for docking
-    //#ifdef __WITH_DOCKING
-    dlist : [],
-    //#endif
-
     removeAll : function(aData) {
         aData.children.length = null
         this.compileAlignment(aData);
@@ -1193,6 +1186,13 @@ jpf.layout = {
     // #endif
     
     // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING 
+
+    timer : null,
+    qlist : {},
+    //@todo incorrect assumption that its only for docking
+    //#ifdef __WITH_DOCKING
+    dlist : [],
+    //#endif
     
     queue : function(oHtml, obj, compile){
         if (this.qlist[oHtml.getAttribute("id")]) {

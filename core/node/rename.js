@@ -252,14 +252,12 @@ jpf.Rename = function(){
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
 
-        //#ifdef __WITH_RENAME_AUTOCOMPLETE
         this.oTxt.onkeydown = function(){
             if (!this.host.$autocomplete)
                 return;
 
             this.host.$lookup(this[jpf.hasContentEditable ? "innerHTML" : "value"]);
         }
-        //#endif
 
         this.oTxt.select = function(){
             if (!jpf.hasMsRangeObject)

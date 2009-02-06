@@ -76,6 +76,7 @@ var jpf = {
     autoLoadSkin  : false,
     crypto        : {}, //namespace
     _GET          : {},
+    dragmode      : {},
     basePath      : "./",
 
     //#ifdef __PARSER_JML

@@ -133,12 +133,12 @@ jpf.BaseComm = function(x){
         if (!jpf[this.type]) 
             throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.$jml));
         
-        this.inherit(jpf[this.type]); /** @inherits jpf[this.type] */
+        this.inherit(jpf[this.type]);
         if (this.useHTTP) {
             // Inherit from HTTP Module
             if (!jpf.http) 
                 throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.$jml));
-            this.inherit(jpf.http); /** @inherits jpf.http */
+            this.inherit(jpf.http);
         }
         
         if (this.$jml.getAttribute("protocol")) {
@@ -146,7 +146,7 @@ jpf.BaseComm = function(x){
             var proto = this.$jml.getAttribute("protocol").toLowerCase();
             if (!jpf[proto]) 
                 throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.$jml));
-            this.inherit(jpf[proto]); /** @inherits jpf[proto] */
+            this.inherit(jpf[proto]);
         }
     }
     

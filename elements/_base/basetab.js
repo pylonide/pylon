@@ -169,7 +169,9 @@ jpf.BaseTab = function(){
 
         page.$activate();
         this.$activepage = page;
+        //#ifdef __ENABLE_TABSCROLL
         this.scrollIntoView(page);
+        //#endif
 
         //Loader support
         if (this.hideLoader) {
