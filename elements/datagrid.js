@@ -1943,7 +1943,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                     jpf.setModel(template, {
                         $xmlUpdate : function(){
-                            debugger;
+                            //debugger;
                         },
                         
                         load: function(xmlNode){
@@ -2052,7 +2052,7 @@ jpf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
-    debugger;
+    //debugger;
     if (!jpf.isIE)
         jpf.importClass(jpf.runNonIe, true, win);
         
