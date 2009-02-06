@@ -161,7 +161,7 @@ jpf.appsettings = {
         this.name               = x.getAttribute("name")
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
 
-        this.baseurl            = jpf.parseExpression(x.getAttribute("baseurl"));
+        this.baseurl            = jpf.parseExpression(x.getAttribute("baseurl") || "");
         this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
         this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
         this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));

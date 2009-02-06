@@ -311,7 +311,7 @@ jpf.getNoCacheUrl = function(url){
  * @return {String} the result of the parsing.
  */
 jpf.parseExpression = function(str){
-    if(!jpf.parseExpression.regexp.test(str))
+    if (!jpf.parseExpression.regexp.test(str))
         return str;
 
     //#ifdef __DEBUG
