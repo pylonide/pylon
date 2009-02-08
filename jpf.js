@@ -23,7 +23,7 @@
  * Javeline Platform
  *
  * @author    Ruben Daniels ruben@javeline.com
- * @version   1.0
+ * @version   2.0
  * @url       http://www.ajax.org
  */
 var jpf = {

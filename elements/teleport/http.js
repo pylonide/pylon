@@ -227,7 +227,7 @@ jpf.http = function(){
         //#endif
 
         var async = options.async
-            || options.async === undefined || jpf.isOpera;
+            || typeof options.async == "undefined" || jpf.isOpera;
 
         //#ifdef __SUPPORT_SAFARI
         if (jpf.isSafari)
@@ -340,8 +340,8 @@ jpf.http = function(){
             http.open(this.method || options.method || "GET", httpUrl,
                 async, options.username || null, options.password || null);
 
-            //OPERA ERROR's here... on retry
-            http.setRequestHeader("User-Agent", "Javeline TelePort 1.0.0"); //@deprecated
+            //@todo OPERA ERROR's here... on retry [is this still applicable?]
+            http.setRequestHeader("User-Agent", "Javeline TelePort 2.0"); //@deprecated
             http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             http.setRequestHeader("Content-type", this.contentType
                 || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
@@ -495,7 +495,7 @@ jpf.http = function(){
         clearInterval(qItem.timer);
         //#endif
 
-        if (!window.navigator.onLine && (location.protocol != "file:"
+        if (window.navigator.onLine === false && (location.protocol != "file:"
           || qItem.url.indexOf("http://") > -1))
             return false;
 
