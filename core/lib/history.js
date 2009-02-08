@@ -154,7 +154,7 @@ jpf.history = {
         (jpf.isIE ? this.iframe : window).location.href = "#" + name;
 
         if (!jpf.isIE)
-            History.lastUrl = location.href;
+            jpf.history.lastUrl = location.href;
     },
 
     timer : null,

@@ -574,5 +574,6 @@ jpf.Event = function(name, data){
 };
 
 jpf.inherit(jpf.Class);
+jpf.Init.run('class');
 
 // #endif

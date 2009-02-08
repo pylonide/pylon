@@ -256,6 +256,7 @@ var jpf = {
      * Starts the application.
      */
     start : function(){
+        this.started = true;
         var sHref = location.href.split("?")[0];
 
         //Set Variables
@@ -347,8 +348,8 @@ var jpf = {
                    webserver - please consider using the file:// protocol to \
                    load your files, because that will make your application \
                    load several times faster.\
-                   On a webserver, we recommend using a release build of \
-                   Javeline Platform.");
+                   On a webserver, we recommend using a release or debug build \
+                   of Javeline Platform.");
         }
 
         jpf.console.info("Loading Dependencies...");
@@ -391,12 +392,16 @@ var jpf = {
             delete this.nsqueue[name];
 
             for (var ns in this.nsqueue) {
-                if (ns.indexOf(name)) {
+                if (ns.indexOf(name) > -1) {
                     this.namespace(ns, this.nsqueue[ns]);
                 }
             }
+            
+            return true;
         }catch(e){
             this.nsqueue[name] = oNamespace;
+            
+            return false;
         }
     },
     //# endif
@@ -780,6 +785,7 @@ var jpf = {
          * @param {String} data     extra data that might help in debugging.
          */
         info : function(msg, subtype, data){
+            document.title = msg;
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif
@@ -932,7 +938,7 @@ var jpf = {
         jpf.console.info("including js file: " + sourceFile);
 
         var sSrc = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
-        if (/WebKit/i.test(navigator.userAgent)) {
+        if (jpf.isSafariOld || !jpf.started) {
             document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
         }
         else {
@@ -1824,9 +1830,9 @@ var jpf = {
         }
 
         for (i in this.nsqueue) {
-            if (this.nsqueue[i]) {
+            if (this.nsqueue[i] && jpf.namespace(i, this.nsqueue[i])) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for namespace to come in " + this.nsqueue[i]);
+                jpf.console.info("Waiting for namespace to come in " + i);
                 //#endif
                 return false;
             }

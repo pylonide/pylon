@@ -66,7 +66,7 @@
 /**
  * @private
  */
-jpf.datainstr = {
+jpf.namespace("datainstr", {
     "call" : function(xmlContext, options, callback){
         var parsed = options.parsed || this.parseInstructionPart(
             options.instrData.join(":"), xmlContext, options.args, options);
@@ -148,7 +148,7 @@ jpf.datainstr = {
     }
 
     // #endif
-};
+});
 
 
 /**
@@ -169,13 +169,14 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
     if (!options) options = {};
     options.instrData = instruction.split(":");
     options.instrType = options.instrData.shift();
-
+    
     var instrType = options.instrType.indexOf("url.") == 0
         ? "url"
         : options.instrType;
 
     //#ifdef __DEBUG
     options.instruction = instruction;
+
     if (!this.datainstr[instrType])
         throw new Error(jpf.formatErrorString(0, null,
             "Processing a data instruction",

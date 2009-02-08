@@ -149,7 +149,7 @@ jpf.JmlParser = {
             //Process Node
             if (this.handler[tagName]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Processing [preload] '" + tagName + "' node");
+                jpf.console.info("Processing [preload] " + tagName + " node");
                 //#endif
 
                 o = this.handler[tagName](x);

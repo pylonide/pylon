@@ -79,13 +79,14 @@ jpf.runNonIe = function (){
         if (!HTMLElement.prototype.insertAdjacentHTML) {
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
-                r.setStartBefore(self.document ? document.body : this);//jpf.isSafari ? document.body : this);
+                r.setStartBefore(jpf.isSafari ? document.body : (self.document ? document.body : this));
                 var parsedHTML = r.createContextualFragment(htmlStr);
-                this.insertAdjacentElement(where,parsedHTML);
+                this.insertAdjacentElement(where, parsedHTML);
             };
         }
         
-        document.body.constructor.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
+        if (jpf.isSafari || jpf.isChrome)
+            document.body.constructor.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
     
         if (!HTMLElement.prototype.insertAdjacentText) {
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){

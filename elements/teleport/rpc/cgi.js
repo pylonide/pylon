@@ -219,12 +219,7 @@ jpf.cgi = function(){
 }
 
 // #ifdef __WITH_DATA_INSTRUCTIONS
-
-jpf.datainstr["url"]        =
-jpf.datainstr["url.post"]   =
-jpf.datainstr["url.delete"] =
-jpf.datainstr["url.put"]    =
-jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
+jpf.namespace("datainstr.url", function(xmlContext, options, callback){
     if (!options.parsed) {
         var url = options.instrData.join(":");
         
@@ -289,7 +284,7 @@ jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
     oHttp.method = (options.instrType.replace(/url.?/, "") || "GET").toUpperCase();
     oHttp.get(jpf.getAbsolutePath(jpf.appsettings.baseurl, url + (oHttp.method == "GET" ? "?" + query : "")), callback,
         jpf.extend({data : httpBody}, options));
-}
+});
 
 // #endif
 
