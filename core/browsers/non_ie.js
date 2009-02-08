@@ -86,7 +86,7 @@ jpf.runNonIe = function (){
         }
         
         if (jpf.isSafari || jpf.isChrome)
-            document.body.constructor.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
+            HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
     
         if (!HTMLElement.prototype.insertAdjacentText) {
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
