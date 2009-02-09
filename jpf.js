@@ -785,7 +785,6 @@ var jpf = {
          * @param {String} data     extra data that might help in debugging.
          */
         info : function(msg, subtype, data){
-            document.title = msg;
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif
