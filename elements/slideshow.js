@@ -843,11 +843,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.checkThumbSize = function() {
-        if(parseInt(this.otBody.childNodes[0].style.width) > 0) {
+        /*if(parseInt(this.otBody.childNodes[0].style.width) > 0) {
             return;
-        }
+        }*/
 
         var nodes = this.getTraverseNodes(), length = nodes.length;
+        var widthSum = 0;
         
         for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
             pictureBox = this.otBody.childNodes[i];
@@ -875,9 +876,21 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 h = w = bh;
             }
 
+            widthSum += w + diff[0]
+                     + (parseInt(jpf.getStyle(pictureBox, "margin-left")
+                         || jpf.getStyle(pictureBox, "marginLeft")))
+                     + (parseInt(jpf.getStyle(pictureBox, "margin-right")
+                         || jpf.getStyle(pictureBox, "marginRight")));
             document.body.removeChild(img);
             pictureBox.style.width = w + "px";
         }
+
+        var thumbDiff = jpf.getDiff(this.otBody);
+
+        this.otPrevious.style.visibility = this.otNext.style.visibility =
+            widthSum < this.oThumbnails.offsetWidth - thumbDiff[0]
+                ? "hidden"
+                : "visible";
     }
 
     this.$load = function(xmlRoot) {
