@@ -185,6 +185,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oBody.style.height    = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
         this.oLoading.innerHTML    = this.loadmsg;
+        
+        jpf.console.info("scroll init");
         /* Removes window scrollbars */
         this.lastOverflow = document.documentElement.style.overflow;
         document.documentElement.style.overflow = "hidden";
@@ -933,8 +935,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     this.$show = function() {
+        jpf.console.info("show");
         /* Removes window scrollbars */
-        this.lastOverflow = document.documentElement.style.overflow;
+        this.lastOverflow = document.documentElement.style.overflow == "hidden"
+            ? "auto"
+            : document.documentElement.style.overflow;
+            
         document.documentElement.style.overflow = "hidden";
         
         _self.oExt.style.display = "block";
@@ -953,6 +959,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$hide = function () {
+        jpf.console.info("hide "+ this.lastOverflow);
         /* Restores window scrollbars */
         document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
