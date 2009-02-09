@@ -1573,7 +1573,7 @@ jpf.DataBinding = function(){
 
         initModelId = null;
 
-        if (this.hasFeature(__MULTISELECT__)) {
+        if (this.hasFeature(__MULTISELECT__) || this.$hasStateMessages) {
             //@todo An optimization might be to loop through the parents once
             var defProps = ["empty-message", "loading-message", "offline-message"];
 

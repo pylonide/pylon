@@ -75,7 +75,7 @@ jpf.runNonIe = function (){
                 }
             };
         }
-    
+
         if (!HTMLElement.prototype.insertAdjacentHTML) {
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
@@ -84,9 +84,9 @@ jpf.runNonIe = function (){
                 this.insertAdjacentElement(where, parsedHTML);
             };
         }
-        
+
         if (jpf.isSafari || jpf.isChrome)
-            HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML
+            HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
     
         if (!HTMLElement.prototype.insertAdjacentText) {
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
