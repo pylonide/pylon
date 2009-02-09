@@ -209,8 +209,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     last                           = current;
                     _self.oBody.style.display      = "block";
                     this.style.display             = "block";
-                    var imgWidth                   = this.offsetWidth;
-                    var imgHeight                  = this.offsetHeight;
+                    var imgWidth                   = this.offsetWidth || this.width;
+                    var imgHeight                  = this.offsetHeight || this.height;
                     var b                          = _self.oBody;
                     var im                         = _self.oImage;
                     this.style.display             = "none";
@@ -241,49 +241,37 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var diff = jpf.getDiff(b);
                     var checkWH = [false, false];
 
-                    if (lastIWidth !== imgWidth) {
-                        lastIWidth = imgWidth;
-                        jpf.tween.single(b, {
-                            steps    : jpf.isGecko
-                                ? 20
-                                : (Math.abs(imgWidth - b.offsetWidth) > 40
-                                    ? 10
-                                    : 3),
-                            anim     : jpf.tween.EASEIN,
-                            type     : "mwidth",
-                            from     : b.offsetWidth - diff[0],
-                            to       : Math.min(imgWidth, ww - hSpace),
-                            onfinish : function() {
-                                checkWH[0] = true;
-                            }
-                        });
-                    }
-                    else {
-                        checkWH[0] = true;
-                    }
+                    jpf.tween.single(b, {
+                        steps    : jpf.isGecko
+                            ? 20
+                            : (Math.abs(imgWidth - b.offsetWidth) > 40
+                                ? 10
+                                : 3),
+                        anim     : jpf.tween.EASEIN,
+                        type     : "mwidth",
+                        from     : b.offsetWidth - diff[0],
+                        to       : Math.min(imgWidth, ww - hSpace),
+                        onfinish : function() {
+                            checkWH[0] = true;
+                        }
+                    });
 
-                    if (lastIHeight !== imgHeight) {
-                        lastIHeight = imgHeight;
-                        jpf.tween.single(b, {
-                            steps    : jpf.isGecko
-                                ? 20
-                                : (Math.abs(imgHeight - b.offsetHeight) > 40
-                                    ? 10
-                                    : 3),
-                            anim     : jpf.tween.EASEIN,
-                            type     : "mheight",
-                            margin   : -1*(bottomPanel - 10),
-                            from     : b.offsetHeight - diff[1],
-                            to       : Math.min(imgHeight,
-                                                wh - vSpace - bottomPanel),
-                            onfinish : function() {
-                                checkWH[1] = true;
-                            }
-                        });
-                    }
-                    else {
-                        checkWH[1] = true;
-                    }
+                    jpf.tween.single(b, {
+                        steps    : jpf.isGecko
+                            ? 20
+                            : (Math.abs(imgHeight - b.offsetHeight) > 40
+                                ? 10
+                                : 3),
+                        anim     : jpf.tween.EASEIN,
+                        type     : "mheight",
+                        margin   : -1*(bottomPanel - 10),
+                        from     : b.offsetHeight - diff[1],
+                        to       : Math.min(imgHeight,
+                                            wh - vSpace - bottomPanel),
+                        onfinish : function() {
+                            checkWH[1] = true;
+                        }
+                    });
 
                     var timer2;
                     timer2 = setInterval(function() {
@@ -334,12 +322,20 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }, 30);
                 };
-    
+
+                _self.oImage.onerror = function() {
+                    onuse = false;
+                }
+
+                _self.oImage.onabort = function() {
+                    onuse = false;
+                }
+
                 _self.oImage.src = (_self.applyRuleSetOnNode("src", current)
                                     || _self.defaultimage || "about:blank");
                 
                 /* When image is unavailable and defaultImage is set, but not exist */
-                if(_self.oImage && _self.oImage.readyState) {
+                /*if(_self.oImage && _self.oImage.readyState) {
                     if(_self.oImage.readyState == "loading") {
                         _self.oTitle.style.visibility = "visible";
                         _self.oConsole.style.visibility = "visible";
@@ -367,7 +363,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
                         onuse = false;
                     }
-                }
+                }*/
                 
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
@@ -490,11 +486,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$refresh = function() {
         /* Fix for situation when image not exist */
-        if(_self.oImage && _self.oImage.readyState) {
+        /*if(_self.oImage && _self.oImage.readyState) {
             if(_self.oImage.readyState == "loading") {
                 onuse = false;
             }
-        }
+        }*/
 
         if (onuse) {
             lastChoose.push(current);
