@@ -41,7 +41,7 @@
 jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can't get the focus
     this.focussable  = false;
-
+    this.$hasStateMessages = true;
     var _self        = this;
 
     /**** Properties and Attributes ****/

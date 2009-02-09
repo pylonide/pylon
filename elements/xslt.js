@@ -36,6 +36,7 @@
  * @since       0.9
  */
 jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
+    this.$hasStateMessages = true;
     // DATABINDING
     this.mainBind = "contents";
     

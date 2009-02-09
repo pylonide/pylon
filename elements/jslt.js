@@ -45,6 +45,7 @@
  * @since       0.9
  */
 jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
+    this.$hasStateMessages = true;
     this.mainBind = "contents";
     this.focussable = false;
     
