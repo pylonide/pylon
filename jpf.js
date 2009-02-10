@@ -150,7 +150,6 @@ var jpf = {
     setCompatFlags : function(){
         //Set Compatibility
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
-        this.hasContentEditable        = jpf.isIE || jpf.isSafari;
         this.supportVML                = jpf.isIE;
         this.supportCanvas             = !jpf.isIE;
         this.supportSVG                = !jpf.isIE;

@@ -70,6 +70,10 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["value"] = function(value){
         var cacheObj = false;
 
+        if (value)
+            this.$removeClearMessage();
+        //@todo else
+
         if (typeof value != "string")
             value = value ? value.toString() : "";
 
