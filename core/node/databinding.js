@@ -1640,7 +1640,7 @@ jpf.DataBinding = function(){
             || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
             || "No items";
 
-        if (!jpf.isParsing)
+        if (!jpf.isParsing) 
             this.$updateClearMessage(this.emptyMsg, "empty");
     };
 

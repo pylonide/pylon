@@ -448,7 +448,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         //Dynamic SubLoading (Insertion) of SubTree
-        if (loadChildren && !this.hasLoadStatus(xmlNode))
+        if (loadChildren && !this.hasLoadStatus(xmlNode) || hasChildren && !this.prerender)
             this.$setLoading(xmlNode, container);
         else if (!this.getTraverseNodes(xmlNode).length 
           && this.applyRuleSetOnNode("empty", xmlNode))
@@ -518,9 +518,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.prerender)
             this.$addNodes(xmlNode, container, true); //checkChildren ???
-        else {
+        /*else {
             this.setLoadStatus(xmlNode, "potential");
-        }
+        }*/
 
         return container;
     };
@@ -915,8 +915,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if (!this.prerender) {
             this.setLoadStatus(xmlNode, "loading");
+            this.$removeLoading(jpf.xmldb.findHTMLNode(xmlNode, this));
             var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
-            xmlUpdateHandler.call(this, "insert", xmlNode, result);
+            xmlUpdateHandler.call(this, {
+                action  : "insert", 
+                xmlNode : xmlNode, 
+                result  : result,
+                anim    : true
+            });
         }
     };
     
@@ -938,7 +944,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode) return;
         if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
-            this.slideOpen(container, e.xmlNode, true);
+            this.slideOpen(container, e.xmlNode, e.anim ? false : true);
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);

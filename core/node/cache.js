@@ -250,11 +250,18 @@ jpf.Cache = function(){
                 }
             }
         }
+        else if (this.$clear)
+            this.$clear();
         else
             this.oInt.innerHTML = "";
 
+        if (typeof nomsg == "string") {
+            var msgType = nomsg;
+            nomsg = false;
+        }
+
         if (!nomsg)
-            this.$setClearMessage(this.emptyMsg, "empty");
+            this.$setClearMessage(msgType ? this[msgType + "Msg"] : this.emptyMsg, msgType || "empty");
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
 
@@ -265,7 +272,7 @@ jpf.Cache = function(){
         this.documentId = this.xmlRoot = this.cacheID = null;
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (!nomsg) //@todo this is all wrong
+        if (!nomsg && this.hasFeature(__MULTISELECT__)) //@todo this is all wrong
             this.setProperty("length", 0);
         //#endif
     };

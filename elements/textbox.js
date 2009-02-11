@@ -494,11 +494,11 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
                 setTimeout(function(){
                     if (!_self.mask && _self.getValue() != _self.value)
                         _self.change(_self.getValue()); //this is a hack
-                    _self.dispatchEvent("keyup", {keyCode : keyCode});
+                    _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
                 });
             }
             else {
-                _self.dispatchEvent("keyup", {keyCode : keyCode});
+                _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
             }
 
             //#ifdef __WITH_VALIDATION

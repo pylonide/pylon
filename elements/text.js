@@ -232,7 +232,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     };
 
-    this.$setClearMessage = function(msg){
+    this.$setClearMessage = this.$updateClearMessage = function(msg){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
         this.oInt.innerHTML = msg;
     };
@@ -244,6 +244,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$clear = function(){
         //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
+        this.setProperty("value", "");
     };
 
     this.caching = false; //Fix for now
