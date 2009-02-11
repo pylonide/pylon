@@ -215,16 +215,16 @@ jpf.editor.searchPlugin = function(sName) {
         
         var aJml = [
             '<j:toolbar xmlns:j="', jpf.ns.jml, '"><j:bar>\
-             <j:button caption="Find next"\
+             <j:button caption="Find next" \
                onclick="jpf.lookup(', this.uniqueId, ').submit(event)" />'];
         if (this.name == "replace") {
             this.oReplace = document.getElementById(idReplace);
             aJml.push(
-                '<j:button caption="Replace"\
-                  onclick="jpf.lookup(', this.uniqueId, ').onDoReplClick(event)"\
+                '<j:button caption="Replace" \
+                  onclick="jpf.lookup(', this.uniqueId, ').onDoReplClick(event)" \
                   id="', idReplBtn, '" />\
-                <j:button caption="Replace all"\
-                  onclick="jpf.lookup(', this.uniqueId, ').onReplAllClick(event)"\
+                <j:button caption="Replace all" \
+                  onclick="jpf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
                   id="', idReplAllBtn, '" />');
         }
         aJml.push('</j:bar></j:toolbar>');
