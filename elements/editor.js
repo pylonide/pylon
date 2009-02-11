@@ -925,7 +925,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
-        if (!this.realtime)
+        if (!this.realtime || this.plugins.isActive('code'))
             this.change(this.getValue());
 
         this.setProperty('state', jpf.editor.DISABLED);
