@@ -97,29 +97,33 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         this.value = html;
-        this.oDoc.body.innerHTML = html;
-        if (this.plugins.isActive('code'))
-            this.plugins.get('code').update(this);
 
-        if (jpf.isGecko) {
-            var oNode, oParent = this.oDoc.body;
-            while (oParent.childNodes.length) {
-                oNode = oParent.firstChild;
-                if (oNode.nodeType == 1) {
-                    if (oNode.nodeName == "BR"
-                      && oNode.getAttribute('_moz_editor_bogus_node') == "TRUE") {
-                        this.selection.selectNode(oNode);
-                        this.selection.remove();
-                        this.selection.collapse(false);
-                        break;
-                    }
-                }
-                oParent = oNode;
-            }
+        if (this.plugins.isActive('code')) {
+            this.plugins.get('code').update(this, html);
         }
-        else if (jpf.isSafari)
-            this.oDoc.designMode = "on";
+        else {
+            this.oDoc.body.innerHTML = html;
 
+            if (jpf.isGecko) {
+                var oNode, oParent = this.oDoc.body;
+                while (oParent.childNodes.length) {
+                    oNode = oParent.firstChild;
+                    if (oNode.nodeType == 1) {
+                        if (oNode.nodeName == "BR"
+                          && oNode.getAttribute('_moz_editor_bogus_node') == "TRUE") {
+                            this.selection.selectNode(oNode);
+                            this.selection.remove();
+                            this.selection.collapse(false);
+                            break;
+                        }
+                    }
+                    oParent = oNode;
+                }
+            }
+            else if (jpf.isSafari)
+                this.oDoc.designMode = "on";
+        }
+            
         this.dispatchEvent('sethtml', {editor: this});
 
         //this.$visualFocus(true);
@@ -927,8 +931,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
-        if (!this.realtime || this.plugins.isActive('code'))
-            this.change(this.getValue());
+        var bCode = this.plugins.isActive('code');
+        if (!this.realtime || bCode)
+            this.change(bCode ? this.plugins.get('code').getValue() : this.getValue());
 
         this.setProperty('state', jpf.editor.DISABLED);
     };
