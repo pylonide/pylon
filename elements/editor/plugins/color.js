@@ -123,11 +123,15 @@ jpf.editor.colorPlugin = function(sName) {
     };
 
     this.queryState = function(editor) {
-        var cmdName = this.name == "forecolor"
+        var cmdName   = this.name == "forecolor"
             ? 'ForeColor'
             : jpf.isIE ? 'BackColor' : 'HiliteColor';
-        this.state = editor.getCommandState(cmdName);
-        var currValue = editor.oDoc.queryCommandValue(cmdName);
+        this.state    = editor.getCommandState(cmdName);
+        var currValue = "";
+        try {
+            currValue = editor.oDoc.queryCommandValue(cmdName);
+        }
+        catch (ex) {}
         if (jpf.isIE)
             currValue = '#' + RGBToBGRToRGB(int2Color(currValue));
         if (currValue != this.colorPreview.style.backgroundColor)
