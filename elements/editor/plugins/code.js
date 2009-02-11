@@ -43,8 +43,7 @@ jpf.editor.plugin('code', function() {
             // remember the selection for IE
             editor.selection.cache();
 
-            // update the contents of the hidden textarea
-            oPreview.value = format.call(this, editor.getValue());
+            this.update(editor);
 
             editor.plugins.active = this;
             // disable the editor...
@@ -58,11 +57,12 @@ jpf.editor.plugin('code', function() {
         }
         else {
             oPreview.style.display = "none";
+            editor.plugins.active = null;
+            editor.setProperty('state', jpf.editor.OFF);
+            
             if (editor.prepareHtml(oPreview.value.replace(/[\n\r\s]+/g, ''))
               != editor.getValue().replace(/[\n\r\s]+/g, ''))
                 editor.setProperty('value', oPreview.value.replace(/\n/g, ''));
-            editor.plugins.active = null;
-            editor.setProperty('state', jpf.editor.OFF);
 
             setTimeout(function() {
                 editor.selection.set();
@@ -72,6 +72,11 @@ jpf.editor.plugin('code', function() {
         editor.notify('code', this.queryState(editor));
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+    };
+
+    this.update = function(editor) {
+        // update the contents of the (hidden) textarea
+        oPreview.value = format.call(this, editor.getValue());
     };
 
     function drawPreview(editor) {
