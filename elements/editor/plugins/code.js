@@ -74,9 +74,13 @@ jpf.editor.plugin('code', function() {
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
-    this.update = function(editor) {
+    this.update = function(editor, sHtml) {
         // update the contents of the (hidden) textarea
-        oPreview.value = format.call(this, editor.getValue());
+        oPreview.value = format.call(this, sHtml || editor.getValue());
+    };
+
+    this.getValue = function() {
+        return oPreview.value;
     };
 
     function drawPreview(editor) {
