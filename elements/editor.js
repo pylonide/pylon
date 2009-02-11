@@ -328,7 +328,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return html.replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<br[^>]*_jpf_placeholder="1"\/?>/gi, '')
-            .replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
+            //.replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
             .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
                 //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
                 //if (tagstart == "BR")
