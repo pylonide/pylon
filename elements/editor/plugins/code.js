@@ -60,7 +60,7 @@ jpf.editor.plugin('code', function() {
             oPreview.style.display = "none";
             if (editor.prepareHtml(oPreview.value.replace(/[\n\r\s]+/g, ''))
               != editor.getValue().replace(/[\n\r\s]+/g, ''))
-                editor.setValue(oPreview.value.replace(/\n/g, ''));
+                editor.setProperty('value', oPreview.value.replace(/\n/g, ''));
             editor.plugins.active = null;
             editor.setProperty('state', jpf.editor.OFF);
 
