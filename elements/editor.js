@@ -98,6 +98,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.value = html;
         this.oDoc.body.innerHTML = html;
+        if (this.plugins.isActive('code'))
+            this.plugins.get('code').update(this);
 
         if (jpf.isGecko) {
             var oNode, oParent = this.oDoc.body;
