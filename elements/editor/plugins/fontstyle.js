@@ -292,7 +292,6 @@ jpf.editor.plugin('paragraph', function() {
             var sBlock = blocksMap[
                 (bParent ? oNode.parentNode.tagName : oNode.tagName).toLowerCase()
             ];
-            jpf.console.log('BlockFormat command value: ' + editor.oDoc.queryCommandValue('FontName') + ' our own - queried - value: ' + sBlock);
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
             this.state = jpf.editor.ON;
