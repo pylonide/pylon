@@ -237,44 +237,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        var depth = -1, stack = [];
         //jpf.console.log('now parsing text: ' + this.getXHTML('text').escapeHTML());
-        this.value = this.getXHTML('text')
-            .replace(/<br\/><\/li>/gi, '</li>')
-            .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '')
-            .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
-                //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
-                //if (tagstart == "BR")
-                //    return m;
-                if (fullstart){
-                    depth++;
-                    if (fullstart.indexOf("_jpf_placeholder") > -1) {
-                        stack.push([tagstart, true]);
-                        return "";
-                    }
-                    else if (fullstart.indexOf("/") > -1) { // self-closing
-                        depth--;
-                        return m;
-                    }
-                    else {
-                        stack.push([tagstart, false]);
-                        return fullstart;
-                    }
-                }
-                else if (fullend) {
-                    depth--;
-                    var startItem = stack.pop();
-                    //#ifdef __DEBUG
-                    if (bStrict && tagend != startItem[0]) {
-                        throw new Error(jpf.formatErrorString(0, _self,
-                            "Mismatch with start '" + startItem[0]
-                            + "' and end '" + tagend + "'"));
-                    }
-                    //#endif
-
-                    return startItem && startItem[1] ? "<BR />" : fullend;
-                }
-             });
+        this.value = this.exportHtml(this.getXHTML('text'), bStrict);
         return this.value;
     };
 
@@ -349,6 +313,55 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        + "$1" + jpf.editor.ALTP.end);
 
         return html;
+    };
+
+    /**
+     * Description.
+     *
+     * @param  {String}  html
+     * @param  {Boolean} bStrict
+     * @return The same string of html, but then formatted in such a way that it can embedded.
+     * @type   {String}
+     */
+    this.exportHtml = function(html, bStrict) {
+        var depth = -1, stack = [];
+
+        return html.replace(/<br\/><\/li>/gi, '</li>')
+            .replace(/<br[^>]*_jpf_placeholder="1"\/?>/gi, '')
+            .replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
+            .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+                //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
+                //if (tagstart == "BR")
+                //    return m;
+                if (fullstart){
+                    depth++;
+                    if (fullstart.indexOf("_jpf_placeholder") > -1) {
+                        stack.push([tagstart, true]);
+                        return "";
+                    }
+                    else if (fullstart.indexOf("/") > -1) { // self-closing
+                        depth--;
+                        return m;
+                    }
+                    else {
+                        stack.push([tagstart, false]);
+                        return fullstart;
+                    }
+                }
+                else if (fullend) {
+                    depth--;
+                    var startItem = stack.pop();
+                    //#ifdef __DEBUG
+                    if (bStrict && tagend != startItem[0]) {
+                        throw new Error(jpf.formatErrorString(0, _self,
+                            "Mismatch with start '" + startItem[0]
+                            + "' and end '" + tagend + "'"));
+                    }
+                    //#endif
+
+                    return startItem && startItem[1] ? "<BR />" : fullend;
+                }
+             });
     };
 
     /**
