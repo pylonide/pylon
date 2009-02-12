@@ -68,16 +68,18 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} value the text of this element
      */
-    this.$propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value, initial){
         // Set Value
         if (this.isHTMLBox) {
             if (this.oInt.innerHTML != value)
                 this.oInt.innerHTML = value;
         }
-        else
-            if (this.oInt.value.replace(/\r/g, "") != value) {
-                this.oInt.value = value;
-            }
+        else if (this.oInt.value.replace(/\r/g, "") != value) {
+            this.oInt.value = value;
+        }
+        
+        if (this.oButton)
+            this.oButton.style.display = value && !initial ? "block" : "none";
     };
 
     //See validation
@@ -175,7 +177,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.initialMsg) {
             this.oInt.onblur();
-            this.setValue(this.initialMsg);
+            this.$propHandlers["value"].call(this, this.initialMsg, true);
         }
     };
 
@@ -278,32 +280,29 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$clear = function(){
-        this.value = "";
-
-        var value = "";
+        this.value = "";//@todo what about property binding?
+        
         if (this.initialMsg && jpf.window.focussed != this) {
-            value = this.initialMsg;
+            this.$propHandlers["value"].call(this, this.initialMsg, true);
             jpf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
         }
-
-        if (this.oInt.tagName.toLowerCase().match(/input|textarea/i))
-            this.oInt.value = value;
         else {
-            this.oInt.innerHTML = value;
-            //try{this.oInt.focus();}catch(e){}
-
-            if (!jpf.hasMsRangeObject) return;
-
-            //will fail when object isn't visible
-            //N.B. why a select in a clear function.. isn't consistent...
-            try {
-                var range = document.selection.createRange();
-                range.moveStart("sentence", -1);
-                //range.text = "";
-                range.select();
-            }
-            catch(e) {}
+            this.$propHandlers["value"].call(this, "");
         }
+        
+        if (!this.oInt.tagName.toLowerCase().match(/input|textarea/i)) {
+            if (jpf.hasMsRangeObject) {
+                try {
+                    var range = document.selection.createRange();
+                    range.moveStart("sentence", -1);
+                    //range.text = "";
+                    range.select();
+                }
+                catch(e) {}
+            }
+        }
+        
+        this.dispatchEvent("clear");
     };
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
@@ -341,6 +340,11 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
+        if (this.initialMsg && this.oInt.value == this.initialMsg) {
+            this.$propHandlers["value"].call(this, "", true);
+            jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Initial"]);
+        }
+        
         function delay(){
             try {
                 if (!fTimer || document.activeElement != _self.oInt) {
@@ -373,6 +377,11 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+
+        if (this.initialMsg && this.oInt.value == "") {
+            this.$propHandlers["value"].call(this, this.initialMsg, true);
+            jpf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
+        }
 
         if (jpf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
@@ -422,7 +431,8 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
             oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
         });
-        this.oInt = this.$getLayoutNode("main", "input", this.oExt);
+        this.oInt    = this.$getLayoutNode("main", "input", this.oExt);
+        this.oButton = this.$getLayoutNode("main", "button", this.oExt);
 
         if (!jpf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
             var node  = this.oInt;
@@ -489,6 +499,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
                 e = event;
 
             var keyCode = e.keyCode;
+            
+            if (_self.oButton)
+                _self.oButton.style.display = this.value ? "block" : "none";
 
             if (_self.realtime) {
                 setTimeout(function(){
@@ -508,11 +521,6 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         this.oInt.onfocus = function(){
-            if (_self.initialMsg && this.value == _self.initialMsg) {
-                this.value = "";
-                jpf.setStyleClass(_self.oExt, "", [_self.baseCSSname + "Initial"]);
-            }
-
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug)
                 jpf.window.$focusfix2();
@@ -520,11 +528,6 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         this.oInt.onblur = function(){
-            if (_self.initialMsg && this.value == "") {
-                this.value = _self.initialMsg;
-                jpf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
-            }
-
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug)
                 jpf.window.$blurfix();

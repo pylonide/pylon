@@ -424,12 +424,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Databinding Support ****/
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
-        //Why is this function called 3 times when adding one node? (hack/should)
         var loadChildren = this.bindingRules && this.bindingRules["insert"] 
             ? this.getNodeFromRule("insert", xmlNode) 
             : false;
-        var hasChildren = loadChildren || xmlNode.selectSingleNode(
-            this.traverse) ? true : false;
+        var hasTraverseNodes = xmlNode.selectSingleNode(this.traverse) ? true : false;
+        var hasChildren = loadChildren || hasTraverseNodes;
         
         var startClosed = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
         var state       = (hasChildren ? HAS_CHILD : 0) | (startClosed && hasChildren 
@@ -450,8 +449,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Dynamic SubLoading (Insertion) of SubTree
         if (loadChildren && !this.hasLoadStatus(xmlNode) || hasChildren && !this.prerender)
             this.$setLoading(xmlNode, container);
-        else if (!this.getTraverseNodes(xmlNode).length 
-          && this.applyRuleSetOnNode("empty", xmlNode))
+        else if (!hasTraverseNodes && this.applyRuleSetOnNode("empty", xmlNode))
             this.$setClearMessage(container);
 
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
@@ -465,9 +463,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (!htmlParentNode) {
-                htmlParentNode = jpf.xmldb.findHTMLNode(
-                    xmlNode.parentNode, this);
-                htmlParentNode     = htmlParentNode 
+                htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
+                htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
             }
@@ -627,7 +624,6 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
 
-    //This can be optimized by NOT using getLayoutNode all the time
     //@todo please upgrade all the event calls to the 21st century, it hurts my eyes.
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
