@@ -1289,6 +1289,8 @@ var jpf = {
      * @private
      */
     loadIncludes : function(docElement){
+        var isEmptyDocument = false;
+        
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
@@ -1316,8 +1318,9 @@ var jpf = {
             }
             else {
                 //#ifdef __DEBUG
-                    jpf.console.warn("No jml found.");
+                jpf.console.warn("No jml found.");
                 //#endif
+                isEmptyDocument = true;
             }
         }
         //#endif
@@ -1386,6 +1389,8 @@ var jpf = {
 
                 return;
             }
+            
+            isEmptyDocument = true;
         }
         //#endif
 
@@ -1436,6 +1441,18 @@ var jpf = {
             //Maybe for IE8??
             //else if (jpf.isIE)
             //    jpf.TAGNAME = "tagName";
+            
+            isEmptyDocument = true;
+        }
+        //#endif
+        
+        //#ifdef __DEBUG
+        if (isEmptyDocument && document.documentElement.outerHTML
+          .split(">", 1)[0]
+          .indexOf(jpf.ns.jml) == -1) {
+            jpf.console.warn("The jml namespace declaration wasn't found. \
+                              No jml elements were found in the body. Exiting");
+            return false;
         }
         //#endif
 
@@ -1476,9 +1493,8 @@ var jpf = {
                     return jpf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
-
+        
         //Parse the second DOM (add includes)
-
         var prefix = jpf.findPrefix(docElement, jpf.ns.jml);
         if (prefix)
             prefix += ":";
