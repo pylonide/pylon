@@ -359,7 +359,7 @@ jpf.http = function(){
         if (errorFound) {
             var useOtherXH = false;
 
-            //#ifdef __DEBUG
+            //#ifdef __WITH_UNSAFE_XMLHTTP
             if (self.XMLHttpRequestUnSafe) {
                 try {
                     http = new XMLHttpRequestUnSafe();
