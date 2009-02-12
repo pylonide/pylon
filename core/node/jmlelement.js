@@ -200,6 +200,7 @@ jpf.JmlElement = function(){
 
         /**** Focussing ****/
 
+        //#ifdef __WITH_FOCUS
         if (this.$focussable) {
             /**
              * Sets the position in the list that determines the sequence
@@ -264,6 +265,9 @@ jpf.JmlElement = function(){
                     && (jpf.window.focussed || {}).$focusParent == this;
             };
         }
+        /* #else
+        this.hasFocus = function(){}
+        #endif */
     }
 
     /**** Load JML ****/
@@ -460,8 +464,10 @@ jpf.JmlElement = function(){
 
         this.$noAlignUpdate = false;
 
+        //#ifdef __WITH_FOCUS
         if (this.$focussable && this.focussable === undefined)
             jpf.JmlElement.propHandlers.focussable.call(this);
+        //#endif
 
         // isSelfLoading is set when JML is being inserted
         if (this.$loadJml && !this.$isSelfLoading)
@@ -773,6 +779,7 @@ jpf.JmlElement.propHandlers = {
         this.name = value;
     },
 
+    //#ifdef __WITH_FOCUS
     /**
      * @attribute {Boolean} focussable whether this element can receive the focus.
      * The focussed element receives keyboard event.s
@@ -789,6 +796,7 @@ jpf.JmlElement.propHandlers = {
             jpf.window.$removeFocus(this);
         }
     },
+    //#endif
 
     /**
      * @attribute {Number} zindex the z ordered layer in which this element is

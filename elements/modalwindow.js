@@ -95,7 +95,7 @@ jpf.WinServer = {
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DelayedRender
- * @inherits jpf.Dockings
+ * @inherits jpf.Docking
  */
 jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;

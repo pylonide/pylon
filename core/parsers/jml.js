@@ -1213,8 +1213,10 @@ jpf.JmlParser = {
                 jpf.window.deskrun.Show();
             //#endif
 
+            //#ifdef __WITH_FOCUS
             //Set the default selected element
             jpf.window.focusDefault();
+            //#endif
 
             this.loaded = true;
         }

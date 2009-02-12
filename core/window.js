@@ -1057,7 +1057,7 @@ jpf.WindowImplementation = function(){
     document.onmousewheel = wheel; //@todo 2 keer events??
     //#endif
 
-    //#ifdef __WITH_HOTKEY_PROPERTY
+    //#ifdef __WITH_HOTKEY_PROPERTY || __WITH_HOTKEY
     var keyNames = {
         "32" : "Spacebar",
         "13" : "Enter",
@@ -1425,7 +1425,9 @@ jpf.DocumentImplementation = function(){
     };
 
     jpf.inherit.call(this.documentElement, jpf.Class);
+    //#ifdef __WITH_FOCUS
     jpf.window.$addFocus(this.documentElement);
+    //#endif
 
     //#ifdef __WITH_JMLDOM
     jpf.inherit.call(this.documentElement, jpf.JmlDom);

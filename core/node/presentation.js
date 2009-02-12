@@ -581,13 +581,11 @@ jpf.Presentation = function(){
             this.baseName = this.skinName = "default:" + this.tagName;
             originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
 
-            //#ifdef __DEBUG
             if (!originalNodes) {
                 throw new Error(jpf.formatErrorString(1077, this,
                     "Presentation",
                     "Could not load skin: " + this.skinName, this.$jml));
             }
-            //#endif
         }
 
         if (originalNodes)

@@ -217,6 +217,7 @@ jpf.JsltImplementation = function(){
     function jfor(n, f, p, sp, ep){
         if (!n) 
             return;
+        
         var t = n.selectNodes(p);
         var end = ep == null ? t.length : Math.min(t.length, (sp + ep));
         for (var i = (sp == null) ? 0 : sp; i < end; i++) 
@@ -892,8 +893,10 @@ jpf.JsltImplementation = function(){
         else {
             cacheId = jsltNode;
             jsltFunc = this.cache[cacheId];
-            if (!jsltFunc) 
+            if (!jsltFunc) {
                 jsltStr = jsltNode;
+                cacheId = null;
+            }
         }
         
         //Compile string
@@ -902,6 +905,7 @@ jpf.JsltImplementation = function(){
         
         this.lastJslt = jsltStr;
         this.lastJs   = jsltFunc[0]; //if it crashes here there is something seriously wrong
+
         //Invalid code - Syntax Error
         if (!jsltFunc[0]) 
             return false;
