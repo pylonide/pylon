@@ -394,8 +394,8 @@ jpf.Validation = function(){
             ? "this.xmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.getTraverseNodes())"
             : "this.xmlRoot && jpf.XSDParser.checkType('"
-                + value + "', this.xmlRoot) || !this.xmlRoot && jpf.XSDParser.matchType('"
-                + value + "', value)");
+                + value + "', this.xmlRoot) || !this.xmlRoot && jpf.XSDParser.matchType(value, '"
+                + value + "')");
     };
     //#endif
 
