@@ -423,6 +423,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Databinding Support ****/
 
+    //@todo refactor
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         var loadChildren = this.bindingRules && this.bindingRules["insert"] 
             ? this.getNodeFromRule("insert", xmlNode) 
@@ -447,7 +448,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         //Dynamic SubLoading (Insertion) of SubTree
-        if (loadChildren && !this.hasLoadStatus(xmlNode) || hasChildren && !this.prerender)
+        if (!this.prerender)
+            var traverseLength = this.getTraverseNodes(xmlNode).length;
+        if (loadChildren && !this.hasLoadStatus(xmlNode) || hasChildren && !this.prerender && traverseLength > 2)
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && this.applyRuleSetOnNode("empty", xmlNode))
             this.$setClearMessage(container);
@@ -513,7 +516,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         
-        if (this.prerender)
+        if (this.prerender || traverseLength < 3)
             this.$addNodes(xmlNode, container, true); //checkChildren ???
         /*else {
             this.setLoadStatus(xmlNode, "potential");
