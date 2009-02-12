@@ -460,9 +460,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             //#ifdef __WITH_ALIGNMENT
             if (this.aData && this.aData.restore)
                 this.aData.restore();
-
-            jpf.layout.play(this.pHtmlNode);
             //#endif
+            
+            if (jpf.layout)
+                jpf.layout.play(this.pHtmlNode);
 
             if (lastzindex)
                 this.oExt.style.zIndex = lastzindex
@@ -567,9 +568,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                 }
 
-                //#ifdef __WITH_ALIGNMENT
-                jpf.layout.pause(this.pHtmlNode, setMax);
-                //#endif
+                if (jpf.layout)
+                    jpf.layout.pause(this.pHtmlNode, setMax);
 
                 lastzindex = this.oExt.style.zIndex;
                 this.oExt.style.zIndex = jpf.WinServer.count + 1;
@@ -617,7 +617,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //#endif
 
-            if (!this.animate && jpf.hasSingleRszEvent)
+            if (!this.animate && jpf.hasSingleRszEvent && jpf.layout)
                 jpf.layout.forceResize(_self.oInt);
         }
     };
