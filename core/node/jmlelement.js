@@ -527,13 +527,13 @@ jpf.JmlElement = function(){
             var oItem = this.childNodes[i];
             var nodes = oItem.childNodes;
             for (var k = 0; k < nodes.length; k++)
-                if (nodes[k].destroySelf)
-                    nodes[k].destroySelf();
+                if (nodes[k].destroy)
+                    nodes[k].destroy();
 
             if (oItem.$jml && oItem.$jml.parentNode)
                 oItem.$jml.parentNode.removeChild(oItem.$jml);
 
-            oItem.destroySelf();
+            oItem.destroy();
 
             if (oItem.oExt != this.oInt)
                 jpf.removeNode(oItem.oExt);
