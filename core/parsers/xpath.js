@@ -248,6 +248,8 @@ jpf.XPath = {
         for (var i = 0; i < sections.length; i++) {
             if (sections[i] == "." || sections[i] == "")
                 continue;
+            else if (sections[i] == "..")
+                results.push([this.getParentNode, null]);
             else if (sections[i].match(/^[\w-_\.]+(?:\:[\w-_\.]+){0,1}$/))
                 results.push([this.getChildNode, sections[i]]);//.toUpperCase()
             else if (sections[i].match(/^\#\#(\d+)$/))
@@ -287,8 +289,6 @@ jpf.XPath = {
                 results.push([this.getTextNode, null]);
             else if (sections[i] == "node()")
                 results.push([this.getAnyNode, null]);//FIX - put in def function
-            else if (sections[i] == "..")
-                results.push([this.getParentNode, null]);
             else if (sections[i].match(/following-sibling::(.*)$/))
                 results.push([this.getFollowingSibling, RegExp.$1.toLowerCase()]);
             else if (sections[i].match(/preceding-sibling::(.*)$/))
@@ -397,6 +397,7 @@ jpf.XPath = {
             return [contextNode];
 
         var info = this.cache[sExpr][0];
+
         var rootNode = (info[3]
             ? (contextNode.nodeType == 9
                 ? contextNode
@@ -442,7 +443,8 @@ jpf.CodeCompilation = function(code){
 
         // Insert
         this.insert();
-
+        
+        code = code.replace(/, \)/g, ", htmlNode)");
         return code;
     };
 
