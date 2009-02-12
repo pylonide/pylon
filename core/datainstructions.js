@@ -174,9 +174,9 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
         ? "url"
         : options.instrType;
 
-    //#ifdef __DEBUG
     options.instruction = instruction;
 
+    //#ifdef __DEBUG
     if (!this.datainstr[instrType])
         throw new Error(jpf.formatErrorString(0, null,
             "Processing a data instruction",
