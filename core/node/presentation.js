@@ -146,7 +146,7 @@ jpf.skins = {
             }
         }
 
-        nodes = xmlNode.selectNodes("alias");
+        nodes = $xmlns(xmlNode, "alias", jpf.ns.jpf);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].firstChild)
                 continue;

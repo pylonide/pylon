@@ -923,6 +923,7 @@ var jpf = {
         return (jpf.lastErrorMessage = str.join("\n"));
         /*#else
         jpf.lastErrorMessage = message;
+        return message;
         #endif */
     },
 
