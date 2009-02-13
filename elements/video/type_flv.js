@@ -341,6 +341,10 @@ jpf.video.TypeFlv.prototype = {
 
                 this.oVideo.$initHook({type:"init"});
                 this.onResize();
+                var node = this.oVideo.oInt;
+                setTimeout(function() {
+                    jpf.layout.forceResize(node);
+                });
                 break;
             // #ifdef __DEBUG
             case "debug":
@@ -422,6 +426,11 @@ jpf.video.TypeFlv.prototype = {
 
         this.player    = this.getElement(this.name);
         this.container = this.getElement(this.name + "_Container");
+
+//        var _self = this;
+//        setTimeout(function() {
+//            _self.onResize();
+//        });
 
         return this;
     },
