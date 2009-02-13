@@ -344,7 +344,7 @@ jpf.video.TypeFlv.prototype = {
                 var node = this.oVideo.oInt;
                 setTimeout(function() {
                     jpf.layout.forceResize(node);
-                });
+                }, 1000);
                 break;
             // #ifdef __DEBUG
             case "debug":
