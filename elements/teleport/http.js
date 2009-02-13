@@ -542,7 +542,7 @@ jpf.http = function(){
 
         if (http.status >= 400 && http.status < 600) {
             //#ifdef __WITH_AUTH
-            //@todo This should probably have a RPC specific handler
+            //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
                 if (jpf.auth.authRequired(extra) === true)
                     return;

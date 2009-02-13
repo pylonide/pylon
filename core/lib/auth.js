@@ -371,7 +371,7 @@ jpf.auth = {
 
             var loginFailed = typeof result == "boolean"
                 ? !result
-                : state != jpf.SUCCESS;
+                : !(state == jpf.SUCCESS || type == "out" && extra.http.status == 401);
 
             if (loginFailed) {
                 jpf.auth.inProcess = 0; //Idle
@@ -414,6 +414,8 @@ jpf.auth = {
                 //Remove cached credentials
                 if (_self.cache[service || "default"])
                      _self.cache[service || "default"] = null;
+                
+                jpf.auth.authRequired();
             }
 
             if (callback)
@@ -493,6 +495,7 @@ jpf.auth = {
         }
         else if (options.service)
             this.$do(options.service, options, "out", null, callback);
+        
     },
 
     /**

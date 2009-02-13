@@ -236,7 +236,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
             });
             
             //Javascript
-            url = url.replace(/\[(.*?)\]/g,
+            /*url = url.replace(/\[(.*?)\]/g,
               function(m, js){
                 var o;
                 
@@ -255,7 +255,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
                 }
                 
                 return o || "";
-            });
+            });*/
         }
         
         var split    = url.split("?");

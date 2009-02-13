@@ -444,11 +444,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force){
-        if (this.noCollapse) return;
+        if (this.noCollapse) 
+            return;
         
         //var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag); // unused?
         var container = htmlNode.nextSibling;
-        
+
         if (jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
