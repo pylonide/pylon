@@ -42,6 +42,7 @@
  * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
+ * @attribute {String}  baseurl                 The basepath for any relative url used throughout your application. This included teleport definitions and data instrutions.
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
  * @attribute {String}  offline                 the storage provider to be used for offline support.
