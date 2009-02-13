@@ -43,6 +43,11 @@
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
  * @attribute {String}  baseurl                 The basepath for any relative url used throughout your application. This included teleport definitions and data instrutions.
+ * @attribute {String}  loading-message         Specifying the global value for the loading message of elements during a loading state.
+ * @attribute {String}  offline-message         Specifying the global value for the offline message of elements not able to display content while offline.
+ * @attribute {String}  empty-message           Specifying the global value for the empty message of elements containing no contents.
+ * @attribute {String}  model                   Specifying the default model for this application.
+ * @attribute {String}  realtime                Specifying the global value which enables or disabled realtime updating of bound data while changing the value. When set to false elements don't update until they loose focus.
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
  * @attribute {String}  offline                 the storage provider to be used for offline support.

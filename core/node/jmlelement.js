@@ -829,6 +829,9 @@ jpf.JmlElement.propHandlers = {
 
             if (this.$show && !this.$noAlignUpdate)
                 this.$show();
+            
+            if (jpf.hasSingleRszEvent)
+                jpf.layout.forceResize(this.oInt);
         }
     },
 

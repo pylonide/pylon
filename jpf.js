@@ -259,7 +259,7 @@ var jpf = {
         var sHref = location.href.split("?")[0];
 
         //Set Variables
-        this.host     = location.hostname;//sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
+        this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
         this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
 
@@ -1087,22 +1087,37 @@ var jpf = {
                         + htmlNode.outerHTML);
                 }
                 //#endif
-
-                var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
-                var strXml = (htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(
-                  new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
-                  + ".*" + htmlNode.tagName))[0] + ">")
-                    .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
-                    .replace(/ disabled /g, " disabled='true' ")
-                    .replace(/\]\]\&gt;/g, "]]>")
-                    .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
-                        if (tags[tag]) {
-                            return "<" + tag + (c||"") + "/>";
-                        }
-                        else {
-                            return m;
-                        }
-                    });
+                
+                try {
+                    var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
+                    var strXml = (htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(
+                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
+                      + ".*" + htmlNode.tagName))[0] + ">")
+                        .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                        .replace(/ disabled /g, " disabled='true' ")
+                        .replace(/\]\]\&gt;/g, "]]>")
+                        .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
+                            if (tags[tag]) {
+                                return "<" + tag + (c||"") + "/>";
+                            }
+                            else {
+                                return m;
+                            }
+                        });
+                } 
+                catch(e) {
+                    //#ifdef __DEBUG
+                    throw new Error(jpf.formatErrorString(0, null,
+                        "Parsing inline jml (without xmlns on root node)",
+                        "Could not parse inline jml. This happens when the html\
+                         is mangled too much by Internet Explorer. Either you\
+                         are using a cdata section or javascript containing\
+                         symbols that throw off the browser. Please put this jml\
+                         in a seperate file and load it using a j:include."));
+                    //#endif
+                    
+                    return;
+                }
 
                 var p = prefix.toLowerCase();
                 var xmlNode = jpf.getJmlDocFromString("<div jid='"
