@@ -375,6 +375,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$blur = function(e){
         if (!this.oExt)
             return;
+            
+        if (!this.realtime)
+            this.change(this.getValue());
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
@@ -395,14 +398,13 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         catch(e) {}
 
-        if (!this.realtime)
-            this.change(this.getValue());
-
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
             setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
+        
+        clearInterval(fTimer);
     };
 
     /**** Init ****/

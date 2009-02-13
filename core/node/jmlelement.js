@@ -821,8 +821,12 @@ jpf.JmlElement.propHandlers = {
 
             if (jpf.window.focussed == this
               || this.canHaveChildren
-              && jpf.xmldb.isChildOf(this, jpf.window.focussed, false))
-                jpf.window.moveNext();
+              && jpf.xmldb.isChildOf(this, jpf.window.focussed, false)) {
+                if (jpf.appsettings.allowBlur)
+                    this.blur();
+                else
+                    jpf.window.moveNext();
+            }
         }
         else if (jpf.isTrue(value)) {
             this.oExt.style.display = "block"; //Some form of inheritance detection

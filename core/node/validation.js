@@ -185,8 +185,6 @@ jpf.Validation = function(){
      *    @private
      */
     this.setError = function(value){
-        jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
-
         if (!this.$validgroup)
             this.$propHandlers["validgroup"].call(this, "vg" + this.parentNode.uniqueId);
 
@@ -196,6 +194,8 @@ jpf.Validation = function(){
             this.$validgroup.hideAllErrors();
 
         errBox.setMessage(this.invalidmsg);
+        
+        jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         this.showMe();
 
         if (this.$validgroup) {
@@ -393,9 +393,8 @@ jpf.Validation = function(){
         setRule("datatype", this.multiselect
             ? "this.xmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.getTraverseNodes())"
-            : "this.xmlRoot && jpf.XSDParser.checkType('"
-                + value + "', this.xmlRoot) || !this.xmlRoot && jpf.XSDParser.matchType(value, '"
-                + value + "')");
+            : "jpf.XSDParser.matchType(value, '" + value + "')");
+        //this.xmlRoot && jpf.XSDParser.checkType('" + value + "', this.xmlRoot) || !this.xmlRoot && 
     };
     //#endif
 

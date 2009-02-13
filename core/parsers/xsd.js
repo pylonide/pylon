@@ -270,7 +270,7 @@ jpf.XSDImplementation = function(){
         },
         "jpf:website": function(value){
             //@todo please make this better
-            return /^([\w-]+\.)+\w{2,4}$/.test(value.trim());
+            return /^(?:http:\/\/)?([\w-]+\.)+\w{2,4}$/.test(value.trim());
         },
         "jpf:email": function(value){
             return /^[A-Z0-9\.\_\%\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,4}$/i

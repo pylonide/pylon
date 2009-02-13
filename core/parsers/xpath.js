@@ -18,6 +18,15 @@ jpf.runXpath = function(){
 jpf.XPath = {
     cache : {},
 
+    getSelf : function(htmlNode, tagName, info, count, num, sResult){
+        var numfound = 0, result = null, data = info[count];
+
+        if (data)
+            data[0](htmlNode, data[1], info, count + 1, numfound++ , sResult);
+        else
+            sResult.push(htmlNode);
+    },
+
     getChildNode : function(htmlNode, tagName, info, count, num, sResult){
         var numfound = 0, result = null, data = info[count];
 
@@ -293,6 +302,8 @@ jpf.XPath = {
                 results.push([this.getFollowingSibling, RegExp.$1.toLowerCase()]);
             else if (sections[i].match(/preceding-sibling::(.*)$/))
                 results.push([this.getPrecedingSibling, RegExp.$1.toLowerCase()]);
+            else if (sections[i] == "self::node()")
+                results.push([this.getSelf, null]);
             else if (sections[i].match(/self::(.*)$/))
                 results.push([this.doQuery, ["jpf.XPath.doXpathFunc('local-name', htmlNode) == '" + RegExp.$1 + "'"]]);
             else {
