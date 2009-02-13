@@ -480,6 +480,10 @@ jpf.video.TypeFlv.prototype = {
     $destroy: function() {
         jpf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo");
         if (this.player) {
+            try {
+                this.stop();
+            }
+            catch(e) {}
             this.player = this.container = null;
             delete this.player;
             delete this.container;
