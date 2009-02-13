@@ -64,21 +64,30 @@ jpf.component = function(nodeFunc, oBase) {
             fC.prototype = oBase;
     }
 
+    // the 'nodeFunc' flag specifies the function that a node/ component represents
+    // within JPF.
     fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
 
-    //#ifdef __DESKRUN
+    // #ifdef __DESKRUN
+    // deprecated Deskrun feature
     if (nodeFunc == jpf.NODE_MEDIAFLOW)
         DeskRun.register(fC.prototype);
-    //#endif
+    // #endif
 
+    // The inherit function is copied from 'jpf.inherit'
     fC.prototype.inherit = jpf.inherit;
 
+    // If the '$init' function is not present yet, we shall define it - the
+    // starting engine of a JPF component
     if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
          * The developer may supply interfaces that will inherited upon element
          * instantiation with implement() below. Calls to 'implement()' may be
          * chained.
+         * Note: duplicate interfaces will not be filtered out! This means that
+         *       only the interface that was provided with implement() will be
+         *       actually implemented.
          * 
          * @private
          */
@@ -109,7 +118,7 @@ jpf.component = function(nodeFunc, oBase) {
             this.pHtmlNode     = pHtmlNode || document.body;
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             
-            this.uniqueId   = jpf.all.push(this) - 1;
+            this.uniqueId      = jpf.all.push(this) - 1;
             
             //Oops duplicate code.... (also in jpf.register)
             this.$propHandlers = {}; //@todo fix this in each component
@@ -150,11 +159,12 @@ jpf.component = function(nodeFunc, oBase) {
              * @inherits jpf.Class
              * @inherits jpf.JmlElement
              */
+            // the ORDER is crucial here.
             this.inherit(jpf.Class);
             this.inherit.apply(this, aImpl);
             this.inherit(jpf.JmlElement, this.base || jpf.K);
             
-            if (this['init'] && typeof this.init == "function")
+            if (typeof this['init'] == "function")
                 this.init();
         }
     }
@@ -218,27 +228,28 @@ jpf.subnode = function(nodeFunc, oBase) {
                     "Dependencies not met, please provide a component name when \
                      instantiating it (ex.: new jpf.tree(oParent, 'tree') )"));
 
-            this.tagName       = sName;
-            this.pHtmlNode     = pHtmlNode || document.body;
-            this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
-            this.parentNode    = parentNode;
-            this.$domHandlers  = {
+            this.tagName      = sName;
+            this.pHtmlNode    = pHtmlNode || document.body;
+            this.pHtmlDoc     = this.pHtmlNode.ownerDocument;
+            this.parentNode   = parentNode;
+            this.$domHandlers = {
                 "remove"      : [],
                 "insert"      : [],
                 "reparent"    : [],
                 "removechild" : []
             };
             
-            this.uniqueId      = jpf.all.push(this) - 1;
+            this.uniqueId     = jpf.all.push(this) - 1;
             
             /** 
              * @inherits jpf.Class
              */
+            // the ORDER is crucial here.
             this.inherit(jpf.Class);
             this.inherit.apply(this, aImpl);
             this.inherit(jpf.JmlDom, this.base || jpf.K);
             
-            if (this['init'] && typeof this.init == "function")
+            if (typeof this['init'] == "function")
                 this.init();
         }
     }
