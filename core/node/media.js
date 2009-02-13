@@ -227,9 +227,13 @@ jpf.Media = function(){
         this.setProperty('networkState',  jpf.Media.NETWORK_EMPTY);
         //this.setProperty('readyState',   jpf.Media.HAVE_NOTHING);
         this.setProperty('ready',         false);
-        this.setProperty('buffered',      {start: 0, end: 0, length: 0});
-        this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
-        this.setProperty('totalBytes',    0);
+        //this.setProperty('buffered',      {start: 0, end: 0, length: 0});
+        //this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
+        this.buffered      = {start: 0, end: 0, length: 0};
+        this.bufferedBytes = {start: 0, end: 0, length: 0};
+        this.totalBytes    = 0;
+        this.setProperty('progress',      0);
+        //this.setProperty('totalBytes',    0);
 
         this.setProperty('seeking',  false);
         this.setProperty('paused',   true);
