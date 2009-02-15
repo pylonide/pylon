@@ -491,10 +491,13 @@ jpf.XmlDatabase = function(){
             xpath    = options.xpath;
             newNodes = options.newNodes;
             
-            undoObj.extra.oldValue = jpf.getXmlValue(xmlNode, xpath);
+            undoObj.extra.oldValue = options.forceNew
+                ? ""
+                : jpf.getXmlValue(xmlNode, xpath);
+
             undoObj.xmlNode        = xmlNode;
             if (xpath)
-                xmlNode = jpf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes);
+                xmlNode = jpf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
 
             undoObj.extra.appliedNode = xmlNode;
         }
@@ -1160,15 +1163,22 @@ jpf.XmlDatabase = function(){
      * @param {DOMNode} contextNode  the dom node that is subject to the query.
      * @param {String}  xPath        the xpath query.
      * @param {Array}   [addedNodes] this array is filled with the nodes added.
+     * @param (Boolean) [forceNew]   wether a new node is always created.
      * @return {DOMNode} the last element found.
      * @todo generalize this to include attributes in if format []
      */
-    this.createNodeFromXpath = function(contextNode, xPath, addedNodes){
+    this.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         var xmlNode, foundpath = "", paths = xPath.split("\|")[0].split("/");
-        if (xmlNode = contextNode.selectSingleNode(xPath))
+        if (!forceNew && (xmlNode = contextNode.selectSingleNode(xPath)))
             return xmlNode;
-
-        for (var addedNode, isAdding = false, i = 0; i < paths.length - 1; i++) {
+        
+        var len = paths.length -1;
+        if (forceNew) {
+            if (paths[len].trim().match(/^\@(.*)$|^text\(\)$/))
+                len--;
+        }
+        
+        for (var addedNode, isAdding = false, i = 0; i < len; i++) {
             if (!isAdding && contextNode.selectSingleNode(foundpath
               + (i != 0 ? "/" : "") + paths[i])) {
                 foundpath += (i != 0 ? "/" : "") + paths[i];// + "/";
@@ -1176,7 +1186,7 @@ jpf.XmlDatabase = function(){
             }
             
             //Temp hack 
-            var isAddId = paths[i].match(/(\w+)\[@property_id=(\w+)\]/);
+            var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
             // #ifdef __DEBUG
             if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
                 throw new Error(jpf.formatErrorString(1041, this, 
@@ -1198,7 +1208,7 @@ jpf.XmlDatabase = function(){
                 .appendChild(contextNode.ownerDocument.createElement(paths[i]));
 
             if (isAddId) {
-                addedNode.setAttribute("property_id", isAddId[2]);
+                addedNode.setAttribute(isAddId[2], isAddId[3]);
                 foundpath += (foundpath ? "/" : "") + isAddId[0];// + "/";
             }
             else
@@ -1210,25 +1220,30 @@ jpf.XmlDatabase = function(){
 
         if (!foundpath)
             foundpath = ".";
-        //else
-            //foundpath = foundpath.substr(0, foundpath.length-1);
 
-        var lastpath = paths[paths.length - 1];
+        var lastpath = paths[len];
         if (lastpath.match(/^\@(.*)$/)) {
             var attrNode = contextNode.ownerDocument.createAttribute(RegExp.$1);
             contextNode.selectSingleNode(foundpath).setAttributeNode(attrNode);
             return attrNode;
         }
-        else if (lastpath.trim() == "text()")
+        else if (lastpath.trim() == "text()") {
             return contextNode.selectSingleNode(foundpath)
                 .appendChild(contextNode.ownerDocument.createTextNode(""));
+        }
         else {
-            var hasId = lastpath.match(/(\w+)\[@property_id=(\w+)\]/);
-            if (hasId) lastpath = hasId[1];
-            var newNode = contextNode.selectSingleNode(foundpath || ".")
-                .appendChild(contextNode.ownerDocument.createElement(lastpath));
-            if (hasId)
-                newNode.setAttribute("property_id", hasId[2]);
+            do {
+                var hasId = lastpath.match(/(\w+)\[@([\w-]+)=(\w+)\]/);
+                if (hasId) lastpath = hasId[1];
+                var newNode = contextNode.selectSingleNode(foundpath)
+                    .appendChild(contextNode.ownerDocument.createElement(lastpath));
+                if (hasId)
+                    newNode.setAttribute(hasId[2], hasId[3]);
+                
+                if (addedNodes)
+                    addedNodes.push(newNode);
+            } while((lastpath = paths[++len]));
+            
             return newNode;
         }
     };

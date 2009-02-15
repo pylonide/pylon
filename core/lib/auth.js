@@ -398,7 +398,7 @@ jpf.auth = {
 
                 return;
             }
-
+            
             if (type == "in") {
                 //If we use retry, cache the login information
                 if (!isRelogin && _self.retry) {
@@ -502,7 +502,7 @@ jpf.auth = {
      * Signals services that a log in is required and fires authrequired event
      * @param {Object}   [options]  information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
      */
-    authRequired : function(options){
+    authRequired : function(options, forceNoRetry){
         if (!this.inited)
             this.init();
 
@@ -511,7 +511,7 @@ jpf.auth = {
             return;
 
         // If we're supposed to be logged in we'll try to log in automatically
-        if (this.loggedIn && this.retry && this.relogin()) {
+        if (this.loggedIn && !forceNoRetry && this.retry && this.relogin()) {
             var result = false;
         }
         else if (this.inProcess != 1) { //If we're not already logging in

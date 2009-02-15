@@ -90,6 +90,7 @@ jpf.popup = {
             this.hide();
 
         var o = this.cache[cacheId];
+        o.options = options;
         //if(this.last != cacheId) 
         //this.popup.document.body.innerHTML = o.content.outerHTML;
 
@@ -169,9 +170,16 @@ jpf.popup = {
     hide : function(){
         if (this.isDragging) return;
 
-        if (this.cache[this.last] && this.cache[this.last].content)
-            this.cache[this.last].content.style.display = "none";
-        //if(this.popup) this.popup.hide();
+        var o = this.cache[this.last];
+        if (o) {
+            if (o.content)
+                o.content.style.display = "none";
+
+            if (o.options.onclose) {
+                o.options.onclose(jpf.extend(o.options, {htmlNode: o.content}));
+                o.options.onclose = false;
+            }
+        }
     },
     
     isShowing : function(cacheId){

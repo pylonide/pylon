@@ -992,19 +992,25 @@ jpf.actiontracker.actions = {
         at[undo ? "undo" : "redo"](UndoObj.stackDone.length, false,
             UndoObj.stackDone, UndoObj.stackUndone);
     },
-
+    
     "setValueByXpath" : function(UndoObj, undo){
         var q = UndoObj.args;//xmlNode, value, xpath
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            var newNodes = [];
-            jpf.xmldb.setNodeValue(q[0], q[1], true, {
-                undoObj  : UndoObj,
-                xpath    : q[2],
-                newNodes : newNodes
-            });
-            
-            UndoObj.newNode = newNodes[0];
+            if (UndoObj.extra.newNode) {
+                jpf.xmldb.appendChild(q[0], UndoObj.extra.newNode);
+            }
+            else {
+                var newNodes = [];
+                jpf.xmldb.setNodeValue(q[0], q[1], true, {
+                    undoObj  : UndoObj,
+                    xpath    : q[2],
+                    newNodes : newNodes,
+                    forceNew : q[3]
+                });
+    
+                UndoObj.extra.newNode = newNodes[0];
+            }
         }
         // Undo Setting NodeValue
         else {
@@ -1016,6 +1022,7 @@ jpf.actiontracker.actions = {
         }
     },
 
+    //@todo please change .func to .action for constency reasons
     "multicall" : function(UndoObj, undo, at){
         var prop, q = UndoObj.args;
 

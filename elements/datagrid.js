@@ -553,6 +553,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 || "50%,50%").splitSafe(",");
             
             //@todo ask rik how this can be cached
+            //@todo get xmlUpdate to be called only once per document update for propedit
             var xml = 
               jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
                 <j:column caption="Property" width="' + cols[0] + '" select="@caption" />\
@@ -560,7 +561,22 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
-                    if (type == "dropdown" || type == "set") {\
+                    if (type == "set") {\
+                        var output = [], sep = $"@separator" || ", ";\
+                        var z = n;\
+                        if ($"@mask")\
+                            %$"@mask";\
+                        else {\
+                            n = dg.xmlData;\
+                            foreach(select) {\
+                                var v = $".";\
+                                n = z;\
+                                output.push(value(\'item[@value="\' + v + \'"]\'));\
+                            }\
+                            %output.join(sep);\
+                        }\
+                    }\
+                    else if (type == "dropdown") {\
                         var v = jpf.getXmlValue(dg.xmlData, select);\
                         %value("item[@value=\'" + v + "\']");\
                     }\
@@ -1045,6 +1061,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             newNode = jpf.xmldb.copyNode(dataNode);
 
         if (oldNode && multiple != "multiple") {
+            //@todo this should become the change action
             this.getActionTracker().execute({
                 action : "replaceNode",
                 args   : [oldNode, newNode]
@@ -1063,6 +1080,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else
                 pNode = this.xmlData;
     
+            //@todo this should become the change action
             this.getActionTracker().execute({
                 action : "appendChild",
                 args   : [pNode, newNode]
@@ -1391,16 +1409,34 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var mirrorNode = oHtml.parentNode.childNodes[1];
                 //this.$setStyleClass(oContainer, mirrorNode.className);
-                oContainer.className = "ddpropeditcontainer";
+                oContainer.className = "propeditcontainer" + type;
                 oContainer.style[jpf.supportOverflowComponent 
                     ? "overflowY"
                     : "overflow"] = "hidden";
                 
                 str   = [];
                 var s = this.selected.selectNodes("item");
-                for (var i = 0, l = s.length; i < l; i++) {
-                    str.push("<div tag='", s[i].getAttribute("value"), "'>",
-                        s[i].firstChild.nodeValue, "</div>");
+                if (type == "dropdown") {
+                    for (var i = 0, l = s.length; i < l; i++) {
+                        str.push("<div tag='", s[i].getAttribute("value"), "'>",
+                            s[i].firstChild.nodeValue, "</div>");
+                    }
+                }
+                else {
+                    var select = this.selected.getAttribute("select");
+                    var values = [], n = this.xmlData.selectNodes(select);
+                    for (var i = 0; i < n.length; i++) {
+                        values.push(jpf.getXmlValue(n[i], "."));
+                    }
+                    
+                    for (var v, c, i = 0, l = s.length; i < l; i++) {
+                        c = values.contains(s[i].getAttribute("value"))
+                              ? "checked" : "";
+                        
+                        str.push("<div class='", c, "' tag='", 
+                            s[i].getAttribute("value"), "'><span> </span>",
+                            s[i].firstChild.nodeValue, "</div>");
+                    }
                 }
                 oContainer.innerHTML = "<blockquote style='margin:0'>"
                     + str.join("") + "</blockquote>";
@@ -1441,8 +1477,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     while (target.parentNode != this)
                         target = target.parentNode;
 
-                    _self.rename(_self.selected, target.getAttribute("tag"));
-                    jpf.popup.forceHide();
+                    if (type == "set") {
+                        if (target.className.indexOf("checked") > -1)
+                            jpf.setStyleClass(target, "", ["checked"]);
+                        else
+                            jpf.setStyleClass(target, "checked");
+                    }
+                    else {
+                        _self.rename(_self.selected, target.getAttribute("tag"));
+                        jpf.popup.forceHide();
+                    }
                 };
                 
                 jpf.popup.show(this.uniqueId, {
@@ -1451,13 +1495,40 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     animate : true,
                     ref     : mirrorNode,
                     width   : mirrorNode.offsetWidth - this.widthdiff,
-                    height  : s.length * this.itemHeight
-                    /*,
-                    callback: function(container){
-                        container.style[jpf.supportOverflowComponent 
-                            ? "overflowY"
-                            : "overflow"] = "auto";
-                    }*/
+                    height  : s.length * this.itemHeight,
+                    onclose : function(e){
+                        if (type == "set") {
+                            var changes = [], checked = [], nodes = e.htmlNode.firstChild.childNodes;
+                            for (var v, i = 0; i < nodes.length; i++) {
+                                if (nodes[i].className.indexOf("checked") > -1) {
+                                    checked.push(v = nodes[i].getAttribute("tag"));
+                                    
+                                    if (!values.contains(v)) {
+                                        changes.push({
+                                            func : "setValueByXpath",
+                                            args : [_self.xmlData, v, select, true]
+                                        });
+                                    }
+                                }
+                            }
+                            for (i = 0; i < values.length; i++) {
+                                if (!checked.contains(values[i])) {
+                                    changes.push({
+                                        func : "removeNode",
+                                        args : [n[i]]
+                                    });
+                                }
+                            }
+                            
+                            if (changes.length) {
+                                //@todo this should become the change action
+                                _self.getActionTracker().execute({
+                                    action : "multicall",
+                                    args   : changes
+                                });
+                            }
+                        }
+                    }
                 });
             }
         }

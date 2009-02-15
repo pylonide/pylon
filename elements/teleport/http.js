@@ -544,7 +544,9 @@ jpf.http = function(){
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
-                if (jpf.auth.authRequired(extra) === true)
+                var wasDelayed = qItem.isAuthDelayed;
+                qItem.isAuthDelayed = true;
+                if (jpf.auth.authRequired(extra, wasDelayed) === true)
                     return;
             }
             //#endif
