@@ -129,7 +129,7 @@ jpf.Rename = function(){
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
 
         if (this.$getOption("main", "scalerename")) {
-            var diff = jpf.getWidthDiff(this.oTxt);
+            var diff = jpf.getWidthDiff(this.oTxt) + (jpf.isIE ? 1 : 0);
             this.oTxt.style.width = (wdt - diff) + "px";
         }
 
@@ -252,7 +252,7 @@ jpf.Rename = function(){
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
 
-        this.oTxt.onkeydown = function(){
+        this.oTxt.onkeyup = function(){
             if (!this.host.$autocomplete)
                 return;
 

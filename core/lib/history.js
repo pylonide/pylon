@@ -106,7 +106,7 @@ jpf.history = {
                 if (!jpf.history.changingHash && location.hash != "#" + jpf.history.page) {
                     jpf.history.hasChanged(location.hash.replace(/^#/, ""));
                 }
-            }, jpf.history.timer || 200);
+            }, jpf.history.delay || 200);
         }
         else {
             jpf.history.lastUrl = location.href;

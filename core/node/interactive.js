@@ -149,6 +149,10 @@ jpf.Interactive = function(){
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
         
+        //#ifdef __WITH_POPUP
+        jpf.popup.forceHide();
+        //#endif
+        
         posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
         if (!posAbs)
             _self.oExt.style.position = "relative";
@@ -304,6 +308,10 @@ jpf.Interactive = function(){
             type : resizeType
           }) === false)
             return;
+        
+        //#ifdef __WITH_POPUP
+        jpf.popup.forceHide();
+        //#endif
 
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();

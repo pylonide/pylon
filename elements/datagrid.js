@@ -557,7 +557,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var xml = 
               jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
                 <j:column caption="Property" width="' + cols[0] + '" select="@caption" />\
-                <j:column caption="Value" width="' + cols[1] + '"><![CDATA[[\
+                <j:column caption="Value" width="' + cols[1] + '" css="{@type}{@multiple}"><![CDATA[[\
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
@@ -580,12 +580,28 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         var v = jpf.getXmlValue(dg.xmlData, select);\
                         %value("item[@value=\'" + v + "\']");\
                     }\
-                    else if (type == "children" || type == "lookup" && $"@multiple" == "multiple") {\
+                    else if (type == "lookup" && $"@multiple" == "multiple"){\
+                        ]<div class="newitem"> </div>[\
+                        var vs = $"@descfield";\
+                        if (vs) {\
+                            n = dg.xmlData;\
+                            foreach(select) {]\
+                                <div class="item"><q onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\')">x</q>[%value(vs)]</div>\
+                            [}\
+                        }\
+                        else {\
+                            var total = dg.xmlData.selectNodes(select).length;\
+                            if (total){\
+                                %("[" + total + " " + $"@caption" + "]");\
+                            }\
+                        }]\
+                    [}\
+                    else if (type == "children") {\
                         var vs = $"@descfield";\
                         if (vs) {\
                             local(dg.xmlData.selectSingleNode(select)){\
                                 foreach("node()"){]\
-                                    <div>[%value(vs)]</div>\
+                                    <div class="item"><q onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</q>[%value(vs)]</div>\
                                 [}\
                             }\
                         }\
@@ -620,11 +636,27 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     }\
                 ]]]></j:column>\
                 <j:traverse select="property|prop" />\
-                <j:css select="@height" value="tall" />\
                 <j:validation select="." />\
               </j:root>');
             
             //<j:select select="self::node()[not(@frozen)]" />\
+            
+            if (!this.$removePropItem) {
+                this.$removePropItem = function(value, xpath){
+                    var xmlNode = this.xmlData.selectSingleNode(
+                        this.selected.getAttribute("select") 
+                      + (xpath ? "/" + xpath : "") + "["
+                      + (value
+                        ? this.selected.getAttribute("descfield") + "='" + value + "'"
+                        : "string-length(" + this.selected.getAttribute("descfield") + ") = 0")
+                      + "]");
+                     
+                    this.getActionTracker().execute({
+                        action : "removeNode",
+                        args   : [xmlNode]
+                    });
+                }
+            }
             
             var nodes = xml.childNodes;
             for (var i = 0; i < nodes.length; i++) {
@@ -664,7 +696,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 type         : xml.getAttribute("type"),
                 colspan      : xml.getAttribute("span") || 1, //currently not supported
                 align        : xml.getAttribute("align") || "left",
-                className    : "col" + this.uniqueId + i
+                className    : "col" + this.uniqueId + i,
+                css          : xml.getAttribute("css")
             };
             
             hId = headings.push(h) - 1;
@@ -795,6 +828,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             h = headings[i];
             
             this.$getNewContext("cell");
+            
+            if (h.css)
+                jpf.setStyleClass(this.$getLayoutNode("cell"), jpf.JsltInstance.apply(h.css, xmlNode));
 
             if (h.type == "icon"){
                 var node = this.$getLayoutNode("cell", "caption",
@@ -806,7 +842,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         + jpf.getAbsolutePath(this.iconPath, 
                             this.applyRuleSetOnNode([h.xml], xmlNode)) 
                         + ")");
-                    
             }
             else {
                 jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
@@ -946,6 +981,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
           && htmlNode == htmlNode.parentNode.lastChild) {
             lastcell = htmlNode;
             lastcol  = 1;
+            
+            if (this.namevalue 
+              && this.selected.getAttribute("type") == "lookup" 
+              && this.selected.getAttribute("multiple") == "multiple") {
+                if ((e.srcElement || e.target).className.indexOf("newitem") == -1)
+                    return;
+            }
+            
             this.startDelayedRename(e, 1);
             return;
         }
@@ -976,11 +1019,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (curBtn && curBtn.parentNode)
                 curBtn.parentNode.removeChild(curBtn);
             
-            var type = this.selected.getAttribute("type");
-            if (type && type != "text") {
-                var multiple = this.selected.getAttribute("multiple") == "multiple";
-                if (type == "lookup" && multiple) 
-                    type = "custom";
+            var type     = this.selected.getAttribute("type");
+            var multiple = this.selected.getAttribute("multiple") == "multiple";
+            if (type && (type != "text" || type != "lookup" || !multiple)) {
                 if (type == "set") 
                     type = "dropdown";
                 if (type != "lookup") {
@@ -1069,12 +1110,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (multiple) {
-                var pNode = this.xmlData.selectSingleNode(select);
-                if (!pNode) {
-                    pNode        = this.xmlData;
-                    var tempNode = this.xmlData.ownerDocument.createElement(select);
-                    tempNode.appendChild(newNode);
-                    newNode      = tempNode;
+                if (multiple == "single") {
+                    var pNode = this.xmlData.selectSingleNode(select);
+                    if (!pNode) {
+                        pNode        = this.xmlData;
+                        var tempNode = this.xmlData.ownerDocument.createElement(select);
+                        tempNode.appendChild(newNode); //@todo wrong qua actiontracker
+                        newNode      = tempNode;
+                    }
+                }
+                else {
+                    var s = select.split("/");
+                    if (s.pop().match(/^@|^text\(\)/)) s.pop();
+                    var pNode = s.length 
+                        ? this.xmlData.selectSingleNode(s.join("/"))
+                        : this.xmlData;
                 }
             }
             else
@@ -1091,7 +1141,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.popup.hide();
     };
 
-    this.$lookup = function(value){
+    this.$lookup = function(value, isMultiple){
         var oHtml = this.$selected.childNodes[this.namevalue ? 1 : lastcol];
 
         if (this.dispatchEvent("beforelookup", {
@@ -1108,7 +1158,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             oContainer.innerHTML = "";
         }
         
-        var lookupJml = self[this.lookupjml].render(oContainer); //@need to implement template
+        var lookupJml = self[this.lookupjml].render(oContainer);
         
         if (!jpf.popup.isShowing(this.uniqueId)) {
             var mirrorNode = oHtml;
@@ -1125,7 +1175,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var widthdiff = jpf.getWidthDiff(oContainer);
             jpf.popup.show(this.uniqueId, {
                 x       : 0,
-                y       : mirrorNode.offsetHeight + 1,
+                y       : isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight,
                 animate : true,
                 ref     : mirrorNode,
                 width   : mirrorNode.offsetWidth - widthdiff + 2,
@@ -1155,9 +1205,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.namevalue) {
             var type = this.selected.getAttribute("type");
             if (type && type != "text") {
-                if (type == "lookup" && this.selected.getAttribute("multiple") != "multiple") {
+                if (type == "lookup") {
                     this.$autocomplete = true;
-                    this.$lookup(this.selected.getAttribute("j_lastsearch") || "");
+                    var isMultiple = this.selected.getAttribute("multiple") == "multiple";
+                    this.$lookup(this.selected.getAttribute("j_lastsearch") || "", isMultiple);
                 }
                 else
                     return;
@@ -1170,15 +1221,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         var node = this.$getLayoutNode("cell", "caption", this.namevalue
             ? lastcell.parentNode.childNodes[1]
             : lastcell);
+        
+        if (this.namevalue && type == "lookup" && isMultiple)
+            node = node.firstChild;
+        
         return node.nodeType == 1 && node || node.parentNode;
     };
     
     var lastCaptionCol = null;
     this.$getCaptionXml = function(xmlNode){
         if (this.namevalue) {
-            return this.createModel
+            /*
+                this.createModel
                 ? jpf.xmldb.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
-                : this.xmlData.selectSingleNode(this.selected.getAttribute("select"));
+                : 
+            */
+            return this.xmlData.selectSingleNode(this.selected.getAttribute("select")) ||
+              this.selected.getAttribute("lookup") && jpf.getXml("<stub />");
         }
         
         var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
@@ -1491,7 +1550,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 jpf.popup.show(this.uniqueId, {
                     x       : 0,
-                    y       : mirrorNode.offsetHeight + 1,
+                    y       : mirrorNode.offsetHeight,
                     animate : true,
                     ref     : mirrorNode,
                     width   : mirrorNode.offsetWidth - this.widthdiff,
@@ -1679,10 +1738,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             this.oTxt.onfocus   = t.onfocus;
             this.oTxt.onblur    = t.onblur;
-            this.oTxt.onkeydown = t.onkeydown;
+            this.oTxt.onkeyup   = t.onkeyup;
             this.oTxt.refCount  = 1;
             // #endif
             
+            if (jpf.getStyle(this.oDoc.documentElement, jpf.isIE ? "overflowY" : "overflow-y") == "auto") {
+                this.oIframe.onresize = function(){
+                    _self.oHead.style.marginRight = 
+                      _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
+                        ? "16px" : "0";
+                }
+            }
+                        
             this.oDoc.documentElement.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
@@ -2091,6 +2158,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$destroy = function(){
         jpf.popup.removeContent(this.uniqueId);
+        
+        //@todo destroy this.oTxt here
         
         if (editors["dropdown_container"]) {
             editors["dropdown_container"].onmouseout  =
