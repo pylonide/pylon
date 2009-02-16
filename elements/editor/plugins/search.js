@@ -86,20 +86,26 @@ jpf.editor.searchPlugin = function(sName) {
         var found = false;
 
         if (jpf.isIE) {
-            var range = this.editor.selection.getRange();
-            if (range.findText(val, 1, flag)) {
+            var sel   = this.editor.selection;
+            var range = sel.getRange();
+            if (!(found = range.findText(val, 1, flag))) {
+                // simulate 'wrapAround' search...
+                this.editor.oDoc.execCommand('SelectAll');
+                sel.collapse(true);
+                range = sel.getRange();
+                //no chaining of calls here, seems to b0rk selection in IE
+                found = range.findText(val, 1, flag);
+            }
+            if (found) {
                 range.scrollIntoView();
                 range.select();
-                found = true;
             }
             //this.storeSelection();
-            this.editor.selection.cache();
+            sel.cache();
         }
         else {
             if (this.editor.oWin.find(val, bMatchCase, false, true, false, false, false))
                 found = true;
-            //else
-            //    fix();
         }
         if (this.oReplBtn)
             this.oReplBtn[!found ? "disable" : "enable"]();
@@ -130,8 +136,7 @@ jpf.editor.searchPlugin = function(sName) {
     };
 
     this.onDoReplClick = function(e) {
-        if (!this.editor.selection.isCollapsed())
-            this.replace();
+        this.replace();
     };
 
     this.onReplAllClick = function(e) {
@@ -177,7 +182,6 @@ jpf.editor.searchPlugin = function(sName) {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
         if (jpf.isIE) {
-            //this.restoreSelection();
             this.editor.selection.set();
             this.editor.selection.getRange().duplicate().pasteHTML(sRepl);
         }
