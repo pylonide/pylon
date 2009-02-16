@@ -59,7 +59,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.state           = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
-    this.$plugins        = ['tablewizard'];
+    this.$plugins        = ['pasteword', 'tablewizard'];
     this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
                             'justifyleft', 'justifycenter', 'justifyright',
                             'justifyfull', 'removeformat', 'cut', 'copy',
@@ -509,16 +509,27 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onPaste(e) {
+        e = e || window.event;
         var sText = "";
         // Get plain text data
-        if (e.clipboardData)
+        /*if (e.clipboardData)
             sText = e.clipboardData.getData('text/plain');
-        else if (jpf.isIE)
+        else if (window.clipboardData)
             sText = window.clipboardData.getData('Text');
-        sText = sText.replace(/\n/g, '<br />');
-        _self.insertHTML(sText);
-        if (e && jpf.isIE)
+        sText = sText.replace(/\n/g, '<br />');*/
+        setTimeout(function() {
+            var s = _self.getXHTML('text');
+            if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
+                var o = _self.plugins.get('pasteword');
+                if (o)
+                    _self.$propHandlers['value'].call(_self, o.parse(s));
+            }
+        });
+        /*_self.insertHTML(sText);
+        if (e && jpf.isIE) {
+            e.cancelBubble = true;
             return false;
+        }*/
     }
 
     var oBookmark;
@@ -778,7 +789,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        if (code == 9) {
+        if (code == 9) { // tab
             if (listBehavior.call(_self, e)) {
                 jpf.AbstractEvent.stop(e);
                 return false;
@@ -955,8 +966,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * Add various event handlers to a <i>Editor</i> object.
     *
     * @type {void}
-    * @todo some day, in a far far constellation of this script, this part
-    *       will be a remote colony, supplying all frames of the right parties
     */
     this.$addListeners = function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
@@ -982,7 +991,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oDoc.host = this;
 
-        jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste);
+        jpf.AbstractEvent.addListener(this.oDoc.body, 'paste', onPaste);
     };
 
     //this.addEventListener("contextmenu", onContextmenu);

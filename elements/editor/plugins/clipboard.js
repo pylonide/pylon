@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-jpf.editor.clipboardPlugin = function(sName) {
-    this.name        = sName;
-    this.icon        = sName;
+jpf.editor.plugin('pastetext', function() {
+    this.name        = 'pastetext';
+    this.icon        = 'pastetext';
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = this.name == "pastetext" ? 'ctrl+shift+v' : 'ctrl+shift+w';
+    this.keyBinding  = 'ctrl+shift+v';
     this.state       = jpf.editor.OFF;
 
     var panelBody;
@@ -75,61 +75,111 @@ jpf.editor.clipboardPlugin = function(sName) {
         for (var i = 0; i < rl.length; i += 2)
             sContent = sContent.replace(new RegExp(rl[i], 'gi'), rl[i+1]);
 
-        if (this.name == "pastetext") {
-            sContent = sContent.replace(/\r\n/g, '<br />')
-                .replace(/\r/g, '<br />')
-                .replace(/\n/g, '<br />');
-        }
-        else {
-            // Cleanup Word content
-            var bull   = String.fromCharCode(8226);
-            var middot = String.fromCharCode(183);
-            // convert headers to strong typed character (BOLD)
-            sContent = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
-                .replace(new RegExp('tab-stops: list [0-9]+.0pt">', 'gi'), '">' + "--list--")
-                .replace(new RegExp(bull + "(.*?)<BR>", "gi"), "<p>" + middot + "$1</p>")
-                .replace(new RegExp('<SPAN style="mso-list: Ignore">', 'gi'), "<span>" + bull) // Covert to bull list
-                .replace(/<o:p><\/o:p>/gi, "")
-                .replace(new RegExp('<br style="page-break-before: always;.*>', 'gi'), '-- page break --') // Replace pagebreaks
-                .replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), "")  // Word comments
-                .replace(/<\/?span[^>]*>/gi, "") //remove Word-generated superfluous spans
-                .replace(new RegExp('<(\\w[^>]*) style="([^"]*)"([^>]*)', 'gi'), "<$1$3") //remove inline style attributes
-                .replace(/<\/?font[^>]*>/gi, "")
-                .replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") // Strips class attributes.
-                //.replace(new RegExp('<(\\w[^>]*) class="?mso([^ |>]*)([^>]*)', 'gi'), "<$1$3"); //MSO class attributes
-                //.replace(new RegExp('href="?' + this._reEscape("" + document.location) + '', 'gi'), 'href="' + this.editor.documentBaseURI.getURI());
-                .replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3")
-                .replace(/<\\?\?xml[^>]*>/gi, "")
-                .replace(/<\/?\w+:[^>]*>/gi, "")
-                .replace(/-- page break --\s*<p>&nbsp;<\/p>/gi, "") // Remove pagebreaks
-                .replace(/-- page break --/gi, "") // Remove pagebreaks
-                .replace(/<\/p>/gi, "<br /><br />") //convert <p> newlines to <br> ones
-                .replace(/<\/?p[^>]*>/gi, "")
-                .replace(/<\/?div[^>]*>/gi, "");
-                //.replace(/\/?&nbsp;*/gi, ""); &nbsp;
-                //.replace(/<p>&nbsp;<\/p>/gi, '');
-
-            // Convert all middlot lists to UL lists
-            var div = document.createElement("div");
-            div.innerHTML = sContent;
-            // Convert all middot paragraphs to li elements
-            while (this._convertMiddots(div, "--list--")); // bull
-            while (this._convertMiddots(div, middot, "unIndentedList")); // Middot
-            while (this._convertMiddots(div, bull)); // bull
-            sContent = div.innerHTML;
-
-            // Replace all headers with strong and fix some other issues
-            //sContent = sContent.replace(/<h[1-6]>&nbsp;<\/h[1-6]>/gi, '<p>&nbsp;&nbsp;</p>')
-            //    .replace(/<h[1-6]>/gi, '<p><b>')
-            //    .replace(/<\/h[1-6]>/gi, '</b></p>')
-            //    .replace(/<b>&nbsp;<\/b>/gi, '<b>&nbsp;&nbsp;</b>')
-            //    .replace(/^(&nbsp;)*/gi, '');
-            sContent = sContent.replace(/--list--/gi, ""); // Remove temporary --list--
-        }
+        sContent = sContent.replace(/\r\n/g, '<br />')
+            .replace(/\r/g, '<br />')
+            .replace(/\n/g, '<br />');
         this.editor.insertHTML(sContent);
 
-        e.stop();
+        if (e.stop)
+            e.stop();
+        else
+            e.cancelBubble = true;
         return false;
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        panelBody.style.display = "none";
+        var idArea = 'editor_' + this.uniqueId + '_input';
+        var idBtns = 'editor_' + this.uniqueId + '_btns';
+        panelBody.innerHTML =
+           '<label for="' + idArea + '">' +
+           'Use %s on your keyboard to paste the text into the window.'.sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
+           + '</label>\
+            <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
+              cols="60" rows="10" class="editor_textarea"></textarea>\
+            <div class="editor_panelrow" style="position:absolute;bottom:0;width:100%" id="' + idBtns + '"></div>';
+
+        this.oArea = document.getElementById(idArea);
+        jpf.sanitizeTextbox(this.oArea);
+        if (jpf.isIE) {
+            this.oArea.onselectstart = this.oArea.onpaste = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
+        }
+        this.appendJmlNode(
+           '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+            <j:button caption="Insert" \
+              onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+            </j:bar></j:toolbar>',
+          document.getElementById(idBtns));
+
+        return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.oArea = null;
+        delete panelBody;
+        delete this.oArea;
+    };
+});
+jpf.editor.plugin('pasteword', function() {
+    this.name        = 'pasteword';
+    this.icon        = 'pasteword';
+    this.type        = jpf.editor.CMDMACRO;
+    this.hook        = 'onpaste';
+    this.keyBinding  = 'ctrl+shift+v';
+    this.state       = jpf.editor.OFF;
+    
+    this.parse = function(sContent) {
+        // Cleanup Word content
+        var bull   = String.fromCharCode(8226);
+        var middot = String.fromCharCode(183);
+        // convert headers to strong typed character (BOLD)
+        sContent = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
+            .replace(new RegExp('tab-stops: list [0-9]+.0pt">', 'gi'), '">' + "--list--")
+            .replace(new RegExp(bull + "(.*?)<BR>", "gi"), "<p>" + middot + "$1</p>")
+            .replace(new RegExp('<SPAN style="mso-list: Ignore">', 'gi'), "<span>" + bull) // Covert to bull list
+            .replace(/<o:p><\/o:p>/gi, "")
+            .replace(new RegExp('<br style="page-break-before: always;.*>', 'gi'), '-- page break --') // Replace pagebreaks
+            .replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), "")  // Word comments
+            .replace(/<\/?span[^>]*>/gi, "") //remove Word-generated superfluous spans
+            .replace(new RegExp('<(\\w[^>]*) style="([^"]*)"([^>]*)', 'gi'), "<$1$3") //remove inline style attributes
+            .replace(/<\/?font[^>]*>/gi, "")
+            .replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") // Strips class attributes.
+            //.replace(new RegExp('<(\\w[^>]*) class="?mso([^ |>]*)([^>]*)', 'gi'), "<$1$3"); //MSO class attributes
+            //.replace(new RegExp('href="?' + this._reEscape("" + document.location) + '', 'gi'), 'href="' + this.editor.documentBaseURI.getURI());
+            .replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3")
+            .replace(/<\\?\?xml[^>]*>/gi, "")
+            .replace(/<\/?\w+:[^>]*>/gi, "")
+            .replace(/-- page break --\s*<p>&nbsp;<\/p>/gi, "") // Remove pagebreaks
+            .replace(/-- page break --/gi, "") // Remove pagebreaks
+            .replace(/<\/p>/gi, "<br /><br />") //convert <p> newlines to <br> ones
+            .replace(/<\/?p[^>]*>/gi, "")
+            .replace(/<\/?div[^>]*>/gi, "")
+            .replace(/<TABLE[^>]*cellPadding=[^>]*>/gi, '<table border="0">') //correct tables
+            .replace(/<td[^>]*vAlign=[^>]*>/gi, '<td>');
+            //.replace(/\/?&nbsp;*/gi, ""); &nbsp;
+            //.replace(/<p>&nbsp;<\/p>/gi, '');
+            // Replace all headers with strong and fix some other issues
+        //sContent = sContent.replace(/<h[1-6]>&nbsp;<\/h[1-6]>/gi, '<p>&nbsp;&nbsp;</p>')
+        //    .replace(/<h[1-6]>/gi, '<p><b>')
+        //    .replace(/<\/h[1-6]>/gi, '</b></p>')
+        //    .replace(/<b>&nbsp;<\/b>/gi, '<b>&nbsp;&nbsp;</b>')
+        //    .replace(/^(&nbsp;)*/gi, '');
+
+        // Convert all middlot lists to UL lists
+        var div = document.createElement("div");
+        div.innerHTML = sContent;
+        // Convert all middot paragraphs to li elements
+        while (this._convertMiddots(div, "--list--")); // bull
+        while (this._convertMiddots(div, middot, "unIndentedList")); // Middot
+        while (this._convertMiddots(div, bull)); // bull
+        sContent = div.innerHTML;
+    
+        return sContent.replace(/--list--/gi, ""); // Remove temporary --list--
     };
 
     this._convertMiddots = function(div, search, class_name) {
@@ -201,47 +251,6 @@ jpf.editor.clipboardPlugin = function(sName) {
         }
         return false;
     };
-
-    this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
-        panelBody.className = "editor_popup";
-        panelBody.style.display = "none";
-        var idArea = 'editor_' + this.uniqueId + '_input';
-        var idBtns = 'editor_' + this.uniqueId + '_btns';
-        panelBody.innerHTML =
-           '<label for="' + idArea + '">' +
-           'Use %s on your keyboard to paste the text into the window.'.sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
-           + '</label>\
-            <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
-              cols="60" rows="10" class="editor_textarea"></textarea>\
-            <div class="editor_panelrow" style="position:absolute;bottom:0;width:100%" id="' + idBtns + '"></div>';
-
-        this.oArea = document.getElementById(idArea);
-        jpf.sanitizeTextbox(this.oArea);
-        if (jpf.isIE) {
-            this.oArea.onselectstart = this.oArea.onpaste = function(e) {
-                e = e || window.event;
-                e.cancelBubble = true;
-            };
-        }
-        this.appendJmlNode(
-           '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
-            <j:button caption="Insert" \
-              onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
-            </j:bar></j:toolbar>',
-          document.getElementById(idBtns));
-
-        return panelBody;
-    };
-
-    this.destroy = function() {
-        panelBody = this.oArea = null;
-        delete panelBody;
-        delete this.oArea;
-    };
-};
-
-jpf.editor.plugin('pastetext', jpf.editor.clipboardPlugin);
-jpf.editor.plugin('pasteword', jpf.editor.clipboardPlugin);
+});
 
 // #endif
