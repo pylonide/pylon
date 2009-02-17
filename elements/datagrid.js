@@ -1021,7 +1021,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             var type     = this.selected.getAttribute("type");
             var multiple = this.selected.getAttribute("multiple") == "multiple";
-            if (type && (type != "text" || type != "lookup" || !multiple)) {
+            if (type && type != "text" && (type != "lookup" || !multiple)) {
                 if (type == "set") 
                     type = "dropdown";
                 if (type != "lookup") {
