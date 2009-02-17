@@ -1583,9 +1583,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             
                             if (changes.length) {
                                 //@todo this should become the change action
-                                _self.getActionTracker().execute({
-                                    action : "multicall",
-                                    args   : changes
+                                setTimeout(function(){
+                                    //@todo force delay here
+                                    _self.getActionTracker().execute({
+                                        action : "multicall",
+                                        args   : changes
+                                    });
+                                    
+                                    //@todo do purge here
                                 });
                             }
                         }
@@ -1751,6 +1756,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                       _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
                         ? "16px" : "0";
                 }
+                
+                this.addEventListener("afterload", this.oIframe.onresize);
+                this.addEventListener("xmlupdate", this.oIframe.onresize);
             }
             
             //@todo implement this for non iframe
