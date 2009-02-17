@@ -77,12 +77,12 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$setClearMessage = this.$updateClearMessage = function(msg){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+        jpf.setStyleClass(this.oExt, this.baseCSSname + "Empty");
         this.oInt.innerHTML = msg;
     };
 
     this.$removeClearMessage = function(){
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
         this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
 
