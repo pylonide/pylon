@@ -1744,12 +1744,19 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oTxt.refCount  = 1;
             // #endif
             
+            //@todo implement this for non iframe
             if (jpf.getStyle(this.oDoc.documentElement, jpf.isIE ? "overflowY" : "overflow-y") == "auto") {
                 this.oIframe.onresize = function(){
                     _self.oHead.style.marginRight = 
                       _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
                         ? "16px" : "0";
                 }
+            }
+            
+            //@todo implement this for non iframe
+            this.oDoc.documentElement.onmousedown = function(e){
+                if (_self.oWin.event.srcElement.tagName == "HTML")
+                    jpf.popup.forceHide();
             }
                         
             this.oDoc.documentElement.onscroll = 
