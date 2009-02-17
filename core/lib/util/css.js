@@ -226,6 +226,10 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             ? 2
             : parseInt(bh) || 0) + o.offsetTop;
 
+        //Scrolling
+        wt -= o.scrollLeft;
+        ht -= o.scrollTop;
+        
         //Table support
         if (o.tagName.toLowerCase() == "table") {
             ht -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0);
@@ -235,6 +239,11 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             ht -= (cp = parseInt(o.parentNode.parentNode.cellSpacing));
             while (o.previousSibling)
                 ht -= (o = o.previousSibling).offsetHeight + cp;
+        }
+
+        if (!o.offsetParent) {
+            wt -= o.parentNode.scrollLeft;
+            ht -= o.parentNode.scrollTop;
         }
 
         o = o.offsetParent;

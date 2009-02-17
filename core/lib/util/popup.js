@@ -100,7 +100,6 @@ jpf.popup = {
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
         
-        
         if (options.ref) {
             var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
             var top    = (options.y || 0) + pos[1];

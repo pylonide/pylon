@@ -246,6 +246,11 @@ jpf.JmlElement = function(){
              * Removes the focus from this element.
              */
             this.blur = function(noset, e){
+                //#ifdef __WITH_POPUP
+                if (jpf.popup.isShowing(this.uniqueId))
+                    jpf.popup.forceHide(); //This should be put in a more general position
+                //#endif
+                
                 if (this.$blur)
                     this.$blur(e);
 
