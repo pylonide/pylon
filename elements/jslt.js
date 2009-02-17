@@ -72,15 +72,26 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
      * @todo please test this.
      */
     this.$clear = function(a, b){
-        if (b == true) {
+        if (b == true)
             this.setProperty("value", "");
-            this.oInt.innerHTML = this.emptyMsg || "";//alert(a+"-"+b);
-        }
     };
     
+    this.$setClearMessage = this.$updateClearMessage = function(msg){
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+        this.oInt.innerHTML = msg;
+    };
+
+    this.$removeClearMessage = function(){
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        this.oInt.innerHTML = ""; //clear if no empty message is supported
+    };
+
     this.$booleanProperties["selectable"] = true;
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
+        if (value)
+            this.$removeClearMessage();
+        
         if (this.createJml) {
             if (typeof code == "string") 
                 code = jpf.xmldb.getXml(code);
