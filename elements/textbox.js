@@ -189,7 +189,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : jpf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
+            : jpf.isTrue(jpf.xmldb.getInheritedAttribute(this.$jml, "realtime")) || false;
     };
 
     /**
@@ -386,11 +386,11 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
         }
 
-        if (jpf.hasMsRangeObject) {
+        /*if (jpf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
             r.collapse();
             r.select();
-        }
+        }*/
 
         try {
             if (jpf.isIE || !e || e.srcElement != jpf.window)

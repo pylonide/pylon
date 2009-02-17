@@ -1092,14 +1092,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
           maxlength="10" type="lookup" foreign_table="author" />
     */
     this.stopLookup = function(propNode, dataNode){
+        if (!dataNode)
+            return;
+        
         this.stopRename();
         
         var multiple = propNode.getAttribute("multiple"),
             select   = propNode.getAttribute("select");
             
         var oldNode = this.xmlData.selectSingleNode(select 
-          + (multiple == "single" ? "/node()" : "")),
-            newNode = jpf.xmldb.copyNode(dataNode);
+          + (multiple == "single" ? "/node()" : ""));
+        var newNode = jpf.xmldb.copyNode(dataNode);
 
         if (oldNode && multiple != "multiple") {
             //@todo this should become the change action

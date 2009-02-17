@@ -260,8 +260,12 @@ jpf.XmlDatabase = function(){
         return jpf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
     };
 
-    this.nodeCount = {};
+    this.getXmlId = function(xmlNode){
+        return xmlNode.getAttribute(this.xmlIdTag) ||
+          this.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode);
+    }
 
+    this.nodeCount = {};
     /**
      * @private
      */

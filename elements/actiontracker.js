@@ -998,7 +998,7 @@ jpf.actiontracker.actions = {
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
             if (UndoObj.extra.newNode) {
-                jpf.xmldb.appendChild(q[0], UndoObj.extra.newNode);
+                jpf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
             }
             else {
                 var newNodes = [];
@@ -1015,6 +1015,7 @@ jpf.actiontracker.actions = {
         // Undo Setting NodeValue
         else {
             if (UndoObj.extra.newNode) {
+                UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
                 jpf.xmldb.removeNode(UndoObj.extra.newNode);
             }
             else

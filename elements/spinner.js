@@ -174,6 +174,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
         this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
 
+        //#ifdef __WITH_WINDOW_FOCUS
+        jpf.sanitizeTextbox(this.oInput);
+        //#endif
+
         var timer, z = 0;
 
         /* Setting start value */
