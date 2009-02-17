@@ -862,7 +862,7 @@ jpf.XmlDatabase = function(){
 
         var xmlId = xmlNode.getAttribute(this.xmlIdTag);
 
-        if ("|remove|move-away|".indexOf("|" + action + "|") > -1)
+        if (!this.delayUpdate && "|remove|move-away|".indexOf("|" + action + "|") > -1)
             this.notifyQueued(); //empty queue
 
         var listen, uIds, i, j, hash, info, jmlNode, runTimer, found;
@@ -897,7 +897,7 @@ jpf.XmlDatabase = function(){
                         continue;
                     }
 
-                    if ("|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
+                    if (!this.delayUpdate && "|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
                         jmlNode = jpf.lookup(uIds[i]);
                         if (jmlNode)
                             jmlNode.$xmlUpdate(action, xmlNode,
@@ -916,7 +916,7 @@ jpf.XmlDatabase = function(){
                 nextloop = null;
         }
 
-        if (undoObj) {
+        if (undoObj && !this.delayUpdate) {
             if (!undoObj.xmlNode) //@todo are we sure about this?
                 undoObj.xmlNode = xmlNode;
 
@@ -938,6 +938,8 @@ jpf.XmlDatabase = function(){
      *  @private
      */
     this.notifyQueued = function(){
+        clearTimeout(notifyTimer);
+        
         for (var uId in notifyQueue) {
             var q = notifyQueue[uId];
             jmlNode = jpf.lookup(uId);

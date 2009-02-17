@@ -1548,6 +1548,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                 };
                 
+                var sel = this.selected;
                 jpf.popup.show(this.uniqueId, {
                     x       : 0,
                     y       : mirrorNode.offsetHeight,
@@ -1583,15 +1584,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             
                             if (changes.length) {
                                 //@todo this should become the change action
-                                setTimeout(function(){
-                                    //@todo force delay here
+                                //setTimeout(function(){
+                                    _self.$lastUpdated = sel;
                                     _self.getActionTracker().execute({
                                         action : "multicall",
                                         args   : changes
                                     });
-                                    
-                                    //@todo do purge here
-                                });
+                                //});
                             }
                         }
                     }
@@ -2044,7 +2043,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
                     if (!_self.xmlRoot)
                         return;
-                    
+
                     /*if (action == "redo-remove")
                         oParent.appendChild(xmlNode);
                     
@@ -2069,12 +2068,19 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
                     }*/
                     
-                    var nodes = _self.getTraverseNodes();
-                    for (var i = 0, l = nodes.length; i < l; i++) {
-                        _self.$updateNode(nodes[i], 
-                            jpf.xmldb.findHTMLNode(nodes[i], _self));
+                    if (_self.$lastUpdated) {
+                        _self.$updateNode(_self.$lastUpdated, 
+                            jpf.xmldb.findHTMLNode(_self.$lastUpdated, _self));
+                        _self.$lastUpdated = null
                     }
-                    
+                    else {
+                        var nodes = _self.getTraverseNodes();
+                        for (var i = 0, l = nodes.length; i < l; i++) {
+                            _self.$updateNode(nodes[i], 
+                                jpf.xmldb.findHTMLNode(nodes[i], _self));
+                        }
+                    }
+                                        
                     _self.dispatchEvent("xmlupdate", {
                         action : action,
                         xmlNode: xmlNode

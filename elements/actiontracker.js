@@ -1026,6 +1026,9 @@ jpf.actiontracker.actions = {
     "multicall" : function(UndoObj, undo, at){
         var prop, q = UndoObj.args;
 
+        var dUpdate = jpf.xmldb.delayUpdate;
+        jpf.xmldb.delayUpdate = true;
+
         // Set Calls
         if (!undo) {
             for(var i = 0; i < q.length; i++) {
@@ -1039,6 +1042,11 @@ jpf.actiontracker.actions = {
             for (var i = q.length - 1; i >= 0; i--)
                 jpf.actiontracker.actions[q[i].func](q[i], true, at);
         }
+
+        jpf.xmldb.delayUpdate = dUpdate;
+
+        if (!dUpdate)
+            jpf.xmldb.notifyQueued();
     },
 
     /**
