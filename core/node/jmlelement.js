@@ -233,7 +233,8 @@ jpf.JmlElement = function(){
                     return;
                 }
 
-                this.$focus(e);
+                if (this.$focus)
+                    this.$focus(e);
 
                 this.dispatchEvent("focus", {
                     srcElement : this,
@@ -245,7 +246,8 @@ jpf.JmlElement = function(){
              * Removes the focus from this element.
              */
             this.blur = function(noset, e){
-                this.$blur(e);
+                if (this.$blur)
+                    this.$blur(e);
 
                 if (!noset)
                     jpf.window.$blur(this);

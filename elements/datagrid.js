@@ -1574,7 +1574,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 if (!checked.contains(values[i])) {
                                     changes.push({
                                         func : "removeNode",
-                                        args : [n[i]]
+                                        args : [n[i].nodeType != 1
+                                         ? n[i].parentNode || n[i].ownerElement || n[i].selectSingleNode("..")
+                                         : n[i]]
                                     });
                                 }
                             }

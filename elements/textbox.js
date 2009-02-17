@@ -236,7 +236,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.getValue = function(){
         var v = this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
-        return v == this.initialMsg ? "" : v;
+        return v == this.initialMsg ? "" : v.replace(/\r/g, "");
     };
 
     /**
@@ -466,9 +466,11 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             e = e || window.event;
 
             //Change
-            if (!_self.realtime)
-                if (e.keyCode == 13 && _self.getValue() != this.value)
-                    _self.change(_self.getValue());
+            if (!_self.realtime) {
+                var value = _self.getValue();
+                if (e.keyCode == 13 && value != this.value)
+                    _self.change(value);
+            }
             else if (jpf.isSafari && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
                 setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
                     o.change(o.getValue())");

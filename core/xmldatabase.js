@@ -1221,31 +1221,32 @@ jpf.XmlDatabase = function(){
         if (!foundpath)
             foundpath = ".";
 
-        var lastpath = paths[len];
-        if (lastpath.match(/^\@(.*)$/)) {
-            var attrNode = contextNode.ownerDocument.createAttribute(RegExp.$1);
-            contextNode.selectSingleNode(foundpath).setAttributeNode(attrNode);
-            return attrNode;
-        }
-        else if (lastpath.trim() == "text()") {
-            return contextNode.selectSingleNode(foundpath)
-                .appendChild(contextNode.ownerDocument.createTextNode(""));
-        }
-        else {
-            do {
+        var newNode, lastpath = paths[len];
+        do {
+            if (lastpath.match(/^\@(.*)$/)) {
+                (newNode || contextNode.selectSingleNode(foundpath))
+                    .setAttributeNode(newNode = contextNode.ownerDocument.createAttribute(RegExp.$1));
+            }
+            else if (lastpath.trim() == "text()") {
+                newNode = (newNode || contextNode.selectSingleNode(foundpath))
+                    .appendChild(contextNode.ownerDocument.createTextNode(""));
+            }
+            else {
                 var hasId = lastpath.match(/(\w+)\[@([\w-]+)=(\w+)\]/);
                 if (hasId) lastpath = hasId[1];
-                var newNode = contextNode.selectSingleNode(foundpath)
+                newNode = (newNode || contextNode.selectSingleNode(foundpath))
                     .appendChild(contextNode.ownerDocument.createElement(lastpath));
                 if (hasId)
                     newNode.setAttribute(hasId[2], hasId[3]);
                 
                 if (addedNodes)
                     addedNodes.push(newNode);
-            } while((lastpath = paths[++len]));
+            }
             
-            return newNode;
-        }
+            foundpath += (foundpath ? "/" : "") + paths[len];
+        } while((lastpath = paths[++len]));
+
+        return newNode;
     };
 
     /**
