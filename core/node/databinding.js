@@ -2964,7 +2964,10 @@ jpf.MultiselectBinding = function(){
                     this.$fill(result);
             }
         }
-        else if ((action == "remove") && foundNode == xmlNode && xmlNode.parentNode) { //Check Remove
+        else if ((action == "remove") && (!xmlNode || foundNode == xmlNode && xmlNode.parentNode)) { //Check Remove
+            if (!xmlNode)
+                return;
+            
             //Remove HTML Node
             if (htmlNode)
                 this.$deInitNode(xmlNode, htmlNode);

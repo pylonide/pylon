@@ -1045,8 +1045,8 @@ jpf.actiontracker.actions = {
 
         jpf.xmldb.delayUpdate = dUpdate;
 
-        if (!dUpdate)
-            jpf.xmldb.notifyQueued();
+        //if (!dUpdate)
+            //jpf.xmldb.notifyQueued();
     },
 
     /**
