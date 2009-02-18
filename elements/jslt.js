@@ -72,8 +72,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
      * @todo please test this.
      */
     this.$clear = function(a, b){
-        if (b == true)
-            this.setProperty("value", "");
+        this.setProperty("value", "");
     };
     
     this.$setClearMessage = this.$updateClearMessage = function(msg){

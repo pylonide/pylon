@@ -332,10 +332,10 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$loadJml = function(x){
         this.caching = false;// hack
-
-        if (this.emptyMsg)
+        
+        if (this.emptyMsg && !this.childNodes.length)
             this.$setClearMessage(this.emptyMsg);
-
+        
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
