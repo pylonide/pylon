@@ -120,8 +120,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     oParent = oNode;
                 }
             }
-            else if (jpf.isSafari)
+            else if (jpf.isSafari) {
                 this.oDoc.designMode = "on";
+            }
+            else if (jpf.isIE) {
+                // yes, we fix hyperlinks...%&$#*@*!
+                aLinks = this.oDoc.getElementsByTagName('a');
+                for (var i = 0, j = aLinks.length; i < j; i++) {
+                    if (aLinks[i].getAttribute('_jpf_href'))
+                        aLinks[i].href = aLinks[i].getAttribute('_jpf_href')
+                }
+            }
         }
             
         this.dispatchEvent('sethtml', {editor: this});
@@ -304,7 +313,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        // block elements by IE - because they're not converted
                        // when an editor command is executed
                        .replace(/([^>]*?)<br[^>]*>/gi, jpf.editor.ALTP.start
-                           + "$1" + jpf.editor.ALTP.end);
+                           + "$1" + jpf.editor.ALTP.end)
+                       .replace(/(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi, '$1$2 _jpf_href=$2$3');
         }
 
         // Fix some issues
@@ -328,6 +338,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return html.replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<br[^>]*_jpf_placeholder="1"\/?>/gi, '')
+            .replace(/<p>[\s\n\r\t]*<\/p>/gi, '')
+            .replace(/[\s]*_jpf_href="?[^\s^>]+"?/gi, '')
             //.replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
             .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
                 //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
