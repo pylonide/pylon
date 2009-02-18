@@ -1214,7 +1214,7 @@ jpf.MultiSelect = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         if (this.bindingRules && (this.bindingRules["value"]
           || this.bindingRules["caption"]) || this.caption) {
-            this.value = this.applyRuleSetOnNode(this.bindingRules && this.bindingRules["value"]
+            this.value = this.applyRuleSetOnNode(this.bindingRules && this.bindingRules["value"] || this.valuerule
                 ? "value"
                 : "caption", e.xmlNode);
 
