@@ -171,7 +171,11 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$clickHandler = function(){
         //this.checked = !this.checked;
         this.change(this.$values[(!this.checked) ? 0 : 1]);
-        if (this.validate) this.validate();
+        
+        //#ifdef __WITH_VALIDATION
+        this.validate(true);
+        //#endif
+        
         return true;
     };
 

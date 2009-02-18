@@ -89,6 +89,7 @@ jpf.Validation = function(){
         /* #ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
         #endif*/
+        
         //#ifdef __WITH_HTML5
         if (!isValid)
             this.dispatchEvent("invalid", this.validityState);
@@ -156,7 +157,9 @@ jpf.Validation = function(){
      * Puts this element in the error state, optionally showing the
      * error box if this element's is invalid.
      *
-     * @param  {Boolean} [force] whether this element in the error state and don't check if the element's value is invalid.
+     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
+     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
+     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
      * @return  {Boolean}  boolean specifying whether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
@@ -165,11 +168,11 @@ jpf.Validation = function(){
     // #ifdef __WITH_HTML5
     this.checkValidity =
     //#endif
-    this.validate = function(force, checkRequired){
+    this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
 
         var hasError = false;
-        if (force || !this.isValid(checkRequired)) {
+        if (force || !this.isValid(!ignoreReq) && !nosetError) {
             this.setError();
             return true;
         }
@@ -199,19 +202,28 @@ jpf.Validation = function(){
         this.showMe();
 
         if (this.$validgroup) {
-            this.oExt.parentNode.insertBefore(errBox.oExt,
-                this.oExt.nextSibling);
-
+            var refHtml = this.validityState.errorHtml || this.oExt;
+            var refParent = document != refHtml.ownerDocument
+                ? refHtml.ownerDocument.parentWindow.frameElement.parentNode
+                : jpf.getPositionedParent(this.oExt);
+            
+            if (document != refHtml.ownerDocument)
+                refParent.appendChild(errBox.oExt);
+            else 
+                this.oExt.parentNode.insertBefore(errBox.oExt, this.oExt.nextSibling);
+                
             if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
-                var pos = jpf.getAbsolutePosition(this.oExt,
-                    jpf.getPositionedParent(this.oExt));
+                var pos = jpf.getAbsolutePosition(refHtml, refParent);
                 errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
                 errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
             }
             errBox.host = this;
         }
         errBox.show();
-
+        
+        if (this.hasFeature(__MULTISELECT__) && this.validityState.errorXml)
+            this.select(this.validityState.errorXml);
+        
         if (jpf.window.focussed && jpf.window.focussed != this)
             this.focus(null, {mouse:true}); //arguable...
     };
@@ -337,14 +349,14 @@ jpf.Validation = function(){
 
     this.$booleanProperties["required"] = true;
     this.$supportedProperties.push("validgroup", "required", "datatype",
-        "pattern", "min", "max", "maxlength", "minlength",
+        "pattern", "min", "max", "maxlength", "minlength", "valid-test",
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
-    function fValidate(){ this.validate(); }
+    this.$fValidate = function(){ this.validate(true); };
     this.$propHandlers["validgroup"] = function(value){
-        this.removeEventListener("blur", fValidate);
+        this.removeEventListener("blur", this.$fValidate);
         if (value) {
-            this.addEventListener("blur", fValidate);
+            this.addEventListener("blur", this.$fValidate);
 
             var vgroup;
             if (typeof value != "string") {
@@ -369,7 +381,7 @@ jpf.Validation = function(){
         }
     };
 
-    function setRule(type, rule){
+    this.$setRule = function(type, rule){
         var vId = vIds[type];
 
         if (!rule) {
@@ -383,14 +395,13 @@ jpf.Validation = function(){
         else
             vRules[vId] = rule;
     }
-    this.$setRule = setRule;
 
     //#ifdef __WITH_XSD
     this.$propHandlers["datatype"] = function(value){
         if (!value)
-            return setRule("datatype");
+            return this.$setRule("datatype");
 
-        setRule("datatype", this.multiselect
+        this.$setRule("datatype", this.multiselect
             ? "this.xmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.getTraverseNodes())"
             : "jpf.XSDParser.matchType(value, '" + value + "')");
@@ -400,48 +411,48 @@ jpf.Validation = function(){
 
     this.$propHandlers["pattern"] = function(value){
         if (!value)
-            return setRule("pattern");
+            return this.$setRule("pattern");
 
         if (value.match(/^\/.*\/(?:[gim]+)?$/))
             this.reValidation = eval(value);
 
-        setRule("pattern", this.reValidation
+        this.$setRule("pattern", this.reValidation
             ? "this.getValue().match(this.reValidation)" //RegExp
             : "(" + validation + ")"); //JavaScript
     };
 
     this.$propHandlers["min"] = function(value){
-        setRule("min", value
+        this.$setRule("min", value
             ? "parseInt(value) >= " + value
             : null);
     };
 
     this.$propHandlers["max"] = function(value){
-        setRule("max", value
+        this.$setRule("max", value
             ? "parseInt(value) <= " + value
             : null);
     };
 
     this.$propHandlers["maxlength"] = function(value){
-        setRule("maxlength", value
+        this.$setRule("maxlength", value
             ? "value.toString().length <= " + value
             : null);
     };
 
     this.$propHandlers["minlength"] = function(value){
-        setRule("minlength", value
+        this.$setRule("minlength", value
             ? "value.toString().length >= " + value
             : null);
     };
 
     this.$propHandlers["notnull"] = function(value){
-        setRule("notnull", value
+        this.$setRule("notnull", value
             ? "value.toString().length > 0"
             : null);
     };
 
     this.$propHandlers["checkequal"] = function(value){
-        setRule("checkequal", value
+        this.$setRule("checkequal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
     };
@@ -491,7 +502,7 @@ jpf.Validation = function(){
             return true;
         }
               
-        setRule("valid-test", value
+        this.$setRule("valid-test", value
             ? "this.$checkRemoteValidation()"
             : null);
     };
@@ -604,7 +615,7 @@ jpf.ValidationGroup = function(name){
                 || !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0))) {
                 if (!nosetError) {
                     if (!found) {
-                        oEl.validate(true);
+                        oEl.validate(true, null, true);
                         found = true;
                         if (!this.allowMultipleErrors)
                             return true; //Added (again)

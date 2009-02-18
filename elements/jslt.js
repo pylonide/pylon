@@ -135,7 +135,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
             if (a.nodeName.indexOf("on") == 0)
                 this.addEventListener(a.nodeName, new Function(a.nodeValue));
         }
-        
+
         if (x.firstChild) {
             var bind = x.getAttribute("ref") || ".";
             x.removeAttribute("ref");
@@ -146,6 +146,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
                     </value>\
                 </bindings>\
             </smartbinding>";
+
             jpf.JmlParser.addToSbStack(this.uniqueId, 
                 new jpf.smartbinding(null, jpf.xmldb.getXml(strBind)));
         }

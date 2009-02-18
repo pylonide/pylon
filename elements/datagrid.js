@@ -43,7 +43,7 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.DragDrop
  *
- * @todo add the right ifdefs
+ * @todo add the right ifdefs i.e. __WITH_PROPEDIT
  */
 jpf.propedit    =
 jpf.spreadsheet = 
@@ -80,11 +80,163 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.smartBinding = value ? true : false;
         this.namevalue    = true;
         
+        this.$initTemplate();
         this.$loaddatabinding();
         
         if (this.bindingRules["traverse"])
             this.parseTraverse(this.bindingRules["traverse"][0]);
     };
+    
+    this.$initTemplate = function(){
+        //#ifdef __WITH_VALIDATION
+        if (!this.hasFeature(__VALIDATION__)) {
+            this.inherit(jpf.Validation);
+            
+            var vRules = {};
+            var rules = ["required", "datatype",
+                "pattern", "min", "max", "maxlength", "minlength", "checkequal"];
+            
+            var ruleContext;
+            this.$fValidate = function(){};
+            this.$setRule   = function(type, rule){
+                var vId = ruleContext.vIds[type];
+        
+                if (!rule) {
+                    if (vId)
+                        ruleContext.vRules[vId] = "";
+                    return;
+                }
+        
+                if (!vId)
+                    ruleContext.vIds[type] = ruleContext.vRules.push(rule) - 1;
+                else
+                    ruleContext.vRules[vId] = rule;
+            }
+            
+            this.addEventListener("afterrename", function(e){
+                if (this.isValid(null, this.selected))
+                    this.clearError();
+                else
+                    this.setError();
+            });
+            
+            this.$propHandlers["required"] = function(value, type){
+                if (!type || type == "text")
+                    this.$setRule("required", "valueNode && value.trim().length > 0");
+                else
+                    this.$setRule("required", "valueNode");
+            }
+            
+            function cacheValidRules(cacheId, nodes){
+                var i, j, v, l, r = [], node, type;
+                for (j = 0; j < rules.length; j++) {
+                    if (_self.bindingRules[rules[j]])
+                        r.push(rules[j]);
+                }
+                var rlength       = r.length;
+                var checkRequired = r.contains("required");
+
+                var contexts = [];
+                for (i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    type = node.getAttribute("type");
+                    ruleContext = {
+                        xmlNode : node, 
+                        select  : node.getAttribute("select"),
+                        vIds    : {},
+                        vRules  : []
+                    };
+                    contexts.push(ruleContext);
+                    
+                    if (type && type != "text") {
+                        if (checkRequired) {
+                            v = _self.applyRuleSetOnNode("required", node);
+                            if (v)
+                                _self.$propHandlers["required"].call(_self, v, type);
+                        }
+                        continue;
+                    }
+                    
+                    for (j = 0; j < rlength; j++) {
+                        v = _self.applyRuleSetOnNode(r[j], node);
+                        if (v)
+                            _self.$propHandlers[r[j]].call(_self, v);
+                    }
+                }
+                
+                return contexts;
+            }
+            
+            this.isValid = function(checkRequired, node){
+                var nodes, isValid = true;
+                var cacheId = this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag);
+                if (!vRules[cacheId])
+                    vRules[cacheId] = cacheValidRules(cacheId, 
+                        (nodes = this.getTraverseNodes()));
+                else 
+                    nodes = node ? [node] : (nodes || this.getTraverseNodes());
+
+                if (!this.xmlData)
+                    return false;
+
+                //#ifdef __WITH_HTML5
+                this.validityState.$reset();
+                //#endif
+
+                var i, l, isValid = true, rule, node, value, type, valueNode;
+                var rules = vRules[cacheId];
+                
+                for (i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    rule = rules[i];
+                    type = node.getAttribute("type");
+                    valueNode = this.xmlData.selectSingleNode(node.getAttribute("select"));
+                    if (!type || type != "text")
+                        value = jpf.getXmlValue(valueNode, '.');
+
+                    //#ifdef __WITH_HTML5
+                    for (var type in rule.vIds) {
+                        if ((type != "required" || checkRequired) 
+                          && !eval(rule.vRules[rule.vIds[type]])) {
+                            this.validityState.$set(type);
+                            isValid = false;
+                        }
+                    }
+                    /*#else
+                    var isValid = (rule.vRules.length
+                        ? eval("!value || (" + rule.vRules.join(") && (") + ")")
+                        : true);
+                    //#endif */
+                    
+                    //#ifdef __WITH_HTML5
+                    //@todo make this work for non html5 validation
+                    if (!isValid) {
+                        this.validityState.errorHtml = jpf.xmldb.findHTMLNode(node, this).childNodes[1];
+                        this.validityState.errorXml  = node;
+                        this.invalidmsg = this.applyRuleSetOnNode("invalidmsg", node);
+                        break;
+                    }
+                    //#endif
+                }
+                
+                /* #ifdef __WITH_XFORMS
+                this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
+                #endif*/
+                
+                //#ifdef __WITH_HTML5
+                if (!isValid)
+                    this.dispatchEvent("invalid", this.validityState);
+                else {
+                    this.validityState.valid = true;
+                    isValid = true;
+                }
+                //#endif
+                
+                return isValid;
+            };
+        }
+        //#endif
+    }
 
     /**
      * This method imports a stylesheet defined in a multidimensional array 
@@ -636,8 +788,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     }\
                 ]]]></j:column>\
                 <j:traverse select="property|prop" />\
-                <j:validation select="." />\
+                <j:required select="self::node()/@required" />\
+                <j:datatype select="@datatype" />\
+                <j:pattern><![CDATA[[\
+                    var validate;\
+                    if ((validate = $"@decimals"))\
+                        %("/\\.\\d{" + validate + "}/");\
+                    else if ((validate = $"@validate") && validate.chartAt(0) == "/")\
+                        %("/" + validate.replace(/^\\/|\\/$/g, "") + "/");\
+                ]]]></j:pattern>\
+                <j:maxlength select="@maxlength" />\
+                <j:invalidmsg><![CDATA[[\
+                     out = $"@invalidmsg" || "Invalid entry;Please correct your entry";\
+                ]]]></j:invalidmsg>\
               </j:root>');
+              <!-- mask -->
             
             //<j:select select="self::node()[not(@frozen)]" />\
             
@@ -2092,6 +2257,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             };
             changeListener.uniqueId = jpf.all.push(changeListener) - 1;
             
+            var vRules = {};
             this.$_load = this.load;
             this.load   = function(xmlRoot, cacheId){
                 var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
@@ -2099,6 +2265,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 //@todo need caching of the template
 
                 if (template) {
+                    this.$initTemplate();
+                    
                     this.xmlData = xmlRoot;
                     if (xmlRoot)
                         this.$loadSubData(xmlRoot);

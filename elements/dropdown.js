@@ -231,7 +231,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //#ifdef __JSUBMITFORM || __INC_ALL
         if (this.hasFeature(__VALIDATION__) && this.form) {
-            this.validate();
+            this.validate(true);
         }
         //#endif
     });

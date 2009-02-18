@@ -121,7 +121,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __JSUBMITFORM || __INC_ALL
     this.addEventListener("afterselect", function(e){
         if (this.hasFeature(__VALIDATION__)) 
-            this.validate();
+            this.validate(true);
     });
     // #endif
     

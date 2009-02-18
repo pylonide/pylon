@@ -1551,6 +1551,8 @@ jpf.DataBinding = function(){
         if (initModelId[1])
             jpf.setModel(initModelId[1], this, true);
 
+        var hasModel = initModelId.length;
+
         //Set the model for normal smartbinding
         if ((!this.ref || this.hasFeature(__MULTISELECT__)) && !this.xmlRoot) {
             var sb = jpf.JmlParser.sbInit[this.uniqueId]
@@ -1586,10 +1588,10 @@ jpf.DataBinding = function(){
         if (!x.getAttribute("create-model"))
             this.$propHandlers["create-model"].call(this);
 
-        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage
-          && (!loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__)
-          || !this.hasFeature(__MULTISELECT__) && (this.ref 
-          || this.xmlRoot || jpf.JmlParser.sbInit[this.uniqueId])))
+        var hasInitSb = jpf.JmlParser.sbInit[this.uniqueId] ? true : false;
+        if ((!hasInitSb || !hasModel) && this.$setClearMessage
+          && (!loadqueue && !this.xmlRoot && (this.hasFeature(__MULTISELECT__)
+          || this.ref || hasInitSb)))
             this.$setClearMessage(this.emptyMsg, "empty");
     });
 
@@ -2431,17 +2433,18 @@ jpf.MultiselectBinding = function(){
      *   {Function} [getNodes]   Function that retrieves a list of nodes.
      *   {String}   [dateFormat] see {@link binding#traverse#date-format}
      *   {Function} [getValue]   Function that determines the string content based on an xml node as it's first argument.
-     * @param {Boolean} clear   removes the current sort options.
+     * @param {Boolean} clear    removes the current sort options.
+     * @param {Boolean} noReload wether to reload the data of this component.
      * @see   binding#traverse
      */
-    this.resort = function(options, clear, no_reload){
+    this.resort = function(options, clear, noReload){
         if (!this.$sort)
             this.$sort = new jpf.Sort();
  
         this.$sort.set(options, clear);
         this.clearAllCache();
 
-        if (no_reload)
+        if (noReload)
             return;
 
         //#ifdef __WITH_VIRTUALVIEWPORT
