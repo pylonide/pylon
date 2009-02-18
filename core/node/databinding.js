@@ -2434,12 +2434,15 @@ jpf.MultiselectBinding = function(){
      * @param {Boolean} clear   removes the current sort options.
      * @see   binding#traverse
      */
-    this.resort = function(options, clear){
+    this.resort = function(options, clear, no_reload){
         if (!this.$sort)
             this.$sort = new jpf.Sort();
-
+ 
         this.$sort.set(options, clear);
         this.clearAllCache();
+
+        if (no_reload)
+            return;
 
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){

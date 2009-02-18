@@ -242,7 +242,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force){
-        if(this.noCollapse) return;
+        if(this.noCollapse) 
+            return;
+        
+        if (!htmlNode)
+            htmlNode = this.$selected;
         
         var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
@@ -267,6 +271,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideOpen = function(container, xmlNode, immediate){
+        if (!xmlNode)
+            xmlNode = this.selected;
+        
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -313,7 +320,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideClose = function(container, xmlNode){
-        if (this.noCollapse) return;
+        if (this.noCollapse) 
+            return;
+        
+        if (!xmlNode)
+            xmlNode = this.selected;
         
         if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
