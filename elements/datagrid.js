@@ -1935,7 +1935,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             //@todo implement this for non iframe
             this.oDoc.documentElement.onmousedown = function(e){
-                if ((e || _self.oWin.event).srcElement.tagName == "HTML")
+                if (!e) e = _self.oWin.event;
+                if ((e.srcElement || e.target).tagName == "HTML")
                     jpf.popup.forceHide();
             }
                         
