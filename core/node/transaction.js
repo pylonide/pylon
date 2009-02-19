@@ -397,7 +397,8 @@ jpf.EditTransaction = function(){
     /**
      * Starts a new transaction for adding a data element and shows this element.
      */
-    this.startAdd = function(){
+    this.startAdd = function(xmlNode){
+        this.xmlRoot = xmlNode;
         this.cancel();
         this.mode = "add";
         this.show();

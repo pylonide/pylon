@@ -189,7 +189,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     node = nodes[i];
                     rule = rules[i];
                     type = node.getAttribute("type");
-                    valueNode = this.xmlData.selectSingleNode(node.getAttribute("select"));
+                    valueNode = this.xmlData.selectSingleNode(jpf.getXmlValue(node, "@select|field/@select"));
                     if (!type || type == "text")
                         value = jpf.getXmlValue(valueNode, '.');
 
@@ -1283,30 +1283,19 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (multiple) {
-                if (multiple == "single") {
-                    var pNode = this.xmlData.selectSingleNode(select);
-                    if (!pNode) {
-                        pNode        = this.xmlData;
-                        var tempNode = this.xmlData.ownerDocument.createElement(select);
-                        tempNode.appendChild(newNode); //@todo wrong qua actiontracker
-                        newNode      = tempNode;
-                    }
-                }
-                else {
+                if (multiple != "single") {
                     var s = select.split("/");
                     if (s.pop().match(/^@|^text\(\)/)) s.pop();
-                    var pNode = s.length 
-                        ? this.xmlData.selectSingleNode(s.join("/"))
-                        : this.xmlData;
+                    select = s.join("/");
                 }
             }
-            else
-                pNode = this.xmlData;
+            else 
+                select = null;
     
             //@todo this should become the change action
             this.getActionTracker().execute({
                 action : "appendChild",
-                args   : [pNode, newNode]
+                args   : [this.xmlData, newNode, null, null, select]
             });
         }
         

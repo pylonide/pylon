@@ -730,7 +730,20 @@ jpf.XmlDatabase = function(){
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         //Add xmlNode to parent pNode or one selected by xpath statement
-        (xpath ? pNode.selectSingleNode(xpath) : pNode).insertBefore(xmlNode, beforeNode);
+
+        if (xpath) {
+            var addedNodes = [];
+            var pNode = this.createNodeFromXpath(pNode, xpath, addedNodes);
+            if (addedNodes.length) {
+                pNode.appendChild(xmlNode);
+                while(addedNodes.length) {
+                    if (pNode == addedNodes.pop() && addedNodes.length)
+                        pNode = pNode.parentNode;
+                }
+            }
+        }
+
+        pNode.insertBefore(xmlNode, beforeNode);
 
         //detect if xmlNode should be removed somewhere else
         //- [17-2-2004] changed pNode (2nd arg applychange) into xmlNode

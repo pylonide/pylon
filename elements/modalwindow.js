@@ -228,12 +228,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
+    this.$booleanProperties["transaction"]  = true;
     this.$booleanProperties["hideselects"]  = true;
     this.$booleanProperties["animate"]      = true;
     this.$booleanProperties["showdragging"] = true;
     this.$supportedProperties.push("title", "icon", "modal", "minwidth",
         "minheight", "hideselects", "center", "buttons", "state",
-        "maxwidth", "maxheight", "animate", "showdragging");
+        "maxwidth", "maxheight", "animate", "showdragging", "transaction");
 
     /**
      * @attribute {Boolean} modal whether the window prevents access to the
@@ -256,6 +257,20 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oCover.style.display = "none";
         }
     };
+    
+    /**
+     * @attribute {Boolean} center centers the window relative to it's parent's
+     * containing rect when shown.
+     */
+    this.$propHandlers["transaction"] = function(value){
+        /**
+         * @inherits jpf.DataBinding
+         * @inherits jpf.Transaction
+         * @inherits jpf.EditTransaction
+         */
+        if (!this.hasFeature(__TRANSACTION__))
+            this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
+    }
 
     /**
      * @attribute {Boolean} center centers the window relative to it's parent's
@@ -840,17 +855,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
 
-        if (!this.hasFeature(__DATABINDING__)
-          && (this.$jml.getAttribute("smartbinding")
-          || this.$jml.getAttribute("actions"))) {
-            /**
-             * @inherits jpf.DataBinding
-             * @inherits jpf.Transaction
-             * @inherits jpf.EditTransaction
-             */
-            this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
-        }
-
         /*var v;
         if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
             this.$jml.setAttribute("visible", "{" + jpf.isTrue(v) + "}");
@@ -904,6 +908,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 name  : "visible",
                 value : "true"
             });
+        }
+        
+        if (!this.hasFeature(__DATABINDING__)
+          && !this.transaction && (this.$jml.getAttribute("smartbinding")
+          || this.$jml.getAttribute("actions"))) {
+            this.$propHandlers.transaction.call(this, true);
         }
     };
 
