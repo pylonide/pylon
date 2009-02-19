@@ -77,6 +77,7 @@ jpf.editor.plugin('code', function() {
     this.update = function(editor, sHtml) {
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, editor.exportHtml(sHtml || editor.getValue()));
+        setSize(editor);
     };
 
     this.getValue = function() {
