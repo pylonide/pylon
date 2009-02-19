@@ -1396,6 +1396,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
         this.plugins.notifyAll("resize");
+
+        if (this.plugins.isActive('code'))
+            this.plugins.get('code').update(this);
     };
 
     /**
