@@ -182,7 +182,7 @@ jpf.popup = {
     },
     
     isShowing : function(cacheId){
-        return this.last && this.last == cacheId 
+        return this.last && this.last == cacheId && this.cache[this.last]
             && this.cache[this.last].content.style.display != "none";
     },
 

@@ -113,9 +113,19 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.change = function(value){
-        if (!this.createModel && !this.xmlRoot) 
-            return;
-        //if(value === undefined) value = this.selected ? this.applyRuleSetOnNode("value", this.selected) : "";
+        // #ifdef __WITH_VALIDATION
+        if (this.errBox && this.errBox.visible && this.isValid())
+            this.clearError();
+        // #endif
+        
+        if (!this.createModel && !this.xmlRoot) { //!this.$jml.getAttribute("ref")
+            //Not databound
+            if (this.dispatchEvent("beforechange", {value : value}) === false)
+                return;
+
+            this.setProperty("value", value);
+            return this.dispatchEvent("afterchange", {value : value});
+        }
         
         this.executeActionByRuleSet("change", this.mainBind, this.xmlRoot, value);
     };
@@ -282,8 +292,12 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     var mlNode = this;
     jmlNode.addEventListener("afterselect", function(e){
-        if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) 
+        if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) {
+            if (this.value)
+                mlNode.change(this.value);
+            
             return;
+        }
 
         if (this.multiselect)
             mlNode.changeSelection(e.list);

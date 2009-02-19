@@ -122,7 +122,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.$propHandlers["required"] = function(value, type){
                 if (!type || type == "text")
-                    this.$setRule("required", "valueNode && value.trim().length > 0");
+                    this.$setRule("required", "value.trim().length > 0");
                 else
                     this.$setRule("required", "valueNode");
             }
@@ -177,7 +177,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     nodes = node ? [node] : (nodes || this.getTraverseNodes());
 
                 if (!this.xmlData)
-                    return false;
+                    return true;
 
                 //#ifdef __WITH_HTML5
                 this.validityState.$reset();
@@ -185,18 +185,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 var i, l, isValid = true, rule, node, value, type, valueNode;
                 var rules = vRules[cacheId];
-                
                 for (i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
                     rule = rules[i];
                     type = node.getAttribute("type");
                     valueNode = this.xmlData.selectSingleNode(node.getAttribute("select"));
-                    if (!type || type != "text")
+                    if (!type || type == "text")
                         value = jpf.getXmlValue(valueNode, '.');
 
                     //#ifdef __WITH_HTML5
                     for (var type in rule.vIds) {
-                        if ((type != "required" || checkRequired) 
+                        if ((type == "required" && checkRequired || value) 
                           && !eval(rule.vRules[rule.vIds[type]])) {
                             this.validityState.$set(type);
                             isValid = false;
@@ -234,6 +233,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 return isValid;
             };
+            
+            var vgroup = jpf.xmldb.getInheritedAttribute(this.$jml, "validgroup");
+            if (vgroup)
+                this.$propHandlers["validgroup"].call(this, vgroup);
         }
         //#endif
     }
@@ -2307,6 +2310,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 }
                             }
                             
+                            _self.setProperty("disabled", _self.xmlData ? false : true);
                             this.isLoaded = true; //@todo how about cleanup?
                         },
         

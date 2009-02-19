@@ -171,17 +171,14 @@ jpf.Validation = function(){
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
 
-        var hasError = false;
         if (force || !this.isValid(!ignoreReq) && !nosetError) {
             this.setError();
-            return true;
+            return false;
         }
         else {
             this.clearError();
-            return false;
+            return true;
         }
-
-        return !hasError;
     };
 
     /**
@@ -199,11 +196,11 @@ jpf.Validation = function(){
         errBox.setMessage(this.invalidmsg);
         
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
-        this.showMe();
+        this.showMe(); //@todo scroll refHtml into view
 
         if (this.$validgroup) {
             var refHtml = this.validityState.errorHtml || this.oExt;
-            var refParent = document != refHtml.ownerDocument
+            /*var refParent = document != refHtml.ownerDocument
                 ? refHtml.ownerDocument.parentWindow.frameElement.parentNode
                 : jpf.getPositionedParent(this.oExt);
             
@@ -216,7 +213,19 @@ jpf.Validation = function(){
                 var pos = jpf.getAbsolutePosition(refHtml, refParent);
                 errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
                 errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
+            }*/
+            
+            document.body.appendChild(errBox.oExt);
+            var pos = jpf.getAbsolutePosition(refHtml, document.body);
+            
+            if (document != refHtml.ownerDocument) {
+                var pos2 = jpf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
+                pos[0] += pos2[0];
+                pos[1] += pos2[1];
             }
+            
+            errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
+            errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
             errBox.host = this;
         }
         errBox.show();
@@ -611,8 +620,9 @@ jpf.ValidationGroup = function(name){
                 continue;
             if (!oEl.disabled
               && (!this.validateVisibleOnly && oEl.visible || !oEl.oExt || oEl.oExt.offsetHeight)
-              && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid()
-                || !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0))) {
+              && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid(!ignoreReq))) {
+                //|| !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0)
+                
                 if (!nosetError) {
                     if (!found) {
                         oEl.validate(true, null, true);

@@ -767,7 +767,7 @@ jpf.DataBinding = function(){
             o.load((xpath && xmlNode)
                 ? xmlNode.selectSingleNode(xpath)
                 : xmlNode);
-            if (o.disabled && o.createModel)
+            if (xmlNode && o.disabled && o.createModel)
                 o.enable();
         }
 

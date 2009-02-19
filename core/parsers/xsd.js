@@ -82,7 +82,7 @@ jpf.XSDImplementation = function(){
             if (!RegExp.$3 || RegExp.$3.length < 4)
                 return false;
 
-            var dt = new Date(value);
+            var dt = new Date(RegExp.$2 + "/" + RegExp.$1 + "/" + RegExp.$3); //@todo this is a dutch date, localization...
             if (dt.getFullYear() != parseFloat(RegExp.$3))
                 return false;
             if (dt.getMonth() != parseFloat(RegExp.$2) - 1)

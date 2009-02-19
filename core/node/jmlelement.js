@@ -634,13 +634,12 @@ jpf.JmlElement = function(){
          * @param  {String} [string] the new value of this element.
          */
         this.change = function(value){
-            // #ifdef __WITH_DATABINDING
-
             // #ifdef __WITH_VALIDATION
             if (this.errBox && this.errBox.visible && this.isValid())
                 this.clearError();
             // #endif
 
+            // #ifdef __WITH_DATABINDING
             //Not databound
             if ((!this.createModel || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
