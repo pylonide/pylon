@@ -295,6 +295,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 
+    var prepareRE = null;
     /**
      * Processes, sanitizes and cleanses a string of raw html that originates
      * from outside a contentEditable area, so that the inner workings of the
@@ -305,29 +306,42 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type   {String}
      */
     this.prepareHtml = function(html) {
+        if (prepareRE === null) {
+            // compile 'em regezz
+            prepareRE = [
+                /<(\/?)strong>|<strong( [^>]+)>/gi,
+                /<(\/?)em>|<em( [^>]+)>/gi,
+                /&apos;/g,
+                /([^>]*?)<br[^>]*>/gi,
+                /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
+                /<a( )([^>]+)\/>|<a\/>/gi,
+                /<p[^>]*>([^<]*)?<\/p>/gi
+            ];
+        }
         // Convert strong and em to b and i in FF since it can't handle them
         if (jpf.isGecko) {
-            html = html.replace(/<(\/?)strong>|<strong( [^>]+)>/gi, '<$1b$2>')
-                       .replace(/<(\/?)em>|<em( [^>]+)>/gi, '<$1i$2>');
+            html = html.replace(prepareRE[0], '<$1b$2>')
+                       .replace(prepareRE[1], '<$1i$2>');
         }
         else if (jpf.isIE) {
-            html = html.replace(/&apos;/g, '&#39;') // IE can't handle apos
+            html = html.replace(prepareRE[2], '&#39;') // IE can't handle apos
                        // <BR>'s need to be replaced to be properly handled as
                        // block elements by IE - because they're not converted
                        // when an editor command is executed
-                       .replace(/([^>]*?)<br[^>]*>/gi, jpf.editor.ALTP.start
+                       .replace(prepareRE[3], jpf.editor.ALTP.start
                            + "$1" + jpf.editor.ALTP.end)
-                       .replace(/(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi, '$1$2 _jpf_href=$2$3');
+                       .replace(prepareRE[4], '$1$2 _jpf_href=$2$3');
         }
 
         // Fix some issues
-        html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>')
-                   .replace(/<p[^>]*>([^<]*)?<\/p>/gi, jpf.editor.ALTP.start
+        html = html.replace(prepareRE[5], '<a$1$2></a>')
+                   .replace(prepareRE[6], jpf.editor.ALTP.start
                        + "$1" + jpf.editor.ALTP.end);
 
         return html;
     };
 
+    var exportRE = null;
     /**
      * Description.
      *
@@ -339,12 +353,29 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.exportHtml = function(html, bStrict) {
         var depth = -1, stack = [];
 
-        return html.replace(/<br\/><\/li>/gi, '</li>')
-            .replace(/<br[^>]*_jpf_placeholder="1"\/?>/gi, '')
-            .replace(/<p>[\s\n\r\t]*<\/p>/gi, '')
-            .replace(/[\s]*_jpf_href="?[^\s^>]+"?/gi, '')
+        if (exportRE === null) {
+            // compile 'em regezz
+            exportRE = [
+                /<br\/><\/li>/gi,
+                /<br[^>]*_jpf_placeholder="1"\/?>/gi,
+                /<(p|a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(p|a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
+                /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
+                /[\s]*_jpf_href="?[^\s^>]+"?/gi,
+                /(\w)=([^'"\s>]+)/gi,
+                /<br>/gi, // NO! do <br />
+                /(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi
+            ];
+        }
+
+        html = html.replace(exportRE[0], '</li>')
+            .replace(exportRE[1], '')
+            .replace(exportRE[2], '')
+            .replace(exportRE[3], '<$1>&nbsp;</$2>')
+            .replace(exportRE[4], '')
+            .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
+            .replace(exportRE[6], '<br />')
             //.replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
-            .replace(/(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi, function(m, fullstart, tagstart, fullend, tagend){
+            .replace(exportRE[7], function(m, fullstart, tagstart, fullend, tagend){
                 //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
                 //if (tagstart == "BR")
                 //    return m;
@@ -377,6 +408,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     return startItem && startItem[1] ? "<BR />" : fullend;
                 }
              });
+        // #ifdef __DEBUG
+        // check for VALID XHTML in DEBUG mode...
+        jpf.getXml('<source>' + html + '</source>');
+        // #endif
+        
+        return html;
     };
 
     /**
@@ -1424,8 +1461,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.plugins.$destroy();
         this.selection.$destroy();
         jpf.editor.ALTP.node = null;
-        this.plugins = this.selection = this.oDoc.host = null;
-        this.oToobar = this.oDoc = this.oWin = this.iframe = null;
+        this.plugins = this.selection = this.oDoc.host = this.oToobar = 
+            this.oDoc = this.oWin = this.iframe = prepareRE = exportRE = null;
     };
 }).implement(
      //#ifdef __WITH_VALIDATION
