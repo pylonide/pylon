@@ -125,7 +125,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             else if (jpf.isIE) {
                 // yes, we fix hyperlinks...%&$#*@*!
-                aLinks = this.oDoc.getElementsByTagName('a');
+                var aLinks = this.oDoc.getElementsByTagName('a');
                 for (var i = 0, j = aLinks.length; i < j; i++) {
                     if (aLinks[i].getAttribute('_jpf_href'))
                         aLinks[i].href = aLinks[i].getAttribute('_jpf_href')
@@ -284,6 +284,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.selection.set();
             this.$visualFocus(true);
             this.selection.setContent(bNoParse ? html : this.prepareHtml(html));
+            // notify SmartBindings that we changed stuff...
+            this.change(this.getValue());
+            
             if (bNoFocus) return;
             setTimeout(function() {
                 _self.selection.set();
