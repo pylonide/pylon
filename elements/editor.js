@@ -410,7 +410,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
              });
         // #ifdef __DEBUG
         // check for VALID XHTML in DEBUG mode...
-        jpf.getXml('<source>' + html.replace(/&.*?;/g, "") + '</source>');
+        try {
+            jpf.getXml('<source>' + html.replace(/&.{4,5};/g, "") + '</source>');
+        }
+        catch(ex) {
+            jpf.console.error(ex.message + "\n" + html.escapeHTML());
+        }
         // #endif
         
         return html;
