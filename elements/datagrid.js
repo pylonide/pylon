@@ -1855,7 +1855,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         widthdiff    = this.$getOption("main", "widthdiff") || 0;
         defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        useiframe    = jpf.isIE && (jpf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
+        //jpf.isIE && 
+        useiframe    = (jpf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
         jpf.JmlParser.parseChildren(this.$jml, null, this);
         
