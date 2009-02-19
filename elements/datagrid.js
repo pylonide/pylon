@@ -688,7 +688,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$findContainer = function(htmlNode) {
-        return htmlNode.nextSibling;
+        var node = htmlNode.nextSibling;
+        return node.nodeType == 1 ? node : node.nextSibling;
     };
     
     /**** Databinding ****/

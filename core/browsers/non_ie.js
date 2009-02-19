@@ -371,8 +371,9 @@ jpf.runNonIe = function (){
                 if (xmlNode.tagName.match(/tbody|td|tr/))
                     pNode.insertBefore(pNode.ownerDocument
                         .createElement(xmlNode.tagName.toLowerCase()), beforeNode || null);
-                else
+                else {
                     pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
+                }
             }
             
             //#ifdef __DEBUG

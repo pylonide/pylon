@@ -361,8 +361,16 @@ jpf.MultiSelect = function(){
 
             if (node.getAttribute("get"))
                 return jpf.getData(node.getAttribute("get"), refNode, null, callback)
-            else if (node.firstChild)
-                return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
+            else if (node.firstChild) {
+                var node = jpf.getNode(node, [0]);
+                if (jpf.supportNamespaces && node.namespaceURI == jpf.ns.xhtml) {
+                    node = jpf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                    //@todo import here for webkit?
+                }
+                else node = node.cloneNode(true);
+                
+                return callback(node, jpf.SUCCESS);
+            }
         }
 
         return addXmlNode;
@@ -509,7 +517,7 @@ jpf.MultiSelect = function(){
 
         if (this.ctrlselect && !shiftKey)
             ctrlKey = true;
-
+        
         // Selection buffering (for async compatibility)
         if (!this.xmlRoot) {
             buffered        = [arguments, this.autoselect];
@@ -551,6 +559,7 @@ jpf.MultiSelect = function(){
                 }
             }
         }
+        
         if (!xmlNode.style)
             htmlNode = this.caching
                 ? this.getNodeFromCache(xmlNode.getAttribute(
