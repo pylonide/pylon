@@ -100,7 +100,6 @@ jpf.editor.plugin('code', function() {
 
     this.setSize = function(editor) {
         if (!oPreview || !editor) return;
-        jpf.console.log('resizing code-editor area...');
         oPreview.style.width  = editor.oExt.offsetWidth - 2 + "px";
         oPreview.style.height = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
     };

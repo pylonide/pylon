@@ -106,7 +106,7 @@ jpf.editor.plugins = function(coll, editor) {
      * @type  {Boolean}
      */
     this.isActive = function(name) {
-        var o = this.get(name);
+        var o = (typeof name == "string") ? this.get(name) : name;
         if (!o) return false;
 
         var res = false;
@@ -192,7 +192,7 @@ jpf.editor.plugins = function(coll, editor) {
             if (!coll[i].busy && coll[i].execute)
                 res.push(coll[i].execute(this.editor, e));
         }
-        this.active = res.length ? res : res[0];
+        //this.active = res.length ? res : res[0];
         return res;
     };
 
@@ -210,7 +210,7 @@ jpf.editor.plugins = function(coll, editor) {
         var coll = this.collKeys[hash];
         for (var i = 0, j = coll.length; i < j; i++)
             coll[i].execute(this.editor, arguments);
-        this.active = coll.length ? coll : coll[0];
+        //this.active = coll.length ? coll : coll[0];
 
         return true;
     };

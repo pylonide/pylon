@@ -1398,7 +1398,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.plugins.notifyAll("resize");
 
         if (this.plugins.isActive('code'))
-            this.plugins.get('code').update(this);
+            this.plugins.get('code').setSize(this);
     };
 
     /**
