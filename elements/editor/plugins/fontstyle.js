@@ -49,7 +49,6 @@ jpf.editor.plugin('fontstyle', function() {
                     aCss    = [];
                     bCss    = [];
 
-                    var cname;
                     node.nodeValue.replace(/([\w ]+)\s*=\s*(([^\{]+?)\s*\{[\s\S]*?\})\s*/g,
                         function(m, caption, css, className){
                             // #ifdef __DEBUG
@@ -166,6 +165,8 @@ jpf.editor.plugin('fontstyle', function() {
                 sel.setContent('<span class="' + sStyle + '">'
                     + s + '</span>');
             }
+            // Notify the SmartBindings we've changed...
+            this.editor.change(this.editor.getValue());
         }
     };
 
@@ -322,7 +323,14 @@ jpf.editor.plugin('paragraph', function() {
                 var oNode = this.editor.selection.getSelectedNode();
                 while (oNode.nodeType != 1)
                     oNode = oNode.parentNode;
-                if (oNode.tagName.match(blocksRE)) {
+
+                //window.console.log(s, '>>>', s.length);
+                //window.console.log('=================');
+                //window.console.log(oNode.textContent, '>>>', oNode.textContent.length);
+                // @todo think it's innerText in IE...
+                // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
+                //       REALLY not like Word does it...
+                if (oNode.tagName.match(blocksRE) && s.length == oNode.textContent.length) {
                     var p = this.editor.oDoc.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
@@ -332,6 +340,9 @@ jpf.editor.plugin('paragraph', function() {
                     sel.setContent('<' + sBlock + '>' + s.replace(blocksRE2, '')
                         + '</' + sBlock + '>');
                 }
+
+                // Notify the SmartBindings we've changed...
+                this.editor.change(this.editor.getValue());
             }
         }
     };
