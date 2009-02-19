@@ -37,7 +37,7 @@ jpf.editor.plugin('code', function() {
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
         if (!oPreview)
-            drawPreview(editor);
+            this.drawPreview(editor);
 
         if (oPreview.style.display == "none") {
             // remember the selection for IE
@@ -50,7 +50,7 @@ jpf.editor.plugin('code', function() {
             editor.setProperty('state', jpf.editor.DISABLED);
 
             // show the textarea and position it correctly...
-            setSize(editor);
+            this.setSize(editor);
             oPreview.style.display = "";
 
             oPreview.focus();
@@ -77,14 +77,13 @@ jpf.editor.plugin('code', function() {
     this.update = function(editor, sHtml) {
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, editor.exportHtml(sHtml || editor.getValue()));
-        setSize(editor);
     };
 
     this.getValue = function() {
         return oPreview.value;
     };
 
-    function drawPreview(editor) {
+    this.drawPreview = function(editor) {
         oPreview = editor.oExt.appendChild(document.createElement('textarea'));
         oPreview.rows = 15;
         oPreview.cols = 10;
@@ -94,16 +93,17 @@ jpf.editor.plugin('code', function() {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
-        setSize(editor);
+        this.setSize(editor);
         oPreview.style.display  = "none";
         jpf.sanitizeTextbox(oPreview);
     }
 
-    function setSize(editor) {
+    this.setSize = function(editor) {
         if (!oPreview || !editor) return;
+        jpf.console.log('resizing code-editor area...');
         oPreview.style.width  = editor.oExt.offsetWidth - 2 + "px";
         oPreview.style.height = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
-    }
+    };
 
     function protect(outer, opener, data, closer) {
         return opener + "___JPFpd___" + protectedData.push(data) + closer;
