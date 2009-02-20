@@ -24,7 +24,7 @@
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
  * Calendar returns a date in chosen date format. Minimal size of calendar is
- * 150px. test
+ * 150px.
  *
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
