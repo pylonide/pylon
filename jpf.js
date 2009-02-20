@@ -1754,15 +1754,15 @@ var jpf = {
                 }
 
                 if (isSkin) {
-                    //#ifdef __DEBUG
                     if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
+                        //#ifdef __DEBUG
                         jpf.console.warn("Found xhtml namespace as global \
                                           namespace of skin file. This is not \
                                           allowed. Please remove this before \
                                           use in production environments.")
+                        //#endif
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                     }
-                    //#endif
 
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     jpf.skins.Init(xmlNode, node, path);
