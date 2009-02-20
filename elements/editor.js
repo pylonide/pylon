@@ -244,8 +244,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        this.value = this.exportHtml(this.getXHTML('text'), bStrict);
-        return this.value;
+        return this.exportHtml(this.getXHTML('text'), bStrict);
     };
 
     /**

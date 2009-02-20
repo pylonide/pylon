@@ -168,6 +168,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             
             this.isValid = function(checkRequired, node){
+                if (!this.xmlRoot || !this.xmlData || this.disabled)
+                    return true;
+                
                 var nodes, isValid = true;
                 var cacheId = this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag);
                 if (!vRules[cacheId])
