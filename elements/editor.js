@@ -70,10 +70,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**** Properties and Attributes ****/
 
-    //this.forceVScrollIE       = true;
-    //this.UseBROnCarriageReturn= true;
     this.isContentEditable = true;
-    //this.useIframe         = false;
     this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
 
     this.$booleanProperties["realtime"]     = true;
@@ -231,7 +228,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {mixed}
      */
     this.getXHTML = function(output) {
-        if (!output) output = this.output;
+        if (!output)
+            output = this.output;
         if (output == "text")
             return this.oDoc.body.innerHTML;
         else
@@ -246,7 +244,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        //jpf.console.log('now parsing text: ' + this.getXHTML('text').escapeHTML());
         this.value = this.exportHtml(this.getXHTML('text'), bStrict);
         return this.value;
     };
@@ -334,9 +331,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         // Fix some issues
-        html = html.replace(prepareRE[5], '<a$1$2></a>')
-                   .replace(prepareRE[6], jpf.editor.ALTP.start
-                       + "$1" + jpf.editor.ALTP.end);
+        html = html.replace(prepareRE[5], '<a$1$2></a>');
 
         return html;
     };
@@ -351,19 +346,18 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type   {String}
      */
     this.exportHtml = function(html, bStrict) {
-        var depth = -1, stack = [];
-
         if (exportRE === null) {
             // compile 'em regezz
             exportRE = [
-                /<br\/><\/li>/gi,
+                /<br[^>]*><\/li>/gi,
                 /<br[^>]*_jpf_placeholder="1"\/?>/gi,
-                /<(p|a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(p|a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
+                /<(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
                 /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
                 /(\w)=([^'"\s>]+)/gi,
                 /<br>/gi, // NO! do <br />
-                /(<(\w+).*?>)|(<\/(\w+?)\s*>)/gi
+                /<p>/gi,
+                /<\/p>/gi
             ];
         }
 
@@ -374,44 +368,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             .replace(exportRE[4], '')
             .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
             .replace(exportRE[6], '<br />')
-            //.replace(/<div[^>]*_jpf_placeholder="1">[\s\n\r]*<\/div>/gi, '<br />')
-            .replace(exportRE[7], function(m, fullstart, tagstart, fullend, tagend){
-                //jpf.console.log('match: ' + m.escapeHTML() + 'tag: ' + (tagstart || tagend));
-                //if (tagstart == "BR")
-                //    return m;
-                if (fullstart){
-                    depth++;
-                    if (fullstart.indexOf("_jpf_placeholder") > -1) {
-                        stack.push([tagstart, true]);
-                        return "";
-                    }
-                    else if (fullstart.indexOf("/") > -1) { // self-closing
-                        depth--;
-                        return m;
-                    }
-                    else {
-                        stack.push([tagstart, false]);
-                        return fullstart;
-                    }
-                }
-                else if (fullend) {
-                    depth--;
-                    var startItem = stack.pop();
-                    //#ifdef __DEBUG
-                    if (bStrict && tagend != startItem[0]) {
-                        throw new Error(jpf.formatErrorString(0, _self,
-                            "Mismatch with start '" + startItem[0]
-                            + "' and end '" + tagend + "'"));
-                    }
-                    //#endif
-
-                    return startItem && startItem[1] ? "<BR />" : fullend;
-                }
-             });
+            .replace(exportRE[7], '')
+            .replace(exportRE[8], '<br />');
         // #ifdef __DEBUG
         // check for VALID XHTML in DEBUG mode...
         try {
-            jpf.getXml('<source>' + html.replace(/&.{4,5};/g, "") + '</source>');
+            jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
         }
         catch(ex) {
             jpf.console.error(ex.message + "\n" + html.escapeHTML());
@@ -456,7 +418,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (pLists.length) {
                         if (pLists[0].queryState(_self) != jpf.editor.OFF
                           && pLists[1].queryState(_self) != jpf.editor.OFF)
-                           bNoSel = false;
+                            bNoSel = false;
                     }
                     var oNode = this.selection.getSelectedNode();
                     if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
@@ -496,7 +458,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             else
                 return this.oDoc.queryCommandState(cmdName)
                     ? jpf.editor.ON
-                    : jpf.editor.OFF ;
+                    : jpf.editor.OFF;
         }
         catch (e) {
             return jpf.editor.OFF;
@@ -566,14 +528,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onPaste(e) {
-        e = e || window.event;
-        var sText = "";
-        // Get plain text data
-        /*if (e.clipboardData)
-            sText = e.clipboardData.getData('text/plain');
-        else if (window.clipboardData)
-            sText = window.clipboardData.getData('Text');
-        sText = sText.replace(/\n/g, '<br />');*/
         setTimeout(function() {
             var s = _self.getXHTML('text');
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
@@ -582,11 +536,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.$propHandlers['value'].call(_self, o.parse(s));
             }
         });
-        /*_self.insertHTML(sText);
-        if (e && jpf.isIE) {
-            e.cancelBubble = true;
-            return false;
-        }*/
     }
 
     var oBookmark;
@@ -669,113 +618,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 commandQueue = [];
             }
             switch(code) {
-                case 13: // enter
-                    if (!(e.ctrlKey || e.altKey || e.shiftKey)) {
-                        // replace paragraphs with divs
-                        var pLists = _self.plugins.get('bullist', 'numlist');
-                        if (pLists.length) {
-                            if (pLists[0].queryState(_self) == jpf.editor.ON
-                              || pLists[1].queryState(_self) == jpf.editor.ON)
-                               return; //allow default behavior
-                        }
-
-                        var _select = jpf.appsettings.allowSelect;
-                        jpf.appsettings.allowSelect = true;
-                        
-                        var sel = _self.selection;
-                        var r   = sel.getRange();
-                        var bm  = r.getBookmark();
-                        // start detection of what KIND of linebreak we need...
-                        var bStartLine = false,
-                            bEndLine   = false,
-                            bEndText   = false,
-                            bInline    = false;
-                        r.moveStart('character', -1);
-                        //jpf.console.log('sel HTML: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
-                        if (!r.htmlText.length) {
-                            r.moveEnd('character', 1);
-                            //jpf.console.log('sel HTML1: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length + ', text length: ' + r.text.length);
-                            //jump: <DIV style="DISPLAY: block; VISIBILITY: hidden" _jpf_placeholder="1">E</DIV>, length: 76, text length: 3
-                            if (r.htmlText.length) {
-                                if (r.text) 
-                                    bInline    = true;
-                                else
-                                    bStartLine = true;
-                            }
-                            else
-                                bEndText = true;
-                        }
-                        else {
-                            r.moveStart('character', 1)
-                            r.moveEnd('character', 2);
-                            //jpf.console.log('sel HTML2: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
-                            if (r.htmlText.indexOf('_jpf_placeholder="1"') > -1) {
-                                bEndLine = true;
-                            }
-                            else {
-                                r.moveStart('character', -1);
-                                r.moveEnd('character', 2)
-                                //jpf.console.log('sel HTML3: ' + r.htmlText.escapeHTML() + ', length: ' + r.htmlText.length);
-                                if (r.htmlText.length < 2 || (r.htmlText.length == 85
-                                  && r.htmlText.indexOf('_jpf_placeholder="1"') > -1))
-                                    bEndText = true;
-                                else
-                                    bInline  = true;
-                            }
-                        }
-                        var oDiv,
-                            oNode = sel.moveToAncestorNode('div'),
-                            oAltP  = jpf.editor.ALTP;
-                        if (!oAltP.node) {
-                            oDiv = oAltP.node = _self.oDoc.createElement('div');
-                            oDiv.setAttribute('_jpf_placeholder', '1');
-                            oDiv.style.display    = "block";
-                            oDiv.style.visibility = "hidden";
-                        }
-
-                        if (bInline) {
-                            r.moveToBookmark(bm);
-                            r.pasteHTML("<BR />");
-                        }
-                        else if (oNode && oNode.getAttribute('_jpf_placeholder')
-                          && (bStartLine || bEndLine || bEndText)) {
-                            oDiv           = oAltP.node.cloneNode();
-                            oDiv.innerHTML = oAltP.text;
-                            if (oNode.nextSibling)
-                                oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
-                            else
-                                oNode.parentNode.appendChild(oDiv);
-                        }
-                        else {
-                            if (bEndText) {
-                                oDiv           = oAltP.node.cloneNode();
-                                oDiv.innerHTML = oAltP.text;
-                                _self.oDoc.body.appendChild(oDiv);
-                            }
-                            else {
-                                _self.insertHTML(oAltP.start
-                                    + oAltP.text
-                                    + oAltP.end, true, true);
-                            }
-                        }
-                        sel.collapse(true);
-
-                        var range = sel.getRange();
-                        // find and select the placeholder text again to make
-                        // sure that the cursor will be inside the DIV
-                        if (!range.findText(oAltP.text, 1, 0))
-                            range.findText(oAltP.text, -1, 0);
-                        range.select();
-                        sel.remove();
-                        jpf.appsettings.allowSelect = _select;
-
-                        e.cancelBubble = true;
-                        _self.dispatchEvent('keyenter', {editor: _self});
-
-                        resumeChangeTimer();
-                        return false;
-                    }
-                    break;
                 case 8: // backspace
                     found = false;
                     if (_self.selection.getType() == 'Control') {
@@ -1374,12 +1216,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             "docstyle", jpf.ns.jml)[0], "text()");
         if (!sCss) {
             sCss = "\
-                html{\
+                html {\
                     cursor: text;\
                     border: 0;\
                 }\
-                body\
-                {\
+                body {\
                     margin: 8px;\
                     padding: 0;\
                     border: 0;\
@@ -1388,6 +1229,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     font-size: 10pt;\
                     background: #fff;\
                     word-wrap: break-word;\
+                }\
+                p {\
+                    margin: 0;\
+                    padding: 0;\
                 }";
         }
 
@@ -1489,8 +1334,8 @@ jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
-    start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
-    end  : '</div>',
+    start: '<p>',//<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
+    end  : '</p>', //'</div>',
     text : '{jpf_placeholder}',
     node : null
 };
