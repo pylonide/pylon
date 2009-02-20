@@ -56,14 +56,15 @@ jpf.editor.plugin('code', function() {
             oPreview.focus();
         }
         else {
-            oPreview.style.display = "none";
             editor.plugins.active = null;
-            editor.setProperty('state', jpf.editor.OFF);
             
             if (editor.prepareHtml(oPreview.value.replace(/[\n\r\s]+/g, ''))
               != editor.getValue().replace(/[\n\r\s]+/g, ''))
                 editor.setProperty('value', oPreview.value.replace(/\n/g, ''));
-
+            
+            oPreview.style.display = "none";
+            editor.setProperty('state', jpf.editor.OFF);
+            
             setTimeout(function() {
                 editor.selection.set();
                 editor.$visualFocus();
