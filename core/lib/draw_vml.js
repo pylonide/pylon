@@ -416,7 +416,7 @@ jpf.draw.vml = {
                 a.push(arguments[i]);
             return this.statefunc.apply(this.statethis,a);
         }
-        var s=["if((_t=",state,")&0x36EC0000){",
+        var s=["if((_t=",state,")&0x0f000000){",
                  //   "document.title=(",time,")+' - '+n;",
                     "if((t=(n-(",time,"))*(_sp[_t]||100000))>1){",
                         "_t=",state,"=_st[_t],",time,"=n,t=0;",

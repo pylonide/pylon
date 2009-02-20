@@ -95,7 +95,7 @@ jpf.highlightCode2 = function(strCode){
   var comment=[];
   return strCode
         .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})        
-        .replace(/(\<)|(\>)/g,function(a,b){ return "<span stylecolorwhite>"+(a?'@lt@':'@gt@')+"</span>"})
+        .replace(/(\<)|(\>)/g,function(n,a,b){ return "<span stylecolorwhite>"+(a?'@lt@':'@gt@')+"</span>"})
          .replace(/(\'.*?\'|\".*?\")/g, "<span stylecolorgray>$1</span>")
          .replace(/(\W)-?([\d\.]+)(\W)/g, "$1<span stylecolor#127ac6>$2</span>$3")
          .replace(/([\|\&\=\;\,\:\?\+\*\-]+)/g, "<span stylecolorwhite>$1</span>")

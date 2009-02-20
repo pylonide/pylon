@@ -39,72 +39,98 @@ jpf.draw = {
     //----------------------------------------------------------------------
      
     vars : function(ml,mt,mr,mb){
-        return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1\n",
-                ",vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy1-vy2\n",
+        return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1",
+                ",vx2 = v.vx2, vy2 = v.vy2, vw = vx2-vx1, vh = vy1-vy2",
+                ",vz2 = v.vz2, vz1 = v.vz1, vd = vz2-vz1",
                 ",zoom = 1/v.zoom",
                 ",dw = l.dw",ml?"-"+(ml+mr):"",
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
+                ",dw12 = dw*0.5, dh12 = dh*0.5",
                 ",dx = ",ml?ml:0,
                 ",dy = ",mt?mt:0,
                 ",mx = m&&m.x, my = m&&m.y",
                 ",db = dy+dh, dr = dx+dw",
-                ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
+                ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx",
                 ",v,t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
-                ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p;\n"].join('');
+                ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
+                ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_;"].join('');
     },
     
-    beginLayer2D : function(l,ml,mt,mr,mb){
-        return [
-            this.beginLayer(l),
-            this.vars2D(ml,mt,mr,mb)
-        ].join('');
-    },
-    
-    endLayer2D : function(){ return this.endLayer(); },
-
-    vars2D : function(ml,mt,mr,mb){
-        return [
-            this.vars(ml,mt,mr,mb),
-            "var x, y, i, j;\n"
-        ].join('');
-    },
-    
-    beginLayer3D : function(l,maxoverlap,ml,mt,mr,mb){
-        return [
-            this.beginLayer(l),
-            this.vars3D(maxoverlap,ml,mt,mr,mb)
-        ].join('');
-    },
-    
-    endLayer3D : function(){ return this.endLayer(); },
-    
-    vars3D : function(maxoverlap,ml,mt,mr,mb){
+    setMatrix3D : function(m){
+        var l = this.l;
+        var s = ["var m00=",m[0],",m01=",m[1],",m02=",m[2], ",m03=",m[3],
+                    ",m10=",m[4],",m11=",m[5],",m12=",m[6], ",m13=",m[7],
+                    ",m20=",m[8],",m21=",m[9],",m22=",m[10],",m23=",m[11],";"];
         if(l.style.persp<0){ // we have ortho perspective
             this.ortho = 1;
-            this.persp = "var persp = __max(dw,dh) / l.style.persp/-v.tz;";
+            s.push("var persp = __max(dw,dh) / l.style.persp/-v.tz;");
         } else {
             this.ortho = 0;
-            this.persp = "var persp = __max(dw,dh) / l.style.persp;";
+            s.push("var persp = __max(dw,dh) / l.style.persp;");
         }
-
-		var s = [
-            this.vars(ml,mt,mr,mb),
-            "var  dw12 = dw*0.5, dh12 = dh*0.5,\n\
-             _ma = __cos(v.rx),_mb = __sin(v.rx),\n\
-             _mc = __cos(v.ry),_md = __sin(v.ry),\n\
-             _me = __cos(v.rz),_mf = __sin(v.rz),\n\
-             m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=v.tx,\n\
-             m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=v.ty,\n\
-             m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=v.tz,\n\
-             x, y, z, _x,_y,_z, zt, i, j, k, _opt_;\n",
-            this.persp
-        ];
-		for(var i = 0;i<maxoverlap;i++)
-            s.push((i?",":""),"_tx",i,",_ty"+i);
-        s.push(";");
-		return s.join('');
-	},
-    
+//        for(var i = 0;i<maxoverlap;i++)
+//           s.push((i?",":""),"_tx",i,",_ty"+i);
+//        s.push(";");
+        return s.join('');
+    },
+    sincos3 : function(pre,rx,ry,rz) {
+      return[ "var ",pre,"cx = __cos(",rx,"),",pre,"sx = __sin(",rx,"),",
+                     pre,"cy = __cos(",ry,"),",pre,"sy = __sin(",ry,"),",
+                     pre,"cz = __cos(",rz,"),",pre,"sz = __sin(",rz,");" ].join('');
+    },
+    matrix4S : function(sx,sy,sz){
+      return [ sx,0,0,0,
+               0,sy,0,0,
+               0,0,sz,0, 
+               0,0,0,1 ];
+    },
+    matrix4T : function(tx,ty,tz){
+      return [ 1,0,0,tx,
+               0,1,0,ty,
+               0,0,1,tz, 
+               0,0,0,1 ];
+    },
+    matrix4RP : function(pre){
+        return this.matrix4R(pre+'cx',pre+'sx',pre+'cy',pre+'sy',pre+'cz',pre+'sz');
+    },
+    matrix4R : function(cx,sx,cy,sy,cz,sz){
+        return [ [cy,'*',cz].join(''), 
+                 ['(-',sz,'*',cy,')'].join(''), 
+                 sy,  
+                 0,
+                 ['(',cz,'*',sx,'*',sy,'+',sz,'*',cx,')'].join(''),
+                 ['(-',sx,'*',sy,'*',sz,'+',cx,'*',cz,')'].join(''),
+                 ['(-',sx,'*',cy,')'].join(''), 
+                 0,
+                 ['(-',cx,'*',sy,'*',cz,'+',sx,'*',sz,')'].join(''),
+                 ['(',cx,'*',sy,'*',sz,'+',cz,'*',sx,')'].join(''),
+                 ['(',cx,'*',cy,')'].join(''), 
+                 0,
+                 0,0,0,1];
+    },
+    matrixMul : function(){
+        alert(1);
+        // lets multiply matrices on our arglist with conceptually ordered transform
+        var m = arguments[arguments.length-1];
+        for(var i = arguments.length-2;i>=0;i--)
+            m = this.matrixAB(m,arguments[i]);
+        return m;
+    },
+    matrixAB : function(a,b){
+        var out = [], x, y, i, j, t, v;
+        for(y = 0;y<16;y+=4){
+            for(x = 0;x<4;x++){
+                v = [];
+                if((i=a[y])  &&(j=b[x])   ) v[v.length] = i==1?j:(j==1?i:(i+'*'+j));
+                if((i=a[y+1])&&(j=b[x+4]) ) v[v.length] = i==1?j:(j==1?i:(i+'*'+j));
+                if((i=a[y+2])&&(j=b[x+8]) ) v[v.length] = i==1?j:(j==1?i:(i+'*'+j));
+                if((i=a[y+3])&&(j=b[x+12])) v[v.length] = i==1?j:(j==1?i:(i+'*'+j));
+                out[out.length] = v.length?((v.length>1)?'('+v.join('+')+')':v[0]):0;
+            }
+        }
+        jpf.alert_r(out);
+        return out;
+    },
     //----------------------------------------------------------------------
     
     // 3D API
@@ -156,7 +182,12 @@ jpf.draw = {
     moveTo3D : function(x,y,z,sx,sy){
         return this.$do3D("moveTo",x,y,z,sx,sy);
     },
-    
+    $store3D : function(x,y){
+      return x+";"+y+";";
+    },
+    store3D : function(x,y,z,sx,sy){
+        return this.$do3D("$store3D",x,y,z,sx,sy);
+    },
     $do3D : function(f,x,y,z,sx,sy){
         var _x,_y,_z;
         if(typeof x == 'string' && x.match(/[\[\]\*\+\-\/]/))x="(_x="+x+")",_x="_x";
@@ -167,11 +198,11 @@ jpf.draw = {
         else z="("+z+")",_z=z;
         
         var r = [];
-        if(!this.ortho)r.push("zt = persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
-        r.push(this.e[f]( (sx===undefined?"":sx)+
-              "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
+        if(!this.ortho)r.push("zt =persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
+        r.push(this[f]( (sx===undefined?"":sx)+
+              "dw12+(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
               (sy===undefined?"":sy)+
-              "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
+              "dh12+(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
         return r.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
     },
     
@@ -364,7 +395,7 @@ jpf.draw = {
         //jpf.alert_r(o);
         return o;
     },
-    
+    /*
     stateBit : {
         0                  : 0,
         'hidden'           : 0x40000000,
@@ -380,21 +411,41 @@ jpf.draw = {
         'select-hover-in'  : 0x00100000,
         'select-hover-out' : 0x00080000,
         'animating'        : 0x00040000
+    },*/
+    stateBit : {
+        0                   : 0,
+        'init'              : 0x01000000, // 0xff0000 == statetype
+        'hidden'            : 0x00010000, // 0x0f000000 == dynamic type 0 = no dyn, 1 = in, 2 = out, 3 = inout
+        'deinit'            : 0x02000000, // 0xf0000000 == automated-return-type
+        'hover'             : 0x00020000,
+        'hover-in'          : 0x01020000,
+        'hover-inout'       : 0x11020000,
+        'hover-out'         : 0x02020000,
+        'select'            : 0x00030000,
+        'select-in'         : 0x01030000,
+        'select-inout'      : 0x11030000,
+        'select-out'        : 0x02030000,
+        'select-hover'      : 0x00040000,
+        'select-hover-in'   : 0x01040000,
+        'select-hover-inout': 0x11040000,
+        'select-hover-out'  : 0x02040000,
+        'animating'         : 0x10050000
     },
 
     stateTransition : {
-        0x20000000 : 0,
-        0x10000000 : 0x40000000,
-        0x04000000 : 0x08000000,
-        0x02000000 : 0,
-        0x00800000 : 0x01000000,
-        0x00400000 : 0,
-        0x00100000 : 0x00200000,
-        0x00080000 : 0x01000000,
-        0x00040000 : 0x00040000
+        0x01000000 : 0,
+        0x02000000 : 0x00010000,
+        0x01020000 : 0x00020000,
+        0x11020000 : 0x02020000,
+        0x02020000 : 0,
+        0x01030000 : 0x00030000,
+        0x11030000 : 0x02030000,
+        0x02030000 : 0,
+        0x01040000 : 0x00040000,
+        0x11040000 : 0x02040000,
+        0x02040000 : 0x00030000,
+        0x01050000 : 0x01050000
     },
-    
-    stateTransitional : 0x36ec0000,
     
     stateMask : {
         'selected' : 0x01000000|0x00800000|0x00200000|0x00100000|0x00080000,
@@ -402,6 +453,40 @@ jpf.draw = {
         'dynamic'  : 0x20000000|0x10000000|0x04000000|0x02000000|0x00800000|
                      0x00400000|0x00100000|0x00080000|0x00040000,
         'hover'    : 0x08000000|0x04000000|0x00200000|0x00100000
+    },
+    
+    
+    $stateInherit : {
+        'hidden'           : 1,       
+        'init'             : 1,
+        'deinit'           : 1,
+        'hover'            : 1,
+        'hover-in'         : 'hover',
+        'hover-out'        : 'hover',
+        'select'           : 1,
+        'select-in'        : 'select',
+        'select-out'       : 'select',
+        'select-hover'     : 'hover',
+        'select-hover-in'  : 'select-hover',
+        'select-hover-out' : 'select-hover',
+        'animating'        : 1
+    },
+
+    $stateFallback : {
+        'init'              : 1,
+        'hover'             : 1,
+        'hover-in'          : 'hover',
+        'hover-inout'       : 'hover-in',
+        'hover-out'         : 1,
+        'select'            : 1,
+        'select-in'         : 'select',
+        'select-inout'      : 'select-in',
+        'select-out'        : 1,
+        'select-hover'      : 'hover',
+        'select-hover-in'   : 'select-hover',
+        'select-hover-inout': 'select-hover-in',
+        'select-hover-out'  : 'select',
+        'hidden'            : 1
     },
     
     getXYWH : function( m, p, noflatten ){
@@ -886,36 +971,7 @@ jpf.draw = {
         color : "#00000",
         size : 10
     },    
-    
-    
-    $stateInherit : {
-        'hidden'           : 1,       
-        'init'             : 1,
-        'deinit'           : 1,
-        'hover'            : 1,
-        'hover-in'         : 'hover',
-        'hover-out'        : 'hover',
-        'select'           : 1,
-        'select-in'        : 'select',
-        'select-out'       : 'select',
-        'select-hover'     : 'hover',
-        'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select-hover',
-        'animating'        : 1
-    },
-    $stateFallback : {
-        'init'             : 1,
-        'hover'            : 1,
-        'hover-in'         : 'hover',
-        'hover-out'        : 1,
-        'select'           : 1,
-        'select-in'        : 'select',
-        'select-out'       : 1,
-        'select-hover'     : 'hover',
-        'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select',
-        'hidden'           : 1
-    },
+
    
     //----------------------------------------------------------------------
     
