@@ -1249,9 +1249,51 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag.style.display  = "none";
     };
 
-    this.$dragout  = 
-    this.$dragover = 
-    this.$dragdrop = function(){};
+    this.findValueNode = function(el){
+        if (!el) return null;
+
+        while(el && el.nodeType == 1 
+          && !el.getAttribute(jpf.xmldb.htmlIdTag)) {
+            el = el.parentNode;
+        }
+
+        return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
+            ? el 
+            : null;
+    };
+
+    this.$dragout = function(dragdata){
+        if (this.lastel)
+            this.$setStyleClass(this.lastel, "", ["dragDenied", "dragInsert",
+                "dragAppend", "selected", "indicate"]);
+        this.$setStyleClass(this.$selected, "selected", ["dragDenied",
+            "dragInsert", "dragAppend", "indicate"]);
+        
+        this.lastel = null;
+    };
+
+    this.$dragover = function(el, dragdata, extra){
+        if(el == this.oExt) return;
+
+        this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
+            "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        this.$setStyleClass(this.lastel = this.findValueNode(el), extra 
+            ? (extra[1] && extra[1].getAttribute("operation") == "insert-before" 
+                ? "dragInsert" 
+                : "dragAppend") 
+            : "dragDenied");
+    };
+
+    this.$dragdrop = function(el, dragdata, extra){
+        this.$setStyleClass(this.lastel || this.$selected,
+            !this.lastel && (this.$selected || this.lastel == this.$selected) 
+                ? "selected" 
+                : "", 
+                ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        this.lastel = null;
+    };
     // #endif
 
     /**** Lookup ****/
@@ -1512,6 +1554,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var newPerc  = ratio * h.width;
             var diffPerc = newPerc - h.width;
             var diffRatio = (total - diffPerc) / total;
+            if (diffRatio < 0.01) {
+                if (newsize < 20) return;
+                return this.resizeColumn(nr, newsize - 10);
+            }
             
             for (var n, i = 0; i < next.length; i++) {
                 n = next[i];
@@ -1688,7 +1734,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     jpf.setStyleClass(target, "", ["hover"]);
                 };
                 
-               oContainer.firstChild.onmousedown = function(e){
+                oContainer.firstChild.onmousedown = function(e){
                     if (!e) e = event;
                     var target = e.srcElement || e.target;
                     
@@ -2018,9 +2064,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     document.onmousemove = function(e){
                         if (!e) e = event;
-                        
-                        _self.oPointer.style.width = Math.max(10, e.clientX
-                            - pos[0] - 1 + sLeft) + "px";
+
+                        _self.oPointer.style.width = Math.max(10, 
+                            Math.min(_self.oInt.offsetWidth - _self.oPointer.offsetLeft - 20, 
+                                e.clientX - pos[0] - 1 + sLeft)) + "px";
                     };
                     
                     return;

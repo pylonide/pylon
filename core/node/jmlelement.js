@@ -643,13 +643,17 @@ jpf.JmlElement = function(){
             //Not databound
             if ((!this.createModel || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
-                if (this.dispatchEvent("beforechange", {value : value}) === false)
+                if (value === this.value 
+                  || this.dispatchEvent("beforechange", {value : value}) === false)
                     return;
 
                 this.setProperty("value", value);
                 return this.dispatchEvent("afterchange", {value : value});
             // #ifdef __WITH_DATABINDING
             }
+            
+            if (this.value === value)
+                return false;
 
             this.executeActionByRuleSet("change", this.mainBind, this.xmlRoot, value);
             // #endif
@@ -1061,6 +1065,24 @@ jpf.JmlElement.propHandlers = {
                     jpf.nameserver.register("actiontracker",
                         value, new jpf.actiontracker()));
         }
+    },
+    //#endif
+    
+    //#ifdef __WITH_TRANSACTION
+    /**
+     * @attribute {Boolean} center centers the window relative to it's parent's
+     * containing rect when shown.
+     */
+    "transaction" : function(value){
+        /**
+         * @inherits jpf.DataBinding
+         * @inherits jpf.Transaction
+         */
+        if (!this.hasFeature(__DATABINDING__)) 
+            this.inherit(jpf.DataBinding);
+         
+        if (!this.hasFeature(__TRANSACTION__))
+            this.inherit(jpf.Transaction);
     },
     //#endif
 

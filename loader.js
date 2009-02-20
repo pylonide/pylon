@@ -56,7 +56,7 @@ jpf.Elements = [
     "button",
     "calendar",
     "caldropdown",
-    "chart",
+    //"chart",
     //"presenter",
     "checkbox",
     "collection",

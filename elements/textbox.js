@@ -375,7 +375,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$blur = function(e){
         if (!this.oExt)
             return;
-            
+        
         if (!this.realtime)
             this.change(this.getValue());
 

@@ -103,6 +103,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
+    this.buttons           = "min|max|close";
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
@@ -258,20 +259,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    /**
-     * @attribute {Boolean} center centers the window relative to it's parent's
-     * containing rect when shown.
-     */
-    this.$propHandlers["transaction"] = function(value){
-        /**
-         * @inherits jpf.DataBinding
-         * @inherits jpf.Transaction
-         * @inherits jpf.EditTransaction
-         */
-        if (!this.hasFeature(__TRANSACTION__))
-            this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
-    }
-
     /**
      * @attribute {Boolean} center centers the window relative to it's parent's
      * containing rect when shown.
@@ -802,17 +789,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oIcon)
             this.oIcon.style.display = "none";
 
-        (this.oTitle.nodeType != 1
-          ? this.oTitle.parentNode
-          : this.oTitle).ondblclick = function(e){
-            if (_self.state.indexOf("normal") == -1)
-                _self.restore();
-            else if (_self.buttons.indexOf("max") > -1)
-                _self.maximize();
-            else if (_self.buttons.indexOf("min") > -1)
-                _self.minimize();
-        }
-
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
 
@@ -869,6 +845,17 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
+
+        (this.oTitle.nodeType != 1
+          ? this.oTitle.parentNode
+          : this.oTitle).ondblclick = function(e){
+            if (_self.state.indexOf("normal") == -1)
+                _self.restore();
+            else if (_self.buttons.indexOf("max") > -1)
+                _self.maximize();
+            else if (_self.buttons.indexOf("min") > -1)
+                _self.minimize();
+        }
 
         if (this.draggable === undefined) {
             (this.$propHandlers.draggable

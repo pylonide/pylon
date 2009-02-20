@@ -340,26 +340,27 @@ jpf.Transaction = function(){
             beginTransaction.call(this);
         }
     };
-    
-    if (this.hasFeature(__MULTISELECT__)){
-        this.addEventListener("beforeselect", function(){
-            if (this.inTransaction){
-                return this.rollbackTransaction();
-            }
-        });
-        
-        this.addEventListener("afterselect", function(){
-            this.beginTransaction();
-        });
-    }
-};
 
-/**
- * Adds an transaction interface to container elements.
- * @constructor
- * @baseclass
- */
-jpf.EditTransaction = function(){
+    /*
+     * @todo
+     *      transaction="true" OR actions="" OR smartbinding=""
+     *      winMultiEdit.show(); //in the case it already has a model #blah, most likely
+     *      for always visible components, 'load' should also signal a transaction start, unload triggers event
+     *      autoset model="#id-or-generated-id" (remove model and set it)
+     *      autoshow="true" --> will autohide as well
+     *      create actiontracker based on data id, destroy actiontracker on cancel/commit
+     *      Multiple transactions can exist at the same time in the same container, but on different data
+     *      .cancel(xmlNode) .apply(xmlNode)
+     *      .list(); // returns a list of all started transactions
+     *      Add undo/redo methods to winMultiEdit
+     *      Route undolength/redolength properties
+     *      Setting replaceat="start" or replaceat="end"
+     *      winMultiEdit.load(e.dataNode); //will start transaction automatically
+     *      winMultiEdit.startAdd(e.dataNode, xpath); //xpath might not exist yet
+     *      winMultiEdit.startUpdate(e.dataNode, xpath); //become inherited model, xpath might not exist yet
+     *      compare to this.add multiselect
+     */
+
     /**
      * Applies the changes and closes this element.
      */
@@ -383,6 +384,7 @@ jpf.EditTransaction = function(){
             
             return true;
         }
+        
         return false;
     };
     
@@ -401,16 +403,17 @@ jpf.EditTransaction = function(){
         this.xmlRoot = xmlNode;
         this.cancel();
         this.mode = "add";
-        this.show();
+        this.beginTransaction(this.mode);
     }
     
     /**
      * Starts a new transaction for updating a data element and shows this element.
      */
-    this.startUpdate = function(){
+    this.startUpdate = function(xmlNode){
+        this.xmlRoot = xmlNode;
         this.cancel();
         this.mode = "update";
-        this.show();
+        this.beginTransaction(this.mode);
     }
     
     this.$load = function(XMLRoot) {
@@ -432,22 +435,29 @@ jpf.EditTransaction = function(){
     };
     
     this.addEventListener("display", function(){
-        if (!this.$validgroup && this.$jml && this.$jml.getAttribute("validgroup")) 
-            this.$validgroup = self[this.$jml.getAttribute("validgroup")];
-        
         //This might require some tweaking
-        if (!this.mode && this.$jml) 
-            this.mode = this.$jml.getAttribute("mode") || 
+        if (!this.mode && this.$jml) {
+            this.mode = this.$jml.getAttribute("mode") || this.actionRule && 
                 (this.actionRules.add ? "add" : 
                     (this.actionRules.update ? "update" : "add"));
-
-        this.beginTransaction(this.mode);
+        }
+        
+        if (this.mode == "update")
+            this.startUpdate();
+        else
+            this.startAdd();
     });
     
     this.addEventListener("close", function(){
         if (this.inTransaction) 
             this.rollbackTransaction();
     });
+    
+    //Init
+    if (!this.$jml || !this.$jml.getAttribute("validgroup")) 
+        this.$validgroup = new jpf.ValidationGroup(value);
+    
+    this.$validgroup.add(this);
 };
 
 // #endif
