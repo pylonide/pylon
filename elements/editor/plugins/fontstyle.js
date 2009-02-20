@@ -220,11 +220,13 @@ jpf.editor.plugin('paragraph', function() {
     this.hook         = 'ontoolbar';
     this.buttonNode   = null;
     this.state        = jpf.editor.OFF;
+    this.node         = null;
 
     var panelBody,
 
     // this hashmap maps font size number to it's equivalent in points (pt)
     blocksMap = {
+        'normal'  : 'Normal',
         'p'       : 'Paragraph',
         'pre'     : 'Preformatted',
         'address' : 'Address',
@@ -296,10 +298,12 @@ jpf.editor.plugin('paragraph', function() {
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
             this.state = jpf.editor.ON;
+            this.node  = bCurrent ? oNode : oNode.parentNode;
         }
         else {
-            this.blockPreview.innerHTML = "Paragraph";
+            this.blockPreview.innerHTML = "Normal";
             this.state = jpf.editor.OFF;
+            this.node  = null;
         }
         return this.state;
     };
@@ -311,23 +315,32 @@ jpf.editor.plugin('paragraph', function() {
         var sBlock = e.target.getAttribute('rel');
         if (sBlock) {
             jpf.popup.forceHide();
-            var sel = this.editor.selection;
+            var oNode, sel = this.editor.selection;
 
             sel.set();
             this.editor.$visualFocus();
+
+            if (sBlock == "normal" && this.queryState(this.editor) == jpf.editor.ON) {
+                // revert style to NORMAL, i.e. no style at all.
+                sel.selectNode(this.node);
+                sel.setContent(this.node.innerHTML);
+                this.state = jpf.editor.OFF;
+                this.node  = null;
+                this.blockPreview.innerHTML = "Normal";
+                return;
+            }
 
             var s = sel.getContent();
             if (sel.isCollapsed() || s.trim() == "")
                 this.editor.executeCommand('FormatBlock', sBlock);
             else {
-                var oNode = this.editor.selection.getSelectedNode();
+                oNode = this.editor.selection.getSelectedNode();
                 while (oNode.nodeType != 1)
                     oNode = oNode.parentNode;
 
                 //window.console.log(s, '>>>', s.length);
                 //window.console.log('=================');
                 //window.console.log(oNode.textContent, '>>>', oNode.textContent.length);
-                // @todo think it's innerText in IE...
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
                 if (oNode.tagName.match(blocksRE) && s.length == oNode[jpf.hasInnerText ? 'innerText' : 'textContent'].length) {
@@ -366,9 +379,10 @@ jpf.editor.plugin('paragraph', function() {
     };
 
     this.destroy = function() {
-        panelBody = this.blockPreview = null;
+        panelBody = this.blockPreview = this.node = null;
         delete panelBody;
         delete this.blockPreview;
+        delete this.node;
     };
 });
 
