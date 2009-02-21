@@ -282,6 +282,15 @@ jpf.runNonIe = function (){
     
     // #endif
     
+    /**
+     * This method retrieves the current value of a property on a HTML element
+     * @param {HTMLElement} el    the element to read the property from
+     * @param {String}      prop  the property to read
+     * @returns {String}
+     */
+    jpf.getStyle = function(el, prop) {
+        return window.getComputedStyle(el, '').getPropertyValue(prop);
+    };
     
     //XMLDocument.setProperty
     HTMLDocument.prototype.setProperty = 

@@ -117,18 +117,6 @@ jpf.importCssString = function(doc, cssString, media){
 
 /**
  * This method retrieves the current value of a property on a HTML element
- * @param {HTMLElement} el    the element to read the property from
- * @param {String}      prop  the property to read
- * @returns {String}
- */
-jpf.getStyle = function(el, prop) {
-    return jpf.hasComputedStyle
-        ? window.getComputedStyle(el,'').getPropertyValue(prop)
-        : el.currentStyle[prop];
-};
-
-/**
- * This method retrieves the current value of a property on a HTML element
  * recursively. If the style isn't found on the element itself, it's parent is
  * checked.
  * @param {HTMLElement} el    the element to read the property from

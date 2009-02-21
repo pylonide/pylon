@@ -844,17 +844,16 @@ jpf.DataBinding = function(){
             #endif */
         }
 
-        for (var node = null, i = 0; i < rules.length; i++) {
-            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
-            var o = cnode.selectSingleNode(sel);
-
+        var node = null, sel, i, o, v, rule;
+        for (i = 0; i < rules.length; i++) {
+            rule = rules[i];
+            sel  = jpf.parseExpression(rule.getAttribute("select")) || ".";
+            o    = cnode.selectSingleNode(sel);
+            
             if (o) {
-                this.lastRule = rules[i];
+                this.lastRule = rule;
 
-                //Return Node if rule contains RPC definition
-                if (rules[i].getAttribute("rpc"))
-                    return rules[i];
-                else if(rules[i].getAttribute("value")){ //Check for Default Value
+                if (v = rule.getAttribute("value")){ //Check for Default Value
                     /**
                      * @todo internationalization for <j:caption value="no value" />
                      */
@@ -864,34 +863,33 @@ jpf.DataBinding = function(){
                     //    "$1"), {htmlNode : pHtmlNode});
                     //#endif
 
-                    return rules[i].getAttribute("value");
+                    return v;
                 }
 
-                // #ifdef __PARSER_XSLT || __PARSER_JSLT
+                //#ifdef (__ENABLE_BINDING_JSLT || __ENABLE_BINDING_XSLT) && (__PARSER_XSLT || __PARSER_JSLT)
                 //Process XSLT/JSLT Stylesheet if needed
-                else if(rules[i].childNodes.length) {
+                else if(rule.childNodes.length) {
                     var xsltNode;
 
                     //Check Cache
-                    if (rules[i].getAttribute("cacheId")) {
-                        xsltNode = jpf.nameserver.get("xslt",
-                            rules[i].getAttribute("cacheId"));
+                    if (v = rule.getAttribute("cacheId")) {
+                        xsltNode = jpf.nameserver.get("xslt", v);
                     }
                     else {
                         //Find Xslt Node
-                        var prefix = jpf.findPrefix(rules[i], jpf.ns.xslt);
+                        var prefix = jpf.findPrefix(rule, jpf.ns.xslt);
                         var xsltNode;
 
-                        if (rules[i].getElementsByTagNameNS) {
-                            xsltNode = rules[i].getElementsByTagNameNS(jpf.ns.xslt, "*")[0];
+                        if (rule.getElementsByTagNameNS) {
+                            xsltNode = rule.getElementsByTagNameNS(jpf.ns.xslt, "*")[0];
                         }
                         else {
-                            var prefix = jpf.findPrefix(rules[i], jpf.ns.xslt, true);
+                            var prefix = jpf.findPrefix(rule, jpf.ns.xslt, true);
                             if (prefix) {
                                 if (!jpf.supportNamespaces)
-                                    rules[i].ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
+                                    rule.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
                                         + prefix + "='" + jpf.ns.xslt + "'");
-                                xsltNode = rules[i].selectSingleNode(prefix + ":*");
+                                xsltNode = rule.selectSingleNode(prefix + ":*");
                             }
                         }
 
@@ -907,11 +905,11 @@ jpf.DataBinding = function(){
                                 }
 
                                 var xsltNode = baseXslt.cloneNode(true);
-                                for (var j = rules[i].childNodes.length; j >= 0; j++)
-                                    xsltNode.firstChild.appendChild(rules[i].childNodes[j]);
+                                for (var j = rule.childNodes.length; j >= 0; j++)
+                                    xsltNode.firstChild.appendChild(rule.childNodes[j]);
 
                                 //Set cache Item
-                                rules[i].setAttribute("cacheId",
+                                rule.setAttribute("cacheId",
                                     jpf.nameserver.add("xslt", xsltNode));
                             }
                         }
@@ -926,14 +924,14 @@ jpf.DataBinding = function(){
                     }
                     //JSLT
                     else {
-                        var x = jpf.JsltInstance.apply(rules[i], o);
+                        var x = jpf.JsltInstance.apply(rule, o);
 
                         //#ifdef __DEBUG
                         var d = document.createElement("div");
                         var t = window.onerror;
                         window.onerror = function(){
                             window.onerror = t;
-                            throw new Error(jpf.formatErrorString(0, this, "JSLT transform", "HTML Error:"+x,rules[i]));
+                            throw new Error(jpf.formatErrorString(0, this, "JSLT transform", "HTML Error:"+x,rule));
                         }
                         d.innerHTML    = x;
                         d.innerHTML    = '';
@@ -942,81 +940,79 @@ jpf.DataBinding = function(){
                     }
 
                     //#ifdef __DEBUG
-                    if (rules[i].getAttribute("method"))
-                        try{eval(rules[i].getAttribute("method"));
-                    }
-                    catch(e) {
-                        jpf.console.warn("Method not available (yet): '" + rules[i].getAttribute("method") + "'");
-                        return false;//throw new Error("---- Javeline Error ----\nMessage : Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML.")
+                    if (v = rule.getAttribute("method")) {
+                        try{
+                            eval(v);
+                        }
+                        catch(e) {
+                            jpf.console.warn("Method not available (yet): '" + v + "'");
+                            return false;
+                        }
                     }
                     //#endif
 
-                    return rules[i].getAttribute("method") ? self[rules[i].getAttribute("method")](x, this) : x;
+                    return rule.getAttribute("method") ? self[rule.getAttribute("method")](x, this) : x;
                 }
                 // #endif
 
+                //#ifdef __ENABLE_BINDING_METHOD
                 //Execute Callback if any
-                else if(rules[i].getAttribute("method")){
-                    if(!self[rules[i].getAttribute("method")]){
+                else if(v = rule.getAttribute("method")){
+                    if(!self[v]){
                         // #ifdef __DEBUG
-                        jpf.console.warn("Method not available (yet): '" + rules[i].getAttribute("method") + "'");
-                        //throw new Error(jpf.formatErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
+                        jpf.console.warn("Method not available (yet): '" + v + "'");
                         // #endif
 
                         return false;
                     }
 
-                    return self[rules[i].getAttribute("method")](o, this);
-                    //if(!res) continue;
-                    //else return res;
+                    return self[v](o, this);
                 }
+                //#endif
+                //#ifdef __ENABLE_BINDING_EVAL
                 //Execute Expression
-                else if(rules[i].getAttribute("eval")){
-                    var func = new Function('xmlNode', 'control', "return " + rules[i].getAttribute("eval"));
+                else if(v = rule.getAttribute("eval")){
+                    var func = new Function('xmlNode', 'control', "return " + v);
 
                     var value = func.call(this, o, this);
                     if (!value) continue;
 
                     return value;
                 }
+                //#endif
                 //Process XMLElement
                 else {
-                    if (o.nodeType == 1) {
-                        if (!o.firstChild || o.firstChild.nodeType == 1 || o.firstChild.nodeType > 4)
-                            return "";
-                        //(!o.firstChild || o.firstChild.nodeType == 1 && o.firstChild.nodeType > 4) ? o.appendChild(o.ownerDocument.createTextNode("")) :
-
-                        o = o.firstChild;
-                    }
-
-                    //Return TextValue of Attribute | Text Node | CDATA Section
-                    //else if(o.nodeType == 2 || o.nodeType == 3 || o.nodeType == 4){
                     var value;
                     if (o.nodeType == 2) {
                         try {
-                            value = decodeURI(o.nodeValue);
+                            value = unescape(decodeURI(o.nodeValue));
                         }
                         catch(e) {
-                            value = o.nodeValue;
+                            value = unescape(o.nodeValue);
                         }
-                        value = unescape(value);
                     }
-                    else
-                        value = o.nodeValue;
+                    else {
+                        if (o.nodeType == 1) {
+                            if (!o.firstChild || o.firstChild.nodeType == 1 || o.firstChild.nodeType > 4)
+                                return "";
+    
+                            value = o.firstChild.nodeValue;
+                        }
+                        else                        
+                            value = o.nodeValue;
+                    }
 
                     //Mask Support
-                    if (rules[i].getAttribute("mask")) {
+                    //#ifdef __ENABLE_BINDING_MASKS
+                    if (v = rule.getAttribute("mask")) {
                         if (value.match(/^(?:true|false)$/))
-                            value = value=="true"?1:0;
-                        return rules[i].getAttribute("mask").split(";")[value];
+                            value = value == "true" ? 1 : 0;
+                        return v.split(";")[value];
                     }
                     else
+                    //#endif
                         return value;
-                    //}
-                    //else return true;
                 }
-
-                //return (rules[i].getAttribute("default") || decodeURI(o.nodeValue));//(o.nodeType == 3 ? o.nodeValue : o)
             }
         }
 
@@ -3187,10 +3183,18 @@ jpf.MultiselectBinding = function(){
         }
         //#endif
 
-        var jNode = this;
-        setTimeout(function(){
-            jNode.setConnections(combinedvalue || jNode.selected);
-        }, 10);
+        this.$chained = true;
+        if (!this.dataParent || !this.dataParent.parent.$chained) {
+            var _self = this;
+            setTimeout(function(){
+                _self.setConnections(combinedvalue || _self.selected);
+                delete _self.$chained;
+            }, 10);
+        }
+        else {
+            this.setConnections(combinedvalue || this.selected);
+            delete this.$chained;
+        }
     });
 
     this.addEventListener("afterdeselect", function(){

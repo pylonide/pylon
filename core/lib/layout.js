@@ -1859,6 +1859,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             return knownVars[vname] ? vname : match;
         }
 
+        //@todo this function needs some serious optimization (according to the profiler)
         this.parseRule = function(rule){
             var aRule        = rule.split(" = ");
             var id           = aRule[0].replace(/^([_\w\d\|]+)\.style\.(\w)/, this.maskText);

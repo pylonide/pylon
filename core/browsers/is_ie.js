@@ -122,6 +122,16 @@ jpf.runIE = function(){
 
         return xml;
     };
+    
+    /**
+     * This method retrieves the current value of a property on a HTML element
+     * @param {HTMLElement} el    the element to read the property from
+     * @param {String}      prop  the property to read
+     * @returns {String}
+     */
+    jpf.getStyle = function(el, prop) {
+        return el.currentStyle[prop];
+    };
 
     //function extendXmlDb(){
     if (jpf.XmlDatabase) {

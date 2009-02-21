@@ -38,35 +38,28 @@ jpf.runGecko = function(){
         var oResult = this.evaluate(sExpr, (contextNode || this),
             this.createNSResolver(this.documentElement),
             7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        
         var nodeList = new Array(oResult.snapshotLength);
         nodeList.expr = sExpr;
-        for (var i = 0; i < nodeList.length; i++) 
+        for (var i = nodeList.length - 1; i >= 0; i--) 
             nodeList[i] = oResult.snapshotItem(i);
         return nodeList;
     };
     
     //Element.selectNodes
     Element.prototype.selectNodes = function(sExpr){
-        var doc = this.ownerDocument;
-        if (doc.selectNodes) 
-            return doc.selectNodes(sExpr, this);
-        else 
-            throw new Error(jpf.formatErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
+       return this.ownerDocument.selectNodes(sExpr, this);
     };
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
         var nodeList = this.selectNodes(sExpr + "[1]", contextNode || null);
-        return nodeList.length > 0 ? nodeList[0] : null;
+        return nodeList[0] || null;
     };
     
     //Element.selectSingleNode
     Element.prototype.selectSingleNode = function(sExpr){
-        var doc = this.ownerDocument;
-        if (doc.selectSingleNode) 
-            return doc.selectSingleNode(sExpr, this);
-        else 
-            throw new Error(jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+        return this.ownerDocument.selectSingleNode(sExpr, this);
     };
     
     // #endif

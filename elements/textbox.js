@@ -74,9 +74,8 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.oInt.innerHTML != value)
                 this.oInt.innerHTML = value;
         }
-        else if (this.oInt.value.replace(/\r/g, "") != value) {
+        else if (this.oInt.value != value)
             this.oInt.value = value;
-        }
         
         if (this.oButton)
             this.oButton.style.display = value && !initial ? "block" : "none";
