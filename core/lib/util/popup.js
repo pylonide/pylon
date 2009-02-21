@@ -182,7 +182,8 @@ jpf.popup = {
     },
     
     isShowing : function(cacheId){
-        return this.last && this.last == cacheId && this.cache[this.last]
+        return this.last && this.last == cacheId 
+            && this.cache[this.last]
             && this.cache[this.last].content.style.display != "none";
     },
 
@@ -245,6 +246,7 @@ jpf.popup = {
                 this.cache[cacheId].content.onmousedown = null;
                 jpf.removeNode(this.cache[cacheId].content);
                 this.cache[cacheId].content = null;
+                this.cache[cacheId] = null;
             }
         }
         
