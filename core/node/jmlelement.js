@@ -430,7 +430,7 @@ jpf.JmlElement = function(){
                 }
                 /* #else
                 if (!value)
-                    value = this.defaults && this.defaults[name];
+                    value = this.defaults && this.defaults[name] || value;
                 #endif */
 
                 if (this.$booleanProperties[name])
