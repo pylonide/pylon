@@ -317,7 +317,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     Ruben: due to a bug in IE and FF this regexp won't fly:
                     /((?:[^<]*|<(?:span|strong|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
                 */
-                /(<(\/?)(span|strong|u|i|b|a)(?:\s+.*?)?>)|(<br.*?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi, //expensive work around
+                /(<(\/?)(span|strong|u|i|b|a|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<br.*?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi, //expensive work around
                 /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
                 /<p><\/p>/gi,
                 /<a( )([^>]+)\/>|<a\/>/gi
@@ -451,7 +451,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /<((?:br|input|hr|img)[^>\/]*)>/gi, // NO! do <br /> @todo Ruben: still not perfect for instance: <input value='test/try'>
                 /<\/p>/gi, //<p>&nbsp;<\/p>|
                 /<p>/gi,
-                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
+                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
             ];
         }
 
