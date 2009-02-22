@@ -42,10 +42,10 @@ jpf.popup = {
         
         content.onmousedown  = function(e) {
             if (!e) e = event;
-            
+
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug 
-              && "INPUT|TEXTAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && "INPUT|TEXTAREA|SELECT".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
             }
             //#endif
@@ -215,7 +215,7 @@ jpf.popup = {
             
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug
-              && "INPUT|TEXTAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && "INPUT|TEXTAREA|SELECT".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
             }
             //#endif

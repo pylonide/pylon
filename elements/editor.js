@@ -92,7 +92,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         // don't do anything...
         if (this.$value.replace(/\r/g, "") == html)
             return;
-
+        
         this.$value = html;
 
         //if (html.indexOf("<p") > -1)

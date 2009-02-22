@@ -111,7 +111,7 @@ jpf.editor.plugin('table', function() {
             e.stop();
             return false;
         }
-        e.stop();
+        //e.stop();
         return false;
     }
 

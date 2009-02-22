@@ -222,7 +222,7 @@ jpf.WindowImplementation = function(){
                     doPopup.call(jpf.window);
             }
 
-            if ("TEXTAREA|INPUT".indexOf(document.activeElement.tagName) > -1) {
+            if ("TEXTAREA|INPUT|SELECT".indexOf(document.activeElement.tagName) > -1) {
                 document.activeElement.blur();
                 document.body.focus();
                 jpf.window.stopFlash = true;
@@ -921,7 +921,7 @@ jpf.WindowImplementation = function(){
             return false;
     };
 
-    var ta = {"INPUT":1, "TEXTAREA":1};
+    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
     document.onmousedown = function(e){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
