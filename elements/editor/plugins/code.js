@@ -32,7 +32,7 @@ jpf.editor.plugin('code', function() {
     this.noDisable   = true;
     this.regex       = null;
 
-    var oPreview, protectedData;
+    var oPreview, protectedData, lastLoaded;
 
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
@@ -58,9 +58,8 @@ jpf.editor.plugin('code', function() {
         else {
             editor.plugins.active = null;
             
-            if (editor.prepareHtml(oPreview.value.replace(/[\n\r\s]+/g, ''))
-              != editor.getValue().replace(/[\n\r\s]+/g, ''))
-                editor.setProperty('value', oPreview.value.replace(/\n/g, ''));
+            if (lastLoaded != oPreview.value)
+                editor.change(oPreview.value.replace(/\n/g, ''));
             
             oPreview.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);
@@ -77,7 +76,7 @@ jpf.editor.plugin('code', function() {
 
     this.update = function(editor, sHtml) {
         // update the contents of the (hidden) textarea
-        oPreview.value = format.call(this, editor.exportHtml(sHtml || editor.getValue()));
+        oPreview.value = format.call(this, sHtml ? editor.exportHtml(sHtml) : (lastLoaded = editor.getValue()));
     };
 
     this.getValue = function() {
