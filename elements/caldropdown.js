@@ -329,11 +329,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     /**** Private methods and event handlers ****/
 
     this.$setLabel = function(value) {
-        //#ifdef __SUPPORT_SAFARI
         this.oLabel.innerHTML = value || this.initialMsg || "";
-        /* #else
-
-        #endif */
 
         this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
             [!value ? "" : this.baseCSSname + "Initial"]);
@@ -384,13 +380,11 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             if (!sValue2 && this.xmlRoot && sValue) {
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
 
-                //#ifdef __SUPPORT_SAFARI
                 xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
 
                 var xmlNode = this.xmlRoot.selectSingleNode(xpath);
                 value = this.applyRuleSetOnNode("caption", xmlNode);
-                //#endif
             } else {
                 value = sValue2 || sValue;
             }
@@ -746,10 +740,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         });
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
 
-        //#ifdef __SUPPORT_SAFARI
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
-        //#endif
 
         this.oIcon = this.$getLayoutNode("main", "icon", this.oExt);
         if (this.oButton)
