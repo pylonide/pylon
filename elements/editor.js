@@ -883,7 +883,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var keyCode = e.keyCode;
         if (!e.ctrlKey && !e.altKey && (keyCode < 112 || keyCode > 122) 
-          && (keyCode < 33  && keyCode > 31 || keyCode > 42 || keyCode == 8)) {
+          && (keyCode < 33  && keyCode > 31 || keyCode > 42 || keyCode == 8 || keyCode == 13)) {
             resumeChangeTimer();
         }
 
