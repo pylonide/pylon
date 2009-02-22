@@ -57,6 +57,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var commandQueue = [];
     var _self        = this;
 
+    this.value           = "";
+    this.$value          = "";
     this.state           = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['pasteword', 'tablewizard'];
@@ -86,14 +88,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (typeof html != "string")
             html = "";
 
-        html = this.prepareHtml(html);
-
         // If the HTML string is the same as the contents of the iframe document,
         // don't do anything...
-        if (this.prepareHtml(this.getValue()).replace(/\r/g, "") == html)
+        if (this.$value.replace(/\r/g, "") == html)
             return;
 
-        this.value = html;
+        this.$value = html;
+
+        //if (html.indexOf("<p") > -1)
+            html = html.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, "$1<br /><br />");
+
+        html = this.prepareHtml(html);
 
         if (this.plugins.isActive('code')) {
             this.plugins.get('code').update(this, html);
@@ -244,7 +249,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return this.exportHtml(this.getXHTML('text'), bStrict);
+        return (this.$value = this.exportHtml(this.getXHTML('text'), bStrict));
     };
 
     /**
@@ -308,29 +313,112 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /<(\/?)strong>|<strong( [^>]+)>/gi,
                 /<(\/?)em>|<em( [^>]+)>/gi,
                 /&apos;/g,
-                /([^>]*?)<br[^>]*>/gi,
+                /*
+                    Ruben: due to a bug in IE and FF this regexp won't fly:
+                    /((?:[^<]*|<(?:span|strong|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
+                */
+                /(<(\/?)(span|strong|u|i|b|a)(?:\s+.*?)?>)|(<br.*?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi, //expensive work around
                 /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
-                /<a( )([^>]+)\/>|<a\/>/gi,
-                /<p[^>]*>([^<]*)?<\/p>/gi
+                /<p><\/p>/gi,
+                /<a( )([^>]+)\/>|<a\/>/gi
             ];
         }
+
         // Convert strong and em to b and i in FF since it can't handle them
-        if (jpf.isGecko) {
+        if (jpf.isGecko) {//@todo what about the other browsers?
             html = html.replace(prepareRE[0], '<$1b$2>')
                        .replace(prepareRE[1], '<$1i$2>');
         }
         else if (jpf.isIE) {
             html = html.replace(prepareRE[2], '&#39;') // IE can't handle apos
-                       // <BR>'s need to be replaced to be properly handled as
-                       // block elements by IE - because they're not converted
-                       // when an editor command is executed
-                       .replace(prepareRE[3], jpf.editor.ALTP.start
-                           + "$1" + jpf.editor.ALTP.end)
                        .replace(prepareRE[4], '$1$2 _jpf_href=$2$3');
+                       //.replace(prepareRE[5], '<p>&nbsp;</p>');
+
+            // <BR>'s need to be replaced to be properly handled as
+            // block elements by IE - because they're not converted
+            // when an editor command is executed
+            var str = []; capture = false; strP = [], depth = [], bdepth = [];
+            html.replace(prepareRE[3], function(m, inline, close, tag, br, block, bclose, btag, any){
+                if (inline) {
+                    var id = strP.push(inline);
+
+                    if (close) {
+                        //#ifdef __DEBUG
+                        if (!depth[depth.length-1][0] == tag)
+                            debugger;
+                        //#endif
+                       
+                       depth.length--;
+                    }
+                    else {
+                        depth.push([tag, id]);
+                    }
+                    capture = true;
+                }
+                else if (any) {
+                    strP.push(any);
+                    capture = true;
+                }
+                else if (br) {
+                    if (capture) {
+                        if (depth.length) {
+                            /*strP.push(jpf.editor.ALTP.start, 
+                                strP.splice(depth[depth.length-1][1], 1).join(""), 
+                                jpf.editor.ALTP.end);*/
+                            strP.push(br);
+                        }
+                        else {
+                            str.push(jpf.editor.ALTP.start, 
+                                strP.join(""), 
+                                jpf.editor.ALTP.end);
+                            strP = [];
+                        }
+                        
+                        if (!depth.length)
+                            capture = false;
+                    }
+                    else
+                        str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                }
+                else if (block){
+                    if (bclose) {
+                        //#ifdef __DEBUG
+                        if (!bdepth[bdepth.length-1] == btag)
+                            debugger;
+                        //#endif
+                       
+                       bdepth.length--;
+                       
+                       if (strP.length) { //Never put P's inside block elements
+                            str.push(strP.join(""));
+                            strP = [];
+                        }
+                    }
+                    else {
+                        bdepth.push(btag);
+
+                        if (str[str.length - 1] == "<p>&nbsp;</p>")
+                            str.length--;
+                        
+                        if (strP.length) {
+                            str.push(jpf.editor.ALTP.start, 
+                                strP.join(""), 
+                                jpf.editor.ALTP.end);
+                            strP = [];
+                        }
+                    }
+                    
+                    
+                    str.push(block);
+                    capture = false;
+                }
+            });
+            str.push(strP.join(""));
+            html = str.join("");
         }
 
         // Fix some issues
-        html = html.replace(prepareRE[5], '<a$1$2></a>');
+        html = html.replace(prepareRE[6], '<a$1$2></a>');
 
         return html;
     };
@@ -344,7 +432,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @return The same string of html, but then formatted in such a way that it can embedded.
      * @type   {String}
      */
-    this.exportHtml = function(html, bStrict) {
+    this.exportHtml = function(html, bStrict, noParagraph) {
         if (exportRE === null) {
             // compile 'em regezz
             exportRE = [
@@ -354,21 +442,111 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
                 /(\w)=([^'"\s>]+)/gi,
-                /<br>/gi, // NO! do <br />
+                /<((?:br|input|hr|img)[^>\/]*)>/gi, // NO! do <br /> @todo Ruben: still not perfect for instance: <input value='test/try'>
+                /<p>&nbsp;<\/p>|<\/p>/gi,
                 /<p>/gi,
-                /<\/p>/gi
+                /(<br[^>]*?>[\r\n\s]*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
             ];
+        }
+        
+        if (jpf.isIE) {
+            html = html.replace(exportRE[7], '<br />')
+                       .replace(exportRE[8], '')
         }
 
         html = html.replace(exportRE[0], '</li>')
-            .replace(exportRE[1], '')
-            .replace(exportRE[2], '')
-            .replace(exportRE[3], '<$1>&nbsp;</$2>')
-            .replace(exportRE[4], '')
-            .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
-            .replace(exportRE[6], '<br />')
-            .replace(exportRE[7], '')
-            .replace(exportRE[8], '<br />');
+                   .replace(exportRE[1], '')
+                   .replace(exportRE[2], '')
+                   .replace(exportRE[3], '<$1>&nbsp;</$2>')
+                   .replace(exportRE[4], '')
+                   .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
+                   .replace(exportRE[6], '<$1 />');
+        
+        //@todo: Ruben: Maybe make this a setting (paragraphs="true")
+        if (!noParagraph) {
+            var str = []; capture = true; strP = [], depth = [], bdepth = [];
+            html.replace(exportRE[9], function(m, br, inline, close, tag, block, bclose, btag, any){
+                if (inline) {
+                    var id = strP.push(inline);
+                    
+                    if (tag != "br") {
+                        if (close) {
+                            //#ifdef __DEBUG
+                            if (!depth[depth.length-1][0] == tag)
+                                debugger;
+                            //#endif
+                           
+                           depth.length--;
+                        }
+                        else {
+                            depth.push([tag, id]);
+                        }
+                    }
+    
+                    capture = true;
+                }
+                else if (any) {
+                    strP.push(any);
+                    capture = true;
+                }
+                else if (br) {
+                    if (capture) {
+                        if (depth.length) {
+                            strP.push(br);
+                        }
+                        else {
+                            str.push("<p>", strP.join(""), "</p>");
+                            strP = [];
+                        }
+                        
+                        if (!depth.length)
+                            capture = false;
+                    }
+                    else
+                        str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                }
+                else if (block){
+                    if (bclose) {
+                        //#ifdef __DEBUG
+                        if (!bdepth[bdepth.length-1] == btag)
+                            debugger;
+                        //#endif
+                       
+                       bdepth.length--;
+                       
+                       if (strP.length) { //Never put P's inside block elements
+                            str.push(strP.join(""));
+                            strP = [];
+                        }
+                    }
+                    else {
+                        bdepth.push(btag);
+                        
+                        if (str[str.length - 1] == "<p>&nbsp;</p>")
+                            str.length--;
+                        
+                        if (strP.length) {
+                            if (bdepth.length) {
+                                str.push(strP.join(""));
+                                strP = [];
+                            }
+                            else {
+                                str.push(jpf.editor.ALTP.start, 
+                                    strP.join(""), 
+                                    jpf.editor.ALTP.end);
+                                strP = [];
+                            }
+                        }
+                    }
+                    
+                    str.push(block);
+                    capture = false;
+                }
+            });
+            str.push(strP.join(""));
+            html = str.join("");
+        }
+        
         // #ifdef __DEBUG
         // check for VALID XHTML in DEBUG mode...
         try {

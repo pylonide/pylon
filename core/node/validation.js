@@ -426,7 +426,7 @@ jpf.Validation = function(){
             this.reValidation = eval(value);
 
         this.$setRule("pattern", this.reValidation
-            ? "this.getValue().match(this.reValidation)" //RegExp
+            ? "value.match(this.reValidation)" //RegExp
             : "(" + validation + ")"); //JavaScript
     };
 

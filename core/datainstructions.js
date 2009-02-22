@@ -229,8 +229,8 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
  */
 //instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.getData = function(instruction, xmlContext, options, callback){
-    var instrParts = instruction.match(/^(.*?)(?:\!(.*)$|$)/);//\[([^\]\[]*)\]
-    var operators  = instrParts[2] ? instrParts[2].splitSafe("\{|\}\s*,|,") : "";
+    var instrParts = instruction.match(/^(.*?)(?:\!\{(.*)$|$)/);//\[([^\]\[]*)\]
+    var operators  = instrParts[2] ? instrParts[2].splitSafe("\}\s*,|,") : "";//\{|
 
     var gCallback  = function(data, state, extra){
         if (state != jpf.SUCCESS)
