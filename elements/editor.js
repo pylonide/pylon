@@ -96,7 +96,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$value = html;
 
         //if (html.indexOf("<p") > -1)
-            html = html.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, "$1<br /><br />");
+            html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br /><br />");
 
         html = this.prepareHtml(html);
 
@@ -296,7 +296,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 
-    var prepareRE = null;
+    var prepareRE = null, noMarginTags = {"table":1,"TABLE":1};
     /**
      * Processes, sanitizes and cleanses a string of raw html that originates
      * from outside a contentEditable area, so that the inner workings of the
@@ -397,17 +397,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     else {
                         bdepth.push(btag);
 
-                        if (str[str.length - 1] == "<p>&nbsp;</p>")
-                            str.length--;
+                        if (!noMarginTags[btag] && str[str.length - 1] == "<p>&nbsp;</p>")
+                            str[str.length - 1] = "<p></p>";
+                            //str.length--;
                         
                         if (strP.length) {
-                            str.push(jpf.editor.ALTP.start, 
-                                strP.join(""), 
-                                jpf.editor.ALTP.end);
-                            strP = [];
+                            if (bdepth.length) { //Never put P's inside block elements
+                                str.push(strP.join(""));
+                                strP = [];
+                            }
+                            else {
+                                str.push(jpf.editor.ALTP.start, 
+                                    strP.join(""), 
+                                    jpf.editor.ALTP.end);
+                                strP = [];
+                            }
                         }
                     }
-                    
                     
                     str.push(block);
                     capture = false;
@@ -443,12 +449,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
                 /(\w)=([^'"\s>]+)/gi,
                 /<((?:br|input|hr|img)[^>\/]*)>/gi, // NO! do <br /> @todo Ruben: still not perfect for instance: <input value='test/try'>
-                /<p>&nbsp;<\/p>|<\/p>/gi,
+                /<\/p>/gi, //<p>&nbsp;<\/p>|
                 /<p>/gi,
-                /(<br[^>]*?>[\r\n\s]*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
+                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
             ];
         }
-        
+
         if (jpf.isIE) {
             html = html.replace(exportRE[7], '<br />')
                        .replace(exportRE[8], '')
@@ -463,13 +469,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                    .replace(exportRE[6], '<$1 />');
         
         //@todo: Ruben: Maybe make this a setting (paragraphs="true")
+        //@todo might be able to unify this function with the one above.
         if (!noParagraph) {
             var str = []; capture = true; strP = [], depth = [], bdepth = [];
             html.replace(exportRE[9], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
                     var id = strP.push(inline);
                     
-                    if (tag != "br") {
+                    if (tag != "BR" && tag != "br") {
                         if (close) {
                             //#ifdef __DEBUG
                             if (!depth[depth.length-1][0] == tag)
@@ -526,7 +533,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             str.length--;
                         
                         if (strP.length) {
-                            if (bdepth.length) {
+                            if (bdepth.length) { //Never put P's inside block elements
                                 str.push(strP.join(""));
                                 strP = [];
                             }
