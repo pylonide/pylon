@@ -109,7 +109,6 @@ jpf.draw = {
                  0,0,0,1];
     },
     matrixMul : function(){
-        alert(1);
         // lets multiply matrices on our arglist with conceptually ordered transform
         var m = arguments[arguments.length-1];
         for(var i = arguments.length-2;i>=0;i--)
@@ -128,7 +127,6 @@ jpf.draw = {
                 out[out.length] = v.length?((v.length>1)?'('+v.join('+')+')':v[0]):0;
             }
         }
-        jpf.alert_r(out);
         return out;
     },
     //----------------------------------------------------------------------
