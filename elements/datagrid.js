@@ -1336,12 +1336,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else 
                 select = null;
-    
-            //@todo this should become the change action
-            this.getActionTracker().execute({
-                action : "appendChild",
-                args   : [this.xmlData, newNode, null, null, select]
-            });
+
+            if (!this.xmlData.selectSingleNode(select + "/" 
+              + newNode.tagName + "[@id='" + newNode.getAttribute("id") + "']")) {
+                //@todo this should become the change action
+                this.getActionTracker().execute({
+                    action : "appendChild",
+                    args   : [this.xmlData, newNode, null, null, select]
+                });
+            }
         }
         
         if (jpf.popup.isShowing(this.uniqueId))
