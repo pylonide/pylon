@@ -1215,7 +1215,8 @@ jpf.JmlParser = {
 
             //#ifdef __WITH_FOCUS
             //Set the default selected element
-            jpf.window.focusDefault();
+            if (!jpf.window.focussed)
+                jpf.window.focusDefault();
             //#endif
 
             this.loaded = true;

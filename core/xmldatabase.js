@@ -952,6 +952,7 @@ jpf.XmlDatabase = function(){
      *  @todo in actiontracker - add stack auto purging
      *        - when undo item is purged which was a removed, remove cache item
      *  @todo shouldn't the removeNode method remove all listeners?
+     *  @todo rename to processQueue
      *  @private
      */
     this.notifyQueued = function(){
