@@ -793,7 +793,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!e) e = event;
 
             //because of some issue I don't understand oExt.onmousedown is not called
-            if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
+            if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 jpf.WinServer.setTop(_self);
 
             if (lastState.maximized)
@@ -810,7 +810,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oExt.onmousedown = function(){
             //Set ZIndex on oExt mousedown
-            if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
+            if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 jpf.WinServer.setTop(_self);
 
             if (!lastState.normal)
