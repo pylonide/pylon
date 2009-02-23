@@ -252,6 +252,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$timeout = function(){
         clearInterval(this.timer);
+        clearInterval(this.timeout_timer);
 
         /*this.oCaption.nodeValue = this.$jml.firstChild
             ? this.$jml.firstChild.nodeValue
@@ -262,10 +263,10 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             this.setValue(this.old_value);
         this.old_value = null;
 
+        this.dispatchEvent("timeout");
+
         this.$initForm();
         this.$uploading = false;
-
-        this.dispatchEvent("timeout");
     };
 
     this.$clearProgress = function(){

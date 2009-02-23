@@ -97,6 +97,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //if (html.indexOf("<p") > -1)
             html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br /><br />");
+            //move this into preparehtml
 
         html = this.prepareHtml(html);
 
@@ -343,12 +344,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     var id = strP.push(inline);
 
                     if (close) {
-                        //#ifdef __DEBUG
-                        if (!depth[depth.length-1][0] == tag)
-                            debugger;
-                        //#endif
-                       
-                       depth.length--;
+                        if (depth[depth.length-1][0] != tag) {
+                            strP.length--; //ignore non matching tag
+                        }
+                        else {
+                            depth.length--;
+                        }
                     }
                     else {
                         depth.push([tag, id]);
@@ -382,14 +383,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 else if (block){
                     if (bclose) {
-                        //#ifdef __DEBUG
-                        if (!bdepth[bdepth.length-1] == btag)
-                            debugger;
-                        //#endif
+                        if (bdepth[bdepth.length-1] != btag) {
+                            return;
+                        }
+                        else {
+                            bdepth.length--;
+                        }
                        
-                       bdepth.length--;
-                       
-                       if (strP.length) { //Never put P's inside block elements
+                        if (strP.length) { //Never put P's inside block elements
                             str.push(strP.join(""));
                             strP = [];
                         }
@@ -478,12 +479,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     
                     if (tag != "BR" && tag != "br") {
                         if (close) {
-                            //#ifdef __DEBUG
-                            if (!depth[depth.length-1][0] == tag)
-                                debugger;
-                            //#endif
-                           
-                           depth.length--;
+                            if (depth[depth.length-1][0] != tag) {
+                                strP.length--; //ignore non matching tag
+                            }
+                            else {
+                                depth.length--;
+                            }
                         }
                         else {
                             depth.push([tag, id]);
@@ -514,14 +515,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 else if (block){
                     if (bclose) {
-                        //#ifdef __DEBUG
-                        if (!bdepth[bdepth.length-1] == btag)
-                            debugger;
-                        //#endif
+                        if (bdepth[bdepth.length-1] != btag) {
+                            return;
+                        }
+                        else {
+                            bdepth.length--;
+                        }
                        
-                       bdepth.length--;
-                       
-                       if (strP.length) { //Never put P's inside block elements
+                        if (strP.length) { //Never put P's inside block elements
                             str.push(strP.join(""));
                             strP = [];
                         }
