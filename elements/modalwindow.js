@@ -643,7 +643,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         //Check if we can 'remove' buttons
         var idleNodes = [];
         for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1)
+            if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
                 continue;
 
             if (!nodes[i].className || !nodes[i].className.match(re)) {
