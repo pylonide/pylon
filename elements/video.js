@@ -141,9 +141,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**** Event listeners ****/
 
-    /* #ifdef __WITH_KEYBOARD
+    // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
-        window.console.log('keydown on media element');
         switch (e.keyCode) {
             case 13 && (e.ctrlKey || e.altKey): //(CTRL | ALT) + RETURN
             case 70: //f
@@ -162,7 +161,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
         };
     }, true);
-    // #endif*/
+    // #endif
 
     this.mainBind = "src";
 
