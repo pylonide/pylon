@@ -80,7 +80,11 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {Boolean} checked  whether the element is in the checked state.
      */
     this.$propHandlers["checked"] = function(value){
-        this.setProperty("value", this.$values[value ? 1 : 0]);
+        if (!this.$values) {
+            if (this.$jml.getAttribute("values")) this.$propHandler["values"].call(this, this.$jml.getAttribute("values"));
+            else this.$values = [false, true];
+        }
+        this.setProperty("value", this.$values[value ? 0 : 1]);
     };
 
     /**
