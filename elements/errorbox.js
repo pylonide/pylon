@@ -97,11 +97,11 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.setMessage = function(value){
         // #ifndef __WITH_EDITMODE
-        if(value.indexOf(";")>-1){
+        if(value && value.indexOf(";")>-1){
             value = value.split(";");
             value = "<strong>" + value[0] + "</strong>" + value[1];
         }
-        this.oInt.innerHTML = value;
+        this.oInt.innerHTML = value || "";
         //#endif
     };
     
