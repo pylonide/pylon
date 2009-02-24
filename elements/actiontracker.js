@@ -221,7 +221,7 @@ jpf.actiontracker = function(parentNode){
      * or redo will not do anything.
      */
     this.reset = function(){
-        stackDone.length = stackUndone.length;
+        stackDone.length = stackUndone.length = 0;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
