@@ -650,7 +650,7 @@ String.prototype.uCaseFirst = function(){
  * @type {String}
  */
 String.prototype.trim = function(){
-    return this.replace(/\s*$/, "").replace(/^\s*/, "");
+    return this.replace(/[\s\n\r]*$/, "").replace(/^[\s\n\r]*/, "");
 };
 
 /**

@@ -82,6 +82,10 @@ jpf.vardump = function(obj, depth, recur,endless){
     }
 }
 
+String.prototype.s = function(){
+    return this.replace(/[\r\n]/g, "");
+}
+
 /**
  * Alerts string giving information on a javascript object.
  *

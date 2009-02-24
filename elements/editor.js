@@ -96,7 +96,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$value = html;
 
         //if (html.indexOf("<p") > -1)
-            html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br /><br />");
+            html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br _jpf_marker='1' /><br _jpf_marker='1' />");
             //move this into preparehtml
 
         html = this.prepareHtml(html);
@@ -338,13 +338,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             // <BR>'s need to be replaced to be properly handled as
             // block elements by IE - because they're not converted
             // when an editor command is executed
-            var str = []; capture = false; strP = [], depth = [], bdepth = [];
+            var str = []; capture = false; strP = [], depth = [], bdepth = [], lastBlockClosed = false;
             html.replace(prepareRE[3], function(m, inline, close, tag, br, block, bclose, btag, any){
                 if (inline) {
                     var id = strP.push(inline);
 
                     if (close) {
-                        if (depth[depth.length-1][0] != tag) {
+                        if (depth[depth.length-1][0] != tag.toUpperCase()) {
                             strP.length--; //ignore non matching tag
                         }
                         else {
@@ -352,7 +352,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }
                     else {
-                        depth.push([tag, id]);
+                        depth.push([tag.toUpperCase(), id]);
                     }
                     capture = true;
                 }
@@ -378,12 +378,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         if (!depth.length)
                             capture = false;
                     }
-                    else
-                        str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                    else {
+                        if ((bdepth.length || lastBlockClosed) && br.indexOf("_jpf_marker") > -1) {
+                            //donothing
+                        }
+                        else
+                            str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                    }
                 }
                 else if (block){
                     if (bclose) {
-                        if (bdepth[bdepth.length-1] != btag) {
+                        if (bdepth[bdepth.length-1] != btag.toUpperCase()) {
                             return;
                         }
                         else {
@@ -394,16 +399,21 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             str.push(strP.join(""));
                             strP = [];
                         }
+                        
+                        lastBlockClosed = 2;
                     }
                     else {
-                        bdepth.push(btag);
-
-                        if (!noMarginTags[btag] && str[str.length - 1] == "<p>&nbsp;</p>")
-                            str[str.length - 1] = "<p></p>";
-                            //str.length--;
+                        var useStrP = strP.length && strP.join("").trim();
+                        var last = useStrP ? strP : str;
+                        if (!noMarginTags[btag]) {
+                            if (last[last.length - 1] == "<p>&nbsp;</p>")
+                                last[last.length - 1] = "<p></p>";
+                            else if(useStrP && !bdepth.length)
+                                last.push("<p></p>");
+                        }
                         
                         if (strP.length) {
-                            if (bdepth.length) { //Never put P's inside block elements
+                            if (!useStrP || bdepth.length) { //Never put P's inside block elements
                                 str.push(strP.join(""));
                                 strP = [];
                             }
@@ -414,10 +424,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 strP = [];
                             }
                         }
+                        
+                        bdepth.push(btag.toUpperCase());
                     }
                     
                     str.push(block);
                     capture = false;
+                    
+                    lastBlockClosed = lastBlockClosed == 2 ? 1 : false;
                 }
             });
             str.push(strP.join(""));
@@ -450,17 +464,18 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
                 /(\w)=([^'"\s>]+)/gi,
                 /<((?:br|input|hr|img)[^>\/]*)>/gi, // NO! do <br /> @todo Ruben: still not perfect for instance: <input value='test/try'>
+                /<p>&nbsp;$/mig,
+                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
                 /<\/p>/gi, //<p>&nbsp;<\/p>|
-                /<p>/gi,
-                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi
+                /<p>/gi
             ];
         }
 
         if (jpf.isIE) {
-            html = html.replace(exportRE[7], '<br />')
-                       .replace(exportRE[8], '')
+            html = html.replace(exportRE[7], '<p></p>')
+                       .replace(exportRE[9], '<br />')
+                       .replace(exportRE[10], '')
         }
-
         html = html.replace(exportRE[0], '</li>')
                    .replace(exportRE[1], '')
                    .replace(exportRE[2], '')
@@ -473,13 +488,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         //@todo might be able to unify this function with the one above.
         if (!noParagraph) {
             var str = []; capture = true; strP = [], depth = [], bdepth = [];
-            html.replace(exportRE[9], function(m, br, inline, close, tag, block, bclose, btag, any){
+            html.replace(exportRE[8], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
                     var id = strP.push(inline);
                     
                     if (tag != "BR" && tag != "br") {
                         if (close) {
-                            if (depth[depth.length-1][0] != tag) {
+                            if (depth[depth.length-1][0] != tag.toUpperCase()) {
                                 strP.length--; //ignore non matching tag
                             }
                             else {
@@ -487,7 +502,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                         }
                         else {
-                            depth.push([tag, id]);
+                            depth.push([tag.toUpperCase(), id]);
                         }
                     }
     
@@ -503,7 +518,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             strP.push(br);
                         }
                         else {
-                            str.push("<p>", strP.join(""), "</p>");
+                            str.push("<p>", strP.join("").trim() || "&nbsp;", "</p>");
                             strP = [];
                         }
                         
@@ -515,7 +530,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 else if (block){
                     if (bclose) {
-                        if (bdepth[bdepth.length-1] != btag) {
+                        if (bdepth[bdepth.length-1] != btag.toUpperCase()) {
                             return;
                         }
                         else {
@@ -528,23 +543,26 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }
                     else {
-                        bdepth.push(btag);
-                        
-                        if (str[str.length - 1] == "<p>&nbsp;</p>")
-                            str.length--;
+                        //@todo this section can be make similar to the one in the above function and vice verse
+                        var last = strP.length ? strP : str;
+                        if (last[last.length - 1] == "<p>&nbsp;</p>")
+                            last.length--;
                         
                         if (strP.length) {
-                            if (bdepth.length) { //Never put P's inside block elements
-                                str.push(strP.join(""));
+                            var s;
+                            if (bdepth.length || (s = strP.join("").trim()).replace(/<.*?>/g,"").trim() == "") { //Never put P's inside block elements
+                                str.push(s || strP.join(""));
                                 strP = [];
                             }
-                            else {
-                                str.push(jpf.editor.ALTP.start, 
-                                    strP.join(""), 
-                                    jpf.editor.ALTP.end);
+                            else{
+                                str.push("<p>", 
+                                    s || strP.join("").trim() || "&nbsp;", 
+                                    "</p>");
                                 strP = [];
                             }
                         }
+                        
+                        bdepth.push(btag.toUpperCase());
                     }
                     
                     str.push(block);
