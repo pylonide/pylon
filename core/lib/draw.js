@@ -68,9 +68,6 @@ jpf.draw = {
             this.ortho = 0;
             s.push("var persp = __max(dw,dh) / l.style.persp;");
         }
-//        for(var i = 0;i<maxoverlap;i++)
-//           s.push((i?",":""),"_tx",i,",_ty"+i);
-//        s.push(";");
         return s.join('');
     },
     sincos3 : function(pre,rx,ry,rz) {
@@ -134,7 +131,13 @@ jpf.draw = {
     // 3D API
     
     //----------------------------------------------------------------------
-    
+    poly3DAlloc : function(n){
+        var s = ["var "];
+        for(var i = 0;i<n;i++)s.push((i?",":""),"_tx",i,",_ty"+i);
+        s.push(";");
+        return s.join('');
+    },
+
     poly3D : function(indices,pts){
         // we want rects between:
         // first we count the doubles
@@ -156,20 +159,20 @@ jpf.draw = {
                 pt = pts[d];
                 q=[this.ortho?"":
                     "zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
-                    "(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+
+                    "dw12+(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+
                         (this.ortho?"persp":"zt"),
-                    "(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+
+                    "dh12+(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+
                         (this.ortho?"persp":"zt")];
                 d = f?0:i;
                 if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), 
                          q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
             }; 
             switch(d){
-                case -1: f=1;s.push( this.e.close() );break;
-                case 0: f=0;s.push( q[0], this.e.moveTo(q[1],q[2]) ); break;
-                case indices.length-1: s.push( q[0], this.e.lineTo(q[1],q[2]), 
-                    this.e.close() );break;
-                default: s.push( q[0], this.e.lineTo(q[1],q[2]) ); break;
+                case -1: f=1;s.push( this.close() );break;
+                case 0: f=0;s.push( q[0], this.moveTo(q[1],q[2]) ); break;
+                case indices.length-1: s.push( q[0], this.lineTo(q[1],q[2]), 
+                    this.close() );break;
+                default: s.push( q[0], this.lineTo(q[1],q[2]) ); break;
             }
         }
         return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
@@ -1292,6 +1295,9 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     "position:absolute;cursor:default;overflow:hidden;left:0;top:0;display:none;font-family:",
                 style.family, ";color:",style.color,";font-weight:",
                 style.weight,";",";font-size:",style.size,"px;",
+                (style.line!==undefined)?"border:1px solid "+style.line+";" : "",
+                (style.fill!==undefined)?"background:"+style.fill+";" : "",
+
                 (style.width!==undefined)?"width:"+style.width+"px;" : "",
                 (style.height!==undefined)?"height:"+style.height+"px;" : "",
                 (style.style!==undefined)?"font-style:"+style.style+";" : "",
