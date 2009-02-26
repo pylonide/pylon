@@ -378,6 +378,21 @@ jpf.XmlDatabase = function(){
             parentNode = getElementById(parentNode);
 
         if (options && options.clearContents) {
+            //Signal listening elements
+            var node, j, i, nodes = parentNode.selectNodes("descendant::node()[@" + this.xmlListenTag + "]");
+            for (i = nodes.length - 1; i >= 0; i--) {
+                var s = nodes[i].getAttribute(this.xmlListenTag).split(";");
+                for (j = s.length - 1; j >= 0; j--) {
+                    node = jpf.all[s[j]];
+                    if (node.dataParent && node.dataParent.xpath)
+                        node.dataParent.parent.signalXmlUpdate[node.uniqueId] = true;
+                    else {
+                        node.$listenRoot = jpf.xmldb.addNodeListener(parentNode, node);
+                        node.xmlRoot = null; //.load(null)
+                    }
+                }
+            }
+            
             //clean parent
             var nodes = parentNode.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--)
@@ -1069,18 +1084,17 @@ jpf.XmlDatabase = function(){
     this.clearConnections = function(xmlNode){
         try {
             var i, nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlListenTag + "]");
-
             for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].removeAttributeNode(nodes[i].getAttributeNode(this.xmlListenTag));
+                nodes[i].removeAttribute(this.xmlListenTag);
             nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlIdTag + "]");
             for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].removeAttributeNode(nodes[i].getAttributeNode(this.xmlIdTag));
+                nodes[i].removeAttribute(this.xmlIdTag);
             nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlDocTag + "]");
             for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].removeAttributeNode(nodes[i].getAttributeNode(this.xmlDocTag));
+                nodes[i].removeAttribute(this.xmlDocTag);
             nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_loaded]");
             for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].removeAttributeNode(nodes[i].getAttributeNode("j_loaded"));
+                nodes[i].removeAttribute("j_loaded");
             // #ifdef __DEBUG
             // var nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_selection]");
             // for (var i = nodes.length - 1; i >= 0; i--)
@@ -1404,7 +1418,7 @@ jpf.XmlDatabase = function(){
                 if (node.nodeType != 1)
                     continue;
 
-                var name        = node.tagName;
+                var name = node.tagName; //@hack
                 if (name == "revision")
                     continue;
 

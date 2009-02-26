@@ -469,10 +469,12 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.style.position = "relative";
         
         if (this.$jml.getAttribute("class")) 
-            this.oExt.className = this.$jml.getAttribute("class");
-        
-        if (!jpf.isIE)
+            jpf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
+
+        if (!jpf.isIE && !jpf.grid.$initedcss) {
             jpf.importCssString(document, ".grid>*{position:absolute}");
+            jpf.grid.$initedcss = true;
+        }
     };
     
     this.$loadJml = function(x){

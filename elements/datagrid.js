@@ -717,7 +717,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var xml = 
               jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
                 <j:column caption="Property" width="' + cols[0] + '" select="@caption" />\
-                <j:column caption="Value" width="' + cols[1] + '" css="{@type}{@multiple}"><![CDATA[[\
+                <j:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
@@ -729,7 +729,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         else {\
                             n = dg.xmlData;\
                             foreach(select) {\
-                                var v = $".";\
+                                var v = n.nodeValue || $".";\
                                 n = z;\
                                 output.push(value(\'item[@value="\' + v + \'"]\'));\
                             }\
@@ -746,7 +746,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         if (vs) {\
                             n = dg.xmlData;\
                             foreach(select) {]\
-                                <div class="item"><q onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\')">x</q>[%value(vs)]</div>\
+                                <div class="item"><i onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\')">x</i>[%value(vs)]</div>\
                             [}\
                         }\
                         else {\
@@ -761,7 +761,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         if (vs) {\
                             local(dg.xmlData.selectSingleNode(select)){\
                                 foreach("node()"){]\
-                                    <div class="item"><q onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</q>[%value(vs)]</div>\
+                                    <div class="item"><i onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</i>[%value(vs)]</div>\
                                 [}\
                             }\
                         }\
@@ -1086,7 +1086,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             htmlNodes = htmlNode.childNodes,
             node;
         
-        for (var i = 0, l = nodes.length; i < l; i++) {
+        for (var i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
             h = headings[nodes[i].getAttribute("hid")];
             
             //@todo fake optimization
@@ -1384,11 +1384,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var widthdiff = jpf.getWidthDiff(oContainer);
             jpf.popup.show(this.uniqueId, {
-                x       : 0,
-                y       : isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight,
+                x       : -1,
+                y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
                 ref     : mirrorNode,
-                width   : mirrorNode.offsetWidth - widthdiff + 2,
+                width   : mirrorNode.offsetWidth - widthdiff + 4,
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
@@ -1699,18 +1699,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     var select = this.selected.getAttribute("select");
                     var values = [], n = this.xmlData.selectNodes(select);
                     for (var i = 0; i < n.length; i++) {
-                        values.push(jpf.getXmlValue(n[i], "."));
+                        values.push(n[i].nodeValue || jpf.getXmlValue(n[i], "."));
                     }
                     
                     for (var v, c, i = 0, l = s.length; i < l; i++) {
                         c = values.contains(s[i].getAttribute("value"))
                               ? "checked" : "";
-                        
                         str.push("<div class='", c, "' tag='", 
                             s[i].getAttribute("value"), "'><span> </span>",
                             s[i].firstChild.nodeValue, "</div>");
                     }
                 }
+
                 oContainer.innerHTML = "<blockquote style='margin:0'>"
                     + str.join("") + "</blockquote>";
 

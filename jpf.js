@@ -1598,7 +1598,8 @@ var jpf = {
             }
         }
 
-        document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+        if (jpf.isIE || jpf.loadScreen) //see also parsers/jml.js
+            document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
         if (!self.ERROR_HAS_OCCURRED) {
             jpf.Init.interval = setInterval(function(){

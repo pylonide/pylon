@@ -1238,7 +1238,7 @@ jpf.DataBinding = function(){
             jpf.popup.forceHide(); //This should be put in a more general position
         //#endif
 
-        // If control hasn't loaded databinding yet, buffer the call
+        // If control hasn't loaded databinding yet, queue the call
         if ((!this.bindingRules && this.$jml
             && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
             && !this.traverse) || (this.$canLoadData && !this.$canLoadData())) {

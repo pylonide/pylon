@@ -306,7 +306,8 @@ jpf.JmlParser = {
             // #endif
 
             // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-            jpf.layout.activateRules(pHtmlNode);
+            if (!jpf.hasSingleRszEvent)
+                jpf.layout.activateRules(pHtmlNode);
             // #endif
         }
 
@@ -1218,6 +1219,9 @@ jpf.JmlParser = {
             if (!jpf.window.focussed)
                 jpf.window.focusDefault();
             //#endif
+
+            if (!jpf.isIE && !jpf.loadScreen)
+                document.body.style.display = "block";
 
             this.loaded = true;
         }

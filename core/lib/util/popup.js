@@ -101,7 +101,8 @@ jpf.popup = {
             o.content.style.display = "";
         
         if (options.ref) {
-            var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
+            var pos    = jpf.getAbsolutePosition(options.ref, 
+                            o.content.offsetParent || o.content.parentNode);//[ref.offsetLeft+2,ref.offsetTop+4];//
             var top    = (options.y || 0) + pos[1];
             var p      = jpf.getOverflowParent(o.content); 
         
@@ -137,8 +138,9 @@ jpf.popup = {
                     if (moveUp)
                         popup.style.top = (top - value - options.y) + "px";
                     else
-                        popup.scrollTop = -1 * (i - steps - 1) * ((options.height || o.height) / steps);
+                        popup.scrollTop = 10000;//-1 * (i - steps - 1) * ((options.height || o.height) / steps);
                     popup.style.display = "block";
+
                     if (i >= steps) {
                         clearInterval(iVal)
                         
