@@ -129,7 +129,7 @@ jpf.Rename = function(){
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
 
         if (this.$getOption("main", "scalerename")) {
-            var diff = jpf.getWidthDiff(this.oTxt) + (jpf.isIE ? 1 : 0);
+            var diff = jpf.getWidthDiff(this.oTxt);
             this.oTxt.style.width = (wdt - diff) + "px";
         }
 

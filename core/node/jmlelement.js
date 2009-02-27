@@ -845,7 +845,7 @@ jpf.JmlElement.propHandlers = {
                 this.$show();
             
             if (jpf.hasSingleRszEvent)
-                jpf.layout.forceResize(this.oInt);
+                jpf.layout.forceResize();//this.oInt
         }
     },
 

@@ -1237,8 +1237,8 @@ jpf.layout = {
             jpf.layout.activateRules(qItem[0]);
         }
 
-        //if (jpf.hasSingleRszEvent)
-            //jpf.layout.activateRules();
+        if (jpf.hasSingleRszEvent)
+            jpf.layout.forceResize();
 
         this.qlist = {};
         //#ifdef __WITH_DOCKING
@@ -1358,7 +1358,8 @@ jpf.layout = {
             var htmlId = this.getHtmlId(oHtml);
             rules = this.rules[htmlId];
             if (!rules){
-                delete this.onresize[htmlId];
+                //@todo keep .children
+                //delete this.onresize[htmlId];
                 return false;
             }
 
@@ -1367,41 +1368,49 @@ jpf.layout = {
                     continue;
                 strRules.push(rules[id]);
             }
+            
+            var p = oHtml.parentNode;
+            while (p && p.nodeType == 1 && !this.onresize[p.getAttribute("id")]) {
+                p = p.parentNode;
+            }
 
-            this.onresize[htmlId] = new Function(strRules.join("\n"));//.replace(/try\{/g, "").replace(/}catch\(e\)\{\s*\}/g, "\n")
+            var f = new Function(strRules.join("\n"));//.replace(/try\{/g, "").replace(/}catch\(e\)\{\s*\}/g, "\n")
+            if (this.onresize[htmlId])
+                f.children = this.onresize[htmlId].children;
+            if (p && p.nodeType == 1) {
+                var x = this.onresize[p.getAttribute("id")];
+                (x.children || (x.children = {}))[htmlId] = f;
+            }
+            else this.onresize[htmlId] = f;
             if (!no_exec)
-                this.onresize[htmlId]();
-
-            /*for (rule in this.rules) {
-                rules = this.rules[rule];
-                for (id in rules) { //might need optimization using join()
-                    if (typeof rules[id] != "string" || rules[id] == "number")
-                        continue;
-                    strRules.push(rules[id]);
-                }
-            }*/
+                f();
 
             if (!window.onresize) {
-                var f = jpf.layout.onresize;
+                /*var f = jpf.layout.onresize;
                 window.onresize = function(){
                     var s = [];
                     for (var name in f)
                         s.unshift(f[name]);
                     for (var i = 0; i < s.length; i++)
                         s[i]();
-                        //f[name]();
+                }*/
+                
+                var rsz = function(f){
+                    var c = [];
+                    for (var name in f)
+                        c.unshift(f[name]);
+                    for (var i = 0; i < c.length; i++){
+                        c[i]();
+                        if (c[i].children) {
+                            rsz(c[i].children);
+                        }
+                    }
+                }
+                
+                window.onresize = function(){
+                    rsz(jpf.layout.onresize);
                 }
             }
-            /*
-            //A hack.. should build a dep tree, but actually FF should just implement onresize on any HTML element.
-            window.onresize = new Function(strRules.reverse().join("\n") + "\n"
-                + strRules.join("\n"));
-            try {
-                if (!no_exec)
-                    window.onresize();
-            }
-            catch (e) {}
-            */
         }
     },
 
@@ -1438,6 +1447,7 @@ jpf.layout = {
 
             if (replaceFunc) {
                 this.onresize[htmlId] = replaceFunc;
+                this.onresize[htmlId].children = this.paused[htmlId].children;
                 replaceFunc();
             }
             else

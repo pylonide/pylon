@@ -404,7 +404,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                         cTotal += this.padding;
                 }
                 
-                //var spanPadding = (cellInfo.span - 1) * this.padding;
+                var spanPadding = (cellInfo.span - 1) * this.padding;
                 if (cTotal > 0) {
                     cellInfo.oHtml.style.width = (cTotal 
                         - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.m[3] 
@@ -414,7 +414,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                     if (cTotal > -1000000)
                         combCol.push(cTotal + 1000000);
                     rule.push(id + ".style.width = (" + combCol.join(" + ") 
-                        + " - " + (cellInfo.m[1] + cellInfo.m[3] 
+                        + " + " + spanPadding + " - " + (cellInfo.m[1] + cellInfo.m[3] 
                         + cellInfo.hordiff) + ") + 'px'");
                 }
             }

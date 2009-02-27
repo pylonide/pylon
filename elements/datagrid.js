@@ -1388,7 +1388,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
                 ref     : mirrorNode,
-                width   : mirrorNode.offsetWidth - widthdiff + 4,
+                width   : mirrorNode.offsetWidth - widthdiff + 5,
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
@@ -1764,11 +1764,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var sel = this.selected;
                 jpf.popup.show(this.uniqueId, {
-                    x       : 0,
-                    y       : mirrorNode.offsetHeight,
+                    x       : -1,
+                    y       : mirrorNode.offsetHeight - 1,
                     animate : true,
                     ref     : mirrorNode,
-                    width   : mirrorNode.offsetWidth - this.widthdiff,
+                    width   : mirrorNode.offsetWidth - this.widthdiff + 3,
                     height  : s.length * this.itemHeight,
                     onclose : function(e){
                         if (type == "set") {
@@ -1845,9 +1845,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 catch(e){
                     throw new Error(jpf.formatErrorString(0, _self,
-                        "Executing the code inside the exec propery",
+                        "Executing the code inside the exec property",
                         "Could not find exec by name '" + this.selected.getAttribute("exec")
-                        + "'", this.selected+ e.message));
+                        + "'\nError: " + e.message, this.selected));
                 }
                 // #endif
             }

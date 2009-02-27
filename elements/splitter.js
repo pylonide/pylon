@@ -74,7 +74,7 @@ jpf.splitter = function(pHtmlNode){
         var itemSize  = htmlNode 
             ? htmlNode[b.offsetSize] 
             : v[b.size + "_" + oItem.id];
-        
+
         var row = oItem.parent.children;
         for (var z = 0, i = 0; i < row.length; i++)
             if (!row[i][b.fsize])
@@ -162,7 +162,7 @@ jpf.splitter = function(pHtmlNode){
                 needRecalc = true;
             }
         }
-    
+
         if (needRecalc) {
             /*
             var l = jpf.layout.layouts[this.oExt.parentNode.getAttribute("id")];
@@ -174,6 +174,9 @@ jpf.splitter = function(pHtmlNode){
             jpf.layout.compile(this.oExt.parentNode);
             jpf.layout.activateRules(this.oExt.parentNode);
             
+            if (jpf.hasSingleRszEvent)
+                jpf.layout.forceResize();
+
             return;
         }
 

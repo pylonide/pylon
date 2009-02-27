@@ -386,7 +386,7 @@ jpf.XmlDatabase = function(){
                     node = jpf.all[s[j]];
                     if (node.dataParent && node.dataParent.xpath)
                         node.dataParent.parent.signalXmlUpdate[node.uniqueId] = true;
-                    else {
+                    else if (node.$model) {
                         node.$listenRoot = jpf.xmldb.addNodeListener(parentNode, node);
                         node.xmlRoot = null; //.load(null)
                     }

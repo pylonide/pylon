@@ -424,12 +424,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (lastpos) {
                 if (this.animate && !noanim) {
                     //Pre remove paused event because of not having onresize
-                    if (jpf.hasSingleRszEvent)
-                        delete jpf.layout.onresize[jpf.layout.getHtmlId(this.pHtmlNode)];
+                    //if (jpf.hasSingleRszEvent)
+                        //delete jpf.layout.onresize[jpf.layout.getHtmlId(this.pHtmlNode)];
 
+                    _self.animstate = 1;
                     jpf.tween.multi(this.oExt, {
                         steps    : 5,
-                        interval : 10,
+                        interval : 100,
                         tweens   : [
                             {type: "left",   from: this.oExt.offsetLeft,   to: lastpos[0]},
                             {type: "top",    from: this.oExt.offsetTop,    to: lastpos[1]},
@@ -528,7 +529,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 pNode.style.overflow = "hidden";
 
-                var animstate = 0, hasAnimated = false, htmlNode = this.oExt;
+                _self.animstate = 0;
+                var hasAnimated = false, htmlNode = this.oExt;
                 function setMax(){
                     var w = !jpf.isIE && pNode == document.documentElement
                         ? window.innerWidth
@@ -539,10 +541,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                         : pNode.offsetHeight;
 
                     if (_self.animate && !hasAnimated) {
-                        animstate = 1;
+                        _self.animstate = 1;
                         hasAnimated = true;
                         jpf.tween.multi(htmlNode, {
-                            steps    : 5,
+                            steps    : 10,
                             interval : 10,
                             tweens   : [
                                 {type: "left",   from: htmlNode.offsetLeft,   to: -1 * marginBox[3]},
@@ -555,11 +557,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                                     jpf.layout.forceResize(_self.oInt);
                             },
                             onfinish : function(){
-                                animstate = 0;
+                                _self.animstate = 0;
                             }
                         });
                     }
-                    else if (!animstate) {
+                    else if (!_self.animstate) {
                         htmlNode.style.left = (-1 * marginBox[3]) + "px";
                         htmlNode.style.top  = (-1 * marginBox[0]) + "px";
 

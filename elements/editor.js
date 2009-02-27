@@ -343,17 +343,21 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (inline) {
                     var id = strP.push(inline);
 
-                    if (close) {
-                        if (depth[depth.length-1][0] != tag.toUpperCase()) {
-                            strP.length--; //ignore non matching tag
+                    tag = tag.toLowerCase();
+                    if (!selfClosing[tag]) {
+                        if (close) {
+                            if (depth[depth.length-1][0] != tag) {
+                                strP.length--; //ignore non matching tag
+                            }
+                            else {
+                                depth.length--;
+                            }
                         }
                         else {
-                            depth.length--;
+                            depth.push([tag, id]);
                         }
                     }
-                    else {
-                        depth.push([tag.toUpperCase(), id]);
-                    }
+                    
                     capture = true;
                 }
                 else if (any) {
@@ -388,7 +392,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 else if (block){
                     if (bclose) {
-                        if (bdepth[bdepth.length-1] != btag.toUpperCase()) {
+                        if (bdepth[bdepth.length-1] != btag.toLowerCase()) {
                             return;
                         }
                         else {
@@ -425,7 +429,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                         }
                         
-                        bdepth.push(btag.toUpperCase());
+                        bdepth.push(btag.toLowerCase());
                     }
                     
                     str.push(block);
@@ -444,7 +448,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         return html;
     };
 
-    var exportRE = null;
+    var exportRE = null, selfClosing = {"br":1,"img":1,"input":1,"hr":1};
     /**
      * Description.
      *
@@ -463,11 +467,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
                 /(\w)=([^'"\s>]+)/gi,
-                /<((?:br|input|hr|img)[^>\/]*)>/gi, // NO! do <br /> @todo Ruben: still not perfect for instance: <input value='test/try'>
+                /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
                 /<p>&nbsp;$/mig,
                 /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
                 /<\/p>/gi, //<p>&nbsp;<\/p>|
-                /<p>/gi
+                /<p>/gi,
+                /<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g
             ];
         }
 
@@ -482,8 +487,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                    .replace(exportRE[3], '<$1>&nbsp;</$2>')
                    .replace(exportRE[4], '')
                    .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
-                   .replace(exportRE[6], '<$1 />');
-        
+                   .replace(exportRE[6], '<$1 />')
+                   .replace(exportRE[11], function(m){return m.toLowerCase();});
+                       
         //@todo: Ruben: Maybe make this a setting (paragraphs="true")
         //@todo might be able to unify this function with the one above.
         if (!noParagraph) {
@@ -492,9 +498,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (inline) {
                     var id = strP.push(inline);
                     
-                    if (tag != "BR" && tag != "br") {
+                    if (!selfClosing[tag]) {
                         if (close) {
-                            if (depth[depth.length-1][0] != tag.toUpperCase()) {
+                            if (depth[depth.length-1][0] != tag) {
                                 strP.length--; //ignore non matching tag
                             }
                             else {
@@ -502,7 +508,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                         }
                         else {
-                            depth.push([tag.toUpperCase(), id]);
+                            depth.push([tag, id]);
                         }
                     }
     
@@ -530,7 +536,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 else if (block){
                     if (bclose) {
-                        if (bdepth[bdepth.length-1] != btag.toUpperCase()) {
+                        if (bdepth[bdepth.length-1] != btag) {
                             return;
                         }
                         else {
@@ -562,7 +568,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                         }
                         
-                        bdepth.push(btag.toUpperCase());
+                        bdepth.push(btags);
                     }
                     
                     str.push(block);
@@ -579,7 +585,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
         }
         catch(ex) {
-            jpf.console.error(ex.message + "\n" + html.escapeHTML());
+            throw new Error(ex.message + "\n" + html.escapeHTML());
         }
         // #endif
         

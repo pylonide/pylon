@@ -59,7 +59,7 @@
  */
 
 jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = false;
     var _self = this;
 
     /**** Properties and attributes ****/
@@ -295,17 +295,6 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             //jmlNode.$startUpload();
         }
 
-        if (jpf.isGecko) {
-            this.inpFile.onmouseover = function(e){
-                if (jmlNode.oBtn.onmouseover)
-                    jmlNode.oBtn.onmouseover(e);
-            }
-            this.inpFile.onmouseout = function(e){
-                if (jmlNode.oBtn.onmouseout)
-                    jmlNode.oBtn.onmouseout(e);
-            }
-        }
-
         if (jpf.debug == 2) {
             this.oFrame.style.visibility = "visible";
             this.oFrame.style.width      = "100px";
@@ -320,7 +309,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 .setAttribute("name", "upload" + this.uniqueId);
         });
 
-        //this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
+        if (!jpf.isIE)
+            this.form = jpf.xmldb.htmlImport(
+                this.$getLayoutNode("form"), this.oExt);
 
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
         jpf.AbstractEvent.addListener(this.oFrame, "load", function(){
@@ -350,10 +341,6 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
             _self.$cancel();
         });
-
-        if (!jpf.isIE)
-            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"),
-                this.oExt);
     };
 
     this.$loadJml = function(x){

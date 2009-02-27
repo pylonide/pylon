@@ -57,9 +57,9 @@ jpf.editor.plugin('code', function() {
         }
         else {
             editor.plugins.active = null;
-            
+
             if (lastLoaded != oPreview.value)
-                editor.change(oPreview.value.replace(/\n/g, ''));
+                editor.change(editor.exportHtml(oPreview.value.replace(/\n/g, '')));
             
             oPreview.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);
