@@ -58,8 +58,21 @@ jpf.editor.plugin('code', function() {
         else {
             editor.plugins.active = null;
 
-            if (lastLoaded != oPreview.value)
-                editor.change(editor.exportHtml(oPreview.value.replace(/\n/g, '')));
+            if (lastLoaded != oPreview.value) {
+                var html = editor.exportHtml(oPreview.value.replace(/\n/g, ''));
+                try{
+                    jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
+                }
+                catch(e){
+                    if (confirm("Er zit een fout in de html. Klik op OK om deze \
+                                 te corrigeren, of op Cancel om door te gaan")){
+                        //@todo mike: finish this
+                        return false;
+                    }
+                }
+                
+                editor.change(html);
+            }
             
             oPreview.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);

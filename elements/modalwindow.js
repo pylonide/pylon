@@ -430,7 +430,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     _self.animstate = 1;
                     jpf.tween.multi(this.oExt, {
                         steps    : 5,
-                        interval : 100,
+                        interval : 10,
                         tweens   : [
                             {type: "left",   from: this.oExt.offsetLeft,   to: lastpos[0]},
                             {type: "top",    from: this.oExt.offsetTop,    to: lastpos[1]},

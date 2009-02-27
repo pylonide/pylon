@@ -480,6 +480,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        .replace(exportRE[9], '<br />')
                        .replace(exportRE[10], '')
         }
+
         html = html.replace(exportRE[0], '</li>')
                    .replace(exportRE[1], '')
                    .replace(exportRE[2], '')
@@ -559,7 +560,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 str.push(s || strP.join(""));
                                 strP = [];
                             }
-                            else{
+                            else {
                                 str.push("<p>", 
                                     s || strP.join("").trim() || "&nbsp;", 
                                     "</p>");
@@ -584,7 +585,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
         }
         catch(ex) {
-            throw new Error(ex.message + "\n" + html.escapeHTML());
+            jpf.console.error(ex.message + "\n" + html.escapeHTML());
         }
         // #endif
         
