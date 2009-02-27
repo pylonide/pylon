@@ -818,7 +818,7 @@ jpf.JmlParser = {
         },
         //#endif
 
-        //#ifdef __JWINDOW
+        //#ifdef __JWINDOW || __JMODALWINDOW
         /**
          * See {@link modalwindow}
          */

@@ -278,7 +278,7 @@ var jpf = {
         this.browserDetect();
         this.setCompatFlags();
 
-        //#ifdef __DEBUG
+        //#ifdef __WITH_DEBUG_WIN
         jpf.debugwin.init();
         //#endif
 

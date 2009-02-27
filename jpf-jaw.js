@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __SUPPORT_JAW
+
 /** 
  * Javeline Platform for jaw
  *
@@ -29,12 +31,6 @@
 
 //Start of the Javeline PlatForm namespace
 jpf = {
-    /*#ifdef __JFWVERSION
-    VERSION       : '__JFWVERSION',
-    #else*/
-    VERSION       : false,
-    //#endif
-
     SUCCESS : 1,
     TIMEOUT : 2,
     ERROR   : 3,
@@ -67,7 +63,6 @@ jpf = {
         this.inherit(jpf.Class);
     },
     
-    // #ifndef __PACKAGED
     startDependencies : function(){
         var i;
         // Load Kernel Modules
@@ -423,3 +418,5 @@ jpf.stacktrace = function(){
 
         return list.join("\n");
 };
+
+//#endif

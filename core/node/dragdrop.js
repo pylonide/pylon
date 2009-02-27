@@ -348,8 +348,8 @@ jpf.DragDrop = function(){
 
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
-                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX) || jpf.event.layerX - srcEl.offsetLeft,
-                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : e.offsetY) || jpf.event.layerY - srcEl.offsetTop,
+                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX), //|| jpf.event.layerX - srcEl.offsetLeft,
+                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : e.offsetY), //|| jpf.event.layerY - srcEl.offsetTop,
                     clientX    : e.clientX,
                     clientY    : e.clientY
                 };

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JPICTURE || __INC_ALL
+// #ifdef __JIMG || __INC_ALL
 // #define __JBASESIMPLE 1
 
 /**

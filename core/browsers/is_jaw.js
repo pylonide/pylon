@@ -116,8 +116,6 @@ jpf.runJaw = function(){
         return oDoc;
     };
     
-    //#endif
-    
     // #ifdef __PARSER_XSLT
     
     //Element.transformNodeToObject

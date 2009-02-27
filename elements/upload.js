@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JFILEUPLOADBOX || __INC_ALL
+// #ifdef __JUPLOAD || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**

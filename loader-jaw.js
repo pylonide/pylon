@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __SUPPORT_JAW
+
 /* ***************************************************************
 **
 **      Bootloader for Javeline PlatForm to run on JAW
@@ -70,3 +72,5 @@ jpf.TelePortModules = [
 
 //Load depencies & start
 jpf.startDependencies();
+
+//#endif

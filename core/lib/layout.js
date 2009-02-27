@@ -589,8 +589,6 @@ jpf.layout = {
         };
     },
 
-    // #ifdef __WITH_ALIGNXML
-
     parseXml : function(x, layout, jmlNode, norecur){
         var aData = this.getData(typeof jmlNode == "string"
             ? jmlNode
@@ -753,6 +751,8 @@ jpf.layout = {
 
         return aData;
     },
+
+    // #ifdef __WITH_ALIGNXML
 
     /**
      * Makes a copy of the current state of the layout and encodes it in xml.
@@ -1189,10 +1189,7 @@ jpf.layout = {
 
     timer : null,
     qlist : {},
-    //@todo incorrect assumption that its only for docking
-    //#ifdef __WITH_DOCKING
     dlist : [],
-    //#endif
     
     queue : function(oHtml, obj, compile){
         if (this.qlist[oHtml.getAttribute("id")]) {
@@ -1213,14 +1210,12 @@ jpf.layout = {
 
         var i, id, l, qItem, list;
 
-        //#ifdef __WITH_DOCKING
         for (i = 0; i < this.dlist.length; i++) {
             if (this.dlist[i].hidden)
                 this.dlist[i].hide();
             else
                 this.dlist[i].show();
         }
-        //#endif
 
         for (id in this.qlist) {
             qItem = this.qlist[id];
@@ -1241,9 +1236,7 @@ jpf.layout = {
             jpf.layout.forceResize();
 
         this.qlist = {};
-        //#ifdef __WITH_DOCKING
         this.dlist = [];
-        //#endif
     },
     
     //#endif
