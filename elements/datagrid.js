@@ -1962,8 +1962,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oTxt.refCount  = 1;
             // #endif
             
-            //@todo implement this for non iframe
-            if (jpf.getStyle(this.oDoc.documentElement, jpf.isIE ? "overflowY" : "overflow-y") == "auto") {
+            if (jpf.getStyle(this.oDoc.documentElement, jpf.isIE 
+              ? "overflowY" : "overflow-y") == "auto") {
+                //@todo ie only
                 this.oIframe.onresize = function(){
                     _self.oHead.style.marginRight = 
                       _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
@@ -1974,7 +1975,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.addEventListener("xmlupdate", this.oIframe.onresize);
             }
             
-            //@todo implement this for non iframe
             this.oDoc.documentElement.onmousedown = function(e){
                 if (!e) e = _self.oWin.event;
                 if ((e.srcElement || e.target).tagName == "HTML")
@@ -1988,6 +1988,28 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 };
         }
         else {
+            if (jpf.getStyle(this.oInt, jpf.isIE 
+              ? "overflowY" : "overflow-y") == "auto") {
+                this.$resize = function(){
+                    _self.oHead.style.marginRight = 
+                      _self.oInt.scrollHeight > _self.oInt.offsetHeight 
+                        ? "16px" : "0";
+                }
+                
+                jpf.layout.setRules(this.oExt, this.uniqueId + "_datagrid",
+                    "jpf.all[" + this.uniqueId + "].$resize()");
+                jpf.layout.activateRules(this.oExt);
+                
+                this.addEventListener("afterload", this.$resize);
+                this.addEventListener("xmlupdate", this.$resize);
+            }
+            
+            this.oInt.onmousedown = function(e){
+                if (!e) e = event;
+                if ((e.srcElement || e.target) == this)
+                    jpf.popup.forceHide();
+            }
+            
             this.oInt.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)

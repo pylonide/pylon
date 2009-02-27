@@ -95,9 +95,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.$value = html;
 
-        //if (html.indexOf("<p") > -1)
-            html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br _jpf_marker='1' /><br _jpf_marker='1' />");
-            //move this into preparehtml
+        html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
+            "<br _jpf_marker='1' /><br _jpf_marker='1' />");
 
         html = this.prepareHtml(html);
 
@@ -568,7 +567,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                         }
                         
-                        bdepth.push(btags);
+                        bdepth.push(btag);
                     }
                     
                     str.push(block);
@@ -1375,7 +1374,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             buttons = null;
         }
     };
-
+    
     /**
      * Draw all the HTML elements at startup time.
      *
@@ -1518,6 +1517,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
+        
+        //jpf.ed = this;
+        //jpf.ed.iframe.contentWindow.document == jpf.ed.oDoc
     };
 
     this.$destroy = function() {

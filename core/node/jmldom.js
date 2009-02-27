@@ -268,7 +268,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                         beforeNode, isMoveWithinParent);
             }
 
-            if (jmlNode.oExt) {
+            //@todo this is a hack, a good solution should be found
+            var containsIframe = jmlNode.oExt.getElementsByTagName("iframe").length > 0;
+            if (jmlNode.oExt && (!jpf.isGecko || !containsIframe)) {
                 jmlNode.pHtmlNode.insertBefore(jmlNode.oExt,
                     beforeNode && beforeNode.oExt || null);
             }

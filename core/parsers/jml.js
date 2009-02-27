@@ -1220,9 +1220,6 @@ jpf.JmlParser = {
                 jpf.window.focusDefault();
             //#endif
 
-            if (!jpf.isIE && !jpf.loadScreen)
-                document.body.style.display = "block";
-
             this.loaded = true;
         }
 

@@ -544,7 +544,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                         _self.animstate = 1;
                         hasAnimated = true;
                         jpf.tween.multi(htmlNode, {
-                            steps    : 10,
+                            steps    : 5,
                             interval : 10,
                             tweens   : [
                                 {type: "left",   from: htmlNode.offsetLeft,   to: -1 * marginBox[3]},
