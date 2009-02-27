@@ -1033,9 +1033,7 @@ var jpf = {
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
 
         //#ifdef __WITH_EXPLICIT_LOWERCASE
-
         var xmlNode = jpf.getXmlDom(str, null, jpf.debug);
-        //if (jpf.xmlParseError) jpf.xmlParseError(xmlNode); //@todo this seems redundant
 
         // Case insensitive support
         var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
@@ -1517,7 +1515,8 @@ var jpf = {
         //#ifdef __SUPPORT_SAFARI2
         if (jpf.isSafariOld || true)
             prefix = "j";
-
+        //#endif
+        
         //#ifdef __DEBUG
         if (!prefix)
             throw new Error(jpf.formatErrorString(0, null,
@@ -1553,9 +1552,9 @@ var jpf = {
             jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         docElement.documentElement.appendChild(jpf.AppData); //Firefox fix for selectNode insertion need...
 
-        /* #else
-        jpf.AppData = docElement.body ? docElement.body : docElement.selectSingleNode("/html/body")
-        #endif*/
+        /*
+        jpf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", jpf.ns.xhtml)[0];
+        */
 
         jpf.loadJmlIncludes(jpf.AppData);
 
