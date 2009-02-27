@@ -1550,7 +1550,7 @@ var jpf = {
             jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         docElement.documentElement.appendChild(jpf.AppData); //Firefox fix for selectNode insertion need...
 
-        /* #else ?
+        /* 
         jpf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", jpf.ns.xhtml)[0];
         */
 
