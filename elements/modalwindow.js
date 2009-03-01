@@ -382,7 +382,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var lastheight = null;
     var lastpos    = null;
-    var lastzindex = 0;
+    var lastzindex = null;
     var lastState  = {"normal":1};
 
     /**
@@ -468,8 +468,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.layout)
                 jpf.layout.play(this.pHtmlNode);
 
-            if (lastzindex)
-                this.oExt.style.zIndex = lastzindex
+            if (lastzindex) {
+                this.oExt.style.zIndex = lastzindex[0];
+                if (this.oCover)
+                    this.oCover.style.zIndex = lastzindex[1];
+            }
 
             lastheight = lastpos = lastzindex = null;
 
@@ -575,9 +578,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (jpf.layout)
                     jpf.layout.pause(this.pHtmlNode, setMax);
 
-                lastzindex = this.oExt.style.zIndex;
-                this.oExt.style.zIndex = jpf.WinServer.count + 1;
-                //jpf.WinServer.setTop(this);
+                lastzindex = [
+                    this.oExt.style.zIndex || 1, 
+                    this.oCover && this.oCover.style.zIndex || 1
+                ];
+                if (this.oCover)
+                    this.oCover.style.zIndex = jpf.WinServer.count + 1;
+                this.oExt.style.zIndex = jpf.WinServer.count + 2;
             }
             else {
                 styleClass.push(this.baseCSSname + "Max");

@@ -558,7 +558,7 @@ jpf.JmlElement = function(){
      * @param {HTMLElement} oInt        the html parent of the created jml elements.
      * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
      */
-    this.insertJml = function(jmlDefNode, oInt, oIntJML, isHidden){
+    this.insertJml = function(jmlDefNode, oInt, oIntJml, isHidden){
         //#ifdef __DEBUG
         jpf.console.info("Loading sub jml from external source");
         //#endif
@@ -584,22 +584,24 @@ jpf.JmlElement = function(){
 
                 throw oError;
             }
-
+            
+            //#ifdef __DEBUG
             jpf.console.info("Runtime inserting jml");
+            //#endif
 
-            var JML = oIntJML || _self.$jml;
-            if (JML.insertAdjacentHTML)
-                JML.insertAdjacentHTML(JML.getAttribute("insert")|| "beforeend",
+            var jml = oIntJml || _self.$jml;
+            if (jml.insertAdjacentHTML)
+                jml.insertAdjacentHTML(jml.getAttribute("insert") || "beforeend",
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
                     data = jpf.xmldb.getXml("<j:jml xmlns:j='"
                         + jpf.ns.jml +"'>" + data + "</j:jml>");
                 for (var i = data.childNodes.length - 1; i >= 0; i--)
-                    JML.insertBefore(data.childNodes[i], JML.firstChild);
+                    jml.insertBefore(data.childNodes[i], jml.firstChild);
             }
 
-            jpf.JmlParser.parseMoreJml(JML, oInt || _self.oInt, _self,
+            jpf.JmlParser.parseMoreJml(jml, oInt || _self.oInt, _self,
                 (isHidden && (oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
         }

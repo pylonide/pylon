@@ -854,7 +854,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     _month = date.getMonth();
                     _year  = date.getFullYear();
 
-                    if (!this.selected && this.initialMsg)
+//                    if (!this.selected && this.initialMsg)
                         this.$setLabel();
                     break;
             }

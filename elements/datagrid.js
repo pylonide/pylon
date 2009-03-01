@@ -1388,7 +1388,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
                 ref     : mirrorNode,
-                width   : mirrorNode.offsetWidth - widthdiff + 5,
+                width   : mirrorNode.offsetWidth - widthdiff + 5, //Math.max(self[this.lookupjml].minwidth, 
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
