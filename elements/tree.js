@@ -802,7 +802,16 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$moveNode = function(xmlNode, htmlNode){
-        if (!self.jpf.debug && !htmlNode) return;
+        if (!self.jpf.debug && !htmlNode) 
+            return;
+            
+        if (this.hasLoadStatus(xmlNode.parentNode, "potential")) {
+            var container  = this.$getLayoutNode("item", "container", htmlNode);
+            htmlNode.parentNode.removeChild(htmlNode);
+            container.parentNode.removeChild(container);
+            this.$extend(xmlNode.parentNode);
+            return;
+        }
         
         var oPHtmlNode = htmlNode.parentNode;
         var pHtmlNode  = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
@@ -952,6 +961,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(
             jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
         if (!htmlNode) return;
+        
         if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode, e.anim ? false : true);
