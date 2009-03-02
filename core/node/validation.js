@@ -301,6 +301,7 @@ jpf.Validation = function(){
      *   xsd:unsignedByte
      *   xsd:positiveInteger
      *   jpf:url
+     *   jpf:website
      *   jpf:email
      *   jpf:creditcard
      *   jpf:expdate

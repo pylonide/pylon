@@ -139,10 +139,15 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         }
 
+        if (!value) {
+            this.$setLabel();
+            return;
+        }
+
         var date = Date.parse(value, this.outputFormat);
 
         //#ifdef __DEBUG
-        if (!date) {
+        if (!date || !date.getFullYear()) {
             throw new Error(jpf.formErrorString(this, "Parsing date",
                 "Invalid date: " + value));
         }

@@ -1314,16 +1314,42 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var multiple = propNode.getAttribute("multiple"),
             select   = propNode.getAttribute("select");
-            
+
         var oldNode = this.xmlData.selectSingleNode(select 
           + (multiple == "single" ? "/node()" : ""));
         var newNode = jpf.xmldb.copyNode(dataNode);
 
-        if (oldNode && multiple != "multiple") {
+        if (multiple != "multiple") {
+            var tagName;
+            
+            var s = select.split("/");
+            if ((tagName = s.pop()).match(/^@|^text\(\)/)) 
+                tagName = s.pop();
+            select = s.join("/") || null;
+            
+            if (tagName && tagName != newNode.tagName) {
+                newNode = jpf.xmldb.integrate(newNode, 
+                    newNode.ownerDocument.createElement(tagName));
+            }
+            
             //@todo this should become the change action
+            var changes = [];
+            if (oldNode) {
+                changes.push({
+                    func : "removeNode",
+                    args : [oldNode]
+                });
+            }
+            else {
+                changes.push({
+                    func : "appendChild",
+                    args   : [this.xmlData, newNode, null, null, select]
+                });
+            }
+            
             this.getActionTracker().execute({
-                action : "replaceNode",
-                args   : [oldNode, newNode]
+                action : "multicall",
+                args   : changes
             });
         }
         else {
