@@ -196,7 +196,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
      * <code>
      *  <j:label>Which newspapers do you read?</j:label>
      *  <j:list ref="krant" 
-     *    more  = "Caption:Other newspaper" 
+     *    more  = "caption:Other newspaper" 
      *    model = "mdlSuggestions:question[@key='krant']">
      *      <j:bindings>
      *          <j:caption select="text()" />

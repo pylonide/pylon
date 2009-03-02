@@ -174,7 +174,14 @@ jpf.MultiLevelBinding = function(jmlNode){
         //if(jmlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
+        
         this.$updateSelection();
+        
+        if (jmlNode["default"] && !jmlNode.getValue())
+            jmlNode.setValue(jmlNode["default"]);
+        
+        if (!this.createModel && this.disabled != jmlNode.disabled)
+            jmlNode.setProperty("disabled", this.disabled);
     };
     
     this.$updateSelection = function(){
@@ -288,14 +295,6 @@ jpf.MultiLevelBinding = function(jmlNode){
               == this.getSelectionValue(selNode);
         }
     };
-    
-    this.addEventListener("afterload", function(e){
-        if (jmlNode["default"] && !jmlNode.getValue())
-            jmlNode.setValue(jmlNode["default"]);
-        
-        if (!this.createModel && this.disabled != jmlNode.disabled)
-            jmlNode.setProperty("disabled", this.disabled);
-    });
     
     var mlNode = this;
     jmlNode.addEventListener("afterselect", function(e){

@@ -575,11 +575,13 @@ jpf.MultiSelect = function(){
             xmlNode = jpf.xmldb.getNodeById(id, this.xmlRoot);
         }
 
-        if(!noEvent && this.dispatchEvent('beforeselect', {
-            xmlNode : xmlNode,
-            htmlNode: htmlNode,
-            ctrlKey : ctrlKey,
-            shiftKey : shiftKey}) === false)
+        if(this.dispatchEvent('beforeselect', {
+            xmlNode     : xmlNode,
+            htmlNode    : htmlNode,
+            ctrlKey     : ctrlKey,
+            shiftKey    : shiftKey,
+            captureOnly : noEvent
+        }) === false)
               return false;
 
         /**** Selection ****/
@@ -665,22 +667,22 @@ jpf.MultiSelect = function(){
             valueList.push(xmlNode);
         }
 
-        if (!noEvent) {
-            if (this.delayedselect){
-                var jNode = this;
-                setTimeout(function(){
-                    jNode.dispatchEvent("afterselect", {
-                        list    : valueList,
-                        xmlNode : xmlNode}
-                    );
-                }, 10);
-            }
-            else
-                this.dispatchEvent("afterselect", {
-                    list    : valueList,
-                    xmlNode : xmlNode
+        if (this.delayedselect){
+            var jNode = this;
+            setTimeout(function(){
+                jNode.dispatchEvent("afterselect", {
+                    list        : valueList,
+                    xmlNode     : xmlNode,
+                    captureOnly : noEvent
                 });
+            }, 10);
         }
+        else
+            this.dispatchEvent("afterselect", {
+                list        : valueList,
+                xmlNode     : xmlNode,
+                captureOnly : noEvent
+            });
 
         return true;
     };
@@ -787,8 +789,9 @@ jpf.MultiSelect = function(){
     this.selectList = function(xmlNodeList, noEvent, selected){
         if (!this.selectable || this.disabled) return;
 
-        if (!noEvent && this.dispatchEvent("beforeselect", {
-            xmlNode : selected
+        if (this.dispatchEvent("beforeselect", {
+            xmlNode     : selected,
+            captureOnly : noEvent
           }) === false)
             return false;
 
@@ -832,12 +835,11 @@ jpf.MultiSelect = function(){
         this.$selected = sel || selectedList[0];
         this.selected   = selected || valueList[0];
 
-        if (!noEvent) {
-            this.dispatchEvent("afterselect", {
-                list    : valueList,
-                xmlNode : this.selected
-            });
-        }
+        this.dispatchEvent("afterselect", {
+            list        : valueList,
+            xmlNode     : this.selected,
+            captureOnly : noEvent
+        });
     };
 
     /**
@@ -1217,7 +1219,7 @@ jpf.MultiSelect = function(){
     this.addEventListener("beforeselect", function(e){
         if (this.applyRuleSetOnNode("select", e.xmlNode, ".") === false)
             return false;
-    });
+    }, true);
     // #endif
 
     // #ifdef __WITH_PROPERTY_BINDING || __WITH_OFFLINE_STATE
@@ -1246,7 +1248,7 @@ jpf.MultiSelect = function(){
             fSelState.call(this);
         }
         //#endif
-    });
+    }, true);
     // #endif
 
     //#ifdef __WITH_OFFLINE_STATE

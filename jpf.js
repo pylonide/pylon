@@ -870,7 +870,6 @@ var jpf = {
         //#ifdef __DEBUG
         var str = ["---- Javeline Error ----"];
         if (jmlContext) {
-            debugger;
             if (jmlContext.nodeType == 9)
                 jmlContext = jmlContext.documentElement;
 

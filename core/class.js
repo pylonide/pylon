@@ -400,8 +400,10 @@ jpf.Class = function(){
                 }
             }
         }
-
-        if (this.disabled)
+        
+        if (options && options.captureOnly)
+            return e.returnValue || rValue;
+        else if (this.disabled)
             result = false;
         else {
             if (this["on" + eventName])

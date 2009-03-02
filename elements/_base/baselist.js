@@ -546,7 +546,7 @@ jpf.BaseList = function(){
 
             if (elCaption)
                 jpf.xmldb.setNodeValue(elCaption,
-                    this.more.match(/caption:(.*)(;|$)/)[1]);
+                    this.more.match(/caption:(.*)(;|$)/i)[1]);
             nodes.push(Item);
         }
 
