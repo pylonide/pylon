@@ -1340,12 +1340,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     args : [oldNode]
                 });
             }
-            else {
-                changes.push({
-                    func : "appendChild",
-                    args   : [this.xmlData, newNode, null, null, select]
-                });
-            }
+
+            changes.push({
+                func : "appendChild",
+                args   : [this.xmlData, newNode, null, null, select]
+            });
             
             this.getActionTracker().execute({
                 action : "multicall",
