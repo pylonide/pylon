@@ -138,13 +138,15 @@ jpf.draw = {
         return s.join('');
     },
 
-    poly3D : function(indices,pts){
+    poly3D : function(indices,pts,fl){
         // we want rects between:
         // first we count the doubles
         var v,f=1,i,j = 0,d,pt,q,s = [],
             cc = new Array(pts.length),
-            cf = new Array(pts.length);
-            
+            cf = new Array(pts.length), 
+            f0, f1, f2;
+        if(fl) f0 = fl[0], f1 = fl[1], f2 = fl[2];
+        else f0 = 0, f1 = 1, f2 = 2;
         // calculate which values are used more than once to cache them
         for( i = 0;i<indices.length;i++){
             d = indices[i];    if(d>=0) cc[d]++;
@@ -158,10 +160,10 @@ jpf.draw = {
             if(d>=0){
                 pt = pts[d];
                 q=[this.ortho?"":
-                    "zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
-                    "dw12+(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+
+                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);",
+                    "dw12+(m00*"+pt[f0]+"+m01*"+pt[f1]+"+m02*"+pt[f2]+"+m03)*"+
                         (this.ortho?"persp":"zt"),
-                    "dh12+(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+
+                    "dh12+(m10*"+pt[f0]+"+m11*"+pt[f1]+"+m12*"+pt[f2]+"+m13)*"+
                         (this.ortho?"persp":"zt")];
                 d = f?0:i;
                 if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), 
@@ -177,19 +179,19 @@ jpf.draw = {
         }
         return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
     },
-    lineTo3D : function(x,y,z,sx,sy){
-        return this.$do3D("lineTo",x,y,z,sx,sy);
+    lineTo3D : function(x,y,z,sx,sy,fl){
+        return this.$do3D("lineTo",x,y,z,sx,sy,fl);
     },
-    moveTo3D : function(x,y,z,sx,sy){
-        return this.$do3D("moveTo",x,y,z,sx,sy);
+    moveTo3D : function(x,y,z,sx,sy,fl){
+        return this.$do3D("moveTo",x,y,z,sx,sy,fl);
     },
     $store3D : function(x,y){
       return x+";"+y+";";
     },
-    store3D : function(x,y,z,sx,sy){
-        return this.$do3D("$store3D",x,y,z,sx,sy);
+    store3D : function(x,y,z,sx,sy,fl){
+        return this.$do3D("$store3D",x,y,z,sx,sy,fl);
     },
-    $do3D : function(f,x,y,z,sx,sy){
+    $do3D : function(f,x,y,z,sx,sy,fl){
         var _x,_y,_z;
         if(typeof x == 'string' && x.match(/[\[\]\*\+\-\/]/))x="(_x="+x+")",_x="_x";
         else x="("+x+")",_x=x;
@@ -197,7 +199,11 @@ jpf.draw = {
         else y="("+y+")",_y=y;
         if(typeof z == 'string' && z.match(/[\[\]\*\+\-\/]/))z="(_z="+z+")",_z="_z";
         else z="("+z+")",_z=z;
-        
+        if(fl){
+            var v = [x,y,z], _v = [_x,_y,_z];
+            x = v[_x=fl[0]], y = v[_y=fl[1]], z = v[_z=fl[2]];
+            _x = _v[_x], _y = _v[_y], _z = _v[_z];
+        }        
         var r = [];
         if(!this.ortho)r.push("zt =persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
         r.push(this[f]( (sx===undefined?"":sx)+
@@ -226,10 +232,9 @@ jpf.draw = {
         function styleinit(d){
             if(d.line === null || d.line=='null') delete d.line;
             if(d.fill === null || d.fill=='null') delete d.fill;
-            if( d.isshape && (d.fill !== undefined || 
-                d.line !== undefined || d.tile !== undefined) || 
-                d.isfont && (d.family !== undefined) ) 
-                d.active = true;
+            if( (d.isshape && d.fill === undefined && 
+                d.line === undefined && d.tile === undefined) || 
+                (d.isfont && d.family === undefined) ) return false; 
             if(d.isshape){
                 d.alpha = d.alpha!==undefined ? d.alpha : 1;
                 d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
@@ -238,6 +243,7 @@ jpf.draw = {
                 d.angle = d.angle!==undefined ? d.angle : 0;
                 d.weight = d.weight!==undefined ? d.weight : 1
             }
+            return true;
         }
         
         function objtohash(a){
@@ -380,7 +386,9 @@ jpf.draw = {
                         // lets dump this shite
                         
                     }
-                    styleinit(v);
+                    // remove if we aint active
+                    if( !styleinit(v) ) delete d[k];
+                    
                 }
             }
         }
@@ -595,8 +603,9 @@ jpf.draw = {
         
         code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
         
-         cnt = {},n = 0, s=[];
-         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
+        cnt = {},n = 0, s=[];
+        /*
+        code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
             var t = a+b;
             if(cnt[t] === undefined){
                 s.push("_mo"+n+"="+t);
@@ -604,6 +613,7 @@ jpf.draw = {
             }
             return cnt[t];
         });
+        */
         code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
         code = code.replace(/__round\((d[wh])\)/g,"$1"); 
 
@@ -1029,7 +1039,7 @@ jpf.draw = {
             style = v[i]; 
             //alert(jpf.vardump(style).replace(/\t/g,'@').replace(/\n/g,'#'));
             this.style = style;
-            if(v[i].active)
+            if(v[i])
                 s[s.length]=[
                 "case ",style._mid,":{","/*"+jpf.vardump(style,0,1)+"*/\n",
                      this.mousefunc.apply(this.mousethis,a),
@@ -1263,7 +1273,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     
     // generic htmlText
     beginFont: function( style, needed, ml,mt,mr,mb ) {
-        if(!style.active || needed===undefined)return -1;
+        if(!style || needed===undefined)return -1;
         var l = this.l, html = l._htmljoin, s=[this.$endDraw()];
         this.style = style;
         style._id = l._styles.push(style)-1;

@@ -405,8 +405,8 @@ jpf.draw.canvas = {
         switch(this.fillmode){ 
             case 3: return this.fillalpha+"_c.closePath();_c.fill();"+
                            this.linealpha+"_c.stroke();_c.beginPath();\n";
-            case 2: return "_c.stroke();_c.beginPath();\n";
-            case 1: return "_c.fill();_c.beginPath();\n";
+            case 2: return "_c.closePath();_c.stroke();_c.beginPath();\n";
+            case 1: return "_c.closePath();_c.fill();_c.beginPath();\n";
         }    
     },
     

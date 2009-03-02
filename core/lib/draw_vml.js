@@ -132,7 +132,7 @@ jpf.draw.vml = {
     //----------------------------------------------------------------------
 
     beginShape : function(style) {
-        if(!style.active)return -1;
+        if(!style)return -1;
         var l=this.l, html = l._htmljoin, i, t,
             shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
         style._path = [];
