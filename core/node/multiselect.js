@@ -1117,6 +1117,7 @@ jpf.MultiSelect = function(){
      * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of an element.
      * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again such that the select events are called.
      * @attribute {String}  [selected]      the value of the xml data element which should be selected after loading data in this element.
+     * @attribute {String}  [default]       the value that this component has when no selection is made, or no value is loaded.
      */
     this.selectable = true;
     if (this.ctrlselect === undefined)
@@ -1140,7 +1141,8 @@ jpf.MultiSelect = function(){
     this.$booleanProperties["reselectable"]  = true;
 
     this.$supportedProperties.push("selectable", "ctrlselect", "multiselect",
-        "autoselect", "delayedselect", "allowdeselect", "reselectable", "value");
+        "autoselect", "delayedselect", "allowdeselect", "reselectable", 
+        "value", "default");
 
     this.$propHandlers["value"] = function(value){
         if (!this.bindingRules && !this.caption || !this.xmlRoot)
@@ -1166,7 +1168,7 @@ jpf.MultiSelect = function(){
         else
             return this.clearSelection(null, noEvent);
     };
-
+    
     this.$propHandlers["allowdeselect"] = function(value){
         if (value) {
             var _self = this;

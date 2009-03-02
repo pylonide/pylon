@@ -157,7 +157,11 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (UndoObj) 
             UndoObj.xmlNode = this.xmlRoot;
+        
         this.$updateSelection();
+        
+        if (jmlNode["default"] && !jmlNode.getValue())
+            jmlNode.setValue(jmlNode["default"]);
         
         this.dispatchEvent("xmlupdate", {
             action    : action,
@@ -286,6 +290,9 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.addEventListener("afterload", function(e){
+        if (jmlNode["default"] && !jmlNode.getValue())
+            jmlNode.setValue(jmlNode["default"]);
+        
         if (!this.createModel && this.disabled != jmlNode.disabled)
             jmlNode.setProperty("disabled", this.disabled);
     });
