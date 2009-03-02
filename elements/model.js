@@ -713,7 +713,7 @@ jpf.model = function(data, caching){
             loadProcOptions = [instruction, xmlContext, options, callback];
         }
 
-        if (!callback)
+        if (!callback && options)
             callback = options.callback;
 
         /*
