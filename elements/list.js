@@ -111,6 +111,9 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
+        if (!(this.$indicator || this.$selected))
+            return;
+        
         var x = this.$getLayoutNode("item", "caption", this.$indicator || this.$selected);
         if (!x) 
             return;
@@ -218,12 +221,12 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
             this.delayedselect = false;
             this.addEventListener("xmlupdate", $xmlUpdate);
             this.addEventListener("afterrename", $afterRenameMore);
-            this.addEventListener("beforeselect", $beforeSelect);
+            //this.addEventListener("beforeselect", $beforeSelect);
         }
         else {
             this.removeEventListener("xmlupdate", $xmlUpdate);
             this.removeEventListener("afterrename", $afterRenameMore);
-            this.removeEventListener("beforeselect", $beforeSelect);
+            //this.removeEventListener("beforeselect", $beforeSelect);
         }
     };
     
@@ -247,18 +250,19 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.select(curNode);
     }
     
-    function $beforeSelect(e){
+    /*function $beforeSelect(e){
         //This is a hack
         if (e.xmlNode && this.isSelected(e.xmlNode) 
           && e.xmlNode.getAttribute('custom') == '1') {
             this.setIndicator(e.xmlNode);
             this.selected = e.xmlNode;
+            debugger;
             setTimeout(function(){
                 _self.startRename()
             });
             return false;
         }
-    }
+    }*/
     //#endif
     
     /**** Keyboard support ****/

@@ -3225,7 +3225,6 @@ jpf.MultiselectBinding = function(){
         #endif */
 
         //#ifdef __DEBUG
-        
         if (x.getAttribute("model")) {
             throw new Error(jpf.formatErrorString(0, this, 
                 "Loading inline data",

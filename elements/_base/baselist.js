@@ -579,11 +579,25 @@ jpf.BaseList = function(){
         this.$setStyleClass(o, "", ["more_down"]);
 
         var xmlNode;
-        if (!this.actionRules || !this.actionRules["add"])
-            xmlNode = "<j:item xmlns:j='" + jpf.ns.jml + "' />";
+        if (!this.actionRules || !this.actionRules["add"]) {
+            if (this.traverse && !this.traverse.match(/[\/\[]/)) {
+                xmlNode = "<" + this.traverse + (this.traverse.match(/^j:/) 
+                    ? " xmlns:j='" + jpf.ns.jml + "'" 
+                    : "") + " custom='1' />";
+            }
+            else {
+                //#ifdef __DEBUG
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Could not start more",
+                    "No add action rule is defined for this component",
+                    this.$jml));
+                //#endif
+                return false;
+            }
+        }
 
         var addedNode = this.add(xmlNode);
-        this.select(addedNode, null, null, null, null, true);
+        //this.select(addedNode, null, null, null, null, true);
         this.oInt.appendChild(this.moreItem);
 
         var undoLastAction = function(){
@@ -604,7 +618,7 @@ jpf.BaseList = function(){
             //There is already a choice with the same value
             var xmlNode = this.findXmlNodeByValue(e.args[1]);
             if (xmlNode || !e.args[1]) {
-                this.getActionTracker().undo(this.autoselect ? 2 : 1);
+                this.getActionTracker().undo();//this.autoselect ? 2 : 1);
                 if (!this.isSelected(xmlNode))
                     this.select(xmlNode);
                 this.removeEventListener("afterrename", afterRename);
