@@ -64,7 +64,40 @@ jpf.Rename = function(){
      * @attribute  {Boolean}  rename  whether the user can rename items in this element.
      */
     this.$booleanProperties["canrename"] = true;
-    this.$supportedProperties.push("canrename");
+    this.$booleanProperties["autorename"] = true;
+    this.$supportedProperties.push("canrename", "autorename");
+
+    //#ifdef __ENABLE_AUTORENAME
+    this.$propHandlers["autorename"] = function(value){
+        if (value) {
+            this.reselectable = true;
+            this.bufferselect = false;
+            this.addEventListener("afterselect", $afterselect);
+            this.addEventListener("keydown", $keydown);
+        }
+        else {
+            this.removeEventListener("afterselect", $afterselect);
+            this.removeEventListener("keydown", $keydown);
+        }
+    }
+    
+    var _self = this;
+    function $afterselect(){
+        setTimeout(function(){
+            _self.startRename();
+        }, 20);
+    }
+    
+    function $keydown(e){
+        if (!this.renaming && e.isCharacter())
+            this.startRename();
+    }
+    
+    this.$isContentEditable = function(e){
+        if (this.renaming && this.autorename)
+            return true;
+    }
+    //#endif
 
     /**
      * Changes the data presented as the caption of a specified xml data element.
@@ -90,7 +123,7 @@ jpf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time){
-        if (e.button == 2 || e.ctrlKey || e.shiftKey)
+        if (e && (e.button == 2 || e.ctrlKey || e.shiftKey))
             return;
 
         clearTimeout(renameTimer);
@@ -127,6 +160,7 @@ jpf.Rename = function(){
         lastCursor = elCaption.style.cursor;
         elCaption.style.cursor = "text";
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
+        elCaption.host = this;
 
         if (this.$getOption("main", "scalerename")) {
             var diff = jpf.getWidthDiff(this.oTxt);
@@ -170,8 +204,10 @@ jpf.Rename = function(){
 
         this.renaming = false;
 
-        if (this.replacedNode)
+        if (this.replacedNode) {
             this.replacedNode.style.cursor = lastCursor || "";
+            this.replacedNode.host = null;
+        }
 
         if (!success) {
             this.dispatchEvent("stoprename");
@@ -188,10 +224,12 @@ jpf.Rename = function(){
                 .replace(/<.*?nobr>/gi, ""));
         }
 
-        renameSubject         = null;
-        this.replacedNode     = null;
-        this.oTxt.style.width = "";
-
+        if (!this.renaming) {
+            renameSubject         = null;
+            this.replacedNode     = null;
+            this.oTxt.style.width = "";
+        }
+        
         return true;
     };
 
@@ -200,8 +238,10 @@ jpf.Rename = function(){
         var key = e.keyCode;
 
         if (this.renaming) {
-            if (key == 27 || key == 13)
+            if (key == 27 || key == 13) {
                 this.stopRename(null, key == 13 && !this.$autocomplete);
+                return false;
+            }
 
             return;
         }
@@ -248,6 +288,7 @@ jpf.Rename = function(){
             (e || event).cancelBubble = true;
         };
         //this.oTxt.host = this;
+        jpf.sanitizeTextbox(this.oTxt);
 
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
@@ -283,7 +324,7 @@ jpf.Rename = function(){
         //#endif
 
         this.oTxt.onblur = function(){
-            if (jpf.isGecko) 
+            if (jpf.isGecko)
                 return; //bug in firefox calling onblur too much
 
             //#ifdef __WITH_WINDOW_FOCUS

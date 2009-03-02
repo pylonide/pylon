@@ -220,12 +220,12 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value) {
             this.delayedselect = false;
             this.addEventListener("xmlupdate", $xmlUpdate);
-            this.addEventListener("afterrename", $afterRenameMore);
+            //this.addEventListener("afterrename", $afterRenameMore);
             //this.addEventListener("beforeselect", $beforeSelect);
         }
         else {
             this.removeEventListener("xmlupdate", $xmlUpdate);
-            this.removeEventListener("afterrename", $afterRenameMore);
+            //this.removeEventListener("afterrename", $afterRenameMore);
             //this.removeEventListener("beforeselect", $beforeSelect);
         }
     };
@@ -235,10 +235,10 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.appendChild(this.moreItem);
     }
     
-    function $afterRenameMore(){
+    /*function $afterRenameMore(){
         var caption = this.applyRuleSetOnNode("caption", this.indicator)
         var xmlNode = this.findXmlNodeByValue(caption);
-        
+
         var curNode = this.indicator;
         if (xmlNode != curNode || !caption) {
             if (xmlNode && !this.isSelected(xmlNode)) 
@@ -250,7 +250,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.select(curNode);
     }
     
-    /*function $beforeSelect(e){
+    function $beforeSelect(e){
         //This is a hack
         if (e.xmlNode && this.isSelected(e.xmlNode) 
           && e.xmlNode.getAttribute('custom') == '1') {

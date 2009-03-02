@@ -312,7 +312,7 @@ jpf.BaseList = function(){
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
                 } else if (this.caption || (this.bindingRules || {})["caption"]) {
-                    if (!this.xmlRoot) return;
+                    if (!this.xmlRoot || this.autorename) return;
 
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
@@ -597,7 +597,7 @@ jpf.BaseList = function(){
         }
 
         var addedNode = this.add(xmlNode);
-        //this.select(addedNode, null, null, null, null, true);
+        this.select(addedNode, null, null, null, null, true);
         this.oInt.appendChild(this.moreItem);
 
         var undoLastAction = function(){
@@ -618,10 +618,22 @@ jpf.BaseList = function(){
             //There is already a choice with the same value
             var xmlNode = this.findXmlNodeByValue(e.args[1]);
             if (xmlNode || !e.args[1]) {
-                this.getActionTracker().undo();//this.autoselect ? 2 : 1);
-                if (!this.isSelected(xmlNode))
-                    this.select(xmlNode);
-                this.removeEventListener("afterrename", afterRename);
+                if (e.args[1] && this.dispatchEvent("notunique", {
+                    value : e.args[1]
+                }) === false) {
+                    this.startRename();
+                    
+                    this.addEventListener("stoprename",   undoLastAction);
+                    this.addEventListener("beforerename", removeSetRenameEvent);
+                }
+                else {
+                    this.removeEventListener("afterrename", afterRename);
+                    
+                    this.getActionTracker().undo();//this.autoselect ? 2 : 1);
+                    if (!this.isSelected(xmlNode))
+                        this.select(xmlNode);
+                }
+                
                 return false;
             }
         };
