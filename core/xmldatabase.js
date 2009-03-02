@@ -1436,6 +1436,10 @@ jpf.XmlDatabase = function(){
                         value = this.cgiobjects(lnodes[j], nm, true);
                         if (value)
                             str.push(value);
+                            
+                        if (jpf.xmldb.isOnlyChild(lnodes[j].firstChild, [3,4]))
+                            str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
+                                + encodeURIComponent(lnodes[j].firstChild.nodeValue));
                         
                         var a, attr = lnodes[j].attributes;
                         for (k = 0; k < attr.length; k++) {
