@@ -492,7 +492,8 @@ jpf.model = function(data, caching){
     }
     //#endif
 
-    var bindValidation = [], defSubmission, submissions = {}, loadProcInstr;
+    var bindValidation = [], defSubmission, submissions = {}, 
+        loadProcInstr, loadProcOptions;
 
     /**
      * @private
@@ -703,16 +704,17 @@ jpf.model = function(data, caching){
      *   {Function} callback   the code executed when the data request returns.
      *   {mixed}    <>         Custom properties available in the data instruction.
      */
-    this.loadFrom = function(instruction, xmlContext, options){
+    this.loadFrom = function(instruction, xmlContext, options, callback){
         var data      = instruction.split(":");
         var instrType = data.shift();
 
-        // #ifdef __WITH_OFFLINE_MODELS
         if (!options || !options.isSession) {
-            loadProcInstr = instruction;
-            //jpf.offline.models.removeModel(this);
+            loadProcInstr   = instruction;
+            loadProcOptions = [instruction, xmlContext, options, callback];
         }
-        //#endif
+
+        if (!callback)
+            callback = options.callback;
 
         /*
             Make connectiong with a jml element to get data streamed in
@@ -778,13 +780,23 @@ jpf.model = function(data, caching){
                     data: data
                 });
 
-                if (options && options.callback)
-                    options.callback.apply(this, arguments);
+                if (callback)
+                    callback.apply(this, arguments);
             }
         });
 
         return this;
     };
+    
+    this.reload = function(){
+        if (!this.data)
+            return;
+        
+        if (loadProcOptions)
+            this.loadFrom.apply(this, loadProcOptions);
+        else if (loadProcInstr)
+            this.loadFrom(loadProcInstr);
+    }
 
     /**
      * Loads data in this model

@@ -103,7 +103,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
 
     this.$supportedProperties.push("initial-message", "output-format",
-                                   "default", "caption-format");
+                                   "default", "caption-format", "value");
 
     /**
      * @attribute {String} initial-message the message displayed by this element
