@@ -590,7 +590,7 @@ jpf.draw = {
         //TODO pull out 0 multiplication
         //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
         
-        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
+        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
         
         code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
@@ -686,7 +686,7 @@ jpf.draw = {
                             break;
                         case 4: // closed a macro
                             ac.push(s.slice(lp,pos));arg.push(ac.join(''));
-                            (ac=sac.pop()).push( (t=_self.macro[fn])?t.apply( _self.macro, 
+                            (ac=sac.pop()).push( (t=_self[fn])?t.apply( _self, 
                             arg ) : arg.join(',') );
                             arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
                             break;
@@ -719,221 +719,217 @@ jpf.draw = {
         return obj;
     },
      
-    macro : {
-        sin : function(a){return "__sin("+a+")";},
-        cos : function(a){return "__cos("+a+")";},
-        tan : function(a){return "__tan("+a+")";},
-        asin : function(a){return "__asin("+a+")";},
-        acos : function(a){return "__acos("+a+")";},
-        atan : function(a){return "__atan("+a+")";},
-        atan2 : function(a){return "__atan2("+a+")";},
-        floor : function(a){return "__floor("+a+")";},
-        exp : function(a){return "__exp("+a+")";},
-        log : function(a){return "__log("+a+")";},
-        max : function(a){return "__max("+a+")";},
-        min : function(a){return "__min("+a+")";},
-        pow : function(a,b){return "__pow("+a+","+b+")";},
-        random : function(a){return "__random("+a+")";},
-        round : function(a){return "__round("+a+")";},
-        sqrt : function(a){return "__sqrt("+a+")";},
-        $pal : function(imode,n){
-            // alright this is a color interpolation function, we got n arguments 
-            // which are string colors, hexcolors or otherwise and we need to write an interpolator
-            var s=[
-            "'#'+('000000'+(__round(",
-            "((__a=parseInt((__t=["];
-            for(var i = 2, len=arguments.length;i<len;i++){
-                var t = arguments[i];
-                // check what t is and insert
-                s.push(i>2?",":"");
-                if(jpf.draw.colors[t])
-                    s.push( "'", jpf.draw.colors[t], "'" );
-                else if(t.match(/\(/))
-                    s.push(t);
-                else if(t.match(/^#/))
-                    s.push( "'", t, "'" );
-                else
-                    s.push(t);
-            }
-            s.push(
-                "])[ __floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
-                ")<0?-__f:__f)%",len-2,"].slice(1),16))&0xff)",
-                "*(__d=1-(__c-__floor(__c)))",
-                "+((__b=parseInt(__t[ __ceil(__c)%",len-2,
-                "].slice(1),16))&0xff)*(__e=1-__d) )",
-                "+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
-                "+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
-                ").toString(16)).slice(-6)");
-            return s.join('');
-        },
+	sin : function(a){return "__sin("+a+")";},
+	cos : function(a){return "__cos("+a+")";},
+	tan : function(a){return "__tan("+a+")";},
+	asin : function(a){return "__asin("+a+")";},
+	acos : function(a){return "__acos("+a+")";},
+	atan : function(a){return "__atan("+a+")";},
+	atan2 : function(a){return "__atan2("+a+")";},
+	floor : function(a){return "__floor("+a+")";},
+	exp : function(a){return "__exp("+a+")";},
+	log : function(a){return "__log("+a+")";},
+	pow : function(a,b){return "__pow("+a+","+b+")";},
+	random : function(a){return "__random("+a+")";},
+	round : function(a){return "__round("+a+")";},
+	sqrt : function(a){return "__sqrt("+a+")";},
+	$pal : function(imode,n){
+		// alright this is a color interpolation function, we got n arguments 
+		// which are string colors, hexcolors or otherwise and we need to write an interpolator
+		var s=[
+		"'#'+('000000'+(__round(",
+		"((__a=parseInt((__t=["];
+		for(var i = 2, len=arguments.length;i<len;i++){
+			var t = arguments[i];
+			// check what t is and insert
+			s.push(i>2?",":"");
+			if(jpf.draw.colors[t])
+				s.push( "'", jpf.draw.colors[t], "'" );
+			else if(t.match(/\(/))
+				s.push(t);
+			else if(t.match(/^#/))
+				s.push( "'", t, "'" );
+			else
+				s.push(t);
+		}
+		s.push(
+			"])[ __floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+			")<0?-__f:__f)%",len-2,"].slice(1),16))&0xff)",
+			"*(__d=1-(__c-__floor(__c)))",
+			"+((__b=parseInt(__t[ __ceil(__c)%",len-2,
+			"].slice(1),16))&0xff)*(__e=1-__d) )",
+			"+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
+			"+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
+			").toString(16)).slice(-6)");
+		return s.join('');
+	},
 
-        $lut : function(imode,n){
-            var s=["(["],a, i = 2, len = arguments.length;
-            for(;i<len;i++){
-                a = arguments[i];s.push(i>2?",":"");
-                if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
-                    s.push(a);
-                else s.push("'",a,"'");
-            }
-            s.push("])[__floor((__b=((",n,")",imode?"*"+(len-3):"",
-                ")%",len-2,")<0?-__b:__b)]");
-            return s.join('');
-        },
-        
-        $lin : function(imode,n){
-            var s=["((__t=["],a, i = 2,len=arguments.length;
-            for(;i<len;i++){
-                a = arguments[i]; s.push(i>2?",":"");
-                if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
-                    s.push(a);
-                else s.push("'",a,"'");
-            }
-            s.push("])[__floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
-                ")<0?-__f:__f)%",len-2,"]",
-                "*(__d=1-(__c-__floor(__c)))",
-                "+__t[ __ceil(__c)%",len-2,
-                "]*(__e=1-__d) )");
-            return s.join('');
-        },
-    
-        fixed : function(a,v,nz){
-            v = "parseFloat(("+a+").toFixed("+v+"))";
-            return parseInt(nz)?this.nozero(a,v):v;
-        },
-        padded : function(a,v,nz){
-            v = "("+a+").toFixed("+v+")";
-            return parseInt(nz)?this.nozero(a,v):v;
-        },
-        abs : function(a){
-            if(parseFloat(a)==a)return Math.abs(a);
-            if(typeof(a) == 'number' || a.match(/$[a-z0-9_]+^/))
-                return "("+a+"<0?-"+a+":"+a+")";
-            return "((__t="+a+")<0?-__t:__t)";
-        },
-        min : function(a,b){
-            if(b===null)return a; 
-            if(parseFloat(a)==a && parseFloat(b)==b)return Math.min(a,b);
-            var a1=a,b1=b,a2=a,b2=b;
-            if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__a="+a+")", a2="__a";
-            if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__b="+b+")", b2="__b";
-            return "(("+a1+")<("+b1+")?"+a2+":"+b2+")";
-        },
-        max : function(a,b){
-            if(b===null)return a; 
-            if(parseFloat(a)==a && parseFloat(b)==b)return Math.max(a,b);
-            var a1=a,b1=b,a2=a,b2=b;
-            if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__c="+a+")", a2="__c";
-            if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__d="+b+")", b2="__d";
-            return "(("+a1+")>("+b1+")?"+a2+":"+b2+")";
-        },
-        clamp : function(a,b,c){
-            if(b===null||c==null)return a; 
-            return this.max(this.min(a,c),b);
-        },  
-        pal : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
-            return this.$pal.apply(this,arg);
-        },
-        pali : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
-            return this.$pal.apply(this,arg);
-        },
-        lin : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
-            return this.$lin.apply(this,arg);
-        },
-        lini : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
-            return this.$lin.apply(this,arg);
-        },
-        lut : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
-            return this.$lut.apply(this,arg);
-        },
-        luti : function(){
-            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
-            return this.$lut.apply(this,arg);
-        },
-        $rgbpack : function( r,g,b){
-            return ('#'+('000000'+(((r<0?0:(r>255?255:parseInt(r)))<<16)+
-                    ((g<0?0:(g>255?255:parseInt(g)))<<8)+
-                    ((b<0?0:(b>255?255:parseInt(b))))).toString(16)).slice(-6));
-        },
-        rgb : function(r,g,b){
-            if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
-                return this.$rgbpack(r,g,b);
-            return ["('#'+('000000'+(",
-                       (parseFloat(r)==r?((r<0?0:(r>255?255:parseInt(r)))<<16):
-                       "(((__t="+r+")<0?0:(__t>255?255:parseInt(__t)))<<16)"),"+",
-                       (parseFloat(g)==g?((g<0?0:(g>255?255:parseInt(g)))<<8):
-                       "(((__t="+g+")<0?0:(__t>255?255:parseInt(__t)))<<8)+"),"+",
-                       (parseFloat(b)==b?((b<0?0:(b>255?255:parseInt(b)))):
-                       "(((__t="+b+")<0?0:(__t>255?255:parseInt(__t))))"),
-                       ").toString(16)).slice(-6))"].join('');
-        },
-        $hsvpack : function(h,s,v){
-        	 var i, m=v*(1-s), 
-                 n=v*(1-s*((i=Math.floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));  
-             
-             switch (i) 
-        	 {  
-        	  case 6:  
-        	  case 0: return this.$rgbpack(v, n, m);  
-        	  case 1: return this.$rgbpack(n, v, m);  
-        	  case 2: return this.$rgbpack(m, v, n);
-        	  case 3: return this.$rgbpack(m, n, v);  
-        	  case 4: return this.$rgbpack(n, m, v);  
-        	  default:
-        	  case 5: return this.$rgbpack.rgb(v, m, n);  
-        	}
-        },
-        hsv : function(h,s,v){
-            if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
-                return this.$hsvpack(r,g,b);
-            return "jpf.draw.macros.$hsvpack("+h+","+s+","+v+");";
-        },
-        rgbf : function(r,g,b){
-            return this.rgb(parseFloat(r)==r?r*255:"255*("+r+")",
-                            parseFloat(g)==g?g*255:"255*("+g+")",
-                            parseFloat(b)==b?b*255:"255*("+b+")");
-        },
-        nozero : function(a,v,z){
-            return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
-                (z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
-        },    
-        $rndtab : null,
-        rnd : function(a){
-            if(a){
-                if( !this.$rndtab ){
-                    var i, t = this.$rndtab = Array( 256 );
-                    for(i = -256;i<256;i++)t[i] = Math.random();
-                }
-                return "_rndtab[__round(("+a+")*255)%255]";
-            }
-            return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"
-        },
-        snap : function(a,b){
-            return "(__round(("+a+")/(__t=("+b+")))*__t)";
-        },
-        rnds : function(a,b){
-            return this.rnd(this.snap(a,b));
-        },
-        tsin : function(a){
-            return "(0.5+0.5*__sin("+a+"))"; 
-        },
-        tcos : function(a){
-            return "(0.5+0.5*__cos("+a+"))"; 
-        },
-        usin : function(a){
-            return "(0.5-0.5*__sin("+a+"))"; 
-        },
-        ucos : function(a){
-            return "(0.5-0.5*__cos("+a+"))"; 
-        },        
-        two : function(a){
-            return "(0.5+0.5*("+a+"))"; 
-        }
-    },
+	$lut : function(imode,n){
+		var s=["(["],a, i = 2, len = arguments.length;
+		for(;i<len;i++){
+			a = arguments[i];s.push(i>2?",":"");
+			if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
+				s.push(a);
+			else s.push("'",a,"'");
+		}
+		s.push("])[__floor((__b=((",n,")",imode?"*"+(len-3):"",
+			")%",len-2,")<0?-__b:__b)]");
+		return s.join('');
+	},
+	
+	$lin : function(imode,n){
+		var s=["((__t=["],a, i = 2,len=arguments.length;
+		for(;i<len;i++){
+			a = arguments[i]; s.push(i>2?",":"");
+			if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
+				s.push(a);
+			else s.push("'",a,"'");
+		}
+		s.push("])[__floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+			")<0?-__f:__f)%",len-2,"]",
+			"*(__d=1-(__c-__floor(__c)))",
+			"+__t[ __ceil(__c)%",len-2,
+			"]*(__e=1-__d) )");
+		return s.join('');
+	},
+
+	fixed : function(a,v,nz){
+		v = "parseFloat(("+a+").toFixed("+v+"))";
+		return parseInt(nz)?this.nozero(a,v):v;
+	},
+	padded : function(a,v,nz){
+		v = "("+a+").toFixed("+v+")";
+		return parseInt(nz)?this.nozero(a,v):v;
+	},
+	abs : function(a){
+		if(parseFloat(a)==a)return Math.abs(a);
+		if(typeof(a) == 'number' || a.match(/$[a-z0-9_]+^/))
+			return "("+a+"<0?-"+a+":"+a+")";
+		return "((__t="+a+")<0?-__t:__t)";
+	},
+	min : function(a,b){
+		if(b===null)return a; 
+		if(parseFloat(a)==a && parseFloat(b)==b)return Math.min(a,b);
+		var a1=a,b1=b,a2=a,b2=b;
+		if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__a="+a+")", a2="__a";
+		if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__b="+b+")", b2="__b";
+		return "(("+a1+")<("+b1+")?"+a2+":"+b2+")";
+	},
+	max : function(a,b){
+		if(b===null)return a; 
+		if(parseFloat(a)==a && parseFloat(b)==b)return Math.max(a,b);
+		var a1=a,b1=b,a2=a,b2=b;
+		if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__c="+a+")", a2="__c";
+		if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__d="+b+")", b2="__d";
+		return "(("+a1+")>("+b1+")?"+a2+":"+b2+")";
+	},
+	clamp : function(a,b,c){
+		if(b===null||c==null)return a; 
+		return this.max(this.min(a,c),b);
+	},  
+	pal : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
+		return this.$pal.apply(this,arg);
+	},
+	pali : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
+		return this.$pal.apply(this,arg);
+	},
+	lin : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
+		return this.$lin.apply(this,arg);
+	},
+	lini : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
+		return this.$lin.apply(this,arg);
+	},
+	lut : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
+		return this.$lut.apply(this,arg);
+	},
+	luti : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
+		return this.$lut.apply(this,arg);
+	},
+	$rgbpack : function( r,g,b){
+		return ('#'+('000000'+(((r<0?0:(r>255?255:parseInt(r)))<<16)+
+				((g<0?0:(g>255?255:parseInt(g)))<<8)+
+				((b<0?0:(b>255?255:parseInt(b))))).toString(16)).slice(-6));
+	},
+	rgb : function(r,g,b){
+		if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
+			return this.$rgbpack(r,g,b);
+		return ["('#'+('000000'+(",
+				   (parseFloat(r)==r?((r<0?0:(r>255?255:parseInt(r)))<<16):
+				   "(((__t="+r+")<0?0:(__t>255?255:parseInt(__t)))<<16)"),"+",
+				   (parseFloat(g)==g?((g<0?0:(g>255?255:parseInt(g)))<<8):
+				   "(((__t="+g+")<0?0:(__t>255?255:parseInt(__t)))<<8)+"),"+",
+				   (parseFloat(b)==b?((b<0?0:(b>255?255:parseInt(b)))):
+				   "(((__t="+b+")<0?0:(__t>255?255:parseInt(__t))))"),
+				   ").toString(16)).slice(-6))"].join('');
+	},
+	$hsvpack : function(h,s,v){
+		 var i, m=v*(1-s), 
+			 n=v*(1-s*((i=Math.floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));  
+		 
+		 switch (i) 
+		 {  
+		  case 6:  
+		  case 0: return this.$rgbpack(v, n, m);  
+		  case 1: return this.$rgbpack(n, v, m);  
+		  case 2: return this.$rgbpack(m, v, n);
+		  case 3: return this.$rgbpack(m, n, v);  
+		  case 4: return this.$rgbpack(n, m, v);  
+		  default:
+		  case 5: return this.$rgbpack.rgb(v, m, n);  
+		}
+	},
+	hsv : function(h,s,v){
+		if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
+			return this.$hsvpack(r,g,b);
+		return "jpf.draw.$hsvpack("+h+","+s+","+v+");";
+	},
+	rgbf : function(r,g,b){
+		return this.rgb(parseFloat(r)==r?r*255:"255*("+r+")",
+						parseFloat(g)==g?g*255:"255*("+g+")",
+						parseFloat(b)==b?b*255:"255*("+b+")");
+	},
+	nozero : function(a,v,z){
+		return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
+			(z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
+	},    
+	$rndtab : null,
+	rnd : function(a){
+		if(a){
+			if( !this.$rndtab ){
+				var i, t = this.$rndtab = Array( 256 );
+				for(i = -256;i<256;i++)t[i] = Math.random();
+			}
+			return "_rndtab[__round(("+a+")*255)%255]";
+		}
+		return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"
+	},
+	snap : function(a,b){
+		return "(__round(("+a+")/(__t=("+b+")))*__t)";
+	},
+	rnds : function(a,b){
+		return this.rnd(this.snap(a,b));
+	},
+	tsin : function(a){
+		return "(0.5+0.5*__sin("+a+"))"; 
+	},
+	tcos : function(a){
+		return "(0.5+0.5*__cos("+a+"))"; 
+	},
+	usin : function(a){
+		return "(0.5-0.5*__sin("+a+"))"; 
+	},
+	ucos : function(a){
+		return "(0.5-0.5*__cos("+a+"))"; 
+	},        
+	two : function(a){
+		return "(0.5+0.5*("+a+"))"; 
+	},
     
     $equalStyle : function( a, b){
         if(a.isfont && b.isfont)
@@ -973,7 +969,6 @@ jpf.draw = {
         size : 10
     },    
 
-   
     //----------------------------------------------------------------------
     
     // Generic rendering
