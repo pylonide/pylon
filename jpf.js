@@ -256,7 +256,7 @@ var jpf = {
      */
     start : function(){
         this.started = true;
-        var sHref = location.href.split("?")[0];
+        var sHref = location.href.split("#")[0].split("?")[0];
 
         //Set Variables
         this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
@@ -933,17 +933,19 @@ var jpf = {
      * Loads javascript from a url.
      * @param {String} sourceFile the url where the javascript is located.
      */
-    include : function(sourceFile, doBase){
+    include : function(sourceFile, doBase, type){
         jpf.console.info("including js file: " + sourceFile);
 
         var sSrc = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
-        if (jpf.isSafariOld || !jpf.started) {
+        if (jpf.isSafariOld || jpf.isSafari && !jpf.started) {
             document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
         }
         else {
             var head     = document.getElementsByTagName("head")[0];//$("head")[0]
             var elScript = document.createElement("script");
             elScript.defer = true;
+            if (type)
+                elScript.setAttribute("_jpf_type", type);
             elScript.src   = sSrc;
             head.appendChild(elScript);
         }
