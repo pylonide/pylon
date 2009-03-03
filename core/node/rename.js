@@ -136,9 +136,10 @@ jpf.Rename = function(){
      * of the item that can be renamed by the user.
      *
      */
-    this.startRename  = function(force, startEmpty){
-        if(!force && (!this.canrename || !this.$startAction("rename",
-          this.indicator || this.selected, this.stopRename)))
+    this.startRename = function(force, startEmpty){
+        if (!force && (this.renaming || !this.canrename 
+          || !this.$startAction("rename", this.indicator 
+          || this.selected, this.stopRename)))
             return false;
 
         if (!this.hasFocus())
