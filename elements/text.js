@@ -232,14 +232,21 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     };
 
+    var lastMsg;
     this.$setClearMessage = this.$updateClearMessage = function(msg){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
-        this.oInt.innerHTML = msg;
+        
+        if (msg) {
+            this.oInt.innerHTML = msg;
+            lastMsg = this.oInt.innerHTML;
+        }
     };
 
     this.$removeClearMessage = function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
-        this.oInt.innerHTML = ""; //clear if no empty message is supported
+        
+        if (this.oInt.innerHTML == lastMsg)
+            this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
 
     this.$clear = function(){

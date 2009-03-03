@@ -75,14 +75,21 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         this.setProperty("value", "");
     };
     
+    var lastMsg;
     this.$setClearMessage = this.$updateClearMessage = function(msg){
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Empty");
-        this.oInt.innerHTML = msg;
+        
+        if (msg) {
+            this.oInt.innerHTML = msg;
+            lastMsg = this.oInt.innerHTML;
+        }
     };
 
     this.$removeClearMessage = function(){
         jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
-        this.oInt.innerHTML = ""; //clear if no empty message is supported
+        
+        if (this.oInt.innerHTML == lastMsg)
+            this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
 
     this.$booleanProperties["selectable"] = true;
