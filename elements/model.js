@@ -1088,7 +1088,9 @@ jpf.model = function(data, caching){
 
         var model = this;
         function cbFunc(data, state, extra){
-            if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+            if ((state == jpf.TIMEOUT 
+              || (_self.retryOnError && state == jpf.ERROR))
+              && extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
                 if (state != jpf.SUCCESS) {

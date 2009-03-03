@@ -257,7 +257,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
                 return o || "";
             });*/
         }
-        
+
         var split    = url.split("?");
             url      = split.shift();
         var query    = split.join("?");
@@ -269,14 +269,15 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
             : query;
 
         if (options.preparse) {
-            options.parsed = [query, httpBody];
-            options.preparse = false;
+            options.parsed = [url, query, httpBody];
+            options.preparse = -1;
             return;
         }
     }
     else {
-        var query    = options.parsed[0];
-        var httpBody = options.parsed[1];
+        var url      = options.parsed[0];
+        var query    = options.parsed[1];
+        var httpBody = options.parsed[2];
     }
 
     var oHttp = new jpf.http();
