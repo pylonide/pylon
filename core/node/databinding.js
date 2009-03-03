@@ -2880,7 +2880,7 @@ jpf.MultiselectBinding = function(){
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
             var isInThis  = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.pNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -2891,7 +2891,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
             if (!goesToThis)
                 action = "remove";
         }

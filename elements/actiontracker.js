@@ -946,7 +946,7 @@ jpf.actiontracker.actions = {
             jpf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
         //Move Node to previous position
         else
-            jpf.xmldb.moveNode(UndoObj.extra.pNode, q[1],
+            jpf.xmldb.moveNode(UndoObj.extra.parent, q[1],
                 UndoObj.extra.beforeNode, q[3]);
     },
 
@@ -958,7 +958,7 @@ jpf.actiontracker.actions = {
             jpf.xmldb.removeNode(q[0], q[1], UndoObj);
         //Append Child Node
         else
-            jpf.xmldb.appendChild(UndoObj.extra.pNode,
+            jpf.xmldb.appendChild(UndoObj.extra.parent,
                 UndoObj.extra.removedNode, UndoObj.extra.beforeNode);
     },
 

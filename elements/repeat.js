@@ -184,7 +184,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.parent, true);
             if (!goesToThis) 
                 action = "remove";
         }
