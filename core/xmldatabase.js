@@ -888,6 +888,9 @@ jpf.XmlDatabase = function(){
         }
         //#endif
 
+        if (undoObj && !undoObj.xmlNode) //@todo are we sure about this?
+            undoObj.xmlNode = xmlNode;
+
         //Set Variables
         var oParent  = nextloop;
         var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
@@ -949,9 +952,6 @@ jpf.XmlDatabase = function(){
         }
 
         if (undoObj && !this.delayUpdate) {
-            if (!undoObj.xmlNode) //@todo are we sure about this?
-                undoObj.xmlNode = xmlNode;
-
             //Ok this was an action let's not delay execution
             jpf.xmldb.notifyQueued();
         }
