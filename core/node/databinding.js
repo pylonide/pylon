@@ -2285,10 +2285,8 @@ jpf.StandardBinding = function(){
         }
 
         //Action Tracker Support
-        if (UndoObj && !UndoObj.xmlNode) {
-            debugger;
+        if (UndoObj && !UndoObj.xmlNode)
             UndoObj.xmlNode = this.xmlRoot;
-        }
 
         //Set Properties
 
