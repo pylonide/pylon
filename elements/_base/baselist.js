@@ -562,9 +562,8 @@ jpf.BaseList = function(){
         }
         //#endif
 
-        if (this.more && !this.moreItem) {
+        if (this.more && !this.moreItem)
             this.moreItem = this.oInt.lastChild;
-        }
     }
 
     var lastAddedMore;

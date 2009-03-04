@@ -222,6 +222,14 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
             this.addEventListener("xmlupdate", $xmlUpdate);
             //this.addEventListener("afterrename", $afterRenameMore);
             //this.addEventListener("beforeselect", $beforeSelect);
+            
+            this.$setClearMessage    = function(msg){
+                if (!this.moreItem)
+                    this.$fill();
+                this.oInt.appendChild(this.moreItem);
+            };
+            this.$updateClearMessage = function(){}
+            this.$removeClearMessage = function(){};
         }
         else {
             this.removeEventListener("xmlupdate", $xmlUpdate);

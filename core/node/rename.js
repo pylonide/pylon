@@ -84,7 +84,8 @@ jpf.Rename = function(){
     var _self = this;
     function $afterselect(){
         setTimeout(function(){
-            _self.startRename();
+            if (_self.hasFocus())
+                _self.startRename();
         }, 20);
     }
     

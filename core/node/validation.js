@@ -462,6 +462,11 @@ jpf.Validation = function(){
     };
 
     this.$propHandlers["checkequal"] = function(value){
+        if (!this.required)
+            this.required = 2;
+        else if (!value && this.required == 2)
+            this.required = false;
+        
         this.$setRule("checkequal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
