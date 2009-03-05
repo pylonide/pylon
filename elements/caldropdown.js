@@ -708,7 +708,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
      * Select today's date on calendar component
      */
     this.today = function() {
-        this.setProperty("value", new Date().format(this.outputFormat));
+        //this.setProperty("value", new Date().format(this.outputFormat));
+        this.change(new Date().format(this.outputFormat));
     };
 
     /**** Init ****/
