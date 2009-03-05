@@ -45,10 +45,10 @@
  * @version     %I%, %G%
  * @since       0.1
  */
-jpf.textbox  =
+jpf.input    =
 jpf.secret   =
 jpf.textarea =
-jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable       = true; // This object can get the focus
     var masking            = false;
     var _self              = this;
@@ -100,7 +100,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
      * user) are in the value of this element. The second option specifies the
      * character that is displayed when the user hasn't yet filled in a
      * character.
-     *   Special Characters:
+     *   Possible values:
      *   0  Any digit
      *   1  The number 1 or 2.
      *   9  Any digit or a space.

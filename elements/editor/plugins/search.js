@@ -202,7 +202,8 @@ jpf.editor.searchPlugin = function(sName) {
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
-                <input type="text" id="' + idSearch + '" class="editor_input" name="' + idSearch + '" value="" />\
+                <textarea type="text" id="' + idSearch + '" class="editor_input" name="' + idSearch + '" value="">\
+                </textarea>\
             </div>' +
             (this.name == "replace" ?
            '<div class="editor_panelrow editor_panelrowinput">\

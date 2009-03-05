@@ -26,6 +26,7 @@
  */
 jpf.popup = {
     cache      : {},
+    focusFix   : {"INPUT":1,"TEXTAREA":1,"SELECT":1},
     
     setContent : function(cacheId, content, style, width, height){
         if (!this.popup) this.init();
@@ -45,7 +46,7 @@ jpf.popup = {
 
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug 
-              && "INPUT|TEXTAREA|SELECT".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && !jpf.popup.focusFix[(e.srcElement || e.target).tagName]) {
                 jpf.window.$focusfix();
             }
             //#endif
@@ -217,7 +218,7 @@ jpf.popup = {
             
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug
-              && "INPUT|TEXTAREA|SELECT".indexOf((e.srcElement || e.target).tagName) == -1) {
+              && !jpf.popup.focusFix[(e.srcElement || e.target).tagName]) {
                 jpf.window.$focusfix();
             }
             //#endif

@@ -142,11 +142,13 @@ jpf.editor.plugin('fontstyle', function() {
         return oCurrent;
     }
 
-    this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sStyle = e.target.getAttribute('rel');
+    this.submit = function(e, sStyle) {
+        if (!sStyle) {
+            e = new jpf.AbstractEvent(e || window.event);
+            while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+                e.target = e.target.parentNode;
+            sStyle = e.target.getAttribute('rel');
+        }
         if (sStyle) {
             jpf.popup.forceHide();
             var sel = this.editor.selection;
@@ -155,15 +157,46 @@ jpf.editor.plugin('fontstyle', function() {
             this.editor.$visualFocus();
 
             var o = getCurrentStyle(this.editor);
-            if (o && o.node == sel.getSelectedNode()) {
+            if (o && (sel.isCollapsed() 
+              || sel.getContent('text') == o.node.innerHTML)
+              && jpf.xmldb.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
                 jpf.setStyleClass(o.node, sStyle, [o.cname]);
             }
             else {
-                var s = sel.getContent();
-                if (s.trim() == "") return;
-                sel.setContent('<span class="' + sStyle + '">'
-                    + s + '</span>');
+                if (sel.isCollapsed()) {
+                    if (jpf.isIE) {
+                        var oNode = sel.getRange().parentElement();
+                        var p = this.editor.oDoc.createElement("span");
+                        p.className = sStyle;
+                        p.innerHTML = oNode.innerHTML;
+                        if (oNode.tagName == "BODY") {
+                            oNode.innerHTML = "";
+                            oNode.appendChild(p);
+                        }
+                        else {
+                            oNode.parentNode.insertBefore(p, oNode);
+                            oNode.parentNode.removeChild(oNode);
+                        }
+                        sel.selectNode(p);
+                    }
+                    else {
+                        var range  = sel.getRange();
+                        var oCaret = range.commonAncestorContainer;
+                        range.setStartBefore(oCaret);
+                        range.setEndAfter(oCaret);
+                        sel.setRange(range);
+                        var htmlNode = sel.setContent('<span class="' + sStyle + '">'
+                            + sel.getContent() + '</span>');
+                        sel.selectNode(htmlNode);
+                    }
+                }
+                else {
+                    var range = sel.getRange();
+                    var htmlNode = sel.setContent('<span class="' + sStyle + '">'
+                        + sel.getContent() + '</span>');
+                    sel.selectNode(htmlNode);
+                }
             }
             // Notify the SmartBindings we've changed...
             this.editor.change(this.editor.getValue());
@@ -194,7 +227,7 @@ jpf.editor.plugin('fontstyle', function() {
         var aHtml = [];
         for (var i in oStyles) {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
-                i, '" href="javascript:;" onmousedown="jpf.lookup(',
+                i, '" href="javascript:;" onmouseup="jpf.lookup(',
                 this.uniqueId, ').submit(event);"><span class="', i, '">',
                 oStyles[i].caption, '</span></a>')
         }
@@ -308,33 +341,81 @@ jpf.editor.plugin('paragraph', function() {
         return this.state;
     };
 
-    this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sBlock = e.target.getAttribute('rel');
+    this.submit = function(e, sBlock) {
+        if (!sBlock) {
+            e = new jpf.AbstractEvent(e || window.event);
+            while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+                e.target = e.target.parentNode;
+            sBlock = e.target.getAttribute('rel');
+        }
+        
         if (sBlock) {
             jpf.popup.forceHide();
             var oNode, sel = this.editor.selection;
 
             sel.set();
             this.editor.$visualFocus();
-
+            
+            var s = sel.getContent();
             if (sBlock == "normal" && this.queryState(this.editor) == jpf.editor.ON) {
                 // revert style to NORMAL, i.e. no style at all.
-                sel.selectNode(this.node);
-                sel.setContent(this.node.innerHTML);
+                /*sel.selectNode(this.node);
+                sel.setContent(this.node.innerHTML);*/
+                
+                var n = this.node.childNodes, p = this.node.parentNode;;
+                while (n.length) {
+                    p.insertBefore(n[0], this.node);
+                }
+                if (jpf.isIE) {
+                    var l = p.insertBefore(p.ownerDocument.createElement("div"), this.node);
+                    p.removeChild(this.node);
+                    sel.selectNode(l);
+                    p.removeChild(l);
+                }
+                else {
+                    p.removeChild(this.node);
+                }
+                
                 this.state = jpf.editor.OFF;
                 this.node  = null;
                 this.blockPreview.innerHTML = "Normal";
-                return;
             }
-
-            var s = sel.getContent();
-            if (sel.isCollapsed() || s.trim() == "")
-                this.editor.executeCommand('FormatBlock', sBlock);
+            else if (sel.isCollapsed() || s.trim() == "") {
+                if (jpf.isIE) {
+                    var startNode, oNode;
+                    oNode = startNode = sel.getRange().parentElement();
+                    while(!oNode.tagName.match(blocksRE) && oNode.tagName != "BODY") {
+                        oNode = oNode.parentNode;
+                    }
+                    
+                    if (oNode && oNode.tagName == "BODY") {
+                        if (startNode != oNode)
+                            oNode = startNode;
+                        else  {
+                            //r = sel.getRange();r.moveEnd("character", 500); r.htmlText
+                        }
+                    }
+                    
+                    var p = this.editor.oDoc.createElement(sBlock);
+                    p.innerHTML = oNode.innerHTML;
+                    if (oNode.tagName == "BODY") {
+                        oNode.innerHTML = "";
+                        oNode.appendChild(p);
+                    }
+                    else {
+                        oNode.parentNode.insertBefore(p, oNode);
+                        oNode.parentNode.removeChild(oNode);
+                    }
+                    sel.selectNode(p);
+                }
+                else {
+                    this.editor.executeCommand('FormatBlock', sBlock);
+                }
+                
+                this.blockPreview.innerHTML = blocksMap[sBlock];
+            }
             else {
-                oNode = this.editor.selection.getSelectedNode();
+                oNode = sel.getSelectedNode();
                 while (oNode.nodeType != 1)
                     oNode = oNode.parentNode;
 
@@ -348,15 +429,64 @@ jpf.editor.plugin('paragraph', function() {
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
                     oNode.parentNode.removeChild(oNode);
+                    sel.selectNode(p);
                 }
                 else {
-                    sel.setContent('<' + sBlock + '>' + s.replace(blocksRE2, '')
-                        + '</' + sBlock + '>');
+                    while(!oNode.tagName.match(blocksRE) && oNode.tagName != "BODY") {
+                        oNode = oNode.parentNode;
+                    }
+                    
+                    if (oNode && oNode.tagName != "BODY") {
+                        s2 = '<DIV __jpf_placeholder="true">' + s + '</DIV>';
+                        sel.setContent(s2);
+                        
+                        var sBlock2 = oNode.tagName;
+                        var html = [], first, last;
+                        var strHtml = oNode.innerHTML.replace(s2, function(m, pos){
+                            return (pos != 0 
+                                    ? (first = true) && '</' + sBlock2 + '>' 
+                                    : '') +
+                                '<' + sBlock + ' __jpf_placeholder="true">' + s.replace(blocksRE2, '') + 
+                                '</' + sBlock + '>' + 
+                                (pos < oNode.innerHTML.length - s.length 
+                                    ? (last = true) && '<' + sBlock2 + '>' 
+                                    : '');
+                        });
+                        if (first)
+                            html.push('<' + sBlock2 + '>');
+                        html.push(strHtml);
+                        if (last)
+                            html.push('</' + sBlock2 + '>');
+                        
+                        oNode.innerHTML = html.join("");
+                        var addedNode, n = oNode.getElementsByTagName(sBlock);
+                        for (var i = 0; i < n.length; i++) {
+                            if (n[i].getAttribute("__jpf_placeholder")) {
+                                n[i].removeAttribute("__jpf_placeholder");
+                                addedNode = n[i];
+                                break;
+                            }
+                        }
+                        
+                        n = oNode.childNodes, p = oNode.parentNode;
+                        while (n.length)
+                            p.insertBefore(n[0], oNode);
+                        p.removeChild(oNode);
+                        
+                        sel.selectNode(addedNode);
+                    }
+                    else {
+                        var htmlNode = sel.setContent('<' + sBlock + '>' 
+                            + s.replace(blocksRE2, '') + '</' + sBlock + '>');
+                        sel.selectNode(htmlNode);
+                    }
                 }
-
-                // Notify the SmartBindings we've changed...
-                this.editor.change(this.editor.getValue());
+                
+                this.blockPreview.innerHTML = blocksMap[sBlock];
             }
+            
+            // Notify the SmartBindings we've changed...
+            this.editor.change(this.editor.getValue());
         }
     };
 
@@ -369,7 +499,7 @@ jpf.editor.plugin('paragraph', function() {
             aFormats = getFormats(editor);
         for (var i = 0, j = aFormats.length; i < j; i++) {
             aHtml.push('<a class="editor_panelcell editor_paragraph" rel="',
-                aFormats[i], '" href="javascript:;" onmousedown="jpf.lookup(',
+                aFormats[i], '" href="javascript:;" onmouseup="jpf.lookup(',
                 this.uniqueId, ').submit(event);"><', aFormats[i], '>',
                 blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
         }

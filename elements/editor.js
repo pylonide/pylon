@@ -320,7 +320,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /(<(\/?)(span|strong|u|i|b|a|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<br.*?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi, //expensive work around
                 /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
                 /<p><\/p>/gi,
-                /<a( )([^>]+)\/>|<a\/>/gi
+                /<a( )([^>]+)\/>|<a\/>/gi,
+                /<p/i
             ];
         }
 
@@ -443,6 +444,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // Fix some issues
         html = html.replace(prepareRE[6], '<a$1$2></a>');
+        
+        if (!html.match(prepareRE[7])) 
+            html = jpf.editor.ALTP.start + html + jpf.editor.ALTP.end;
 
         return html;
     };
@@ -621,7 +625,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
                     bNoSel = true;
                 }
-                if (cmdName == "outdent") {
+                else if (cmdName == "outdent") {
                     bNoSel = true;
                     var pLists = this.plugins.get('bullist', 'numlist');
                     if (pLists.length) {
@@ -633,12 +637,21 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
                         bNoSel = false;
                 }
+                
                 if (bNoSel)
                     this.oDoc.body.innerHTML = this.prepareHtml(this.oDoc.body.innerHTML);
                 var r = this.selection.getRange();
                 if (r)
                     r.scrollIntoView();
             }
+            
+            /*if (cmdName == "removeformat") {
+                this.plugins.get('paragraph', 'fontstyle').forEach(function(plugin){
+                    if (plugin.queryState(this) == jpf.editor.ON) {
+                        plugin.submit(null, 'normal');
+                    }
+                });
+            }*/
 
             this.notifyAll();
             this.change(this.getValue());
@@ -1331,7 +1344,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 else {
                     this.$getNewContext("button");
                     oButton = tb.appendChild(this.$getLayoutNode("button"));
-
+                    
                     bIsPlugin = false;
                     if (!this.$nativeCommands.contains(item)) {
                         plugin = plugins.add(item);
@@ -1373,6 +1386,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             buttons = null;
+        }
+        
+        if (jpf.isIE) {
+            var nodes = oParent.getElementsByTagName("*");
+            for (var i = nodes.length - 1; i >= 0; i--)
+                nodes[i].setAttribute("unselectable", "On");
         }
     };
     

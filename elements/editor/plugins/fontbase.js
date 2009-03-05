@@ -113,7 +113,7 @@ jpf.editor.plugin('fonts', function() {
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
                 this.fontNames[i], ';" rel="', i,
-                '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
+                '" href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId,
                 ').submit(event);">', i, '</a>');
         }
         panelBody.innerHTML = aHtml.join('');
@@ -225,7 +225,7 @@ jpf.editor.plugin('fontsize', function() {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:',
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
-                '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
+                '" href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId,
                 ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
         }
         panelBody.innerHTML = aHtml.join('');

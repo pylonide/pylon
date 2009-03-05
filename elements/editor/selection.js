@@ -81,7 +81,7 @@ jpf.editor.selection = function(editor) {
      * @type {void}
      */
     this.cache = function() {
-        if (!jpf.isIE) return;
+        if (!jpf.isIE) return this;
         var oSel = _self.editor.oDoc.selection;
         _self.current      = oSel.createRange();
         _self.current.type = oSel.type;
@@ -93,6 +93,8 @@ jpf.editor.selection = function(editor) {
             clearTimeout(csLock);
             csLock = null;
         }
+        
+        return this;
     };
 
     /**
@@ -151,6 +153,8 @@ jpf.editor.selection = function(editor) {
             // Needed for some odd IE bug
             catch (ex) {}
         }
+        
+        return this;
     };
 
     /**
@@ -403,14 +407,34 @@ jpf.editor.selection = function(editor) {
      *
      * @type {String}
      */
-    this.getContent = function() {
+    this.getContent = function(retType) {
+        if (typeof retType != "string")
+            retType = "html"
         var range = this.getRange(), oSel = this.get(), prefix, suffix, n;
         var oNode = this.editor.oDoc.body;
+        
+        if (retType == "text")
+             return this.isCollapsed() ? '' : (range.text || (oSel.toString ? oSel.toString() : ''));
 
+        if (this.isCollapsed())
+            return "";
+        
+        if (typeof range.htmlText != "undefined")
+            return range.htmlText;
+
+        
+        var pNode, n = range.cloneContents();
+        if (!n.childNodes.length)
+            return "";
+        
+        pNode = n.childNodes[0].ownerDocument.createElement("div");
+        pNode.appendChild(n);
+        return pNode.innerHTML;
+
+        /*
         prefix = suffix = '';
-
-        if (this.editor.output == 'text')
-            return this.isCollapsed() ? '' : (range.text || (oSel.toString ? oSel.toString() : ''));
+        //if (this.editor.output == 'text')
+            //return this.isCollapsed() ? '' : (range.htmlText || (range.item && range.item(0).outerHTML) || '');//oSel.toString ? oSel.toString() : '')); // ?
 
         if (range.cloneContents) {
             n = range.cloneContents();
@@ -430,7 +454,7 @@ jpf.editor.selection = function(editor) {
 
         // Note: TinyMCE uses a serializer here, I don't.
         //       prefix + this.serializer.serialize(oNode, options) + suffix;
-        return this.isCollapsed() ? '' : prefix + oNode.outerHTML + suffix;
+        return this.isCollapsed() ? '' : prefix + oNode.outerHTML + suffix;*/
     }
 
     /**
@@ -439,6 +463,7 @@ jpf.editor.selection = function(editor) {
      *
      * @param {String} html
      * @type {void}
+     * @return A reference to the HTML node which has been inserted or its direct parent
      */
     this.setContent = function(html) {
         var range = this.getRange();
@@ -457,6 +482,7 @@ jpf.editor.selection = function(editor) {
 
             // Move to caret marker
             var oCaret = oDoc.getElementById('__caret');
+            var htmlNode = oCaret.previousSibling;
 
             // Make sure we wrap it completely, Opera fails with a simple
             // select call
@@ -472,6 +498,8 @@ jpf.editor.selection = function(editor) {
             // In case it's still there
             if (oCaret && oCaret.parentNode)
                 oCaret.parentNode.removeChild(oCaret);
+                
+            return htmlNode;
         }
         else {
             if (range.item) {
@@ -480,7 +508,12 @@ jpf.editor.selection = function(editor) {
                 range = this.getRange();
             }
 
-            range.pasteHTML(html);
+            range.pasteHTML('<div id="__caret">' + html + '</div>');
+            var divNode  = oDoc.getElementById('__caret');
+            var htmlNode = divNode.firstChild;
+            divNode.removeNode(false);
+            
+            return htmlNode;
         }
     }
 
@@ -608,7 +641,12 @@ jpf.editor.selection = function(editor) {
         var oSel, range;
         if (jpf.isIE) {
             oSel = this.get();
+            
+            if (!node)
+                node = oSel.createRange().parentElement();
+            
             oSel.empty();
+            
             try {
                 // Try to select the node as a control.
                 range = this.editor.oDoc.body.createControlRange();
@@ -623,11 +661,14 @@ jpf.editor.selection = function(editor) {
         }
         else {
             range = this.getRange();
-            range.selectNode(node);
+            if (node)
+                range.selectNode(node);
             oSel  = this.get();
             oSel.removeAllRanges();
             oSel.addRange(range);
         }
+        
+        return this;
     };
 
     /**
@@ -648,6 +689,8 @@ jpf.editor.selection = function(editor) {
 
         range.collapse(!!toEnd);
         this.setRange(range);
+        
+        return this;
     };
 
     /**
@@ -751,7 +794,7 @@ jpf.editor.selection = function(editor) {
             for (i = 0; i < oSel.rangeCount; i++)
                 oSel.getRangeAt(i).deleteContents();
         }
-        return oSel;
+        return this;
     };
 
     this.$destroy = function() {

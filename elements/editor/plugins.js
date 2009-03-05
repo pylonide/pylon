@@ -292,57 +292,6 @@ jpf.editor.plugin = function(sName, fExec) {
         this.uniqueId = jpf.all.push(this) - 1;
 
         /**
-         * Save the selection - i.e. create a bookmark of the current selection - for
-         * (re)use later.
-         * @deprecated
-         *
-         * @see restoreSelection
-         * @type {void}
-         */
-        this.storeSelection = function() {
-            if (this.editor)
-                this.bookmark = this.editor.selection.getBookmark('simple');
-        };
-
-        /**
-         * Set the current selection/ active range to the bookmark that was saved earlier.
-         * @deprecated
-         *
-         * @see storeSelection
-         * @type {void}
-         */
-        this.restoreSelection = function() {
-            if (this.editor && jpf.isIE && this.bookmark)
-                this.editor.selection.moveToBookmark(this.bookmark);
-        };
-
-        this.insertBlock = function(sStart, sEnd) {
-            if (!this.editor) return;
-
-            var sel   = this.editor.selection;
-            var sText = sel.isCollapsed() ? "" : sel.getRange().htmlText;
-            this.editor.$visualFocus();
-            sel.set();
-
-            this.editor.insertHTML((sStart || "") + sText + jpf.editor.ALTP.text
-                + (sEnd || ""), true);
-            sel.collapse(true);
-            
-            var r = sel.getRange();
-            r.findText(jpf.editor.ALTP.text, -1);
-            r.select();
-            sel.remove();
-            sel.collapse(true);
-            sel.cache();
-            var oParent = r.parentElement();
-            if (oParent && oParent.parentNode) {
-                oParent = oParent.parentNode;
-                if (oParent.nextSibling && oParent.nextSibling.tagName == "BR")
-                    oParent.parentNode.removeChild(oParent.nextSibling);
-            }
-        };
-
-        /**
          * Appends a new JML element - in its string representation - to an
          * existing JML node. A new JML node will be created as specified by the
          * contents of sNode and appended to oParent.
