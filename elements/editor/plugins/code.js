@@ -59,7 +59,10 @@ jpf.editor.plugin('code', function() {
             editor.plugins.active = null;
 
             if (lastLoaded != oPreview.value) {
-                var html = editor.exportHtml(oPreview.value.replace(/\n/g, ''));
+                var html = editor.exportHtml(oPreview.value
+                    .replace(/<\/p>/gi, "</p><p></p>")
+                    .replace(/\n/g, ''));
+                
                 try{
                     jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
                 }
