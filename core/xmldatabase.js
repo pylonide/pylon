@@ -1319,7 +1319,9 @@ jpf.XmlDatabase = function(){
         if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
             xmlRootNode = xmlRootNode.parentNode;
         if (xmlRootNode.nodeType == 2)
-            xmlRootNode = xmlRootNode.selectSingleNode("..");
+            xmlRootNode = xmlRootNode.ownerElement 
+                || xmlRootNode.parentNode 
+                || xmlRootNode.selectSingleNode("..");
 
         return xmlRootNode;
     };
