@@ -149,15 +149,26 @@ jpf.editor.plugin('fontstyle', function() {
                 e.target = e.target.parentNode;
             sStyle = e.target.getAttribute('rel');
         }
+
         if (sStyle) {
             jpf.popup.forceHide();
             var sel = this.editor.selection;
 
             sel.set();
             this.editor.$visualFocus();
-
+            
             var o = getCurrentStyle(this.editor);
-            if (o && (sel.isCollapsed() 
+            
+            if (o && sStyle == "normal") {
+                var n = o.node.childNodes, p = o.node.parentNode;
+                while (n.length) {
+                    p.insertBefore(n[0], o.node);
+                }
+                p.removeChild(o.node);
+                
+                this.queryState(this.editor);
+            }
+            else if (o && (sel.isCollapsed() 
               || sel.getContent('text') == o.node.innerHTML)
               && jpf.xmldb.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
@@ -192,9 +203,30 @@ jpf.editor.plugin('fontstyle', function() {
                     }
                 }
                 else {
-                    var range = sel.getRange();
-                    var htmlNode = sel.setContent('<span class="' + sStyle + '">'
-                        + sel.getContent() + '</span>');
+                    //s.match(/^([\s\S]*?)(<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)[\s\S]*?<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>)([\s\S]*?)$/gi)
+                    var s = sel.getContent().trim();
+                    var shouldPrefixSpan = s.substr(0,5) == "<SPAN";
+                    s = s.replace(/<SPAN class=.*?>|<\/SPAN>/gi, "");
+                    if (s.charAt(0) == "<") {
+                        s = s
+                          .replace(/<(normal|pre|p|address|h1|h2|h3|h4|h5|h6)(?:\s.*?|)>(.+?)<\/(normal|pre|p|address|h1|h2|h3|h4|h5|h6)>/gi, 
+                            '<$1><span class="' + sStyle + '">$2</span></$3>')
+                          .replace(/^([\s\S]*?)(<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)[\s\S]*<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>)([\s\S]*?)$/gi, 
+                            function(m, m1, m2, m3){
+                                return (m1 ? '<span class="' + sStyle + '">' + m1 + '</span>' : '') + m2 + (m3 ? '<span class="' + sStyle + '">' + m3 + '</span>' : '');
+                            })
+                          .replace(/^\s*<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)(?:\s.*?|)>|<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>\s*$/gi, "");
+                        if (jpf.isIE) 
+                            s = s.replace(/<\/P>/, "");
+                    }
+                    else {
+                        s = '<span class="' + sStyle + '">' + s + '</span>';
+                    }
+                    
+                    if (shouldPrefixSpan) 
+                        s = "</SPAN>" + s.replace(/<\/SPAN>$/i, "");
+                    
+                    var htmlNode = sel.setContent(s, true);
                     sel.selectNode(htmlNode);
                 }
             }
@@ -224,7 +256,9 @@ jpf.editor.plugin('fontstyle', function() {
         panelBody.style.display = "none";
 
         getStyles(editor);
-        var aHtml = [];
+        var aHtml = ['<a class="editor_panelcell editor_fontstyle" rel="normal" \
+            href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId, 
+            ').submit(event);"><span>Normal</span></a>'];
         for (var i in oStyles) {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
                 i, '" href="javascript:;" onmouseup="jpf.lookup(',
@@ -289,8 +323,10 @@ jpf.editor.plugin('paragraph', function() {
             }
 
             var sJoin = "(" + blockFormats.join("|") + ")";
-            blocksRE  = new RegExp(sJoin, "gi");
+            blocksRE  = new RegExp("^" + sJoin + "$", "gi");
             blocksRE2 = new RegExp("<\\/?" + sJoin + ">", "gi");
+            blocksRE3 = new RegExp("<\\/?(" + blockFormats.join("|") + "|p)>", "gi");
+            blocksRE4 = new RegExp("^(" + blockFormats.join("|") + "|p)$", "gi");
         }
         return blockFormats;
     }
@@ -316,22 +352,26 @@ jpf.editor.plugin('paragraph', function() {
             action: null
         };
     };
-
+    
     this.queryState = function(editor) {
         var oNode    = editor.selection.getSelectedNode(),
             aFormats = getFormats(editor),
-            bCurrent = (oNode && oNode.nodeType == 1
+            /*bCurrent = (oNode && oNode.nodeType == 1
                 && aFormats.contains(oNode.tagName.toLowerCase())),
             bParent  = (oNode && oNode.parentNode && oNode.parentNode.nodeType == 1
-                && aFormats.contains(oNode.parentNode.tagName.toLowerCase()));
-        if (bCurrent || bParent) {
-            var sBlock = blocksMap[
-                (bParent ? oNode.parentNode.tagName : oNode.tagName).toLowerCase()
-            ];
+                && aFormats.contains(oNode.parentNode.tagName.toLowerCase())),*/
+            tagName  = oNode.tagName.toLowerCase();
+        
+        while (!tagName.match(blocksRE) && tagName != "body") {
+            oNode   = oNode.parentNode;
+            tagName = oNode.tagName.toLowerCase();
+        }
+        if (tagName.match(blocksRE)) {//bCurrent || bParent) {
+            var sBlock = blocksMap[tagName];
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
             this.state = jpf.editor.ON;
-            this.node  = bCurrent ? oNode : oNode.parentNode;
+            this.node  = oNode;
         }
         else {
             this.blockPreview.innerHTML = "Normal";
@@ -348,31 +388,42 @@ jpf.editor.plugin('paragraph', function() {
                 e.target = e.target.parentNode;
             sBlock = e.target.getAttribute('rel');
         }
-        
+
         if (sBlock) {
             jpf.popup.forceHide();
             var oNode, sel = this.editor.selection;
 
             sel.set();
             this.editor.$visualFocus();
-            
             var s = sel.getContent();
             if (sBlock == "normal" && this.queryState(this.editor) == jpf.editor.ON) {
                 // revert style to NORMAL, i.e. no style at all.
                 /*sel.selectNode(this.node);
                 sel.setContent(this.node.innerHTML);*/
                 
-                var n = this.node.childNodes, p = this.node.parentNode;;
-                while (n.length) {
-                    p.insertBefore(n[0], this.node);
-                }
+                var n = this.node.childNodes, p = this.node.parentNode;
+                
                 if (jpf.isIE) {
-                    var l = p.insertBefore(p.ownerDocument.createElement("div"), this.node);
+                    var textlength = sel.getContent('text').length;
+                    var l = p.insertBefore(p.ownerDocument.createElement("p"), this.node);
+                    
+                    while (n.length) {
+                        l.insertBefore(n[0], l.firstChild);
+                    }
+                    
                     p.removeChild(this.node);
                     sel.selectNode(l);
-                    p.removeChild(l);
+                    if (l.previousSibling && l.previousSibling.tagName == "P") {
+                        if (l.previousSibling.innerHTML == "") {
+                            l.parentNode.removeChild(l.previousSibling);
+                        }
+                    }
                 }
                 else {
+                    while (n.length) {
+                        p.insertBefore(n[0], this.node);
+                    }
+                    
                     p.removeChild(this.node);
                 }
                 
@@ -384,7 +435,7 @@ jpf.editor.plugin('paragraph', function() {
                 if (jpf.isIE) {
                     var startNode, oNode;
                     oNode = startNode = sel.getRange().parentElement();
-                    while(!oNode.tagName.match(blocksRE) && oNode.tagName != "BODY") {
+                    while(!oNode.tagName.match(blocksRE4) && oNode.tagName != "BODY") {
                         oNode = oNode.parentNode;
                     }
                     
@@ -419,12 +470,9 @@ jpf.editor.plugin('paragraph', function() {
                 while (oNode.nodeType != 1)
                     oNode = oNode.parentNode;
 
-                //window.console.log(s, '>>>', s.length);
-                //window.console.log('=================');
-                //window.console.log(oNode.textContent, '>>>', oNode.textContent.length);
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
-                if (oNode.tagName.match(blocksRE) && s.length == oNode[jpf.hasInnerText ? 'innerText' : 'textContent'].length) {
+                if (oNode.tagName.match(blocksRE4) && s.length == oNode[jpf.hasInnerText ? 'innerText' : 'textContent'].length) {
                     var p = this.editor.oDoc.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
@@ -432,53 +480,72 @@ jpf.editor.plugin('paragraph', function() {
                     sel.selectNode(p);
                 }
                 else {
-                    while(!oNode.tagName.match(blocksRE) && oNode.tagName != "BODY") {
+                    while(!oNode.tagName.match(blocksRE4) && oNode.tagName != "BODY") {
                         oNode = oNode.parentNode;
                     }
-                    
                     if (oNode && oNode.tagName != "BODY") {
-                        s2 = '<DIV __jpf_placeholder="true">' + s + '</DIV>';
-                        sel.setContent(s2);
-                        
-                        var sBlock2 = oNode.tagName;
-                        var html = [], first, last;
-                        var strHtml = oNode.innerHTML.replace(s2, function(m, pos){
-                            return (pos != 0 
-                                    ? (first = true) && '</' + sBlock2 + '>' 
-                                    : '') +
-                                '<' + sBlock + ' __jpf_placeholder="true">' + s.replace(blocksRE2, '') + 
-                                '</' + sBlock + '>' + 
-                                (pos < oNode.innerHTML.length - s.length 
-                                    ? (last = true) && '<' + sBlock2 + '>' 
-                                    : '');
-                        });
-                        if (first)
-                            html.push('<' + sBlock2 + '>');
-                        html.push(strHtml);
-                        if (last)
-                            html.push('</' + sBlock2 + '>');
-                        
-                        oNode.innerHTML = html.join("");
-                        var addedNode, n = oNode.getElementsByTagName(sBlock);
-                        for (var i = 0; i < n.length; i++) {
-                            if (n[i].getAttribute("__jpf_placeholder")) {
-                                n[i].removeAttribute("__jpf_placeholder");
-                                addedNode = n[i];
-                                break;
+                        if (oNode.tagName == "P" && jpf.isIE) {
+                            s2 = '<' + sBlock + '>' + s.trim().replace(blocksRE3, '') + '</' + sBlock + '>';
+                            addedNode = sel.setContent(s2);
+                        }
+                        else {
+                            s2 = '<P __jpf_placeholder="true">' + s + '</P>';
+                            sel.setContent(s2);
+                            
+                            var sBlock2 = oNode.tagName;
+                            var html = [], first, last;
+                            var strHtml = oNode.innerHTML.replace(s2, function(m, pos){
+                                return (pos != 0 
+                                        ? (first = true) && '</' + sBlock2 + '>' 
+                                        : '') +
+                                    '<' + sBlock + ' __jpf_placeholder="true">' + s.replace(blocksRE3, '') + 
+                                    '</' + sBlock + '>' + 
+                                    (pos < oNode.innerHTML.length - s.length 
+                                        ? (last = true) && '<' + sBlock2 + '>' 
+                                        : '');
+                            });
+                            if (first)
+                                html.push('<' + sBlock2 + '>');
+                            html.push(strHtml);
+                            if (last)
+                                html.push('</' + sBlock2 + '>');
+                            
+                            oNode.innerHTML = html.join("");
+                            var addedNode, n = oNode.getElementsByTagName(sBlock);
+                            for (var i = 0; i < n.length; i++) {
+                                if (n[i].getAttribute("__jpf_placeholder")) {
+                                    n[i].removeAttribute("__jpf_placeholder");
+                                    addedNode = n[i];
+                                    break;
+                                }
                             }
+                            
+                            n = oNode.childNodes, p = oNode.parentNode;
+                            while (n.length)
+                                p.insertBefore(n[0], oNode);
+                            p.removeChild(oNode);
                         }
                         
-                        n = oNode.childNodes, p = oNode.parentNode;
-                        while (n.length)
-                            p.insertBefore(n[0], oNode);
-                        p.removeChild(oNode);
-                        
+                        if (jpf.isIE) {
+                            addedNode.parentNode.insertBefore(
+                                addedNode.ownerDocument.createElement("P"),
+                                addedNode);
+                        }
+                                
                         sel.selectNode(addedNode);
                     }
                     else {
-                        var htmlNode = sel.setContent('<' + sBlock + '>' 
-                            + s.replace(blocksRE2, '') + '</' + sBlock + '>');
-                        sel.selectNode(htmlNode);
+                        var addedNode = sel.setContent('<' + sBlock + '>' 
+                            + s.replace(/<p>(.*?)<\/p>(.)/gi, "$1<br />$2")
+                               .replace(blocksRE3, '') + '</' + sBlock + '>');
+                       
+                        if (jpf.isIE) {
+                            addedNode.parentNode.insertBefore(
+                                addedNode.ownerDocument.createElement("P"),
+                                addedNode);
+                        }
+                       
+                        sel.selectNode(addedNode);
                     }
                 }
                 

@@ -465,11 +465,12 @@ jpf.editor.selection = function(editor) {
      * @type {void}
      * @return A reference to the HTML node which has been inserted or its direct parent
      */
-    this.setContent = function(html) {
+    this.setContent = function(html, bNoPrepare) {
         var range = this.getRange();
         var oDoc  = this.editor.oDoc;
 
-        html = this.editor.prepareHtml(html);
+        if (!bNoPrepare)
+            html = this.editor.prepareHtml(html, true);
 
         if (range.insertNode) {
             // Make caret marker since insertNode places the caret in the
@@ -508,12 +509,13 @@ jpf.editor.selection = function(editor) {
                 range = this.getRange();
             }
 
-            range.pasteHTML('<div id="__caret">' + html + '</div>');
-            var divNode  = oDoc.getElementById('__caret');
-            var htmlNode = divNode.firstChild;
-            divNode.removeNode(false);
-            
-            return htmlNode;
+            html = html.replace(/^<(\w+)/, '<$1 id="__caret"');
+            range.pasteHTML(html);
+            var htmlNode = oDoc.getElementById('__caret');
+            if (htmlNode) {
+                htmlNode.removeAttribute("id");
+                return htmlNode;
+            }
         }
     }
 

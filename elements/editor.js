@@ -306,7 +306,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @return The sanitized string, valid to store and use in the editor
      * @type   {String}
      */
-    this.prepareHtml = function(html) {
+    this.prepareHtml = function(html, bNoEnclosing) {
         if (prepareRE === null) {
             // compile 'em regezz
             prepareRE = [
@@ -317,11 +317,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     Ruben: due to a bug in IE and FF this regexp won't fly:
                     /((?:[^<]*|<(?:span|strong|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
                 */
-                /(<(\/?)(span|strong|u|i|b|a|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<br.*?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi, //expensive work around
+                /(<(\/?)(span|strong|u|i|b|a|strike|sup|sub|font|img)(?:\s+[\s\S]*?)?>)|(<br[\s\S]*?>)|(<(\/?)([\w\-]+)(?:\s+[\s\S]*?)?>)|([^<>]*)/gi, //expensive work around
                 /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
                 /<p><\/p>/gi,
-                /<a( )([^>]+)\/>|<a\/>/gi,
-                /<p/i
+                /<a( )([^>]+)\/>|<a\/>/gi
             ];
         }
 
@@ -346,7 +345,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     tag = tag.toLowerCase();
                     if (!selfClosing[tag]) {
                         if (close) {
-                            if (depth[depth.length-1][0] != tag) {
+                            if (!depth[depth.length-1] 
+                              || depth[depth.length-1][0] != tag) {
                                 strP.length--; //ignore non matching tag
                             }
                             else {
@@ -438,15 +438,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     lastBlockClosed = lastBlockClosed == 2 ? 1 : false;
                 }
             });
-            str.push(strP.join(""));
+            var s;
+            if ((s = strP.join("")).trim())
+                str.push(bNoEnclosing
+                 ? s
+                 : jpf.editor.ALTP.start + s + jpf.editor.ALTP.end);
             html = str.join("");
         }
 
         // Fix some issues
         html = html.replace(prepareRE[6], '<a$1$2></a>');
-        
-        if (!html.match(prepareRE[7])) 
-            html = jpf.editor.ALTP.start + html + jpf.editor.ALTP.end;
 
         return html;
     };
@@ -504,7 +505,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     
                     if (!selfClosing[tag]) {
                         if (close) {
-                            if (depth[depth.length-1][0] != tag) {
+                            if (!depth[depth.length-1] 
+                              || depth[depth.length-1][0] != tag) {
                                 strP.length--; //ignore non matching tag
                             }
                             else {
@@ -530,10 +532,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         else {
                             str.push("<p>", strP.join("").trim() || "&nbsp;", "</p>");
                             strP = [];
-                        }
-                        
-                        if (!depth.length)
                             capture = false;
+                        }
                     }
                     else
                         str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
@@ -566,7 +566,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                             else {
                                 str.push("<p>", 
-                                    s || strP.join("").trim() || "&nbsp;", 
+                                    s || strP.join("").trim() || "&nbsp;",  //).replace(/<br \/>$/, "")
                                     "</p>");
                                 strP = [];
                             }
@@ -614,6 +614,29 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             this.$visualFocus();
+            
+            if (cmdName.toLowerCase() == "removeformat") {
+                /*this.plugins.get('paragraph', 'fontstyle').forEach(function(plugin){
+                    if (plugin.queryState(_self) == jpf.editor.ON) {
+                        plugin.submit(null, 'normal');
+                    }
+                });*/
+
+                var c = this.selection.getContent();
+                var disallowed = {FONT:1, SPAN:1, H1:1, H2:1, H3:1, H4:1, H5:1, H6:1, PRE:1, ADDRESS:1, BLOCKQUOTE:1, STRONG:1, B:1, U:1, I:1, EM:1, LI:1, OL:1, UL:1, DD:1, DL:1, DT:1};
+                c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
+                    return !disallowed[tag] ? m : "";
+                });
+                if (jpf.isIE) {
+                    var htmlNode = this.selection.setContent("<div>" + c + "</div>");
+                    this.selection.selectNode(htmlNode);
+                    htmlNode.removeNode(false);
+                    return;
+                }
+                else {
+                    this.selection.setContent(c);
+                }
+            }
 
             this.oDoc.execCommand(cmdName, false, cmdParam);
 
@@ -645,14 +668,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     r.scrollIntoView();
             }
             
-            /*if (cmdName == "removeformat") {
-                this.plugins.get('paragraph', 'fontstyle').forEach(function(plugin){
-                    if (plugin.queryState(this) == jpf.editor.ON) {
-                        plugin.submit(null, 'normal');
-                    }
-                });
-            }*/
-
             this.notifyAll();
             this.change(this.getValue());
 
