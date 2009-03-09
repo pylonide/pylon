@@ -308,7 +308,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             callback: function(container) {
                 container.style[jpf.supportOverflowComponent
                     ? "overflowY"
-                    : "overflow"] = "auto";
+                    : "overflow"] = "hidden";
             }
         });
     };
