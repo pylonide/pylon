@@ -337,7 +337,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             // <BR>'s need to be replaced to be properly handled as
             // block elements by IE - because they're not converted
             // when an editor command is executed
-            var str = []; capture = false; strP = [], depth = [], bdepth = [], lastBlockClosed = false;
+            var str = [], capture = false, strP = [], depth = [], bdepth = [], lastBlockClosed = false;
             html.replace(prepareRE[3], function(m, inline, close, tag, br, block, bclose, btag, any){
                 if (inline) {
                     var id = strP.push(inline);
@@ -498,7 +498,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         //@todo: Ruben: Maybe make this a setting (paragraphs="true")
         //@todo might be able to unify this function with the one above.
         if (!noParagraph) {
-            var str = []; capture = true; strP = [], depth = [], bdepth = [];
+            var str = [], capture = true, strP = [], depth = [], bdepth = [];
             html.replace(exportRE[8], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
                     var id = strP.push(inline);
