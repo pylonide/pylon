@@ -32,7 +32,7 @@ jpf.editor.plugin('code', function() {
     this.noDisable   = true;
     this.regex       = null;
 
-    var oPreview, protectedData, lastLoaded;
+    var oPreview, protectedData, lastLoaded, _self = this;
 
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
@@ -58,24 +58,7 @@ jpf.editor.plugin('code', function() {
         else {
             editor.plugins.active = null;
 
-            if (lastLoaded != oPreview.value) {
-                var html = editor.exportHtml(oPreview.value
-                    .replace(/<\/p>/gi, "</p><p></p>")
-                    .replace(/\n/g, ''));
-                
-                try{
-                    jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
-                }
-                catch(e){
-                    if (confirm("Er zit een fout in de html. Klik op OK om deze \
-                                 te corrigeren, of op Cancel om door te gaan")){
-                        //@todo mike: finish this
-                        return false;
-                    }
-                }
-                
-                editor.change(html);
-            }
+            propagateChange();
             
             oPreview.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);
@@ -91,15 +74,64 @@ jpf.editor.plugin('code', function() {
     };
 
     this.update = function(editor, sHtml) {
+        if (changeTimer) return;
         // update the contents of the (hidden) textarea
-        oPreview.value = format.call(this, sHtml ? editor.exportHtml(sHtml) : (lastLoaded = editor.getValue()));
+        oPreview.value = format.call(this, sHtml 
+            ? editor.exportHtml(sHtml)
+            : (lastLoaded = editor.getValue()));
     };
 
     this.getValue = function() {
         return oPreview.value;
     };
 
+    function propagateChange() {
+        if (lastLoaded == oPreview.value) return false;
+        var html = _self.editor.exportHtml(oPreview.value
+            .replace(/<\/p>/gi, "</p><p></p>")
+            .replace(/\n/g, ''));
+
+        try{
+            jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
+        }
+        catch(e){
+            if (confirm("Er zit een fout in de html. Klik op OK om deze \
+                         te corrigeren, of op Cancel om door te gaan")){
+                //@todo mike: finish this
+                return false;
+            }
+        }
+
+        _self.editor.change(html);
+        return true;
+    }
+
+    var changeTimer = null;
+
+    function resumeChangeTimer() {
+        if (!_self.editor.realtime || changeTimer !== null) return;
+        changeTimer = setTimeout(function() {
+            clearTimeout(changeTimer);
+            window.console.log('firing change....');
+            _self.editor.change(oPreview.value);
+            changeTimer = null;
+        }, 200);
+    }
+
+    function onKeydown(e) {
+        window.console.log('onkeydown fired...');
+        e = e || window.event;
+        var code = e.which || e.keyCode;
+        if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
+          && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
+            window.console.log('resetting changeTimer...');
+            resumeChangeTimer();
+        }
+    }
+
     this.drawPreview = function(editor) {
+        this.editor = editor;
+        
         oPreview = editor.oExt.appendChild(document.createElement('textarea'));
         oPreview.rows = 15;
         oPreview.cols = 10;
@@ -109,6 +141,7 @@ jpf.editor.plugin('code', function() {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
+        oPreview.onkeydown = onKeydown;
         this.setSize(editor);
         oPreview.style.display  = "none";
         jpf.sanitizeTextbox(oPreview);
