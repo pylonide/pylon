@@ -304,7 +304,7 @@ jpf.editor.plugin('paragraph', function() {
         'h5'      : 'Header 5',
         'h6'      : 'Header 6'
     },
-    blocksRE, blocksRE2, blockFormats;
+    blocksRE, blocksRE2, blocksRE3, blocksRE4, blockFormats;
 
     function getFormats(editor) {
         if (!blockFormats) {
@@ -360,7 +360,7 @@ jpf.editor.plugin('paragraph', function() {
                 && aFormats.contains(oNode.tagName.toLowerCase())),
             bParent  = (oNode && oNode.parentNode && oNode.parentNode.nodeType == 1
                 && aFormats.contains(oNode.parentNode.tagName.toLowerCase())),*/
-            tagName  = oNode.tagName.toLowerCase();
+            tagName  = oNode.nodeType == 1 ? oNode.tagName.toLowerCase() : "";
         
         while (!tagName.match(blocksRE) && tagName != "body") {
             oNode   = oNode.parentNode;
@@ -484,6 +484,7 @@ jpf.editor.plugin('paragraph', function() {
                         oNode = oNode.parentNode;
                     }
                     if (oNode && oNode.tagName != "BODY") {
+                        var s2;
                         if (oNode.tagName == "P" && jpf.isIE) {
                             s2 = '<' + sBlock + '>' + s.trim().replace(blocksRE3, '') + '</' + sBlock + '>';
                             addedNode = sel.setContent(s2);
