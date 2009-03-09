@@ -224,7 +224,7 @@ jpf.date.getDateTime = function(datetime, format) {
                                 ? s = value
                                 : h = value))); 
             case 'dd':
-                return d = parseInt(part); //01-31
+                return d = part; //01-31
             case 'dddd':
                 //changeing alteration because "dddd" have no information about day number
                 alteration += i18n.dayNames[i18n.dayNumbers[part.substring(0,3)] + 7].length - 4;
