@@ -126,13 +126,16 @@ jpf.namespace("storage.modules.flash", {
      */
     callMethod: function(param1, param2, param3, param4, param5) {
         if (this.initialized && typeof this.player.callMethod == "function") {
-            return this.player.callMethod(
-                jpf.flash.encode(param1),
-                jpf.flash.encode(param2),
-                jpf.flash.encode(param3),
-                jpf.flash.encode(param4),
-                jpf.flash.encode(param5)
-            ); // function.apply does not work on the flash object
+            try {
+                return this.player.callMethod(
+                    jpf.flash.encode(param1),
+                    jpf.flash.encode(param2),
+                    jpf.flash.encode(param3),
+                    jpf.flash.encode(param4),
+                    jpf.flash.encode(param5)
+                ); // function.apply does not work on the flash object
+            }
+            catch (ex) {}
         }
         else
             this.delayCalls.push(arguments);
@@ -317,7 +320,10 @@ jpf.namespace("storage.modules.flash", {
 
         var metaKey     = keys.join(",");
         var metaResults = this.callMethod('getMultiple', metaKey, namespace);
-        var results     = eval("(" + metaResults + ")");
+        if (!metaResults)
+            return null;
+        var results     = eval("(" + metaResults.replace(/""([^",\]]+)/g, '"\\"$1')
+            .replace(/([^",]+)""/g, '$1\\""') + ")");
 
         // destringify each entry back into a real JS object
         for (var i = 0; i < results.length; i++)

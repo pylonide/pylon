@@ -144,8 +144,9 @@ jpf.storage = {
                 return;
                 
             var values = this.getMultiple(keys, namespace);
-            for (var i = 0; i < keys.length; i++) {
-                store[keys[i]] = values[i];
+            for (var i = 0; i < keys.length && values; i++) {
+                if (values[i])
+                    store[keys[i]] = values[i];
             }
 
             return keys.length;
