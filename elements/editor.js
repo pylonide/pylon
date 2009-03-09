@@ -934,9 +934,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else if (code == 8 || code == 46) //backspace or del
             listBehavior.call(_self, e, true); //correct lists, if any
 
-        var keyCode = e.keyCode;
-        if (!e.ctrlKey && !e.altKey && (keyCode < 112 || keyCode > 122) 
-          && (keyCode < 33  && keyCode > 31 || keyCode > 42 || keyCode == 8 || keyCode == 13)) {
+        if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
+          && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
             resumeChangeTimer();
         }
 
