@@ -92,6 +92,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         // don't do anything...
         if (this.$value.replace(/\r/g, "") == html)
             return;
+            
+        if (html == "")
+            html = "<br />";
         
         this.$value = html;
 
@@ -104,6 +107,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.plugins.get('code').update(this, html);
         }
         else {
+            if (jpf.isIE)
+                html = html.replace(/<\/p>$/i, jpf.editor.ALTP.text + '</p>');
+
             this.oDoc.body.innerHTML = html;
 
             if (jpf.isGecko) {
@@ -131,6 +137,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 for (var i = 0, j = aLinks.length; i < j; i++) {
                     if (aLinks[i].getAttribute('_jpf_href'))
                         aLinks[i].href = aLinks[i].getAttribute('_jpf_href')
+                }
+                
+                // restore caret position if we need to...
+                var sel   = this.selection;
+                var range = sel.getRange();
+                if (found = range.findText(jpf.editor.ALTP.text, -1, false)) {
+                    range.scrollIntoView();
+                    range.select();
+                    sel.remove();
                 }
             }
         }
