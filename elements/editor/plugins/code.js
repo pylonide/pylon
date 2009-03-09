@@ -57,11 +57,11 @@ jpf.editor.plugin('code', function() {
         }
         else {
             editor.plugins.active = null;
-
-            propagateChange();
             
             oPreview.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);
+            
+            propagateChange();
             
             setTimeout(function() {
                 editor.selection.set();
@@ -74,7 +74,10 @@ jpf.editor.plugin('code', function() {
     };
 
     this.update = function(editor, sHtml) {
-        if (changeTimer) return;
+        if (changeTimer) {
+            lastLoaded = sHtml;
+            return;
+        }
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, sHtml 
             ? editor.exportHtml(sHtml)
@@ -112,19 +115,16 @@ jpf.editor.plugin('code', function() {
         if (!_self.editor.realtime || changeTimer !== null) return;
         changeTimer = setTimeout(function() {
             clearTimeout(changeTimer);
-            window.console.log('firing change....');
             _self.editor.change(oPreview.value);
             changeTimer = null;
         }, 200);
     }
 
     function onKeydown(e) {
-        window.console.log('onkeydown fired...');
         e = e || window.event;
         var code = e.which || e.keyCode;
         if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
           && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
-            window.console.log('resetting changeTimer...');
             resumeChangeTimer();
         }
     }
