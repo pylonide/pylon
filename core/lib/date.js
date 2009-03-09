@@ -182,7 +182,7 @@ jpf.date.getDateTime = function(datetime, format) {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
     var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC:)(?:[-+]\d{4})?)\b/g;
     var alteration = 0;
-    var time_y = new Date().getFullYear(), m = 1, d = 1,
+    var time, y = new Date().getFullYear(), m = 1, d = 1,
         h = 12, M = 0, s = 0;
     var i18n = jpf.date.i18n;
 
