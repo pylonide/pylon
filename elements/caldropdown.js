@@ -100,7 +100,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                   {name : "November",  number : 30},
                   {name : "December",  number : 31}];
 
-    var _self = this;
+    var _self = this; //NOT USED
 
     this.$supportedProperties.push("initial-message", "output-format",
                                    "default", "caption-format", "value");
@@ -117,7 +117,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
-            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat = value));
+            this.setProperty("value", new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.outputFormat = value));
         }
         else
             this.outputFormat = value;
@@ -377,20 +378,21 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //Only display caption when a value is set
         if (value === undefined) {
-            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.xmlRoot,
-                null, true);
+            var sValue2,
+                sValue = bc.applyRuleSetOnNode("value", bc.xmlRoot, null, true);
             if (sValue)
                 sValue2 = bc.applyRuleSetOnNode("caption", bc.xmlRoot, null, true);
 
             if (!sValue2 && this.xmlRoot && sValue) {
-                var rule = this.getBindRule(this.mainBind).getAttribute("select");
+                var rule    = this.getBindRule(this.mainBind).getAttribute("select");
 
-                xpath = this.traverse + "[" + rule + "='"
+                var xpath   = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
 
                 var xmlNode = this.xmlRoot.selectSingleNode(xpath);
-                value = this.applyRuleSetOnNode("caption", xmlNode);
-            } else {
+                value       = this.applyRuleSetOnNode("caption", xmlNode);
+            }
+            else {
                 value = sValue2 || sValue;
             }
         }
@@ -460,7 +462,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("popuphide", this.slideUp);
 
     var isLeapYear = function(year) {
-        return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0)
+        return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
             ? true
             : false;
     };
@@ -468,10 +470,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.redraw = function(month, year) {
         _currentMonth = month;
         _currentYear  = year;
-        _width = this.oExt.offsetWidth;
+        var _width    = this.oExt.offsetWidth;
 
-        var temp = Math.floor((_width - 36) / 8) * 8
-                 + 32 - jpf.getDiff(this.oNavigation)[0];
+        var temp      = Math.floor((_width - 36) / 8) * 8 + 32 - jpf.getDiff(this.oNavigation)[0];
 
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
@@ -486,9 +487,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             w_days += months[i].number;
         }
 
-        var w_weeks = Math.ceil(w_days / 7);
+        var w_weeks   = Math.ceil(w_days / 7);
 
-        var date = new Date(year, month);
+        var date      = new Date(year, month);
 
         _numberOfDays = months[date.getMonth()].number;
         if (isLeapYear(year) && date.getMonth() == 1)
@@ -722,42 +723,43 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt) {
-            oExt.setAttribute("onmouseover", 'var o = jpf.lookup('
-                + this.uniqueId
-                + ');o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
-            oExt.setAttribute("onmouseout", 'var o = jpf.lookup('
-                + this.uniqueId
-                + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
+        this.oExt      = this.$getExternal(null, null, function(oExt) {
+            oExt.setAttribute("onmouseover", 
+                'var o = jpf.lookup(' + this.uniqueId + ');\
+                 o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
+            oExt.setAttribute("onmouseout", 
+                'var o = jpf.lookup('+ this.uniqueId + ');\
+                 if (o.isOpen) return;\
+                 o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
 
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
-                oButton.setAttribute("onmousedown", 'jpf.lookup('
-                    + this.uniqueId + ').slideToggle(event);');
+                oButton.setAttribute("onmousedown",
+                    'jpf.lookup(' + this.uniqueId + ').slideToggle(event);');
             }
 
             //Label
-            var oLabel = this.$getLayoutNode("main", "label", oExt);
+            var oLabel  = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
-        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
+        this.oLabel     = this.$getLayoutNode("main", "label", this.oExt);
 
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
 
-        this.oIcon = this.$getLayoutNode("main", "icon", this.oExt);
+        this.oIcon      = this.$getLayoutNode("main", "icon", this.oExt);
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
 
         if (jpf.caldropdown.cache) {
-            var cal = jpf.caldropdown.cache;
-            this.oSlider = cal["oSlider"];
+            var cal          = jpf.caldropdown.cache;
+            this.oSlider     = cal["oSlider"];
             this.oNavigation = cal["oNavigation"];
-            this.oDow = cal["oDow"];
+            this.oDow        = cal["oDow"];
 
             jpf.caldropdown.cache.refcount++;
 
@@ -768,10 +770,10 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         }
 
-        this.oSlider = this.$getExternal("container", null, function(oExt1) {
-            var oSlider = this.$getLayoutNode("container", "contents", oExt1);
+        this.oSlider    = this.$getExternal("container", null, function(oExt1) {
+            var i, oSlider = this.$getLayoutNode("container", "contents", oExt1);
 
-            for (var i = 0; i < 6; i++) {
+            for (i = 0; i < 6; i++) {
                 this.$getNewContext("row");
                 var oRow = oSlider.appendChild(this.$getLayoutNode("row"));
 
@@ -779,17 +781,22 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.$getNewContext("cell");
                     var oCell = this.$getLayoutNode("cell");
                     if (j > 0) {
-                        oCell.setAttribute("onmouseout", "jpf.setStyleClass(this, '', ['hover']);");
-                        oCell.setAttribute("onmouseover", "if (this.className.indexOf('disabled') > -1 "
-                            + "|| this.className.indexOf('active') > -1) "
-                            + "return; jpf.setStyleClass(this, 'hover');");
+                        oCell.setAttribute("onmouseout",
+                            "jpf.setStyleClass(this, '', ['hover']);");
+                        oCell.setAttribute("onmouseover",
+                            "if (this.className.indexOf('disabled') > -1 \
+                               || this.className.indexOf('active') > -1)\
+                                 return;\
+                             jpf.setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmousedown",
-                            "var o = jpf.findHost(this);"
-                            + " if (this.className.indexOf('prev') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'prev');}"
-                            + " else if (this.className.indexOf('next') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'next');}"
-                            + " else {o.selectDay(this.innerHTML);}o.slideUp();");
+                            "var o = jpf.findHost(this);\
+                             if (this.className.indexOf('prev') > -1)\
+                                 o.selectDay(this.innerHTML, 'prev');\
+                             else if (this.className.indexOf('next') > -1)\
+                                 o.selectDay(this.innerHTML, 'next');\
+                             else\
+                                 o.selectDay(this.innerHTML);\
+                             o.slideUp();");
                     }
                     oRow.appendChild(oCell);
                 }
@@ -801,7 +808,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             if (oNavigation) {
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
                                "today", "status"];
-                for (var i = 0; i < buttons.length; i++) {
+                for (i = 0; i < buttons.length; i++) {
                     this.$getNewContext("button");
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
@@ -816,24 +823,24 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             var oDaysOfWeek = this.$getLayoutNode("container",
                                                   "daysofweek", oExt1);
 
-            for (var i = 0; i < days.length + 1; i++) {
+            for (i = 0; i < days.length + 1; i++) {
                 this.$getNewContext("day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
             }
         });
 
         this.oNavigation = this.$getLayoutNode("container", "navigation", this.oSlider);
-        this.oDow = this.$getLayoutNode("container", "daysofweek", this.oSlider);
+        this.oDow        = this.$getLayoutNode("container", "daysofweek", this.oSlider);
 
         //Set up the popup
-        this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
+        this.pHtmlDoc    = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
 
         document.body.appendChild(this.oSlider);
 
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
-        this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
+        this.listtype    = parseInt(this.$getLayoutNode("main", "type")) || 1;
 
         if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml);
@@ -849,13 +856,14 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$loadJml = function(x) {
+        var date;
         if (typeof this.value == "undefined") {
             switch(this["default"]) {
                 case "today":
                     this.setProperty("value", new Date().format(this.outputFormat));
                     break;
                 default :
-                    var date =  new Date();
+                    date =  new Date();
                     _day   = 0;
                     _month = date.getMonth();
                     _year  = date.getFullYear();
@@ -866,12 +874,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         else {
-            var date = Date.parse(_temp || this.value, this.outputFormat);
+            date = Date.parse(_temp || this.value, this.outputFormat);
             _day   = date.getDate();
             _month = date.getMonth();
             _year  = date.getFullYear();
 
-            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat));
+            this.setProperty("value", new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.outputFormat));
         }
     };
 
