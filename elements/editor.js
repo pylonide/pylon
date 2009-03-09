@@ -512,7 +512,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        
         //@todo: Ruben: Maybe make this a setting (paragraphs="true")
         //@todo might be able to unify this function with the one above.
-        if (!noParagraph) {
+        if (jpf.isIE && !noParagraph) {
             var str = [], capture = true, strP = [], depth = [], bdepth = [];
             html.replace(exportRE[8], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
@@ -596,6 +596,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             });
             str.push(strP.join(""));
             html = str.join("");
+        }
+        else {
+            html = html.replace(/<br[^>]*_jpf_marker="1"[^>]*>/gi, '<br />');
         }
         
         // #ifdef __DEBUG
