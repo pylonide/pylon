@@ -23,6 +23,7 @@
 jpf.belatedpngfix = {
 
     ns :'jpf_belatedpng',
+    imgSize: {},
 
     createVmlNameSpace : function() { /* enable VML */
         if (document.namespaces && !document.namespaces[this.ns])

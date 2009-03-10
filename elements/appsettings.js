@@ -205,7 +205,7 @@ jpf.appsettings = {
         if (this.iePngFix) {
             var aSelectors = (x.getAttribute("iepngfix-selectors") || "img,.pngfix,input").splitSafe(",");
             jpf.belatedpngfix.createVmlNameSpace().createVmlStyleSheet()
-                .fix(aSelectors.join(""));
+                .fix(aSelectors.join(","));
         }
         // #endif
 
