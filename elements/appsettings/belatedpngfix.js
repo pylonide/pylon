@@ -56,23 +56,37 @@ jpf.belatedpngfix = {
         return this;
     },
 
-    interceptPropertyChanges : function() {
-        var el = event.srcElement;
-        if (event.propertyName.search('background') != -1) {
-            el.runtimeStyle.cssText = '';
-            jpf.belatedpngfix.updateVmlFill.call(el);
-        }
-    },
+    readPropertyChange: function() {
+		var el = event.srcElement;
+		if (event.propertyName.search('background') != -1
+          || event.propertyName.search('border') != -1) {
+			jpf.belatedpngfix.applyVML(el);
+		}
+		if (event.propertyName == 'style.display') {
+			var display = (el.currentStyle.display == 'none') ? 'none' : 'block';
+			for (var v in el.vml) {
+				el.vml[v].shape.style.display = display;
+			}
+		}
+		if (event.propertyName.search('filter') != -1) {
+			jpf.belatedpngfix.vmlOpacity(el);
+		}
+	},
 
-    handlePseudoHover : function(el) {
-        var self = this;
-        // wouldn't work as intended without setTimeout
-        setTimeout(function() {
-            self.runtimeStyle.backgroundColor = '';
-            self.runtimeStyle.backgroundImage = '';
-            jpf.belatedpngfix.updateVmlFill.call(self);
-        }, 1);
-    },
+	vmlOpacity: function(el) {
+		if (el.currentStyle.filter.search('lpha') != -1) {
+			var trans = el.currentStyle.filter;
+			trans = parseInt(trans.substring(trans.lastIndexOf('=')+1, trans.lastIndexOf(')')), 10)/100;
+			el.vml.color.shape.style.filter = el.currentStyle.filter; /* complete guesswork */
+			el.vml.image.fill.opacity = trans; /* complete guesswork */
+		}
+	},
+
+	handlePseudoHover: function(el) {
+		setTimeout(function() { /* wouldn't work as intended without setTimeout */
+			jpf.belatedpngfix.applyVML(el);
+		}, 1);
+	},
 
     /**
      * This is the method to use in a document.
@@ -84,243 +98,263 @@ jpf.belatedpngfix = {
         for (var i = 0; i < selectors.length; i++) {
             // seems to execute the function without adding it to the stylesheet - interesting...
             this.styleSheet.addRule(selectors[i],
-                'behavior:expression(jpf.belatedpngfix.fixPng.call(this))');
+                'behavior:expression(jpf.belatedpngfix.fixPng(this))');
         }
 
         return this;
     },
 
-    fixPng : function(isImg) {
-        this.style.behavior = 'none';
-        if (this.nodeName == 'BODY' || this.nodeName == 'TD'
-          || this.nodeName == 'TR') { /* elements not supported yet */
-            return this;
-        }
-        var self = this;
-        var lib  = jpf.belatedpngfix;
-        this.isImg = isImg;
-        if (this.nodeName == 'IMG') {
-            var thisStyle   = this.currentStyle;
-            this.width      = this.clientWidth;
-            this.height     = this.clientHeight;
-            this.borderRect = document.createElement('div');
-            var styles = {
-                'backgroundColor': true,
-                'borderStyle'    : true,
-                'borderWidth'    : true,
-                'borderColor'    : true,
-                'display'        : true,
-                'verticalAlign'  : true,
-                'width'          : true,
-                'height'         : true,
-                'zIndex'         : true
-            };
-            for (var s in styles)
-                this.borderRect.style[s] = thisStyle[s];
-            this.parentNode.style.zoom     = 1;
-            this.borderRect.style.backgroundImage    = 'url(' + this.src + ')';
-            this.borderRect.style.backgroundRepeat   = 'no-repeat';
-            this.borderRect.style.backgroundPosition = 'center center';
-            this.borderRect.style.position = 'absolute';
-            this.borderRect.style.left     = this.offsetLeft;
-            this.borderRect.style.top      = this.offsetTop + 'px';
-            this.parentNode.insertBefore(this.borderRect, this);
-            lib.fixPng.call(this.borderRect, true);
-            this.style.visibility          = 'hidden';
-            return this;
-        }
-        this.bgSizeFinder = document.createElement('img');
-        this.bgSizeFinder.className = lib.ns + '_sizeFinder';
-        this.bgSizeFinder.attachEvent('onload', function() {
-            lib.updateVmlDimensions.call(self);
-        });
-        document.body.insertBefore(this.bgSizeFinder, document.body.firstChild);
-        this.imgRect   = document.createElement(lib.ns + ':rect');
-        this.imgFill   = document.createElement(lib.ns + ':fill');
-        this.colorRect = document.createElement(lib.ns + ':rect');
-        this.rects = [this.imgRect, this.colorRect];
-        for (var r = 0; r < 2; r++)
-            this.rects[r].stroked = false;
+    applyVML: function(el) {
+		el.runtimeStyle.cssText = '';
+		this.vmlFill(el);
+		this.vmlOffsets(el);
+		this.vmlOpacity(el);
+		if (el.isImg) {
+			this.copyImageBorders(el);
+		}
+	},
 
-        this.parentNode.insertBefore(this.colorRect, this);
-        this.imgRect.appendChild(this.imgFill);
-        this.parentNode.insertBefore(this.imgRect, this);
-
-        /* attach handlers */
-        var handlers = {
-            'resize' : 'updateVmlDimensions',
-            'move'   : 'updateVmlDimensions'
+	attachHandlers: function(el) {
+		var self = this;
+		var handlers = {
+            resize: 'vmlOffsets',
+            move  : 'vmlOffsets'
         };
-        if (this.nodeName == 'A') {
-            var moreForAs = {
-                'mouseleave' : 'handlePseudoHover',
-                'mouseenter' : 'handlePseudoHover',
-                'focus'      : 'handlePseudoHover',
-                'blur'       : 'handlePseudoHover'
+		if (el.nodeName == 'A') {
+			var moreForAs = {
+                mouseleave: 'handlePseudoHover',
+                mouseenter: 'handlePseudoHover',
+                focus     : 'handlePseudoHover',
+                blur      : 'handlePseudoHover'
             };
-            for (var a in moreForAs)
-                handlers[a] = moreForAs[a];
-        }
-        for (var h in handlers) {
-            this.attachEvent('on' + h, function() {
-                lib[handlers[h]].call(self);
-            });
-        }
-        this.attachEvent('onpropertychange', lib.interceptPropertyChanges);
+			for (var a in moreForAs) {
+				handlers[a] = moreForAs[a];
+			}
+		}
+		for (var h in handlers) {
+			el.attachEvent('on' + h, function() {
+				self[handlers[h]](el);
+			});
+		}
+		el.attachEvent('onpropertychange', this.readPropertyChange);
+	},
 
-        /* set up element */
-        setTimeout(function() {
-            lib.updateVmlFill.call(self);
-        }, 1);
+	giveLayout: function(el) {
+		el.style.zoom = 1;
+		if (el.currentStyle.position == 'static') {
+			el.style.position = 'relative';
+		}
+	},
 
-        return this;
-    },
+	copyImageBorders: function(el) {
+		var styles = {
+            'borderStyle': true,
+            'borderWidth': true,
+            'borderColor': true
+        };
+		for (var s in styles) {
+			el.vml.color.shape.style[s] = el.currentStyle[s];
+		}
+	},
 
-    updateVmlFill : function() {
-        var thisStyle = this.currentStyle;
-        if (thisStyle.backgroundImage) {
-            this.colorRect.style.zIndex = thisStyle.zIndex;
-            this.imgRect.style.zIndex = thisStyle.zIndex;
-            var giveLayout = function(el) {
-                el.style.zoom = 1;
-                if (el.currentStyle.position == 'static')
-                    el.style.position = 'relative';
-            };
-            giveLayout(this);
-            giveLayout(this.parentNode);
-            var bg = thisStyle.backgroundImage;
-            bg = bg.split('"')[1];
-        }
-        if (this.src)
-            var bg = this.src;
-        if (thisStyle.backgroundImage || this.src) {
-            this.bgSizeFinder.src = bg;
-            this.imgFill.src      = bg;
-            this.imgFill.type     = 'tile';
-        }
-        this.colorRect.filled    = (thisStyle.backgroundColor != 'transparent');
-        this.colorRect.fillColor = thisStyle.backgroundColor;
-        this.runtimeStyle.backgroundImage = 'none';
-        this.runtimeStyle.backgroundColor = 'transparent';
+	vmlFill: function(el) {
+		if (!el.currentStyle) {
+			return;
+		} else {
+			var elStyle = el.currentStyle;
+		}
+		for (var v in el.vml) {
+			el.vml[v].shape.style.zIndex = elStyle.zIndex;
+		}
+		el.runtimeStyle.backgroundColor = '';
+		el.runtimeStyle.backgroundImage = '';
+		var noColor = (elStyle.backgroundColor == 'transparent');
+		var noImg = true;
+		if (elStyle.backgroundImage != 'none' || el.isImg) {
+			if (!el.isImg) {
+				el.vmlBg = elStyle.backgroundImage;
+				el.vmlBg = el.vmlBg.substr(5, el.vmlBg.lastIndexOf('")')-5);
+			}
+			else {
+				el.vmlBg = el.src;
+			}
+			var lib = this;
+			if (!lib.imgSize[el.vmlBg]) { /* determine size of loaded image */
+				var img = document.createElement('img');
+				lib.imgSize[el.vmlBg] = img;
+				img.className = lib.ns + '_sizeFinder';
+				img.runtimeStyle.cssText = 'behavior:none; position:absolute; left:-10000px; top:-10000px; border:none;'; /* make sure to set behavior to none to prevent accidental matching of the helper elements! */
+				img.attachEvent('onload', function() {
+					this.width  = this.offsetWidth; /* weird cache-busting requirement! */
+					this.height = this.offsetHeight;
+					lib.vmlOffsets(el);
+				});
+				img.src = el.vmlBg;
+				img.removeAttribute('width');
+				img.removeAttribute('height');
+				document.body.insertBefore(img, document.body.firstChild);
+			}
+			el.vml.image.fill.src = el.vmlBg;
+			noImg = false;
+		}
+		el.vml.image.fill.on = !noImg;
+		el.vml.image.fill.color = 'none';
+		el.vml.color.shape.style.backgroundColor = elStyle.backgroundColor;
+		el.runtimeStyle.backgroundImage = 'none';
+		el.runtimeStyle.backgroundColor = 'transparent';
+	},
 
-        return this;
-    },
-
-    /**
+	/**
      * IE can't figure out what do when the offsetLeft and the clientLeft add up
      * to 1, and the VML ends up getting fuzzy... so we have to push/enlarge
      * things by 1 pixel and then clip off the excess
-     *
      */
-    updateVmlDimensions : function() {
-        var thisStyle = this.currentStyle;
-        var size = {
-            'W'   : this.clientWidth + 1,
-            'H'   : this.clientHeight + 1,
-            'w'   : this.bgSizeFinder.width,
-            'h'   : this.bgSizeFinder.height,
-            'L'   : this.offsetLeft,
-            'T'   : this.offsetTop,
-            'bLW' : this.clientLeft,
-            'bTW' : this.clientTop
-        };
-        var fudge = (size.L + size.bLW == 1) ? 1 : 0;
-        if (size.W >= document.body.clientWidth)
-            size.W = document.body.clientWidth - 1;
-        for (var r = 0; r < 2; r++) {
-            this.rects[r].style.width  = size.W + 'px';
-            this.rects[r].style.height = size.H + 'px';
-            this.rects[r].style.left   = (size.L + size.bLW - 1) + 'px';
-            this.rects[r].style.top    = (size.T + size.bTW - 1) + 'px';
-        }
+	vmlOffsets: function(el) {
+		var thisStyle = el.currentStyle;
+		var size = {
+            'W'  : el.clientWidth + 1,
+            'H'  : el.clientHeight + 1,
+            'w'  : this.imgSize[el.vmlBg].width,
+            'h'  : this.imgSize[el.vmlBg].height,
+            'L'  : el.offsetLeft,
+            'T'  : el.offsetTop,
+            'bLW': el.clientLeft,
+            'bTW': el.clientTop};
+		var fudge = (size.L + size.bLW == 1) ? 1 : 0;
 
-        var bg = {
-            'X': 0,
-            'Y': 0
-        };
+		// vml shape, left, top, width, height, origin
+		var makeVisible = function(vml, l, t, w, h, o) {
+			vml.coordsize    = w + ',' + h;
+			vml.coordorigin  = o + ',' + o;
+			vml.path         = 'm0,0l' + w + ',0l' + w + ',' + h + 'l0,' + h + ' xe';
+			vml.style.width  = w + 'px';
+			vml.style.height = h + 'px';
+			vml.style.left   = l + 'px';
+			vml.style.top    = t + 'px';
+		};
+		makeVisible(el.vml.color.shape, (size.L + (el.isImg ? 0 : size.bLW)),
+            (size.T + (el.isImg ? 0 : size.bTW)), (size.W-1), (size.H-1), 0);
+		makeVisible(el.vml.image.shape, (size.L + size.bLW), (size.T + size.bTW),
+            (size.W), (size.H), 1);
 
-        var figurePercentage = function(axis, position) {
-            var fraction = true;
-            switch (position) {
-            case 'left':
-            case 'top':
-                bg[axis] = 0;
-                break;
-            case 'center':
-                bg[axis] = .5;
-                break;
-            case 'right':
-            case 'bottom':
-                bg[axis] = 1;
-                break;
-            default:
-                if (position.search('%') != -1)
-                    bg[axis] = parseInt(position) * .01;
-                else
-                    fraction = false;
-            }
-            var horz = (axis == 'X');
-            bg[axis] = Math.ceil(fraction
-                ? ((size[horz ? 'W' : 'H'] * bg[axis]) - (size[horz
-                    ? 'w'
-                    : 'h'] * bg[axis]))
+		var bg = {'X':0, 'Y':0};
+		var figurePercentage = function(axis, position) {
+			var fraction = true;
+			switch(position) {
+				case 'left':
+				case 'top':
+					bg[axis] = 0;
+					break;
+				case 'center':
+					bg[axis] = .5;
+					break;
+				case 'right':
+				case 'bottom':
+					bg[axis] = 1;
+					break;
+				default:
+					if (position.search('%') != -1) {
+						bg[axis] = parseInt(position)*.01;
+					}
+					else {
+						fraction = false;
+					}
+			}
+			var horz = (axis == 'X');
+			bg[axis] = Math.ceil(fraction 
+                ? ((size[horz ? 'W' : 'H'] * bg[axis]) - (size[horz ? 'w' : 'h'] * bg[axis]))
                 : parseInt(position));
-            if (bg[axis] == 0)
-                bg[axis] = 1;
-        };
-        for (var b in bg)
-            figurePercentage(b, thisStyle['backgroundPosition' + b]);
+			if (bg[axis] == 0) {
+				bg[axis]++;
+			}
+		};
+		for (var b in bg) {
+			figurePercentage(b, thisStyle['backgroundPosition' + b]);
+		}
 
-        this.imgFill.position = (bg.X / size.W) + ',' + (bg.Y / size.H);
-        var bgR = thisStyle.backgroundRepeat;
-        var dC  = {
-            'T' : 1,
-            'R' : size.W + fudge,
-            'B' : size.H,
-            'L' : 1 + fudge
+		el.vml.image.fill.position = (bg.X / size.W) + ',' + (bg.Y / size.H);
+
+		var bgR = thisStyle.backgroundRepeat;
+		var dC = {
+            'T': 1,
+            'R': size.W + fudge,
+            'B': size.H,
+            'L': 1 + fudge
         }; /* these are defaults for repeat of any kind */
-        var altC = {
-            'X' : {
-                'b1' : 'L',
-                'b2' : 'R',
-                'd'  : 'W'
-            },
-            'Y' : {
-                'b1' : 'T',
-                'b2' : 'B',
-                'd'  : 'H'
-            }
+		var altC = {
+            'X': {'b1': 'L', 'b2': 'R', 'd': 'W'},
+            'Y': {'b1': 'T', 'b2': 'B', 'd': 'H'}
         };
-        if (bgR != 'repeat') {
+		if (bgR != 'repeat') {
             // these are defaults for no-repeat - clips down to the image location
-            var c = {
-                'T' : (bg.Y),
-                'R' : (bg.X + size.w),
-                'B' : (bg.Y + size.h),
-                'L' : (bg.X)
+			var c = {
+                'T': (bg.Y),
+                'R': (bg.X + size.w),
+                'B': (bg.Y + size.h),
+                'L': (bg.X)
             };
             // now let's revert to dC for repeat-x or repeat-y
-            if (bgR.search('repeat-') != -1) {
-                var v = bgR.split('repeat-')[1].toUpperCase();
-                c[altC[v].b1] = 1;
-                c[altC[v].b2] = size[altC[v].d];
-            }
-            if (c.B > size.H)
-                c.B = size.H;
-            this.imgRect.style.clip = 'rect(' + c.T + 'px ' + (c.R + fudge)
+			if (bgR.search('repeat-') != -1) {
+				var v = bgR.split('repeat-')[1].toUpperCase();
+				c[altC[v].b1] = 1;
+				c[altC[v].b2] = size[altC[v].d];
+			}
+			if (c.B > size.H) {
+				c.B = size.H;
+			}
+			el.vml.image.shape.style.clip = 'rect(' + c.T + 'px ' + (c.R + fudge)
                 + 'px ' + c.B + 'px ' + (c.L + fudge) + 'px)';
-        } else {
-            this.imgRect.style.clip = 'rect(' + dC.T + 'px ' + dC.R + 'px '
+		}
+		else {
+			el.vml.image.shape.style.clip = 'rect(' + dC.T + 'px ' + dC.R + 'px '
                 + dC.B + 'px ' + dC.L + 'px)';
-        }
-        if (this.isImg) {
-            dC.R++;
-            dC.B++;
-        }
-        this.colorRect.style.clip = 'rect(' + dC.T + 'px ' + dC.R + 'px '
-            + dC.B + 'px ' + dC.L + 'px)';
+		}
+	},
 
-        return this;
+    fixPng : function(el) {
+        el.style.behavior = 'none';
+		if (el.nodeName == 'BODY' || el.nodeName == 'TD' || el.nodeName == 'TR') { /* elements not supported yet */
+			return;
+		}
+		el.isImg = false;
+		if (el.nodeName == 'IMG') {
+			if(el.src.toLowerCase().search(/\.png$/) != -1) {
+				el.isImg = true;
+				el.style.visibility = 'hidden';
+			}
+			else {
+				return;
+			}
+		}
+		else if (el.currentStyle.backgroundImage.toLowerCase().search('.png') == -1) {
+			return;
+		}
+		var lib = jpf.belatedpngfix;
+		el.vml = {color: {}, image: {}};
+		var els = {shape: {}, fill: {}};
+		for (var r in el.vml) {
+			for (var e in els) {
+				var nodeStr = lib.ns + ':' + e;
+				el.vml[r][e] = document.createElement(nodeStr);
+			}
+			el.vml[r].shape.stroked = false;
+			el.vml[r].shape.appendChild(el.vml[r].fill);
+			el.parentNode.insertBefore(el.vml[r].shape, el);
+		}
+        // Don't show blank white shapeangle when waiting for image to load.
+		el.vml.image.shape.fillcolor = 'none';
+        // Ze magic!! Makes image show up.
+		el.vml.image.fill.type = 'tile';
+        // Actually going to apply vml element's style.backgroundColor, so hide the whiteness.
+		el.vml.color.fill.on = false;
+
+		lib.attachHandlers(el);
+
+		lib.giveLayout(el);
+		lib.giveLayout(el.offsetParent);
+
+		/* set up element */
+		lib.applyVML(el);
     }
 };
 
