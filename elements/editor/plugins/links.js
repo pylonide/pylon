@@ -83,6 +83,9 @@ jpf.editor.plugin('link', function(){
             oLink.title  = this.oTitle.value;
         }
         this.editor.selection.collapse(false);
+        
+        // propagate the change AFTER changing back the link to its proper format
+        this.editor.change(this.editor.getValue());
 
         if (e.stop)
             e.stop();
