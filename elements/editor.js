@@ -787,8 +787,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             var s = _self.getXHTML('text');
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
                 var o = _self.plugins.get('pasteword');
-                if (o)
+                if (o) {
                     _self.$propHandlers['value'].call(_self, o.parse(s));
+                    if (_self.realtime)
+                        _self.change(_self.getValue());
+                }
             }
         });
     }
@@ -873,6 +876,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 commandQueue = [];
             }
             switch(code) {
+                case 66:  // B
+                case 98:  // b
+                case 105: // i
+                case 73:  // I
+                case 117: // u
+                case 85:  // U
+                    if ((e.ctrlKey || (jpf.isMac && e.metaKey)) && !e.shiftKey 
+                      && !e.altKey && _self.realtime)
+                        _self.change(_self.getValue());
+                    break;
                 case 8: // backspace
                     found = false;
                     if (_self.selection.getType() == 'Control') {
@@ -903,27 +916,30 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         found = true;
                         break;
                     case 105: // i
-                    case 73: // I
+                    case 73:  // I
                         _self.executeCommand('Italic');
                         found = true;
                         break;
                     case 117: // u
-                    case 85: // U
+                    case 85:  // U
                         _self.executeCommand('Underline');
                         found = true;
                         break;
-                    case 86: // V
+                    case 86:  // V
                     case 118: // v
                         if (!jpf.isGecko)
                             onPaste.call(_self);
                         //found = true;
                         break;
-                    case 37:
-                    case 39:
+                    case 37: // left
+                    case 39: // right
                         found = true;
                 }
-                if (found)
+                if (found) {
                     jpf.AbstractEvent.stop(e);
+                    if (_self.realtime)
+                        _self.change(_self.getValue());
+                }
             }
             else if (!e.ctrlKey && !e.shiftKey && code == 13)
                 _self.dispatchEvent('keyenter', {editor: _self, event: e});
