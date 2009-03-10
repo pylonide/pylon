@@ -428,7 +428,7 @@ jpf.Validation = function(){
 
         this.$setRule("pattern", this.reValidation
             ? "value.match(this.reValidation)" //RegExp
-            : "(" + validation + ")"); //JavaScript
+            : "(" + value + ")"); //JavaScript
     };
 
     this.$propHandlers["min"] = function(value){
