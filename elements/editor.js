@@ -85,8 +85,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!inited || !complete)
             return;
 
-        if (typeof html != "string" || html == "")
-            html = jpf.isIE ? "<br />" : "";
+        if (typeof html != "string")// || html == ""
+            html = "";//jpf.isIE ? "<br />" :
 
         // If the HTML string is the same as the contents of the iframe document,
         // don't do anything...
@@ -268,9 +268,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @type {void}
      */
-    this.$clear = function() {
-        this.value = "";
-        return this.$propHandlers["value"].call(this, "");
+    this.$clear = function(nomsg) {
+        if (!nomsg) {
+            this.value = "";
+            return this.$propHandlers["value"].call(this, "");
+        }
     };
 
     /**
