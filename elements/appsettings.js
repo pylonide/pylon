@@ -200,10 +200,13 @@ jpf.appsettings = {
         }
 
         // #ifdef __WITH_IEPNGFIX
-        this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
-        if (this.iePngFix)
+        this.iePngFix           = !jpf.supportPng24 && (jpf.isTrue(x.getAttribute("iepngfix"))
+            || x.getAttribute("iepngfix-selectors"));
+        if (this.iePngFix) {
+            var aSelectors = (x.getAttribute("iepngfix-selectors") || "img,.pngfix,input").splitSafe(",");
             jpf.belatedpngfix.createVmlNameSpace().createVmlStyleSheet()
-                .fix('img,.pngfix,input');
+                .fix(aSelectors.join(""));
+        }
         // #endif
 
         //#ifdef __DESKRUN
