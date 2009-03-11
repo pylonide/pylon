@@ -114,7 +114,7 @@ jpf.Elements = [
     "video",
     "xslt",
 
-    "appsettings/belatedpngfix",
+    "appsettings/iepngfix",
 
     "audio/type_flash",
 
