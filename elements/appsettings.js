@@ -200,12 +200,15 @@ jpf.appsettings = {
         }
 
         // #ifdef __WITH_IEPNGFIX
-        this.iePngFix           = !jpf.supportPng24 && (jpf.isTrue(x.getAttribute("iepngfix"))
-            || x.getAttribute("iepngfix-selectors"));
+        this.iePngFix           = (!jpf.supportPng24 
+            && (jpf.isTrue(x.getAttribute("iepngfix"))
+            || x.getAttribute("iepngfix-elements")));
         if (this.iePngFix) {
-            var aSelectors = (x.getAttribute("iepngfix-selectors") || "img,.pngfix,input").splitSafe(",");
-            jpf.belatedpngfix.createVmlNameSpace().createVmlStyleSheet()
-                .fix(aSelectors.join(","));
+            // run after the init() has finished, otherwise the body of the 
+            // document will still be empty, thus no elements found.
+            setTimeout(function() {
+                jpf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
+            });
         }
         // #endif
 
