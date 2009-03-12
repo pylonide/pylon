@@ -630,7 +630,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 });*/
 
                 var c = this.selection.getContent();
-                var disallowed = {FONT:1, SPAN:1, H1:1, H2:1, H3:1, H4:1, H5:1, H6:1, PRE:1, ADDRESS:1, BLOCKQUOTE:1, STRONG:1, B:1, U:1, I:1, EM:1, LI:1, OL:1, UL:1, DD:1, DL:1, DT:1};
+                var disallowed = {FONT:1, SPAN:1, H1:1, H2:1, H3:1, H4:1, H5:1, 
+                    H6:1, PRE:1, ADDRESS:1, BLOCKQUOTE:1, STRONG:1, B:1, U:1,
+                    I:1, EM:1, LI:1, OL:1, UL:1, DD:1, DL:1, DT:1};
                 c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
                     return !disallowed[tag] ? m : "";
                 });
@@ -796,7 +798,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     function onClick(e) {
         if (oBookmark && jpf.isGecko) {
-            var oNewBm = this.selection.getBookmark();
+            var oNewBm = _self.selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
                 //this.selection.moveToBookmark(oBookmark);
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
@@ -804,15 +806,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         setTimeout(function() {
+            var rClick = ((e.which == 3) || (e.button == 2));
             if (jpf.window.focussed != this) {
                 //this.$visualFocus(true);
                 _self.focus(e);
             }
-            else if (!e.rightClick)
+            else if (!rClick)
                 _self.$focus(e);
         });
 
-        e.stop();
+        jpf.AbstractEvent.stop(e);
     }
 
     /**
@@ -871,6 +874,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 case 73:  // I
                 case 117: // u
                 case 85:  // U
+                case 86:  // V
+                case 118: // v
                     if ((e.ctrlKey || (jpf.isMac && e.metaKey)) && !e.shiftKey 
                       && !e.altKey && _self.realtime)
                         _self.change(_self.getValue());
@@ -1130,16 +1135,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * @type {void}
     */
     this.$addListeners = function() {
-        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick);
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup);
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown);
-        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(e){
-            this.selection.cache();
+        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e){
+            e = e || window.event;
+            _self.selection.cache();
             jpf.popup.forceHide();
             //this.notifyAll();
-            document.onmousedown(e.event);
-        }).bindWithEvent(this));
+            document.onmousedown(e);
+        });
 
         jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
         jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
