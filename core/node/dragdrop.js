@@ -141,7 +141,7 @@ jpf.DragDrop = function(){
      */
     this.isDragAllowed = function(x){
         //#ifdef __WITH_OFFLINE
-        if(!jpf.offline.canTransact())
+        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
             return false;
         //#endif
 
@@ -174,7 +174,7 @@ jpf.DragDrop = function(){
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE
-        if(!jpf.offline.canTransact())
+        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
             return false;
         //#endif
 

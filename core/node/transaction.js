@@ -217,7 +217,7 @@ jpf.Transaction = function(){
             return false;
             
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.canTransact())
+        if (typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
             return false;
         //#endif
 
@@ -292,7 +292,8 @@ jpf.Transaction = function(){
             //#endif
             
             //#ifdef __WITH_OFFLINE
-            if (!jpf.offline.onLine && !node.getAttribute("get"))
+            if (typeof jpf.offline != "undefined" && !jpf.offline.onLine
+              && !node.getAttribute("get"))
                 return false;
             //#endif
             

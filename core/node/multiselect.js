@@ -286,10 +286,11 @@ jpf.MultiSelect = function(){
             node = null;
 
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.canTransact())
+        var bHasOffline = (typeof jpf.offline != "undefined");
+        if (bHasOffline && !jpf.offline.canTransact())
             return false;
 
-        if (!jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
+        if (bHasOffline && !jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
             return false;
         //#endif
         
@@ -1240,7 +1241,8 @@ jpf.MultiSelect = function(){
         //#endif
 
         //#ifdef __WITH_OFFLINE_STATE
-        if (jpf.offline.state.enabled && jpf.offline.state.realtime) {  //@todo please optimize
+        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
+          && jpf.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < valueList.length; i++)
                 sel.push(jpf.remote.xmlToXpath(valueList[i], null, true));
 
@@ -1253,7 +1255,8 @@ jpf.MultiSelect = function(){
 
     //#ifdef __WITH_OFFLINE_STATE
     function fSelState(){
-        if (jpf.offline.state.enabled && jpf.offline.state.realtime) {
+        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
+          && jpf.offline.state.realtime) {
             jpf.offline.state.set(this, "selstate",
                 [this.indicator
                     ? jpf.remote.xmlToXpath(this.indicator, null, true)

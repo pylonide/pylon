@@ -882,7 +882,8 @@ jpf.XmlDatabase = function(){
     var notifyQueue = {}, notifyTimer;
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
         //#ifdef __WITH_OFFLINE
-        if (jpf.offline.models.enabled && jpf.offline.models.realtime) {
+        if (typeof jpf.offline != "undefined" && jpf.offline.models.enabled
+          && jpf.offline.models.realtime) {
             var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
             if (model) jpf.offline.models.markForUpdate(model);
         }

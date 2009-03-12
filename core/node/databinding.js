@@ -336,8 +336,9 @@ jpf.DataBinding = function(){
           || this.actionRules && !actionRule)
             return false;
 
+        var bHasOffline = typeof jpf.offline != "undefined";
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.canTransact())
+        if (bHasOffline && !jpf.offline.canTransact())
             return false;
         //#endif
 
@@ -360,11 +361,11 @@ jpf.DataBinding = function(){
 
         //Check if we should attain a lock (when offline, we just pretend to get it)
         var lockInstruction = actionRule ? actionRule.getAttribute("lock") : null;
-        if ((!jpf.offline.enabled || !jpf.offline.onLine) && lockInstruction) {
+        if ((bHasOffline && (!jpf.offline.enabled || !jpf.offline.onLine)) && lockInstruction) {
             var curLock = lock[name] = {
-                start      : jpf.offline.onLine
-                                ? new Date().getTime()
-                                : jpf.offline.offlineTime,
+                start      : bHasOffline && !jpf.offline.onLine
+                                ? jpf.offline.offlineTime
+                                : new Date().getTime(),
                 stopped    : false,
                 xmlContext : xmlContext,
                 instr      : lockInstruction,
@@ -496,7 +497,7 @@ jpf.DataBinding = function(){
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if(!jpf.offline.canTransact())
+        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
             return false;
         //#endif
 
@@ -1388,7 +1389,7 @@ jpf.DataBinding = function(){
         if (this.hasLoadStatus(xmlRootNode)) return;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (!jpf.offline.onLine) {
+        if (typeof jpf.offline != "undefined" && !jpf.offline.onLine) {
             jpf.offline.transactions.actionNotAllowed();
             this.loadedWhenOffline = true;
 
@@ -2711,8 +2712,9 @@ jpf.MultiselectBinding = function(){
         //Select First Child
         if (this.selectable) {
             //#ifdef __WITH_OFFLINE_STATE
-            var sel
-            if (!this.firstLoad && jpf.offline.state.enabled && jpf.offline.state.realtime) {
+            var sel, bHasOffline = (typeof jpf.offline != "undefined");
+            if (!this.firstLoad && bHasOffline && jpf.offline.state.enabled
+              && jpf.offline.state.realtime) {
                 sel = jpf.offline.state.get(this, "selection");
                 this.firstLoad = true;
             }

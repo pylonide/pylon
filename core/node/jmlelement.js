@@ -385,7 +385,7 @@ jpf.JmlElement = function(){
 
         // #ifdef __WITH_OFFLINE_STATE
         var offlineLookup;
-        if (jpf.offline.state.enabled)
+        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled)
             offlineLookup = jpf.offline.state.getAll(this);
         // #endif
 
@@ -564,7 +564,7 @@ jpf.JmlElement = function(){
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.onLine)
+        if (typeof jpf.offline != "undefined" && !jpf.offline.onLine)
             return false; //it's the responsibility of the dev to check this
         //#endif
 

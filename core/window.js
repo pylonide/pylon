@@ -477,7 +477,8 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __WITH_OFFLINE_STATE
-        if (jpf.offline.state.enabled && jpf.offline.state.realtime)
+        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
+          && jpf.offline.state.realtime)
             jpf.offline.state.set(this, "focus", jmlNode.name || jmlNode.uniqueId);
         //#endif
     };
@@ -716,7 +717,7 @@ jpf.WindowImplementation = function(){
      */
     this.focusDefault = function(){
         //#ifdef __WITH_OFFLINE_STATE
-        if (jpf.offline.state.enabled) {
+        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled) {
             var node, id = jpf.offline.state.get(this, "focus");
 
             if (id == -1)
