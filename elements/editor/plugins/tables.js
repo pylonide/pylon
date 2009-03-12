@@ -84,7 +84,7 @@ jpf.editor.plugin('table', function() {
         //this.restoreSelection();
         //if (jpf.isIE)
         //this.editor.selection.set();
-        this.editor.insertHTML(aOut.join(''));
+        this.editor.insertHTML(aOut.join(''), true);
         this.editor.selection.collapse(false);
         this.editor.$visualFocus();
     };

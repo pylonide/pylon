@@ -32,7 +32,7 @@ jpf.editor.plugin('hr', function(){
 
     this.execute = function(editor) {
         if (jpf.isGecko || jpf.isIE)
-            editor.insertHTML('<hr />');
+            editor.insertHTML('<hr />', true);
         else
             editor.executeCommand('InsertHorizontalRule');
 

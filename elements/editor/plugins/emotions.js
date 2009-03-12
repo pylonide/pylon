@@ -81,7 +81,7 @@ jpf.editor.plugin('emotions', function() {
         if (!icon) return;
         jpf.popup.forceHide();
         this.editor.insertHTML('<img src="' + this.emotionsPath
-            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
+            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />', true);
         //this.restoreSelection();
     };
 

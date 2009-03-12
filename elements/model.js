@@ -668,7 +668,7 @@ jpf.model = function(data, caching){
         }
         else {
             //#ifdef __WITH_OFFLINE_MODELS
-            if (jpf.offline.models.enabled) {
+            if (typeof jpf.offline != "undefined" && jpf.offline.models.enabled) {
                 //Check if there's stored data
                 if (jpf.offline.models.loadModel(this)) {
                     return;

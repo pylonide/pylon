@@ -278,7 +278,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * API; insert any given text (or HTML) at cursor position into the Editor
      *
-     * @param {String} html
+     * @param {String}  html
+     * @param {Boolean} bNoParse Prevents parsing the HTML, which might alter the string
+     * @param {Boolean} bNoFocus Prevents setting the focus back to the editor area
      * @type  {void}
      */
     this.insertHTML = function(html, bNoParse, bNoFocus) {

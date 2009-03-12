@@ -229,7 +229,7 @@ jpf.appsettings = {
 
         //#ifdef __WITH_OFFLINE
         this.offline = x.getAttribute("offline");
-        if (this.offline)
+        if (this.offline && typeof jpf.offline != "undefined")
             jpf.offline.init(this.offline);
         //#endif
 

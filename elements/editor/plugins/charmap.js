@@ -95,7 +95,7 @@ jpf.editor.plugin('charmap', function() {
         if (sCode) {
             jpf.popup.forceHide();
             //this.storeSelection();
-            this.editor.insertHTML(sCode);
+            this.editor.insertHTML(sCode, true);
             //this.restoreSelection();
         }
     };

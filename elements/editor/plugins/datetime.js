@@ -64,7 +64,7 @@ jpf.editor.dateTimePlugin = function(sName) {
                  .replace("%a", "" + this.i18n.days_short[d.getDay()])
                  .replace("%%", "%");
 
-        editor.insertHTML(fmt);
+        editor.insertHTML(fmt, true);
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

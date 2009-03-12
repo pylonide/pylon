@@ -1188,7 +1188,7 @@ jpf.xmpp = function(){
             to only contacts. This can be more useful than using XMPP's server
             storage solution, because of the feedback to user.
         */
-        if (!jpf.offline.onLine) {
+        if (typeof jpf.offline != "undefined" && !jpf.offline.onLine) {
             if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = {

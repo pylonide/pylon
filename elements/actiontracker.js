@@ -158,10 +158,12 @@ jpf.actiontracker = function(parentNode){
         this.setProperty("undolength", stackDone.length);
 
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-        var t = jpf.offline.transactions;
-        if (t.doStateSync) {
-            t.addAction(this, UndoObj, "undo");
-            t.clearActions(this, "redo");
+        if (typeof jpf.offline != "undefined") {
+            var t = jpf.offline.transactions;
+            if (t.doStateSync) {
+                t.addAction(this, UndoObj, "undo");
+                t.clearActions(this, "redo");
+            }
         }
         //#endif
 
@@ -262,7 +264,7 @@ jpf.actiontracker = function(parentNode){
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
             //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-            if (jpf.offline.transactions.doStateSync) {
+            if (typeof jpf.offline != "undefined" && jpf.offline.transactions.doStateSync) {
                 jpf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
                 jpf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
             }
@@ -309,9 +311,11 @@ jpf.actiontracker = function(parentNode){
                 stackUndone = [];
 
                 //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-                var t = jpf.offline.transactions;
-                if (t.doStateSync)
-                    t.clear("undo|redo");
+                if (typeof jpf.offline != "undefined") {
+                    var t = jpf.offline.transactions;
+                    if (t.doStateSync)
+                        t.clear("undo|redo");
+                }
                 //#endif
 
                 return false;
@@ -363,7 +367,7 @@ jpf.actiontracker = function(parentNode){
                        is it intuitive enough for the user that redo will
                        let the user retry the action??
             */
-            if (!jpf.offline.reloading)
+            if (typeof jpf.offline != "undefined" && !jpf.offline.reloading)
                 this.undo(UndoObj.id, extra.userdata, true);
 
             if (callback)
@@ -416,7 +420,7 @@ jpf.actiontracker = function(parentNode){
             execStack.length--;
 
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
-            if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+            if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
                 jpf.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
@@ -448,7 +452,7 @@ jpf.actiontracker = function(parentNode){
         execStack.push(qItem) - 1;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+        if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
             jpf.offline.transactions.addAction(this, qItem, "queue");
         //#endif
 
@@ -476,7 +480,7 @@ jpf.actiontracker = function(parentNode){
         var lastItem = execStack.shift();
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+        if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
             jpf.offline.transactions.removeAction(this, null, "queue");
         //#endif
 
@@ -609,7 +613,9 @@ jpf.UndoData = function(settings, at){
             : jpf.remote;
 
         //Record arguments
-        var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
+        var sLookup = (typeof jpf.offline != "undefined" && jpf.offline.sLookup)
+            ? jpf.offline.sLookup
+            : (jpf.offline.sLookup = {});
         if (!sLookup.count) sLookup.count = 0;
         var xmlNode, xmlId, args = this.args.slice();
 
@@ -700,7 +706,9 @@ jpf.UndoData = function(settings, at){
                 || jpf.lookup(this.argsModel);
 
             //Record arguments
-            var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
+            var sLookup =  (typeof jpf.offline != "undefined" && jpf.offline.sLookup)
+                ? jpf.offline.sLookup
+                : (jpf.offline.sLookup = {});
             if (!sLookup.count) sLookup.count = 0;
 
             var args = this.args;

@@ -193,10 +193,11 @@ jpf.http = function(){
             options = {};
 
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.onLine && options.notWhenOffline)
+        var bHasOffline = (typeof jpf.offline != "undefined");
+        if (bHasOffline && !jpf.offline.onLine && options.notWhenOffline)
             return false;
 
-        if (!jpf.offline.onLine && !options.ignoreOffline) {
+        if (bHasOffline && !jpf.offline.onLine && !options.ignoreOffline) {
             if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = jpf.extend({

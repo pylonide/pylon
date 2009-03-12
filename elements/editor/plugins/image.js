@@ -72,7 +72,7 @@ jpf.editor.plugin('image', function(){
             if (!oUrl.protocol || !oUrl.host || !oUrl.file) 
                 alert("Please enter a valid URL");
             else
-                this.editor.insertHTML('<img src="' + sUrl + '" border="0" />');
+                this.editor.insertHTML('<img src="' + sUrl + '" border="0" />', true);
         }
     };
 
