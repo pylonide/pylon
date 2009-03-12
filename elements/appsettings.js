@@ -91,6 +91,7 @@ jpf.appsettings = {
 
     tags               : {},
     defaults           : {},
+    baseurl            : "",
 
     init : function(){
         //#ifdef __WITH_PARTIAL_JML_LOADING

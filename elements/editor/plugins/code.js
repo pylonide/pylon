@@ -105,7 +105,12 @@ jpf.editor.plugin('code', function() {
             }
         }
 
-        _self.editor.change(html);
+        if (_self.editor.$value.replace(/[\r\n]/g, "") == html.replace(/[\r\n]/g, "")) {
+            _self.editor.$propHandlers["value"].call(_self.editor, html);
+        }
+        else 
+            _self.editor.change(html);
+
         return true;
     }
 

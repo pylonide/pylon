@@ -122,12 +122,14 @@ var jpf = {
         this.isChrome    = sAgent.indexOf("chrome/") != -1;
         this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
         this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
+        
+        var found;
         this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
-        this.isIE50      = this.isIE && sAgent.indexOf("msie 5.0") != -1;
-        this.isIE55      = this.isIE && sAgent.indexOf("msie 5.5") != -1;
-        this.isIE6       = this.isIE && sAgent.indexOf("msie 6.") != -1;
-        this.isIE7       = this.isIE && sAgent.indexOf("msie 7.") != -1;
-        this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1;
+        this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
+        this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
+        this.isIE6       = this.isIE && !found && sAgent.indexOf("msie 6.") != -1 && (found = true);
+        this.isIE55      = this.isIE && !found && sAgent.indexOf("msie 5.5") != -1 && (found = true);
+        this.isIE50      = this.isIE && !found && sAgent.indexOf("msie 5.0") != -1 && (found = true);
 
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
@@ -1027,7 +1029,7 @@ var jpf = {
     getJmlDocFromString : function(xmlString){
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
-            .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g,
+            .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
             function(m){ return m.toLowerCase(); });
 
         if (!this.supportNamespaces)

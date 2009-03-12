@@ -2038,7 +2038,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
-                        _self.oHead.scrollLeft = _self.oDoc.documentElement.scrollLeft;
+                        _self.oHead.scrollLeft = _self.oInt.scrollLeft;
                 };
         }
         

@@ -333,9 +333,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /&apos;/g,
                 /*
                     Ruben: due to a bug in IE and FF this regexp won't fly:
-                    /((?:[^<]*|<(?:span|strong|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
+                    /((?:[^<]*|<(?:span|strong|em|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
                 */
-                /(<(\/?)(span|strong|u|i|b|a|strike|sup|sub|font|img)(?:\s+[\s\S]*?)?>)|(<br[\s\S]*?>)|(<(\/?)([\w\-]+)(?:\s+[\s\S]*?)?>)|([^<>]*)/gi, //expensive work around
+                /(<(\/?)(span|strong|em|u|i|b|a|strike|sup|sub|font|img)(?:\s+[\s\S]*?)?>)|(<br[\s\S]*?>)|(<(\/?)([\w\-]+)(?:\s+[\s\S]*?)?>)|([^<>]*)/gi, //expensive work around
                 /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
                 /<p><\/p>/gi,
                 /<a( )([^>]+)\/>|<a\/>/gi
@@ -491,7 +491,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /(\w)=([^'"\s>]+)/gi,
                 /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
                 /<p>&nbsp;$/mig,
-                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
+                /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|em|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
                 /<\/p>/gi, //<p>&nbsp;<\/p>|
                 /<p>/gi,
                 /<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g
@@ -584,7 +584,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
                             else {
                                 str.push("<p>", 
-                                    s || strP.join("").trim() || "&nbsp;",  //).replace(/<br \/>$/, "")
+                                    (s || strP.join("").trim() || "&nbsp;").replace(/<br \/>[\s\r\n]*$/, ""),
                                     "</p>");
                                 strP = [];
                             }
@@ -597,7 +597,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     capture = false;
                 }
             });
-            str.push(strP.join(""));
+            if (strP.length)
+                str.push("<p>" + strP.join("").replace(/<br \/>[\s\r\n]*$/, "") + "</p>");
             html = str.join("");
         }
         else {
