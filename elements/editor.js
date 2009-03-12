@@ -819,14 +819,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
+        var which = e.which, button = e.button;
         setTimeout(function() {
-            var rClick = ((e.which == 3) || (e.button == 2));
+            var rClick = ((which == 3) || (button == 2));
             if (jpf.window.focussed != this) {
                 //this.$visualFocus(true);
-                _self.focus(e);
+                _self.focus({});
             }
             else if (!rClick)
-                _self.$focus(e);
+                _self.$focus({});
         });
 
         jpf.AbstractEvent.stop(e);
