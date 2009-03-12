@@ -249,7 +249,21 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return (this.$value = this.exportHtml(this.getXHTML('text'), bStrict));
+        var xhtml = (this.$value = this.exportHtml(this.getXHTML('text'), bStrict));
+        if (this.output == "dom") { //@todo might need a bit more love...
+            var dom      = jpf.getXml('<jpf_cool>' + xhtml + '</jpf_cool>'),
+                fragment = document.createDocumentFragment();
+            for (var i = 0, j = dom.childNodes.length; i < j; i++) {
+                try {
+                    fragment.appendChild(dom.childNodes[i]);
+                }
+                catch (ex) {}
+            }
+
+            return fragment;
+        }
+
+        return xhtml;
     };
 
     /**
