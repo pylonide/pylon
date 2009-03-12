@@ -778,12 +778,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             var s = _self.getXHTML('text');
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
                 var o = _self.plugins.get('pasteword');
-                if (o) {
+                if (o)
                     _self.$propHandlers['value'].call(_self, o.parse(s));
-                    if (_self.realtime)
-                        _self.change(_self.getValue());
-                }
             }
+            if (_self.realtime)
+                _self.change(_self.getValue());
         });
     }
 
@@ -874,8 +873,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 case 73:  // I
                 case 117: // u
                 case 85:  // U
-                case 86:  // V
-                case 118: // v
+                //case 86:  // V |_ See onPaste()
+                //case 118: // v |  event handler...
                     if ((e.ctrlKey || (jpf.isMac && e.metaKey)) && !e.shiftKey 
                       && !e.altKey && _self.realtime)
                         _self.change(_self.getValue());
