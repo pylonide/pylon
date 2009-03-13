@@ -67,6 +67,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             'justifyfull', 'removeformat', 'cut', 'copy',
                             'paste', 'outdent', 'indent', 'undo', 'redo'];
     this.$classToolbar   = 'editor_Toolbar';
+    this.language        = 'en_GB';//'nl_NL';
 
     this.oDoc = this.oWin = null;
 
@@ -79,7 +80,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$booleanProperties["imagehandles"] = true;
     this.$booleanProperties["tablehandles"] = true;
     this.$supportedProperties.push("value", "realtime", "imagehandles", 
-        "tablehandles", "plugins", "output", "state");
+        "tablehandles", "plugins", "output", "state", "language");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -167,6 +168,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.realtime = typeof value == "boolean"
             ? value
             : jpf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
+    };
+    
+    this.$propHandlers["language"] = function(value){
+        // @todo implement realtime language switching
     };
 
     /**
@@ -1342,6 +1347,27 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         for (var item in oButtons)
             this.notify(item, state);
     };
+    
+    /**
+     * Returns the translated key from a locale pack/ collection
+     *
+     * @param {String}  key
+     * @param {Boolean} bIsPlugin
+     * @type  {String}
+     * @private
+     */
+    function _(key, bIsPlugin) {
+        // #ifdef __DEBUG
+        if ((!bIsPlugin && !jpf.editor.i18n[_self.language][key])
+          || (bIsPlugin && !jpf.editor.i18n[_self.language]['plugins'][key]))
+            jpf.console.error('Translation does not exist' 
+                + (bIsPlugin ? ' for plugin' : '') + ': ' + key);
+        // #endif
+        
+        return bIsPlugin 
+            ? jpf.editor.i18n[_self.language]['plugins'][key]
+            : jpf.editor.i18n[_self.language][key];
+    }
 
     /**** Init ****/
 
@@ -1425,13 +1451,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
 
-                        oButton.setAttribute("title", plugin.name);
+                        oButton.setAttribute("title", _(plugin.name, true));
                     }
                     else {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
 
-                        oButton.setAttribute("title", item);
+                        oButton.setAttribute("title", _(item));
                     }
 
                     oButton.setAttribute("onmousedown", "jpf.all["
@@ -1462,6 +1488,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (this.$jml.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
                 .call(this, this.$jml.getAttribute("plugins"));
+        }
+        if (this.$jml.getAttribute("language")) {
+            this.$propHandlers["language"]
+                .call(this, this.$jml.getAttribute("language"));
         }
 
         this.plugins   = new jpf.editor.plugins(this.$plugins, this);
@@ -1631,6 +1661,117 @@ jpf.editor.ALTP           = {
     end  : '</p>', //'</div>',
     text : '{jpf_placeholder}',
     node : null
+};
+
+jpf.editor.i18n = {
+    'en_GB': {
+        'bold': 'Bold',
+        'italic': 'Italic',
+        'underline': 'Underline',
+        'strikethrough': 'Strikethrough',
+        'justifyleft': 'Align text left',
+        'justifycenter': 'Center',
+        'justifyright': 'Align text right',
+        'justifyfull': 'Justify',
+        'removeformat': 'Clear formatting',
+        'cut': 'Cut',
+        'copy': 'Copy',
+        'paste': 'Paste',
+        'outdent': 'Decrease indent',
+        'indent': 'Increase indent',
+        'undo': 'Undo',
+        'redo': 'Redo',
+        'plugins': {
+            'anchor': 'Insert anchor',
+            'blockquote': 'Blockquote',
+            'charmap': 'Character map',
+            'code': 'HTML source view',
+            'forecolor': 'Font color',
+            'backcolor': 'Highlight color',
+            'insertdate': 'Insert current date',
+            'inserttime': 'Insert current time',
+            'rtl': 'Change text direction to right-to-left',
+            'ltr': 'Change text direction to left-to-right',
+            'emotions': 'Insert emotion',
+            'fonts': 'Font',
+            'fontsize': 'Font size',
+            'fontstyle': 'Font style',
+            'paragraph': 'Paragraph style',
+            'help': 'Help',
+            'hr': 'Insert horizontal rule',
+            'image': 'Insert image',
+            'imagespecial': 'Choose an image to insert',
+            'link': 'Insert hyperlink',
+            'unlink': 'Remove hyperlink',
+            'bullist': 'Bullets',
+            'numlist': 'Numbering',
+            'media': 'Insert medium',
+            'pastetext': 'Paste plaintext',
+            'print': 'Print document',
+            'preview': 'Preview document',
+            'scayt': 'Turn spellcheck on/ off',
+            'search': 'Search',
+            'replace': 'Search and Replace',
+            'sub': 'Subscript',
+            'sup': 'Superscript',
+            'table': 'Insert table',
+            'visualaid': 'Toggle visual aid on/ off'
+        }
+    },
+     'nl_NL': {
+        'bold': 'Vet',
+        'italic': 'Schuingedrukt',
+        'underline': 'Onderstreept',
+        'strikethrough': 'Doorgestreept',
+        'justifyleft': 'Recht uitlijnen',
+        'justifycenter': 'Centreren',
+        'justifyright': 'Rechts uitlijnen',
+        'justifyfull': 'Justify',
+        'removeformat': 'Stijlen verwijderen',
+        'cut': 'Knippen',
+        'copy': 'Kopieren',
+        'paste': 'Plakken',
+        'outdent': 'Inspringen verkleinen',
+        'indent': 'Inspringen vergroten',
+        'undo': 'Ongedaan maken',
+        'redo': 'Opnieuw',
+        'plugins': {
+            'anchor': 'Anchor invoegen',
+            'blockquote': 'Blockquote',
+            'charmap': 'Speciale tekens',
+            'code': 'HTML broncode',
+            'forecolor': 'Tekstkleur',
+            'backcolor': 'Markeerkleur',
+            'insertdate': 'Huidige datum invoegen',
+            'inserttime': 'Huidige tijd invoegen',
+            'rtl': 'Verander tekstrichting naar rechts-naar-links',
+            'ltr': 'Verander tekstrichting naar links-naar-rechts',
+            'emotions': 'Emoticon invoegen',
+            'fonts': 'Lettertype',
+            'fontsize': 'Letter grootte',
+            'fontstyle': 'Tekststijl',
+            'paragraph': 'Paragraafstijl',
+            'help': 'Hulp',
+            'hr': 'Horizontale lijn invoegen',
+            'image': 'Afbeelding invoegen',
+            'imagespecial': 'Afbeelding kiezen',
+            'link': 'Link invoegen',
+            'unlink': 'Link verwijderen',
+            'bullist': 'Ongenummerd',
+            'numlist': 'Genummerd',
+            'media': 'Medium invoegen',
+            'pastetext': 'Tekst Plakken',
+            'print': 'Printen',
+            'preview': 'Voorbeeldvertoning',
+            'scayt': 'Spelling check aan/ uit',
+            'search': 'Zoeken',
+            'replace': 'Zoeken en vervangen',
+            'sub': 'Subscript',
+            'sup': 'Superscript',
+            'table': 'Tabel invoegen',
+            'visualaid': 'Visuele hulp aan/ uit'
+        }
+    }
 };
 
 // #endif
