@@ -407,6 +407,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     else {
                         if ((bdepth.length || lastBlockClosed) && br.indexOf("_jpf_marker") > -1) {
+                            debugger;
                             //donothing
                         }
                         else
@@ -457,9 +458,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     
                     str.push(block);
                     capture = false;
-                    
-                    lastBlockClosed = lastBlockClosed == 2 ? 1 : false;
                 }
+                
+                lastBlockClosed = lastBlockClosed == 2 ? 1 : false;
             });
             var s;
             if ((s = strP.join("")).trim())
