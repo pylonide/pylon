@@ -129,12 +129,17 @@ jpf.history = {
      * @param {String}  name    the new hash value.
      * @param {Boolean} timed   whether to add a delay to setting the value.
      */
+    to_name : null,
     setHash : function(name, timed){
-        if (this.changing || this.page == name || location.hash == "#" + name)
+        if (this.changing || this.page == name || location.hash == "#" + name) {
+            this.to_name = name;
             return;
+        }
 
-        if (jpf.isIE && !timed)
-            return setTimeout(function(){jpf.history.setHash(name, true);}, 200);
+        if (jpf.isIE && !timed) {
+            this.to_name = name;
+            return setTimeout(function(){jpf.history.setHash(jpf.history.to_name, true);}, 200);
+        }
 
         this.changePage(name);
         if (!this.inited)

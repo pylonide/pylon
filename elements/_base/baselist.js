@@ -537,8 +537,8 @@ jpf.BaseList = function(){
             var elSelect  = this.$getLayoutNode("item", "select");
 
             Item.setAttribute("class", "more");
-            elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId
-                + ').$setStyleClass(this, "more_down");');
+            elSelect.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId
+                + ');o.clearSelection();o.$setStyleClass(this, "more_down");');
             elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
                 + ').$setStyleClass(this, "", ["more_down"]);');
             elSelect.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId

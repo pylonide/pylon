@@ -119,7 +119,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["margin"]     =
     this.$propHandlers["cellheight"] = function(value){
         if (!update && jpf.loaded)
-            l.queue(this.oExt, updater);
+            l.queue(_self.oExt, updater);
         update = true;
     };
     
@@ -190,6 +190,19 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         update = true;
     });
     
+    function propChange(e){
+        if (update && e.name == "visible" && e.value == true && _self.oExt.offsetHeight) {
+            _self.$updateGrid();
+            jpf.layout.activateRules(_self.oExt);
+            
+            var p = _self;
+            while (p) {
+                p.removeEventListener(propChange);
+                p = p.parentNode;
+            }
+        }
+    };
+    
     /**
      * @macro
      */
@@ -199,9 +212,35 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : expr;
     }
     
+    var timer;
     this.$updateGrid = function(){
         if (!update)
             return;
+        
+        if (!this.oExt.offsetHeight) {
+            this.addEventListener("propertychange", propChange);
+            
+            if (timer)
+                return;
+
+            var p = this.parentNode;
+            while(p) {
+                p.addEventListener("propertychange", propChange);
+                p = p.parentNode;
+            }
+            
+            /*if (!this.oExt.parentNode.offsetHeight) {
+                var timer = setInterval(function(){
+                    if (_self.oExt.offsetHeight) {
+                        _self.$updateGrid();
+                        clearInterval(timer);
+                        timer = null;
+                    }
+                }, 10);
+            }*/
+            
+            return;
+        }
         
         var pWidth  = "pWidth";
         var pHeight = "pHeight";
@@ -214,7 +253,6 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.padding    = parseInt(this.padding);
         
         var oCols   = [];
-
         var col, row, oExt, diff, j, m, cellInfo;
         this.ids = [this.oExt];
         var span, jNode, jNodes = this.childNodes;

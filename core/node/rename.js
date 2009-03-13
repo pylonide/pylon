@@ -164,7 +164,7 @@ jpf.Rename = function(){
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
         elCaption.host = this;
 
-        if (this.$getOption("main", "scalerename")) {
+        if (jpf.isTrue(this.$getOption("main", "scalerename"))) {
             var diff = jpf.getWidthDiff(this.oTxt);
             this.oTxt.style.width = (wdt - diff) + "px";
         }
@@ -311,7 +311,8 @@ jpf.Rename = function(){
             try {
                 r.moveToElementText(this);
 
-                if (typeof this.host.$renameStartCollapse != "undefined")
+                if (jpf.isFalse(this.host.$getOption("main", "selectrename")) 
+                  || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
                     r.collapse(this.host.$renameStartCollapse);
             } catch(e) {} //BUG!!!!
 

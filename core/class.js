@@ -263,11 +263,18 @@ jpf.Class = function(){
                 found = true;
             }
 
-            if (!found)
-                this.$handlePropSet(prop, eval(pValue));
+            //if (!found)
+                //this.$handlePropSet(prop, eval(pValue));
+                var value = eval(pValue);
+                this[prop] = !value;
+                this.setProperty(prop, value);
         }
-        else
-            this.$handlePropSet(prop, pValue);
+        else {
+            //this.$handlePropSet(prop, pValue);
+            var value = eval(pValue);
+            this[prop] = !value;
+            this.setProperty(prop, eval(pValue));
+        }
     }
 
     // #endif
@@ -307,7 +314,7 @@ jpf.Class = function(){
             }
         }
         
-        // @todo place ifdef here
+        // #ifdef __WITH_PROPERTY_CHANGE
         if (this["onpropertychange"] || events_stack["propertychange"]) {
             this.dispatchEvent("propertychange", {
                 name          : prop,
@@ -315,6 +322,7 @@ jpf.Class = function(){
                 originalvalue : oldvalue
             });
         }
+        //#endif
         
         //#ifdef __WITH_PROPERTY_BINDING
         var nodes = boundObjects[prop];

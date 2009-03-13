@@ -781,6 +781,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
+            if (!oButtons)
+                return;
 
             var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {

@@ -2747,12 +2747,20 @@ jpf.MultiselectBinding = function(){
             else
             //#endif
             if (this.autoselect) {
-                if (this.renderRoot)
-                    this.select(XMLRoot);
-                else if (nodes.length)
-                    this.$selectDefault(XMLRoot);
-                else
-                    this.setConnections();
+                if (this.value) {
+                    var value = this.value;
+                    this.value = !this.value;
+                    this.setProperty("value", value);
+                }
+                
+                if (!this.selected) {
+                    if (this.renderRoot)
+                        this.select(XMLRoot);
+                    else if (nodes.length)
+                        this.$selectDefault(XMLRoot);
+                    else
+                        this.setConnections();
+                }
             }
             else {
                 this.clearSelection(null, true);

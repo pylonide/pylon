@@ -491,7 +491,7 @@ jpf.JmlElement = function(){
 
     this.$handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
-        if (!force && this.xmlRoot && this.bindingRules
+        if (!force && !this.hasFeature(__MULTISELECT__) && this.xmlRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse) {
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.xmlRoot, null, null, true),
