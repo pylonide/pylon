@@ -162,7 +162,8 @@ jpf.editor.plugin('table', function() {
         if (iCurrentX > 0 && iCurrentY > 0) {
             oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
             oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
-            var sCaption = iCurrentY + " x " + iCurrentX + " Table";
+            var sCaption = iCurrentY + " x " + iCurrentX + " " 
+                + _self.editor.translate('table_noun', true);
             if (sCurrentCaption != sCaption)
                 oStatus.innerHTML = sCurrentCaption = sCaption;
         }
@@ -174,7 +175,7 @@ jpf.editor.plugin('table', function() {
         if (bMorphing) return;
         oTableSel.style.width = oTableSel.style.height = "0px";
         iCurrentX = iCurrentY = 0;
-        oStatus.innerHTML = sCurrentCaption = "Cancel";
+        oStatus.innerHTML = sCurrentCaption = _self.editor.translate('cancel');
     }
 
     function statusClick(e) {
@@ -196,7 +197,8 @@ jpf.editor.plugin('table', function() {
                 <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
                 <div id="' + idTable + '" class="editor_paneltable"></div>\
             </div>\
-            <div id="' + idStatus + '" class="editor_paneltablecancel">Cancel</div>';
+            <div id="' + idStatus + '" class="editor_paneltablecancel">' 
+                + this.editor.translate('cancel') + '</div>';
 
         oTableCont = document.getElementById(idTableCont);
         oTableSel  = document.getElementById(idTableSel);

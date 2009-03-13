@@ -140,7 +140,7 @@ jpf.editor.plugin('link', function(){
 
         this.appendJmlNode(
             '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
-             <j:button caption="Insert" \
+             <j:button caption="' + this.editor.translate('insert') + '" \
                onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',
           document.getElementById(idBtns))

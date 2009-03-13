@@ -1356,7 +1356,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {String}
      * @private
      */
-    function _(key, bIsPlugin) {
+    this.translate = function(key, bIsPlugin) {
         // #ifdef __DEBUG
         if ((!bIsPlugin && !jpf.editor.i18n[_self.language][key])
           || (bIsPlugin && !jpf.editor.i18n[_self.language]['plugins'][key]))
@@ -1367,7 +1367,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         return bIsPlugin 
             ? jpf.editor.i18n[_self.language]['plugins'][key]
             : jpf.editor.i18n[_self.language][key];
-    }
+    };
 
     /**** Init ****/
 
@@ -1451,13 +1451,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
 
-                        oButton.setAttribute("title", _(plugin.name, true));
+                        oButton.setAttribute("title", this.translate(plugin.name, true));
                     }
                     else {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
 
-                        oButton.setAttribute("title", _(item));
+                        oButton.setAttribute("title", this.translate(item));
                     }
 
                     oButton.setAttribute("onmousedown", "jpf.all["
@@ -1665,6 +1665,8 @@ jpf.editor.ALTP           = {
 
 jpf.editor.i18n = {
     'en_GB': {
+        'cancel': 'Cancel',
+        'insert': 'Insert',
         'bold': 'Bold',
         'italic': 'Italic',
         'underline': 'Underline',
@@ -1707,6 +1709,7 @@ jpf.editor.i18n = {
             'numlist': 'Numbering',
             'media': 'Insert medium',
             'pastetext': 'Paste plaintext',
+            'paste_keyboardmsg': 'Use %s on your keyboard to paste the text into the window.',
             'print': 'Print document',
             'preview': 'Preview document',
             'scayt': 'Turn spellcheck on/ off',
@@ -1715,10 +1718,13 @@ jpf.editor.i18n = {
             'sub': 'Subscript',
             'sup': 'Superscript',
             'table': 'Insert table',
+            'table_noun': 'Table',
             'visualaid': 'Toggle visual aid on/ off'
         }
     },
      'nl_NL': {
+        'cancel': 'Annuleren',
+        'insert': 'Invoegen',
         'bold': 'Vet',
         'italic': 'Schuingedrukt',
         'underline': 'Onderstreept',
@@ -1761,6 +1767,7 @@ jpf.editor.i18n = {
             'numlist': 'Genummerd',
             'media': 'Medium invoegen',
             'pastetext': 'Tekst Plakken',
+            'paste_keyboardmsg': 'Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.',
             'print': 'Printen',
             'preview': 'Voorbeeldvertoning',
             'scayt': 'Spelling check aan/ uit',
@@ -1769,6 +1776,7 @@ jpf.editor.i18n = {
             'sub': 'Subscript',
             'sup': 'Superscript',
             'table': 'Tabel invoegen',
+            'table_noun': 'Tabel',
             'visualaid': 'Visuele hulp aan/ uit'
         }
     }

@@ -71,7 +71,8 @@ jpf.editor.plugin('pastetext', function() {
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
 
-        var rl = ['\u2122', '<sup>TM</sup>', '\u2026', '...', '\u201c|\u201d', '"', '\u2019,\'', '\u2013|\u2014|\u2015|\u2212', '-'];
+        var rl = ['\u2122', '<sup>TM</sup>', '\u2026', '...', '\u201c|\u201d', 
+            '"', '\u2019,\'', '\u2013|\u2014|\u2015|\u2212', '-'];
         for (var i = 0; i < rl.length; i += 2)
             sContent = sContent.replace(new RegExp(rl[i], 'gi'), rl[i+1]);
 
@@ -95,7 +96,7 @@ jpf.editor.plugin('pastetext', function() {
         var idBtns = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
-           'Use %s on your keyboard to paste the text into the window.'.sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
+           this.editor.translate('paste_keyboardmsg', true).sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
               cols="60" rows="10" class="editor_textarea"></textarea>\
@@ -111,7 +112,7 @@ jpf.editor.plugin('pastetext', function() {
         }
         this.appendJmlNode(
            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
-            <j:button caption="Insert" \
+            <j:button caption="' + this.editor.translate('insert') + '" \
               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
             </j:bar></j:toolbar>',
           document.getElementById(idBtns));
