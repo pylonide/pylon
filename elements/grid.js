@@ -216,8 +216,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$updateGrid = function(){
         if (!update)
             return;
-        
-        if (!this.oExt.offsetHeight) {
+
+        //@todo when not visible make all property settings rule based
+        /*if (!this.oExt.offsetHeight) {
             this.addEventListener("propertychange", propChange);
             
             if (timer)
@@ -229,18 +230,8 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                 p = p.parentNode;
             }
             
-            /*if (!this.oExt.parentNode.offsetHeight) {
-                var timer = setInterval(function(){
-                    if (_self.oExt.offsetHeight) {
-                        _self.$updateGrid();
-                        clearInterval(timer);
-                        timer = null;
-                    }
-                }, 10);
-            }*/
-            
             return;
-        }
+        }*/
         
         var pWidth  = "pWidth";
         var pHeight = "pHeight";

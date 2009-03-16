@@ -224,8 +224,8 @@ jpf.Validation = function(){
                 pos[1] += pos2[1];
             }
             
-            errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
-            errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
+            errBox.oExt.style.left = (pos[0] + parseFloat(this.$getOption("main", "erroffsetx") || 0)) + "px"; //this.oExt.offsetLeft + "px";
+            errBox.oExt.style.top  = (pos[1] + parseFloat(this.$getOption("main", "erroffsety") || 0)) + "px"; //this.oExt.offsetTop + "px";
             errBox.host = this;
         }
         errBox.show();
