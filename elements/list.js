@@ -367,7 +367,6 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Init ****/
     
     this.$draw = function(){
-        //#ifdef __WITH_XFORMS
         this.appearance = this.$jml.getAttribute("appearance") || "compact";
         var mode = this.$jml.getAttribute("mode");
         
@@ -385,7 +384,6 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if (this.tagName == "select1" && this.appearance == "compact") 
             this.multiselect = false;
-        //#endif
         
         //Build Main Skin
         this.oExt = this.$getExternal();
