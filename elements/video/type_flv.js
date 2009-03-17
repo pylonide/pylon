@@ -38,11 +38,11 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     // #ifndef __PACKAGED
     this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/video/FAVideo.swf";
     /* #else
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";*/
-    // #endif 
-    // #ifdef __WITH_CDN
-    //this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/videoplayer.swf";
-    // #endif
+    this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
+    #endif */
+    /* #ifdef __WITH_CDN
+    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/videoplayer.swf";
+    #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
@@ -410,9 +410,9 @@ jpf.video.TypeFlv.prototype = {
             "allowFullScreen",  "true",
             "name",             this.name,
             "flashvars",        "playerID=" + this.id + "&volume=" + this.volume
-            // #ifdef __WITH_CDN
-            /*+ "&secureDomain=" + window.location.protocol + "//" + window.location.host*/
-            // #endif
+            /* #ifdef __WITH_CDN
+            + "&secureDomain=" + window.location.protocol + "//" + window.location.host
+            #endif */
             ,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",

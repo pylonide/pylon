@@ -191,4 +191,4 @@ jpf.modalwindow.widget = function(){
         this.minheight = this.$getOption("Main", "min-height");
     };
 };
-// #endif
+//#endif

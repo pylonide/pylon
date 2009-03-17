@@ -269,8 +269,8 @@ jpf.language = {
 
 // #endif
 
-// #ifdef __WITH_EDITMODE
-/* EditServer = {
+/* #ifdef __WITH_EDITMODE
+EditServer = {
     data : [],
     edit : null,
 
@@ -452,7 +452,7 @@ function EditMode(){
 //    value1 = jpf.language.getWordListXml();
 //    jpf.language.setWordListXml(jpf.language.getWordListXml(true), "sub");', 3000);
 //setTimeout('alert("Switch back");
-//    jpf.language.setWordListXml(value1, "sub");', 6000);*/
+//    jpf.language.setWordListXml(value1, "sub");', 6000);
 // #endif
 
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE

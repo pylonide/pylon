@@ -221,9 +221,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     //#endif
                 }
                 
-                // #ifdef __WITH_XFORMS
-                //this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
-                // #endif
+                /* #ifdef __WITH_XFORMS
+                this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
+                #endif*/
                 
                 //#ifdef __WITH_HTML5
                 if (!isValid)

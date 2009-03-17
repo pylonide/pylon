@@ -841,8 +841,8 @@ jpf.DataBinding = function(){
                     && jpf.getXmlValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
             /* #else
-            return def && cnode.selectSingleNode(def) || false;*/
-            // #endif 
+            return def && cnode.selectSingleNode(def) || false;
+            #endif */
         }
 
         var node = null, sel, i, o, v, rule;

@@ -82,9 +82,9 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oCaption   = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
-        // #ifdef __WITH_EDITMODE
-        //if(this.editable)
-        // #endif
+        /* #ifdef __WITH_EDITMODE
+        if(this.editable)
+        #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
             this.$makeEditable("main", this.oExt, this.$jml);
         // #endif

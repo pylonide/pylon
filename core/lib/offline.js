@@ -383,8 +383,8 @@ jpf.namespace("offline", {
                     // #ifdef __WITH_OFFLINE_MODEL
                     jpf.offline.models.addToInitQueue(rsb.models[j])
                     /* #else
-                    rbs[i].models[j].init();*/
-                    // #endif 
+                    rbs[i].models[j].init();
+                    #endif */
                 }
             }
         }
@@ -558,5 +558,5 @@ jpf.namespace("offline", {
 /*#else
 jpf.offline = {
     onLine : true
-} */
-// #endif
+}
+#endif */

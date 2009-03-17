@@ -147,9 +147,9 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
         
-        // #ifdef __WITH_EDITMODE
-        /*if(this.editable)*/
-        // #endif 
+        /* #ifdef __WITH_EDITMODE
+        if(this.editable)
+        #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
             this.$makeEditable("main", this.oExt, this.$jml);
         // #endif

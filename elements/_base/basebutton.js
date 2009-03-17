@@ -66,8 +66,8 @@ jpf.BaseButton = function(pHtmlNode){
         if (!oNode)
             return jpf.console.warn("No background defined in the Button skin", "button");
         /* #else
-        if (!oNode) return;*/
-        // #endif 
+        if (!oNode) return;
+        #endif */
 
         if (value) {
             var b = value.split("|");

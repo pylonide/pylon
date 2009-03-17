@@ -97,11 +97,11 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
             : jpf.JmlParser.parseChildren(x, oInt, this);
     };
     
-    // #ifdef __WITH_SKIN_CHANGE
-    /*this.$skinchange = function(){
+    /*#ifdef __WITH_SKIN_CHANGE
+    this.$skinchange = function(){
         
-    }*/
-    //#endif
+    }
+    //#endif*/
 }).implement(jpf.Presentation);
 
 // #endif
