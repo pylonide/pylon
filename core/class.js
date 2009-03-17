@@ -535,8 +535,8 @@ jpf.Class = function(){
 
         //Clear all children too
         if (deep && this.childNodes) {
-            var i, l, nodes = this.childNodes;
-            for (i = 0, l = nodes.length; i < l; i++) {
+            var i, nodes = this.childNodes;
+            for (i = nodes.length - 1; i >= 0; i--) {
                 if (nodes[i].destroy)
                     nodes[i].destroy(true);
             }
