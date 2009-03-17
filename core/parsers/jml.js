@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_TELEPORT || __PARSER_JML
+// #ifdef __PARSER_JML
 /**
  * The parser of the Javeline Markup Language. It parses other namespaces as
  * well, such as html and xsd.
@@ -672,8 +672,6 @@ jpf.JmlParser = {
     },
     //#endif
 
-    //#endif
-
     invalidJml : function(jml, message){
         //#ifdef __DEBUG
         jpf.console.warn((message || "Invalid JML syntax. The j:"
@@ -1280,6 +1278,8 @@ jpf.JmlParser = {
     }
     // #endif
 };
+
+//#endif
 
 //#ifdef __WITH_HTML5
 /**
