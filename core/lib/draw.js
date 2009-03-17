@@ -55,7 +55,14 @@ jpf.draw = {
                 ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
                 ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_;"].join('');
     },
-    
+    defCamVec : function(){
+        // lets do a proper 3x3 inverse and mul it with our camera pos
+        return  "var inv=1/m00*(m11*m22-m12*m21)-m01*(m10*m22-m12*m20)+m02*(m10*m21-m11*m20);"+
+                "var mcx = inv*(m11*m22-m12*m21)*m03 + inv*(m02*m21-m01*m22)*m13 + inv*(m01*m12-m02*m11)*m23,"+
+                "    mcy = inv*(m12*m20-m10*m22)*m03 + inv*(m00*m22-m02*m20)*m13 + inv*(m02*m10-m00*m12)*m23,"+
+                "    mcz = inv*(m10*m21-m11*m20)*m03 + inv*(m01*m20-m00*m21)*m13 + inv*(m00*m11-m01*m10)*m23;"
+            //        "    mcz         m10*m13+m20*m23,mcy=m01*m03+m11*m13+m21*m23,mcz=m02*m03+m12*m13+m22*m23;";
+    },
     setMatrix3D : function(m){
         var l = this.l;
         var s = ["var m00=",m[0],",m01=",m[1],",m02=",m[2], ",m03=",m[3],
@@ -70,6 +77,7 @@ jpf.draw = {
         }
         return s.join('');
     },
+
     sincos3 : function(pre,rx,ry,rz) {
       return[ "var ",pre,"cx = __cos(",rx,"),",pre,"sx = __sin(",rx,"),",
                      pre,"cy = __cos(",ry,"),",pre,"sy = __sin(",ry,"),",
@@ -126,6 +134,38 @@ jpf.draw = {
         }
         return out;
     },
+    // we have point a b and c, and we first will rotate them all and then check the sign of the z
+    // 
+    zface3D : function(pts,cm){
+        // first we calc the normal of vector a>b and a>c
+        // then we take the matrix camera pos vector dot normal
+        var a = pts[0], b = pts[1], c = pts[2], x, y, z;
+        if(cm) x = cm[0], y = cm[1], z = cm[2];
+        else x = 0, y = 1, z = 2;
+        // acccurate backface (on vector A)
+        return [
+        '-((m00*',b[x],'+m01*',b[y],'+m02*',b[z],'+m03)-(__ax=m00*',a[x],'+m01*',a[y],'+m02*',a[z],'+m03))*',
+        '((m10*',c[x],'+m11*',c[y],'+m12*',c[z],'+m13)-(__ay=m10*',a[x],'+m11*',a[y],'+m12*',a[z],'+m13))+',
+        '((m10*',b[x],'+m11*',b[y],'+m12*',b[z],'+m13)-__ay)*((m00*',c[x],'+m01*',c[y],'+m02*',c[z],'+m03)-__ax)'].join('');
+    },
+    backface3D : function(pts,cm){
+        var a = pts[0], b = pts[1], c = pts[2], x, y, z;
+        if(cm) x = cm[0], y = cm[1], z = cm[2];
+        else x = 0, y = 1, z = 2;
+/*        return [
+        '_x=((__y1=((',b[y],')-(',a[y],')))*(__z2=((',c[z],')-(',a[z],'))) - (__z1=((',b[z],')-(',a[z],'))) * (__y2=((',c[y],')-(',a[y],')))) ; ',
+        '_y=(__z1*(__x2=((',c[x],')-(',a[x],'))) - (__x1=((',b[x],')-(',a[x],'))) * __z2) ; ',
+        '_z=(__x1 * __y2 - __y1 * __x2) ; '].join('');*/
+        return [
+        '(((__by=m10*',b[x],'+m11*',b[y],'+m12*',b[z],'+m13) - (__ay=m10*',a[x],'+m11*',a[y],'+m12*',a[z],'+m13)) *',
+        '((__cz=m20*',c[x],'+m21*',c[y],'+m22*',c[z],'+m23) - (__az=m20*',a[x],'+m21*',a[y],'+m22*',a[z],'+m23)) -',
+        '((__bz=m20*',b[x],'+m21*',b[y],'+m22*',b[z],'+m23) - __az) * ((__cy=m10*',c[x],'+m11*',c[y],'+m12*',c[z],'+m13) - __ay) ) * ',
+        '(__ax=m00*',a[x],'+m01*',a[y],'+m02*',a[z],'+m03) + ',
+        '((__bz - __az) * ((__cx=m00*',c[x],'+m01*',c[y],'+m02*',c[z],'+m03) - __ax) -',
+        '((__bx=m00*',b[x],'+m01*',b[y],'+m02*',b[z],'+m03) - __ax) * (__cz - __az) ) * __ay + ',
+        '((__bx - __ax) * (__cy - __ay) - (__by - __ay) * (__cx - __ax) ) * __az '];
+    },
+
     //----------------------------------------------------------------------
     
     // 3D API
@@ -160,7 +200,7 @@ jpf.draw = {
             if(d>=0){
                 pt = pts[d];
                 q=[this.ortho?"":
-                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);",
+                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);if(zt>0)zt=-10000;",
                     "dw12+(m00*"+pt[f0]+"+m01*"+pt[f1]+"+m02*"+pt[f2]+"+m03)*"+
                         (this.ortho?"persp":"zt"),
                     "dh12+(m10*"+pt[f0]+"+m11*"+pt[f1]+"+m12*"+pt[f2]+"+m13)*"+
@@ -581,7 +621,7 @@ jpf.draw = {
         // find used math functions and create local var
         code.replace(/\_\_(\w+)/g,function(m,a){
             if(!cnt[a]) {
-                if(a.length==1)s.push("__"+a);
+                if(a.length<=2)s.push("__"+a);
                 else s.push("__"+a+"=Math."+a);
                 cnt[a]=1;
             }
