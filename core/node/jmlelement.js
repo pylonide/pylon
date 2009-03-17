@@ -273,10 +273,10 @@ jpf.JmlElement = function(){
             };
         }
         /* #else
-        this.hasFocus = function(){}
-        #endif */
+        this.hasFocus = function(){}*/
+        // #endif 
     }
-
+		
     /**** Load JML ****/
 
     // #ifdef __WITH_JMLDOM
@@ -356,8 +356,8 @@ jpf.JmlElement = function(){
             /* #else
             {
                 this.$supportedProperties.push("width", "left", "top", "height");
-            }
-            #endif*/
+            }*/
+            // #endif
 
             if (this.visible === undefined && !x.getAttribute("visible"))
                 this.visible = true;
@@ -430,8 +430,8 @@ jpf.JmlElement = function(){
                 }
                 /* #else
                 if (!value)
-                    value = this.defaults && this.defaults[name] || value;
-                #endif */
+                    value = this.defaults && this.defaults[name] || value;*/
+                // #endif 
 
                 if (this.$booleanProperties[name])
                     value = jpf.isTrue(value);
@@ -498,7 +498,7 @@ jpf.JmlElement = function(){
                 value, !this.$onlySetXml);
         }
         //#endif
-        /*#ifndef __WITH_PROPERTY_BINDING
+        /*#ifdef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.xmlRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
