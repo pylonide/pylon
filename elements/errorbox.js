@@ -105,9 +105,9 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         //#endif
     };
     
-    /* #ifdef __WITH_EDITMODE
-    this.hide = function(){}
-    #endif */
+    // #ifdef __WITH_EDITMODE
+    // this.hide = function(){}
+    // #endif 
     
     this.$draw = function(){
         //Build Main Skin
@@ -139,8 +139,8 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
         
-        /* #ifdef __WITH_EDITMODE
-        if (this.editable && this.form.elements[x.getAttribute("for")]) {
+        // #ifdef __WITH_EDITMODE
+        /*if (this.editable && this.form.elements[x.getAttribute("for")]) {
             this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
                 .$jml.getAttribute("invalidmsg");
             
@@ -148,8 +148,8 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.form.elements[x.getAttribute("for")].$jml);
             
             this.show();
-        }
-        #endif */
+        }*/
+        // #endif 
     };
     
     this.$destroy = function(){

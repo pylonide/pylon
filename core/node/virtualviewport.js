@@ -505,8 +505,8 @@ jpf.VirtualViewport = function(){
             //#ifdef __WITH_SORTING
             return this.$sort ? this.$sort.apply(list) : list;
             /* #else
-            return list;
-            #endif */
+            return list;*/
+            // #endif 
         }
 
         for (var i = 0; i < markers.length; i++) {

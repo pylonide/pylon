@@ -205,11 +205,11 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Private methods and event handlers ****/
 
     this.$setLabel = function(value){
-        //#ifdef __SUPPORT_SAFARI
+        // #ifdef __SUPPORT_SAFARI
         this.oLabel.innerHTML = value || this.initialMsg || "";
         /* #else
-        this.oLabel.nodeValue = value || this.initialMsg || "";//nodeValue
-        #endif */
+        this.oLabel.nodeValue = value || this.initialMsg || "";//nodeValue*/
+        // #endif 
         
         this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
             [!value ? "" : this.baseCSSname + "Initial"]);
@@ -275,12 +275,12 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!sValue2 && this.xmlRoot && sValue) {
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
                 
-                //#ifdef __SUPPORT_SAFARI
+                // #ifdef __SUPPORT_SAFARI
                 xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
                 /*#else
-                xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
-                #endif */
+                xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";*/
+                // #endif 
                 
                 var xmlNode = this.xmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
                 value = this.applyRuleSetOnNode("caption", xmlNode);

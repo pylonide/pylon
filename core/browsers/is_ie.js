@@ -46,8 +46,8 @@ jpf.runIE = function(){
     }
     // #endif
 
-    /* #ifdef __TP_IFRAME
-     if(hasIESecurity) jpf.importClass(function(){
+     // #ifdef __TP_IFRAME
+     /*if(hasIESecurity) jpf.importClass(function(){
          __CONTENT_IFRAME
      }, true, self);
      #else*/

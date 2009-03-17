@@ -89,9 +89,9 @@ jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        /* #ifdef __WITH_EDITMODE
+         // #ifdef __WITH_EDITMODE
          //if(this.editable)
-         #endif */
+         // #endif
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         //this.$makeEditable("main", this.oExt, this.$jml);
         // #endif

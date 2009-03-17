@@ -41,8 +41,8 @@ jpf = {
     debugType     : "Memory",
     debugFilter   : "!teleport",
     /* #else
-    debug         : false,
-    #endif */
+    debug         : false,*/
+    //#endif 
     
     initialized   : false,
     crypto        : {}, //namespace

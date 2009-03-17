@@ -31,8 +31,8 @@ var jpf = {
     // #ifndef __WITH_CDN
     CDN            : "",
     /* #else
-    CDN            : "http://cdn.ajax.org/platform/",
-    #endif */
+    CDN            : "http://cdn.ajax.org/platform/",*/
+    // #endif 
 
     READY          : false,
 
@@ -68,8 +68,8 @@ var jpf = {
     debugType     : "Memory",
     debugFilter   : "!teleport",
     /* #else
-    debug         : false,
-    #endif */
+    debug         : false,*/
+    // #endif 
 
     includeStack  : [],
     initialized   : false,
@@ -925,8 +925,8 @@ var jpf = {
         return (jpf.lastErrorMessage = str.join("\n"));
         /*#else
         jpf.lastErrorMessage = message;
-        return message;
-        #endif */
+        return message; */
+        // #endif 
     },
 
     /* Init */
@@ -1047,9 +1047,9 @@ var jpf = {
         /* #else
 
         var xmlNode = jpf.getXmlDom(str);
-        if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
+        if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);*/
 
-        #endif */
+        // #endif 
 
         return xmlNode;
     },

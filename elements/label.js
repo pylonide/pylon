@@ -110,9 +110,9 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
         else
             jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
         
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
+        // #ifdef __WITH_EDITMODE
+        //if(this.editable)
+        // #endif
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif

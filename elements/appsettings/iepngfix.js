@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_IEPNGFIX
+// #ifdef __WITH_IEPNGFIX
 
 jpf.iepngfix = (function() {
 	var sNodes           = null, 

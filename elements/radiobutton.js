@@ -480,9 +480,9 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
         this.oIcon  = this.$getLayoutNode("main", "icon", this.oExt);
 
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
+        // #ifdef __WITH_EDITMODE
+         //if(this.editable)
+        // #endif
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif

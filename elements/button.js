@@ -51,9 +51,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     // #endif
 
-    /* #ifdef __WITH_EDITMODE
-     this.editableEvents = {"click":true}
-    #endif */
+    // #ifdef __WITH_EDITMODE
+    //this.editableEvents = {"click":true}
+    // #endif
 
     /**** Properties and Attributes ****/
 
@@ -93,8 +93,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.oIcon)
             return jpf.console.warn("No icon defined in the Button skin", "button");
         /* #else
-        if (!this.oIcon) return;
-        #endif */
+        if (!this.oIcon) return;*/
+        // #endif 
 
         if (value)
             this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
@@ -527,9 +527,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         else if (typeof this.caption == "undefined")
             this.$propHandlers["caption"].call(this, "");
 
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
+        // #ifdef __WITH_EDITMODE
+         //if(this.editable)
+        // #endif
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
@@ -556,8 +556,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     });
     //#endif
 
-    /* #ifdef __WITH_XFORMS
-
+    // #ifdef __WITH_XFORMS
+		/* 
     //XForms support
     if (this.tagName == "trigger") {
         this.addEventListener("click", function(e){
@@ -637,8 +637,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
     //if(x.getAttribute("condition")) this.condition = x.getAttribute("condition");
     //this.form.registerButton(this.action, this);
-
-    #endif*/
+		*/
+    // #endif
 }).implement(jpf.Presentation, jpf.BaseButton);
 
 //#ifdef __ENABLE_BUTTON_ACTIONS

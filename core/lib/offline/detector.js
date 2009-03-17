@@ -49,8 +49,8 @@ jpf.namespace("offline.detector", {
     //#ifndef __PACKED
     detectUrl : jpf.basePath + "core/lib/offline/network_check.txt",
     /* #else
-    detectUrl : "network_check.txt",
-    #endif */
+    detectUrl : "network_check.txt",*/
+    // #endif 
     detection : "auto", //manual|auto|error
     interval  : 5000,
 

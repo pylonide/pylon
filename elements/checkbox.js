@@ -199,9 +199,9 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.label && x.firstChild)
             this.setProperty("label", x.firstChild.nodeValue);
 
-        /* #ifdef __WITH_EDITMODE
-        if(this.editable)
-        #endif */
+        // #ifdef __WITH_EDITMODE
+        /*if(this.editable)*/
+        // #endif 
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
