@@ -568,13 +568,13 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$updateNode = function(xmlNode, htmlNode){
         //Attributes
-        var i, aLookup   = {};
+        var len, i, aLookup   = {};
         var elAttributes = this.$getLayoutNode("item", "attributes", htmlNode);
         var elEnd        = this.$getLayoutNode("item", "endtag", htmlNode);
         var elBeginTail  = this.$getLayoutNode("item", "begintail", htmlNode);
         
         if (typeof len == "function")
-            len = xmlNode.attributes.length();
+            len = xmlNode.attributes.length;
         for (var i = 0; i < len; i++) {
             var attr = xmlNode.attributes.item(i);
             if (attr.nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
