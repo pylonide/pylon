@@ -113,6 +113,12 @@ jpf.model = function(data, caching){
     jpf.console.info("Creating Model");
     //#endif
 
+    this.$supportedProperties = ["submission", "load"];
+    this.$handlePropSet = function(prop, value, force){
+        if (prop == "submission")
+            defSubmission = value;
+    }
+
     /**
      * @private
      */
@@ -1040,6 +1046,15 @@ jpf.model = function(data, caching){
             xmlNode = this.data;
         if (!instruction && typeof defSubmission == "string")
             instruction = defSubmission;
+
+        //#ifdef __DEBUG
+        if (!xmlNode) {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Submitting model",
+                "Could not submit data, because no data was passed and the \
+                 model does not have data set"));
+        }
+        //#endif
 
         //First check if instruction is a known submission
         var sub;
