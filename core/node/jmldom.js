@@ -474,6 +474,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         return this[name];
     };
 
+    //#ifdef __WITH_JMLDOM_FULL
     /**
      * Retrieves the attribute node for a given name
      * @param {String} name the name of the attribute to find.
@@ -482,6 +483,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
     }
+    // #endif
 
     /**** Xpath support ****/
 
