@@ -2479,9 +2479,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     jpf.MultiSelect,
     jpf.Cache,  
     jpf.DataBinding,
-    jpf.Presentation,
+    jpf.Presentation
     //#ifdef __WITH_RENAME
-    jpf.Rename,
+    ,jpf.Rename,
     //#endif
     //#ifdef __WITH_DRAGDROP
     jpf.DragDrop
