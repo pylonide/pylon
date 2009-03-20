@@ -2476,16 +2476,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.counter = 0;
 }).implement(
+    //#ifdef __WITH_RENAME
+    jpf.Rename,
+    //#endif
+    //#ifdef __WITH_DRAGDROP
+    jpf.DragDrop,
+    //#endif
     jpf.MultiSelect,
     jpf.Cache,  
     jpf.DataBinding,
     jpf.Presentation
-    //#ifdef __WITH_RENAME
-    ,jpf.Rename,
-    //#endif
-    //#ifdef __WITH_DRAGDROP
-    jpf.DragDrop
-    //#endif
 );
 
 //#endif
