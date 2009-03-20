@@ -1052,7 +1052,7 @@ jpf.model = function(data, caching){
             throw new Error(jpf.formatErrorString(0, this, 
                 "Submitting model",
                 "Could not submit data, because no data was passed and the \
-                 model does not have data set"));
+                 model does not have data loaded."));
         }
         //#endif
 

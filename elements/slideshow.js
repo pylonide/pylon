@@ -60,10 +60,6 @@
  * @attribute {String} defaulttitle   this text will be showing for each picture without description
  * @attribute {String} loadmsg        this text will be displayd when picture is loading
  * 
- * @binding src     path to image file
- * @binding title   image description
- * @binding thumb   path to thumbnail file
- * 
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
  *
@@ -74,6 +70,21 @@
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
+ *
+ * @binding src, title, thumb
+ *
+ * @define bindings
+ * @allowchild src, title, thumb
+ *
+ * @define src      path to image file
+ * @binding
+ * @addnode bindings
+ * @define title    image description
+ * @binding
+ * @addnode bindings
+ * @define thumb    path to thumbnail file
+ * @binding
+ * @addnode bindings
  */
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;
