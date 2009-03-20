@@ -256,7 +256,7 @@ jpf.DragDrop = function(){
 
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 
-        var parentXpath = rule.getAttribute("parent");
+        var parentXpath = rule ? rule.getAttribute("parent") : null;
         switch (action) {
             case "list-append":
                 xmlReceiver = (isParent 
