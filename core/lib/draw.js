@@ -134,50 +134,95 @@ jpf.draw = {
         }
         return out;
     },
-    // we have point a b and c, and we first will rotate them all and then check the sign of the z
-    // 
-    zface3D : function(pts,cm){
-        // first we calc the normal of vector a>b and a>c
-        // then we take the matrix camera pos vector dot normal
-        var a = pts[0], b = pts[1], c = pts[2], x, y, z;
+
+    // check for backface for a certain plane
+    backface3D : function(pts,cm,zmode){
+        var a = pts[0], b = pts[1], c = pts[2], x = 0, y = 1, z = 2;
         if(cm) x = cm[0], y = cm[1], z = cm[2];
-        else x = 0, y = 1, z = 2;
-        // acccurate backface (on vector A)
-        return [
-        '-((m00*',b[x],'+m01*',b[y],'+m02*',b[z],'+m03)-(__ax=m00*',a[x],'+m01*',a[y],'+m02*',a[z],'+m03))*',
-        '((m10*',c[x],'+m11*',c[y],'+m12*',c[z],'+m13)-(__ay=m10*',a[x],'+m11*',a[y],'+m12*',a[z],'+m13))+',
-        '((m10*',b[x],'+m11*',b[y],'+m12*',b[z],'+m13)-__ay)*((m00*',c[x],'+m01*',c[y],'+m02*',c[z],'+m03)-__ax)'].join('');
-    },
-    backface3D : function(pts,cm){
-        var a = pts[0], b = pts[1], c = pts[2], x, y, z;
-        if(cm) x = cm[0], y = cm[1], z = cm[2];
-        else x = 0, y = 1, z = 2;
-/*        return [
-        '_x=((__y1=((',b[y],')-(',a[y],')))*(__z2=((',c[z],')-(',a[z],'))) - (__z1=((',b[z],')-(',a[z],'))) * (__y2=((',c[y],')-(',a[y],')))) ; ',
-        '_y=(__z1*(__x2=((',c[x],')-(',a[x],'))) - (__x1=((',b[x],')-(',a[x],'))) * __z2) ; ',
-        '_z=(__x1 * __y2 - __y1 * __x2) ; '].join('');*/
-        return [
-        '(((__by=m10*',b[x],'+m11*',b[y],'+m12*',b[z],'+m13) - (__ay=m10*',a[x],'+m11*',a[y],'+m12*',a[z],'+m13)) *',
-        '((__cz=m20*',c[x],'+m21*',c[y],'+m22*',c[z],'+m23) - (__az=m20*',a[x],'+m21*',a[y],'+m22*',a[z],'+m23)) -',
-        '((__bz=m20*',b[x],'+m21*',b[y],'+m22*',b[z],'+m23) - __az) * ((__cy=m10*',c[x],'+m11*',c[y],'+m12*',c[z],'+m13) - __ay) ) * ',
-        '(__ax=m00*',a[x],'+m01*',a[y],'+m02*',a[z],'+m03) + ',
-        '((__bz - __az) * ((__cx=m00*',c[x],'+m01*',c[y],'+m02*',c[z],'+m03) - __ax) -',
-        '((__bx=m00*',b[x],'+m01*',b[y],'+m02*',b[z],'+m03) - __ax) * (__cz - __az) ) * __ay + ',
-        '((__bx - __ax) * (__cy - __ay) - (__by - __ay) * (__cx - __ax) ) * __az '];
+        return this.ortho?[
+            "-((m00*",b[x],"+m01*",b[y],"+m02*",b[z],"+m03)-(__ax=m00*",a[x],"+m01*",a[y],"+m02*",a[z],"+m03))*",
+        "((m10*",c[x],"+m11*",c[y],"+m12*",c[z],"+m13)-(__ay=m10*",a[x],"+m11*",a[y],"+m12*",a[z],"+m13))+",
+        "((m10*",b[x],"+m11*",b[y],"+m12*",b[z],"+m13)-__ay)*((m00*",c[x],"+m01*",c[y],"+m02*",c[z],"+m03)-__ax)"].join(''):
+        [
+        "(((__by=m10*",b[x],"+m11*",b[y],"+m12*",b[z],"+m13) - (__ay=m10*",a[x],"+m11*",a[y],"+m12*",a[z],"+m13)) *",
+        "((__cz=m20*",c[x],"+m21*",c[y],"+m22*",c[z],"+m23) - (__az=m20*",a[x],"+m21*",a[y],"+m22*",a[z],"+m23)) -",
+        "((__bz=m20*",b[x],"+m21*",b[y],"+m22*",b[z],"+m23) - __az) * ((__cy=m10*",c[x],"+m11*",c[y],"+m12*",c[z],"+m13) - __ay) ) * ",
+        "(__ax=m00*",a[x],"+m01*",a[y],"+m02*",a[z],"+m03) + ",
+        "((__bz - __az) * ((__cx=m00*",c[x],"+m01*",c[y],"+m02*",c[z],"+m03) - __ax) -",
+        "((__bx=m00*",b[x],"+m01*",b[y],"+m02*",b[z],"+m03) - __ax) * (__cz - __az) ) * __ay + ",
+        "((__bx - __ax) * (__cy - __ay) - (__by - __ay) * (__cx - __ax) ) * __az "].join('');
     },
 
     //----------------------------------------------------------------------
     
     // 3D API
-    
-    //----------------------------------------------------------------------
-    poly3DAlloc : function(n){
-        var s = ["var "];
-        for(var i = 0;i<n;i++)s.push((i?",":""),"_tx",i,",_ty"+i);
-        s.push(";");
-        return s.join('');
-    },
+    // draw a 3D polygon clipped against the z axis
+    poly3DClip : function(idx,pt,cm,zc,open){
+        var i = 0, d, pt, q, s = ["__n=0;"], x = 0, y = 1, z = 2, sx, sy, vx, vy, vxi, vyi;
+        if(cm) x = cm[0], y = cm[1], z = cm[2];            
 
+        //calculate z-clipping info for each vertex
+        for(var i = 0;i<idx.length;i++){    
+            p = pt[idx[i]];
+            s.push(["if(__n",i,"=(__z",i," = m20*",p[x],"+m21*",p[y],"+m22*",p[z],"+m23) < ",zc,")__n++;"].join(''))
+        }
+         s.push("if(__n){",
+                "if(__n==",idx.length,"){");
+        // the nonclipped draw
+        for(var i = 0;i<idx.length;i++){    
+            p = pt[idx[i]];
+            vx = ["dw12+(m00*",p[x],"+m01*",p[y],"+m02*",p[z],"+m03)*",this.ortho?"persp":"(persp/__z"+i+")"].join('');
+            vy = ["dh12+(m10*",p[x],"+m11*",p[y],"+m12*",p[z],"+m13)*",this.ortho?"persp":"(persp/__z"+i+")"].join('');
+            if(i==0)s.push(this.moveTo(vx,vy));
+            else s.push(this.lineTo(vx,vy));
+        }
+        if(!open)s.push(this.close());
+        s.push("}else{");
+        
+        // the clipped draw
+        for(var i = 0;i<idx.length;i++){
+            p = pt[idx[i]];
+            // if we are number index 0 we only move to 
+            if(i==0){ // first vertex
+              s.push([
+                "__x0=m00*",p[x],"+m01*",p[y],"+m02*",p[z],"+m03;",
+                "__y0=m10*",p[x],"+m11*",p[y],"+m12*",p[z],"+m13;",
+                "if( __o=__n0){",
+                    this.moveTo("dw12+__x0*"+(this.ortho?"persp":"(persp/__z0)"),"dh12+__y0*"+(this.ortho?"persp":"(persp/__z0)")),
+                "}"].join(''));
+            } else { // all other vertices
+                s.push([
+                "__xn=dw12+(__x",i,"=m00*",p[x],"+m01*",p[y],"+m02*",p[z],"+m03)*",(this.ortho?"persp;":"(persp/__z"+i+");"),
+                "__yn=dh12+(__y",i,"=m10*",p[x],"+m11*",p[y],"+m12*",p[z],"+m13)*",(this.ortho?"persp;":"(persp/__z"+i+");"),
+                "if( __n",i," && !__n",i-1," || !__n",i,"&& __n",i-1,"){", // we visible and prev not or prev inv and we not
+                    "__z=(__zc=(",zc,"-__z",i-1,")/(__z",i,"-__z",i-1,")) * __z",i,"+(__ze=1-__zc)* __z",i-1,";",
+                    "__xi=dw12+(__zc*__x",i,"+__ze* __x",i-1,")*",(this.ortho?"persp":"(persp/__z)"),";",
+                    "__yi=dh12+(__zc*__y",i,"+__ze* __y",i-1,")*",(this.ortho?"persp":"(persp/__z)"),";",
+                    "if(!__o){__o=true;",
+                        this.moveTo("__xi","__yi"),
+                    "}else{",
+                        this.lineTo("__xi","__yi"),
+                    "}",
+                "}",
+                "if( __n",i,"){",
+                    this.lineTo("__xn","__yn"),
+                "}"].join(''));
+            }
+            if(i==idx.length-1){
+                s.push([ // termination step
+                    "if(!__n0 && __n",i," || __n0 && ! __n",i,"){",
+                        // do a lineto to the interp pos between last element and us
+                        "__z=(__zc=(",zc,"-__z",i,")/(__z0-__z",i,")) * __z0+(__ze=1-__zc)* __z",i,";",
+                        this.lineTo(["dw12+(__zc*__x0+__ze* __x",i,")*",(this.ortho?"persp":"(persp/__z)")].join(''),
+                                    ["dh12+(__zc*__y0+__ze* __y",i,")*",(this.ortho?"persp":"(persp/__z)") ].join('')),
+                    "}",
+                this.close()].join(''));
+            } 
+        }
+        s.push("}}");
+        return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
+    },
+    // draw a 3D polygon
     poly3D : function(indices,pts,fl){
         // we want rects between:
         // first we count the doubles
@@ -200,14 +245,14 @@ jpf.draw = {
             if(d>=0){
                 pt = pts[d];
                 q=[this.ortho?"":
-                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);if(zt>0)zt=-10000;",
+                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);",
                     "dw12+(m00*"+pt[f0]+"+m01*"+pt[f1]+"+m02*"+pt[f2]+"+m03)*"+
                         (this.ortho?"persp":"zt"),
                     "dh12+(m10*"+pt[f0]+"+m11*"+pt[f1]+"+m12*"+pt[f2]+"+m13)*"+
                         (this.ortho?"persp":"zt")];
                 d = f?0:i;
-                if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), 
-                         q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
+                if(cc[d])q[1]= "__t"+cc[d]+(cf[d]?"":"="+q[1]), 
+                         q[2]= "__t"+cc[d]+(cf[d]++?"":"="+q[2]);
             }; 
             switch(d){
                 case -1: f=1;s.push( this.close() );break;
@@ -608,16 +653,15 @@ jpf.draw = {
         var c2,c3,s=[],cnt={},n=0;
         // first we need to join all nested arrays to depth 2
         if(typeof(code) == 'object'){
-            for(var i = code.length-1;i>=0;i--)
+            code = code.join('');
+        /*     for(var i = code.length-1;i>=0;i--)
                 if(typeof(c2=code[i]) == 'object'){
                     for(var j=c2.length-1;j>=0;j--)
                         if(typeof(c3=c2[j]) == 'object')
                             c2[j] = c3.join('');
                     code[i] = c2.join('');
-                }
-            code = code.join('');
+                }*/
         }
-        
         // find used math functions and create local var
         code.replace(/\_\_(\w+)/g,function(m,a){
             if(!cnt[a]) {
@@ -626,12 +670,15 @@ jpf.draw = {
                 cnt[a]=1;
             }
         });
+       
         // optimize out const parseInt and const math-operations
         code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
             function(m,a,b,c){
             if(a=='__round')return Math.round(c);
             return Math[b](c);
         });
+        
+        
         //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
         //code = code.replace(/\(0\)\+/g,""); 
         
@@ -640,9 +687,9 @@ jpf.draw = {
         
         if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
-        
+         
         code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
-        
+       
         cnt = {},n = 0, s=[];
         /*
         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
@@ -656,7 +703,7 @@ jpf.draw = {
         */
         code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
         code = code.replace(/__round\((d[wh])\)/g,"$1"); 
-
+        
         return code;
     },
     
