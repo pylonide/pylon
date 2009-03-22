@@ -95,7 +95,12 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     this.display = function(host){
         this.host = host;
         
-        var refHtml = host.validityState.errorHtml || host.oExt;
+        var refHtml = 
+            //#ifdef __WITH_HTML5
+            host.validityState.errorHtml || 
+            //#endif
+            host.oExt;
+
         document.body.appendChild(this.oExt);
         var pos = jpf.getAbsolutePosition(refHtml, document.body);
         

@@ -200,8 +200,10 @@ jpf.Validation = function(){
 
         errBox.display(this);
         
+        //#ifdef __WITH_HTML5
         if (this.hasFeature(__MULTISELECT__) && this.validityState.errorXml)
             this.select(this.validityState.errorXml);
+        //#endif
         
         if (jpf.window.focussed && jpf.window.focussed != this)
             this.focus(null, {mouse:true}); //arguable...
