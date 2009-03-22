@@ -54,7 +54,7 @@ jpf.textbox.masking = function(){
     var lastPos = -1;
     var masking = false;
     var oExt    = this.oExt
-    var initial, pos, myvalue, format, fcase, replaceChar;
+    var initial, pos = [], myvalue, format, fcase, replaceChar;
 
     this.setPosition = function(setpos){
         setPosition(setpos || lastPos || 0);
@@ -198,7 +198,7 @@ jpf.textbox.masking = function(){
         var mask = m.join(""); //why a join here???
         var validation = "", visual="", mode_case = "-",
             strmode = false, startRight = false, chr;
-        var pos = [], format = "", fcase = "";
+        pos = [], format = "", fcase = "";
         
         for (var looppos = -1, i = 0; i < mask.length; i++) {
             chr = mask.substr(i,1);

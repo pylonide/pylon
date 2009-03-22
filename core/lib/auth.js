@@ -116,6 +116,7 @@
  * @attribute {String}  login-state     the id of the state element which is activated when logging in succeeded.
  * @attribute {String}  waiting-state   the id of the state element which is activated when the user is waiting while the application is logging in.
  * @attribute {String}  logout-state    the id of the state element which is activated when the user is logged out.
+ * @attribute {String}  model           the id of the model element which gets the data loaded given at login success.
  * @allowchild service
  * @define service
  * @attribute {String} name     the unique identifier of the service

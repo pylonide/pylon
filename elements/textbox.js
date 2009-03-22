@@ -148,7 +148,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      * This currently only works in internet explorer.
      */
     this.$propHandlers["mask"] = function(value){
-        if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
+        if (!jpf.hasMsRangeObject || this.mask == "PASSWORD")
             return;
 
         if (!value) {

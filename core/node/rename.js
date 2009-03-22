@@ -198,7 +198,8 @@ jpf.Rename = function(){
     this.stopRename = function(contextXml, success){
         clearTimeout(renameTimer);
 
-        if (!this.renaming || contextXml && contextXml != renameSubject)
+        if (!this.renaming || contextXml && contextXml != renameSubject 
+          || !this.replacedNode)
             return false;
 
         if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1)

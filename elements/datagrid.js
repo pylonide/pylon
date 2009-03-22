@@ -1149,6 +1149,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         while (htmlNode.parentNode != rowHtml)
             htmlNode = htmlNode.parentNode;
 
+        var type = this.selected.getAttribute("type");
+
         if (this.namevalue && wasSelected && lastcell 
           && lastcell.parentNode == htmlNode.parentNode 
           && htmlNode == htmlNode.parentNode.lastChild) {
@@ -1156,7 +1158,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             lastcol  = 1;
             
             if (this.namevalue 
-              && this.selected.getAttribute("type") == "lookup" 
+              && type == "lookup" 
               && this.selected.getAttribute("multiple") == "multiple") {
                 if ((e.srcElement || e.target).className.indexOf("newitem") == -1)
                     return;
@@ -1213,6 +1215,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastcell = htmlNode;
         lastcol  = col;
         lastrow  = rowHtml;
+        
+        if (!type || type == "text")
+            this.startDelayedRename(e, 1);
     };
 
     /**** Drag & Drop ****/
@@ -1546,7 +1551,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (typeof lastSorted != "undefined") {
             h = headings[lastSorted];
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "white");
+            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "");
             jpf.setStyleClass(h.htmlNode, "", ["descending", "ascending"]);
         }
         
