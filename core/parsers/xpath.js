@@ -88,7 +88,7 @@ jpf.XPath = {
     getAnyNode : function(htmlNode, empty, info, count, num, sResult){
         var result = null, data = info[count];
 
-        var sel = [], nodes = htmlNode.childNodes;
+        var sel = [], nodes = htmlNode.getElementsByTagName("*");//childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, i, sResult);
@@ -99,6 +99,14 @@ jpf.XPath = {
 
     getAttributeNode : function(htmlNode, attrName, info, count, num, sResult){
         if (!htmlNode || htmlNode.nodeType != 1) return;
+
+        if (attrName == "*") {
+            var nodes = htmlNode.attributes;
+            for (var i = 0; i < nodes.length; i++) {
+                arguments.callee.call(this, htmlNode, nodes[i].nodeName, info, count, i, sResult); 
+            }
+            return;
+        }
 
         var result = null, data = info[count];
         var value = htmlNode.getAttributeNode(attrName);//htmlNode.attributes[attrName];//
@@ -122,8 +130,30 @@ jpf.XPath = {
                 sResult.push(htmlNode);
         }
 
-        var nodes = htmlNode.getElementsByTagName((prefix
+        if (tagName == "node()") {
+            tagName = "*";
+            prefix = "";
+            if (jpf.isIE)
+                var nodes = htmlNode.getElementsByTagName("*");
+            else {
+                var nodes = [];
+                (function recur(x){
+                    for (var n, i = 0; i < x.childNodes.length; i++) {
+                        n = x.childNodes[i];
+                        if (n.nodeType != 1)
+                            continue;
+                        nodes.push(n);
+                        //@todo please dont seg fault, you mf
+                        if (n.tagName != "skin" && n.tagName != "jslt" && n.tagName != "ref" && n.parentNode.tagName != "bindings")
+                            recur(n);
+                    }
+                })(htmlNode);
+            }
+        }
+        else {
+            var nodes = htmlNode.getElementsByTagName((prefix
               && (jpf.isGecko || jpf.isOpera) ? prefix + ":" : "") + tagName);
+        }
 
         for (var i = 0; i < nodes.length; i++) {
             if (data)
@@ -336,6 +366,9 @@ jpf.XPath = {
     },
 
     doXpathFunc : function(type, arg1, arg2, arg3){
+        if (arg1.nodeType)
+            arg1 = arg1.nodeValue;
+
         switch(type){
             case "not":
                 return !arg1;
@@ -394,7 +427,6 @@ jpf.XPath = {
         //#ifdef __DEBUG
         //jpf.console.info("Processing custom XPath: " + sExpr + ":" + contextNode.serialize().replace(/</g, "&lt;"));
         //#endif
-
         if (typeof this.cache[sExpr] == "string"){
             if (this.cache[sExpr] == ".")
                 return [contextNode];
@@ -479,7 +511,7 @@ jpf.CodeCompilation = function(code){
 
         //Xpath
         var data = this.data.X;
-        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z][\.\@\/\w]*(?:\(\)){0,1})/g,
+        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z\*][\*\.\@\/\w]*(?:\(\)){0,1})/g,
             function(d, m1, m2){
                 return m1 + (data.push(m2) - 1) + "X_";
             });

@@ -1224,7 +1224,7 @@ jpf.JmlElement.propHandlers = {
 
 // #endif
 
-//#ifdef __DEBUG
+//#ifdef __WITH_DEBUG_WIN
 document.onkeydown = function(e){
     if (!e) e = event;
     if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {

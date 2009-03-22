@@ -63,17 +63,6 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @binding insert Determines how new data is loaded when the user slides open
- * an item. For instance by clicking on the + sign. This way only the root nodes
- * need to be loaded at the start of the application. All other children are
- * received on demand when the user requests it by navigating throught the tree.
- * Example:
- * This example shows an insert rule that only works on folder elements. It then
- * reads the directory contents using webdav.
- * <code>
- *  <j:insert select="self::folder" get="webdav:readdir({@id})" />
- * </code>
- *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
@@ -86,6 +75,18 @@
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
  * @inherits jpf.Rename
+ *
+ * @binding insert Determines how new data is loaded when the user slides open
+ * an item. For instance by clicking on the + sign. This way only the root nodes
+ * need to be loaded at the start of the application. All other children are
+ * received on demand when the user requests it by navigating throught the tree.
+ * Example:
+ * This example shows an insert rule that only works on folder elements. It then
+ * reads the directory contents using webdav.
+ * <code>
+ *  <j:insert select="self::folder" get="webdav:readdir({@id})" />
+ * </code>
+ *
  */
 jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options

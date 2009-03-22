@@ -593,8 +593,10 @@ jpf.removePathContext = function(base, url){
  */
 jpf.cancelBubble = function(e, o){
     e.cancelBubble = true;
+    // #ifdef __WITH_FOCUS
     if (o.$focussable && !o.disabled)
         jpf.window.$focus(o);
+    // #endif
 };
 
 // #endif

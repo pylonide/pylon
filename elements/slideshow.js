@@ -71,20 +71,12 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  *
- * @binding src, title, thumb
- *
  * @define bindings
  * @allowchild src, title, thumb
  *
- * @define src      path to image file
- * @binding
- * @addnode bindings
- * @define title    image description
- * @binding
- * @addnode bindings
- * @define thumb    path to thumbnail file
- * @binding
- * @addnode bindings
+ * @binding src      path to image file
+ * @binding title    image description
+ * @binding thumb    path to thumbnail file
  */
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;

@@ -162,11 +162,15 @@ jpf.JmlParser = {
                 //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeType)
                     o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
-                //#endif
+                /* #else
+                if (o)
+                #endif */
+                {
+                    o.$jmlLoaded = true;
 
-                o.$jmlLoaded = true;
-
-                if (name) jpf.setReference(name, o);
+                    if (name)
+                        jpf.setReference(name, o);
+                }
 
                 x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
             }
@@ -365,9 +369,12 @@ jpf.JmlParser = {
                     delete this.preparsed[id];
 
                     if (o && !o.parentNode) {
+                        //#ifdef __WITH_JMLDOM_FULL
                         if (jmlParent.hasFeature && jmlParent.hasFeature(__WITH_JMLDOM__))
                             o.$setParent(jmlParent);
-                        else {
+                        else 
+                        //#endif
+                        {
                             o.parentNode = jmlParent;
                             jmlParent.childNodes.push(o);
                         }
@@ -395,12 +402,15 @@ jpf.JmlParser = {
                     o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
                 else if(noImpliedParent)
                     o.$setParent(jmlParent);
-                //#endif
+                /* #else
+                if (o)
+                #endif */
+                {
+                    o.$jmlLoaded = true;
 
-                o.$jmlLoaded = true;
-
-                if (name)
-                    jpf.setReference(name, o);
+                    if (name)
+                        jpf.setReference(name, o);
+                }
             }
 
             //XForms

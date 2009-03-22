@@ -2334,11 +2334,9 @@ jpf.MultiselectBinding = function(){
     this.length = 0;
 
     /**
-     * @binding traverse
-     * 
      * @define bindings
      * @allowchild traverse
-     * @define traverse Determines the list of elements which for which each
+     * @binding traverse Determines the list of elements which for which each
      * gets a visual representation within the element. It also can determine
      * the sequence of how the elements are visualized by offering a way to
      * specify the sort order. (N.B. The sorting mechanism is very similar to
@@ -2375,8 +2373,6 @@ jpf.MultiselectBinding = function(){
      *      }
      *  </j:script>
      * </code>
-     *
-     * @binding
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
      * @attribute {String} data-type    the way sorting is executed. See {@link #sort-method} for how to specify a custom sort method.
@@ -2406,7 +2402,6 @@ jpf.MultiselectBinding = function(){
      *   Possible values:
      *   upper-first    Upper case characters are higher.
      *   lower-first    Lower case characters are higher.
-     * @addnode bindings
      */
     /**
      * @private

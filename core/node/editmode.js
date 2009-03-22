@@ -453,6 +453,7 @@ function EditMode(){
 //    jpf.language.setWordListXml(jpf.language.getWordListXml(true), "sub");', 3000);
 //setTimeout('alert("Switch back");
 //    jpf.language.setWordListXml(value1, "sub");', 6000);
+*/
 // #endif
 
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE

@@ -473,7 +473,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.getAttribute = this.getProperty || function(name){
         return this[name];
     };
-
+    
     //#ifdef __WITH_JMLDOM_FULL
     /**
      * Retrieves the attribute node for a given name
