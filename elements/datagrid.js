@@ -193,8 +193,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     rule = rules[i];
                     type = node.getAttribute("type");
                     valueNode = this.xmlData.selectSingleNode(jpf.getXmlValue(node, "@select|field/@select"));
-                    if (!type || type == "text")
-                        value = jpf.getXmlValue(valueNode, '.');
+                    value = (!type || type == "text")
+                        ? jpf.getXmlValue(valueNode, '.')
+                        : null;
 
                     //#ifdef __WITH_HTML5
                     for (var type in rule.vIds) {
@@ -1216,7 +1217,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastcol  = col;
         lastrow  = rowHtml;
         
-        if (!type || type == "text")
+        if (this.namevalue && this.hasFocus() 
+          && (!type || type == "text" || type == "lookup") 
+          && htmlNode == htmlNode.parentNode.childNodes[1])
             this.startDelayedRename(e, 1);
     };
 

@@ -198,37 +198,7 @@ jpf.Validation = function(){
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         this.showMe(); //@todo scroll refHtml into view
 
-        if (this.$validgroup) {
-            var refHtml = this.validityState.errorHtml || this.oExt;
-            /*var refParent = document != refHtml.ownerDocument
-                ? refHtml.ownerDocument.parentWindow.frameElement.parentNode
-                : jpf.getPositionedParent(this.oExt);
-            
-            if (document != refHtml.ownerDocument)
-                refParent.appendChild(errBox.oExt);
-            else 
-                this.oExt.parentNode.insertBefore(errBox.oExt, this.oExt.nextSibling);
-                
-            if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
-                var pos = jpf.getAbsolutePosition(refHtml, refParent);
-                errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
-                errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
-            }*/
-            
-            document.body.appendChild(errBox.oExt);
-            var pos = jpf.getAbsolutePosition(refHtml, document.body);
-            
-            if (document != refHtml.ownerDocument) {
-                var pos2 = jpf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
-                pos[0] += pos2[0];
-                pos[1] += pos2[1];
-            }
-            
-            errBox.oExt.style.left = (pos[0] + parseFloat(this.$getOption("main", "erroffsetx") || 0)) + "px"; //this.oExt.offsetLeft + "px";
-            errBox.oExt.style.top  = (pos[1] + parseFloat(this.$getOption("main", "erroffsety") || 0)) + "px"; //this.oExt.offsetTop + "px";
-            errBox.host = this;
-        }
-        errBox.show();
+        errBox.display(this);
         
         if (this.hasFeature(__MULTISELECT__) && this.validityState.errorXml)
             this.select(this.validityState.errorXml);
@@ -363,11 +333,11 @@ jpf.Validation = function(){
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
     this.$fValidate = function(){ this.validate(true); };
+    this.addEventListener("blur", this.$fValidate);
+    
     this.$propHandlers["validgroup"] = function(value){
-        this.removeEventListener("blur", this.$fValidate);
+        //this.removeEventListener("blur", this.$fValidate);
         if (value) {
-            this.addEventListener("blur", this.$fValidate);
-
             var vgroup;
             if (typeof value != "string") {
                 this.$validgroup = value.name;

@@ -68,6 +68,10 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
+    this.getValue = function(){
+        return this.value;
+    }
+    
     /**
      * @todo please test this.
      */

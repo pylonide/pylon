@@ -66,7 +66,7 @@ jpf.XSDImplementation = function(){
         "xsd:time": function(value){
             value.match(/^(\d{2}):(\d{2}):(\d{2})$/);
 
-            var dt = new Date(value);
+            var dt = new Date("21/06/1980 " + value);
             if (dt.getHours() != parseFloat(RegExp.$1))
                 return false;
             if (dt.getMinutes() != parseFloat(RegExp.$2))

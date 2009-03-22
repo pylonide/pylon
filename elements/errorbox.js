@@ -91,6 +91,31 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     
     var _self = this;
     
+    this.$positioning = "basic";
+    this.display = function(host){
+        this.host = host;
+        
+        var refHtml = host.validityState.errorHtml || host.oExt;
+        document.body.appendChild(this.oExt);
+        var pos = jpf.getAbsolutePosition(refHtml, document.body);
+        
+        if (document != refHtml.ownerDocument) {
+            var pos2 = jpf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
+            pos[0] += pos2[0];
+            pos[1] += pos2[1];
+        }
+        
+        var left = (pos[0] + parseFloat(host.$getOption("main", "erroffsetx") || 0))
+        this.oExt.style.left = left + "px"
+        this.oExt.style.top  = (pos[1] + parseFloat(host.$getOption("main", "erroffsety") || 0)) + "px"
+        this.show();
+
+        this.$setStyleClass(this.oExt, 
+            left + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
+                ? "rightbox"
+                : "leftbox", ["leftbox", "rightbox"]);
+    }
+    
     /**
      * Sets the message of the errorbox.
      * @param {String} value 
@@ -132,7 +157,7 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.window.$focusfix();
             //#endif
         }
-        
+
         this.hide();
     };
     
