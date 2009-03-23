@@ -66,6 +66,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$focussable   = true;
     this.autoselect    = false;
     this.multiselect   = false;
+    this.value         = "";
 
     this.outputFormat  = null;
     this.captionFormat = "yyyy-mm-dd";
