@@ -785,16 +785,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                             "jpf.setStyleClass(this, '', ['hover']);");
                         oCell.setAttribute("onmouseover",
                             "if (this.className.indexOf('disabled') > -1 \
-                               || this.className.indexOf('active') > -1)\
+                               || this.className.indexOf('active') > -1) \
                                  return;\
                              jpf.setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmousedown",
                             "var o = jpf.findHost(this);\
-                             if (this.className.indexOf('prev') > -1)\
+                             if (this.className.indexOf('prev') > -1) \
                                  o.selectDay(this.innerHTML, 'prev');\
-                             else if (this.className.indexOf('next') > -1)\
+                             else if (this.className.indexOf('next') > -1) \
                                  o.selectDay(this.innerHTML, 'next');\
-                             else\
+                             else \
                                  o.selectDay(this.innerHTML);\
                              o.slideUp();");
                     }
