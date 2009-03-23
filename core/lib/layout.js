@@ -1195,6 +1195,8 @@ jpf.layout = {
         if (this.qlist[oHtml.getAttribute("id")]) {
             if (obj)
                 this.qlist[oHtml.getAttribute("id")][2].push(obj);
+            if (compile)
+                this.qlist[oHtml.getAttribute("id")][1] = compile;
             return;
         }
 

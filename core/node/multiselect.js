@@ -668,7 +668,7 @@ jpf.MultiSelect = function(){
             valueList.push(xmlNode);
         }
 
-        if (this.delayedselect){
+        if (this.delayedselect && (typeof ctrlKey == "boolean")){
             var jNode = this;
             setTimeout(function(){
                 jNode.dispatchEvent("afterselect", {
