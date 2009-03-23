@@ -346,7 +346,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
             if (this.modal) {
                 this.bringToFront();
+                // #ifdef __WITH_FOCUS
                 this.focus(false, {mouse:true});
+                // #endif
             }
         }
         else if (jpf.isFalse(value)) {
