@@ -691,40 +691,65 @@ String.prototype.escape = function() {
     return escape(this);
 };
 
-/**
- * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
- * and '&lt;' to '&amp;lt;'.
- *
- * @type {String}
- */
-String.prototype.escapeHTML = function() {
-    var div  = document.createElement('div');
-    var text = document.createTextNode(this);
-    div.appendChild(text);
-    return div.innerHTML;
-};
+if (window && window.document && window.document.createElement) {
+    /**
+     * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
+     * and '&lt;' to '&amp;lt;'.
+     *
+     * @type {String}
+     */
+    String.prototype.escapeHTML = function() {
+        this.escapeHTML.text.data = this;
+        return this.escapeHTML.div.innerHTML;
+    };
 
-/**
- * Decode HTML equivalent entities to characters, like '&amp;amp;' to '&amp;'
- * and '&amp;lt;' to '&lt;'.
- *
- * @type {String}
- */
-String.prototype.unescapeHTML = function() {
-    var div = document.createElement('div');
-    div.innerHTML = this.stripTags();
-    if (div.childNodes[0]) {
-        if (div.childNodes.length > 1) {
-            var out = [];
-            for (var i = 0; i < div.childNodes.length; i++)
-                out.push(div.childNodes[i].nodeValue);
-            return out.join('');
+    /**
+     * Decode HTML equivalent entities to characters, like '&amp;amp;' to '&amp;'
+     * and '&amp;lt;' to '&lt;'.
+     *
+     * @type {String}
+     */
+    String.prototype.unescapeHTML = function() {
+        var div = document.createElement('div');
+        div.innerHTML = this.stripTags();
+        if (div.childNodes[0]) {
+            if (div.childNodes.length > 1) {
+                var out = [];
+                for (var i = 0; i < div.childNodes.length; i++)
+                    out.push(div.childNodes[i].nodeValue);
+                return out.join('');
+            }
+            else
+                return div.childNodes[0].nodeValue;
         }
-        else
-            return div.childNodes[0].nodeValue;
+        return "";
+    };
+
+    String.prototype.escapeHTML.div  = document.createElement('div');
+    String.prototype.escapeHTML.text = document.createTextNode('');
+    String.prototype.escapeHTML.div.appendChild(String.prototype.escapeHTML.text);
+
+    if ('<\n>'.escapeHTML() !== '&lt;\n&gt;') {
+        String.prototype.escapeHTML = null;
     }
-    return "";
-};
+
+    if ('&lt;\n&gt;'.unescapeHTML() !== '<\n>') {
+        String.prototype.unescapeHTML = null;
+    }
+}
+
+if (!String.prototype.escapeHTML) {
+    String.prototype.escapeHTML = function() {
+        return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+}
+
+if (!String.prototype.unescapeHTML) {
+    String.prototype.unescapeHTML = function() {
+        return this.stripTags().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+    }
+}
+
 
 /**
  * Trim a string down to a specific number of characters. Optionally, append an
