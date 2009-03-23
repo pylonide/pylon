@@ -477,9 +477,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
 
-        var w_firstYearDay = new Date(year, 0, 1);
-        var w_dayInWeek    = w_firstYearDay.getDay();
-        var w_days         = w_dayInWeek;
+        //var w_firstYearDay = new Date(year, 0, 1);
+        //var w_dayInWeek    = w_firstYearDay.getDay();
+        var w_days         = new Date(year, 0, 1).getDay();
 
         for (i = 0; i <= month; i++) {
             if (isLeapYear(year) && i == 1)
@@ -487,21 +487,21 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             w_days += months[i].number;
         }
 
-        var w_weeks   = Math.ceil(w_days / 7);
-
-        var date      = new Date(year, month);
+        var w_weeks = Math.ceil(w_days / 7),
+            date    = new Date(year, month);
 
         _numberOfDays = months[date.getMonth()].number;
         if (isLeapYear(year) && date.getMonth() == 1)
             _numberOfDays++;
 
         _dayNumber = new Date(year, month, 1).getDay();
-        var prevMonth     = month == 0 ? 11 : month - 1;
-        var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
+        var prevMonth     = month == 0 ? 11 : month - 1,
+            prevMonthDays = months[prevMonth].number - _dayNumber + 1,
+            nextMonthDays = 1,
+            rows = this.oNavigation.childNodes,
+            cells,
+            y;
 
-        var nextMonthDays = 1;
-
-        var rows = this.oNavigation.childNodes;
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
                 if (_width < 300) {
@@ -524,16 +524,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.sliderHeight = 22; //navigators bar height
-        var temp = Math.floor((_width - 37) / 8);
+        temp = Math.floor((_width - 37) / 8);
         var squareSize = temp > 0 ? temp : 0;
 
-        var daysofweek   = this.oDow.childNodes;
-        var d_height     = Math.floor(squareSize / 4 + 6);
-        var d_paddingTop = Math.floor(squareSize / 4 - 8) > 0
-            ? Math.floor(squareSize / 4 - 8)
-            : 0;
-        var d_fontSize   = _width  <= 220 ? "9px" : "11px";
-        var d_width      = (squareSize * 8 + 32);
+        var daysofweek   = this.oDow.childNodes,
+            d_height     = Math.floor(squareSize / 4 + 6),
+            d_paddingTop = Math.floor(squareSize / 4 - 8) > 0
+                ? Math.floor(squareSize / 4 - 8)
+                : 0,
+            d_fontSize   = _width  <= 220 ? "9px" : "11px",
+            d_width      = (squareSize * 8 + 32);
 
 
         this.oDow.style.width = d_width + "px";
@@ -608,8 +608,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                             this.$setStyleClass(cells[j], "weekend");
                         }
 
-                        if (month == _month && year == _year  && y - _dayNumber == _day) {
-                        this.$setStyleClass(cells[j], "active");
+                        if (month == _month && year == _year
+                          && y - _dayNumber == _day) {
+                            this.$setStyleClass(cells[j], "active");
                         }
                     }
                     else if (y > _numberOfDays + _dayNumber) {
