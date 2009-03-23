@@ -691,7 +691,8 @@ String.prototype.escape = function() {
     return escape(this);
 };
 
-if (window && window.document && window.document.createElement) {
+if (typeof window != "undefined" && typeof window.document != "undefined" 
+  && typeof window.document.createElement == "function") {
     /**
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
      * and '&lt;' to '&amp;lt;'.
@@ -729,27 +730,24 @@ if (window && window.document && window.document.createElement) {
     String.prototype.escapeHTML.text = document.createTextNode('');
     String.prototype.escapeHTML.div.appendChild(String.prototype.escapeHTML.text);
 
-    if ('<\n>'.escapeHTML() !== '&lt;\n&gt;') {
+    if ('<\n>'.escapeHTML() !== '&lt;\n&gt;')
         String.prototype.escapeHTML = null;
-    }
 
-    if ('&lt;\n&gt;'.unescapeHTML() !== '<\n>') {
+    if ('&lt;\n&gt;'.unescapeHTML() !== '<\n>')
         String.prototype.unescapeHTML = null;
-    }
 }
 
 if (!String.prototype.escapeHTML) {
     String.prototype.escapeHTML = function() {
         return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
+    };
 }
 
 if (!String.prototype.unescapeHTML) {
     String.prototype.unescapeHTML = function() {
         return this.stripTags().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
-    }
+    };
 }
-
 
 /**
  * Trim a string down to a specific number of characters. Optionally, append an
