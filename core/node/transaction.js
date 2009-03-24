@@ -121,7 +121,7 @@ jpf.Transaction = function(){
      * @bug  when a commit is cancelled using the onbeforecommit event, the 
      * state of the element becomes undefined.
      */
-    this.commitTransaction = function(){
+    this.commit = function(){
         if (!this.inTransaction) return;
         
         //This should be move to after action has been executed
@@ -158,7 +158,7 @@ jpf.Transaction = function(){
      * @bug When there is no rollback action is defined. A Transaction can never 
      * be rolled back. This is incorrect behaviour.
      */
-    this.rollbackTransaction = function(){
+    this.rollback = function(){
         if (!this.inTransaction) return;
         
         if (this.$at) {
@@ -193,7 +193,7 @@ jpf.Transaction = function(){
      *   add    the transaction is started to add a new data element.
      *   update the transaction is started to update an existing data element.
      */
-    this.beginTransaction = function(transMode){
+    this.begin = function(transMode){
         //#ifdef __DEBUG
         if (this.inTransaction) {
             throw new Error(jpf.formatErrorString(0, this, 

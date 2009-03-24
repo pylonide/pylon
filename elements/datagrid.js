@@ -1221,10 +1221,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastrow  = rowHtml;
         
         // #ifdef __WITH_RENAME
-        if (this.namevalue && this.hasFocus() 
+        /*if (this.namevalue && this.hasFocus() 
           && (!type || type == "text" || type == "lookup") 
           && htmlNode == htmlNode.parentNode.childNodes[1])
-            this.startDelayedRename(e, 1);
+            this.startDelayedRename(e, 1);*/
         // #endif
     };
 
