@@ -85,8 +85,11 @@ jpf.DockServer = {
         }
         
         jpf.dragmode.setMode("dockobject");
+
+        // #ifdef __WITH_PLANE
         jpf.plane.show(this.nextPositionMarker);
-        
+        // #endif
+
         var pos  = jpf.getAbsolutePosition(oItem.oHtml);
         var diff = jpf.getDiff(this.nextPositionMarker);
 
@@ -131,15 +134,21 @@ jpf.DockServer = {
         if (jpf.isIE && e.button < 1) 
             return false;
         
+        // #ifdef __WITH_PLANE
         jpf.plane.hide();
+        // #endif
+
         jpf.DockServer.nextPositionMarker.style.top = "10000px";
         //jpf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
         
         var el = document.elementFromPoint(e.clientX
             + document.documentElement.scrollLeft,
             e.clientY + document.documentElement.scrollTop);
+
+        // #ifdef __WITH_PLANE
         jpf.plane.show(jpf.DockServer.nextPositionMarker);
-        
+        // #endif
+
         var o = el;
         while (o && !o.host && o.parentNode) 
             o = o.parentNode;
@@ -240,7 +249,10 @@ jpf.DockServer = {
         if (jpf.isIE && e.button < 1) 
             return false;
         
+        // #ifdef __WITH_PLANE
         jpf.plane.hide();
+        // #endif
+
         jpf.dragmode.clear();
         jpf.DockServer.nextPositionMarker.style.display = "none";
         //jpf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";

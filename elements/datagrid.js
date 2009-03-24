@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JDATAGRID || __INC_ALL
+// #ifdef __JDATAGRID || __INC_ALL || __JSPREADSHEET || __JPROPEDIT
 // #define __WITH_CACHE 1
 // #define __WITH_DATABINDING 1
 // #define __WITH_MULTISELECT 1
@@ -1164,8 +1164,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 if ((e.srcElement || e.target).className.indexOf("newitem") == -1)
                     return;
             }
-            
+
+            // #ifdef __WITH_RENAME            
             this.startDelayedRename(e, 1);
+            // #endif
+
             return;
         }
         
@@ -1217,10 +1220,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastcol  = col;
         lastrow  = rowHtml;
         
+        // #ifdef __WITH_RENAME
         if (this.namevalue && this.hasFocus() 
           && (!type || type == "text" || type == "lookup") 
           && htmlNode == htmlNode.parentNode.childNodes[1])
             this.startDelayedRename(e, 1);
+        // #endif
     };
 
     /**** Drag & Drop ****/
@@ -2115,8 +2120,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     _self.oPointer.style.left    = (t.offsetLeft - sLeft - 1) + "px";
                     _self.oPointer.style.width   = (t.offsetWidth - widthdiff + 1) + "px";
                     
+                    // #ifdef __WITH_PLANE
                     jpf.plane.show(_self.oPointer, null, true);
-                    
+                    // #endif
+
                     dragging = true;
                     document.onmouseup = function(){
                         if (!e) e = event;
@@ -2130,7 +2137,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         dragging = false;
                         _self.oPointer.style.display = "none";
                         
+                        // #ifdef __WITH_PLANE
                         jpf.plane.hide();
+                        // #endif
+
                     };
                     
                     document.onmousemove = function(e){
