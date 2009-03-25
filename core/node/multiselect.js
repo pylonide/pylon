@@ -440,7 +440,7 @@ jpf.MultiSelect = function(){
 
         };
     }
-
+    // #ifdef __WITH_MULTIBINDING
     /**
      * Sets the second level SmartBinding for Multilevel Databinding.
      * For more information see {@link MultiLevelBinding}
@@ -457,11 +457,11 @@ jpf.MultiSelect = function(){
 
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
     };
-
     this.getMultibinding = function(){
         return selSmartbinding;
     }
-
+    // #endif
+    // #ifdef __WITH_MULTIBINDING
     /**
      * Gets the second level SmartBinding for Multilevel Databinding.
      * For more information see {@link MultiLevelBinding}
@@ -474,7 +474,7 @@ jpf.MultiSelect = function(){
         return (selSmartbinding
             || (selSmartbinding = new jpf.MultiLevelBinding(this)));
     };
-
+    // #endif
     // #endif
 
     /**

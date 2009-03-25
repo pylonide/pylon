@@ -290,8 +290,10 @@ jpf.Rename = function(){
         this.oTxt.onselectstart    = function(e){
             (e || event).cancelBubble = true;
         };
+        // #ifdef __WITH_WINDOW_FOCUS
         //this.oTxt.host = this;
         jpf.sanitizeTextbox(this.oTxt);
+        // #endif
 
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
         this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
