@@ -2540,7 +2540,10 @@ jpf.convertIframe = function(iframe, preventSelect){
     
     doc.onmousedown = function(e){
         if (!e) e = win.event;
-        
+
+        if (!pos)
+            pos = jpf.getAbsolutePosition(iframe);
+
         var q = {
             offsetX       : e.offsetX,
             offsetY       : e.offsetY,
