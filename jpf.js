@@ -1171,7 +1171,7 @@ var jpf = {
         jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
             + "application " + strXmlns + " />").documentElement;
 
-        var temp;
+        var temp, loop;
         var cnode, isPrefix = false, id = 0, str, x, node = document.body;
         while (node) {
             isPrefix = node.nodeType == 1
@@ -1463,15 +1463,15 @@ var jpf = {
         }
         //#endif
         
-        //#ifdef __DEBUG
         if (isEmptyDocument && document.documentElement.outerHTML
           .split(">", 1)[0]
           .indexOf(jpf.ns.jml) == -1) {
+            //#ifdef __DEBUG
             jpf.console.warn("The jml namespace declaration wasn't found. \
                               No jml elements were found in the body. Exiting");
+            //#endif
             return false;
         }
-        //#endif
 
         //Load current HTML document as 'second DOM'
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
