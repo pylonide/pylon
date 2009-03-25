@@ -563,19 +563,21 @@ jpf.Class = function(){
 jpf.Event = function(name, data){
     this.name = name;
 
-    //#ifdef __WITH_EVENT_BUBBLING
+    // #ifdef __WITH_EVENT_BUBBLING
     this.bubbles = false;
     this.cancelBubble = false;
-    //#endif
+    // #endif
 
     this.preventDefault = function(){
         this.returnValue = false;
     }
 
+    // #ifdef __WITH_EVENT_BUBBLING
     this.stopPropagation = function(){
         this.cancelBubble = true;
     }
-
+    // #endif
+    
     //@todo should be implemented;
     this.isCharacter = function(){
         return (this.keyCode < 112 || this.keyCode > 122) 
