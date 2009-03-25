@@ -62,7 +62,8 @@ jpf.XPath = {
 
         if (returnResult)
             return sResult.push(qResult);
-        if (!qResult) return;
+        if (!qResult || qResult.dataType == "array" && !qResult.length) 
+            return;
 
         if (data)
             data[0](htmlNode, data[1], info, count + 1, 0, sResult);
@@ -269,7 +270,10 @@ jpf.XPath = {
 
     processXpath : function(sExpr, isAbsolute){
         var results = new Array();
-        sExpr = sExpr.replace(/('[^']*)\|([^']*')/g, "$1_@_$2");
+        sExpr = sExpr.replace(/'[^']*'/g, function(m){
+            return m.replace("|", "_@_");
+        });
+
         sExpr = sExpr.split("\|");
         for (var i = 0; i < sExpr.length; i++)
             sExpr[i] = sExpr[i].replace(/_\@\_/g, "|");//replace(/('[^']*)\_\@\_([^']*')/g, "$1|$2");
@@ -365,9 +369,18 @@ jpf.XPath = {
         return c.compile();
     },
 
-    doXpathFunc : function(type, arg1, arg2, arg3){
-        if (arg1.nodeType)
-            arg1 = arg1.nodeValue;
+    doXpathFunc : function(type, nodelist, arg2, arg3){
+        if (nodelist.length == 0)
+            nodelist = "";
+
+        if (typeof nodelist != "string") {
+            for (var i = 0; i < nodelist.length; i++) {
+                if (arguments.callee.call(this, type, typeof nodelist[i] != "string" ? nodelist[i].nodeValue : nodelist[i], arg2, arg3))
+                    return true;
+            }
+            return false;
+        }
+        else arg1 = nodelist;
 
         switch(type){
             case "not":
@@ -409,15 +422,15 @@ jpf.XPath = {
     selectNodeExtended : function(sExpr, contextNode, match){
         var sResult = this.selectNodes(sExpr, contextNode);
 
-        if (sResult.length == 0) return null;
-        if (!match) return sResult[0];
+        if (sResult.length == 0) return [];
+        if (!match) return sResult;
 
         for (var i = 0; i < sResult.length; i++) {
-            if(getNodeValue(sResult[i]) == match)
-                return sResult[i];
+            if (getNodeValue(sResult[i]) == match)
+                return [sResult[i]];
         }
 
-        return null;
+        return [];
     },
 
     selectNodes : function(sExpr, contextNode){
@@ -511,7 +524,7 @@ jpf.CodeCompilation = function(code){
 
         //Xpath
         var data = this.data.X;
-        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z\*][\*\.\@\/\w]*(?:\(\)){0,1})/g,
+        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z\*][\*\.\@\/\w\-]*(?:\(\)){0,1})/g,
             function(d, m1, m2){
                 return m1 + (data.push(m2) - 1) + "X_";
             });
