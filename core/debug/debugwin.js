@@ -486,7 +486,7 @@ jpf.debugwin = {
 
         oHtml.setAttribute("inited", "true");
 
-        var oInt = oHtml.getElementsByTagName("div")[0];
+        var oInt = oHtml.getElementsByTagName("div")[1];
         jpf.test = oHtml;
 
         //Get all models
@@ -594,11 +594,11 @@ jpf.debugwin = {
         if (!this.PROFILER_ELEMENT) return;
         if (jpf.profiler.isRunning) {
             this.PROFILER_ELEMENT.innerHTML = this.PROFILER_PROGRESS;
-            this.PROFILER_BUTTON.innerHTML  = "Stop";
+            //this.PROFILER_BUTTON.innerHTML  = "Stop";
         }
         else {
             this.PROFILER_ELEMENT.innerHTML = this.PROFILER_NOPROGRESS;
-            this.PROFILER_BUTTON.innerHTML  = "Start";
+            //this.PROFILER_BUTTON.innerHTML  = "Start";
         }
     },
 
@@ -636,11 +636,11 @@ jpf.debugwin = {
         while (oLast.nodeType != 1) oLast = oLast.previousSibling;
         if (oLast.style.display == "block"){
             oLast.style.display = "none";
-            oFirst.src          = this.resPath + "arrow_right.gif";
+            oFirst.src          = this.resPath + "arrow_gray_right.gif";
         }
         else {
             oLast.style.display = "block";
-            oFirst.src          = this.resPath + "arrow_down.gif";
+            oFirst.src          = this.resPath + "arrow_gray_down.gif";
             if (corrScroll)
                 oLast.scrollTop = oLast.scrollHeight;
             if (corrFocus) {
@@ -665,18 +665,6 @@ jpf.debugwin = {
                 }
 
                 elError.style.position = jpf.supportFixedPosition ? "fixed" : "absolute";
-                elError.style.zIndex = 10000000;
-                elError.style.top = "10px";
-                elError.style.border = "2px outset";//solid #65863a
-                elError.style.textAlign = "left";
-                elError.style.MozBorderBottomColors = "black gray";
-                elError.style.MozBorderRightColors = "black gray";
-                elError.style.MozBorderTopColors = "#C0C0C0 #FFFFFF";
-                elError.style.MozBorderLeftColors = "#C0C0C0 #FFFFFF";
-                elError.style.padding = "10px";
-                elError.style.width = "600px";
-                elError.style.background = "#dfdfdf";
-                elError.style.right = "10px";
 
                 elError.onmousedown =
                 elError.onkeydown =
@@ -685,163 +673,252 @@ jpf.debugwin = {
                 }
 
                 jpf.importCssString(document, "\
-                    #cbTW, #cbHighlight, #toggledebug{\
-                        float:left;\
-                    }\
-                    #javerror button, #javerror select, #javerror input, #javerror label{\
-                        font-family:Arial;\
-                        font-size:8pt;\
-                    }\
-                    #override #javerror{\
-                        letter-spacing:0;\
-                        font-family:Arial;\
-                    }\
-                    #javerror label{\
-                        padding:5px 0 0 1px;\
-                        width:auto;\
-                    }\
-                    #javerror button{\
-                        padding:0;\
-                        margin-top:-1px;\
-                    }\
-                    #javerror .debug_javeline_logo{\
-                        width:106px;\
-                        height:74px;\
-                        background:url(" + this.resPath + "platform_logo.gif) no-repeat;\
-                        position:absolute;\
-                        right:20px;\
-                        top:5px;\
-                    }\
-                    #javerror .debug_closebtn{\
-                        cursor:hand;\
-                        cursor:pointer;\
-                        right : 10px;\
-                        top : 10px;\
-                        z-index : 1000;\
-                        margin:0px;\
-                        font-size:8pt;\
-                        font-family:'Lucida Grande',Verdana;\
-                        width:14px;\
-                        text-align:center;\
-                        height:14px;\
-                        overflow:hidden;\
-                        border:1px solid gray;\
-                        color:gray;\
-                        background-color:#EEEEEE;\
-                        padding:0;\
-                        position : absolute;\
-                    }\
-                    #javerror .debug_title{\
-                        height:26px;\
-                        background:url(" + this.resPath + "debug_title.gif) no-repeat 10px 10px;\
-                        position : absolute;\
-                        padding : 10px;\
-                        width : 100%;\
-                        left : 0;\
-                        top : 0;\
-                        margin : 0;\
-                    }\
-                    #javerror .debug_errorbox{\
-                        border:1px solid black;\
-                        padding:4px;\
-                        font-family:Arial;\
-                        font-size:10pt;\
-                        background-color:white;\
-                        margin-bottom:5px;\
-                        margin-top : " + (jpf.isIE ? "42px" : "32px") + ";\
-                    }\
-                    #javerror .debug_footer{\
-                         width:97px;\
-                         height:18px;\
-                         background:url(" + this.resPath + "javeline_logo.gif) no-repeat;\
-                         position:absolute;\
-                         right:16px;\
-                         bottom:11px;\
-                    }\
-                    #javerror .debug_panel_head{\
-                        cursor:default;\
-                        border:1px solid gray;\
-                        padding:4px;\
-                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
-                        font-size:8pt;\
-                        background-color:#eaeaea;\
-                        margin-bottom:1px;\
-                    }\
-                    #javerror .debug_panel_headsub{\
-                        margin-right:5px;\
-                        float:right;\
-                        margin-top:-4px;\
-                    }\
-                    #javerror .debug_panel_body_base{\
-                        cursor:text;\
-                        background:white url(" + this.resPath + "shadow.gif) no-repeat 0 0;\
-                        padding:4px;\
-                        font-size:9pt;\
-                        font-family:Monaco, Courier New;\
-                        margin:3px;\
-                        border:1px solid gray;\
-                    }\
-                    #javerror .debug_panel_body_none{\
-                        display:none;\
-                    }\
-                    #javerror .debug_panel_body_markup{\
-                        padding:4px 4px 20px 4px;\
-                        max-height:200px;\
-                        white-space:nowrap;\
-                        overflow:auto;\
-                    }\
-                    #javerror .debug_panel_body_data{\
-                        max-height:200px;\
-                        white-space:nowrap;\
-                        overflow:auto;\
-                        display:none;\
-                    }\
-                    #javerror .debug_panel_body_profiler{\
-                        padding:0px;\
-                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
-                        font-size:9px;\
-                        width:575px;\
-                        height:180px;\
-                        overflow:auto;\
-                        display:block;\
-                    }\
-                    #javerror .debug_panel_body_log{\
-                        height:250px;\
-                        overflow:auto;\
-                        font-size:8pt;\
-                        font-family:'Lucida Grande',Verdana;\
-                        margin:5px 3px 3px 3px;\
-                    }\
-                    #javerror .debug_panel_body_console{\
-                        width:575px;\
-                        height:100px;\
-                    }\
-                    #javerror .debug_profilermsg{\
-                        margin: 4px;\
-                        font-weight: 500;\
-                        height:20px;\
-                        line-height:20px;\
-                        vertical-align:middle;\
-                        overflow:visible;\
-                        padding:4px;\
-                    }\
-                    #javerror .debug_progress{\
-                        background-image:url(" + this.resPath + "progress.gif);\
-                        background-repeat:no-repeat;\
-                        background-position:center left;\
-                        padding-left:22px;\
-                    }\
-                    #javerror .debug_console_btn{\
-                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
-                        font-size:8pt;\
-                        margin:0 0 0 3px;\
-                    }\
-                    #javerror .debug_check_use{\
-                        position:relative;\
-                        top:4px;\
-                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
-                        font-size:8pt;\
-                    }");
+                    #javerror {\
+                    z-index: 10000000;\
+                    top: 10px;\
+                    border: 2px outset;\
+                    text-align: left;\
+                    -moz-border-bottom-colors: black gray;\
+                    -moz-border-right-colors: black gray;\
+                    -moz-border-top-colors: #C0C0C0 #FFFFFF;\
+                    -moz-border-left-colors: #a3a3a3 #FFFFFF;\
+                    width: 600px;\
+                    background: #fff;\
+                    right: 10px;\
+                    font-family: 'Lucida Grande', Arial, Monaco, MS Sans Serif;\
+                    font-size: 12px;\
+                    color: #333;\
+                    overflow: hidden;\
+                }\
+                #cbTW, #cbHighlight, #toggledebug{\
+                    float: left;\
+                }\
+                #javerror button, #javerror select, #javerror input, #javerror label{\
+                    font-size: 10px;\
+                }\
+                #override #javerror{\
+                    letter-spacing: 0;\
+                    font-family: 'Lucida Grande', Arial;\
+                }\
+                #javerror label{\
+                    padding: 5px 0 0 1px;\
+                    width: auto;\
+                }\
+                #javerror button{\
+                    padding: 0;\
+                    margin: 0 0 2px 0;\
+                }\
+                #javerror .debug_header {\
+                    position: relative;\
+                    background: url(" + this.resPath + "backgrounds.png) repeat-x 0 -79px;\
+                    border-bottom: 1px solid #505050;\
+                    height: 66px;\
+                }\
+                #javerror .debug_closebtn{\
+                    cursor: hand;\
+                    cursor: pointer;\
+                    right: 10px;\
+                    top: 10px;\
+                    z-index: 1000;\
+                    margin: 0px;\
+                    font-size: 8pt;\
+                    font-family: 'Lucida Grande',Verdana;\
+                    width: 14px;\
+                    text-align: center;\
+                    height: 14px;\
+                    overflow: hidden;\
+                    border: 1px solid gray;\
+                    color: gray;\
+                    background-color: #EEEEEE;\
+                    padding: 0;\
+                    position : absolute;\
+                }\
+                #javerror .debug_title{\
+                    height: 26px;\
+                    position: absolute;\
+                    padding: 10px;\
+                    width: 100%;\
+                    left: 0;\
+                    top: 0;\
+                    margin: 0;\
+                }\
+                #javerror .debug_errorbox{\
+                    position: absolute;\
+                    bottom: 0px;\
+                    padding:4px;\
+                    margin: 0;\
+                }\
+                #javerror .debug_toolbar{\
+                    position: relative;\
+                    height: 22px;\
+                    background: url(" + this.resPath + "backgrounds.png) repeat-x 0 -57px;\
+                    padding: 0 0 0 4px;\
+                    font-size: 10px;\
+                    vertical-align: middle;\
+                }\
+                #javerror .debug_toolbar_inner{\
+                    border-top: 1px solid #cacaca;\
+                    border-bottom: 1px solid #cacaca;\
+                }\
+                #javerror .debug_toolbar .debug_btn{\
+                    position: relative;\
+                    border-right: 1px solid #b8b8b8;\
+                    width: 24px;\
+                    height: 22px;\
+                    float: left;\
+                    cursor: pointer;\
+                    cursor: hand;\
+                }\
+                #javerror .debug_toolbar .debug_btn span{\
+                    position: absolute;\
+                    background: url(" + this.resPath + "buttons.png) no-repeat 0 0;\
+                    width: 16px;\
+                    height: 16px;\
+                    top: 4px;\
+                    left: 4px;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.reboot{\
+                    background-position: -16px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.undo{\
+                    background-position: -32px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.redo{\
+                    background-position: -48px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.online{\
+                    background-position: -64px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.offline{\
+                    background-position: -80px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.reset{\
+                    background-position: -96px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn span.start{\
+                    background-position: -112px 0;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.exec{\
+                    background-position: 0 -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.reboot{\
+                    background-position: -16px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.undo{\
+                    background-position: -32px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.redo{\
+                    background-position: -48px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.online{\
+                    background-position: -64px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.offline{\
+                    background-position: -80px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.reset{\
+                    background-position: -96px -16px;\
+                }\
+                #javerror .debug_toolbar .debug_btn_down span.start{\
+                    background-position: -112px -16px;\
+                }\
+                #javerror .debug_footer{\
+                    width: 100%;\
+                    position: relative;\
+                    bottom: 0px;\
+                }\
+                #javerror .debug_panel{\
+                    cursor:default;\
+                    border-left: 1px solid #a3a3a3;\
+                    padding: 0;\
+                    margin: 0;\
+                    font-family: 'Lucida Grande',MS Sans Serif,Arial;\
+                    font-size: 8pt;\
+                }\
+                #javerror .debug_panel_head{\
+                    background: url(" + this.resPath + "backgrounds.png) repeat-x 0 0;\
+                    height: 17px;\
+                    padding: 2px 0 0 0;\
+                }\
+                #javerror .debug_panel_head img{\
+                    margin: 2px 0 0 6px;\
+                }\
+                #javerror .debug_panel_head strong{\
+                    color: #826e6e;\
+                }\
+                #javerror .debug_panel_headsub{\
+                    margin-right: 5px;\
+                    float: right;\
+                    margin-top: -4px;\
+                }\
+                #javerror .debug_panel_body_base{\
+                    cursor: text;\
+                    background: white url(" + this.resPath + "shadow.gif) no-repeat 0 0;\
+                    padding: 4px;\
+                    font-size: 9pt;\
+                    font-family: Monaco, Courier New;\
+                    margin: 0;\
+                }\
+                #javerror .debug_panel_body_none{\
+                    display: none;\
+                }\
+                #javerror .debug_panel_body_markup{\
+                    padding: 4px 4px 20px 4px;\
+                    max-height: 200px;\
+                    white-space: nowrap;\
+                    overflow: auto;\
+                }\
+                #javerror .debug_panel_body_data{\
+                    max-height: 200px;\
+                    white-space: nowrap;\
+                    overflow: auto;\
+                    display: none;\
+                }\
+                #javerror .debug_panel_body_profiler{\
+                    padding: 0px;\
+                    font-family: 'Lucida Grande',MS Sans Serif,Arial;\
+                    font-size: 9px;\
+                    height: 180px;\
+                    overflow: auto;\
+                    display: block;\
+                }\
+                #javerror .debug_panel_body_log{\
+                    height: 250px;\
+                    overflow: auto;\
+                    font-size: 8pt;\
+                    font-family: 'Lucida Grande',Verdana;\
+                }\
+                #javerror .debug_panel_body_console{\
+                    width: 599px;\
+                    height: 100px;\
+                    border: 0;\
+                }\
+                #javerror .debug_profilermsg{\
+                    margin: 4px;\
+                    font-weight: 500;\
+                    height: 20px;\
+                    line-height: 20px;\
+                    vertical-align: middle;\
+                    overflow: visible;\
+                    padding: 4px;\
+                }\
+                #javerror .debug_progress{\
+                    background-image: url(" + this.resPath + "progress.gif);\
+                    background-repeat: no-repeat;\
+                    background-position: center left;\
+                    padding-left: 22px;\
+                }\
+                #javerror .debug_console_btn{\
+                    font-family: 'Lucida Grande',MS Sans Serif,Arial;\
+                    font-size: 8pt;\
+                    margin: 0 0 0 3px;\
+                }\
+                #javerror .debug_check_use{\
+                    position: relative;\
+                    top: 4px;\
+                    font-family: 'Lucida Grande',MS Sans Serif,Arial;\
+                    font-size: 8pt;\
+                }");
             }
 
             document.body.style.display = "block";
@@ -856,124 +933,137 @@ jpf.debugwin = {
             var canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false;
 
             elError.innerHTML = "\
-                <div class='debug_javeline_logo'></div>\
-                <span onmouseover='this.style.backgroundColor=\"white\"' \
-                  onmouseout='this.style.backgroundColor=\"#EEEEEE\"' \
-                  onclick='this.parentNode.style.display=\"none\"' class='debug_closebtn'\
-                >X</span>\
-                <h1 class='debug_title'></h1>\
-                <div onselectstart='event.cancelBubble=true' class='debug_errorbox'\
-                >" + errorMessage + "</div>" +
+                <div class='debug_header'>\
+                    <span onmouseover='this.style.backgroundColor=\"white\"'\
+                      onmouseout='this.style.backgroundColor=\"#EEEEEE\"'\
+                      onclick='this.parentNode.style.display=\"none\"' class='debug_closebtn'\
+                    >X</span>\
+                    <h1 class='debug_title'></h1>\
+                    <div onselectstart='event.cancelBubble=true' class='debug_errorbox'>" + errorMessage + "</div>\
+                </div>" +
             (jmlContext
-             ? "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_down.gif' />&nbsp;\
-                    <strong>Javeline Markup Language</strong>\
-                    <br />\
+             ? "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
+                    <div class='debug_panel_head'>\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
+                        <strong>Javeline Markup Language</strong>\
+                    </div>\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' \
                       class='debug_panel_body_base debug_panel_body_markup'>" + jmlContext + "</div>\
                 </div>"
              : "") +
-               "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <div class='debug_panel_headsub'>\
-                        <input id='cbHighlight' type='checkbox' onclick='\
-                          jpf.debugwin.toggleHighlighting(this.checked);\
-                          event.cancelBubble = true;\' " + (jpf.getcookie("highlight") == "true" ? "checked='checked'" : "") +
-                       "/>\
-                        <label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>\
-                            Enable Syntax Coloring\
-                        </label>\
+               "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
+                    <div class='debug_panel_head'>\
+                        <div class='debug_panel_headsub'>\
+                            <input id='cbHighlight' type='checkbox' onclick='\
+                              jpf.debugwin.toggleHighlighting(this.checked);\
+                              event.cancelBubble = true;'" + (jpf.isTrue(jpf.getcookie("highlight")) ? " checked='checked'" : "") + "/>\
+                            <label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>\
+                                Enable Syntax Coloring\
+                            </label>\
+                        </div>\
+                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
+                        <strong>Stack Trace</strong>\
                     </div>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
-                    <strong>Stack Trace</strong>\
-                    <br />\
-                    <div style='\
-                      display:none;\
-                      background:white url(" + this.resPath + ") no-repeat 0 0;\
-                      padding:4px;\
-                      font-size:9pt;\
-                      font-family:Monaco, Courier New;\
-                      margin:3px;\
-                      border:1px solid gray;\
-                    '>\
+                    <div class='debug_panel_body_base debug_panel_body_none'>\
                         <blockquote></blockquote>\
                     </div>\
-                </div>  " +
+                </div>" +
             (canViewMarkup
-             ? "<div class='debug_panel_head' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
-                    <strong>Live Data Debugger (beta)</strong>\
-                    <br />\
+             ? "<div class='debug_panel' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
+                    <div class='debug_panel_head'>\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
+                        <strong>Live Data Debugger (beta)</strong>\
+                    </div>\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_data'></div>\
                 </div>"
              : "") +
-               "<div class='debug_panel_head' id='jpfProfilerPanel' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
-                    <strong>Javascript Profiler (beta)</strong>\
-                    <br />\
+               "<div class='debug_panel' id='jpfProfilerPanel' onclick='jpf.debugwin.toggleFold(this);'>\
+                    <div class='debug_panel_head'>\
+                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
+                        <strong>Javascript Profiler (beta)</strong>\
+                    </div>\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;'>\
                         <div id='jpfProfilerOutput' class='debug_panel_body_base debug_panel_body_profiler'></div>\
                         <div id='jpfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
-                        <button id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' class='debug_control_btn'>Start</button>\
-                        <input id='cbProfileGlobal' type='checkbox' onclick='\
-                          jpf.debugwin.toggleProfileGlobal(this.checked);\
-                          event.cancelBubble = true;\' " + (this.profileGlobal ? "checked='checked'" : "") +
-                       "/>\
-                        <label for='cbProfileGlobal' onclick='event.cancelBubble=true'>\
-                            Profile window object\
-                        </label>\
-                        <input id='cbProfileStartup' type='checkbox' onclick='\
-                          jpf.debugwin.toggleProfileStartup(this.checked);\
-                          event.cancelBubble = true;\' " + (jpf.getcookie("profilestartup") == "true" ? "checked='checked'" : "") +
-                       "/>\
-                        <label for='cbProfileStartup' onclick='event.cancelBubble=true'>\
-                            Profile startup\
-                        </label>\
+                        <div class='debug_toolbar debug_toolbar_inner'>\
+                            <div id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='start'> </span>\
+                            </div>\
+                            <input id='cbProfileGlobal' type='checkbox' onclick='\
+                              jpf.debugwin.toggleProfileGlobal(this.checked);\
+                              event.cancelBubble = true;'" + (this.profileGlobal ? " checked='checked'" : "") + "/>\
+                            <label for='cbProfileGlobal' onclick='event.cancelBubble=true'>\
+                                Profile window object\
+                            </label>\
+                            <input id='cbProfileStartup' type='checkbox' onclick='\
+                              jpf.debugwin.toggleProfileStartup(this.checked);\
+                              event.cancelBubble = true;'" + (jpf.isTrue(jpf.getcookie("profilestartup")) ? " checked='checked'" : "") + "/>\
+                            <label for='cbProfileStartup' onclick='event.cancelBubble=true'>\
+                                Profile startup\
+                            </label>\
+                        </div>\
                     </div>\
                 </div>\
-                <div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, true);'>\
-                    <div class='debug_panel_headsub'>\
-                        <input id='cbTW' type='checkbox' onclick='\
-                          jpf.debugwin.toggleLogWindow(this.checked);\
-                          event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/>\
-                        <label for='cbTW' style='\
-                          top:4px;\
-                          position:relative;' onclick='event.cancelBubble=true'\
-                        >View in window</label>\
-                    </div>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_down.gif' />&nbsp;\
-                    <strong>Log Viewer</strong>\
-                    <br />\
-                    <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
-                      onselectstart='event.cancelBubble=true' \
-                      onmousedown='event.cancelBubble=true;if (jpf.window) jpf.window.$focusRoot();' \
-                      class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
-                </div>" +
-               "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
-                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
-                    <strong>Javascript console</strong>\
-                    <br />\
-                    <div style='display:none' onclick='event.cancelBubble=true'>\
-                        <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);' \
-                          onselectstart='event.cancelBubble=true' \
-                          onmousedown='event.cancelBubble=true;if(jpf.window) jpf.window.$focusRoot();' \
-                          class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
-                        <div style='float:right'>\
-                            <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\
-                            <button onclick='jpf.debugwin.run(\"undo\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Undo</button>\
-                            <button onclick='jpf.debugwin.run(\"redo\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Redo</button>\
-                            <button onclick='jpf.debugwin.run(\"reset\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reset State</button>\
-                            <button onclick='jpf.debugwin.run(\"online\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Go Online</button>\
-                            <button onclick='jpf.debugwin.run(\"offline\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Go Offline</button>\
+                <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, true);'>\
+                    <div class='debug_panel_head'>\
+                        <div class='debug_panel_headsub'>\
+                            <input id='cbTW' type='checkbox' onclick='\
+                              jpf.debugwin.toggleLogWindow(this.checked);\
+                              event.cancelBubble = true;'" + (jpf.isTrue(jpf.getcookie("viewinwindow")) ? " checked='checked'" : "") + "/>\
+                            <label for='cbTW' style='\
+                              top:4px;\
+                              position:relative;' onclick='event.cancelBubble=true'\
+                            >View in window</label>\
                         </div>\
-                        <button id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)' \
-                          class='debug_console_btn' onkeydown='return jpf.debugwin.consoleExecHandler(event)'>Execute</button>\
+                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_down.gif' />&nbsp;\
+                        <strong>Log Viewer</strong>\
                     </div>\
-                </div>" +
-               "<br style='line-height:5px'/>\
-                <input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)' />\
-                <label for='toggledebug' class='debug_check_use'>Use browser's debugger</label>\
-                <div class='debug_footer'></div>"
+                    <div id='jvlnviewlog' onclick='event.cancelBubble=true'\
+                      onselectstart='event.cancelBubble=true'\
+                      onmousedown='event.cancelBubble=true;if (jpf.window) jpf.window.$focusRoot();'\
+                      class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
+                </div>\
+                <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
+                    <div class='debug_panel_head'>\
+                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
+                        <strong>Javascript console</strong>\
+                    </div>\
+                    <div style='display:none' onclick='event.cancelBubble=true'>\
+                        <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);'\
+                          onselectstart='event.cancelBubble=true'\
+                          onmousedown='event.cancelBubble=true;if(jpf.window) jpf.window.$focusRoot();'\
+                          class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
+                        <div class='debug_toolbar debug_toolbar_inner'>\
+                            <div id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)'\
+                              class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='exec'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"reboot\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='reboot'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"undo\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='undo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"redo\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='redo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"reset\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='reset'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"online\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='online'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.run(\"offline\")' class='debug_btn' onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class='debug_footer debug_toolbar'>\
+                    <input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)'" + (jpf.isTrue(jpf.getcookie("debugger")) ? " checked='checked'" : "") + " />\
+                    <label for='toggledebug' class='debug_check_use'>Use browser's debugger</label>\
+                </div>";
             var b = elError.getElementsByTagName("blockquote")[0];
             //" || "No stacktrace possible").replace(/\n/g, "<br />") + "
             if (stackTrace.length) {
@@ -1110,6 +1200,19 @@ jpf.debugwin = {
             jpf.debugwin.jRunCode(oArea.value);
             return false;
         }
+    },
+
+    btnMouseDown: function(oBtn) {
+        oBtn.className = oBtn.className.replace("debug_btn_down", "")
+            + " debug_btn_down";
+        /*window.console.log('click!');
+        var span = oBtn.getElementsByTagName('span')[0];
+        if (span)
+            span.style.backgroundPositionY = "-16px";*/
+    },
+
+    btnMouseUp: function(oBtn) {
+        oBtn.className = "debug_btn";
     },
 
     consoleBtnHandler: function(e) {
