@@ -1097,9 +1097,10 @@ jpf.JmlElement.propHandlers = {
         //Clear??
         this.insertJml(value);
         this.$isSelfLoading = true;
-    },
-    
-    "alias" : function(value){
+    }
+   
+    //#ifdef __WITH_ALIAS
+    ,"alias" : function(value){
         if (!value) //@todo think about wether this has more meaning
             return;
 
@@ -1220,6 +1221,7 @@ jpf.JmlElement.propHandlers = {
         
         cg.set(this);
     }
+    //#endif
 };
 
 // #endif
