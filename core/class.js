@@ -530,8 +530,10 @@ jpf.Class = function(){
         if (this.$focussable && this.focussable)
             jpf.window.$removeFocus(this);
 
+        //#ifdef __WITH_PROPERTY_BINDING
         //Remove dynamic properties
         this.unbindAllProperties();
+        //#endif
 
         //Clear all children too
         if (deep && this.childNodes) {

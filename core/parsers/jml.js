@@ -1169,13 +1169,17 @@ jpf.JmlParser = {
         this.sbInit = {};
         //#endif
 
-        //#ifdef __WITH_STATE || __WITH_PROPERTY_BINDING
+        //#ifdef __WITH_STATE
         //Initialize property bindings
         var s = this.stateStack;
         for (var i = 0; i < s.length; i++) {
             //if (s[i].name == "visible" && !/^\{.*\}$/.test(s[i].value)) //!jpf.dynPropMatch.test(pValue)
                 //continue; //@todo check that this code can be removed...
+            //#ifdef __WITH_PROPERTY_BINDING
             s[i].node.setDynamicProperty(s[i].name, s[i].value);
+            /* #else
+            s[i].node.setProperty(s[i].name, s[i].value);
+            #endif */
         }
         this.stateStack = [];
         //#endif

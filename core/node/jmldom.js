@@ -446,9 +446,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (this.nodeFunc == jpf.NODE_VISIBLE && !this.oExt)
             return;
 
+        //#ifdef __WITH_PROPERTY_BINDING
         if (jpf.dynPropMatch.test(value))
             this.setDynamicProperty(name, value);
-        else if (this.setProperty)
+        else 
+        //#endif
+        if (this.setProperty)
             this.setProperty(name, value);
         else
             this[name] = value;
