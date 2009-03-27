@@ -172,7 +172,7 @@ Function.prototype.toHTMLNode = function(highlight){
 jpf.debugwin = {
     useDebugger  : jpf.getcookie("debugger") == "true",
     profileGlobal: jpf.getcookie("profileglobal") == "true",
-    resPath      : "resources/",
+    resPath      : "",
 
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
@@ -712,12 +712,12 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_header{\
                         position: relative;\
-                        background: url(" + this.resPath + "/backgrounds.png) repeat-x 0 -79px;\
+                        background: url(" + this.resPath + "backgrounds.png) repeat-x 0 -79px;\
                         border-bottom: 1px solid #505050;\
                         height: 66px;\
                     }\
                     #javerror .debug_header_cont{\
-                        background: url(" + this.resPath + "/ajax_logo.png) no-repeat 230px 4px;\
+                        background: url(" + this.resPath + "ajax_logo.png) no-repeat 230px 4px;\
                         width: 399px;\
                         height: 66px;\
                     }\
@@ -758,7 +758,7 @@ jpf.debugwin = {
                     #javerror .debug_toolbar{\
                         position: relative;\
                         height: 22px;\
-                        background: url(" + this.resPath + "/backgrounds.png) repeat-x 0 -57px;\
+                        background: url(" + this.resPath + "backgrounds.png) repeat-x 0 -57px;\
                         padding: 0 0 0 4px;\
                         font-size: 10px;\
                         vertical-align: middle;\
@@ -778,7 +778,7 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_toolbar .debug_btn span{\
                         position: absolute;\
-                        background: url(" + this.resPath + "/buttons.png) no-repeat 0 0;\
+                        background: url(" + this.resPath + "buttons.png) no-repeat 0 0;\
                         width: 16px;\
                         height: 16px;\
                         top: 4px;\
@@ -851,7 +851,7 @@ jpf.debugwin = {
                         font-size: 8pt;\
                     }\
                     #javerror .debug_panel_head{\
-                        background: url(" + this.resPath + "/backgrounds.png) repeat-x 0 0;\
+                        background: url(" + this.resPath + "backgrounds.png) repeat-x 0 0;\
                         height: 17px;\
                         padding: 2px 0 0 0;\
                     }\
@@ -868,7 +868,7 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_panel_body_base{\
                         cursor: text;\
-                        background: white url(" + this.resPath + "/shadow.gif) no-repeat 0 0;\
+                        background: white url(" + this.resPath + "shadow.gif) no-repeat 0 0;\
                         padding: 4px;\
                         font-size: 9pt;\
                         font-family: Monaco, Courier New;\
@@ -918,7 +918,7 @@ jpf.debugwin = {
                         padding: 4px;\
                     }\
                     #javerror .debug_progress{\
-                        background-image: url(" + this.resPath + "/progress.gif);\
+                        background-image: url(" + this.resPath + "progress.gif);\
                         background-repeat: no-repeat;\
                         background-position: center left;\
                         padding-left: 22px;\
@@ -997,7 +997,7 @@ jpf.debugwin = {
              : "") +
                "<div class='debug_panel' id='jpfProfilerPanel' onclick='jpf.debugwin.toggleFold(this);'>\
                     <div class='debug_panel_head'>\
-                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Javascript Profiler (beta)</strong>\
                     </div>\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;'>\
@@ -1034,7 +1034,7 @@ jpf.debugwin = {
                               position:relative;' onclick='event.cancelBubble=true'\
                             >View in window</label>\
                         </div>\
-                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_down.gif' />&nbsp;\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                         <strong>Log Viewer</strong>\
                     </div>\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true'\
@@ -1044,7 +1044,7 @@ jpf.debugwin = {
                 </div>\
                 <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
                     <div class='debug_panel_head'>\
-                        <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Javascript console</strong>\
                     </div>\
                     <div style='display:none' onclick='event.cancelBubble=true'>\
@@ -1087,7 +1087,7 @@ jpf.debugwin = {
                 <div class='debug_footer debug_toolbar'>\
                     <input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)'" + (jpf.isTrue(jpf.getcookie("debugger")) ? " checked='checked'" : "") + " />\
                     <label for='toggledebug' class='debug_check_use'>Use browser's debugger</label>\
-                    <a href='http://www.javeline.com' target='_blank'><img src='" + this.resPath + "/javeline_logo_small.png' /></a>\
+                    <a href='http://www.javeline.com' target='_blank'><img src='" + this.resPath + "javeline_logo_small.png' /></a>\
                 </div>";
             var b = elError.getElementsByTagName("blockquote")[0];
             //" || "No stacktrace possible").replace(/\n/g, "<br />") + "
