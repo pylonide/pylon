@@ -691,6 +691,7 @@ jpf.debugwin = {
                         font-size: 12px;\
                         color: #333;\
                         overflow: hidden;\
+                        z-index: 99999;\
                     }\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float: left;\
