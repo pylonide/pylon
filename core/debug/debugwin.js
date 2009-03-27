@@ -953,7 +953,7 @@ jpf.debugwin = {
                     <div class='debug_header_cont'>\
                         <span onmouseover='this.style.backgroundColor=\"white\"'\
                           onmouseout='this.style.backgroundColor=\"#EEEEEE\"'\
-                          onclick='this.parentNode.style.display=\"none\"' class='debug_closebtn'\
+                          onclick='this.parentNode.parentNode.parentNode.style.display=\"none\"' class='debug_closebtn'\
                         >X</span>\
                         <h1 class='debug_title'></h1>\
                         <div onselectstart='event.cancelBubble=true' class='debug_errorbox'>" + errorMessage + "</div>\
