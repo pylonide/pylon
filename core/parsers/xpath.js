@@ -40,6 +40,7 @@ jpf.XPath = {
               ? nodes[i].tagName.toLowerCase()
               : nodes[i].tagName) != tagName)
                 continue;// || numsearch && ++numfound != numsearch
+                htmlNode = nodes[i];
 
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, numfound++ , sResult);
@@ -57,6 +58,7 @@ jpf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
+            //jpf.console.error(e.name + " " + e.type + ":" + jpf.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
@@ -331,7 +333,7 @@ jpf.XPath = {
             else if (sections[i] == "text()")
                 results.push([this.getTextNode, null]);
             else if (sections[i] == "node()")
-                results.push([this.getAnyNode, null]);//FIX - put in def function
+                results.push([this.getChildNode, null]);//FIX - put in def function
             else if (sections[i].match(/following-sibling::(.*)$/))
                 results.push([this.getFollowingSibling, RegExp.$1.toLowerCase()]);
             else if (sections[i].match(/preceding-sibling::(.*)$/))
@@ -339,7 +341,7 @@ jpf.XPath = {
             else if (sections[i] == "self::node()")
                 results.push([this.getSelf, null]);
             else if (sections[i].match(/self::(.*)$/))
-                results.push([this.doQuery, ["jpf.XPath.doXpathFunc('local-name', htmlNode) == '" + RegExp.$1 + "'"]]);
+                results.push([this.doQuery, ["jpf.XPath.doXpathFunc(htmlNode, 'local-name') == '" + RegExp.$1 + "'"]]);
             else {
                 var query = sections[i];
 
@@ -369,24 +371,38 @@ jpf.XPath = {
         return c.compile();
     },
 
-    doXpathFunc : function(type, nodelist, arg2, arg3){
-        if (nodelist.length == 0)
+    doXpathFunc : function(contextNode, type, nodelist, arg2, arg3, xmlNode){
+        if (!nodelist || nodelist.length == 0)
             nodelist = "";
 
-        if (typeof nodelist != "string") {
+        if (type == "not")
+            return !nodelist;
+
+        if (typeof nodelist == "object" || nodelist.dataType == "array") {
+            if (nodelist && !nodelist.length)
+                nodelist = [nodelist];
+            
+            var res = false, value, xmlNode;
             for (var i = 0; i < nodelist.length; i++) {
-                if (arguments.callee.call(this, type, typeof nodelist[i] != "string" ? nodelist[i].nodeValue : nodelist[i], arg2, arg3))
-                    return true;
+                xmlNode = nodelist[i];
+                if (!xmlNode || typeof xmlNode == "string")
+                    value = xmlNode;
+                else {
+                    if (xmlNode.nodeType == 1 && xmlNode.firstChild && xmlNode.firstChild.nodeType != 1)
+                        xmlNode = xmlNode.firstChild;
+                    value = xmlNode.nodeValue;
+                }
+
+                if (res = arguments.callee.call(this, contextNode, type, value, arg2, arg3, xmlNode))
+                    return res;
             }
-            return false;
+            return res;
         }
         else arg1 = nodelist;
 
         switch(type){
-            case "not":
-                return !arg1;
-            case "position()":
-                return num == arg1;
+            case "position":
+                return jpf.xmldb.getChildNumber(contextNode) + 1;
             case "format-number":
                 return jpf.formatNumber(arg1); //@todo this should actually do something
             case "floor":
@@ -402,7 +418,7 @@ jpf.XPath = {
             case "last":
                 return arg1 ? arg1[arg1.length-1] : null;
             case "local-name":
-                return arg1 ? arg1.tagName : "";//[jpf.TAGNAME]
+                return xmlNode ? xmlNode.tagName : contextNode.tagName;//[jpf.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":
@@ -415,14 +431,19 @@ jpf.XPath = {
                     }
                     str += arguments[i];
                 }
-            return str;
+                return str;
+            case "translate":
+                for (var i = 0; i < arg2.length; i++) {
+                    arg1 = arg1.replace(arg2.substr(i,1), arg3.substr(i,1));
+                }
+                return arg1;
         }
     },
 
     selectNodeExtended : function(sExpr, contextNode, match){
         var sResult = this.selectNodes(sExpr, contextNode);
 
-        if (sResult.length == 0) return [];
+        if (sResult.length == 0) return null;
         if (!match) return sResult;
 
         for (var i = 0; i < sResult.length; i++) {
@@ -430,7 +451,14 @@ jpf.XPath = {
                 return [sResult[i]];
         }
 
-        return [];
+        return null;
+    },
+    
+    getRoot : function(xmlNode){
+        while (xmlNode.parentNode && xmlNode.parentNode.nodeType == 1)
+            xmlNode = xmlNode.parentNode;
+        
+        return xmlNode;
     },
 
     selectNodes : function(sExpr, contextNode){
@@ -438,15 +466,20 @@ jpf.XPath = {
             this.cache[sExpr] = this.compile(sExpr);
 
         //#ifdef __DEBUG
-        //jpf.console.info("Processing custom XPath: " + sExpr + ":" + contextNode.serialize().replace(/</g, "&lt;"));
+        if (sExpr.length > 20) {
+            this.lastExpr = sExpr;
+            this.lastCompile = this.cache[sExpr];
+        }
         //#endif
+        
         if (typeof this.cache[sExpr] == "string"){
             if (this.cache[sExpr] == ".")
                 return [contextNode];
-            if (this.cache[sExpr] == "/")
+            if (this.cache[sExpr] == "/") {
                 return [(contextNode.nodeType == 9
-                    ? contextNode
-                    : contextNode.ownerDocument).documentElement];
+                    ? contextNode.documentElement
+                    : this.getRoot(contextNode))];
+            }
         }
 
         if (typeof this.cache[sExpr] == "string" && this.cache[sExpr] == ".")
@@ -456,8 +489,8 @@ jpf.XPath = {
 
         var rootNode = (info[3]
             ? (contextNode.nodeType == 9
-                ? contextNode
-                : contextNode.ownerDocument).documentElement
+                ? contextNode.documentElement
+                : this.getRoot(contextNode))
             : contextNode);//document.body*/
         var sResult = [];
 
@@ -501,13 +534,14 @@ jpf.CodeCompilation = function(code){
         this.insert();
         
         code = code.replace(/, \)/g, ", htmlNode)");
+
         return code;
     };
 
     this.tokenize = function(){
         //Functions
         var data = this.data.F;
-        code = code.replace(/(format-number|contains|substring|local-name|last|node|position|round|starts-with|string|string-length|sum|floor|ceiling|concat|count|not)\s*\(/g,
+        code = code.replace(/(translate|format-number|contains|substring|local-name|last|position|round|starts-with|string|string-length|sum|floor|ceiling|concat|count|not)\s*\(/g,
             function(d, match){
                 return (data.push(match) - 1) + "F_";
             }
@@ -550,7 +584,7 @@ jpf.CodeCompilation = function(code){
             var value = data[type][nr];
 
             if (type == "F") {
-                return "jpf.XPath.doXpathFunc('" + value + "', ";
+                return "jpf.XPath.doXpathFunc(htmlNode, '" + value + "', ";
             }
             else if (type == "S") {
                 return "'" + value + "'";

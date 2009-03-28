@@ -1384,6 +1384,7 @@ jpf.DataBinding = function(){
      *      </j:bindings>
      *  </j:text>
      * </code>
+     * @attribute {string} get the data instruction on how to load data from the data source into the xmlRoot of this component.
      */
     this.$loadSubData = function(xmlRootNode){
         if (this.hasLoadStatus(xmlRootNode)) return;
