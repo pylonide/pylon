@@ -1215,7 +1215,7 @@ jpf.debugwin = {
                         </div>\
                     </div>\
                 </div>\
-                <div class='debug_footer debug_toolbar'>\
+                <div id='lastElement' class='debug_footer debug_toolbar'>\
                     <input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)'" + (jpf.isTrue(jpf.getcookie("debugger")) ? " checked='checked'" : "") + " />\
                     <label for='toggledebug' class='debug_check_use'>Use browser's debugger</label>\
                     <a href='http://www.javeline.com' target='_blank'><img src='" + this.resPath + "javeline_logo_small.png' /></a>\
@@ -1269,11 +1269,20 @@ jpf.debugwin = {
                 jpf.layout.setRules(elError, "resize", 
                     "var oHtml = document.getElementById('" + elError.id + "');\
                     var o = document.getElementById('jvlnviewlog');\
-                    var shouldSize = oHtml.scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
+                    if (jpf.isIE) {\
+                        var scrollHeight = oHtml.scrollHeight;\
+                    }\
+                    else {\
+                        var l = document.getElementById('lastElement');\
+                        var scrollHeight = l.offsetTop + l.offsetHeight;\
+                    }\
+                    var shouldSize = scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
                     o.style.height = (shouldSize\
-                        ? oHtml.offsetHeight - oHtml.scrollHeight + o.offsetHeight - 10\
+                        ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 10\
                         : 240) + 'px';\
                     oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
+                    oHtml.style.right = '0px';\
+                    oHtml.style.left = '';\
                     document.body.style.marginRight = \
                         oHtml.offsetWidth + 'px';\
                     var o = document.getElementById('jpfDebugExpr');\
