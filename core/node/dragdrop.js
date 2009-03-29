@@ -66,6 +66,37 @@ var __DRAGDROP__ = 1 << 5;
  *      dragMoveEnabled = "true" />
  * </code>
  *
+ * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
+ *   object:
+ *   {XMLElement} data the default data for the drag&drop operation
+ * @event  dragstart Fires before a drag operation is started.
+ *   cancellable: Prevents the drag operation to start.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {JMLElement}  host      the jml source element.
+ * @event  dragover Fires when the users drags over this jml element.
+ *   cancellable: Prevents the possibility to drop.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {JMLElement}  host      the jml source element.
+ * @event  dragout  Fires when the user moves away from this jml element.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {JMLElement}  host      the jml source element.
+ * @event  dragdrop  Fires when the user drops an item on this jml element.
+ *   cancellable: Prevents the possibility to drop.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {JMLElement}  host      the jml source element.
+ *   {Boolean}     candrop   wether the data can be inserted at the point hovered over by the user
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
  * @define allow-drag   Specifies when nodes can be dragged from this element.
@@ -572,7 +603,7 @@ jpf.DragServer = {
             ? o.isDropAllowed(this.dragdata.selection, elSel || o.xmlRoot)
             : false;
         //EVENT - cancellable: ondragover
-        if (o.dispatchEvent("dragover") === false)
+        if (o.dispatchEvent("dragover", this.dragdata) === false)
             candrop = false;
 
         //Set Cursor
@@ -596,7 +627,7 @@ jpf.DragServer = {
 
         //EVENT: ondragout
         if (o)
-            o.dispatchEvent("dragout");
+            o.dispatchEvent("dragout", this.dragdata);
 
         //REQUIRED INTERFACE: __dragout()
         if (this.last && this.last.$dragout)
