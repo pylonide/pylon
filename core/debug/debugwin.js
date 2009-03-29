@@ -730,6 +730,10 @@ jpf.debugwin = {
         
         jpf.layout.forceResize(this.oExt);
     },
+    
+    $getOption : function(){
+        return 7;
+    },
 
     focusFix   : {"INPUT":1,"TEXTAREA":1,"SELECT":1},
     createWindow : function (e, stackTrace, errorInfo){
@@ -764,6 +768,7 @@ jpf.debugwin = {
                     (e || event).cancelBubble = true;
                 };
                 
+                elError.dispatchEvent = function(){}
                 elError.onkeydown   =
                 elError.onkeyup     = function(e){
                     (e || event).cancelBubble = true;

@@ -118,7 +118,7 @@ jpf.Interactive = function(){
         
         rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
         rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
-        marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
+        marginBox = jpf.getBox(jpf.getStyle(this.oExt, jpf.isIE ? "borderWidth" : "border-width"));
     };
     
     /*
@@ -501,7 +501,7 @@ jpf.Interactive = function(){
         }
         
         if (_self.resizable == true || _self.resizable == "horizontal") {
-            if (x < (cursor ? rszcorner : rszborder))  // + marginBox[3]
+            if (x < (cursor ? rszcorner : rszborder) + marginBox[0])
                 cursor += tcursor + (posAbs ? "w" : "");
             else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
                 cursor += tcursor + "e";
