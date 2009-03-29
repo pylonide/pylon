@@ -171,6 +171,7 @@ Function.prototype.toHTMLNode = function(highlight){
                   oLast.style.display = 'block';\
                   oFirst.src='" + jpf.debugwin.resPath + "arrow_down.gif';\
               }\
+              jpf.layout.forceResize(jpf.debugwin.oExt);\
               event.cancelBubble=true\">\
                 <nobr>"
                       + (this.url
@@ -726,8 +727,11 @@ jpf.debugwin = {
                 oFirst.focus();
             }
         }
+        
+        jpf.layout.forceResize(this.oExt);
     },
 
+    focusFix   : {"INPUT":1,"TEXTAREA":1,"SELECT":1},
     createWindow : function (e, stackTrace, errorInfo){
         if (!jpf.debugwin.win) {
             var elError = jpf.debugwin.win = document.getElementById("javerror");
@@ -743,32 +747,84 @@ jpf.debugwin = {
 
                 elError.style.position = jpf.supportFixedPosition ? "fixed" : "absolute";
 
-                elError.onmousedown =
+                elError.host = this;
+                this.name = "Debug Window";
+                this.tagName = "debugwin";
+                
+                elError.onmousedown  = function(e) {
+                    if (!e) e = event;
+        
+                    //#ifdef __WITH_WINDOW_FOCUS
+                    if (jpf.hasFocusBug 
+                      && !jpf.debugwin.focusFix[(e.srcElement || e.target).tagName]) {
+                        jpf.window.$focusfix();
+                    }
+                    //#endif
+                    
+                    (e || event).cancelBubble = true;
+                };
+                
                 elError.onkeydown   =
                 elError.onkeyup     = function(e){
                     (e || event).cancelBubble = true;
                 }
 
+                if (jpf.isIE) {
+                    jpf.setStyleRule("BODY", "overflow", "", 0);
+                    
+                    var p = jpf.getBox(jpf.getStyle(document.body, "padding"));
+                    var m = jpf.getBox(jpf.getStyle(document.body, "margin"));
+                    var o = [jpf.getStyle(document.documentElement, "overflow"), 
+                             jpf.getStyle(document.documentElement, "overflowX"),
+                             jpf.getStyle(document.documentElement, "overflowY")];
+                }
+                else {
+                    var p = [parseInt(jpf.getStyle(document.body, "padding-top")), parseInt(jpf.getStyle(document.body, "padding-right")), parseInt(jpf.getStyle(document.body, "padding-bottom")), parseInt(jpf.getStyle(document.body, "padding-left"))];
+                    var m = [parseInt(jpf.getStyle(document.body, "margin-top")), parseInt(jpf.getStyle(document.body, "margin-right")), parseInt(jpf.getStyle(document.body, "margin-bottom")), parseInt(jpf.getStyle(document.body, "margin-left"))];
+                    var o = [jpf.getStyleRule("html", "overflow") || "auto", 
+                             jpf.getStyleRule("html", "overflow-x") || "auto", 
+                             jpf.getStyleRule("html", "overflow-y") || "auto"];
+                }
+                
                 jpf.importCssString(document, "\
                     html{\
-                        margin-right: 400px;\
+                        height : 100%;\
+                        overflow : hidden;\
+                        overflow-x : hidden;\
+                        overflow-y : hidden;\
+                        margin-bottom : " + (p[0] + m[0] + p[2] + m[2]) + "px;\
+                    }\
+                    body{\
+                        height : 100%;\
+                        position : relative;\
+                        overflow  : " + o[0] + ";\
+                        overflow-x : " + o[1] + ";\
+                        overflow-y : " + o[2] + ";\
+                        margin : 0 605px 0 0;\
+                        padding : " + (p[0] + m[0]) + "px " + 
+                                              (p[1] + m[1]) + "px " + 
+                                              (p[2] + m[2]) + "px " + 
+                                              (p[3] + m[3]) + "px;\
+                        width : auto;\
                     }\
                     #javerror {\
                         top: 0px;\
-                        border: 2px outset;\
+                        border-left: 1px solid #bbb;\
                         text-align: left;\
                         -moz-border-bottom-colors: black gray;\
                         -moz-border-right-colors: black gray;\
                         -moz-border-top-colors: #C0C0C0 #FFFFFF;\
                         -moz-border-left-colors: #a3a3a3 #FFFFFF;\
-                        width: 400px;\
-                        background: #fff;\
+                        width: 600px;\
+                        background: #fff url(" + this.resPath + "splitter_handle_vertical.gif) no-repeat 1px 50%;\
                         right: 0px;\
                         font-family: 'Lucida Grande', Arial, Monaco, MS Sans Serif;\
                         font-size: 12px;\
                         color: #333;\
                         overflow: hidden;\
                         z-index: 99999;\
+                        height : 100%;\
+                        padding-left:4px;\
                     }\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float: left;\
@@ -982,9 +1038,10 @@ jpf.debugwin = {
                         font-family: 'Lucida Grande',Verdana;\
                     }\
                     #javerror .debug_panel_body_console{\
-                        width: 399px;\
+                        width: 591px;\
                         height: 100px;\
                         border: 0;\
+                        overflow:auto;\
                     }\
                     #javerror .debug_profilermsg{\
                         margin: 4px;\
@@ -1013,9 +1070,9 @@ jpf.debugwin = {
                         font-size: 8pt;\
                     }");
             }
-
+            
             document.body.style.display = "block";
-
+            
             elError.style.display = "block";
             var parse        = e.message.split(/\n===\n/);
             var errorMessage = parse[0].replace(/---- Javeline Error ----\n/g, "")
@@ -1109,18 +1166,17 @@ jpf.debugwin = {
                     </div>\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true'\
                       onselectstart='event.cancelBubble=true'\
-                      onmousedown='event.cancelBubble=true;if (jpf.window) jpf.window.$focusRoot();'\
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>\
                 <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
                     <div class='debug_panel_head'>\
-                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
+                        <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                         <strong>Javascript console</strong>\
                     </div>\
-                    <div style='display:none' onclick='event.cancelBubble=true'>\
+                    <div onclick='event.cancelBubble=true'>\
                         <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);'\
                           onselectstart='event.cancelBubble=true'\
-                          onmousedown='event.cancelBubble=true;if(jpf.window) jpf.window.$focusRoot();'\
+                          onmousedown='if(jpf.window) jpf.window.$focusRoot();'\
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie('jsexec') + "</textarea>\
                         <div class='debug_toolbar debug_toolbar_inner'>\
                             <div id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)' title='Run Code'\
@@ -1169,9 +1225,9 @@ jpf.debugwin = {
             else
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
 
+            var logView = document.getElementById("jvlnviewlog");
             if (!self.ERROR_HAS_OCCURRED && jpf.addEventListener) {
                 jpf.addEventListener("debug", function(e){
-                    var logView = document.getElementById("jvlnviewlog");
                     if (!logView) return;
 
                     logView.insertAdjacentHTML("beforeend", e.message);
@@ -1179,6 +1235,8 @@ jpf.debugwin = {
                     logView.scrollTop     = logView.scrollHeight;
                 });
             }
+
+            var dbgExpr = document.getElementById('jpfDebugExpr');
 
             if (!this.oExt && jpf.Interactive) {
                 this.oExt     = elError;
@@ -1195,7 +1253,36 @@ jpf.debugwin = {
                 this.resizable     = "horizontal";
                 this.resizeOutline = true;
                 this.$propHandlers["resizable"].call(this, "horizontal");
+                
+                if (jpf.isIE) {
+                    dbgExpr.parentNode.style.width = "auto";
+                    dbgExpr.parentNode.style.paddingTop = "108px";
+                    dbgExpr.style.position = "absolute";
+                    dbgExpr.style.marginTop = "-108px";
+                }
+                
+                jpf.layout.setRules(elError, "resize", 
+                    "var oHtml = document.getElementById('" + elError.id + "');\
+                    var o = document.getElementById('jvlnviewlog');\
+                    var shouldSize = oHtml.scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
+                    o.style.height = (shouldSize\
+                        ? oHtml.offsetHeight - oHtml.scrollHeight + o.offsetHeight - 10\
+                        : 240) + 'px';\
+                    oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
+                    document.body.style.marginRight = \
+                        oHtml.offsetWidth + 'px';\
+                    var o = document.getElementById('jpfDebugExpr');\
+                    if (o.parentNode.offsetWidth)\
+                        o.style.width = (o.parentNode.offsetWidth \
+                            - (jpf.isGecko ? 4 : 8)) + 'px';\
+                    ");
+                jpf.layout.activateRules(elError);
             }
+            
+            if (jpf.hasFocusBug)
+                jpf.sanitizeTextbox(dbgExpr);
+
+            logView.scrollTop = logView.scrollHeight;
 
             clearInterval(jpf.Init.interval);
             ERROR_HAS_OCCURRED = true;

@@ -40,6 +40,33 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
     return false;
 };
 
+jpf.getStyleRule = function(name, type, stylesheet, win){
+    if (!stylesheet) {
+        var sheets = (win || self).document.styleSheets;
+        for (var j = sheets.length - 1; j >= 0; j--) {
+            try {
+                var rules = sheets[j][jpf.styleSheetRules];
+                for (var i = 0; i < rules.length; i++) {
+                    if (rules.item(i).selectorText == name) {
+                        return rules.item(i).style[type];
+                    }
+                }
+            }
+            catch(e){}
+        }
+    }
+    else {
+        var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
+        for (var i = 0; i < rules.length; i++) {
+            if (rules.item(i).selectorText == name) {
+                return rules.item(i).style[type];
+            }
+        }
+    }
+    
+    return false;
+}
+
 /**
  * This method adds one class name to an HTMLElement and removes none or more.
  * @param {HTMLElement} oHtml        the HTMLElement to apply the css class to.
