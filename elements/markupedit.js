@@ -1086,7 +1086,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation,
+    //jpf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
     jpf.XForms,

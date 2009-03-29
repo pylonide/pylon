@@ -171,7 +171,8 @@ Function.prototype.toHTMLNode = function(highlight){
                   oLast.style.display = 'block';\
                   oFirst.src='" + jpf.debugwin.resPath + "arrow_down.gif';\
               }\
-              jpf.layout.forceResize(jpf.debugwin.oExt);\
+              if (jpf.layout)\
+                 jpf.layout.forceResize(jpf.debugwin.oExt);\
               event.cancelBubble=true\">\
                 <nobr>"
                       + (this.url
@@ -183,7 +184,7 @@ Function.prototype.toHTMLNode = function(highlight){
                       + "arrow_right.gif' style='margin:0 3px 0 2px;' />"
                       + (name.trim() || "anonymous") + "(" + args.join(", ") + ")&nbsp;\
                 </nobr>\
-                <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
+                <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' style='\
                   cursor: text;\
                   display: none;\
                   padding: 0px;\
@@ -282,6 +283,11 @@ jpf.debugwin = {
         })
     },
 
+    hide : function(){
+        this.oExt.style.display = "none";
+        document.body.style.marginRight = "0";
+    },
+    
     show : function(e, filename, linenr){
         var list = [], seen = {};
 
@@ -345,10 +351,7 @@ jpf.debugwin = {
         e.lineNr   = linenr;
         e.fileName = filename;
 
-        this.createWindow(e, list, errorInfo);//str
-
-        //window.onerror = function(){window.onerror=null;return true}
-        //throw new Error("Stopping Error Prosecution");
+        this.createWindow(e, list, errorInfo);
     },
 
     states      : {},
@@ -426,15 +429,19 @@ jpf.debugwin = {
             <j:markupedit name="debugmarkup">\
                 <j:style><![CDATA[\
                     .debugmarkup{\
-                        border : 1px solid gray;\
-                        background-color : #FFFFFF;\
-                        width : 200px;\
-                        height : 500px;\
-                        overflow : hidden;\
-                        overflow : auto;\
+                        background : #FFFFFF url(' + this.resPath + 'splitter_docs.gif) no-repeat 50% bottom;\
                         font-family : Monaco, Courier New;\
                         font-size : 11px;\
                         cursor : default;\
+                        padding-bottom : 4px;\
+                    }\
+                    .debugmarkup blockquote{\
+                        margin : 0;\
+                        padding : 0px;\
+                        overflow : hidden;\
+                        overflow : auto;\
+                        width : 100%;\
+                        height : 100%;\
                     }\
                     .debugmarkup dl,\
                     .debugmarkup dt,\
@@ -528,17 +535,20 @@ jpf.debugwin = {
                     .debugmarkup DIV.min {\
                         background-image:url(' + this.resPath + 'smin.gif);\
                     }\
-                    .debugmarkup BLOCKQUOTE{\
+                    .debugmarkup DIV BLOCKQUOTE{\
                         margin : 0;\
                         padding : 0 0 0 10px;\
                         display : none;\
                         height : 0;\
                         overflow : hidden;\
+                        width : auto;\
                     }\
                 ]]></j:style>\
                 <j:presentation>\
-                    <j:main container="." startclosed="false">\
-                        <div class="debugmarkup"></div>\
+                    <j:main container="blockquote" startclosed="false">\
+                        <div class="debugmarkup">\
+                            <blockquote> </blockquote>\
+                        </div>\
                     </j:main>\
                     <j:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="." select="dl" container="blockquote">\
                         <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span></div>\
@@ -564,7 +574,7 @@ jpf.debugwin = {
 
         oHtml.setAttribute("inited", "true");
 
-        var oInt = oHtml.getElementsByTagName("div")[1];
+        var oInt = oHtml.getElementsByTagName("div")[2];
         jpf.test = oHtml;
 
         //Get all models
@@ -594,17 +604,13 @@ jpf.debugwin = {
         options   = options.join('').replace(/option>/, "option selected='1'>");
         var first = options ? options.match(/>([^<]*)</)[1] : "";
 
+        oHtml.getElementsByTagName("label")[0].insertAdjacentHTML("afterend", 
+            "<select id='dbgMarkupSelect' style='margin-top:2px;float:left;' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>");
+
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jml + "'>\
-                <button style='float:right' onclick='jpf.debugwin.exec(\"attribute\")' onkeydown='event.cancelBubble=true;'>Attribute</button>\
-                <button style='float:right' onclick='jpf.debugwin.exec(\"textnode\")' onkeydown='event.cancelBubble=true;'>Textnode</button>\
-                <button style='float:right' onclick='jpf.debugwin.exec(\"remove\")' onkeydown='event.cancelBubble=true;'>Remove</button>\
-                <button style='float:right;margin-right:5px;' onclick='jpf.debugwin.exec(\"redo\")' onkeydown='event.cancelBubble=true;'>Redo</button>\
-                <button style='float:right' onclick='jpf.debugwin.exec(\"undo\")' onkeydown='event.cancelBubble=true;'>Undo</button>\
-                <label>Model:</label><select id='dbgMarkupSelect' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>\
-                <label>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='width:90px'/>\
-                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' width='572' height='158'>\
+                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' height='110' minheight='110' resizable='vertical'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
                     </j:bindings>\
@@ -629,6 +635,12 @@ jpf.debugwin = {
 
         //Load JML
         j.parseMoreJml(xml, oInt);
+        
+        if (jpf.layout) {
+            jpf.layout.setRules(oInt.firstChild, "resize", 
+                "jpf.layout.forceResize(jpf.debugwin.oExt);");
+            jpf.layout.activateRules(oInt.firstChild);
+        }
     },
 
     PROFILER_ELEMENT   : null,
@@ -728,7 +740,8 @@ jpf.debugwin = {
             }
         }
         
-        jpf.layout.forceResize(this.oExt);
+        if (jpf.layout)
+            jpf.layout.forceResize(this.oExt);
     },
     
     $getOption : function(){
@@ -1023,10 +1036,11 @@ jpf.debugwin = {
                         overflow: auto;\
                     }\
                     #javerror .debug_panel_body_data{\
-                        max-height: 200px;\
+                        min-height: 130px;\
                         white-space: nowrap;\
                         overflow: auto;\
                         display: none;\
+                        padding : 0;\
                     }\
                     #javerror .debug_panel_body_profiler{\
                         padding: 0px;\
@@ -1092,10 +1106,10 @@ jpf.debugwin = {
                     <div class='debug_header_cont'>\
                         <span onmouseover='this.style.backgroundColor=\"white\"'\
                           onmouseout='this.style.backgroundColor=\"#EEEEEE\"'\
-                          onclick='this.parentNode.parentNode.parentNode.style.display=\"none\"' class='debug_closebtn'\
+                          onclick='jpf.debugwin.hide();' class='debug_closebtn'\
                         >X</span>\
                         <h1 class='debug_title'></h1>\
-                        <div onselectstart='event.cancelBubble=true' class='debug_errorbox'>" + errorMessage + "</div>\
+                        <div onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' class='debug_errorbox'>" + errorMessage + "</div>\
                     </div>\
                 </div>" +
             (jmlContext
@@ -1104,7 +1118,7 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                         <strong>Javeline Markup Language</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' \
+                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' \
                       class='debug_panel_body_base debug_panel_body_markup'>" + jmlContext + "</div>\
                 </div>"
              : "") +
@@ -1123,8 +1137,34 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Live Data Debugger (beta)</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
-                      class='debug_panel_body_base debug_panel_body_data'></div>\
+                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
+                      class='debug_panel_body_base debug_panel_body_data'>\
+                        <div></div>\
+                        <div class='debug_toolbar debug_toolbar_inner'>\
+                            <label style='float:left'>Model:</label>\
+                            <label style='float:left'>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='margin-top:2px;width:90px;float:left'/>\
+                            <div onclick='jpf.debugwin.exec(\"undo\")' class='debug_btn' title='Undo'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='undo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"redo\")' class='debug_btn' title='Redo'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='redo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"attribute\")' class='debug_btn' title='Clear offline cache'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"textnode\")' class='debug_btn' title='Go Online'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"remove\")' class='debug_btn' title='Go Offline'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                        </div>\
+                    </div>\
                 </div>"
              : "") +
                "<div class='debug_panel' id='jpfProfilerPanel' onclick='jpf.debugwin.toggleFold(this);'>\
@@ -1132,7 +1172,7 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Javascript Profiler (beta)</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;'>\
+                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' style='display:none;'>\
                         <div id='jpfProfilerOutput' class='debug_panel_body_base debug_panel_body_profiler'></div>\
                         <div id='jpfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
                         <div class='debug_toolbar debug_toolbar_inner'>\
@@ -1170,7 +1210,7 @@ jpf.debugwin = {
                         <strong>Log Viewer</strong>\
                     </div>\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true'\
-                      onselectstart='event.cancelBubble=true'\
+                      onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>\
                 <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
@@ -1180,7 +1220,7 @@ jpf.debugwin = {
                     </div>\
                     <div onclick='event.cancelBubble=true'>\
                         <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);'\
-                          onselectstart='event.cancelBubble=true'\
+                          onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                           onmousedown='if(jpf.window) jpf.window.$focusRoot();'\
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie('jsexec') + "</textarea>\
                         <div class='debug_toolbar debug_toolbar_inner'>\
@@ -1266,31 +1306,28 @@ jpf.debugwin = {
                     dbgExpr.style.marginTop = "-108px";
                 }
                 
-                jpf.layout.setRules(elError, "resize", 
-                    "var oHtml = document.getElementById('" + elError.id + "');\
-                    var o = document.getElementById('jvlnviewlog');\
-                    if (jpf.isIE) {\
-                        var scrollHeight = oHtml.scrollHeight;\
-                    }\
-                    else {\
+                if (jpf.layout) {
+                    jpf.layout.setRules(elError, "resize", 
+                        "var oHtml = document.getElementById('" + elError.id + "');\
+                        var o = document.getElementById('jvlnviewlog');\
                         var l = document.getElementById('lastElement');\
                         var scrollHeight = l.offsetTop + l.offsetHeight;\
-                    }\
-                    var shouldSize = scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
-                    o.style.height = (shouldSize\
-                        ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 10\
-                        : 240) + 'px';\
-                    oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
-                    oHtml.style.right = '0px';\
-                    oHtml.style.left = '';\
-                    document.body.style.marginRight = \
-                        oHtml.offsetWidth + 'px';\
-                    var o = document.getElementById('jpfDebugExpr');\
-                    if (o.parentNode.offsetWidth)\
-                        o.style.width = (o.parentNode.offsetWidth \
-                            - (jpf.isGecko ? 4 : 8)) + 'px';\
-                    ");
-                jpf.layout.activateRules(elError);
+                        var shouldSize = scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
+                        o.style.height = (shouldSize\
+                            ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 10\
+                            : 240) + 'px';\
+                        oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
+                        oHtml.style.right = '0px';\
+                        oHtml.style.left = '';\
+                        document.body.style.marginRight = \
+                            oHtml.offsetWidth + 'px';\
+                        var o = document.getElementById('jpfDebugExpr');\
+                        if (o.parentNode.offsetWidth)\
+                            o.style.width = (o.parentNode.offsetWidth \
+                                - (jpf.isGecko ? 4 : 8)) + 'px';\
+                        ");
+                    jpf.layout.activateRules(elError);
+                }
             }
             
             if (jpf.hasFocusBug)
@@ -1473,8 +1510,12 @@ jpf.debugwin = {
     activate : function(msg){
         //jpf.debugwin.toggleDebugger(false);
 
-        if (document.getElementById("javerror"))
+        if (document.getElementById("javerror")) {
             document.getElementById("javerror").style.display = "block";
+            
+            if (jpf.layout)
+                jpf.layout.forceResize(this.oExt);
+        }
         else {
             jpf.debugwin.errorHandler(msg || "User forced debug window to show",
                 location.href, 0, true);
