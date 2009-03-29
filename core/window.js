@@ -927,9 +927,6 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
         
-        if (jmlNode && jmlNode.tagName == "debugwin")
-            return;
-
         // #ifdef __WITH_POPUP
         if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId)
             jpf.popup.forceHide();

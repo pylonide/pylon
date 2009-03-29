@@ -122,20 +122,23 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     
+    /**
+     * @private
+     */
     this.slideToggle = function(htmlNode, force){
-        if (this.noCollapse) return;
-
+        if(this.noCollapse) 
+            return;
+        
+        if (!htmlNode)
+            htmlNode = this.$selected;
+        
         var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
-            id = (htmlNode = htmlNode.parentNode).getAttribute(jpf.xmldb.htmlIdTag);
-
-        /*var xmlNode = jpf.xmldb.getNodeById(id);
-        var hasChildren = this.getTraverseNodes(xmlNode).length || this.emptyMessage && this.applyRuleSetOnNode("empty", xmlNode);
-        if(!hasChildren) return false;
-        else if(!htmlNode.className.match(/plus|min/)) this.fixItem(xmlNode, htmlNode);*/
+            var id = (htmlNode = htmlNode.parentNode)
+                .getAttribute(jpf.xmldb.htmlIdTag);
 
         var elClass, container = this.$getLayoutNode("item", "container", htmlNode);
-        if (!force && jpf.getStyle(container, "display") == "block") {
+        if (jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/min/, "plus");
@@ -149,9 +152,14 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    //htmlNode || xmlNode
     var lastOpened = {};
-    this.slideOpen = function(container, xmlNode){
+    /**
+     * @private
+     */
+    this.slideOpen = function(container, xmlNode, immediate){
+        if (!xmlNode)
+            xmlNode = this.selected;
+        
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -166,47 +174,59 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         container.style.display = "block";
+        
+        if (immediate) {
+            container.style.height = "auto";
+            return;
+        }
 
         jpf.tween.single(container, {
-            type:     'scrollheight', 
-            from:     0, 
-            to:       container.scrollHeight, 
-            anim:     this.animType, 
-            steps:    this.animSteps,
+            type    : 'scrollheight', 
+            from    : 0, 
+            to      : container.scrollHeight, 
+            anim    : this.animType, 
+            steps   : this.animOpenStep,
             interval: this.animSpeed,
-            onfinish: function(container, data){
-                if (data[1] && data[0].hasLoadStatus(data[1], "potential")) {
-                    //'jpf.lookup(' + data[0].uniqueId + ').doUpdate(jpf.xmldb.getElementById("' + data[1].getAttribute(jpf.xmldb.xmlIdTag) + '"));'
-                    setTimeout(function(){data[0].doUpdate(data[1], container);});
+            onfinish: function(container){
+                if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
+                    setTimeout(function(){
+                        _self.$extend(xmlNode, container);
+                    });
                     container.style.height = "auto";
                 }
                 else {
                     //container.style.overflow = "visible";
                     container.style.height = "auto";
                 }
-            }, 
-            userdata: [this, xmlNode]
+            }
         });
     };
 
+    /**
+     * @private
+     */
     this.slideClose = function(container, xmlNode){
-        if (this.noCollapse) return;
+        if (this.noCollapse) 
+            return;
         
-        if (this.singleopen){
+        if (!xmlNode)
+            xmlNode = this.selected;
+        
+        if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
                 .getAttribute(jpf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
         
-        container.style.height = container.offsetHeight;
+        container.style.height   = container.offsetHeight;
         container.style.overflow = "hidden";
 
         jpf.tween.single(container, {
-            type:     'scrollheight', 
-            from:     container.scrollHeight, 
-            to:       0, 
-            anim:     this.animType, 
-            steps:    this.animSteps,
+            type    : 'scrollheight', 
+            from    : container.scrollHeight, 
+            to      : 0, 
+            anim    : this.animType, 
+            steps   : this.animCloseStep,
             interval: this.animSpeed,
             onfinish: function(container, data){
                container.style.display = "none";
@@ -336,7 +356,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         
         elName.setAttribute("onmousedown", "this.contentEditable=true;\
             jpf.selectTextHtml(this);\
-            this.className='textedit';");
+            this.className='textedit';\
+            event.cancelBubble=true;");
         elName.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
             return false;");
@@ -354,7 +375,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         
         elValue.setAttribute("onmousedown", "this.contentEditable=true;\
             jpf.selectTextHtml(this);\
-            this.className='textedit'");
+            this.className='textedit';\
+            event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
             return false;");
@@ -722,138 +744,155 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
+        var selHtml  = this.$indicator || this.$selected;
         
-        if (!this.$selected) return;
-        //if(!this.$selected || this.dragging) return;
-        //var img = this.$selected.parentNode.parentNode.firstChild.firstChild;
+        if (!selHtml || this.renaming) 
+            return;
+
+        var selXml = this.indicator || this.selected;
+        var oExt   = this.oExt;
 
         switch (key) {
+            case 13:
+                if (this.$tempsel)
+                    this.selectTemp();
+            
+                if (this.ctrlselect == "enter")
+                    this.select(this.indicator, true);
+            
+                this.choose(selHtml);
+                break;
+            case 32:
+                //if (ctrlKey)
+                    this.select(this.indicator, true);
+                break;
+            case 46:
+                if (this.$tempsel)
+                    this.selectTemp();
+            
+                //DELETE
+                //this.remove();
+                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
+                break;
             case 109:
             case 37:
                 //LEFT
-                if (this.$tempsel) {
-                    clearTimeout(this.timer);
-                    this.select(this.$tempsel);
-                    this.$tempsel = this.timer = null;
-                }
-            
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.$selected, 2)
+                if (this.$tempsel)
+                    this.selectTemp();
+                    
+                if (this.indicator.selectSingleNode(this.traverse))
+                    this.slideToggle(this.$indicator || this.$selected, 2)
                 break;
             case 107:
             case 39:
                 //RIGHT
-                if (this.$tempsel) {
-                    clearTimeout(this.timer);
-                    this.select(this.$tempsel);
-                    this.$tempsel = this.timer = null;
-                }
+                if (this.$tempsel)
+                    this.selectTemp();
             
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.$selected, 1)
-                break;
-            case 46:
-                //DELETE
-                var xmlNode = this.selected;
-                var i = 0, ln = 1, nextNode = xmlNode;
-                this.remove(xmlNode, true);
+                if (this.indicator.selectSingleNode(this.traverse))
+                    this.slideToggle(this.$indicator || this.$selected, 1)
                 break;
             case 187:
                 //+
                 if (shiftKey)
-                    arguments.callee.call(this, 39);
-                break;
+                    arguments.callee(39);
+            break;
             case 189:
                 //-
                 if (!shiftKey)
-                    arguments.callee.call(this, 37);
+                    arguments.callee(37);
                 break;
             case 38:
                 //UP
-                if (!this.selected && !this.$tempsel) return;
+                if (!selXml && !this.$tempsel) 
+                    return;
+                
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
-                    : this.selected;
+                    : selXml;
                 
                 var sNode = this.getNextTraverse(node, true);
                 if (sNode) {
-                    var nodes = sNode.selectNodes(this.traverse);
+                    var nodes = this.getTraverseNodes(sNode);
                     
                     do {
-                        var container = this.$getLayoutNode("item", "container", 
+                        var container = this.$getLayoutNode("item", "container",
                             this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
-                        if (jpf.getStyle(container, "display") == "block") {
-                            if (nodes.length)
+                        if (container && jpf.getStyle(container, "display") == "block" 
+                          && nodes.length) {
                                 sNode = nodes[nodes.length-1];
-                            else 
-                                break;
                         }
                         else 
                             break;
-                    } while (sNode && (nodes = sNode.selectNodes(this.traverse)).length);
+                    }
+                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
                 }
-                else 
-                    if (node.parentNode == this.xmlRoot) 
-                        return;
-                else 
-                    sNode = node.parentNode;
+                else if (this.getTraverseParent(node) == this.xmlRoot) {
+                    this.dispatchEvent("selecttop");
+                    return;
+                }
+                else
+                    sNode = this.getTraverseParent(node);
 
-                if (sNode && sNode.nodeType == 1) {
-                    clearTimeout(this.timer);
-                    var id = jpf.xmldb.getID(sNode, this);
-                    this.$deselect(this.$tempsel || this.$selected);
-                    this.$tempsel = this.$select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.$tempsel = o.timer = null;\
-                        o.select(document.getElementById('" + id + "'));", 300);
-                }
+                if (sNode && sNode.nodeType == 1)
+                   this.setTempSelected(sNode, ctrlKey, shiftKey);
                 
-                if (this.$tempsel && this.$tempsel.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.$tempsel.offsetTop;
+                if (this.$tempsel && this.$tempsel.offsetTop < oExt.scrollTop)
+                    oExt.scrollTop = this.$tempsel.offsetTop;
                 
                 return false;
+             
                 break;
             case 40:
                 //DOWN
-                if (!this.selected && !this.$tempsel) return;
+                if (!selXml && !this.$tempsel) 
+                    return;
+                    
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
-                    : this.selected;
+                    : selXml;
                 
-                var sNode = node.selectSingleNode(this.traverse);
+                var sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
-                    var container = this.$getLayoutNode("item", "container", 
+                    var container = this.$getLayoutNode("item", "container",
                         this.getNodeFromCache(jpf.xmldb.getID(node, this)));
-                    if (jpf.getStyle(container, "display") != "block")
+                    if (container && jpf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
                 
-                while (!sNode && node.parentNode) {
-                    var i     = 0; 
-                    var nodes = node.parentNode.selectNodes(this.traverse);
+                while (!sNode) {
+                    var pNode = this.getTraverseParent(node);
+                    if (!pNode) break;
+                    
+                    var i = 0;
+                    var nodes = this.getTraverseNodes(pNode);
                     while (nodes[i] && nodes[i] != node)
                         i++;
-                    sNode     = nodes[i+1];
-                    node      = node.parentNode;
+                    sNode = nodes[i+1];
+                    node  = pNode;
                 }
                 
-                if (sNode && sNode.nodeType == 1) {
-                    clearTimeout(this.timer);
-                    var id       = jpf.xmldb.getID(sNode, this);
-                    this.$deselect(this.$tempsel || this.$selected);
-                    this.$tempsel = this.$select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer   = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.$tempsel = null;\
-                        o.select(document.getElementById('" + id + "'));", 300);
-                }
+                if (sNode && sNode.nodeType == 1)
+                   this.setTempSelected(sNode, ctrlKey, shiftKey);
                 
-                if (this.$tempsel && (this.$tempsel.offsetTop 
-                  + this.$tempsel.offsetHeight) > this.oExt.scrollTop 
-                  + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.$tempsel.offsetTop 
-                        - this.oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
+                if (this.$tempsel && this.$tempsel.offsetTop + this.$tempsel.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = this.$tempsel.offsetTop 
+                        - oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
                 
                 return false;
+                break;
+            case 33: //@todo
+                //PGUP
+                break;
+            case 34: //@todo
+                //PGDN
+                break;
+            case 36: //@todo
+                //HOME
+                break;
+            case 35: //@todo
+                //END
                 break;
         }
     }, true);

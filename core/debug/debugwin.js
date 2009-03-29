@@ -420,6 +420,9 @@ jpf.debugwin = {
         if (!jpf.JmlParser)
             return alert("Sorry, the depencies for the Data Debugger could not be loaded");
 
+        if (oHtml.getAttribute("inited")) return;
+        oHtml.setAttribute("inited", "true");
+
         /**
          * @todo change the .attribute to be in the debugmarkup namespace
          * @todo fix the edit state
@@ -438,10 +441,11 @@ jpf.debugwin = {
                     .debugmarkup blockquote{\
                         margin : 0;\
                         padding : 0px;\
-                        overflow : hidden;\
                         overflow : auto;\
                         width : 100%;\
                         height : 100%;\
+                        position : relative;\
+                        line-height : 1.4em;\
                     }\
                     .debugmarkup dl,\
                     .debugmarkup dt,\
@@ -467,7 +471,8 @@ jpf.debugwin = {
                         color : black;\
                         border : 1px solid black;\
                         padding : 1px 2px 1px 2px;\
-                        margin : -2px -4px -5px -3px;\
+                        margin : 2px -4px -2px -3px;\
+                        line-height : 1em;\
                     }\
                     #override strong.textedit{\
                         position : relative;\
@@ -489,12 +494,24 @@ jpf.debugwin = {
                         padding : 0 0 0 5px;\
                     }\
                     .debugmarkup dl{\
+                        height : 18px;\
+                        white-space : normal;\
+                    }\
+                    .debugmarkup dl dt{\
+                        white-space : normal;\
+                        padding : 2px;\
+                    }\
+                    .debugmarkup dl dl{\
                         height : 14px;\
+                        white-space : nowrap;\
+                    }\
+                    .debugmarkup dl dl dt{\
                         white-space : nowrap;\
                     }\
                     /*\*/html>body*.debugmarkup dl{height : 12px;}/**/\
                     .debugmarkup span{\
                         display : inline;\
+                        padding : 2px;\
                     }\
                     .debugmarkup u{\
                         text-decoration : none;\
@@ -508,8 +525,7 @@ jpf.debugwin = {
                     .debugmarkup DIV{\
                         cursor : default;\
                         padding : 0 0 0 14px;\
-                        background-repeat : no-repeat;\
-                        background-position : 2px 3px;\
+                        position : relative;\
                     }\
                     .debugmarkup .selected dl,\
                     .debugmarkup .selected dd,\
@@ -523,16 +539,24 @@ jpf.debugwin = {
                         background-color : #FFFF00;\
                         color : #000000;\
                     }\
-                    .debugmarkup DIV.pluslast {\
+                    .debugmarkup I{\
+                        width : 9px;\
+                        height : 9px;\
+                        position : absolute;\
+                        left : 2px;\
+                        top : 3px;\
+                        background-repeat : no-repeat;\
+                    }\
+                    .debugmarkup I.pluslast {\
                         background-image:url(' + this.resPath + 'splus.gif);\
                     }\
-                    .debugmarkup DIV.minlast {\
+                    .debugmarkup I.minlast {\
                         background-image:url(' + this.resPath + 'smin.gif);\
                     }\
-                    .debugmarkup DIV.plus {\
+                    .debugmarkup I.plus {\
                         background-image:url(' + this.resPath + 'splus.gif);\
                     }\
-                    .debugmarkup DIV.min {\
+                    .debugmarkup I.min {\
                         background-image:url(' + this.resPath + 'smin.gif);\
                     }\
                     .debugmarkup DIV BLOCKQUOTE{\
@@ -550,8 +574,8 @@ jpf.debugwin = {
                             <blockquote> </blockquote>\
                         </div>\
                     </j:main>\
-                    <j:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="." select="dl" container="blockquote">\
-                        <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span></div>\
+                    <j:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="i" select="dl" container="blockquote">\
+                        <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span><i> </i></div>\
                     </j:item>\
                     <j:attribute name="dt" value="dd">\
                         <dl class="attribute"><dt> </dt>="<dd> </dd>"</dl>\
@@ -570,9 +594,7 @@ jpf.debugwin = {
         </j:skin>';
         jpf.skins.Init(jpf.xmldb.getXml(skinXml));
 
-        if (oHtml.getAttribute("inited")) return;
-
-        oHtml.setAttribute("inited", "true");
+        document.documentElement.setAttribute("id", "override");
 
         var oInt = oHtml.getElementsByTagName("div")[2];
         jpf.test = oHtml;
@@ -610,7 +632,7 @@ jpf.debugwin = {
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jml + "'>\
-                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' height='110' minheight='110' resizable='vertical'>\
+                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' height='210' minheight='110' resizable='vertical'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
                     </j:bindings>\
@@ -782,10 +804,10 @@ jpf.debugwin = {
                 };
                 
                 elError.dispatchEvent = function(){}
-                elError.onkeydown   =
+                /*elError.onkeydown   =
                 elError.onkeyup     = function(e){
                     (e || event).cancelBubble = true;
-                }
+                }*/
 
                 if (jpf.isIE) {
                     jpf.setStyleRule("BODY", "overflow", "", 0);
