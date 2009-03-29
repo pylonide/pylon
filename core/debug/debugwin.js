@@ -98,14 +98,60 @@ Function.prototype.toHTMLNode = function(highlight){
                 info.push("Value: " + jpf.vardump(this.arguments[i], null, false));
             }
         }
+        else if (jpf.isGecko) {
+            args = args.splitSafe(",");
+            var result = [];
+            var argName;
+            for (var i = 0; i < args.length; i++) {
+                var firstChar = args[i].charAt(0);
+                
+                if (firstChar == "[")
+                    argName = "object";
+                else if (firstChar == '"')
+                    argName = "string";
+                else if (firstChar == 't' || firstChar == 'f')
+                    argName = "boolean";
+                else 
+                    argName = "number";    
+                
+                var info = ["Type: " + argName];
+                var id   = jpf.DebugInfoStack.push(info) - 1;
+
+                result.push("<a href='javascript:void(0)' onclick='alert(jpf.DebugInfoStack["
+                    + id + "].join(\"\\n\"));event.cancelBubble=true;'>" + argName + "</a>");
+                info.push("Value: " + jpf.vardump(args[i], null, false));
+            }
+            
+            args = result;
+        }
 
         line2 = line2.replace(/\{/ , "");
         line2 = line2.substr(0, line2.length-2);
 
         if (!highlight) {
+            //fine common start whitespace count
+            var lines = line2.split("\n");
+            for (var min = 1000, m, i = 0; i < lines.length; i++) {
+                if (!lines[i].trim()) 
+                    continue;
+                    
+                m = lines[i].match(/^[\s \t]+/);
+                if (!m) {
+                    min = 0;
+                    break;
+                }
+                else min = Math.min(min, m[0].length);
+            }
+            if (min) {
+                for (var i = 0; i < lines.length; i++) {
+                    lines[i] = lines[i].substr(min);
+                }
+            }
+            line2 = lines.join("\n");
+            
             line2 = line2.replace(/ /g, "&nbsp;");
-            line2 = line2.replace(/\t/g, "&nbsp;&nbsp;&nbsp;");
-            line2 = line2.replace(/\n/g, "</nobr><br><nobr>&nbsp;&nbsp;&nbsp;");
+            line2 = line2.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
+            line2 = line2.replace(/\n/g, "</nobr><br><nobr>&nbsp;&nbsp;&nbsp;&nbsp;");
             line2 = "{<br><nobr>&nbsp;&nbsp;&nbsp;" + line2 + "</nobr><br>}";
         }
         else {
@@ -115,31 +161,32 @@ Function.prototype.toHTMLNode = function(highlight){
 
         var d = document.createElement("div");
         res   = "<div>\
-            <div style='padding:0px 0px 2px 0px;cursor:default;' onclick='\
-              var oFirst = this.firstChild;\
-              while (oFirst.nodeType != 1) oFirst = oFirst.nextSibling;\
-              oFirst = oFirst.firstChild;\
-              while (oFirst.nodeType != 1) oFirst = oFirst.nextSibling;\
-              var oLast = this.lastChild;\
-              while (oLast.nodeType != 1) oLast = oLast.previousSibling;\
-              if (oLast.style.display == \"block\") {\
-                  oLast.style.display = \"none\";\
-                  oFirst.src=\"" + this.resPath + "arrow_right.gif\";\
+            <div style='padding:0px 0px 2px 0px;cursor:default;' onclick=\"\
+              var oFirst = this.getElementsByTagName('img')[0];\
+              var oLast = this.getElementsByTagName('div')[0];\
+              if (oLast.style.display == 'block') {\
+                  oLast.style.display = 'none';\
+                  oFirst.src='" + jpf.debugwin.resPath + "arrow_right.gif';\
               } else {\
-                  oLast.display = \"block\";\
-                  oFirst.src=\"" + this.resPath + "arrow_down.gif\";\
+                  oLast.style.display = 'block';\
+                  oFirst.src='" + jpf.debugwin.resPath + "arrow_down.gif';\
               }\
-              event.cancelBubble=true'>\
-                <nobr>\
-                    <img width='9' height='9' src='" + this.resPath
+              event.cancelBubble=true\">\
+                <nobr>"
+                      + (this.url
+                        ? "<a href='" + this.url + "' target='_blank' style='float:right'>" 
+                                + jpf.getFilename(this.url) + 
+                            " (" + this.line + ")</a>"
+                        : "")
+                      + "<img width='9' height='9' src='" + jpf.debugwin.resPath
                       + "arrow_right.gif' style='margin:0 3px 0 2px;' />"
-                      + (name.trim() || "function") + "(" + args.join(", ") + ")&nbsp;\
+                      + (name.trim() || "anonymous") + "(" + args.join(", ") + ")&nbsp;\
                 </nobr>\
                 <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
                   cursor: text;\
                   display: none;\
                   padding: 0px;\
-                  background-color: #EAEAEA;\
+                  background-color: #f6f6f6;\
                   color: #222;\
                   overflow: auto;\
                   margin-top: 2px;'>\
@@ -200,7 +247,8 @@ jpf.debugwin = {
         #endif */
 
         if (!this.useDebugger) {
-            window.onerror = jpf.debugwin.errorHandler;
+            jpf.debugwin.toggleDebugger(false);
+            //window.onerror = jpf.debugwin.errorHandler;
 
             if (jpf.isGecko)
                 var error = Error;
@@ -236,32 +284,61 @@ jpf.debugwin = {
     show : function(e, filename, linenr){
         var list = [], seen = {};
 
-        //Opera doesnt support caller... weird...
-        try {
-            var loop = end = jpf.isIE
-              ? this.show.caller.caller
-              : this.show.caller.caller
-                  ? this.show.caller.caller.caller
-                  : this.show.caller.caller;
-            if (loop) {
-                try {
-                    do {
-                        if (seen[loop.toString()])
-                            break; //recursion checker
-                        seen[loop.toString()] = true;
-                        //str += loop.toHTML();
-                        list.push(loop.toHTMLNode(jpf.getcookie("highlight") == "true"));
-                        loop = loop.caller;
+        if (!jpf.isIE) {
+            var stack = new Error().stack.split("\n");
+            for (var i = 0; i < stack.length; i++) {
+                stack[i].trim().match(/^([\w_\$]*)(\(.*?\))?@(.*?):(\d+)$/);
+                var name = RegExp.$1;
+                var args = RegExp.$2;
+                var url  = RegExp.$3;
+                var line = RegExp.$4;
+                
+                list.push(Function.prototype.toHTMLNode.call({
+                    toString : function(){
+                        return "function " + name + (args || "()") + "{\n...\n}";
+                    },
+                    url : url,
+                    line: line
+                }));
+            }
+            
+            /*
+                Error()@:0
+                ([object Object],"file:///C:/Development/javeline/platform/source/trunk/list.html",0)@file:///C:/Development/javeline/platform/source/trunk/core/debug/debugwin.js:241
+                ("User forced debug window to show","file:///C:/Development/javeline/platform/source/trunk/list.html",0,true)@file:///C:/Development/javeline/platform/source/trunk/core/debug/debugwin.js:1305
+                ()@file:///C:/Development/javeline/platform/source/trunk/core/debug/debugwin.js:1317
+                @file:///C:/Development/javeline/platform/source/trunk/elements/appsettings.js:163
+
+            */
+        }
+        else {
+            //Opera doesnt support caller... weird...
+            try {
+                var loop = end = jpf.isIE
+                  ? this.show.caller.caller
+                  : this.show.caller.caller
+                      ? this.show.caller.caller.caller
+                      : this.show.caller.caller;
+                if (loop) {
+                    try {
+                        do {
+                            if (seen[loop.toString()])
+                                break; //recursion checker
+                            seen[loop.toString()] = true;
+                            //str += loop.toHTML();
+                            list.push(loop.toHTMLNode(jpf.getcookie("highlight") == "true"));
+                            loop = loop.caller;
+                        }
+                        while (list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
                     }
-                    while (list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
-                }
-                catch(a) {
-                    list=[];
+                    catch(a) {
+                        list=[];
+                    }
                 }
             }
+            catch(e){}
         }
-        catch(e){}
-
+        
         errorInfo  = "Exception caught on line " + linenr + " in file " + filename + "<br>Message: " + e.message;
 
         e.lineNr   = linenr;
@@ -971,14 +1048,6 @@ jpf.debugwin = {
              : "") +
                "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
                     <div class='debug_panel_head'>\
-                        <div class='debug_panel_headsub'>\
-                            <input id='cbHighlight' type='checkbox' onclick='\
-                              jpf.debugwin.toggleHighlighting(this.checked);\
-                              event.cancelBubble = true;'" + (jpf.isTrue(jpf.getcookie("highlight")) ? " checked='checked'" : "") + "/>\
-                            <label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>\
-                                Enable Syntax Coloring\
-                            </label>\
-                        </div>\
                         <img width='9' height='9' src='" + this.resPath + "/arrow_gray_right.gif' />&nbsp;\
                         <strong>Stack Trace</strong>\
                     </div>\
@@ -1273,8 +1342,9 @@ jpf.debugwin = {
         if (jpf.setcookie)
             jpf.setcookie("debugger", checked)
 
-        if (!checked)
+        if (!checked) {
             window.onerror = this.errorHandler;
+        }
         else
             window.onerror = null;
     },
