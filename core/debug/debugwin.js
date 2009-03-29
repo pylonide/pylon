@@ -499,7 +499,7 @@ jpf.debugwin = {
                     }\
                     .debugmarkup dl dt{\
                         white-space : normal;\
-                        padding : 2px;\
+                        padding : 1px 2px 2px 2px;\
                     }\
                     .debugmarkup dl dl{\
                         height : 14px;\
@@ -532,7 +532,7 @@ jpf.debugwin = {
                     .debugmarkup .selected dt,\
                     .debugmarkup .selected span,\
                     .debugmarkup .selected strong{\
-                        background-color : #191970;\
+                        background-color : #25a8e7;\
                         color : #FFFFFF;\
                     }\
                     #override .debugmarkup .highlight{\
@@ -544,7 +544,7 @@ jpf.debugwin = {
                         height : 9px;\
                         position : absolute;\
                         left : 2px;\
-                        top : 3px;\
+                        top : 5px;\
                         background-repeat : no-repeat;\
                     }\
                     .debugmarkup I.pluslast {\
@@ -596,7 +596,7 @@ jpf.debugwin = {
 
         document.documentElement.setAttribute("id", "override");
 
-        var oInt = oHtml.getElementsByTagName("div")[2];
+        var oInt = document.getElementById("jpf_markupcontainer");
         jpf.test = oHtml;
 
         //Get all models
@@ -1161,7 +1161,7 @@ jpf.debugwin = {
                     </div>\
                     <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_data'>\
-                        <div></div>\
+                        <div id='jpf_markupcontainer'></div>\
                         <div class='debug_toolbar debug_toolbar_inner'>\
                             <label style='float:left'>Model:</label>\
                             <label style='float:left'>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='margin-top:2px;width:90px;float:left'/>\
