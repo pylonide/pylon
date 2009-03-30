@@ -1037,7 +1037,6 @@ jpf.debugwin = {
                         padding: 0;\
                     }\
                     #javerror .debug_panel{\
-                        position: relative;\
                         cursor:default;\
                         border-left: 1px solid #a3a3a3;\
                         padding: 0;\
@@ -1101,9 +1100,7 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_panel_body_markup{\
                         padding: 0;\
-                        max-height: 200px;\
                         white-space: nowrap;\
-                        overflow: hidden;\
                     }\
                     #javerror .debug_panel_body_data{\
                         min-height: 130px;\
@@ -1175,7 +1172,7 @@ jpf.debugwin = {
             elError.innerHTML = "\
                 <div class='debug_header'>\
                     <div class='debug_header_cont'>\
-                        <div onselectstart='event.cancelBubble=true' class='debug_logos'>\
+                        <div onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' class='debug_logos'>\
                             <span class='debug_jpf'><strong>Javeline</strong> Platform</span>\
                             <span class='debug_jpf_slogan'>\
                                 Open source, standards compliant,<br />\
@@ -1188,7 +1185,7 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                         <strong>Error</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
+                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_error'>\
                         <table border='0' cellpadding='0' cellspacing='0'>\
                             <tr>\
@@ -1235,7 +1232,7 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Live Data Debugger (beta)</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
+                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_markup debug_panel_body_none'>\
                         <div id='jpf_markupcontainer'> </div>\
                         <div class='debug_toolbar debug_toolbar_inner'>\
