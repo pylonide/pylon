@@ -1027,7 +1027,7 @@ jpf.debugwin = {
                         width: 100%;\
                         position: relative;\
                         bottom: 0px;\
-                        border-bottom: 1px solid #cacaca;\
+                        border-bottom: 0;\
                         border-left: 1px solid #a3a3a3;\
                         -moz-user-select: none;\
                         -khtml-user-select: none;\
@@ -1416,7 +1416,7 @@ jpf.debugwin = {
                         var scrollHeight = l.offsetTop + l.offsetHeight;\
                         var shouldSize = scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
                         o.style.height = (shouldSize\
-                            ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 10\
+                            ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 8\
                             : 240) + 'px';\
                         oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
                         oHtml.style.right = '0px';\
