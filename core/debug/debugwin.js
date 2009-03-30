@@ -894,6 +894,24 @@ jpf.debugwin = {
                         width: 100%;\
                         height: 66px;\
                     }\
+                    #javerror .debug_closebtn,\
+                    #javerror .debug_closebtn_hover{\
+                        cursor: hand;\
+                        cursor: pointer;\
+                        right: 8px;\
+                        top: 6px;\
+                        z-index: 1000;\
+                        margin: 0px;\
+                        width: 16px;\
+                        height: 16px;\
+                        overflow: hidden;\
+                        padding: 0;\
+                        position: absolute;\
+                        background: url(" + this.resPath + "buttons.png) no-repeat -176px -16px;\
+                    }\
+                    #javerror .debug_closebtn_hover{\
+                        background-position: -176px 0px;\
+                    }\
                     #javerror .debug_logos{\
                         background: url(" + this.resPath + "jpf_logo.png) no-repeat 5px 5px;\
                         position: absolute;\
@@ -1202,6 +1220,8 @@ jpf.debugwin = {
                         <div onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' class='debug_logos'>\
                             &nbsp;\
                         </div>\
+                        <div class='debug_closebtn' onmouseover='this.className=\"debug_closebtn_hover\"' \
+                          onmouseout='this.className=\"debug_closebtn\"' onclick='jpf.debugwin.hide()' title='Close'>&nbsp;</div>\
                     </div>\
                 </div>\
                 <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
