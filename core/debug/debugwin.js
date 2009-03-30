@@ -626,37 +626,13 @@ jpf.debugwin = {
         options   = options.join('').replace(/option>/, "option selected='1'>");
         var first = options ? options.match(/>([^<]*)</)[1] : "";
 
-        //oHtml.getElementsByTagName("label")[0].insertAdjacentHTML("afterend",
-        //    "<select id='dbgMarkupSelect' style='margin-top:2px;float:left;' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>");
+        oHtml.getElementsByTagName("label")[0].insertAdjacentHTML("afterend",
+            "<select id='dbgMarkupSelect' style='margin-top:2px;float:left;' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>");
 
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jml + "'>\
-                <div class='debug_toolbar debug_toolbar_inner'>\
-                    <div class='debug_btn debug_btnright' onclick='jpf.debugwin.exec(\"attribute\")' title='Attribute'\
-                      onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
-                        <span class='attribute'> </span>\
-                    </div>\
-                    <div class='debug_btn debug_btnright' onclick='jpf.debugwin.exec(\"textnode\")' title='Textnode'\
-                      onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
-                        <span class='textnode'> </span>\
-                    </div>\
-                    <div class='debug_btn debug_btnright' onclick='jpf.debugwin.exec(\"remove\")' title='Remove'\
-                      onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
-                        <span class='remove'> </span>\
-                    </div>\
-                    <div class='debug_btn debug_btnright' onclick='jpf.debugwin.exec(\"redo\")' title='Redo'\
-                      onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
-                        <span class='redo'> </span>\
-                    </div>\
-                    <div class='debug_btn debug_btnright' onclick='jpf.debugwin.exec(\"undo\")' title='Undo'\
-                      onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
-                        <span class='undo'> </span>\
-                    </div>\
-                    <label>Model:</label><select id='dbgMarkupSelect' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>\
-                    <label>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='width:72px'/>\
-                </div>\
-                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' width='572' height='158'>\
+                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
                     </j:bindings>\
@@ -682,8 +658,8 @@ jpf.debugwin = {
         //Load JML
         j.parseMoreJml(xml, oInt);
         
-        if (jpf.layout) {
-            jpf.layout.setRules(oInt.childNodes[1], "resize",
+        if (jpf.layout && !jpf.hasSingleRszEvent) {
+            jpf.layout.setRules(jpf.getFirstElement(oInt), "resize",
                 "jpf.layout.forceResize(jpf.debugwin.oExt);");
             jpf.layout.activateRules(oInt.firstChild);
         }
@@ -875,7 +851,7 @@ jpf.debugwin = {
                         top: 0px;\
                         border-left: 1px solid #bbb;\
                         text-align: left;\
-                        width: 400px;\
+                        width: 500px;\
                         background: #fff url(" + this.resPath + "splitter_handle_vertical.gif) no-repeat 1px 50%;\
                         right: 0px;\
                         font-family: 'Lucida Grande', Arial, Monaco, 'MS Sans Serif';\
@@ -1259,8 +1235,34 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                         <strong>Live Data Debugger (beta)</strong>\
                     </div>\
-                    <div id='jpf_markupcontainer' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
-                      class='debug_panel_body_base debug_panel_body_markup'></div>\
+                    <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
+                      class='debug_panel_body_base debug_panel_body_markup debug_panel_body_none'>\
+                        <div id='jpf_markupcontainer'> </div>\
+                        <div class='debug_toolbar debug_toolbar_inner'>\
+                            <label style='float:left'>Model:</label>\
+                            <label style='float:left'>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='margin-top:2px;width:90px;float:left'/>\
+                            <div onclick='jpf.debugwin.exec(\"undo\")' class='debug_btn' title='Undo'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='undo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"redo\")' class='debug_btn' title='Redo'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='redo'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"attribute\")' class='debug_btn' title='Clear offline cache'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"textnode\")' class='debug_btn' title='Go Online'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                            <div onclick='jpf.debugwin.exec(\"remove\")' class='debug_btn' title='Go Offline'\
+                              onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
+                                <span class='offline'> </span>\
+                            </div>\
+                        </div>\
+                    </div>\
                 </div>"
              : "") +
             (useProfiler
