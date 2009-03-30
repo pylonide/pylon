@@ -346,7 +346,7 @@ jpf.debugwin = {
             catch(e){}
         }
         
-        errorInfo  = "Exception caught on line " + linenr + " in file " + filename + "<br>Message: " + e.message;
+        var errorInfo  = "Exception caught on line " + linenr + " in file " + filename + "\nMessage: " + e.message;
 
         e.lineNr   = linenr;
         e.fileName = filename;
@@ -899,6 +899,7 @@ jpf.debugwin = {
                         position: absolute;\
                         top: 0px;\
                         height: 50px;\
+                        width: 200px;\
                         padding: 14px 4px 4px 68px;\
                         margin: 0;\
                         font-family: Arial, sans-serif, Tahoma, Verdana, Helvetica;\
@@ -1167,21 +1168,39 @@ jpf.debugwin = {
             elError.style.display = "block";
             var parse         = e.message.split(/\n===\n/),
                 errorMessage  = parse[0].replace(/---- Javeline Error ----\n/g, "")
-                    .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://developer.javeline.net/projects/platform/wiki/ErrorCodes#$1'>$1</a>]")
-                    .replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>").replace(/\n/g, "<br />"),
+                    .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://developer.javeline.net/projects/platform/wiki/ErrorCodes#$1'>$1</a>]"),
+                    //.replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>"),//.replace(/\n/g, "<br />"),
+                errorTable    = [],
                 jmlContext    = jpf.formatXml(parse[1] ? parse[1].trim(true) : "")
                     .replace(/</g, "&lt;").replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;"),
                 canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false,
                 useProfiler   = false;
 
+            errorMessage.replace(/(?:([\w ]+):(.*)(?:\n|$)|([\s\S]+))/gi, function(m, m1, m2) {
+                if (!errorTable.length)
+                    errorTable.push("<table border='0' cellpadding='0' cellspacing='0'>");
+                if (m1) {
+                    if (errorTable.length != 1) {
+                        errorTable.push("</td></tr>");
+                    }
+                    errorTable.push("<tr><td class='debug_error_header'>",
+                        m1, ":</td><td>", m2, "</td>", "</tr>");
+                }
+                else {
+                    if (errorTable[errorTable.length - 1] != "</tr>")
+                        errorTable.push("</td></tr><tr><td>&nbsp;</td>", "<td>");
+                    else
+                        errorTable.push("<tr><td>&nbsp;</td>", "<td>");
+                    errorTable.push(m);
+                }
+            });
+            errorTable.push("</td></tr></table>");
+
             elError.innerHTML = "\
                 <div class='debug_header'>\
                     <div class='debug_header_cont'>\
                         <div onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' class='debug_logos'>\
-                            <span class='debug_jpf'><strong>Javeline</strong> Platform</span>\
-                            <span class='debug_jpf_slogan'>\
-                                Open source, standards compliant,<br />\
-                                and blazing fast</span>\
+                            &nbsp;\
                         </div>\
                     </div>\
                 </div>\
@@ -1190,27 +1209,11 @@ jpf.debugwin = {
                         <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                         <strong>Error</strong>\
                     </div>\
-                    <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
-                      class='debug_panel_body_base debug_panel_body_error'>\
-                        <table border='0' cellpadding='0' cellspacing='0'>\
-                            <tr>\
-                                <td class='debug_error_header'>File (js):</td>\
-                                <td>[line: 0] index_editor.html</td>\
-                            </tr>\
-                            <tr>\
-                                <td class='debug_error_header'>Process:</td>\
-                                <td>&nbsp;</td>\
-                            </tr>\
-                            <tr>\
-                                <td class='debug_error_header'>Message:</td>\
-                                <td>User forced debug window to show</td>\
-                            </tr>\
-                            <tr>\
-                                <td class='debug_error_header'>Source Text:</td>\
-                                <td>" + errorMessage + "</td>\
-                            </tr>\
-                        </table>\
-                      </div>\
+                    <div id='debug_panel_errortable' onclick='event.cancelBubble=true' \
+                      onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
+                      class='debug_panel_body_base debug_panel_body_error'>"
+                        + errorTable.join("") +
+                   "</div>\
                 </div>" +
             (jmlContext
              ? "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
