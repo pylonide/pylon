@@ -1142,6 +1142,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     var lastcell, lastcol = 0, lastrow;
+    this.getColumn = function(nr){
+        return headings[nr || lastcol || 0];
+    }
+    
     this.selectCell = function(e, rowHtml, wasSelected) {
         var htmlNode = e.srcElement || e.target;
         if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
