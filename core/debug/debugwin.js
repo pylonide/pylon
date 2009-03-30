@@ -895,11 +895,11 @@ jpf.debugwin = {
                         height: 66px;\
                     }\
                     #javerror .debug_logos{\
-                        background: url(" + this.resPath + "jpf_logo.png) no-repeat 6px 5px;\
+                        background: url(" + this.resPath + "jpf_logo.png) no-repeat 5px 5px;\
                         position: absolute;\
                         top: 0px;\
                         height: 50px;\
-                        padding: 16px 4px 4px 72px;\
+                        padding: 14px 4px 4px 68px;\
                         margin: 0;\
                         font-family: Arial, sans-serif, Tahoma, Verdana, Helvetica;\
                         color: #fff;\
@@ -920,6 +920,7 @@ jpf.debugwin = {
                         font-style: italic;\
                         font-size: 9px;\
                         line-height: 10px;\
+                        display : block;\
                     }\
                     #javerror .debug_toolbar{\
                         position: relative;\
