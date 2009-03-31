@@ -362,7 +362,13 @@ jpf.debugwin = {
         //e, list, errorInfo
         var parsed = this.formatError(e);
         this.errorTable.innerHTML = parsed.table;
-        this.contextDiv.innerHTML = parsed.jmlcontext;
+        if (parsed.jmlcontext.trim()) {
+            this.contextDiv.parentNode.style.display = "block";
+            this.contextDiv.innerHTML = parsed.jmlcontext;
+        }
+        else
+            this.contextDiv.parentNode.style.display = "none";
+        
 
         if (list.length) {
             this.stackTrace.innerHTML = "";
@@ -411,7 +417,7 @@ jpf.debugwin = {
         });
         errorTable.push("</td></tr></table>");
 
-        return {table: errorTable.join(''), jmlcontext: jmlContext};
+        return {table: errorTable.join(''), jmlcontext: jmlContext || ""};
     },
 
     states      : {},
