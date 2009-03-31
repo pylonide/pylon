@@ -605,7 +605,7 @@ jpf.DataBinding = function(){
                     if (!this.dataParent)
                         return false;
 
-                    xmlNode = this.dataParent.parent.selected;
+                    xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
                     xpath = this.dataParent.xpath;
                     shouldLoad = true;
                 }

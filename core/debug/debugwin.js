@@ -1230,7 +1230,7 @@ jpf.debugwin = {
                 height: 100px;\
                 border: 0;\
                 overflow: auto;\
-                font-size: 11px;\
+                font-size: 12px;\
             }\
             #jpf_debugwin .debug_profilermsg{\
                 margin: 4px;\
