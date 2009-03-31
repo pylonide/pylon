@@ -378,13 +378,14 @@ jpf.debugwin = {
         else
             this.stackTrace.innerHTML = "No stacktrace possible";
 
-        if (!self.ERROR_HAS_OCCURRED && jpf.addEventListener) {
+        //!self.ERROR_HAS_OCCURRED && 
+        if (jpf.addEventListener) {
             jpf.addEventListener("debug", function(e){
-                if (!this.logView) return;
+                if (!jpf.debugwin.logView) return;
 
-                this.logView.insertAdjacentHTML("beforeend", e.message);
-                this.logView.style.display = "block";
-                this.logView.scrollTop     = this.logView.scrollHeight;
+                jpf.debugwin.logView.insertAdjacentHTML("beforeend", e.message);
+                jpf.debugwin.logView.style.display = "block";
+                jpf.debugwin.logView.scrollTop     = jpf.debugwin.logView.scrollHeight;
             });
         }
     },
