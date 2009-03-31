@@ -677,8 +677,10 @@ jpf.XmlDatabase = function(){
             oldNode = oldNode.selectSingleNode(xpath);
 
         //Action Tracker Support
-        if (undoObj)
+        if (undoObj) {
             undoObj.oldNode = oldNode;
+            undoObj.xmlNode = newNode;
+        }
 
         oldNode.parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);

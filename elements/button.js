@@ -826,11 +826,12 @@ jpf.button.actions = {
                 node = node.parentNode;
             }
 
-            if (!node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(__TRANSACTION__))
                 return;
         }
 
-        node.ok();
+        if (node.commit() && node.close) 
+            node.close();
     },
 
     "cancel" : function(){
@@ -845,11 +846,13 @@ jpf.button.actions = {
                 node = node.parentNode;
             }
 
-            if (!node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(__TRANSACTION__))
                 return;
         }
 
-        node.cancel();
+        node.rollback();
+        if (node.close)
+            node.close();
     },
 
     "apply" : function(){
@@ -864,11 +867,12 @@ jpf.button.actions = {
                 node = node.parentNode;
             }
 
-            if (!node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(__TRANSACTION__))
                 return;
         }
 
-        node.apply();
+        if (node.commit())
+            node.begin();
     },
     //#endif
 

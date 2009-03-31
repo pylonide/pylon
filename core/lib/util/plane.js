@@ -54,13 +54,13 @@ jpf.plane = {
         
         var pWidth = (plane.parentNode == document.body
             ? (jpf.isIE 
-                ? document.documentElement.offsetWidth 
+                ? plane.offsetParent.offsetWidth 
                 : window.innerWidth)
             : plane.parentNode.offsetWidth);
 
         var pHeight = (plane.parentNode == document.body
             ? (jpf.isIE 
-                ? document.documentElement.offsetHeight
+                ? plane.offsetParent.offsetHeight
                 : window.innerHeight)
             : plane.parentNode.offsetHeight);
         

@@ -93,7 +93,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.columns    = "100,*";
     this.padding    = 2;
     this.margin     = "5 5 5 5";
-    this.cellheight = 22;
+    this.cellheight = 19;
     
     /**
      * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
@@ -429,14 +429,14 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                         cTotal -= 1000000;
                     }
                     
-                    if (j != cellInfo.span - 1)
-                        cTotal += this.padding;
+                    //if (j != cellInfo.span - 1)
+                        //cTotal += this.padding;
                 }
-                
+
                 var spanPadding = (cellInfo.span - 1) * this.padding;
                 if (cTotal > 0) {
                     cellInfo.oHtml.style.width = (cTotal 
-                        - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.m[3] 
+                        + spanPadding - (cellInfo.m[1] + cellInfo.m[3] 
                         + cellInfo.hordiff)) + "px";
                 }
                 else {
@@ -493,7 +493,6 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
         //this.oExt.style.height = "80%"
-        //this.oExt.style.width  = "100%"
         this.oExt.style.top    = 0;
         this.oExt.style.position = "relative";
         
@@ -508,6 +507,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
+        
+        if (!this.width)
+            this.oExt.style.width  = "100%"
         
         var jmlNode, nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {

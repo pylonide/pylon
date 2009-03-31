@@ -1229,7 +1229,11 @@ jpf.DataBinding = function(){
      * @param {Boolean} [forceNoCache]  whether cache is checked before loading the data.
      * @event beforeload  Fires before loading data in this element.
      *   cancellable: Prevents the data from being loaded.
+     *   object:
+     *   {XMLElement} xmlNode the node that is loaded as the root data element.
      * @event afterload   Fires after loading data in this element.
+     *   object:
+     *   {XMLElement} xmlNode the node that is loaded as the root data element.
      * @see  SmartBinding
      * @see  Cache#clear
      */
@@ -1276,11 +1280,6 @@ jpf.DataBinding = function(){
             return;
         }
 
-        //#ifdef __DEBUG
-        jpf.console.info("Loading XML data in "
-            + this.tagName + "[" + (this.name || '') + "]");
-        //#endif
-
         var disabled = this.disabled;
         this.disabled = false;
 
@@ -1293,6 +1292,11 @@ jpf.DataBinding = function(){
         //Run onload event
         if (this.dispatchEvent("beforeload", {xmlNode : xmlRootNode}) === false)
             return false;
+
+        //#ifdef __DEBUG
+        jpf.console.info("Loading XML data in "
+            + this.tagName + "[" + (this.name || '') + "]");
+        //#endif
 
         // If reloading current document, and caching is disabled, exit
         if (this.caching && !forceNoCache && xmlRootNode && xmlRootNode == this.xmlRoot)
@@ -1364,7 +1368,7 @@ jpf.DataBinding = function(){
             this.setConnections(this.xmlRoot);
 
         // Run onafteronload event
-        this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
+        this.dispatchEvent('afterload', {xmlNode : xmlRootNode});
     };
 
     /**
@@ -2140,6 +2144,11 @@ jpf.DataBinding = function(){
      * @see jpf.DataBinding@model
      */
     this.$propHandlers["model"] = function(value){
+        if (this.$modelIgnoreOnce) {
+            delete this.$modelIgnoreOnce;
+            return;
+        }
+        
         if (!value) {
             this.clear();
             this.$model.unregister(this);
@@ -3080,7 +3089,8 @@ jpf.MultiselectBinding = function(){
         this.dispatchEvent("xmlupdate", {
             action : action,
             xmlNode: xmlNode,
-            result : result
+            result : result,
+            UndoObj: UndoObj
         });
     };
 

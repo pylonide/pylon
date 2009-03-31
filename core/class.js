@@ -61,6 +61,10 @@ jpf.Class = function(){
 
     //#ifdef __WITH_PROPERTY_BINDING
 
+    //#ifdef __WITH_PROPERTY_WATCH
+    var watchCallbacks     = {};
+    //#endif
+
     var boundObjects       = {};
     var myBoundPlaces      = {};
     
@@ -142,6 +146,24 @@ jpf.Class = function(){
 
         #--endif */
     };
+    
+    //#ifdef __WITH_PROPERTY_WATCH
+    /**
+     * Implemented as Mozilla.
+     * https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch
+     */
+    this.watch = function(propName, callback){
+        (watchCallbacks[propName] || (watchCallbacks[propName] = []))
+            .pushUnique(callback);
+    }
+    
+    this.unwatch = function(propName, callback){
+        if (!watchCallbacks[propName])
+            return;
+        
+        watchCallbacks[propName].remove(callback);
+    }
+    //#endif
 
     /**
      * Unbinds all bound properties for this componet.
@@ -292,6 +314,7 @@ jpf.Class = function(){
         if (reqValue && !value || !jpf || this.$ignoreSignals)
             return;
 
+        var oldvalue = this[prop];
         if (String(this[prop]) !== String(value) || typeof value == "object") {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
             if (typeof jpf.offline != "undefined") {
@@ -307,12 +330,19 @@ jpf.Class = function(){
                 }
             }
             //#endif
-            var oldvalue = this[prop];
             if (this.$handlePropSet(prop, value, forceOnMe) === false) {
                 this[prop] = oldvalue;
                 return false;
             }
         }
+        
+        // #ifdef __WITH_PROPERTY_WATCH
+        var cb = watchCallbacks[prop];
+        if (cb) {
+            for (var i = 0; i < cb.length; i++)
+                cb[i].call(this, prop, oldvalue, value);
+        }
+        //#endif
         
         // #ifdef __WITH_PROPERTY_CHANGE
         if (this["onpropertychange"] || events_stack["propertychange"]) {

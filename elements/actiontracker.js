@@ -921,7 +921,7 @@ jpf.actiontracker.actions = {
             jpf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
         //Undo Attribute Setting
         else
-            jpf.xmldb.replaceNode(q[1], q[0], q[2]);
+            jpf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
     },
 
     "addChildNode" : function(UndoObj, undo){
