@@ -135,7 +135,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
 
         if (this.oCaption)
-            this.oCaption.nodeValue = (value || "").trim();
+            this.oCaption.nodeValue = String(value || "").trim();
     };
 
     //@todo reparenting
@@ -871,8 +871,10 @@ jpf.button.actions = {
                 return;
         }
 
+        if (node.autoshow)
+            node.autoshow = -1;
         if (node.commit())
-            node.begin();
+            node.begin("update");
     },
     //#endif
 

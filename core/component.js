@@ -138,8 +138,8 @@ jpf.component = function(nodeFunc, oBase) {
                     "disable-keyboard" : true,
                     //#endif
                     "visible"          : true,
-                    "focussable"       : true,
-                    "disabled"         : true
+                    "focussable"       : true
+                    //"disabled"         : true
                 };
                 
                 this.$supportedProperties = [

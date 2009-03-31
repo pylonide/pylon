@@ -49,12 +49,17 @@ var __TRANSACTION__ = 1 << 3;
  * 'lockfail' event the user can be notified of the reason. For more information 
  * see {@link term.locking}.
  * <code>
- *  <j:list id="lstItems" onafterchoose="winMail.startUpdate()">
+ *  <j:list id="lstItems" onafterchoose="winEdit.show()">
  *      <j:bindings>
  *          <j:caption select="name" />
  *          <j:icon value="icoItem.png" />
  *          <j:traverse select="item" />
  *      </j:bindings>
+ *      <j:actions>
+ *          <j:add set="rpc:comm.addItem({name}, {subject}, {message})">
+ *              <item name="New Item" />
+ *          </j:add>
+ *      </j:actions>
  *      <j:model>
  *          <items>
  *              <item name="test" subject="subject">
@@ -65,20 +70,18 @@ var __TRANSACTION__ = 1 << 3;
  *  </j:list>
  *  
  *  <j:actions id="actTrans">
- *      <j:add set="rpc:comm.addItem({name}, {subject}, {message})">
- *          <item name="New Item" />
- *      </j:add>
  *      <j:update 
  *          set="rpc:comm.update({@id}, {name}, {subject}, {message})" 
  *          lock="rpc:comm.getLock({@id})" />
  *  </j:actions>
  *  
- *  <j:button onclick="winMail.startAdd();">add new item</j:button>
+ *  <j:button onclick="winMail.begin('add');">add new item</j:button>
  *  
- *  <j:window id="winMail" 
- *    actions    = "actTrans" 
- *    model      = "#lstItems"
- *    validgroup = "vgItems">
+ *  <j:window id="winEdit" 
+ *    transaction = "true"
+ *    actions     = "actTrans" 
+ *    model       = "#lstItems"
+ *    validgroup  = "vgItems">
  *      <j:label>Name</j:label>
  *      <j:textbox ref="@name" required="true" />
  *
@@ -138,40 +141,47 @@ jpf.Transaction = function(){
         if (this.$validgroup && !this.$validgroup.isValid())
             return false;
         
-        //#ifdef __DEBUG
-        jpf.console.info("Committing transaction on " + this.tagName + "[" + this.name + "]");
-        //#endif
-        
-        //This should be move to after action has been executed
-        this.$at.purge();
-        inTransaction = false;
-        
-        if (lastAction == "add") {
-            //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
-            if (transactionSubject.executeAction("appendChild", 
-              [addParent, transactionNode], "add", transactionNode)) {
-                transactionSubject.select(transactionNode);
-            }
+        var returnValue = true;
+        if (!this.$at.undolength) {
+            this.$at.purge();
+            inTransaction = false;
             
-            transactionSubject = null;
+            this.load(originalNode);
+            
+            returnValue = false;
         }
         else {
-            //Reverse
-            if(this.hasFeature(__MULTISELECT__))
-                jpf.xmldb.replaceChild(transactionNode, originalNode);
-        
-            //Use ActionTracker
-            //getTraverseParent(o.selected) || o.xmlRoot
-            var at = this.$at;
-            this.$at = self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+            //#ifdef __DEBUG
+            jpf.console.info("Committing transaction on " + this.tagName + "[" + this.name + "]");
+            //#endif
             
-            this.executeAction("replaceNode", [originalNode, transactionNode],
-                "update", transactionNode);
-
-            this.$at = at;
+            this.$at.reset();//purge();
+            inTransaction = false;
+            
+            if (lastAction == "add") {
+                //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
+                if (transactionSubject.executeAction("appendChild", 
+                  [addParent, transactionNode], "add", transactionNode)) {
+                    transactionSubject.select(transactionNode);
+                }
+                
+                transactionSubject = null;
+            }
+            else {
+                //Use ActionTracker
+                //getTraverseParent(o.selected) || o.xmlRoot
+                var at = this.$at;
+                this.$at = this.dataParent 
+                    ? this.dataParent.parent.getActionTracker()
+                    : null;//self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+                
+                this.executeAction("replaceNode", [originalNode, transactionNode],
+                    "update", transactionNode);
     
-            if (!this.hasFeature(__MULTISELECT__)) //isn't this implicit?
-                this.load(transactionNode);
+                this.$at = at;
+        
+                //this.load(transactionNode);
+            }
         }
         
         transactionNode = null;
@@ -185,7 +195,7 @@ jpf.Transaction = function(){
                 this.hide();
         }
         
-        return true;
+        return returnValue;
     };
     
     /**
@@ -297,8 +307,14 @@ jpf.Transaction = function(){
          *   Route undolength/redolength properties
          *   Setting replaceat="start" or replaceat="end"
          */
-        if (!this.$at)
+        if (!this.$at) {
             this.$at = new jpf.actiontracker();
+            var propListen = function(name, oldvalue, newvalue){
+                _self.setProperty(name, newvalue);
+            };
+            this.$at.watch("undolength", propListen);
+            this.$at.watch("redolength", propListen);
+        }
 
         transactionNode = null;
         addParent       = null;
@@ -474,19 +490,6 @@ jpf.Transaction = function(){
         }
     };
 
-    /*
-     * @todo
-     *      transaction="true" OR actions="" OR smartbinding=""
-     *      winMultiEdit.show(); //in the case it already has a model #blah, most likely
-     *      for always visible components, 'load' should also signal a transaction start, unload triggers event
-     *      autoset model="#id-or-generated-id" (remove model and set it)
-     *      autoshow="true" --> will autohide as well
-     *      winMultiEdit.load(e.dataNode); //will start transaction automatically
-     *      winMultiEdit.startAdd(e.dataNode, xpath); //xpath might not exist yet
-     *      winMultiEdit.startUpdate(e.dataNode, xpath); //become inherited model, xpath might not exist yet
-     *      compare to this.add multiselect
-     */
-    
     //No need to restart the transaction when the same node is loaded
     this.addEventListener("beforeload", function(e){
         if (originalNode == e.xmlNode)

@@ -864,8 +864,11 @@ jpf.JmlElement.propHandlers = {
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
-                    if (node.nodeFunc == jpf.NODE_VISIBLE)
-                        node.setProperty("disabled", value);
+                    if (node.nodeFunc == jpf.NODE_VISIBLE) {
+                        if (value)
+                            node.$disabled = node.disabled;
+                        node.setProperty("disabled", value ? -1 : null);
+                    }
 
                     if (node.childNodes.length)
                         loopChildren(node.childNodes);
@@ -877,7 +880,21 @@ jpf.JmlElement.propHandlers = {
             return;
         }
 
-        if (value) {
+        if (value == -1) {
+            value = true;
+        }
+        else if (typeof this.$disabled == "boolean") {
+            if (value === null) {
+                value = this.$disabled;
+                this.$disabled = null;
+            }
+            else {
+                this.$disabled = value;
+                return;
+            }
+        }
+
+        if (jpf.isTrue(value)) {
             this.disabled = false;
             if (jpf.window.focussed == this) {
                 jpf.window.moveNext(true); //@todo should not include window

@@ -548,7 +548,7 @@ var jpf = {
             o.$booleanProperties = {
                 "visible"          : true,
                 "focussable"       : true,
-                "disabled"         : true,
+                //"disabled"         : true,
                 "disable-keyboard" : true
             }
 
