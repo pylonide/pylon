@@ -148,22 +148,22 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * Example:
  * <code>
  *  <j:frame title="Options">
- *      <j:radiobutton>Option 1</radiobutton>
- *      <j:radiobutton>Option 2</radiobutton>
- *      <j:radiobutton>Option 3</radiobutton>
- *      <j:radiobutton>Option 4</radiobutton>
+ *      <j:radiobutton>Option 1</j:radiobutton>
+ *      <j:radiobutton>Option 2</j:radiobutton>
+ *      <j:radiobutton>Option 3</j:radiobutton>
+ *      <j:radiobutton>Option 4</j:radiobutton>
  *  </j:frame>
  * </code>
  * Example:
  * This example shows radio buttons with an explicit group set:
  * <code>
  *  <j:label>Options</j:label>
- *  <j:radiobutton group="g1">Option 1</radiobutton>
- *  <j:radiobutton group="g1">Option 2</radiobutton>
+ *  <j:radiobutton group="g1">Option 1</j:radiobutton>
+ *  <j:radiobutton group="g1">Option 2</j:radiobutton>
  *
  *  <j:label>Choices</j:label>
- *  <j:radiobutton group="g2">Choice 1</radiobutton>
- *  <j:radiobutton group="g2">Choice 2</radiobutton>
+ *  <j:radiobutton group="g2">Choice 1</j:radiobutton>
+ *  <j:radiobutton group="g2">Choice 2</j:radiobutton>
  * </code>
  *
  * @constructor
