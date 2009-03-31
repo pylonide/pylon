@@ -78,7 +78,7 @@ jpf.draw = {
         return s.join('');
     },
 
-    sincos3 : function(pre,rx,ry,rz) {
+    sincos3 : function(pre,rx,ry,rz){
       return[ "var ",pre,"cx = __cos(",rx,"),",pre,"sx = __sin(",rx,"),",
                      pre,"cy = __cos(",ry,"),",pre,"sy = __sin(",ry,"),",
                      pre,"cz = __cos(",rz,"),",pre,"sz = __sin(",rz,");" ].join('');
@@ -156,7 +156,7 @@ jpf.draw = {
     //----------------------------------------------------------------------
     
     // 3D API
-    // draw a 3D polygon clipped against the z axis
+    // draw a 3D polygon clipped against a z-plane
     poly3DClip : function(idx,pt,cm,zc,open){
         var i = 0, d, pt, q, s = ["__n=0;"], x = 0, y = 1, z = 2, sx, sy, vx, vy, vxi, vyi;
         if(cm) x = cm[0], y = cm[1], z = cm[2];            
