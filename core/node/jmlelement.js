@@ -1080,8 +1080,10 @@ jpf.JmlElement.propHandlers = {
          * @inherits jpf.DataBinding
          * @inherits jpf.Transaction
          */
-        if (!this.hasFeature(__DATABINDING__)) 
+        if (!this.hasFeature(__DATABINDING__)) {
             this.inherit(jpf.DataBinding);
+            this.smartBinding = true;
+        }
          
         if (!this.hasFeature(__TRANSACTION__))
             this.inherit(jpf.Transaction);

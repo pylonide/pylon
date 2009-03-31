@@ -804,10 +804,13 @@ jpf.debugwin = {
                 };
                 
                 elError.dispatchEvent = function(){}
-                /*elError.onkeydown   =
+                elError.onkeydown   =
                 elError.onkeyup     = function(e){
-                    (e || event).cancelBubble = true;
-                }*/
+                    if (!e) e = event;
+                    
+                    if (jpf.debugwin.focusFix[(e.srcElement || e.target).tagName])
+                        (e || event).cancelBubble = true;
+                }
 
                 if (jpf.isIE) {
                     jpf.setStyleRule("BODY", "overflow", "", 0);
