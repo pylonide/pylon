@@ -564,7 +564,7 @@ jpf.Transaction = function(){
         this.$jml.setAttribute("model", "#" + this.name);
     }
     
-    if (typeof this.autoshow == "undefined" && (this.tagName == "modelwindow" 
+    if (typeof this.autoshow == "undefined" && (this.tagName == "modalwindow" 
       || this.tagName == "window"))
         this.autoshow = true;
 };
