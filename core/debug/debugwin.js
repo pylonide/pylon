@@ -352,32 +352,40 @@ jpf.debugwin = {
             catch(e){}
         }
         
-        var errorInfo  = "Exception caught on line " + linenr + " in file " + filename + "\nMessage: " + e.message;
-
-        e.lineNr   = linenr;
-        e.fileName = filename;
-
         if (!jpf.debugwin.win)
             this.createWindow();
 
-        //e, list, errorInfo
-        var parsed = this.formatError(e);
-        this.errorTable.innerHTML = parsed.table;
-        if (parsed.jmlcontext.trim()) {
-            this.contextDiv.parentNode.style.display = "block";
-            this.contextDiv.innerHTML = parsed.jmlcontext;
+        if (e) {
+            var parsed = this.formatError(e);
+            this.errorTable.innerHTML = parsed.table;
+            this.errorTable.parentNode.style.display = "block";
+            
+            if (parsed.jmlcontext.trim()) {
+                this.contextDiv.parentNode.style.display = "block";
+                this.contextDiv.innerHTML = parsed.jmlcontext;
+            }
+            else
+                this.contextDiv.parentNode.style.display = "none";
         }
-        else
+        else {
+            this.errorTable.parentNode.style.display = "none";
             this.contextDiv.parentNode.style.display = "none";
+        }
         
-
         if (list.length) {
             this.stackTrace.innerHTML = "";
             for (i = 0; i < list.length; i++)
                 this.stackTrace.appendChild(list[i]);
+            
+            this.stackTrace.parentNode.style.display = "block";
         }
-        else
-            this.stackTrace.innerHTML = "No stacktrace possible";
+        else {
+            this.stackTrace.parentNode.style.display = "none";
+        }
+
+        this.oExt.style.display = "block";
+        jpf.layout.forceResize(this.oExt);
+        this.logView.scrollTop = this.logView.scrollHeight;
 
         //!self.ERROR_HAS_OCCURRED && 
         if (jpf.addEventListener) {
@@ -399,6 +407,7 @@ jpf.debugwin = {
                 .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://developer.javeline.net/projects/platform/wiki/ErrorCodes#$1'>$1</a>]"),
                 //.replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>"),//.replace(/\n/g, "<br />"),
             errorTable    = [];
+
         errorMessage.replace(/(?:([\w ]+):(.*)(?:\n|$)|([\s\S]+))/gi, function(m, m1, m2) {
             if (!errorTable.length)
                 errorTable.push("<table border='0' cellpadding='0' cellspacing='0'>");
@@ -814,7 +823,7 @@ jpf.debugwin = {
         var oFirst = oNode.getElementsByTagName('img')[0];
         var oLast  = oNode.lastChild;
         while (oLast.nodeType != 1) oLast = oLast.previousSibling;
-        if (oLast.style.display == "block"){
+        if (oLast.style.display != "none"){
             oLast.style.display = "none";
             oFirst.src          = this.resPath + "arrow_gray_right.gif";
         }
@@ -941,6 +950,7 @@ jpf.debugwin = {
                 z-index: 99999;\
                 height: 100%;\
                 padding-left: 4px;\
+                display : none;\
             }\
             #cbTW, #cbHighlight, #toggledebug{\
                 float: left;\
@@ -1263,8 +1273,6 @@ jpf.debugwin = {
 
         document.body.style.display = "block";
 
-        elError.style.display = "block";
-        
         var canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false,
             useProfiler   = false;
 
@@ -1372,13 +1380,13 @@ jpf.debugwin = {
            "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, true);'>\
                 <div class='debug_panel_head'>\
                     <div class='debug_panel_headsub'>\
-                        <input id='cbTW' type='checkbox' onclick='\
-                          jpf.debugwin.toggleLogWindow(this.checked);\
-                          event.cancelBubble = true;'" + (jpf.isTrue(jpf.getcookie("viewinwindow")) ? " checked='checked'" : "") + "/>\
                         <label for='cbTW' style='\
-                          top:4px;\
-                          position:relative;' onclick='event.cancelBubble=true'\
-                        >View in window</label>\
+                              top:4px;\
+                              position:relative;'\
+                          onclick='\
+                              jpf.debugwin.showLogWindow();\
+                              event.cancelBubble = true;'\
+                        >Show window</label>\
                     </div>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
@@ -1463,7 +1471,7 @@ jpf.debugwin = {
                 this.debugConsole.style.position = "absolute";
                 this.debugConsole.style.marginTop = "-108px";
             }
-
+            
             if (jpf.layout) {
                 jpf.layout.setRules(elError, "resize",
                     "var oHtml = document.getElementById('" + elError.id + "');\
@@ -1487,11 +1495,11 @@ jpf.debugwin = {
                 jpf.layout.activateRules(elError);
             }
         }
+        else
+            this.oExt = elError;
 
         if (jpf.hasFocusBug)
             jpf.sanitizeTextbox(this.debugConsole);
-
-        this.logView.scrollTop = this.logView.scrollHeight;
 
         clearInterval(jpf.Init.interval);
         ERROR_HAS_OCCURRED = true;
@@ -1612,16 +1620,8 @@ jpf.debugwin = {
         }
     },
 
-    toggleLogWindow : function (checked){
-        if (checked) {
-            jpf.console.debugType = "window";
-            jpf.console.showWindow();
-        }
-        else
-            jpf.console.debugType = "memory";
-
-        if (jpf.setcookie)
-            jpf.setcookie("viewinwindow", checked)
+    showLogWindow : function (checked){
+        jpf.console.showWindow();
     },
 
     toggleHighlighting : function (checked){
@@ -1643,12 +1643,14 @@ jpf.debugwin = {
 
     errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
-        var e = {
-            message : message.indexOf("jml file") > -1
-                ? message
-                : "js file: [line: " + linenr + "] "
-                    + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
-        }
+        var e = message 
+            ? {
+                message : message.indexOf("jml file") > -1
+                    ? message
+                    : "js file: [line: " + linenr + "] "
+                        + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
+            }
+            : null;
 
         if (!isForced) {
             jpf.console.error("[line " + linenr + "] " + message
@@ -1671,8 +1673,7 @@ jpf.debugwin = {
                 jpf.layout.forceResize(this.oExt);
         }
         else {
-            jpf.debugwin.errorHandler(msg || "User forced debug window to show",
-                location.href, 0, true);
+            jpf.debugwin.errorHandler(msg, null, null, true);
         }
     }
 }

@@ -728,9 +728,8 @@ var jpf = {
 
             this.data[type].messages[subtype].push(msg);
 
-            if (this.debugType == "window" || this.win && !this.win.closed || forceWin) {
+            if (this.win && !this.win.closed)
                 this.showWindow(msg);
-            }
 
             //if (jpf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
             //    return;
