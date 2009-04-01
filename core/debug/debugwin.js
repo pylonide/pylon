@@ -1505,6 +1505,13 @@ jpf.debugwin = {
         ERROR_HAS_OCCURRED = true;
 
         this.initProfiler(this);
+        
+        jpf.getWindowWidth = function(){
+            return document.body.offsetWidth;
+        }
+        jpf.getWindowHeight = function(){
+            return document.body.offsetHeight;
+        }
     },
 
     run : function(action){

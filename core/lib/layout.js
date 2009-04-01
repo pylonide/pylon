@@ -1501,6 +1501,13 @@ jpf.layout = {
 
 // #ifdef __WITH_ALIGNMENT
 
+jpf.getWindowWidth = function(){
+    return jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
+}
+jpf.getWindowHeight = function(){
+    return jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
+}
+
 /**
  * @constructor
  * @private
@@ -1697,10 +1704,10 @@ jpf.layoutParser = function(parentNode, pMargin){
                 }
 
                 var strParentNodeWidth  = (this.parentNode.tagName.toLowerCase() == "body"
-                    ? (jpf.isIE ? "document.documentElement['offsetWidth']" : "window.innerWidth")
+                    ? "jpf.getWindowWidth()"
                     : "document.getElementById('" + this.parentNode.id + "').offsetWidth");
                 var strParentNodeHeight = (this.parentNode.tagName.toLowerCase() == "body"
-                    ? (jpf.isIE ? "document.documentElement['offsetHeight']" : "window.innerHeight")
+                    ? "jpf.getWindowHeight()"
                     : "document.getElementById('" + this.parentNode.id + "').offsetHeight");
                 node.calcwidth  = "Math.max(" + minWidth + ", " + strParentNodeWidth
                     + " - " + (pMargin[1]) + " - " + pMargin[3] + " - " + hordiff + ")";

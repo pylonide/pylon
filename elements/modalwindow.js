@@ -258,7 +258,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oCover.style.display = "none";
         }
     };
-    
+
     /**
      * @attribute {Boolean} center centers the window relative to it's parent's
      * containing rect when shown.
@@ -312,12 +312,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.center) {
                 this.oExt.style.left = Math.max(0, ((
                     (jpf.isIE
-                        ? document.documentElement.offsetWidth
+                        ? this.oExt.offsetParent.offsetWidth
                         : window.innerWidth)
                     - this.oExt.offsetWidth)/2)) + "px";
                 this.oExt.style.top  = Math.max(0, ((
                     (jpf.isIE
-                        ? document.documentElement.offsetHeight
+                        ? this.oExt.offsetParent.offsetHeight
                         : window.innerHeight)
                     - this.oExt.offsetHeight)/3)) + "px";
             }
@@ -457,8 +457,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oExt.style.height = lastpos[3] + "px";
 
                 var pNode = (this.oExt.parentNode == document.body
-                    ? document.documentElement
-                    : this.oExt.parentNode);
+                    ? this.oExt.offsetParent || document.documentElement
+                    : this.oExt.offsetParent);
                 pNode.style.overflow = lastpos[4];
             }
 
@@ -525,7 +525,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.baseCSSname + "Edit");
 
                 var pNode = (this.oExt.parentNode == document.body
-                    ? document.documentElement
+                    ? this.oExt.offsetParent || document.documentElement
                     : this.oExt.parentNode);
 
                 lastpos = [this.oExt.offsetLeft, this.oExt.offsetTop,

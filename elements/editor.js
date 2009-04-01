@@ -494,7 +494,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 /<(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
                 /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
                 /[\s]*_jpf_href="?[^\s^>]+"?/gi,
-                /(\w)=([^'"\s>]+)/gi,
+                /(".*?"|'.*?')|(\w)=([^'"\s>]+)/gi,
                 /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
                 /<p>&nbsp;$/mig,
                 /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|em|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
@@ -515,7 +515,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                    .replace(exportRE[2], '')
                    .replace(exportRE[3], '<$1>&nbsp;</$2>')
                    .replace(exportRE[4], '')
-                   .replace(exportRE[5], '$1="$2"') //quote un-quoted attributes
                    .replace(exportRE[6], '<$1 />')
                    .replace(exportRE[11], function(m){return m.toLowerCase();});
                        
@@ -525,6 +524,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             var str = [], capture = true, strP = [], depth = [], bdepth = [];
             html.replace(exportRE[8], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
+                    if (jpf.isIE) {
+                        inline = inline.replace(exportRE[5], function(m, str, m, v){
+                            return str || m + "=\"" + v + "\"";
+                        });//'$2="$3"') //quote un-quoted attributes
+                    }
+                    
                     var id = strP.push(inline);
                     
                     if (!selfClosing[tag]) {
@@ -577,6 +582,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }
                     else {
+                        if (jpf.isIE) {
+                            block = block.replace(exportRE[5], function(m, str, m, v){
+                                return str || m + "=\"" + v + "\"";
+                            });//'$2="$3"') //quote un-quoted attributes
+                        }
+                        
                         //@todo this section can be make similar to the one in the above function and vice verse
                         var last = strP.length ? strP : str;
                         if (last[last.length - 1] == "<p>&nbsp;</p>")
