@@ -1099,6 +1099,7 @@ jpf.WindowImplementation = function(){
         // #endif
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
+        //@todo move this to appsettings and use with_hotkey
         if (jpf.appsettings.useUndoKeys && e.ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {

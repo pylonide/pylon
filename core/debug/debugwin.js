@@ -264,6 +264,7 @@ jpf.debugwin = {
                 self.Error = function(msg){
                     jpf.debugwin.errorHandler(msg, location.href, 0);
                 }
+                self.Error.custom = true;
             }
 
             if (jpf.isGecko) {
@@ -296,7 +297,7 @@ jpf.debugwin = {
     show : function(e, filename, linenr){
         var list = [], seen = {}, i;
 
-        if (!jpf.isIE) {
+        if (!jpf.isIE && !Error.custom) {
             var stack = new Error().stack.split("\n");
             for (i = 0; i < stack.length; i++) {
                 stack[i].trim().match(/^([\w_\$]*)(\(.*?\))?@(.*?):(\d+)$/);
@@ -873,7 +874,7 @@ jpf.debugwin = {
             (e || event).cancelBubble = true;
         };
 
-        elError.dispatchEvent = function(){}
+        this.dispatchEvent    = function(){}
         elError.onkeydown     =
         elError.onkeyup       = function(e){
             if (!e) e = event;
@@ -1469,10 +1470,10 @@ jpf.debugwin = {
                     var o = document.getElementById('jvlnviewlog');\
                     var l = document.getElementById('lastElement');\
                     var scrollHeight = l.offsetTop + l.offsetHeight;\
-                    var shouldSize = scrollHeight - o.offsetHeight + 250 < oHtml.offsetHeight;\
+                    var shouldSize = scrollHeight - o.offsetHeight + 200 < oHtml.offsetHeight;\
                     o.style.height = (shouldSize\
                         ? oHtml.offsetHeight - scrollHeight + o.offsetHeight - 8\
-                        : 240) + 'px';\
+                        : 190) + 'px';\
                     oHtml.style.overflowY = shouldSize ? 'hidden' : 'auto';\
                     oHtml.style.right = '0px';\
                     oHtml.style.left = '';\

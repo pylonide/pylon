@@ -259,6 +259,8 @@ jpf.Transaction = function(){
             jpf.console.warn("Rolling back transaction, while starting a new one");
             //#endif
             
+            if (this.autoshow)
+                this.autoshow = -1;
             this.rollback();
         }
         
