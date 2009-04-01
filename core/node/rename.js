@@ -148,15 +148,15 @@ jpf.Rename = function(){
 
         clearTimeout(renameTimer);
 
-        this.renaming = true;
-        renameSubject = this.indicator || this.selected;
-
         var elCaption = this.$getCaptionElement
             ? this.$getCaptionElement()
             : this.$indicator || this.$selected;
 
         if (!elCaption) 
             return this.stopRename();
+        
+        this.renaming = true;
+        renameSubject = this.indicator || this.selected;
 
         var wdt = elCaption.offsetWidth;
         lastCursor = elCaption.style.cursor;
