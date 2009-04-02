@@ -95,7 +95,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.multiselect  = false; // Initially multiselect is disabled.
     this.bufferselect = true;
     
-    this.startClosed  = true;
+    this.startcollapsed  = true;
     this.animType     = jpf.tween.NORMAL;
     this.animOpenStep = 3;
     this.animCloseStep= 1;
@@ -123,6 +123,23 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     treeState[IS_ROOT]                         = "root";
     
     /**** Properties and Attributes ****/
+
+    /**
+     * @attribute {Boolean} openadd         wether the tree expands the parent to which a node is added. Defaults to true.
+     * @attribute {Boolean} startcollapsed  wether the tree collapses all nodes that contain children on load. Defaults to true.
+     * @attribute {Boolean} nocollapse      wether the user cannot collapse a node. Defaults to false.
+     * @attribute {Boolean} singleopen      wether the tree will expand a node by a single click. Defaults to false.
+     * @attribute {Boolean} prerender       wether the tree will render all the nodes at load. Defaults to true.
+     */
+    this.$booleanProperties["openadd"]        = true;
+    this.$booleanProperties["startcollapsed"] = true;
+    this.$booleanProperties["nocollapse"]     = true;
+    this.$booleanProperties["singleopen"]     = true;
+    this.$booleanProperties["prerender"]      = true;
+    
+    this.openadd   = true;
+    this.startcollapsed = 1;
+    this.prerender   = true;
     
     /**
      * @attribute {String} mode Sets the way this element interacts with the user.
@@ -243,7 +260,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force){
-        if(this.noCollapse) 
+        if(this.nocollapse) 
             return;
         
         if (!htmlNode)
@@ -321,7 +338,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideClose = function(container, xmlNode){
-        if (this.noCollapse) 
+        if (this.nocollapse) 
             return;
         
         if (!xmlNode)
@@ -443,13 +460,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var hasTraverseNodes = xmlNode.selectSingleNode(this.traverse) ? true : false;
         var hasChildren = loadChildren || hasTraverseNodes;
         
-        var startClosed = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
-        var state       = (hasChildren ? HAS_CHILD : 0) | (startClosed && hasChildren 
+        var startcollapsed = this.startcollapsed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
+        var state       = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren 
             || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
 
         var htmlNode  = this.$initNode(xmlNode, state, Lid);
         var container = this.$getLayoutNode("item", "container");
-        if (!startClosed && !this.noCollapse)
+        if (!startcollapsed && !this.nocollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
         var removeContainer = (!this.removecontainer || hasChildren);
@@ -514,7 +531,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if (!startClosed && this.openOnAdd && htmlParentNode != this.oInt 
+                if (!startcollapsed && this.openadd && htmlParentNode != this.oInt 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
@@ -833,7 +850,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         pContainer.insertBefore(htmlNode, beforeNode);
         pContainer.insertBefore(container, beforeNode);
         
-        /*if (!this.startClosed) {
+        /*if (!this.startcollapsed) {
             pContainer.style.display = "block";
             pContainer.style.height = "auto";
         }*/
@@ -841,7 +858,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.emptyMessage && !oPHtmlNode.childNodes.length)
             this.$setClearMessage(oPHtmlNode);
         
-        if (this.openOnAdd && pHtmlNode != this.oInt && pContainer.style.display != "block") 
+        if (this.openadd && pHtmlNode != this.oInt && pContainer.style.display != "block") 
             this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
@@ -1231,16 +1248,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
-        this.startClosed = !jpf.isFalse(this.$jml.getAttribute("startclosed") 
-            || this.$getOption("main", "startclosed"));
-        this.noCollapse  = jpf.isTrue(this.$jml.getAttribute("nocollapse"));
-        
-        if (this.noCollapse)
-            this.startClosed = false;
-
-        this.singleopen  = jpf.isTrue(this.$jml.getAttribute("singleopen"));
-        this.prerender   = !jpf.isFalse(this.$jml.getAttribute("prerender"));
+        if (this.nocollapse)
+            this.startcollapsed = false;
+        else if (this.startcollapsed === 1)
+            this.startcollapsed = this.$getOption("main", "startcollapsed");
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);

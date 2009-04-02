@@ -130,25 +130,7 @@ Function.prototype.toHTMLNode = function(highlight){
 
         if (!highlight) {
             //fine common start whitespace count
-            var lines = line2.split("\n");
-            for (var min = 1000, m, i = 0; i < lines.length; i++) {
-                if (!lines[i].trim()) 
-                    continue;
-                    
-                m = lines[i].match(/^[\s \t]+/);
-                if (!m) {
-                    min = 0;
-                    break;
-                }
-                else min = Math.min(min, m[0].length);
-            }
-            if (min) {
-                for (var i = 0; i < lines.length; i++) {
-                    lines[i] = lines[i].substr(min);
-                }
-            }
-            line2 = lines.join("\n");
-            
+            line2 = jpf.debugwin.outdent(line2);
             line2 = line2.replace(/ /g, "&nbsp;");
             line2 = line2.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
             line2 = line2.replace(/\n/g, "</nobr><br><nobr>&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -227,6 +209,27 @@ jpf.debugwin = {
     stackTrace   : "debug_panel_stacktrace",//null, //blockquote[0]
     logView      : "jvlnviewlog",
     debugConsole : "jpfDebugExpr",
+    
+    outdent : function(str, skipFirst){
+        var lines = str.split("\n");
+        for (var min = 1000, m, i = skipFirst ? 1 : 0; i < lines.length; i++) {
+            if (!lines[i].trim()) 
+                continue;
+                
+            m = lines[i].match(/^[\s \t]+/);
+            if (!m) {
+                min = 0;
+                break;
+            }
+            else min = Math.min(min, m[0].length);
+        }
+        if (min) {
+            for (var i = skipFirst ? 1 : 0; i < lines.length; i++) {
+                lines[i] = lines[i].substr(min);
+            }
+        }
+        return lines.join("\n");
+    },
 
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
@@ -401,8 +404,8 @@ jpf.debugwin = {
 
     formatError: function(e) {
         var parse         = e.message.split(/\n===\n/),
-            jmlContext    = jpf.formatXml(parse[1] ? parse[1].trim(true) : "")
-                .replace(/</g, "&lt;").replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;"),
+            jmlContext    = jpf.highlightXml(parse[1] ? jpf.debugwin.outdent(parse[1].trim(true), true).replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/ /g, "&nbsp;") : "")
+                //.replace(/</g, "&lt;").replace(/\n/g, "<br />")
             errorMessage  = parse[0].replace(/---- Javeline Error ----\n/g, "")
                 .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://developer.javeline.net/projects/platform/wiki/ErrorCodes#$1'>$1</a>]"),
                 //.replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>"),//.replace(/\n/g, "<br />"),
@@ -509,7 +512,7 @@ jpf.debugwin = {
             <j:markupedit name="debugmarkup">\
                 <j:style><![CDATA[\
                     .debugmarkup{\
-                        background : #FFFFFF url(' + this.resPath + 'splitter_docs.gif) no-repeat 50% bottom;\
+                        background : url(' + this.resPath + 'splitter_docs.gif) no-repeat 50% bottom;\
                         font-family : Monaco, \'Courier New\';\
                         font-size : 11px;\
                         cursor : default;\
@@ -822,8 +825,10 @@ jpf.debugwin = {
 
         var oFirst = oNode.getElementsByTagName('img')[0];
         var oLast  = oNode.lastChild;
-        while (oLast.nodeType != 1) oLast = oLast.previousSibling;
-        if (oLast.style.display != "none"){
+        while (oLast.nodeType != 1) 
+            oLast = oLast.previousSibling;
+            
+        if (jpf.getStyle(oLast, "display") == "block"){
             oLast.style.display = "none";
             oFirst.src          = this.resPath + "arrow_gray_right.gif";
         }
@@ -1216,6 +1221,16 @@ jpf.debugwin = {
                 padding: 0;\
                 white-space: nowrap;\
             }\
+            #jpf_debugwin .debug_panel_body_jml{\
+                padding: 0;\
+                white-space: nowrap;\
+                padding : 10px;\
+                font-family : 'Lucida Grande', Verdana;\
+                font-size : 8.5pt;\
+                white-space : normal;\
+                overflow : auto;\
+                max-height : 200px;\
+            }\
             #jpf_debugwin .debug_panel_body_data{\
                 min-height: 130px;\
                 white-space: nowrap;\
@@ -1298,11 +1313,11 @@ jpf.debugwin = {
             <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
-                    <strong>Javeline Markup Language</strong>\
+                    <strong>JML related to the error</strong>\
                 </div>\
                 <div id='" + this.contextDiv + "' onclick='event.cancelBubble=true' \
                   onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' \
-                  class='debug_panel_body_base debug_panel_body_markup'>@todo</div>\
+                  class='debug_panel_body_base debug_panel_body_jml'>@todo</div>\
             </div>\
             <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
