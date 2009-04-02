@@ -44,6 +44,11 @@
  * @attribute {String}   value   the date returned by calendar; should be in the 
  *                               same format as output-format
  *
+ * @event slidedown Fires when the calendar slides open.
+ *   cancellable: Prevents the calendar from sliding open
+ * @event slideup   Fires when the calendar slides up.
+ *   cancellable: Prevents the calendar from sliding up
+ *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
  * @inherits jpf.Validation

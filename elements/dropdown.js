@@ -74,6 +74,11 @@
  *  </j:bar>
  * </pre>
  *
+ * @event slidedown Fires when the calendar slides open.
+ *   cancellable: Prevents the calendar from sliding open
+ * @event slideup   Fires when the calendar slides up.
+ *   cancellable: Prevents the calendar from sliding up
+ *
  * @constructor
  * @define dropdown
  * @allowchild item, {smartbinding}
