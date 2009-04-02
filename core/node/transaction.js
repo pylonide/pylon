@@ -169,7 +169,7 @@ jpf.Transaction = function(){
                     ? this.dataParent.parent.getActionTracker()
                     : null;//self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
                 
-                this.executeAction("replaceNode", [originalNode, transactionNode],
+                dataParent.executeAction("replaceNode", [originalNode, transactionNode],
                     "update", transactionNode);
     
                 this.$at = at;
@@ -343,12 +343,12 @@ jpf.Transaction = function(){
             }
         }
         
+        //Determine data parent
+        var node, dataParent = this.dataParent 
+          && this.dataParent.parent || this;
+        
         //Add
         if (lastAction == "add") {
-            //Determine data parent
-            var node, dataParent = this.dataParent 
-              && this.dataParent.parent || this;
-            
             //Check for add rule on data parent
             var actionRules = dataParent.actionRules;
             if (actionRules) {
@@ -470,9 +470,10 @@ jpf.Transaction = function(){
                 }
             }
         }
+        
         //Update
         else {
-            if (!this.$startAction(lastAction, this.xmlRoot, this.rollback))
+            if (!dataParent.$startAction(lastAction, this.xmlRoot, this.rollback))
                 return false;
             
             transactionNode = originalNode.cloneNode(true);//xmldb.clearConnections(this.xmlRoot.cloneNode(true));
