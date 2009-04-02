@@ -220,7 +220,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //@todo when not visible make all property settings rule based
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!jpf.isParsing && !this.oExt.offsetHeight) {
+        if (!jpf.loaded && !this.oExt.offsetHeight) {
             this.watch("visible", propChange);
             
             var p = this.parentNode;
