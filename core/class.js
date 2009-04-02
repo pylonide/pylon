@@ -154,7 +154,7 @@ jpf.Class = function(){
      */
     this.watch = function(propName, callback){
         (watchCallbacks[propName] || (watchCallbacks[propName] = []))
-            .pushUnique(callback);
+            .push(callback);
     }
     
     this.unwatch = function(propName, callback){

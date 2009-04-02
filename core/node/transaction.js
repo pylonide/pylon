@@ -538,14 +538,15 @@ jpf.Transaction = function(){
     });
     
     //Init
-    if (!this.$jml || !this.$jml.getAttribute("validgroup")) 
+    if (!this.$jml || !this.$jml.getAttribute("validgroup")) {
         this.$validgroup = new jpf.ValidationGroup();
-    
-    this.$validgroup.add(this);
+        this.$validgroup.add(this);
+    }
     
     //autoset model="#id-or-generated-id"
     if (this.$jml) {
-        if (!this.model) {
+        if (!this.$model) {
+            this.model = -1;
             if (this.$jml.getAttribute("model")) 
                 this.setProperty("model", this.$jml.getAttribute("model"));
             this.$modelIgnoreOnce = true;

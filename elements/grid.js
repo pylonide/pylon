@@ -190,18 +190,20 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         update = true;
     });
     
-    function propChange(e){
-        if (update && e.name == "visible" && e.value == true && _self.oExt.offsetHeight) {
+    //#ifdef __WITH_PROPERTY_WATCH
+    function propChange(name, old, value){
+        if (update && value == true && _self.oExt.offsetHeight) {
             _self.$updateGrid();
             jpf.layout.activateRules(_self.oExt);
             
             var p = _self;
             while (p) {
-                p.removeEventListener(propChange);
+                p.unwatch("visible", propChange);
                 p = p.parentNode;
             }
         }
     };
+    //#endif
     
     /**
      * @macro
@@ -212,26 +214,24 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : expr;
     }
     
-    var timer;
     this.$updateGrid = function(){
         if (!update)
             return;
 
         //@todo when not visible make all property settings rule based
-        /*if (!this.oExt.offsetHeight) {
-            this.addEventListener("propertychange", propChange);
+        //#ifdef __WITH_PROPERTY_WATCH
+        if (!this.oExt.offsetHeight) {
+            this.watch("visible", propChange);
             
-            if (timer)
-                return;
-
             var p = this.parentNode;
             while(p) {
-                p.addEventListener("propertychange", propChange);
+                p.watch("visible", propChange);
                 p = p.parentNode;
             }
             
             return;
-        }*/
+        }
+        //#endif
         
         var pWidth  = "pWidth";
         var pHeight = "pHeight";
@@ -500,7 +500,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
 
         if (!jpf.isIE && !jpf.grid.$initedcss) {
-            jpf.importCssString(document, ".grid>*{position:absolute}");
+            jpf.importCssString(document, ".grid>*{position:absolute} .grid{min-height:10px;}");
             jpf.grid.$initedcss = true;
         }
     };
