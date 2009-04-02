@@ -169,7 +169,7 @@ jpf.Transaction = function(){
                     ? this.dataParent.parent.getActionTracker()
                     : null;//self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
                 
-                dataParent.executeAction("replaceNode", [originalNode, transactionNode],
+                transactionSubject.executeAction("replaceNode", [originalNode, transactionNode],
                     "update", transactionNode);
     
                 this.$at = at;
@@ -476,7 +476,8 @@ jpf.Transaction = function(){
             if (!dataParent.$startAction(lastAction, this.xmlRoot, this.rollback))
                 return false;
             
-            transactionNode = originalNode.cloneNode(true);//xmldb.clearConnections(this.xmlRoot.cloneNode(true));
+            transactionSubject = dataParent;
+            transactionNode    = originalNode.cloneNode(true);//xmldb.clearConnections(this.xmlRoot.cloneNode(true));
             //xmlNode.removeAttribute(xmldb.xmlIdTag);
             
             //@todo rename listening attributes
