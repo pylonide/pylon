@@ -33,7 +33,8 @@
  * </pre>
  *
  * @constructor
- * @addnode elements:caldropdown
+ * @define caldropdown
+ * @addnode elements
  *
  * @attribute {String}   output-format    style of returned date
  * @attribute {String}   caption-format   style of displayed date, default yyyy-mm-dd
@@ -43,15 +44,31 @@
  * @attribute {String}   value   the date returned by calendar; should be in the 
  *                               same format as output-format
  *
- * @classDescription    This class creates a new calendar dropdown
- * @return {Caldropdown}   Returns a new calendar dropdown
- *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  *
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the date based on data loaded into this component.
+ * <pre class="code">
+ *  <j:caldropdown>
+ *      <j:bindings>
+ *          <j:value select="@date" />
+ *      </j:bindings>
+ *  </j:caldropdown>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:caldropdown ref="@date" />
+ * </pre>
  */
 jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$animType        = 1;
@@ -898,8 +915,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 }).implement(
-    jpf.Presentation,
-    jpf.DataBinding
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    //#endif
+    //#ifdef __WITH_VALIDATION
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
 );
 
 // #endif

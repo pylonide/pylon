@@ -461,6 +461,7 @@ function EditMode(){
 /**
  * Baseclass adding multilingual features to this element.
  *
+ * @see core.layout
  * @constructor
  * @baseclass
  * @author      Ruben Daniels

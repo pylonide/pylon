@@ -49,14 +49,14 @@ var __DELAYEDRENDER__ = 1 << 11
  *   cancellable: Prevents rendering of the childNodes
  * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
  *
- * @attribute {String}  render
+ * @attribute {String}  render           when the contents of this element is rendered.
  *   Possible values:
  *   init     elements are rendered during init of the application.
  *   runtime  elements are rendered when the user requests them.
- * @attribute {Boolean} use-render-delay
+ * @attribute {Boolean} use-render-delay wether there's a short delay between showing this element and rendering it's contents.
  *   Possible values:
  *   true   The elements are rendered immediately
- *   false  There is a delay between calling this function and the actual rendering, allowing the browsers' render engine to draw (for instance a loader).
+ *   false  There is a delay between showing this element and the actual rendering, allowing the browsers' render engine to draw (for instance a loader).
  *
  * @constructor
  * @baseclass

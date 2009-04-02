@@ -23,22 +23,33 @@ var __MULTIBINDING__ = 1 << 7;
 
 // #ifdef __WITH_MULTIBINDING
 
-/*
- <bindclass>
-     <data connect="" select="" />
-     <bindings>
-         <value select="" />
-     </bindings>
-     <actions>
-         <selectadd select="." />
-         <selectremove select="." />
-         <change select="." />
-     </actions>
- </bindclass>
- */
 /**
  * Baseclass adding the ability to databind the selection of this Element.
+ * Example:
+ * In this example the selection of the dropdown determines the value of the city
+ * xml element in mdlForm. The dropdown is filled with information from mdlCities.
+ * <pre class="code">
+ *  <j:model id="mdlCities" load="url:cities.php" />
+ *  <j:model id="mdlForm">
+ *      <form>
+ *          <name />
+ *          <city />
+ *      </form>
+ *  </j:model>
  *
+ *  <j:bar model="mdlForm">
+ *      <j:textbox ref="name" />
+ *      <j:dropdown ref="city" model="mdlCities">
+ *          <j:bindings>
+ *              <j:caption select="text()" />
+ *              <j:value select="@code" />
+ *              <j:traverse select="city" />
+ *          </j:bindings>
+ *      </j:dropdown>
+ *  </j:bar>
+ * </pre>
+ *
+ * @see element.dropdown
  * @private
  * @constructor
  * @baseclass

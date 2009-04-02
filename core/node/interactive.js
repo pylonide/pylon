@@ -26,6 +26,10 @@ var __INTERACTIVE__ = 1 << 21;
 /**
  * Baseclass giving interactive features to this element, it makes an
  * element draggable and resizable.
+ * Example:
+ * <pre class="code">
+ *  <j:textarea draggable="true" resizable="true" />
+ * </pre>
  * 
  * @attribute {Boolean} draggable makes an element draggable. The user will 
  * able to move the element around while holding the mouse button down on the 
@@ -54,6 +58,10 @@ var __INTERACTIVE__ = 1 << 21;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       1.0
+ *
+ * @see element.appsettings.attribute.outline
+ * @see element.appsettings.attribute.resize-outline
+ * @see element.appsettings.attribute.drag-outline
  */
 jpf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, 

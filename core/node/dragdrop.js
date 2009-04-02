@@ -97,6 +97,9 @@ var __DRAGDROP__ = 1 << 5;
  *   {HTMLElement} indicator the html element that is shown while dragging the data
  *   {JMLElement}  host      the jml source element.
  *   {Boolean}     candrop   wether the data can be inserted at the point hovered over by the user
+ *
+ * @see element.allow-drag, element.allow-drop, element.dragdrop
+ *
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
  * @define allow-drag   Specifies when nodes can be dragged from this element.
@@ -326,6 +329,7 @@ jpf.DragDrop = function(){
      * @param  {Array}      rules     the rules array created using {@link jpf#getRules(XMLElement)}
      * @param  {XMLElement} [node] the reference to the j:dragdrop element
      * @see  SmartBinding
+     * @private
      */
     this.loadDragDrop = function(rules, node){
         //#ifdef __DEBUG
@@ -421,6 +425,7 @@ jpf.DragDrop = function(){
      * Unloads the dragdrop rules from this element
      *
      * @see  SmartBinding
+     * @private
      */
     this.unloadDragDrop = function(){
         this.xmlDragDrop = this.dragdropRules = this.icoAllowed = this.icoDenied

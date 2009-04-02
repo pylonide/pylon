@@ -60,9 +60,6 @@
  * @attribute {String} defaulttitle   this text will be showing for each picture without description
  * @attribute {String} loadmsg        this text will be displayd when picture is loading
  * 
- * @classDescription        This class creates a new slideshow
- * @return {Slideshow}      Returns a new slideshow
- *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
  * @inherits jpf.Cache
@@ -71,6 +68,9 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  *
+ * @define slideshow
+ * @addnode elements
+ * 
  * @define bindings
  * @allowchild src, title, thumb
  *

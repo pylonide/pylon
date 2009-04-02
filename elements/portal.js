@@ -51,7 +51,7 @@
  * Remarks:
  * A docklet xml is a piece of jml that should be in the following form:
  * <pre class="code">
- *  <j:docklet xmlns:j="http://www.javeline.com/2005/PlatForm" caption="Billing History" icon="icoBilling.gif" name="BillHistory">
+ *  <j:docklet xmlns:j="http://www.javeline.com/2005/jml" caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <j:script><![CDATA[
  *          function BillHistory(){
  *              //Create a Javeline class
@@ -91,8 +91,13 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @binding src       Determines the data instruction that loads the docklet from it's datasource.
+ * @binding collapsed Determines wether the docklet is collapsed after init.
+ * @binding icon      Determines the icon of the docklet.
+ * @binding column    Determines the column in which the docklet is created.
+ * @binding caption   Determines the caption of the docklet.
  */
-
 jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;

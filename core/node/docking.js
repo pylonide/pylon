@@ -31,6 +31,8 @@ var __DOCKING__ = 1 << 18;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.5
+ *
+ * @see baseclass.alignment
  */
 jpf.Docking = function(){
     this.$regbase = this.$regbase | __DOCKING__;

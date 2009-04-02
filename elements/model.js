@@ -47,6 +47,23 @@
  *  </j:bar>
  * </pre>
  *
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ *   cancellable: Prevents the data from being retrieved.
+ * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
+ * @event receive           Fires when data is successfully retrieved
+ *   object:
+ *   {String} data  the retrieved data
+ * @event beforeload        Fires before data is loaded into the model.
+ *   cancellable:
+ * @event afterload         Fires after data is loaded into the model.
+ * @event beforesubmit      Fires before data is submitted.
+ *   cancellable: Prevents the submit.
+ *   object:
+ *   {String} instruction The data instruction used to store the data.
+ * @event submiterror       Fires when submitting data has failed.
+ * @event submitsuccess     Fires when submitting data was successfull.
+ * @event aftersubmit       Fires after submitting data.
+ *
  * @constructor
  * @define model
  * @allowchild [cdata], instance, load, submission
@@ -75,23 +92,6 @@
  *   form-data-post  not implemented (multipart/form-data)
  *   urlencoded-post sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
  * @attribute  {String}  set          the data instruction on how to record the data from the data source from this model.
- *
- * @event beforeretrieve    Fires before a request is made to retrieve data.
- *   cancellable: Prevents the data from being retrieved.
- * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
- * @event receive           Fires when data is successfully retrieved
- *   object:
- *   {String} data  the retrieved data
- * @event beforeload        Fires before data is loaded into the model.
- *   cancellable:
- * @event afterload         Fires after data is loaded into the model.
- * @event beforesubmit      Fires before data is submitted.
- *   cancellable: Prevents the submit.
- *   object:
- *   {String} instruction The data instruction used to store the data.
- * @event submiterror       Fires when submitting data has failed.
- * @event submitsuccess     Fires when submitting data was successfull.
- * @event aftersubmit       Fires after submitting data.
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

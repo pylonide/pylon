@@ -34,14 +34,11 @@ var __VALIDATION__ = 1 << 6;
  * @since       0.4
  */
 jpf.JmlElement = function(){
+    //#ifdef __USE_TOSTRING
     /**
      * Returns a string representation of this element.
      *
      * @return  {String}  a representation of this element
-     */
-    //#ifdef __USE_TOSTRING
-    /**
-     * Returns a string representation of this object.
      */
     this.toString = function(){
         return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName
@@ -169,8 +166,7 @@ jpf.JmlElement = function(){
         /**
          * Moves this element to the lowest z ordered level.
          */
-        this.sendToBack    =
-        this.sentToBack    = function(){
+        this.sendToBack = function(){
             this.setProperty("zindex", 0);
         };
 
@@ -184,8 +180,7 @@ jpf.JmlElement = function(){
         /**
          * Moves this element one z order level deeper.
          */
-        this.sendBackwards =
-        this.sentBackwards = function(){
+        this.sendBackwards = function(){
             this.setProperty("zindex", this.zindex - 1);
         };
 
@@ -662,7 +657,6 @@ jpf.JmlElement = function(){
         };
     }
 
-    //this.getNodeFromRule = function(){return false}
     if (this.setValue && !this.clear) {
         /**
          * Clears the data loaded into this element resetting it's value.

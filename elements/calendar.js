@@ -33,7 +33,8 @@
  * </pre>
  * 
  * @constructor
- * @addnode elements:calendar
+ * @define calendar
+ * @addnode elements
  *
  * @attribute {String}   output-format    style of returned date
  * @attribute {String}   default          name which represent some date
@@ -41,12 +42,11 @@
  *     today   calendar is set on today's date
  * @attribute {String}   value   the date returned by calendar; should be in the 
  *                               same format as output-format
- * 
- * @classDescription    This class creates a new calendar
- * @return {Calendar}   Returns a new calendar
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -588,8 +588,16 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oCalendar = null;
     };
 }).implement(
-    jpf.Presentation, 
-    jpf.DataBinding
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    //#endif
+    //#ifdef __WITH_VALIDATION
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
 );
 
 // #endif
