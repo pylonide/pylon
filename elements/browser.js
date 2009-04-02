@@ -37,6 +37,23 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the url based on data loaded into this component.
+ * <pre class="code">
+ *  <j:browser>
+ *      <j:bindings>
+ *          <j:value select="@url" />
+ *      </j:bindings>
+ *  </j:browser>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:colorpicker ref="@url" />
+ * </pre>
  */
 jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     /**

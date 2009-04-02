@@ -76,17 +76,53 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.Rename
  *
- * @binding insert Determines how new data is loaded when the user slides open
- * an item. For instance by clicking on the + sign. This way only the root nodes
+ * @binding insert Determines how new data is loaded when the user expands 
+ * an item. For instance by clicking on the + button. This way only the root nodes
  * need to be loaded at the start of the application. All other children are
  * received on demand when the user requests it by navigating throught the tree.
  * Example:
- * This example shows an insert rule that only works on folder elements. It then
- * reads the directory contents using webdav.
- * <code>
- *  <j:insert select="self::folder" get="webdav:readdir({@id})" />
- * </code>
- *
+ * This example shows an insert rule that only works on folder elements. It will
+ * read the directory contents using webdav and insert it under the selected 
+ * tree node.
+ * <pre class="code">
+ *  <j:bindings>
+ *      <j:caption select="@caption" />
+ *      <j:insert select="self::folder" get="webdav:readdir({@id})" />
+ *      <j:traverse select="folder" />
+ *  </j:bindings>
+ * </pre>
+ * @binding caption  Determines the caption of a tree node.
+ * @binding icon     Determines the icon of a tree node.
+ * @binding css      Determines a css class for a tree node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <pre class="code">
+ *  <j:tree>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:css select="message[@unread]" value="highlighUnread" />
+ *          <j:icon select="@icon" />
+ *          <j:icon select="self::folder" value="icoFolder.gif" />
+ *          <j:traverse select="folder" />
+ *      </j:bindings>
+ *  </j:tree>
+ * </pre>
+ * @binding tooltip  Determines the tooltip of a tree node.
+ * @binding empty    Determines the empty message of a node.
+ * Example:
+ * This example shows a gouped contact list, that displays a message under 
+ * empty groups.
+ * <pre class="code">
+ *  <j:tree>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:icon select="self::contact" value="icoContact.png" />
+ *          <j:icon select="self::group" value="icoFolder.png" />
+ *          <j:empty select="self::group" value="Drag a contact to this group." />
+ *          <j:traverse select="group|contact" />
+ *      </j:bindings>
+ *  </j:tree>
+ * </pre>
  */
 jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options

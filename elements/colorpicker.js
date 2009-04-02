@@ -38,6 +38,25 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.Validation
  * @inherits jpf.XForms
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the color based on data loaded into this component.
+ * <pre class="code">
+ *  <j:colorpicker>
+ *      <j:bindings>
+ *          <j:value select="@color" />
+ *      </j:bindings>
+ *  </j:colorpicker>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:colorpicker ref="@color" />
+ * </pre>
+ *
+ * @attribute {String} color the color that is selected in the color picker.
  */
 jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options

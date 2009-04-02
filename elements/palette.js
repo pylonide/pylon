@@ -39,8 +39,24 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the color based on data loaded into this component.
+ * <pre class="code">
+ *  <j:palette>
+ *      <j:bindings>
+ *          <j:value select="@color" />
+ *      </j:bindings>
+ *  </j:palette>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:palette ref="@color" />
+ * </pre>
  */
-
 jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/

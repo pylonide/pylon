@@ -72,6 +72,23 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.Validation
  * @inherits jpf.XForms
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the slider position based on data loaded into this component.
+ * <pre class="code">
+ *  <j:slider>
+ *      <j:bindings>
+ *          <j:value select="@value" />
+ *      </j:bindings>
+ *  </j:slider>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:slider ref="@value" />
+ * </pre>
  */
 jpf.range  =
 jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){

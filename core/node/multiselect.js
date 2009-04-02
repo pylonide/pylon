@@ -34,6 +34,37 @@ var __MULTISELECT__ = 1 << 8;
  * @version     %I%, %G%
  * @since       0.5
  *
+ * @binding select Determines wether the traverse node can be selected.
+ * Example:
+ * In this example the tree contains nodes that have a disabled flag set. 
+ * These nodes cannot be selected
+ * <pre class="code">
+ *  <j:tree>
+ *      <j:bindings>
+ *          <j:select select="self::node()[not(@disabled)]" />
+ *      </j:bindings>
+ *  </j:tree>
+ * </pre>
+ * @binding value  Determines the way the value for the element is retrieved
+ * from the selected node. The value property contains this value.
+ * Example:
+ * <pre class="code">
+ *  <j:dropdown onafterchange="alert(this.value)">
+ *      <j:bindings>
+ *          <j:caption select="text()" />
+ *          <j:value select="@value" />
+ *          <j:traverse select="item" />
+ *      </j:bindings>
+ *      <j:model>
+ *          <items>
+ *              <item value="#FF0000">red</item>
+ *              <item value="#00FF00">green</item>
+ *              <item value="#0000FF">blue</item>
+ *          </items>
+ *      </j:model>
+ *  </j:dropdown>
+ * </pre>
+ *
  * @inherits jpf.MultiselectBinding
  */
 jpf.MultiSelect = function(){

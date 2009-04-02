@@ -47,8 +47,24 @@
  * @inherits jpf.XForms
  * @inherits jpf.DataBinding
  * @inherits jpf.Presentation
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the text based on data loaded into this component.
+ * <pre class="code">
+ *  <j:editor>
+ *      <j:bindings>
+ *          <j:value select="body/text()" />
+ *      </j:bindings>
+ *  </j:editor>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:colorpicker ref="body/text()" />
+ * </pre>
  */
-
 jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var inited, complete, oButtons = {};
 

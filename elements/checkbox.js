@@ -45,6 +45,23 @@
  * @inherits jpf.Validation
  * @inherits jpf.XForms
  * @inherits jpf.DataBinding
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the value of the checkbox based on data loaded into this component.
+ * <pre class="code">
+ *  <j:checkbox>
+ *      <j:bindings>
+ *          <j:value select="@answer" />
+ *      </j:bindings>
+ *  </j:checkbox>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:checkbox ref="@answer" />
+ * </pre>
  */
 jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE

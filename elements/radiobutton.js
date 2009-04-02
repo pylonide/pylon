@@ -176,6 +176,25 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the selection based on data loaded into this component.
+ * <pre class="code">
+ *  <j:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</j:radiobutton>
+ *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
+ *
+ *  <j:bindings id="bndExample">
+ *      <j:value select="@value" />
+ *  </j:bindings>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:radiobutton group="g2" ref="@value" value="1">Choice 1</j:radiobutton>
+ *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
+ * </pre>
  */
 jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
@@ -233,10 +252,16 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             this.radiogroup.setValue(this.value);
     };
     
+    /**
+     * @attribute {String} tooltip the tooltip of this radio button.
+     */
     this.$propHandlers["tooltip"] = function(value){
         this.oExt.setAttribute("title", value);
     };
 
+    /**
+     * @attribute {String} icon the icon for this radiobutton
+     */
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
         if (!this.oIcon)
@@ -254,7 +279,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @copy checkbox#label
+     * @attribute {String} label the label for this radiobutton
      */
     this.$propHandlers["label"] = function(value){
         if (value)
@@ -267,7 +292,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @copy checkbox#checked
+     * @attribute {String} checked wether this radiobutton is the checked one in the group it belongs to.
      */
     this.$propHandlers["checked"] = function(value){
         if (!this.radiogroup)

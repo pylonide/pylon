@@ -51,6 +51,9 @@ var IS_ROOT   = 1 << 4;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.98.3
+ *
+ * @binding css      Determines a css class for a node.
+ * @binding empty    Determines the empty message of a node.
  */
 jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isTreeArch  = true; // Tree Architecture for loading Data

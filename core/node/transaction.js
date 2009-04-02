@@ -98,12 +98,9 @@ var __TRANSACTION__ = 1 << 3;
  * </code>
  *
  * @constructor
- * @advanced
- * @experimental this code has never been executed
  * @baseclass
  *
  * @event transactionconflict Fires when data in a transaction is being updated by an external process.
- * @action add     adds data to the current dataset using transactions. see {@link multiselect#add}
  * @action update  updates existent data using transactions.
  *
  * @author      Ruben Daniels
@@ -117,14 +114,11 @@ jpf.Transaction = function(){
     var addParent, transactionNode, originalNode, inTransaction, lastAction;
 
     this.$supportedProperties.push("autoshow");
-    this.$booleanProperties["autoshow"] = true;
-
+    
     /**
      * @attribute {Boolean} autoshow whether this element is shown when an transaction begins.
      */
-    this.$propHandlers["autoshow"] = function(value){
-        
-    }
+    this.$booleanProperties["autoshow"] = true;
 
     /**
      * Commits a started transaction. This will trigger an update or add action.
@@ -200,8 +194,6 @@ jpf.Transaction = function(){
     
     /**
      * Rolls back the started transaction.
-     * @bug When there is no rollback action is defined. A Transaction can never 
-     * be rolled back. This is incorrect behaviour.
      */
     this.rollback = function(noLoad){
         if (!inTransaction) 
