@@ -67,6 +67,9 @@
  *   object:
  *   {Event}      htmlEvent the char code of the pressed key.
  *   {JMLElement} jmlNode   the element on which is clicked.
+ * @event onbeforeprint Fires before the application will print.
+ * @event onafterprint  Fires after the application has printed.
+ * @event load          Fires after the application is loaded.
  */
 var jpf = {
     // Content Distribution Network URL:

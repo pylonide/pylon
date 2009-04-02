@@ -46,6 +46,8 @@ var __RENAME__ = 1 << 10;
  *  </j:list>
  * </pre>
  *
+ * @event stoprename Fires when a rename action is cancelled.
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels

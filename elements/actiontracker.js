@@ -37,8 +37,47 @@
  * @define actiontracker
  * @addnode smartbinding, global
  * @event afterchange   Fires after a change to the action stack occurs
+ *    object:
+ *    {String} action the name of the action that was execution
  * @event beforechange  Fires before a change to the action stack will occur
- *   cancellable:    Prevents the execution of the action
+ *   cancellable:    Prevents the execution of the action.
+ *   object:
+ *   {String}  action           the action to be executed
+ *   {Array}   args             the arguments for the action
+ *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
+ *   {JmlNode} [jmlNode]        the GUI element that triggered the action
+ *   {XmlNode} [selNode]        the relevant data node to which the action node works on
+ *   {Number}  [timestamp]      the start of the action that is now executed.
+ * @event actionfail Fires when an action fails to be sent to the server.
+ *   bubles: true
+ *   object:
+ *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
+ *     {Number}         state     the state of the call
+ *       Possible values:
+ *       jpf.SUCCESS  the request was successfull
+ *       jpf.TIMEOUT  the request has timed out.
+ *       jpf.ERROR    an error has occurred while making the request.
+ *       jpf.OFFLINE  the request was made while the application was offline.
+ *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *     {XMLHttpRequest} http      the object that executed the actual http request.
+ *     {String}         url       the url that was requested.
+ *     {Http}           tpModule  the teleport module that is making the request.
+ *     {Number}         id        the id of the request.
+ *     {String}         message   the error message.
+ * @event actionsuccess Fires when an action fails to be sent to the server.
+ *   bubles: true
+ *   object:
+ *     {Number}         state     the state of the call
+ *       Possible values:
+ *       jpf.SUCCESS  the request was successfull
+ *       jpf.TIMEOUT  the request has timed out.
+ *       jpf.ERROR    an error has occurred while making the request.
+ *       jpf.OFFLINE  the request was made while the application was offline.
+ *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *     {XMLHttpRequest} http      the object that executed the actual http request.
+ *     {String}         url       the url that was requested.
+ *     {Http}           tpModule  the teleport module that is making the request.
+ *     {Number}         id        the id of the request.
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

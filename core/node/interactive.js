@@ -53,6 +53,13 @@ var __INTERACTIVE__ = 1 << 21;
  * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.
  * @attribute {Number} maxheight the maximum vertical size the element can get when resizing.
  *
+ * @event drag          Fires when the widget has been dragged.
+ * @event resizestart   Fires before the widget is resized.
+ *   cancellable: Prevents this resize action to start.
+ *   object:
+ *   {String} type the type of resize. This is a combination of the four directions, n, s, e, w.
+ * @event resize        Fires when the widget has been resized.
+ *
  * @constructor
  *
  * @author      Ruben Daniels

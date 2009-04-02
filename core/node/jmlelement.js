@@ -41,6 +41,8 @@ var __VALIDATION__ = 1 << 6;
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
  *   {Object} htmlEvent the html event object.
+ * @event focus  Fires when the element receives focus.
+ * @event blur   Fires when the element loses focus.
  */
 jpf.JmlElement = function(){
     //#ifdef __USE_TOSTRING

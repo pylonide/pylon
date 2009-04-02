@@ -38,6 +38,8 @@ var __VALIDATION__ = 1 << 6;
  *  </j:bar>
  * </pre>
  *
+ * @event invalid    Fires when this component goes into an invalid state.
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels
@@ -539,6 +541,8 @@ jpf.Validation = function(){
  * <pre class="code">
  *  vgForm.validate();
  * </pre>
+ *
+ * @event validation Fires when the validation group isn't validated.
  *
  * @constructor
  *

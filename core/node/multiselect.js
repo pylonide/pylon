@@ -78,10 +78,24 @@ jpf.MultiSelect = function(){
 
     /**** Properties ****/
 
+    /**
+     * the last selected item of this element.
+     * @type {XMLElement} 
+     */
     this.selected     = null;
     this.$selected    = null;
+    
+    /**
+     * the xml element that has the caret.
+     * @type {XMLElement} 
+     */
     this.indicator    = null;
     this.$indicator   = null;
+    
+    /**
+     * wether to use a caret in the interaction of this element.
+     * @type {Boolean} 
+     */
     this.useindicator = true;
 
     // #ifdef __WITH_DATABINDING
@@ -1161,7 +1175,6 @@ jpf.MultiSelect = function(){
      * @attribute {Boolean} [ctrlselect]    whether the user makes a selection as if it was holding the Ctrl key.
      * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of an element.
      * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again such that the select events are called.
-     * @attribute {String}  [selected]      the value of the xml data element which should be selected after loading data in this element.
      * @attribute {String}  [default]       the value that this component has when no selection is made, or no value is loaded.
      */
     this.selectable = true;

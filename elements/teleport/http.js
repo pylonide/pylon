@@ -78,6 +78,7 @@
  *     {String}         url       the url that was requested.
  *     {Http}           tpModule  the teleport module that is making the request.
  *     {Number}         id        the id of the request.
+ *     {String}         message   the error message.
  *
  * @constructor
  * @define http

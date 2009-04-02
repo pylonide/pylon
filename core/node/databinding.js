@@ -1468,6 +1468,14 @@ jpf.DataBinding = function(){
     };
 
     /**
+     * @event beforeinsert Fires before data is inserted.
+     *   cancellable: Prevents the data from being inserted.
+     *   object:
+     *   {XMLElement} xmlParentNode the parent in which the new data is inserted
+     * @event afterinsert Fires after data is inserted.
+     */
+
+    /**
      * @private
      */
     this.insert = function(XMLRoot, parentXMLElement, options){
@@ -2798,6 +2806,23 @@ jpf.MultiselectBinding = function(){
      * Loops through parents of changed node to find the first
      * connected node. Based on the action it will change, remove
      * or update the representation of the data.
+     *
+     * @event xmlupdate Fires when xml of this element is updated.
+     *   object:
+     *   {String}     action   the action that was executed on the xml.
+     *      Possible values:
+     *      text        a text node is set.
+     *      update      an xml node is updated.
+     *      insert      xml nodes are inserted.
+     *      add         an xml node is added.
+     *      remove      an xml node is removed (parent still set).
+     *      redo-remove an xml node is removed (parent not set).
+     *      synchronize unknown update.
+     *      move-away   an xml node is moved (parent not set).
+     *      move        an xml node is moved (parent still set).
+     *   {XMLElement} xmlNode  the node that is subject to the update.
+     *   {Mixed}      result   the result.
+     *   {UndoObj}    UndoObj  the undo information.
      */
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
         if (!this.xmlRoot)

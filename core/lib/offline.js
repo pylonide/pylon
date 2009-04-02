@@ -41,10 +41,49 @@
  *        detect-url    = "network.txt"
  *        detection     = "auto"
  *        realtime      = "true"
- *        onrestore     = "return confirm('Would you like to continue your previous session?');"
+ *        onrestore     = "return confirm('Continue your previous session?');"
  *        onlosechanges = "" />
  *  </j:appsettings>
  * </pre>
+ *
+ * @event losechanges   Fires before the offline state is removed.
+ *   cancellable: Prevents the application from losing it's recorded offline state.
+ * @event beforeoffline Fires before bringing the application offline.
+ *   cancellabe: Prevents the application from going offline
+ * @event afteroffline  Firest after the application is brought offline.
+ * @event beforeonline  Fires before bringing the application online.
+ *   cancellabe: Prevents the application from going online
+ * @event afteronline   Fires after the application is brought online.
+ * @event beforeload    Fires before loading the offline state into this application.
+ *   cancellabe: Prevents the application from reloading it's offline state.
+ * @event sync          Fires at each sync item's completion.
+ *   object:
+ *   {Number} position 
+ *   {Number} length   
+ *
+ * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
+ * Example:
+ * <pre class="code">
+ * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
+ *    <j:Label>Synchronizing your changes</j:label>
+ *    <j:progressbar value="{offline.progress}" />
+ *    <j:button onclick="jpf.offline.stopSync()">Cancel</j:button>
+ *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
+ * </j:modalwindow>
+ * </pre>
+ * @attribute {Number}  position  the progress of the sync. 
+ * @attribute {Number}  length    the total length of items to sync.
+ * @attribute {Boolean} syncing   wether the application is syncing while coming online.
+ * @attribute {Boolean} onLine    wether the application is online. This property is false during sync.
+ * @attribute {String} resources the resources that should be
+ * kept offline and synced later. This is a pipe '|' seperated list.
+ *   Possible values:
+ *   application    deals with making the actual application offline avaible.
+ *   models         takes care of having the data of the models offline available.
+ *   transactions   records the state of the actiontrackers so that these are available offline.
+ *   queue          handles queuing of actions that can only be executed whilst online.
+ *   state          records the state of all elements in this application on a property level.
+ * 
  * @default_private
  */
 jpf.namespace("offline", {
@@ -74,17 +113,6 @@ jpf.namespace("offline", {
 
             }
             else if (jml.nodeType) {
-                /**
-                 * @attribute {String} resources the resources that should be
-                 * kept offline and synced later. This is a pipe '|' seperated
-                 * list.
-                 *   Possible values:
-                 *   application    deals with making the actual application offline avaible.
-                 *   models         takes care of having the data of the models offline available.
-                 *   transactions   records the state of the actiontrackers so that these are available offline.
-                 *   queue          handles queuing of actions that can only be executed whilst online.
-                 *   state          records the state of all elements in this application on a property level.
-                 */
                 if (jml.getAttribute("resources"))
                     this.providers = jml.getAttribute("resources").split("|");
 
@@ -211,15 +239,6 @@ jpf.namespace("offline", {
      */
     inProcess : 0,
 
-    /**
-     * Example:
-     * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
-     *    <j:Label>Synchronizing your changes</j:label>
-     *    <j:progressbar value="{offline.progress}" />
-     *    <j:button onclick="jpf.offline.stopSync()">Cancel</j:button>
-     *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
-     * </j:modalwindow>
-     */
     $supportedProperties : ["syncing", "position", "length", "progress", "onLine"],
     handlePropSet : function(prop, value, force){
         this[prop] = value;
