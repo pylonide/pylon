@@ -27,6 +27,8 @@
  * Object returning an implementation of an JSLT parser.
  * @todo Rik: please document this one extensively!
  *
+ * Note: you cannot declare a variable with name node it is a deserved word
+ *
  * @constructor
  * @parser
  *
@@ -63,7 +65,19 @@ jpf.JsltImplementation = function(){
         if (!n) 
             return;
         if (p) {
-            var t = n.selectNodes(p);
+
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                var t = n.selectNodes(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting node for 'copy' JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif
+            
             if (!t || t.length == 0) 
                 return;
             for (var i = 0; i < t.length; i++) 
@@ -78,7 +92,19 @@ jpf.JsltImplementation = function(){
             return;
         if (p) {
             var o = [];
-            var t = n.selectNodes(p);
+
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                var t = n.selectNodes(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting node for 'xml' JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif
+            
             if (!t || t.length == 0) 
                 return;
             for (var i = 0; i < t.length; i++) 
@@ -92,8 +118,22 @@ jpf.JsltImplementation = function(){
     function jval(n, p){
         if (!n) 
             return '';
-        if (p) 
-            n = n.selectSingleNode(p);
+
+        if (p) {
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                n = n.selectSingleNode(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting node in JSLT",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif
+        }
+        
+
         if (!n) 
             return '';
         if (n.nodeType == 1) 
@@ -117,8 +157,19 @@ jpf.JsltImplementation = function(){
     function jnod(n, p){
         if (!n) 
             return '';
-        if (p) 
-            n = n.selectSingleNode(p);
+        if (p) {
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                n = n.selectSingleNode(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting node in JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif 
+        }
         if (!n) 
             return null;
         return n;
@@ -127,8 +178,19 @@ jpf.JsltImplementation = function(){
     function jnds(n, p){
         if (!n) 
             return '';
-        if (p) 
-            n = n.selectNodes(p);
+        if (p) {
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                n = n.selectNodes(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting nodes in JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif 
+        }
         if (!n) 
             return null;
         return n;
@@ -137,16 +199,38 @@ jpf.JsltImplementation = function(){
     function jexs(n, p){
         if (!n) 
             return false;
-        if (p) 
-            n = n.selectSingleNode(p);
+        if (p) {
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                n = n.selectSingleNode(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting a node to check if it 'exists' in JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif
+        }
         return n != null;
     }
     
     function jemp(n, p){
         if (!n) 
             return false;
-        if (p) 
-            n = n.selectSingleNode(p);
+        if (p) {
+            // #ifdef __DEBUG
+            try {
+            //#endif
+                n = n.selectSingleNode(p);
+            // #ifdef __DEBUG
+            } catch(e) {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting a node to check if is 'empty' JSLT ",
+                    "unxpected character in xpath \n" + e.message + "'"));
+            }
+            // #endif
+        }
         if (!n) 
             return true;
         if (n.nodeType == 1) 
@@ -157,7 +241,19 @@ jpf.JsltImplementation = function(){
     function jcnt(n, p){
         if (!n) 
             return 0;
-        var t = n.selectNodes(p);
+
+        // #ifdef __DEBUG
+        try {
+        //#endif
+            var t = n.selectNodes(p);
+        // #ifdef __DEBUG
+        } catch(e) {
+            throw new Error(jpf.formatErrorString(0, this,
+                "Selecting nodes for 'count' JSLT ",
+                "unxpected character in xpath \n" + e.message + "'"));
+        }
+        // #endif
+        
         return t ? t.length : 0;
     }
     
@@ -196,7 +292,19 @@ jpf.JsltImplementation = function(){
         var r = [];
         if (!n) 
             return r;
-        var t = n.selectNodes(p);
+
+        // #ifdef __DEBUG
+        try {
+        //#endif
+            var t = n.selectNodes(p);
+        // #ifdef __DEBUG
+        } catch(e) {
+            throw new Error(jpf.formatErrorString(0, this,
+                "Selecting nodes for 'values' JSLT ",
+                "unxpected character in xpath \n" + e.message + "'"));
+        }
+        // #endif
+        
         if (!t) 
             return r;
         for (var i = 0; i < t.length; i++) {
@@ -217,8 +325,20 @@ jpf.JsltImplementation = function(){
     function jfor(n, f, p, sp, ep){
         if (!n) 
             return;
+
+        // #ifdef __DEBUG
+        try {
+        //#endif
+            var t = n.selectNodes(p);
+        // #ifdef __DEBUG
+        } catch(e) {
+            throw new Error(jpf.formatErrorString(0, this,
+                "Selecting nodes in 'foreach' JSLT ",
+                "unxpected character in xpath \n" + e.message + "'"));
+        }
+        // #endif
+
         
-        var t = n.selectNodes(p);
         var end = ep == null ? t.length : Math.min(t.length, (sp + ep));
         for (var i = (sp == null) ? 0 : sp; i < end; i++) 
             f(i, end, t[i]);
@@ -443,12 +563,20 @@ jpf.JsltImplementation = function(){
             if (pre[1] != '')
                 return [this.jslt_inline[pre[1]], str];
             
+            // #ifdef __DEBUG
             try {
+            //#endif
                 eval("var f = function(n){" + str + "};");
-            } catch (e) {
+            // #ifdef __DEBUG
+            } catch(e) {
                 jpf.console.info(jpf.formatJS(str));
-                throw new Error("Could not parse Precompiled JSLT with: " + e.message);
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Selecting node in JSLT",
+                    "Could not parse Precompiled JSLT with: \n" + e.message + "'"));
             }
+            // #endif
+
+
             return [f, str];
         }
         
@@ -874,9 +1002,9 @@ jpf.JsltImplementation = function(){
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {
-            //#ifdef __DEBUG
+            // #ifdef __DEBUG
             doTest = jpf.isTrue(jsltNode.getAttribute("test"));
-            //#endif
+            // #endif
             
             //check the jslt node for cache setting
             cacheId = jsltNode.getAttribute("cache");
@@ -927,7 +1055,7 @@ jpf.JsltImplementation = function(){
             if (!xmlNode) 
                 return '';
             
-            //#ifdef __DEBUG
+            // #ifdef __DEBUG
             var str = jsltFunc[0](xmlNode);
             if (doTest) 
                 jpf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
