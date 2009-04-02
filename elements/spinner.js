@@ -30,9 +30,9 @@
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
  * 
- * <code>
+ * <pre class="code">
  *     <j:spinner value="6" min="-99" max="199"></j:spinner>
- * </code>
+ * </pre>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000
  * @attribute {Number}   min       minimal allowed value, default is -64000
@@ -46,6 +46,25 @@
  * 
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the value based on data loaded into this component.
+ * <pre class="code">
+ *  <j:spinner>
+ *      <j:bindings>
+ *          <j:value select="@value" />
+ *      </j:bindings>
+ *  </j:spinner>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:spinner ref="@value" />
+ * </pre>
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.max           = 64000;
@@ -419,6 +438,17 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmousedown =
         this.oButtonMinus.onmouseup = null;
     };
-}).implement(jpf.Presentation, jpf.DataBinding);
+}).implement(
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    //#endif
+    //#ifdef __WITH_VALIDATION
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
+);
 
 // #endif

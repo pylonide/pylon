@@ -28,7 +28,7 @@
  * Example:
  * Simple example of some jml which is repeated. The button removes an item
  * from the model when pressed.
- * <code>
+ * <pre class="code">
  *   <j:model id="mdlExample">
  *      <data>
  *          <item>test1</item>
@@ -48,7 +48,7 @@
  *  <j:button onclick="
  *      jpf.xmldb.removeNode(mdlExample.data.childNodes[1]);
  *  ">remove item</j:button>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define repeat

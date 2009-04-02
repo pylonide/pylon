@@ -325,9 +325,9 @@ jpf.JmlParser = {
     /**
      * @define include element that loads another jml files.
      * Example:
-     * <code>
+     * <pre class="code">
      *   <j:include src="bindings.jml" />
-     * </code>
+     * </pre>
      * @attribute {String} src the location of the jml file to include in this application.
      * @addnode global, anyjml
      */
@@ -696,17 +696,17 @@ jpf.JmlParser = {
          * @define script element that loads javascript into the application
          * either from it's first child or from a file.
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:script src="code.js" />
-         * </code>
+         * </pre>
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:script><![CDATA[
          *      for (var i = 0; i < 10; i++) {
          *          alert(i);
          *      }
          *  ]]></j:script>
-         * </code>
+         * </pre>
          * @attribute {String} src the location of the script file.
          * @addnode global, anyjml
          */
@@ -731,8 +731,10 @@ jpf.JmlParser = {
 
         //#ifdef __WITH_STATE
         /**
-         * @define state-group element that groups state elements together and
+         * @define state-group Element that groups state elements together and
          * provides a way to set a default state.
+         * Example:
+         * <pre class="code">
          *  <j:state-group
          *    loginMsg.visible  = "false"
          *    winLogin.disabled = "false">
@@ -748,6 +750,7 @@ jpf.JmlParser = {
          *          winLogin.disabled = "true" />
          *      <j:state id="stIdle" />
          *  </j:state-group>
+         * </pre>
          * @addnode elements
          * @see state
          */
@@ -783,7 +786,7 @@ jpf.JmlParser = {
          * @define iconmap element that provides a means to get icons from a
          * single image containing many icons.
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:iconmap id="tbicons" src="toolbar.icons.gif"
          *    type="horizontal" size="20" offset="2,2" />
          *
@@ -791,7 +794,7 @@ jpf.JmlParser = {
          *      <j:item icon="tbicons:1">Copy</j:item>
          *      <j:item icon="tbicons:2">Cut</j:item>
          *  </j:menu>
-         * </code>
+         * </pre>
          * @attribute {String} src    the location of the image.
          * @attribute {String} type   the spatial distribution of the icons within the image.
          *   Possible values:
@@ -876,12 +879,12 @@ jpf.JmlParser = {
         /**
          * @define skin element specifying the skin of an application.
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:skin src="perspex.xml"
          *    name       = "perspex"
          *    media-path = "http://example.com/images"
          *    icon-path  = "http://icons.example.com" />
-         * </code>
+         * </pre>
          * @attribute {String} name       the name of the skinset.
          * @attribute {String} src        the location of the skin definition.
          * @attribute {String} media-path the basepath for the images of the skin.
@@ -995,12 +998,12 @@ jpf.JmlParser = {
          * This example shows a list that shows the mnuRoot menu when the user
          * right clicks on the root data element. Otherwise the mnuItem menu is
          * shown.
-         * <code>
+         * <pre class="code">
          *  <j:list>
          *      <j:contextmenu menu="mnuRoot" select="root" />
          *      <j:contextmenu menu="mnuItem" />
          *  </j:list>
-         * </code>
+         * </pre>
          * @attribute {String} menu   the id of the menu element.
          * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
          */
@@ -1073,13 +1076,13 @@ jpf.JmlParser = {
          * @define loader Element defining the html that is shown while the
          * application is loading.
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:loader>
          *      <div class="loader">
          *          Loading...
          *      </div>
          *  </j:loader>
-         * </code>
+         * </pre>
          * @addnode global
          */
         , "loader" : function(q){

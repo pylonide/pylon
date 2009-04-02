@@ -27,7 +27,7 @@
  * plugin of jpf.teleport.
  * Example:
  * Javeline Markup Language
- * <code>
+ * <pre class="code">
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="xmlrpc">
  *          <j:method 
@@ -47,7 +47,7 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </j:script>
- * </code>
+ * </pre>
  *
  * @constructor
  *

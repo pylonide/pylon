@@ -33,12 +33,12 @@
  * the functionality of this object will be managed from within the offline 
  * element in JML.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:offline 
  *      realtime  = "true" 
  *      set       = "url:store_session.jsp" 
  *      onrestore = "return confirm('Would you like to continue where you left of?')" />
- * </code>
+ * </pre>
  *
  * @event restore Fires before restoring the application to the predefined state.
  *   cancellable: Loads the stored state into the applicaton.

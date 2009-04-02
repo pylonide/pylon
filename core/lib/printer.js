@@ -25,11 +25,11 @@
  * @define printer
  * Element providing printer control.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:appsettings>
  *      <j:printer onbeforeprint="jpf.printer.preview(getHtml())" />
  *  </j:appsettings>
- * </code>
+ * </pre>
  */
 jpf.printer = {
     //#ifdef __WITH_JMLDOM_FULL

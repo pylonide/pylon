@@ -138,29 +138,29 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   \  Cancel the special meaning of a character.
      * Example:
      * An american style phone number.
-     * <code>
+     * <pre class="code">
      *  <j:textbox mask="(000)0000-0000;;_" />
-     * </code>
+     * </pre>
      * Example:
      * A dutch postal code
-     * <code>
+     * <pre class="code">
      *  <j:textbox mask="0000 AA;;_" />
-     * </code>
+     * </pre>
      * Example:
      * A date
-     * <code>
+     * <pre class="code">
      *  <j:textbox mask="00-00-0000;;_" datatype="xsd:date" />
-     * </code>
+     * </pre>
      * Example:
      * A serial number
-     * <code>
+     * <pre class="code">
      *  <j:textbox mask="'WCS74'0000-00000;1;_" />
-     * </code>
+     * </pre>
      * Example:
      * A MAC address
-     * <code>
+     * <pre class="code">
      *  <j:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
-     * </code>
+     * </pre>
      * Remarks:
      * This currently only works in internet explorer.
      */

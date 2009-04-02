@@ -87,7 +87,7 @@ jpf.StateServer = {
  * belong to a state-group containing multiple elements with a default state.
  * Example:
  * This example shows a log in window and four state elements in a state-group.
- * <code>
+ * <pre class="code">
  *  <j:window id="winLogin" title="Log in">
  *      ...
  *
@@ -110,17 +110,17 @@ jpf.StateServer = {
  *          winLogin.disabled = "true" />
  *      <j:state id="stIdle" />
  *  </j:state-group>
- * </code>
+ * </pre>
  * Example:
  * This example shows a label using property binding to get it's caption
  * based on the current state.
- * <code>
+ * <pre class="code">
  *  <j:state group="stRole" id="stUser" caption="You are a user" active="true" />
  *  <j:state group="stRole" id="stAdmin" caption="You have super powers" />
  *
  *  <j:label value="{stRole.caption}" />
  *  <j:button onclick="stAdmin.activate()">Become admin</j:button>
- * </code>
+ * </pre>
  *
  * @event change Fires when the active property of this element changes.
  *

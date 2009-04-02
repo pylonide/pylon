@@ -70,7 +70,7 @@ jpf.WinServer = {
  * as a portal widget container. Furthermore this element supports
  * docking in an alignment layout.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:window id="winMail"
  *    modal       = "false"
  *    buttons     = "min|max|close"
@@ -82,7 +82,7 @@ jpf.WinServer = {
  *    minheight   = "290">
  *      ...
  *  </j:window>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define modalwindow

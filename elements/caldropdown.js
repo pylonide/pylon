@@ -28,9 +28,9 @@
  *
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
- * <code>
+ * <pre class="code">
  *     <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
- * </code>
+ * </pre>
  *
  * @constructor
  * @addnode elements:caldropdown

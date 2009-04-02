@@ -27,14 +27,14 @@
  * using Javascript And in most cases it sends or receives Xml.
  * Example:
  * Retrieving content over http synchronously:
- * <code>
+ * <pre class="code">
  *  var http = new jpf.http();
  *  var data = http.get("http://www.example.com/mydata.jsp", null, {async: false});
  *  alert(data);
- * </code>
+ * </pre>
  * Example:
  * Retrieving content over http asynchronously:
- * <code>
+ * <pre class="code">
  *  var http = new jpf.http();
  *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
  *      if (state != jpf.SUCCESS)
@@ -42,10 +42,10 @@
  *
  *      alert(data);
  *  });
- * </code>
+ * </pre>
  * Example:
  * Async http request with retry.
- * <code>
+ * <pre class="code">
  *  var http = new jpf.http();
  *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
  *      if (state != jpf.SUCCESS) {
@@ -60,7 +60,7 @@
  *
  *      alert(data);
  *  });
- * </code>
+ * </pre>
  *
  * @event error Fires when a communication error occurs.
  *   bubbles: yes
@@ -693,9 +693,9 @@ jpf.http = function(){
      * is done when a request is retried for instance. The id of the call
      * is found on the 'extra' object. The third argument of the callback.
      * Example:
-     * <code>
+     * <pre class="code">
      *  http.clearQueueItem(extra.id);
-     * </code>
+     * </pre>
      * @param {Number} id the id of the call that should be removed from the queue.
      */
     this.clearQueueItem = function(id){
@@ -718,14 +718,14 @@ jpf.http = function(){
      * Retries a call based on it's id. The id of the call is found on the
      * 'extra' object. The third argument of the callback.
      * Example:
-     * <code>
+     * <pre class="code">
      *  function callback(data, state, extra){
      *      if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
      *  }
-     * </code>
+     * </pre>
      * @param {Number} id the id of the call that should be retried.
      */
     this.retry = function(id){

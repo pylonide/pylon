@@ -1260,9 +1260,9 @@ jpf.WindowImplementation = function(){
     /**
      * Registers a hotkey handler to a key combination.
      * Example:
-     * <code>
+     * <pre class="code">
      *   jpf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
+     * </pre>
      * @param {String}   hotkey  the key combination to user. This is a
      * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
      * seperate the keys.

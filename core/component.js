@@ -30,7 +30,7 @@
  * jpf.foo = jpf.component(jpf.NODE_VISIBLE, {
  *     // component body (method and property declaration)
  * }).implement(jpf.barInterface);
- * </code>
+ * </pre>
  * 
  * @classDescription         This class serves as a baseclass for new elements
  * @param  {Number} nodeFunc A number constant, defining the type of element

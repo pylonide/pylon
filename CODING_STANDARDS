@@ -90,10 +90,10 @@ names but are discouraged in most cases.
 name consists of more than one word, the first letter of each new word must be
 capitalized. This is commonly called "camelCase" formatting.
 
-  Verbosity is generally encouraged. Function names should be as verbose as is
+Verbosity is generally encouraged. Function names should be as verbose as is
 practical to fully describe their purpose and behavior.
 
-  These are examples of acceptable names for functions:
+These are examples of acceptable names for functions:
 
 #
 # filterInput()

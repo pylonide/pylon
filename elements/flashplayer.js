@@ -34,6 +34,23 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the flash source text based on data loaded into this component.
+ * <pre class="code">
+ *  <j:flashplayer>
+ *      <j:bindings>
+ *          <j:value select="@src" />
+ *      </j:bindings>
+ *  </j:flashplayer>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:flashplayer ref="@src" />
+ * </pre>
  */
 jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE

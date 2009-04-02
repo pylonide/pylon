@@ -364,9 +364,9 @@ jpf.Presentation = function(){
      * of <j:appsettings /> is used. When not defined the default skinset
      * is accessed.
      * Example:
-     * <code>
+     * <pre class="code">
      * <j:list skinset="perspex" />
-     * </code>
+     * </pre>
      */
     this.$propHandlers["skinset"] =
 
@@ -376,13 +376,13 @@ jpf.Presentation = function(){
      * element is kept including it's selection, all the
      * jml attributes, loaded data, focus and disabled state.
      * Example:
-     * <code>
+     * <pre class="code">
      * <j:list id="lstExample" skin="thumbnails" />
-     * </code>
+     * </pre>
      * Example:
-     * <code>
+     * <pre class="code">
      * lstExample.setAttribute("skin", "list");
-     * </code>
+     * </pre>
      */
     this.$propHandlers["skin"] = function(value){
         if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent

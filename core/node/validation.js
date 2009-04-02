@@ -498,7 +498,7 @@ jpf.Validation = function(){
 /**
  * Object allowing for a set of JML elements to be validated. an element that goes into an error state will
  * show the errorbox.
- * <code>
+ * <pre class="code">
  *  <j:bar validgroup="vgForm">
  *      <j:label>Phone number</j:label>
  *      <j:textbox id="txtPhone"
@@ -513,24 +513,24 @@ jpf.Validation = function(){
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
  *  </j:bar>
- * </code>
+ * </pre>
  *
  * To check if the element has valid information entered, leaving the textbox
  * (focussing another element) will trigger a check. Programmatically a check
  * can be done using the following code:
- * <code>
+ * <pre class="code">
  *  txtPhone.validate();
  *
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
- * </code>
+ * </pre>
  *
  * To check for the entire group of elements use the validation group. For only
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <code>
+ * <pre class="code">
  *  vgForm.validate();
- * </code>
+ * </pre>
  *
  * @constructor
  *

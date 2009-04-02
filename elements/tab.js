@@ -29,7 +29,7 @@
  * arbitrary jml. Each page can render it's content during
  * startup of the application or when the page is activated.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:tab id="tab">
  *      <j:page caption="General">
  *          <j:checkbox>Example</j:checkbox>
@@ -45,7 +45,7 @@
  *          <j:checkbox>This better?</j:checkbox>
  *      </j:page>
  *  </j:tab>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define tab, pages, switch

@@ -32,7 +32,7 @@ var __ANCHORING__ = 1 << 13;
  * Example:
  * This example shows a bar that has 10% as a margin around it and contains a
  * frame that is displayed using different calculations and settings.
- * <code>
+ * <pre class="code">
  *  <j:bar width="80%" height="80%" top="10%" left="10%">
  *      <j:frame title="Example"
  *          left    = "50%+10"
@@ -40,7 +40,7 @@ var __ANCHORING__ = 1 << 13;
  *          right   = "10%"
  *          bottom  = "Math.round(0.232*100)" />
  *  </j:bar>
- * </code>
+ * </pre>
  * Remarks:
  * This is one of three positioning methods.
  * See {@link alignment}

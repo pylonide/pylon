@@ -27,12 +27,12 @@
  * functionality of this object will be managed from within the offline
  * element in JML.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:offline
  *      version-get  = "url:version.php"
  *      providers    = "gears|air"
  *      auto-install = "true" />
- * </code>
+ * </pre>
  *
  * @define offline
  * @event beforeinstall Fires before installation of an offline provider

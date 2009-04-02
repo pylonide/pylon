@@ -33,7 +33,7 @@
  * can grow by fetching more data when the user requests it.
  * Example:
  * A tree with inline items.
- * <code>
+ * <pre class="code">
  *  <j:tree id="tree" align="right">
  *      <j:item caption="root" icon="icoUsers.gif">
  *          <j:item icon="icoUsers.gif" caption="test">
@@ -46,9 +46,9 @@
  *          <j:item icon="icoUsers.gif" caption="test" />
  *      </j:item>
  *  </j:tree>
- * </code>
+ * </pre>
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:tree model="url:items.xml">
  *      <j:bindings>
  *          <j:caption select="@name" />
@@ -56,7 +56,7 @@
  *          <j:traverse select="file|folder" />
  *      </j:bindings>
  *  </j:tree>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define tree

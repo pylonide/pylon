@@ -36,7 +36,7 @@ var __MULTILANG__ = 1 << 16;
  * There is a simple window and a couple of buttons that receive symbols from
  * the language file. Two buttons provide a means to switch the language of the
  * application, using the language symbols from the model.
- * <code>
+ * <pre class="code">
  *   <j:model id="mdlLang">
  *       <groups>
  *           <!-- For French -->
@@ -86,7 +86,7 @@ var __MULTILANG__ = 1 << 16;
  *     onclick="jpf.language.loadFrom('mdlLang:french');">
  *        French
  *   </j:button>
- * </code>
+ * </pre>
  *
  * @default_private
  * @todo get appsettings to understand language

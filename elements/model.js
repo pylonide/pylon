@@ -28,12 +28,12 @@
  * modal can be reset to it's original state. It has support for offline use and
  * synchronization between multiple clients.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:model load="url:products.xml" />
- * </code>
+ * </pre>
  * Example:
  * A small form where a form is submitted using a model.
- * <code>
+ * <pre class="code">
  *  <j:model id="mdlForm" submission="url:save_form.asp" />
  *
  *  <j:bar model="mdlForm">
@@ -45,7 +45,7 @@
  *
  *      <j:button default="true" action="submit">Submit</j:button>
  *  </j:bar>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define model
@@ -638,9 +638,9 @@ jpf.model = function(data, caching){
      * Only relevant for models that are a connect proxy.
      * A connect proxy is set up like this:
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:model connect="element_name" type="select" select="xpath" />
-     * </code>
+     * </pre>
      *
      * @param  {JMLElement} jmlNode  the jml element to be registered.
      * @param  {String}     [type]   select
@@ -814,7 +814,7 @@ jpf.model = function(data, caching){
      */
     var doc;
     this.load = function(xmlNode, nocopy){
-        if (this.dispatchEvent("beforeload") === false)
+        if (this.dispatchEvent("beforeload", {xmlNode: xmlNode}) === false)
             return false;
 
         if (typeof xmlNode == "string")
@@ -845,7 +845,7 @@ jpf.model = function(data, caching){
             //jmlNodes[uniqueId][0].load(xmlNode);
         }
 
-        this.dispatchEvent("afterload");
+        this.dispatchEvent("afterload", {xmlNode: xmlNode});
 
         return this;
     };

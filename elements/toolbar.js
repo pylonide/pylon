@@ -26,7 +26,7 @@
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:toolbar>
  *      <j:menubar>
  *          <j:button submenu="mnuFile">File</j:button>
@@ -51,7 +51,7 @@
  *  <j:menu id="mnuEdit">
  *      ...
  *  </j:menu>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define toolbar

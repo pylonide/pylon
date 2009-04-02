@@ -56,9 +56,9 @@ jpf.BaseButton = function(pHtmlNode){
      *
      * Example:
      * A 3 state picture where each state is 16px high, vertically spaced
-     * <code>
+     * <pre class="code">
      * background="threestates.gif|vertical|3|16"
-     * </code>
+     * </pre>
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.oExt);

@@ -25,12 +25,12 @@
  * Object that represents a URI, broken down to its parts, according to RFC3986.
  * All parts are publicly accessible after parsing like 'url.port' or 'url.host'.
  * Example:
- * <code>
+ * <pre class="code">
  *   var url = new jpf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
- * </code>
+ * </pre>
  *
  * @link http://tools.ietf.org/html/rfc3986
  * @classDescription This class creates a new URL object, divided into chunks

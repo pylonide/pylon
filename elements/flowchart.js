@@ -27,7 +27,7 @@
  *
  * Example:
  * Flowchart element:
- * <code>
+ * <pre class="code">
  *     <j:flowchart id="WF" template="url:template.xml" model="modelName">
  *         <j:css default="red" />
  *         <j:bindings>
@@ -57,11 +57,11 @@
  *             <j:ttype      select = "@type" />
  *         </j:bindings>
  *     </j:flowchart>
- * </code>
+ * </pre>
  *
  * Example:
  * Flowchat model
- * <code>
+ * <pre class="code">
  *     <j:model id="modelName" save-original="true">
  *         <flowchart>
  *             <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="false" flipv="true" fliph="false"></block>
@@ -70,14 +70,14 @@
  *             </block>
  *         </flowchart>
  *     </j:model>
- * </code>
+ * </pre>
  *
  * @define flowchart
  * @attribute {String}   template   the data instruction to load the xml for the
  * template that defines all the elements which are available in the flowchart.
  * Example:
  * A template describing a single transistor element
- * <code>
+ * <pre class="code">
  *  <template>
  *      <element type="capacitor"
  *        picture     = "elements/capacitor.png"
@@ -90,7 +90,7 @@
  *          <input x="28" y="56" position="bottom" name="2" />
  *      </element>
  *  </template>
- * </code>
+ * </pre>
  *
  * @binding lock    prohibit block move, default is false.
  *     Possible values:

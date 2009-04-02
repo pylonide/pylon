@@ -27,7 +27,7 @@
  * display context sensitive and other information about the state of the 
  * application.
  * Example:
- * <code>
+ * <pre class="code">
  *   <j:statusbar align="bottom">
  *      <j:panel>
  *          Javeline PlatForm
@@ -37,7 +37,7 @@
  *      
  *      </j:panel>
  *  </j:statusbar>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define statusbar

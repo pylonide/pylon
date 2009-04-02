@@ -27,12 +27,12 @@
  * cases the functionality of this object will be managed from within the
  * offline element in JML.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:offline
  *      detect-url  = "netork.txt"
  *      detection   = "auto"
  *      interval    = "2000" />
- * </code>
+ * </pre>
  *
  * @define offline
  * @attribute {String} [detect-url] a datainstruction for getting a version number of the current application

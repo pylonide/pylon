@@ -29,17 +29,17 @@
  * The jml label element is used in the same way as the html label element. This
  * example shows the label as a child of a form element. It is rendered outside
  * to the element.
- * <code>
+ * <pre class="code">
  *  <j:textbox ref="address">
  *      <j:label>Address</j:label>
  *  </j:textbox>
- * </code>
+ * </pre>
  * Example:
  * This example uses the for attribute to connect the label to the form element.
- * <code>
+ * <pre class="code">
  *  <j:label for="txtAddress">Address</j:label>
  *  <j:textbox id="txtAddress" ref="address" />
- * </code>
+ * </pre>
  *
  * @constructor
  * @allowchild {smartbinding}
@@ -50,6 +50,23 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the label text based on data loaded into this component.
+ * <pre class="code">
+ *  <j:label>
+ *      <j:bindings>
+ *          <j:value select="@text" />
+ *      </j:bindings>
+ *  </j:label>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:label ref="@text" />
+ * </pre>
  */
 
 jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){

@@ -28,7 +28,7 @@
  * can have specific data loaded from a datasource and can
  * be instantiated more than once.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:portal columns="60%,40%">
  *      <j:bindings>
  *          <j:src select="@src" />
@@ -47,10 +47,10 @@
  *          </docklets>
  *      </j:model>
  *  </j:portal>
- * </code>
+ * </pre>
  * Remarks:
  * A docklet xml is a piece of jml that should be in the following form:
- * <code>
+ * <pre class="code">
  *  <j:docklet xmlns:j="http://www.javeline.com/2005/PlatForm" caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <j:script><![CDATA[
  *          function BillHistory(){
@@ -76,7 +76,7 @@
  *          ...
  *      </j:body>
  *  </j:docklet>
- * </code>
+ * </pre>
  *
  * @constructor
  * @allowchild {smartbinding}
@@ -319,11 +319,11 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
          * a number and a % sign to indicate a percentage.
          * Defaults to "33%, 33%, 33%".
          * Example:
-         * <code>
+         * <pre class="code">
          *  <j:portal columns="25%, 50%, 25%">
          *      ...
          *  </j:portal>
-         * </code>
+         * </pre>
          */
         var cols = (this.$jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
         for (var i = 0; i < cols.length; i++) {

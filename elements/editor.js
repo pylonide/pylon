@@ -26,7 +26,7 @@
  * make it behave that way, simply because it is considered to be the market leader among
  * word-processors.
  * Example:
- * <code>
+ * <pre class="code">
  *     <j:editor
  *         id="myEditor"
  *         left="100"
@@ -34,7 +34,7 @@
  *         height="90%-10">
  *         Default value...
  *     </j:editor>
- * </code>
+ * </pre>
  *
  * @constructor
  * @addnode elements:editor

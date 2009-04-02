@@ -26,9 +26,9 @@
  * location string in your browser that takes care of pointing to a section
  * within the current application.
  * Example:
- * <code>
+ * <pre class="code">
  *  http://www.example.com/index.php#products
- * </code>
+ * </pre>
  * Remarks:
  * In future browsers (2008) the location hash can be set by script and the
  * {@link history#hashchange} event is called when it's changed by using the back or forward
@@ -40,7 +40,7 @@
  * a new hash value or when a user uses the back or forward button. Typing a
  * new hash value in the location bar will also trigger this function.
  * Example:
- * <code>
+ * <pre class="code">
  *  jpf.addEventListener("onhashchange", function(e){
  *      var info = e.page.split(":");
  *
@@ -54,7 +54,7 @@
  *              break;
  *      }
  *  });
- * </code>
+ * </pre>
  *
  * @default_private
  */

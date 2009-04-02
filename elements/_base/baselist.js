@@ -66,9 +66,9 @@ jpf.BaseList = function(){
      * element. A start and an end seperated by a -.
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     * <pre class="code">
      *  <j:dropdown fill="1980-2050" />
-     * </code>
+     * </pre>
      */
     this.$propHandlers["fill"] = function(value){
         if (value)
@@ -704,9 +704,9 @@ jpf.BaseList = function(){
      * @param {String} str the description of the items. A start and an end seperated by a -.
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     * <pre class="code">
      *  lst.loadFillData("1980-2050");
-     * </code>
+     * </pre>
      */
     this.loadFillData = function(str){
         var parts = str.split("-");

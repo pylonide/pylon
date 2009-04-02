@@ -32,7 +32,7 @@
  * combinations. it will queue all requests that require authentication until
  * we're logged in again and will then empty the queue.
  * Example:
- * <code>
+ * <pre class="code">
  * <j:appsettings>
  *     <j:auth>
  *          <j:service name   = "my-backend"
@@ -43,10 +43,10 @@
  *                     logout = "xmpp:logout()" />
  *     </j:auth>
  * </j:appsettings>
- * </code>
+ * </pre>
  * Example:
  * A login window with different states managed by j:auth
- * <code>
+ * <pre class="code">
  *  <j:appsettings>
  *      <j:auth login  = "xmpp:login(username, password)"
  *              logout = "xmpp:logout()"
@@ -84,7 +84,7 @@
  *      <j:text id="loginMsg" />
  *      <j:button action="login">Log in</j:button>
  *  </j:window>
- * </code>
+ * </pre>
  *
  * @event beforelogin   Fires before the log in request is sent to the service
  *   cancellable:    Prevents the log in from happening

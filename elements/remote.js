@@ -31,7 +31,7 @@
  * Example:
  * This example shows a small application which is editable by all clients that
  * have started it. Any change to the data is synchronized to all participants.
- * <code>
+ * <pre class="code">
  *  <j:teleport>
  *      <j:xmpp id="myXMPP"
  *        url           = "http://javeline.com:5280/http-bind" 
@@ -64,7 +64,7 @@
  *  <j:button onclick="myXMPP.connect('testuser@javeline.com', 'testpass')">
  *      Login
  *  </j:button>
- * </code>
+ * </pre>
  * Remarks:
  * Although locking is solved in smartbindings it is directly connected
  * to remote smartbindings. When multiple people are working within the same
@@ -108,7 +108,7 @@
  * Example:
  * This example shows a complex data set and a remote smartbinding that
  * specifies the uniqueness of all nodes concerned.
- * <code>
+ * <pre class="code">
  *  <j:model id="mdlPersons" remote="rmtPersons">
  *      <universe>
  *          <galaxy name="milkyway">
@@ -130,7 +130,7 @@
  *      <j:planet unique="@id" />
  *      <j:species unique="text()" />
  *  </j:remote>
- * </code>
+ * </pre>
  * @attribute {String} select   the xpath that selects the set of data elements that share a similar uniqueness trait.
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific data element.
  */

@@ -30,7 +30,7 @@ var __DATABINDING__ = 1 << 1;
  * change the representation as well. Furthermore, actions that are executed on
  * the representation will change the underlying data.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:list>
  *      <j:bindings>
  *          <j:icon select="@icon" />
@@ -38,7 +38,7 @@ var __DATABINDING__ = 1 << 1;
  *          <j:traverse select="item" />
  *      </j:bindings>
  *  </j:list>
- * </code>
+ * </pre>
  *
  * @constructor
  * @baseclass
@@ -304,9 +304,9 @@ jpf.DataBinding = function(){
      *     the developer should handle this by reloading that part of the content for which the lock failed.
      *     It is impossible for JPF to know which part this is and what to update
      * Example:
-     * <code>
+     * <pre class="code">
      *     <j:rename set="..." lock="rpc:comm.lockFile(xpath:@path, unlock)" />
-     * </code>
+     * </pre>
      * Note: We are expecting the status codes specified in RFC4918 for the locking implementation
      *       http://tools.ietf.org/html/rfc4918#section-9.10.6
      *
@@ -629,10 +629,10 @@ jpf.DataBinding = function(){
      * when a selection occurs.
      * Example:
      * This is how it's achieved using the javeline markup language.
-     * <code>
+     * <pre class="code">
      *  <j:list id="lstExample" />
      *  <j:text model="#lstExample:select" />
-     * </code>
+     * </pre>
      *
      * @param {JmlNode} oElement  JmlNode specifying the element which is connected to this element.
      * @param {Boolean} [dataOnly]
@@ -1203,7 +1203,7 @@ jpf.DataBinding = function(){
      * Loads data in to this element using binding rules to transform the
      * data in to a presentation.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list id="lstExample">
      *      <j:bindings>
      *          <j:caption select="text()" />
@@ -1218,7 +1218,7 @@ jpf.DataBinding = function(){
      *          <image icon="icoTest.gif">image 2</image>\
      *          <image icon="icoTest.gif">image 3</image>');
      *  </j:script>
-     * </code>
+     * </pre>
      *
      * @param {mixed}  [xmlRootNode]
      *   Possible Values:
@@ -1378,7 +1378,7 @@ jpf.DataBinding = function(){
      * This example shows a load rule in a text element. It gets its data from
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
-     * <code>
+     * <pre class="code">
      *  <j:list id="lstExample" smartbinding="..." />
      *
      *  <j:text model="#lstExample">
@@ -1387,7 +1387,7 @@ jpf.DataBinding = function(){
      *          <j:contents select="message/text()" />
      *      </j:bindings>
      *  </j:text>
-     * </code>
+     * </pre>
      * @attribute {string} get the data instruction on how to load data from the data source into the xmlRoot of this component.
      */
     this.$loadSubData = function(xmlRootNode){
@@ -1612,7 +1612,7 @@ jpf.DataBinding = function(){
      * element is rendered as well. Default is false.
      * Example:
      * This example shows a tree which also renders the root element.
-     * <code>
+     * <pre class="code">
      *  <j:tree render-root="true">
      *      <j:model>
      *          <root name="My Computer">
@@ -1623,7 +1623,7 @@ jpf.DataBinding = function(){
      *          </root>
      *      </j:model>
      *  </j:tree>
-     * </code>
+     * </pre>
      */
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",
@@ -1658,10 +1658,10 @@ jpf.DataBinding = function(){
      * This example uses property binding to update the loading message. The
      * position of the progressbar should be updated by the script taking care
      * of loading the data.
-     * <code>
+     * <pre class="code">
      *  <j:list loading-message="{'Loading ' + Math.round(progress1.value*100) + '%'}" />
      *  <j:progressbar id="progress1" />
-     * </code>
+     * </pre>
      * Remarks:
      * Usually a static loading message is displayed for only 100 milliseconds
      * or so, whilst loading the data from the server. This is done for instance
@@ -1669,14 +1669,14 @@ jpf.DataBinding = function(){
      * binds on the selection of a tree displaying folders. When the selection
      * changes, the list loads new data by extending the model. During the load
      * of this new data the loading message is displayed.
-     * <code>
+     * <pre class="code">
      *  <j:list model="#trFolders">
      *      <j:bindings>
      *          ...
      *          <j:load load="rpc:comm.getFiles({@path})" />
      *      </j:bindings>
      *  </j:list>
-     * </code>
+     * </pre>
      */
     this.$propHandlers["loading-message"] = function(value){
         this.loadingMsg = value
@@ -1713,7 +1713,7 @@ jpf.DataBinding = function(){
      * data, this changes when for instance the name is filled in. A root node
      * is created and under that a 'name' element with a textnode containing
      * the entered text.
-     * <code>
+     * <pre class="code">
      *  <j:model id="mdlForm" submission="url:save_form.php" />
      *
      *  <j:bar>
@@ -1728,7 +1728,7 @@ jpf.DataBinding = function(){
      *
      *      <j:button action="submit">Submit</j:button>
      *  </j:bar>
-     * </code>
+     * </pre>
      */
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !jpf.isFalse(
@@ -1750,7 +1750,7 @@ jpf.DataBinding = function(){
      * Example:
      * This example shows a fully specified smartbinding. Usually only parts
      * are used. This example shows a tree with files and folders.
-     * <code>
+     * <pre class="code">
      *  <j:tree smartbinding="sbExample" />
      *
      *  <j:smartbinding id="sbExample">
@@ -1774,11 +1774,11 @@ jpf.DataBinding = function(){
      *      </j:dragdrop>
      *      <j:model load="url:get_listing.php" />
      *  </j:smartbinding>
-     * </code>
+     * </pre>
      * Remarks:
      * The smartbinding parts can also be assigned to an element by adding them
      * directly as a child in jml.
-     * <code>
+     * <pre class="code">
      *  <j:tree>
      *      <j:bindings>
      *          ...
@@ -1791,7 +1791,7 @@ jpf.DataBinding = function(){
      *      </j:dragdrop>
      *      <j:model />
      *  </j:tree>
-     * </code>
+     * </pre>
      *
      * There are several ways to be less verbose in assigning certain rules.
      * see {@link Multiselectelement.traverse}
@@ -1839,7 +1839,7 @@ jpf.DataBinding = function(){
      * representation of a list. In this case it displays the names of
      * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
-     * <code>
+     * <pre class="code">
      *  <j:list bindings="bndExample" />
      *
      *  <j:bindings id="bndExample">
@@ -1847,7 +1847,7 @@ jpf.DataBinding = function(){
      *      <j:icon     select = "@icon" />
      *      <j:traverse select = "account" sort="text()" />
      *  </j:bindings>
-     * </code>
+     * </pre>
      * Remarks:
      * Bindings can also be assigned directly by putting the bindings tag as a
      * child of this element.
@@ -1855,9 +1855,9 @@ jpf.DataBinding = function(){
      * If the rule only contains a select attribute, it can be written in a
      * short way by adding an attribute with the name of the rule to the
      * element itself:
-     * <code>
+     * <pre class="code">
      *  <j:list caption="text()" icon="@icon" traverse="item" />
-     * </code>
+     * </pre>
      */
     this.$propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing
@@ -1885,7 +1885,7 @@ jpf.DataBinding = function(){
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:tree actions="actExample" />
      *
      *  <j:actions id="actExample">
@@ -1893,7 +1893,7 @@ jpf.DataBinding = function(){
      *      <j:remove set="rpc:comm.remove({@id})" />
      *      <j:add get="rpc:comm.add({../@id})" />
      *  </j:actions>
-     * </code>
+     * </pre>
      */
     this.$propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing
@@ -2046,23 +2046,23 @@ jpf.DataBinding = function(){
      * @attribute {String} model the name of the model to load data from or a
      * datainstruction to load data.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:tree model="mdlExample" />
      *  <j:model id="mdlExample" load="url:example.xml" />
-     * </code>
+     * </pre>
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list model="url:friends.xml" />
-     * </code>
+     * </pre>
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:tree id="trContacts" model="rpc:comm.getContacts()" />
      *  <j:text model="#trContacts" />
-     * </code>
+     * </pre>
      * Remarks:
      * This attribute is inherited from a parent when not set. You can use this
      * to tell sets of elements to use the same model.
-     * <code>
+     * <pre class="code">
      *  <j:bar model="mdlForm">
      *      <j:label>Name</j:label>
      *      <j:textbox ref="name" />
@@ -2074,7 +2074,7 @@ jpf.DataBinding = function(){
      *  <j:model id="mdlForm">
      *      <data />
      *  </j:model>
-     * </code>
+     * </pre>
      * When no model is specified the default model is choosen. The default
      * model is the first model that is found without a name, or if all models
      * have a name, the first model found.
@@ -2089,7 +2089,7 @@ jpf.DataBinding = function(){
      * a country in the dropdown the value of the item is stored in the second
      * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
-     * <code>
+     * <pre class="code">
      *  <j:label>Name</j:label>
      *  <j:textbox ref="name" model="mdlForm" />
      *
@@ -2118,11 +2118,11 @@ jpf.DataBinding = function(){
      *          <country />
      *      </data>
      *  </j:model>
-     * </code>
+     * </pre>
      * Remarks:
      * In most cases this attribute isn't used because the model is inherited
      * from a parent element. In a typical form this will happen as follows:
-     * <code>
+     * <pre class="code">
      *  <j:bar model="mdlForm">
      *      <j:label>Name</j:label>
      *      <j:textbox ref="name" />
@@ -2140,7 +2140,7 @@ jpf.DataBinding = function(){
      *  <j:model id="mdlForm">
      *      <data />
      *  </j:model>
-     * </code>
+     * </pre>
      * @see jpf.DataBinding@model
      */
     this.$propHandlers["model"] = function(value){
@@ -2183,13 +2183,13 @@ jpf.DataBinding = function(){
      * @attribute {String} ref  an xpath statement used to select the data xml
      * element to which this element is bound to.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:slider ref="@value" model="mdlExample" />
      *
      *  <j:model id="mdlExample">
      *      <data value="0.3" />
      *  </j:model>
-     * </code>
+     * </pre>
      */
     var hasRefBinding;
     this.$propHandlers["ref"] = function(value){
@@ -2354,27 +2354,27 @@ jpf.MultiselectBinding = function(){
      * Example:
      * This example shows a list that displays only elements with the tagName
      * 'mail' that do not have the deleted attribute set to 1.
-     * <code>
+     * <pre class="code">
      *  <j:list>
      *      <j:bindings>
      *          ...
      *          <j:traverse select="mail[not(@deleted='1')]" />
      *      </j:bindings>
      *  </j:list>
-     * </code>
+     * </pre>
      * Example:
      * This example shows how to use the traverse rule to order files based
      * on their modified data.
-     * <code>
+     * <pre class="code">
      *  <j:traverse
      *      select      = "file"
      *      sort        = "@date"
      *      date-format = "DD-MM-YYYY"
      *      order       = "descending" />
-     * </code>
+     * </pre>
      * Example:
      * This example shows how to do complex sorting using a javascript callback function.
-     * <code>
+     * <pre class="code">
      *  <j:traverse select="file|folder" sort="@name" sort-method="compare" />
      *  <j:script>
      *      function compare(value, args, xmlNode) {
@@ -2382,7 +2382,7 @@ jpf.MultiselectBinding = function(){
      *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
      *      }
      *  </j:script>
-     * </code>
+     * </pre>
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
      * @attribute {String} data-type    the way sorting is executed. See {@link #sort-method} for how to specify a custom sort method.
@@ -2400,9 +2400,9 @@ jpf.MultiselectBinding = function(){
      *   mm     Minutes
      *   ss     Seconds
      * Example:
-     * <code>
+     * <pre class="code">
      *  date-format="DD-MM-YYYY"
-     * </code>
+     * </pre>
      * @attribute {String} sort-method  the name of a javascript function to executed to determine the value to sort on.
      * @attribute {String} order        the order of the sorted list.
      *   Possible values:
@@ -3287,7 +3287,7 @@ jpf.MultiselectBinding = function(){
      * xml data elements are rendered by this element. See
      * {@link element.traverse} for more information.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:label>Country</j:label>
      *  <j:dropdown
      *      model        = "mdlCountries"
@@ -3304,7 +3304,7 @@ jpf.MultiselectBinding = function(){
      *          ...
      *      </countries>
      *  </j:model>
-     * </code>
+     * </pre>
      * @see  element.traverse
      */
     this.$propHandlers["traverse"] =
@@ -3313,9 +3313,9 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} caption the xpath statement that determines from
      * which xml node the caption is retrieved.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list caption="text()" traverse="item" />
-     * </code>
+     * </pre>
      * @see  binding#caption
      */
     this.$propHandlers["caption"]  =
@@ -3324,9 +3324,9 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} valuerule the xpath statement that determines from
      * which xml node the value is retrieved.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list valuerule="@value" traverse="item" />
-     * </code>
+     * </pre>
      * @see  binding#value
      */
     this.$propHandlers["valuerule"]  =
@@ -3335,9 +3335,9 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} icon the xpath statement that determines from
      * which xml node the icon url is retrieved.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list icon="@icon" traverse="item" />
-     * </code>
+     * </pre>
      * @see  binding#icon
      */
     this.$propHandlers["icon"]     =
@@ -3346,9 +3346,9 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} tooltip the xpath statement that determines from
      * which xml node the tooltip text is retrieved.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list tooltip="text()" traverse="item" />
-     * </code>
+     * </pre>
      * @see  binding#tooltip
      */
     this.$propHandlers["tooltip"]  =
@@ -3357,9 +3357,9 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} select the xpath statement that determines whether
      * this node is selectable.
      * Example:
-     * <code>
+     * <pre class="code">
      *  <j:list select="self::node()[not(@disabled='1')]" traverse="item" />
-     * </code>
+     * </pre>
      * @see  binding#select
      */
     this.$propHandlers["select"]   = this.$handleBindingRule;

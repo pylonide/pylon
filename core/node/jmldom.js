@@ -37,13 +37,13 @@ var __WITH_JMLDOM__ = 1 << 14;
  * implement DOM Level 2. For more information see http://www.w3.org/DOM/.
  * Example:
  * Javeline Markup Language
- * <code>
+ * <pre class="code">
  *  <j:window id="winExample" title="Example">
  *      <j:button id="tstButton" />
  *  </j:window>
- * </code>
+ * </pre>
  * Document Object Model in javascript
- * <code>
+ * <pre class="code">
  *  //The following line is only there for completeness sake. In fact jpf
  *  //automatically adds a reference in javascript called winExample based
  *  //on the is it has.
@@ -56,9 +56,9 @@ var __WITH_JMLDOM__ = 1 << 14;
  *  lblNew.setAttribute("caption", "Example");
  *
  *  tstButton.setAttribute("caption", "Click me");
- * </code>
+ * </pre>
  * That would be the same as having the following jml:
- * <code>
+ * <pre class="code">
  *  <j:window id="winExample"
  *    title = "Example"
  *    icon  = "icoFolder.gif"
@@ -66,7 +66,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  *      <j:label caption="Example" />
  *      <j:button id="tstButton" caption="Click me"/>
  *  </j:window>
- * </code>
+ * </pre>
  * Remarks:
  * Because the W3C DOM is native to all modern browsers the internet is full
  * of tutorials and documentation for this API. If you need more information

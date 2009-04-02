@@ -48,7 +48,7 @@ var __TRANSACTION__ = 1 << 3;
  * is possible. When the lock fails the window will close. By hooking the
  * 'lockfail' event the user can be notified of the reason. For more information 
  * see {@link term.locking}.
- * <code>
+ * <pre class="code">
  *  <j:list id="lstItems" onafterchoose="winEdit.show()">
  *      <j:bindings>
  *          <j:caption select="name" />
@@ -95,7 +95,7 @@ var __TRANSACTION__ = 1 << 3;
  *      <j:button action="cancel">Cancel</j:button>
  *      <j:button action="apply">Apply</j:button>
  *  </j:window>
- * </code>
+ * </pre>
  *
  * @constructor
  * @baseclass

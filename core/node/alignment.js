@@ -34,13 +34,13 @@ var __ALIGNMENT__ = 1 << 12;
  * from layouts and save new ones.
  * Example:
  * An Outlook like layout in JML
- * <code>
+ * <pre class="code">
  * <j:toolbar   align = "top-1"          height = "40" />
  * <j:tree      align = "left-splitter"  width  = "20%" />
  * <j:datagrid  align = "right-splitter" height = "50%" />
  * <j:text      align = "right" />
  * <j:statusbar align = "bottom-2"       height = "20" />
- * </code>
+ * </pre>
  * Remarks:
  * This is one of three positioning methods.
  * See {@link grid}

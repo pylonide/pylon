@@ -28,9 +28,9 @@
  * 
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
- * <code>
+ * <pre class="code">
  *     <j:calendar top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06" />
- * </code>
+ * </pre>
  * 
  * @constructor
  * @addnode elements:calendar
@@ -51,6 +51,23 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the date based on data loaded into this component.
+ * <pre class="code">
+ *  <j:calendar>
+ *      <j:bindings>
+ *          <j:value select="@date" />
+ *      </j:bindings>
+ *  </j:calendar>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:calendar ref="@date" />
+ * </pre>
  */
 jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 

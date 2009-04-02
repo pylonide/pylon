@@ -27,9 +27,9 @@
  * Element displaying a clickable rectangle having two states which
  * can be toggled by user interaction.
  * Example:
- * <code>
+ * <pre class="code">
  * <j:checkbox values="full|empty">the glass is full</j:checkbox>
- * </code>
+ * </pre>
  *
  * @constructor
  *

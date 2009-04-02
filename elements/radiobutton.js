@@ -146,17 +146,17 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * Element displaying a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
- * <code>
+ * <pre class="code">
  *  <j:frame title="Options">
  *      <j:radiobutton>Option 1</j:radiobutton>
  *      <j:radiobutton>Option 2</j:radiobutton>
  *      <j:radiobutton>Option 3</j:radiobutton>
  *      <j:radiobutton>Option 4</j:radiobutton>
  *  </j:frame>
- * </code>
+ * </pre>
  * Example:
  * This example shows radio buttons with an explicit group set:
- * <code>
+ * <pre class="code">
  *  <j:label>Options</j:label>
  *  <j:radiobutton group="g1">Option 1</j:radiobutton>
  *  <j:radiobutton group="g1">Option 2</j:radiobutton>
@@ -164,7 +164,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  *  <j:label>Choices</j:label>
  *  <j:radiobutton group="g2">Choice 1</j:radiobutton>
  *  <j:radiobutton group="g2">Choice 2</j:radiobutton>
- * </code>
+ * </pre>
  *
  * @constructor
  * @define radiobutton

@@ -30,11 +30,11 @@
  * This example shows a progress bar that is only visible when an application is
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
- * <code>
+ * <pre class="code">
  *  <j:progressbar
  *     value="{jpf.offline.progress}"
  *     visible="{jpf.offline.syncing}" />
- * </code>
+ * </pre>
  *
  * @constructor
  * @allowchild {smartbinding}
@@ -46,8 +46,24 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the progress position based on data loaded into this component.
+ * <pre class="code">
+ *  <j:progressbar>
+ *      <j:bindings>
+ *          <j:value select="@progress" />
+ *      </j:bindings>
+ *  </j:progressbar>
+ * </pre>
+ * Example:
+ * A shorter way to write this is:
+ * <pre class="code">
+ *  <j:progressbar ref="@progress" />
+ * </pre>
  */
-
 jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = false; // This object can get the focus
 
@@ -61,6 +77,11 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["autohide"] = true;
 
     this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
+    
+    /**
+     * @attribute {String} value the position of the progressbar stated between 
+     * the min and max value.
+     */
     this.$propHandlers["value"] = function(value){
         this.value = parseInt(value) || this.min;
 
@@ -79,10 +100,18 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
             Math.round((this.value / (this.max - this.min)) * 100) + "%";
     };
 
+    /**
+     * @attribute {Number} min the minimal value the progressbar can have. This is
+     * the value that the progressbar has when it's at it's begin position.
+     */
     this.$propHandlers["min"] = function(value){
         this.min = parseFloat(value);
     }
 
+    /**
+     * @attribute {Number} max the maximal value the progressbar can have. This is
+     * the value that the progressbar has when it's at it's end position.
+     */
     this.$propHandlers["max"] = function(value){
         this.max = parseFloat(value);
     }
