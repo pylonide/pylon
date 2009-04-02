@@ -42,6 +42,37 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @binding caption  Determines the caption of a node.
+ * @binding icon     Determines the icon of a node.
+ * @binding image    Determines the image of a node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <pre class="code">
+ *  <j:thumbnail>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:image select="@thumbnail" />
+ *          <j:image value="no_image.png" />
+ *          <j:traverse select="images" />
+ *      </j:bindings>
+ *  </j:thumbnail>
+ * </pre>
+ * @binding css      Determines a css class for a node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <pre class="code">
+ *  <j:list>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:css select="message[@unread]" value="highlighUnread" />
+ *          <j:icon select="@icon" />
+ *          <j:icon select="self::folder" value="icoFolder.gif" />
+ *          <j:traverse select="folder" />
+ *      </j:bindings>
+ *  </j:list>
+ * </pre>
+ * @binding tooltip  Determines the tooltip of a node.
  */
 
 jpf.BaseList = function(){

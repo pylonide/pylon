@@ -85,6 +85,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * @attribute {String}  value      the path of the file to uploaded, or the online path after upload.
+     * @attribute {Boolean} target     the url the form is posted to.
      * @attribute {Number}  !progress  the position of the progressbar indicating the position in the upload process.
      * @attribute {Boolean} !uploading whether this upload element is uploading.
      * Example:
@@ -219,7 +220,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @event receive Fires when the upload succeeded
+     * @event receive Fires when the upload succeeded, was cancelled or failed
      */
     this.$done = function(data){
         window.clearInterval(this.timer);
@@ -243,9 +244,6 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$uploading = false;
     };
 
-    /**
-     * @event receive Fires when the upload was cancelled or failed.
-     */
     this.$cancel = function(value, caption){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);

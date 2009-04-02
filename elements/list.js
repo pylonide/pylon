@@ -102,7 +102,6 @@
  * @version     %I%, %G%
  * @since       0.4
  */
- 
 jpf.thumbnail = 
 jpf.select    = 
 jpf.select1   = 

@@ -43,7 +43,24 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.DragDrop
  *
- * @todo add the right ifdefs i.e. __WITH_PROPEDIT
+ * @binding caption   Determines the caption of a node.
+ * @binding css       Determines a css class for a node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <pre class="code">
+ *  <j:list>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:css select="message[@unread]" value="highlighUnread" />
+ *          <j:icon select="@icon" />
+ *          <j:icon select="self::folder" value="icoFolder.gif" />
+ *          <j:traverse select="folder" />
+ *      </j:bindings>
+ *  </j:list>
+ * </pre>
+ * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
+ * @binding description Determines the text that is displayed under the expanded row.
+ * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
  */
 jpf.propedit    =
 jpf.spreadsheet = 

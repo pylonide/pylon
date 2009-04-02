@@ -32,7 +32,7 @@
  * @version     %I%, %G%
  * @since       0.8
  *
- * @event propertychagne Fires when a property changes.
+ * @event propertychange Fires when a property changes.
  *   object:
  *     {String} name          the name of the changed property
  *     {Mixed}  originalvalue the value it had before the change

@@ -765,6 +765,7 @@ jpf.JmlElement = function(){
 
 /**
  * @for jpf.jmlNode
+ * @private
  */
 jpf.JmlElement.propHandlers = {
     /**
