@@ -23,10 +23,10 @@
 
 /**
  * @define auth
- * Centralized login handling. Not being logged in, for instance after being
- * offline for enough time, or your session that expires can put the application
- * in a complex undefined state. This object makes sure the state is never
- * undefined. It gets signalled 'authentication is required' and gives off
+ * Centralized authentication handling. Not being logged in, after being
+ * offline for a while can put the application
+ * in a complex undefined state. The auth element makes sure the state is always
+ * properly managed. When it gets signalled 'authentication required' it dispatches the
  * appropriate events to display a login box. It can automatically retry logging
  * in to one or more services using in memory stored username/password
  * combinations. it will queue all requests that require authentication until
@@ -118,10 +118,11 @@
  * @attribute {String}  logout-state    the id of the state element which is activated when the user is logged out.
  * @attribute {String}  model           the id of the model element which gets the data loaded given at login success.
  * @allowchild service
- * @define service
+ * @define service  Element specifying a server to log into.
  * @attribute {String} name     the unique identifier of the service
  * @attribute {String} login    the datainstruction on how to log in to a service
  * @attribute {String} logout   the datainstruction on how to log out of a service
+ * @see element.auth
  *
  * @default_private
  */

@@ -301,7 +301,7 @@ jpf.DataBinding = function(){
      * <pre class="code">
      *     <j:rename set="..." lock="rpc:comm.lockFile(xpath:@path, unlock)" />
      * </pre>
-     * Note: We are expecting the status codes specified in RFC4918 for the locking implementation
+     * Note: I am expecting the status codes specified in RFC4918 for the locking implementation
      *       http://tools.ietf.org/html/rfc4918#section-9.10.6
      *
      * @event locksuccess   Fires when a lock request succeeds

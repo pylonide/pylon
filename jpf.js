@@ -25,6 +25,48 @@
  * @author    Ruben Daniels ruben@javeline.com
  * @version   2.0
  * @url       http://www.ajax.org
+ *
+ * @event domready Fires when the browsers' dom is ready to be manipulated.
+ * @event movefocus         Fires when the focus moves from one element to another.
+ *   object:
+ *   {JMLElement} toElement the element that will receive the focus.
+ * @event exit              Fires when the application wants to exit.
+ *   cancellable:  Prevents the application from exiting. The returnValue of the
+ *   event object is displayed in a popup which asks the user for permission.
+ * @event keyup                            Fires when the user stops pressing a key.
+ *   cancellable: Prevents the behaviour.
+ *   object:
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object.
+ * @event mousescroll                Fires when the user scrolls the mouse
+ *   cancellable: Prevents the container to scroll
+ *   object:
+ *   {Number} delta the scroll impulse.
+ * @event hotkey                        Fires when the user presses a hotkey
+ *   bubbles: yes
+ *   cancellable: Prevents the default hotkey behaviour.
+ *   object:
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object.
+ * @event keydown    Fires when the user presses a key
+ *   bubbles: yes
+ *   cancellable: Prevents the behaviour.
+ *   object:
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object.
+ * @event mousedown  Fires when the user presses a mouse button
+ *   object:
+ *   {Event}      htmlEvent the char code of the pressed key.
+ *   {JMLElement} jmlNode   the element on which is clicked.
  */
 var jpf = {
     // Content Distribution Network URL:

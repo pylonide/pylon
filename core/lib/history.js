@@ -31,7 +31,7 @@
  * </pre>
  * Remarks:
  * In future browsers (2008) the location hash can be set by script and the
- * {@link history#hashchange} event is called when it's changed by using the back or forward
+ * {@link element.history.event.hashchange} event is called when it's changed by using the back or forward
  * button of the browsers. In the current (2008) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
@@ -41,13 +41,15 @@
  * new hash value in the location bar will also trigger this function.
  * Example:
  * <pre class="code">
- *  jpf.addEventListener("onhashchange", function(e){
+ *  jpf.addEventListener("hashchange", function(e){
  *      var info = e.page.split(":");
  *
  *      switch(info[0]) {
  *          case "product": //hash is for instance 'product:23849'
- *              stProduct.activate(); //Sets the state to displaying product information see {@link state}
- *              loadProduct(info[1]); //Loads a product by id
+ *              //Sets the state to displaying product information see {@link element.state}
+ *              stProduct.activate(); 
+ *              //Loads a product by id
+ *              loadProduct(info[1]); 
  *              break;
  *          case "news":
  *              stNews.activate();

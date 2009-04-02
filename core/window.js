@@ -71,57 +71,9 @@ jpf.windowManager = {
  * the same as the javascript global object. It handles the focussing within
  * the document and several other events such as exit and the keyboard events.
  *
- * @for jpf
- * @event movefocus         Fires when the focus moves from one element to another.
- *   object:
- *   {JMLElement} toElement the element that will receive the focus.
- * @event exit              Fires when the application wants to exit.
- *   cancellable:  Prevents the application from exiting. The returnValue of the
- *   event object is displayed in a popup which asks the user for permission.
- *
- * @for window
  * @event blur              Fires when the browser window looses focus.
  * @event focus             Fires when the browser window receives focus.
  *
- * @for jmlNode
- * @event contextmenu       Fires when the user requests a context menu. Either
- * using the keyboard or mouse.
- *   bubbles: yes
- *   cancellable:  Prevents the default contextmenu from appearing.
- *   object:
- *   {Number} x         the x coordinate where the contextmenu is requested on.
- *   {Number} y         the y coordinate where the contextmenu is requested on.
- *   {Object} htmlEvent the html event object.
- * @event keyup                            Fires when the user stops pressing a key.
- *   cancellable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event mousescroll                Fires when the user scrolls the mouse
- *   cancellable: Prevents the container to scroll
- *   object:
- *   {Number} delta the scroll impulse.
- * @event hotkey                        Fires when the user presses a hotkey
- *   bubbles: yes
- *   cancellable: Prevents the default hotkey behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event keydown                        Fires when the user presses a key
- *   bubbles: yes
- *   cancellable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
  * @constructor
  * @jpfclass
  *
