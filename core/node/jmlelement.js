@@ -622,9 +622,7 @@ jpf.JmlElement = function(){
       this.hasFeature(__DATABINDING__) &&
       //#endif
       !this.hasFeature(__MULTISELECT__) && !this.change) {
-        /* ***********************
-                Change Action
-        ************************/
+
         /**
          * Changes the value of this element.
          * @action

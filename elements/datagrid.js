@@ -42,6 +42,7 @@
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
  * @inherits jpf.DragDrop
+ * @inherits jpf.Rename
  *
  * @binding caption   Determines the caption of a node.
  * @binding css       Determines a css class for a node.

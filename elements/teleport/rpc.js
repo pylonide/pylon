@@ -51,6 +51,8 @@
  * </pre>
  *
  * @define rpc
+ * @attribute {String} soap-xmlns   the url that uniquely identifies the xml namespace for the message
+ * @attribute {String} soap-prefix  the prefix that is paired with the message xml namespace
  * @addnode teleport
  * @allowchild method
  *

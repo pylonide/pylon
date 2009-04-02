@@ -26,7 +26,8 @@ var __VALIDATION__ = 1 << 6;
 /**
  * Baseclass adding validation to this element.
  * Example:
- * <j:bar validgroup="vgExample">
+ * <pre class="code">
+ *  <j:bar validgroup="vgExample">
  *      <j:label>Number</j:label>
  *      <j:textbox required="true" min="3" max="10" invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
  *      <j:label>Name</j:label>
@@ -35,6 +36,7 @@ var __VALIDATION__ = 1 << 6;
  *      <j:textarea required="true" invalidmsg="Invalid Message;Please enter a message!" />
  *          <j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
  *  </j:bar>
+ * </pre>
  *
  * @constructor
  * @baseclass
@@ -232,6 +234,9 @@ jpf.Validation = function(){
 
     var vRules = ["true"];
     var vIds   = {};
+    /**
+     * Adds a string of javascript that validates this element.
+     */
     this.addValidationRule = function(rule){
         vRules.push(rule);
     };
@@ -240,8 +245,8 @@ jpf.Validation = function(){
      *
      * @attribute  {Boolean}  required     whether a valid value for this element is required.
      * @attribute  {RegExp}   pattern      the pattern tested against the value of this element to determine it's validity.
-     * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any
-     *      of a set of predefined types, or a simple type created by an XML Schema definition.
+     * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any 
+     * of a set of predefined types, or a simple type created by an XML Schema definition.
      *   Possible values:
      *   xsd:dateTime
      *   xsd:time
@@ -446,6 +451,9 @@ jpf.Validation = function(){
     
     this.$propHandlers["valid-test"] = function(value){
         var _self = this, rvCache = {};
+        /**
+         * Removes the validation cache created by the valid-test rule.
+         */
         this.removeValidationCache = function(){
             rvCache = {};
         }

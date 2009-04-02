@@ -62,8 +62,8 @@
  * </pre>
  * Remarks:
  * This is one of three positioning methods.
- * See {@link alignment}
- * See {@link anchoring}
+ * See {@link baseclass.alignment}
+ * See {@link baseclass.anchoring}
  *
  * @define grid
  * @allowchild {elements}, {anyjml}

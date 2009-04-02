@@ -63,9 +63,6 @@
  *
  * @constructor
  *
- * @define rpc
- * @attribute {String} soap-xmlns   the url that uniquely identifies the xml namespace for the message
- * @attribute {String} soap-prefix  the prefix that is paired with the message xml namespace
  * @addenum rpc[@protocol]:soap
  *
  * @inherits jpf.BaseComm
@@ -319,11 +316,6 @@ jpf.soap = function(){
         return true;
     }
 
-    /**
-     * @define rpc
-     * @attribute ns-name 
-     * @attribute ns-url 
-     */
     this.$load = function(x){
         if (x.getAttribute("soap-prefix"))
             this.nsName = x.getAttribute("soap-prefix");

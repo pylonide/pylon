@@ -43,7 +43,7 @@
  * get="#element:choose:xpath"
  * get="#element::xpath"
  * get="url:example.jsp"
- * get="url:http://www.bla.nl?blah=10&foo={@bar}&example=eval:10+5"
+ * get="url:http://www.bla.nl?blah=10&foo={@bar}&example=[10+5]"
  * get="rpc:comm.submit('abc', {@bar})"
  * get="call:submit('abc', {@bar})"
  * get="xmpp:login(username, password)"
@@ -54,8 +54,8 @@
  * Syntax:
  * Using data instructions to store data
  * <pre class="code">
- * set="url:http://www.bla.nl?blah=10&foo={/bar}&example=eval:10+5&"
- * set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=eval:10+5&"
+ * set="url:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
+ * set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
  * set="rpc:comm.submit('abc', {/bar})"
  * set="call:submit('abc', {/bar})"
  * set="eval:example=5"

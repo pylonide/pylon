@@ -56,9 +56,12 @@ var __TRANSACTION__ = 1 << 3;
  *          <j:traverse select="item" />
  *      </j:bindings>
  *      <j:actions>
- *          <j:add set="rpc:comm.addItem({name}, {subject}, {message})">
+ *          <j:add set="url:save.php?xml={.}">
  *              <item name="New Item" />
  *          </j:add>
+ *          <j:update 
+ *              set="url:save.php?xml={.}" 
+ *              lock="url:lock.php?id={@id}" />
  *      </j:actions>
  *      <j:model>
  *          <items>
@@ -69,21 +72,15 @@ var __TRANSACTION__ = 1 << 3;
  *      </j:model>
  *  </j:list>
  *  
- *  <j:actions id="actTrans">
- *      <j:update 
- *          set="rpc:comm.update({@id}, {name}, {subject}, {message})" 
- *          lock="rpc:comm.getLock({@id})" />
- *  </j:actions>
- *  
  *  <j:button onclick="winMail.begin('add');">add new item</j:button>
  *  
  *  <j:window id="winEdit" 
  *    transaction = "true"
- *    actions     = "actTrans" 
  *    model       = "#lstItems"
- *    validgroup  = "vgItems">
+ *    title       = "Edit this message">
  *      <j:label>Name</j:label>
- *      <j:textbox ref="@name" required="true" />
+ *      <j:textbox ref="@name" required="true" 
+ *        invalidmsg="Please enter your name" />
  *
  *      <j:label>Subject</j:label>
  *      <j:textbox ref="@subject" />
@@ -93,7 +90,8 @@ var __TRANSACTION__ = 1 << 3;
  *      
  *      <j:button action="ok" default="true">OK</j:button>
  *      <j:button action="cancel">Cancel</j:button>
- *      <j:button action="apply">Apply</j:button>
+ *      <j:button action="apply" 
+ *        disabled="{!winEdit.undolength}">Apply</j:button>
  *  </j:window>
  * </pre>
  *
@@ -101,7 +99,6 @@ var __TRANSACTION__ = 1 << 3;
  * @baseclass
  *
  * @event transactionconflict Fires when data in a transaction is being updated by an external process.
- * @action update  updates existent data using transactions.
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

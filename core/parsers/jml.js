@@ -21,8 +21,9 @@
 
 // #ifdef __PARSER_JML
 /**
- * The parser of the Javeline Markup Language. It parses other namespaces as
- * well, such as html and xsd.
+ * The parser of the Javeline Markup Language. Besides jml this parser takes care
+ * of distributing parsing tasks to other parsers like the native html parser and
+ * the xsd parser.
  * @parser
  * @private
  */

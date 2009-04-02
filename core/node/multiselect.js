@@ -474,7 +474,7 @@ jpf.MultiSelect = function(){
     // #ifdef __WITH_MULTIBINDING
     /**
      * Sets the second level SmartBinding for Multilevel Databinding.
-     * For more information see {@link MultiLevelBinding}
+     * For more information see {@link baseclass.multilevelbinding MultiLevelBinding}
      *
      * @return  {SmartBinding}
      * @see #getSelectionBindClass
@@ -488,6 +488,11 @@ jpf.MultiSelect = function(){
 
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
     };
+    
+    /**
+     * Gets the {@link baseclass.multilevelbinding MultiLevelBinding} for this element.
+     * @return {MultiLevelBinding} the {@link baseclass.multilevelbinding MultiLevelBinding} for this element.
+     */
     this.getMultibinding = function(){
         return selSmartbinding;
     }
@@ -925,6 +930,9 @@ jpf.MultiSelect = function(){
         this.dispatchEvent("indicate");
     };
 
+    /**
+     * @private
+     */
     this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
         clearTimeout(this.timer);
 
@@ -961,6 +969,9 @@ jpf.MultiSelect = function(){
         }
     };
 
+    /**
+     * @private
+     */
     this.selectTemp = function(){
         if (!this.$tempsel)
             return;

@@ -57,6 +57,13 @@
  *      comm.searchProduct('car', 10);
  *  </j:script>
  * </pre>
+ * Remarks:
+ * Calls can be made to a server using cgi variables with a special {@link term.datainstruction data instruction}
+ * format.
+ * <pre class="code">
+ *  get="url:http://www.bla.nl?blah=10&foo={@bar}&example=[10+5]"
+ *  set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
+ * </pre>
  *
  * @addenum rpc[@protocol]:cgi
  *

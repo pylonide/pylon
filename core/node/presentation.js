@@ -340,6 +340,36 @@ jpf.skins = {
  * Baseclass adding skinning features to this element. A skin is a description
  * of how the element is rendered. In the web browser this is done using html
  * elements and css.
+ * Remarks:
+ * The skin is set using the skin attribute. The skin of each element can be
+ * changed at run time. Other than just changing the look of an element, a skin
+ * change can help the user to perceive information in a different way. For 
+ * example a list element has a default skin, but can also use the thumbnail 
+ * skin to display thumbnails of the data elements.
+ *
+ * A skin for an element is always build up out of a standard set of parts.
+ * <pre class="code">
+ *   <j:textbox name="textbox">
+ *      <j:alias>
+ *          ...
+ *      </j:alias>
+ *      <j:style><![CDATA[
+ *          ...
+ *      ]]></j:style>
+ *  
+ *      <j:presentation>
+ *          <j:main>
+ *              ...
+ *          </j:main>
+ *          ...
+ *      </j:presentation>
+ *   </j:textbox>
+ * </pre>
+ * The alias contains a name that contains alternative names for the skin. The
+ * style tags contain the css. The main tag contains the html elements that are
+ * created when the component is created. Any other skin items are used to render
+ * other elements of the widget. In this reference guide you will find these
+ * skin items described on the pages of each widget.
  *
  * @constructor
  * @baseclass
@@ -365,7 +395,7 @@ jpf.Presentation = function(){
      * is accessed.
      * Example:
      * <pre class="code">
-     * <j:list skinset="perspex" />
+     *  <j:list skinset="perspex" />
      * </pre>
      */
     this.$propHandlers["skinset"] =
@@ -377,11 +407,11 @@ jpf.Presentation = function(){
      * jml attributes, loaded data, focus and disabled state.
      * Example:
      * <pre class="code">
-     * <j:list id="lstExample" skin="thumbnails" />
+     *  <j:list id="lstExample" skin="thumbnails" />
      * </pre>
      * Example:
      * <pre class="code">
-     * lstExample.setAttribute("skin", "list");
+     *  lstExample.setAttribute("skin", "list");
      * </pre>
      */
     this.$propHandlers["skin"] = function(value){

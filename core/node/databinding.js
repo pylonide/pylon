@@ -47,10 +47,6 @@ var __DATABINDING__ = 1 << 1;
  * @since       0.4
  */
 jpf.DataBinding = function(){
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
     var loadqueue;
     var cXmlOnLoad = [];
     var cXmlSelect = [];
@@ -60,9 +56,7 @@ jpf.DataBinding = function(){
     this.mainBind  = "value";
     var _self      = this;
 
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**** Public Methods ****/
 
     /**
      * Gets the xpath statement from the main bind rule. Each databound

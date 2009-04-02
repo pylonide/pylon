@@ -43,8 +43,8 @@ var __ALIGNMENT__ = 1 << 12;
  * </pre>
  * Remarks:
  * This is one of three positioning methods.
- * See {@link grid}
- * See {@link anchoring}
+ * See {@link element.grid}
+ * See {@link baseclass.anchoring}
  *
  * @constructor
  * @baseclass
