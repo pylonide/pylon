@@ -39,13 +39,13 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.isNine              = jpf.flash.isAvailable('9.0.0');
 
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/audio/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = jpf.basePath + "elements/audio/null.mp3";
+    this.NULL_MP3_PATH       = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/audio/null.mp3";
     /* #else
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = jpf.basePath + "resources/null.mp3";
+    this.NULL_MP3_PATH       = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/null.mp3";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/audioplayer"

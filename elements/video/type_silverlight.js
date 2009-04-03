@@ -42,9 +42,9 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
     }
 
     // #ifndef __PACKAGED
-    this.DEFAULT_PLAYER = jpf.basePath + "elements/video/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/video/wmvplayer.xaml";
     /* #else
-    this.DEFAULT_PLAYER = jpf.basePath + "resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/wmvplayer.xaml";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_PLAYER = jpf.CDN + jpf.VERSION + "/resources/wmvplayer.xaml";

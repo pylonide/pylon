@@ -36,9 +36,9 @@
 jpf.video.TypeFlv = function(oVideo, node, options) {
     this.oVideo              = oVideo;
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/video/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/video/FAVideo.swf";
     /* #else
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/FAVideo.swf";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/videoplayer.swf";
