@@ -170,7 +170,7 @@ jpf.appsettings = {
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
 
         this.baseurl            = jpf.parseExpression(x.getAttribute("baseurl") || "");
-        this.resourcePath       = jpf.parseExpression(x.getAttribute("resource-path") || "");
+        this.resourcePath       = jpf.parseExpression(x.getAttribute("resource-path") || "").replace(/resources\/?/, '');
         if (this.resourcePath.charAt(this.resourcePath.length - 1) != "/")
             this.resourcePath   = this.resoursePath + "/";
         this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
