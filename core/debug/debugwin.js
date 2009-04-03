@@ -993,8 +993,8 @@ jpf.debugwin = {
             #jpf_debugwin .debug_closebtn_hover{\
                 cursor: hand;\
                 cursor: pointer;\
-                right: 8px;\
-                top: 6px;\
+                right: 0px;\
+                top: 3px;\
                 z-index: 1000;\
                 margin: 0px;\
                 width: 16px;\
@@ -1035,6 +1035,16 @@ jpf.debugwin = {
                 font-size: 9px;\
                 line-height: 10px;\
                 display : block;\
+            }\
+            #jpf_debugwin .debug_panel_head .debug_btn{\
+                top:3px;\
+                position:relative;\
+                background: url(" + this.resPath + "buttons.png) no-repeat -192px 0;\
+                width: 16px;\
+                height: 16px;\
+            }\
+            #jpf_debugwin .debug_panel_head .debug_btn_down{\
+                background-position: -192px -16px;\
             }\
             #jpf_debugwin .debug_toolbar{\
                 position: relative;\
@@ -1395,13 +1405,12 @@ jpf.debugwin = {
            "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, true);'>\
                 <div class='debug_panel_head'>\
                     <div class='debug_panel_headsub'>\
-                        <label for='cbTW' style='\
-                              top:4px;\
-                              position:relative;'\
+                        <div class='debug_btn' title='Open window'\
+                          onmouseover='jpf.debugwin.btnMouseDown(this)' onmouseout='jpf.debugwin.btnMouseUp(this)'\
                           onclick='\
                               jpf.debugwin.showLogWindow();\
                               event.cancelBubble = true;'\
-                        >Show window</label>\
+                        >&nbsp;</div>\
                     </div>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
