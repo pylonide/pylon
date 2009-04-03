@@ -44,6 +44,22 @@
  *         icon    = "icoDone.gif" />
  * </j:notifier>
  * </pre>
+ * Example:
+ * Notifier with 4 notifications which will be appears and stays over the 3 seconds
+ * begins to the top right corner and goes to the left. First notification will
+ * be displayed when value in textbox will be bigger than 4. In next two cases 
+ * notification will be shown when notifier's position or arrange attribute will 
+ * be changed. In the last case notification will be shown when date 2008-12-24 
+ * will be selected on calendar.
+ * <pre class="code">
+ * <j:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
+ *     <j:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></j:event>
+ *     <j:event when="{notiTest.position}" message="Notifier display position has been changed"></j:event>
+ *     <j:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></j:event>
+ *     <j:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></j:event>
+ * </j:notifier>
+ * </pre>
+ * 
  * @define notifier
  * @attribute   {String}   position     Vertical and horizontal element's start position, it can be changed in any time, default is 'top-right'
  *     Possible values:
@@ -58,7 +74,7 @@
  *     left-bottom     element is placed in bottom-left corner of browser window
  *     center-center   element is placed in the middle of browser window
  * @attribute   {String}   margin       It's a free space around popup element, default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify element width and cols width where element will be displayed, default is 300 pixels
+ * @attribute   {String}   columnsize   Specify element width and col width where element will be displayed, default is 300 pixels
  * @attribute   {String}   arrange      popup elements can be displayed in rows or columns, default is 'vertical'
  *     Possible values:
  *     vertical     element will be displayed in rows

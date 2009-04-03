@@ -44,7 +44,7 @@
  * 
  * @attribute {String}   output-format    style of returned date
  * @attribute {String}   caption-format   style of displayed date, default yyyy-mm-dd
- * @attribute {String}   default          name which represent some date
+ * @attribute {String}   default          the name which represent some date
  *     Possible values:
  *     today   calendar is set on today's date
  * @attribute {String}   value   the date returned by calendar; should be in the 
@@ -58,23 +58,23 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <pre class="code">
- *     <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
+ * <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
  * </pre>
  * 
  * Example:
  * Sets the date based on data loaded into this component.
  * <pre class="code">
- *  <j:caldropdown>
- *      <j:bindings>
- *          <j:value select="@date" />
- *      </j:bindings>
- *  </j:caldropdown>
+ * <j:caldropdown>
+ *     <j:bindings>
+ *         <j:value select="@date" />
+ *     </j:bindings>
+ * </j:caldropdown>
  * </pre>
  * 
  * Example:
  * A shorter way to write this is:
  * <pre class="code">
- *  <j:caldropdown ref="@date" />
+ * <j:caldropdown ref="@date" />
  * </pre>
  */
 jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
@@ -139,6 +139,29 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             || jpf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
     };
 
+    /**
+     * @attribute {String} style of returned date
+     * 
+     * recognized masks:
+     *     d      day of the month as digits, no leading zero for single-digit days
+     *     dd     day of the month as digits, leading zero for single-digit days
+     *     ddd    day of the week as a three-letter abbreviation
+     *     dddd   day of the week as its full name
+     *     m      month as digits, no leading zero for single-digit months
+     *     mm     month as digits, leading zero for single-digit months
+     *     mmm    month as a three-letter abbreviation
+     *     mmmm   month as its full name
+     *     yy     year as last two digits, leading zero for years less than 2010
+     *     yyyy   year represented by four digits
+     *     h      hours, no leading zero for single-digit hours (12-hour clock)
+     *     hh     hours, leading zero for single-digit hours (12-hour clock)
+     *     H      hours, no leading zero for single-digit hours (24-hour clock)
+     *     HH     hours, leading zero for single-digit hours (24-hour clock)
+     *     M      minutes, no leading zero for single-digit minutes
+     *     MM     minutes, leading zero for single-digit minutes
+     *     s      seconds, no leading zero for single-digit seconds
+     *     ss     seconds, leading zero for single-digit seconds
+     */
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
             this.setProperty("value", new Date(_year, _month, _day, _hours,
@@ -148,6 +171,29 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             this.outputFormat = value;
     }
 
+    /**
+     * @attribute {String} style of returned date
+     * 
+     * recognized masks:
+     *     d      day of the month as digits, no leading zero for single-digit days
+     *     dd     day of the month as digits, leading zero for single-digit days
+     *     ddd    day of the week as a three-letter abbreviation
+     *     dddd   day of the week as its full name
+     *     m      month as digits, no leading zero for single-digit months
+     *     mm     month as digits, leading zero for single-digit months
+     *     mmm    month as a three-letter abbreviation
+     *     mmmm   month as its full name
+     *     yy     year as last two digits, leading zero for years less than 2010
+     *     yyyy   year represented by four digits
+     *     h      hours, no leading zero for single-digit hours (12-hour clock)
+     *     hh     hours, leading zero for single-digit hours (12-hour clock)
+     *     H      hours, no leading zero for single-digit hours (24-hour clock)
+     *     HH     hours, leading zero for single-digit hours (24-hour clock)
+     *     M      minutes, no leading zero for single-digit minutes
+     *     MM     minutes, leading zero for single-digit minutes
+     *     s      seconds, no leading zero for single-digit seconds
+     *     ss     seconds, leading zero for single-digit seconds
+     */
     this.$propHandlers["caption-format"] = function(value) {
         if (this.value) {
             this.$setLabel(new Date(_year, _month, _day, _hours,
@@ -191,10 +237,18 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.redraw(_month, _year);
     }
     
+    /**
+     * @method  
+     * 
+     * @return {String} date indicated by calendar
+     */
     this.getValue = function(){
         return this.value;
     }
     
+    /**
+     * @method  Sets calendar date
+     */
     this.setValue = function(value){
         this.setProperty("value", value);
     }
@@ -460,7 +514,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (msg) {
             this.$setLabel(msg);
         }
-
     };
 
     this.$removeClearMessage = function() {
@@ -652,7 +705,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Change choosen date with selected and highlight its cell in calendar
+     * Change choosen date with selected and highlight its cell on calendar
      * component
      *
      * @param {Number}   nr     day number
