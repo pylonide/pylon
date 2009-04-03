@@ -897,7 +897,10 @@ var jpf = {
                 this.haspopupkiller = true;
             }
             else {
-                this.win.document.write(msg || this.debugInfo.join(""));
+                this.win.document.write((msg || this.debugInfo.join(""))
+                    .replace(/\{imgpath\}/g, jpf.debugwin
+                        ? jpf.debugwin.resPath
+                        : jpf.basePath + "core/debug/resources/"));
             }
         }
 
