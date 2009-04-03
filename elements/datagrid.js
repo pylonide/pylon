@@ -62,6 +62,67 @@
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
  * @binding description Determines the text that is displayed under the expanded row.
  * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
+ *
+ * @event beforelookup  Fires before the value lookup UI is shown..
+ *  cancellable: Prevents the lookup value from being processed.
+ *  object:
+ *  {String}      value     the value that has been found.
+ *  {XMLElement}  xmlNode   the selected node.
+ *  {HTMLElement} htmlNode  the node that is updated.
+ * @event afterlookup   Fires after a lookup value is processed.
+ *   object:
+ *  {Mixed}       value     the value that has been found.
+ *  {XMLElement}  xmlNode   the selected node.
+ *  {HTMLElement} htmlNode  the node that is updated.
+ *  {Nodeset}     nodes     ???.
+ * @event multiedit     Fires before a multiedit request is done. Used to display the UI.
+ *   object:
+ *   {XMLElement} xmlNode   the selected node.
+ *   {XMLElement} dataNode  the xml data element.
+ *   Example:
+ *   <pre class="code">
+ *      <j:propedit 
+ *        lookupjml      = "tmpLookup"
+ *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
+ *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
+ *        onmultiedit    = "loadMultiEdit(event, this)">
+ *          <j:bindings>
+ *              <j:template select="self::product" value="mdlProps:product" />
+ *          </j:bindings>
+ *      </j:propedit>
+ *
+ *      <j:template id="tmpLookup" autoinit="true">
+ *          <j:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
+ *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
+ *            autoselect="false">
+ *              <j:bindings>
+ *                  <j:caption select="self::picture"><![CDATA[
+ *                      {name} | {description}
+ *                  ]]></j:caption>
+ *                  <!-- use @descfield -->
+ *                  <j:caption><![CDATA[[
+ *                      var field = n.parentNode.getAttribute("descfield");
+ *                      %(value(field) || "[Geen Naam]");
+ *                  ]]]></j:caption>
+ *                  <j:icon select="self::product" value="package_green.png" />
+ *                  <j:icon value="table.png" />
+ *                  <j:traverse select="node()[local-name()]" />
+ *              </j:bindings>
+ *              <j:actions />
+ *          </j:list>
+ *          
+ *          <j:toolbar>
+ *              <j:bar>
+ *                  <j:button id="btnLkpPrev" disabled="true" 
+ *                      onclick="...">&lt; Previous</j:button>
+ *                  <j:spinner id="spnLookup" width="40" 
+ *                      min="1" max="1" onafterchange="..." />
+ *                  <j:button id="btnLkpNext" disabled="true" 
+ *                      onclick="...">Next &gt;</j:button>
+ *              </j:bar>
+ *          </j:toolbar>
+ *      </j:template>
+ *   </pre>
  */
 jpf.propedit    =
 jpf.spreadsheet = 

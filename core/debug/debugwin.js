@@ -248,9 +248,9 @@ jpf.debugwin = {
         }
 
         // #ifndef __PACKAGED
-        this.resPath = jpf.basePath + "core/debug/resources/";
+        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "core/debug/resources/";
         /* #else
-        this.resPath = jpf.basePath + "resources/";
+        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/";
         #endif */
         /* #ifdef __WITH_CDN
         this.resPath = jpf.CDN + jpf.VERSION + "/resources/";
@@ -712,7 +712,7 @@ jpf.debugwin = {
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jml + "'>\
-                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
+                <j:markupedit skin='debugmarkup' skinset='debug' " + (first ? "model='" + first + "'" : "") + " id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
                     </j:bindings>\

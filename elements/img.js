@@ -55,6 +55,8 @@
  * @version     %I%, %G%
  * @since       0.4
  *
+ * @event click
+ *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  * Example:
