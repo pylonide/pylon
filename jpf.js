@@ -745,8 +745,8 @@ var jpf = {
             msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = jpf.debugwin && jpf.debugwin.resPath
-                ? jpf.debugwin.resPath
+            var sPath = jpf.debugwin
+                ? (jpf.debugwin.resPath || "{imgpath}")
                 : jpf.basePath + "core/debug/resources/";
 
             if (data) {
