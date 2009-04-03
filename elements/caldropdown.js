@@ -25,17 +25,23 @@
  * allows the user to choose the month and year for which to display the days.
  * Calendar returns a date in chosen date format. Minimal size of calendar is
  * 150px.
- *
- * Example:
- * Calendar component with date set on "Saint Nicholas Day" in iso date format
- * <pre class="code">
- *     <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
- * </pre>
- *
+ * 
  * @constructor
  * @define caldropdown
  * @addnode elements
+ * 
+ * @author      Lukasz Lipinski
+ * @version     %I%, %G%
+ * @since       1.0
+ * 
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * 
  * @attribute {String}   output-format    style of returned date
  * @attribute {String}   caption-format   style of displayed date, default yyyy-mm-dd
  * @attribute {String}   default          name which represent some date
@@ -49,17 +55,12 @@
  * @event slideup   Fires when the calendar slides up.
  *   cancellable: Prevents the calendar from sliding up
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- *
- * @author      Lukasz Lipinski
- * @version     %I%, %G%
- * @since       1.0
- *
- * @binding value  Determines the way the value for the element is retrieved 
- * from the bound data.
+ * Example:
+ * Calendar component with date set on "Saint Nicholas Day" in iso date format
+ * <pre class="code">
+ *     <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
+ * </pre>
+ * 
  * Example:
  * Sets the date based on data loaded into this component.
  * <pre class="code">
@@ -69,6 +70,7 @@
  *      </j:bindings>
  *  </j:caldropdown>
  * </pre>
+ * 
  * Example:
  * A shorter way to write this is:
  * <pre class="code">
