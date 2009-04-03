@@ -865,12 +865,14 @@ jpf.JmlElement.propHandlers = {
         if (this.canHaveChildren) {
             //@todo Fix focus here first.. else it will jump whilst looping
 
+            value = jpf.isTrue(value);
+
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
                     if (node.nodeFunc == jpf.NODE_VISIBLE) {
-                        if (value)
-                            node.$disabled = node.disabled;
+                        if (value && node.disabled != -1)
+                            node.$disabled = node.disabled || false;
                         node.setProperty("disabled", value ? -1 : null);
                     }
 
@@ -893,7 +895,7 @@ jpf.JmlElement.propHandlers = {
                 this.$disabled = null;
             }
             else {
-                this.$disabled = value;
+                this.$disabled = value || false;
                 return;
             }
         }
