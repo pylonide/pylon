@@ -13,8 +13,8 @@ Connecting to external data sources can be done by using Javeline TelePort.
 Public License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
-  Size of runtime
-  =======
+  Size of Runtime
+  ===============
   
   Javeline Platform comes in two flavors. Debug and Release. These contain all
 that is JPF. For a project you only need a subset of JPF. Usually resulting in
