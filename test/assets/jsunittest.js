@@ -1,3 +1,5 @@
+// #ifdef __WITH_UNITTESTER
+
 /*  Jsunittest, version 0.7.3
  *  (c) 2008 Dr Nic Williams
  *
@@ -1015,3 +1017,5 @@ JsUnitTest.Unit.Testcase.prototype.benchmark = function(operation, iterations) {
 };
 
 Test = JsUnitTest
+
+// #endif

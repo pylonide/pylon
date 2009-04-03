@@ -1,3 +1,4 @@
+// #ifdef __WITH_UNITTESTER
 /**
  * Allow shoulda inspired syntax for JsUnitTest unit tests. Usage:
  *
@@ -126,3 +127,5 @@
         return results;
     };
 })(this);
+
+// #endif
