@@ -13,6 +13,14 @@ Connecting to external data sources can be done by using Javeline TelePort.
 Public License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
+  Size of runtime
+  =======
+  
+  Javeline Platform comes in two flavors. Debug and Release. These contain all
+  that is jpf. For a project you only need a subset of jpf. Usually resulting
+  in a zipped download of 100KB. The up and coming packager application will
+  help packaging jpf for your project.
+
   Hints on Usage
   ==============
 

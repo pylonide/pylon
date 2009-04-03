@@ -55,7 +55,7 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @event click
+ * @event click Fires when a user presses a mouse button while over this element.
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.

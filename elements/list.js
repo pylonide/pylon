@@ -89,6 +89,8 @@
  *  </j:script>
  * </pre>
  *
+ * @event click Fires when a user presses a mouse button while over this element.
+ *
  * @constructor
  * @define list, select, select1, thumbnail
  * @allowchild {smartbinding}
