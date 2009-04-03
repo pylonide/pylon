@@ -48,11 +48,11 @@ jpf.namespace("storage.modules.flash", {
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
         // #ifndef __PACKAGED
-        this.STORAGE_SWF = jpf.basePath
-        + "core/lib/storage/resources/jpfStorage.swf?cachebust="
-        + new Date().getTime();
+        this.STORAGE_SWF = (jpf.appsettings.resourcePath || jpf.basePath)
+            + "core/lib/storage/resources/jpfStorage.swf?cachebust="
+            + new Date().getTime();
         /* #else
-        this.STORAGE_SWF = jpf.basePath
+        this.STORAGE_SWF = (jpf.appsettings.resourcePath || jpf.basePath)
             + "resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
         #endif */
