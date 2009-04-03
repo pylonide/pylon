@@ -167,7 +167,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         //#endif
         
         /**
-         * @define jmlNode
+         * @define jpf.JmlElement
          * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
          * @attribute {String} width
          * Remarks:
@@ -192,7 +192,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     //#ifdef __WITH_PROPERTY_WATCH
     function propChange(name, old, value){
-        if (update && value == true && _self.oExt.offsetHeight) {
+        if (update && jpf.isTrue(value) && _self.oExt.offsetHeight) {
             _self.$updateGrid();
             jpf.layout.activateRules(_self.oExt);
             
@@ -220,7 +220,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //@todo when not visible make all property settings rule based
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.oExt.offsetHeight && this.parentNode.tagName.indexOf("window") > -1) {
+        if (!this.oExt.offsetHeight) {
             this.watch("visible", propChange);
             
             var p = this.parentNode;
@@ -493,14 +493,15 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
         //this.oExt.style.height = "80%"
-        this.oExt.style.top    = 0;
-        this.oExt.style.position = "relative";
+        this.oExt.style.top       = 0;
+        this.oExt.style.position  = "relative";
+        this.oExt.style.minHeight = "10px";
         
         if (this.$jml.getAttribute("class")) 
             jpf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
 
         if (!jpf.isIE && !jpf.grid.$initedcss) {
-            jpf.importCssString(document, ".grid>*{position:absolute} .grid{min-height:10px;}");
+            jpf.importCssString(document, ".grid>*{position:absolute}");
             jpf.grid.$initedcss = true;
         }
     };
