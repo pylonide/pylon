@@ -350,6 +350,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.focus(false, {mouse:true});
                 // #endif
             }
+            
+            if (jpf.isIE) {
+                var cls = this.oExt.className;
+                this.oExt.className = "rnd" + Math.random();
+                this.oExt.className = cls;
+            }
         }
         else if (jpf.isFalse(value)) {
             //this.setProperty("visible", false);

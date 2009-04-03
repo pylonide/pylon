@@ -1030,6 +1030,12 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         // #ifdef __WITH_DELAYEDRENDER
         this.$render();
         // #endif
+        
+        if (!this.fake && jpf.isIE) {
+            var cls = this.oExt.className;
+            this.oExt.className = "rnd" + Math.random();
+            this.oExt.className = cls;
+        }
     };
 
     this.$skinchange = function(){
