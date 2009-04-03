@@ -292,7 +292,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Keyboard Support ****/
     
     // #ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", function keyHandler(e){
+    function keyHandler(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -558,7 +558,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.lookup = null;
         return false;
-    }, true);
+    }
+    
+    this.addEventListener("keydown", keyHandler, true);
     // #endif
     
     /**** Focus ****/
@@ -2015,16 +2017,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oTxt.onmousedown   = function(e){ 
                 (e || (_self.oWin || window).event).cancelBubble = true; 
             };
-            this.oTxt.onkeydown     = function(e){
-                if (!e) e = (_self.oWin || window).event;
-                if (_self.celledit && !_self.namevalue && e.keyCode == 9) {
-                    _self.stopRename();
-                    keyHandler.call(_self, {keyCode:39, force:true});
-                    e.cancelBubble = true;
-                    e.returnValue  = true;
-                    return false;
-                }
-            }
 
             this.oTxt.onfocus   = t.onfocus;
             this.oTxt.onblur    = t.onblur;
@@ -2086,6 +2078,22 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         _self.oHead.scrollLeft = _self.oInt.scrollLeft;
                 };
         }
+        
+        // #ifdef __WITH_RENAME
+        this.oTxt.onkeydown     = function(e){
+            if ("datagrid|spreadsheet|propedit".indexOf(_self.tagName) == -1)
+                return;
+            
+            if (!e) e = (_self.oWin || window).event;
+            if (_self.celledit && !_self.namevalue && e.keyCode == 9) {
+                _self.stopRename(null, true);
+                keyHandler.call(_self, {keyCode:39, force:true});
+                e.cancelBubble = true;
+                e.returnValue  = true;
+                return false;
+            }
+        }
+        //#endif
         
         var dragging = false;
         
