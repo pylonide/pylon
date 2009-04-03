@@ -173,7 +173,7 @@ jpf.appsettings = {
         this.resourcePath       = jpf.parseExpression(x.getAttribute("resource-path") || "").replace(/resources\/?/, '');
         if (this.resourcePath && this.resourcePath.charAt(this.resourcePath.length - 1) != "/")
             this.resourcePath   = this.resourcePath + "/";
-            this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
+        this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
         this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
         this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));
 
