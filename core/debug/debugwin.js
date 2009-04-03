@@ -1408,7 +1408,9 @@ jpf.debugwin = {
                 </div>\
                 <div id='" + this.logView + "' onclick='event.cancelBubble=true'\
                   onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
-                  class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
+                  class='debug_panel_body_base debug_panel_body_log'>" 
+                    + jpf.console.debugInfo.join('').replace(/\{imgpath\}/g, this.resPath) +
+               "</div>\
             </div>\
             <div class='debug_panel' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
                 <div class='debug_panel_head'>\
