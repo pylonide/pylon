@@ -216,7 +216,7 @@ jpf.draw = {
                         this.lineTo(["dw12+(__zc*__x0+__ze* __x",i,")*",(this.ortho?"persp":"(persp/__z)")].join(''),
                                     ["dh12+(__zc*__y0+__ze* __y",i,")*",(this.ortho?"persp":"(persp/__z)") ].join('')),
                     "}",
-                this.close()].join(''));
+                open?"":this.close()].join(''));
             } 
         }
         s.push("}}");
