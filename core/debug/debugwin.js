@@ -247,15 +247,6 @@ jpf.debugwin = {
             jpf.setcookie("highlight", false)
         }
 
-        // #ifndef __PACKAGED
-        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "core/debug/resources/";
-        /* #else
-        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/";
-        #endif */
-        /* #ifdef __WITH_CDN
-        this.resPath = jpf.CDN + jpf.VERSION + "/resources/";
-        #endif */
-
         if (!this.useDebugger) {
             jpf.debugwin.toggleDebugger(false);
             //window.onerror = jpf.debugwin.errorHandler;
@@ -919,6 +910,15 @@ jpf.debugwin = {
                      jpf.getStyleRule("html", "overflow-x") || "auto",
                      jpf.getStyleRule("html", "overflow-y") || "auto"];
         }
+
+        // #ifndef __PACKAGED
+        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "core/debug/resources/";
+        /* #else
+        this.resPath = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/";
+        #endif */
+        /* #ifdef __WITH_CDN
+        this.resPath = jpf.CDN + jpf.VERSION + "/resources/";
+        #endif */
 
         jpf.importCssString(document, "\
             html{\
