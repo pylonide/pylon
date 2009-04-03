@@ -47,7 +47,7 @@
  */
 jpf.namespace("offline.detector", {
     //#ifndef __PACKED
-    detectUrl : (jpf.appsettings.resourcePath || jpf.basePath) + "core/lib/offline/network_check.txt",
+    detectUrl : jpf.basePath + "core/lib/offline/network_check.txt",
     /* #else
     detectUrl : "network_check.txt",
     #endif */
@@ -58,6 +58,11 @@ jpf.namespace("offline.detector", {
         if (jml.nodeType) {
             if (jml.getAttribute("detect-url"))
                 this.detectUrl = jml.getAttribute("detect-url");
+            /* #ifdef __PACKAGED
+            else
+                this.detectUrl = (jpf.appsettings.resourcePath || jpf.basePath)
+                    + "resources/network_check.txt";
+            #endif */
 
             this.detection = jpf.isTrue(jml.getAttribute("detection"))
                 ? "auto"
