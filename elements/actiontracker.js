@@ -121,8 +121,10 @@ jpf.actiontracker = function(parentNode){
             case "redolength":
                 this.redolength = stackUndone.length;
                 break;
+            //#ifdef __WITH_ALIAS
             case "alias":
                 jpf.JmlElement.propHandlers.alias.call(this, value);
+            //#endif
             default:
                 this[prop] = value;
         }
