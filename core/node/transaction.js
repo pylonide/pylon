@@ -261,7 +261,7 @@ jpf.Transaction = function(){
         //winMail.dataParent.parent.xmlRoot
 
         lastAction = strAction;
-        
+
         if (!lastAction) {
             lastAction = this.xmlRoot && "update" || "add";
                 /*this.actionRules && (this.actionRules.add 
@@ -283,9 +283,10 @@ jpf.Transaction = function(){
         if (dataParent)
             dataParent.connect(this);
 
-        if (xmlNode) {
-            inTransaction = -1; //Prevent load from triggering a new transaction
-            this.load(xmlNode);
+        if (xmlNode && lastAction == "update") {
+            this.xmlRoot = xmlNode;
+            //inTransaction = -1; //Prevent load from triggering a new transaction
+            //this.load(xmlNode);
         }
         
         /*
@@ -327,7 +328,9 @@ jpf.Transaction = function(){
             }
             //#endif
             
+            this.inTransaction = -1;
             this.load(transactionNode);
+            this.inTransaction = true;
             
             if (this.disabled)
                 this.enable();
@@ -487,9 +490,7 @@ jpf.Transaction = function(){
     this.addEventListener("beforeload", function(e){
         if (originalNode == e.xmlNode)
             return false;
-    });
-     
-    this.addEventListener("afterload", function(e){
+        
         if (inTransaction == -1)
             return;
 
@@ -505,9 +506,12 @@ jpf.Transaction = function(){
 
         if (this.autoshow)
             this.autoshow = -1;
-        this.begin();
+            
+        this.begin("update", e.xmlNode);
+        
+        return false;
     });
-    
+     
     //hmm really?
     //@todo what to do here? check original cloned node???
     /*this.addEventListener("xmlupdate", function(e){

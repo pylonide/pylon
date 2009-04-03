@@ -238,7 +238,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
                 return o
                     ? (o.nodeType >= 2 && o.nodeType <= 4
                         ? o.nodeValue
-                        : jpf.xmldb.convertXml(o, "cgivars"))
+                        : o.xml || o.serialize()) //jpf.xmldb.convertXml(o, "cgivars"))
                     : ""
             });
             

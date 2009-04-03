@@ -588,19 +588,28 @@ jpf.DataBinding = function(){
                 //Assuming this component is connnected to a model
                 var model   = this.getModel();
                 if (model) {
-                    if (!model.data)
-                        model.load("<data />");
-    
-                    xpath   = (model.getXpathByJmlNode(this) || ".")
-                        + (xpath && xpath != "." ? "/" + xpath : "");
-                    xmlNode = model.data;
+                    if (model.connect) {
+                        xmlNode = model.connect.node.selected || model.connect.node.xmlRoot;
+                        xpath = (model.connect.select || ".")
+                            + (xpath && xpath != "." ? "/" + xpath : "");
+                        shouldLoad = true;
+                    }
+                    else {
+                        if (!model.data)
+                            model.load("<data />");
+        
+                        xpath   = (model.getXpathByJmlNode(this) || ".")
+                            + (xpath && xpath != "." ? "/" + xpath : "");
+                        xmlNode = model.data;
+                    }
                 }
                 else {
                     if (!this.dataParent)
                         return false;
 
                     xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
-                    xpath = this.dataParent.xpath;
+                    xpath = (this.dataParent.xpath || ".")
+                        + (xpath && xpath != "." ? "/" + xpath : "");
                     shouldLoad = true;
                 }
             }
@@ -2272,16 +2281,17 @@ jpf.StandardBinding = function(){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Clear this component if some ancestor has been detached
         if (action == "redo-remove") {
-            var testNode = this.xmlRoot;
-            while (testNode && testNode.nodeType != 9)
-                testNode = testNode.parentNode;
-
-            if (!testNode) {
-                //Set Component in listening state untill data becomes available again.
-                var model = this.getModel(true);
-                if (!model)
-                    return;
-                    
+            var retreatToListenMode = false, model = this.getModel(true);
+            if (model) {
+                var xpath = model.getXpathByJmlNode(this);
+                if (xpath) {
+                    var xmlNode = model.data.selectSingleNode(xpath);
+                    if (xmlNode != this.xmlRoot)
+                        retreatToListenMode = true;
+                }
+            }
+            
+            if (retreatToListenMode || this.xmlRoot == xmlNode) {
                 /*#ifdef __DEBUG
                 //RLD: Disabled because sometimes indeed components do not 
                 //have a model when their xmlRoot is removed.
@@ -2293,7 +2303,8 @@ jpf.StandardBinding = function(){
                 }
                 #endif*/
 
-                return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
+                //Set Component in listening state untill data becomes available again.
+                return model.loadInJmlNode(this, xpath);
             }
         }
 

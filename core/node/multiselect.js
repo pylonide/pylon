@@ -781,7 +781,8 @@ jpf.MultiSelect = function(){
      *   {XMLElement} xmlNode   the xml data element that is deselected.
      */
     this.clearSelection = function(singleNode, noEvent){
-        if (!this.selectable || this.disabled) return;
+        if (!this.selectable || this.disabled) 
+            return;
 
         var clSel = singleNode ? this.selected : valueList;
         if (!noEvent && this.dispatchEvent("beforedeselect", {
@@ -827,8 +828,13 @@ jpf.MultiSelect = function(){
             this.$indicator = this.$indicate(htmlNode);
         }
 
-        if (!noEvent)
+        if (!noEvent) {
             this.dispatchEvent("afterdeselect", {xmlNode : clSel});
+        
+            //#ifdef __WITH_PROPERTY_BINDING
+            this.setProperty("value", "");
+            //#endif
+        }
     };
 
     /**
