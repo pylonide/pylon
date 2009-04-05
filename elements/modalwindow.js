@@ -96,6 +96,19 @@ jpf.WinServer = {
  * @inherits jpf.Presentation
  * @inherits jpf.DelayedRender
  * @inherits jpf.Docking
+ *
+ * @event display       Fires when the window is displayed.
+ * @event close         Fires when the window is closed.
+ * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal portal} widget.
+ * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal portal} widget.
+ *   cancellable:   Prevents the edit panel from being closed.
+ * @event statechange   Fires after the state of this window changed.
+ *   object:
+ *   {Boolean} minimized  wether the window is minimized.
+ *   {Boolean} maximized  wether the window is maximized.
+ *   {Boolean} normal     wether the window has it's normal size and position.
+ *   {Boolean} edit       wether the window is in the edit state.
+ *   {Boolean} closed     wether the window is closed.
  */
 jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;

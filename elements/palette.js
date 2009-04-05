@@ -116,6 +116,11 @@ jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
         this.change(clr);
     };
     
+    /**
+     * @event createcustom Fires when a custom color is choosen. This event allows the developer to display a color picker to fill the palette's color.
+     *   object:
+     *   {HTMLElement} htmlNode the rectangle in the palette to be filled.
+     */
     this.$doCustom = function(oItem, force_create){
         if (force_create || oItem.style.backgroundColor == "#ffffff") {
             this.dispatchEvent("createcustom", {

@@ -61,6 +61,14 @@
  * <pre class="code">
  *  <j:textbox ref="@name" />
  * </pre>
+ *
+ * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+ * @event mousedown Fires when the user presses a mousebutton while over this element. 
+ * @event keyup     Fires when the user lets go of a keyboard button while this element is focussed. 
+ *   object:
+ *   {Number}  keyCode   which key was pressed. This is an ascii number.
+ * @event clear     Fires when the content of this element is cleared. 
  */
 jpf.input    =
 jpf.secret   =

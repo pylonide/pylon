@@ -33,16 +33,25 @@ var __VALIDATION__ = 1 << 6;
  * @version     %I%, %G%
  * @since       0.4
  *
- * @event contextmenu       Fires when the user requests a context menu. Either
+ * @event contextmenu Fires when the user requests a context menu. Either
  * using the keyboard or mouse.
  *   bubbles: yes
  *   cancellable:  Prevents the default contextmenu from appearing.
  *   object:
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
- *   {Object} htmlEvent the html event object.
- * @event focus  Fires when the element receives focus.
- * @event blur   Fires when the element loses focus.
+ *   {Event}  htmlEvent the html event object that triggered this event from being called.
+ * @event focus       Fires when this element receives focus.
+ * @event blur        Fires when this element loses focus.
+ * @event keydown     Fires when this element has focus and the user presses a key on the keyboard.
+ *   cancellable: Prevents the default key action.
+ *   bubbles:
+ *   object:
+ *   {Boolean} ctrlKey   wether the ctrl key was pressed.
+ *   {Boolean} shiftKey  wether the shift key was pressed.
+ *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Number}  keyCode   which key was pressed. This is an ascii number.
+ *   {Event}   htmlEvent the html event object that triggered this event from being called.
  */
 jpf.JmlElement = function(){
     //#ifdef __USE_TOSTRING

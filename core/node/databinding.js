@@ -40,6 +40,25 @@ var __DATABINDING__ = 1 << 1;
  *  </j:list>
  * </pre>
  *
+ * @event error             Fires when a communication error has occured while making a request for this element.
+ *   cancellable: Prevents the error from being thrown.
+ *   bubbles:
+ *   object:
+ *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
+ *   {Number}         state     the state of the call
+ *     Possible values:
+ *     jpf.SUCCESS  the request was successfull
+ *     jpf.TIMEOUT  the request has timed out.
+ *     jpf.ERROR    an error has occurred while making the request.
+ *     jpf.OFFLINE  the request was made while the application was offline.
+ *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *   {XMLHttpRequest} http      the object that executed the actual http request.
+ *   {String}         url       the url that was requested.
+ *   {Http}           tpModule  the teleport module that is making the request.
+ *   {Number}         id        the id of the request.
+ *   {String}         message   the error message.
+ 
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels

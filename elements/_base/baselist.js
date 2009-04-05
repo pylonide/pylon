@@ -73,8 +73,10 @@
  *  </j:list>
  * </pre>
  * @binding tooltip  Determines the tooltip of a node.
+ * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
+ *   object:
+ *   {String} value the value that was entered.
  */
-
 jpf.BaseList = function(){
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation);

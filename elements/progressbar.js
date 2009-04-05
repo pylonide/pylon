@@ -137,8 +137,6 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
      * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
      */
     this.clear = function(restart, restart_time){
-        this.dispatchEvent("clear");
-
         clearInterval(this.timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";

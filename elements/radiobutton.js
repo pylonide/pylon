@@ -195,6 +195,9 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  *  <j:radiobutton group="g2" ref="@value" value="1">Choice 1</j:radiobutton>
  *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
  * </pre>
+ *
+ * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ * @see baseclass.jmlnode.event.afterchange
  */
 jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE

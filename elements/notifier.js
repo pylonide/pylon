@@ -392,6 +392,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
  * position specified by the position attribute. After the timeout has passed
  * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
+ *
+ * @event click Fires when the user clicks on the representation of this event.
  */
 jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
     var _self         = this;

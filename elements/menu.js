@@ -55,7 +55,12 @@
  *      ...
  *  </j:window>
  * </pre>
- * @see {@link JMLElement#oncontextmenu}
+ * @see {@link baseclass.jmlelement.event.contextmenu oncontextmenu}
+ *
+ * @event display   Fires when the contextmenu is shown.
+ * @event itemclick Fires when a user presses the mouse button while over a child of this element.
+ *   object:
+ *   {String} value the value of the clicked element.
  *
  * @constructor
  * @define menu
@@ -516,6 +521,10 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
  * Item of a menu displaying a clickable area.
  * @define item, check, radio
  * @constructor
+ *
+ * @event click Fires when a user presses the mouse button while over this element.
+ *   object:
+ *   {String} value the value of the clicked element.
  */
 jpf.radio =
 jpf.check =

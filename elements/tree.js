@@ -1258,6 +1258,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Init ****/
     
+    /**
+     * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+     * @see baseclass.multiselect.event.beforeselect, baseclass.multiselect.event.afterselect, 
+     *      baseclass.multiselect.event.beforechoose, baseclass.multiselect.event.afterchoose
+     */
     this.$draw = function(){
         if (!this.$jml.getAttribute("skin")) {
             var mode = this.$jml.getAttribute("mode");

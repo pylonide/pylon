@@ -31,8 +31,25 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ * 
+ * @event beforeswitch
+ *   cancellable: Prevents the page to become active.
+ *   object:
+ *   {Mixed}    previous     the name or number of the current page.
+ *   {Number}   previousId   the number of the current page.
+ *   {jpf.page} previousPage the current page.
+ *   {Mixed}    next         the name or number of the page the will become active.
+ *   {Number}   nextId       the number of the page the will become active.
+ *   {jpf.page} nextpage     the page the will become active.
+ * @event afterswitch
+ *   object:
+ *   {Mixed}    previous     the name or number of the previous page.
+ *   {Number}   previousId   the number of the previous page.
+ *   {jpf.page} previousPage the previous page.
+ *   {Mixed}    next         the name or number of the current page.
+ *   {Number}   nextId       the number of the the current page.
+ *   {jpf.page} nextpage     the the current page.   
  */
-
 jpf.BaseTab = function(){
     this.isPaged         = true;
     this.$focussable     = jpf.KEYBOARD;

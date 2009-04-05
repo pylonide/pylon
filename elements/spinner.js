@@ -176,7 +176,11 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     }, true);
     //#endif
     
-
+    /**
+     * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+     * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+     * @event mousedown Fires when the user presses a mousebutton while over this element. 
+     */
     this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt) {

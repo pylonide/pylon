@@ -220,7 +220,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @event receive Fires when the upload succeeded, was cancelled or failed
+     * @event receive Fires when the upload succeeded, was cancelled or failed.
+     *   object:
+     *   {String} data the data that was returned by the upload post.
      */
     this.$done = function(data){
         window.clearInterval(this.timer);
@@ -317,6 +319,13 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
 
+    /**
+     * @event beforereceive Fires before data is received.
+     *   cancellabel: Prevents the data from being received.
+     *   object:
+     *   {String} data the data that was returned by the upload post.
+     *   {HTMLFrameElement} frame the iframe serving as the target to the form post.
+     */
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal("main", null, function(oExt){

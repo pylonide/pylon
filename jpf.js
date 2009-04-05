@@ -26,14 +26,14 @@
  * @version   2.0
  * @url       http://www.ajax.org
  *
- * @event domready Fires when the browsers' dom is ready to be manipulated.
+ * @event domready      Fires when the browsers' dom is ready to be manipulated.
  * @event movefocus         Fires when the focus moves from one element to another.
  *   object:
  *   {JMLElement} toElement the element that will receive the focus.
  * @event exit              Fires when the application wants to exit.
  *   cancellable:  Prevents the application from exiting. The returnValue of the
  *   event object is displayed in a popup which asks the user for permission.
- * @event keyup                            Fires when the user stops pressing a key.
+ * @event keyup         Fires when the user stops pressing a key.
  *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
@@ -41,11 +41,11 @@
  *   {Boolean} shiftKey  whether the shift key was pressed.
  *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event mousescroll                Fires when the user scrolls the mouse
+ * @event mousescroll   Fires when the user scrolls the mouse
  *   cancellable: Prevents the container to scroll
  *   object:
  *   {Number} delta the scroll impulse.
- * @event hotkey                        Fires when the user presses a hotkey
+ * @event hotkey        Fires when the user presses a hotkey
  *   bubbles: yes
  *   cancellable: Prevents the default hotkey behaviour.
  *   object:
@@ -54,7 +54,7 @@
  *   {Boolean} shiftKey  whether the shift key was pressed.
  *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event keydown    Fires when the user presses a key
+ * @event keydown       Fires when the user presses a key
  *   bubbles: yes
  *   cancellable: Prevents the behaviour.
  *   object:
@@ -63,13 +63,30 @@
  *   {Boolean} shiftKey  whether the shift key was pressed.
  *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event mousedown  Fires when the user presses a mouse button
+ * @event mousedown     Fires when the user presses a mouse button
  *   object:
  *   {Event}      htmlEvent the char code of the pressed key.
  *   {JMLElement} jmlNode   the element on which is clicked.
  * @event onbeforeprint Fires before the application will print.
  * @event onafterprint  Fires after the application has printed.
  * @event load          Fires after the application is loaded.
+ * @event error         Fires when a communication error has occured while making a request for this element.
+ *   cancellable: Prevents the error from being thrown.
+ *   bubbles:
+ *   object:
+ *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
+ *   {Number}         state     the state of the call
+ *     Possible values:
+ *     jpf.SUCCESS  the request was successfull
+ *     jpf.TIMEOUT  the request has timed out.
+ *     jpf.ERROR    an error has occurred while making the request.
+ *     jpf.OFFLINE  the request was made while the application was offline.
+ *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *   {XMLHttpRequest} http      the object that executed the actual http request.
+ *   {String}         url       the url that was requested.
+ *   {Http}           tpModule  the teleport module that is making the request.
+ *   {Number}         id        the id of the request.
+ *   {String}         message   the error message.
  */
 var jpf = {
     // Content Distribution Network URL:

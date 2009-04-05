@@ -664,7 +664,7 @@ jpf.http = function(){
      *   jpf.TIMEOUT  the request has timed out.
      *   jpf.ERROR    an error has occurred while making the request.
      *   jpf.OFFLINE  the request was made while the application was offline.
-     * @param {JmlNode} jmlNode    the element receives the error event.
+     * @param {JmlNode} jmlNode    the element receiving the error event.
      * @param {Error}   oError     the error to be thrown when the request is not retried.
      * @param {Number}  maxRetries the number of retries that are done before the request times out. Default is 3.
      */

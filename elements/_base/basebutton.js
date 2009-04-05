@@ -30,6 +30,8 @@
  * @author      Abe Ginner
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  */
 
 jpf.BaseButton = function(pHtmlNode){
