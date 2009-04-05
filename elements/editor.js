@@ -816,7 +816,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Paste (clipboard) data into the Editor
      *
-     * @see Editor#insertHTML
+     * @see element.editor.method.inserthtml
      * @param {Event} e
      * @type  {void}
      * @private
@@ -838,7 +838,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Event handler; fired when the user clicked inside the editable area.
      *
-     * @see jpf.AbstractEvent
+     * @see object.abstractevent
      * @param {Event} e
      * @type void
      * @private
@@ -1024,7 +1024,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Event handler; fired when the user releases a key inside the editable area
      *
-     * @see jpf.AbstractEvent
+     * @see object.abstractevent
      * @param {Event} e
      * @type  {void}
      * @private
@@ -1241,7 +1241,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Handler function; invoked when a toolbar button node was clicked
      *
-     * @see jpf.AbstractEvent
+     * @see object.abstractevent
      * @param {Event}      e
      * @param {DOMElement} oButton
      * @type  {void}
@@ -1616,7 +1616,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Takes care of setting the proper size of the editor after a resize event
      * was fired through the JPF layout manager
-     * @see jpf.layout
+     * @see object.layout
      * 
      * @type {void}
      */

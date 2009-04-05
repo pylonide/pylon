@@ -22,7 +22,7 @@
 
 /**
  * @define vbox Container that stacks it's children vertically.
- * @see hbox
+ * @see element.hbox
  * @define hbox Container that stacks it's children horizontally.
  * Example:
  * <code>

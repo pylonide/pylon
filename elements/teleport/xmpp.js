@@ -941,7 +941,7 @@ jpf.xmpp = function(){
      * still open, reconnect it after the current callback sequence has completed
      * (hence the 'setTimeout' call).
      *
-     * @see jpf.xmpp.listen
+     * @see teleport.xmpp.methodlisten
      * @type {void}
      * @private
      */
@@ -1026,7 +1026,7 @@ jpf.xmpp = function(){
      * One or more (instant-)messages have are arrived that need to be processed
      * and parsed to eventually show up in the GUI
      *
-     * @see jpf.xmpp.parseData
+     * @see teleport.xmpp.methodparseData
      * @param {Array} aMessages
      * @type  {void}
      * @private
@@ -1078,7 +1078,7 @@ jpf.xmpp = function(){
      * changed in the roster, e.g. the status of a node changed, a node was
      * disconnected, etc. All of these messages will update the local Roster.
      *
-     * @see jpf.xmpp.parseData
+     * @see teleport.xmpp.methodparseData
      * @param {Array} aPresence
      * @type  {void}
      * @private
@@ -1106,7 +1106,7 @@ jpf.xmpp = function(){
      * presence, connection errors, probe for supported features of nodes results,
      * etc.
      *
-     * @see jpf.xmpp.parseData
+     * @see teleport.xmpp.methodparseData
      * @param {Array} aIQs
      * @type  {void}
      * @private
@@ -1261,7 +1261,7 @@ jpf.xmpp = function(){
      * Makes sure that a few header are sent along with all the requests to the
      * XMPP server. This function overrides the abstract found in jpf.http
      *
-     * @see jpf.http
+     * @see teleport.http
      * @param {Object} http
      * @type {void}
      */

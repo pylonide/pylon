@@ -431,7 +431,7 @@ jpf.MultiSelect = function(){
          *
          * @param  {String}  value  the new value for this element.
          * @param  {Boolean} disable_event
-         * @see #getValue
+         * @see baseclass.multiselect.method.getValue
          */
         this.setValue = function(value, disable_event){
             noEvent = disable_event;
@@ -491,7 +491,7 @@ jpf.MultiSelect = function(){
      * For more information see {@link baseclass.multilevelbinding}
      *
      * @return  {SmartBinding}
-     * @see #getSelectionBindClass
+     * @see baseclass.multiselect.method.getSelectionBindClass
      * @private
      */
     this.$setMultiBind = function(smartbinding, part){
@@ -517,7 +517,7 @@ jpf.MultiSelect = function(){
      * For more information see {@link baseclass.multilevelbinding}
      *
      * @return  {SmartBinding}
-     * @see #setSelectionBindClass
+     * @see baseclass.multiselect.method.setSelectionBindClass
      * @private
      */
     this.$getMultiBind = function(){

@@ -458,7 +458,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      *
      *  <j:tree bindings="bndFolders" />
      * </code>
-     * @see smartbinding
+     * @see element.smartbinding
      * @allowchild {bindings}
      * @addnode smartbinding, global
      * @define actions  element containing all the action rules for the data 

@@ -55,7 +55,7 @@
  *      ...
  *  </j:window>
  * </code>
- * @see {@link baseclass.jmlelement.event.contextmenu oncontextmenu}
+ * @see baseclass.jmlelement.event.contextmenu
  *
  * @event display   Fires when the contextmenu is shown.
  * @event itemclick Fires when a user presses the mouse button while over a child of this element.
@@ -187,7 +187,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
      * @param {Boolean}    noanim   whether to animate the showing of this menu.
      * @param {JMLElement} opener   the element that is the context of this menu.
      * @param {XMLElement} xmlNode  the xml data element that provides data context to the menu child nodes.
-     * @see {@link baseclass.jmlelement.event.contextmenu}
+     * @see baseclass.jmlelement.event.contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;

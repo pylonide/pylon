@@ -344,7 +344,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      * Sets the text displayed as caption of this element.
      *
      * @param  {String}  value  required  The string to display.
-     * @see    Validation
+     * @see    baseclass.validation
      */
     this.setCaption = function(value){
         this.setProperty("caption", value);
@@ -354,8 +354,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      * Sets the URL of the icon displayed on this element.
      *
      * @param  {String}  value  required  The URL to the location of the icon.
-     * @see    Button
-     * @see    ModalWindow
+     * @see    element.button
+     * @see    element.modalwindow
      */
     this.setIcon = function(url){
         this.setProperty("icon", url);

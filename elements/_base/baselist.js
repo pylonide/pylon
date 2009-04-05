@@ -607,7 +607,7 @@ jpf.BaseList = function(){
      * Adds a new item to the list and lets the users type in the new name.
      * This functionality is especially useful in the interface when
      * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
-     * @see {@link element.list.attribute.more}
+     * @see element.list.attribute.more
      */
     this.startMore = function(o){
         this.$setStyleClass(o, "", ["more_down"]);

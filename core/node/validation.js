@@ -55,8 +55,8 @@ jpf.Validation = function(){
      *
      * @param  {Boolean} [checkRequired] whether this check also adheres to the 'required' ruled.
      * @return  {Boolean} specifying whether the value is valid
-     * @see  ValidationGroup
-     * @see  Submitform
+     * @see  baseclass.validationgroup
+     * @see  element.submitform
      */
     this.isValid = function(checkRequired){
         var value = this.getValue();
@@ -165,8 +165,8 @@ jpf.Validation = function(){
      * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
      * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
      * @return  {Boolean}  boolean specifying whether the value is valid
-     * @see  ValidationGroup
-     * @see  Submitform
+     * @see  object.validationgroup
+     * @see  element.submitform
      * @method
      */
     // #ifdef __WITH_HTML5

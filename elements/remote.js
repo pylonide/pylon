@@ -94,7 +94,7 @@
  * will reload all it's data from the server and discard all offline rsb 
  * messages before reconnecting to the hyve.
  * 
- * @see auth
+ * @see object.auth
  *
  * @define remote
  * @allowchild unique, {any}

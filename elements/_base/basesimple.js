@@ -41,9 +41,6 @@ jpf.BaseSimple = function(){
     this.inherit(jpf.DataBinding); 
     // #endif
     
-    /**
-     * @see Widget#getValue
-     */
     this.getValue = function(){
         return this.value;
     }

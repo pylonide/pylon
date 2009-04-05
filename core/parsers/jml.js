@@ -753,7 +753,7 @@ jpf.JmlParser = {
          *  </j:state-group>
          * </code>
          * @addnode elements
-         * @see state
+         * @see element.state
          */
         "state-group" : function(q, jmlParent){
             var name = q.getAttribute("name") || "stategroup" + jpf.all.length;

@@ -83,7 +83,7 @@ jpf.DataBinding = function(){
      * This method gets the xpath statement in the select attribute of this rule.
      *
      * @return  {String}  the xpath statement
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.getMainBindXpath = function(){
         if (this.hasFeature(__MULTIBINDING__))
@@ -161,7 +161,7 @@ jpf.DataBinding = function(){
      *
      * @param {Array}   rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.loadBindings = function(rules, node){
         if (this.bindingRules)
@@ -192,7 +192,7 @@ jpf.DataBinding = function(){
     /**
      * Unloads the binding rules from this element
      *
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.unloadBindings = function(){
         if (this.$unloaddatabinding)
@@ -219,7 +219,7 @@ jpf.DataBinding = function(){
      *
      * @param {Array}       rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.loadActions = function(rules, node){
         if (this.actionRules)
@@ -255,7 +255,7 @@ jpf.DataBinding = function(){
      * Gets the ActionTracker this element communicates with.
      *
      * @return {ActionTracker}
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
         if (!jpf.JmlDom)
@@ -279,7 +279,7 @@ jpf.DataBinding = function(){
     /**
      * Unloads the action rules from this element
      *
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.unloadActions = function(){
         this.xmlActions  = null;
@@ -499,7 +499,7 @@ jpf.DataBinding = function(){
      * @param {Boolean}     [noevent]     whether or not to call events.
      * @param {XMLElement}  [contextNode] the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         if (this.disabled) return; //hack
@@ -666,8 +666,8 @@ jpf.DataBinding = function(){
      *   Possible values:
      *   select  sents data when a node is selected
      *   choice  sents data when a node is chosen (by double clicking, or pressing enter)
-     * @see  SmartBinding
-     * @see  #disconnect
+     * @see  element.smartbinding
+     * @see  baseclass.databinding.method.disconnect
      */
     this.connect = function(o, dataOnly, xpath, type, noselect){
         if (o.dataParent)
@@ -741,8 +741,8 @@ jpf.DataBinding = function(){
      *   Possible values:
      *   select  disconnects the select connection
      *   choice  disconnects the choice connection
-     * @see  SmartBinding
-     * @see  #connect
+     * @see  element.smartbinding
+     * @see  baseclass.databinding.method.connect
      */
     this.disconnect = function(o, type){
         //User action - Select || Choice
@@ -774,9 +774,9 @@ jpf.DataBinding = function(){
      *   Possible Values:
      *   select  pushes data to the elements registered for selection
      *   choice  pushes data to the elements registered for choice
-     * @see  SmartBinding
-     * @see  #connect
-     * @see  #disconnect
+     * @see  element.smartbinding
+     * @see  baseclass.databinding.method.connect
+     * @see  baseclass.databinding.method.disconnect
      */
     this.setConnections = function(xmlNode, type){
         var a = type == "both"
@@ -833,7 +833,7 @@ jpf.DataBinding = function(){
      * @param {XMLElement}  cnode    the xml element to which the binding rules are applied.
      * @param {String}      [def]    the default (fallback) value for the query.
      * @return  {String} the calculated value
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.applyRuleSetOnNode = function(setname, cnode, def){
         if (!cnode) return "";
@@ -1060,7 +1060,7 @@ jpf.DataBinding = function(){
      *   {SmartBinding}  object to be assigned to this element.
      *   {String}        the name of the SmartBinding.
      * @throws  Error  If no SmartBinding was passed to the method.
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.setSmartBinding = function(sb){
         this.$propHandlers["smartbinding"].call(this, sb);
@@ -1073,7 +1073,7 @@ jpf.DataBinding = function(){
     /**
      * Removes the smartbinding from this element
      *
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.removeSmartBinding = function(){
         this.setProperty("smartbinding", null);
@@ -1083,7 +1083,7 @@ jpf.DataBinding = function(){
      * Gets the smartbinding of this element
      *
      * @returns  {SmartBinding}  The SmartBinding object of this element
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.getSmartBinding = function(){
         return this.smartBinding;
@@ -1095,7 +1095,7 @@ jpf.DataBinding = function(){
      *
      * @param {Boolean} doRecur whether the model should be searched recursively up the data tree.
      * @returns  {Model}  The model this element is connected to.
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.getModel = function(doRecur){
         if(doRecur && !this.$model)
@@ -1110,7 +1110,7 @@ jpf.DataBinding = function(){
      *
      * @param {Model}  model   the model this element will be connected to.
      * @param {String} [xpath] the xpath statement used to query a subset of the data presented by the model.
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.setModel = function(model, xpath){
         if (this.$model)
@@ -1132,7 +1132,7 @@ jpf.DataBinding = function(){
      * @param {Boolean}     [getRule]     whether search is for a binding rule.
      * @param {Boolean}     [createNode]  whether the xml data elementis created when it doesn't exist.
      * @returns  {XMLElement}  the requested node.
-     * @see  SmartBinding
+     * @see  element.smartbinding
      */
     this.getNodeFromRule = function(setname, cnode, isAction, getRule, createNode){
         //Get Rules from Array
@@ -1256,7 +1256,7 @@ jpf.DataBinding = function(){
      * @event afterload   Fires after loading data in this element.
      *   object:
      *   {XMLElement} xmlNode the node that is loaded as the root data element.
-     * @see  SmartBinding
+     * @see  element.smartbinding
      * @see  Cache#clear
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
@@ -2178,7 +2178,7 @@ jpf.DataBinding = function(){
      *      <data />
      *  </j:model>
      * </code>
-     * @see jpf.DataBinding@model
+     * @see baseclass.databinding.attribute.model
      */
     this.$propHandlers["model"] = function(value){
         if (this.$modelIgnoreOnce) {
@@ -3372,7 +3372,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list caption="text()" traverse="item" />
      * </code>
-     * @see  binding#caption
+     * @see  binding.caption
      */
     this.$propHandlers["caption"]  =
     
@@ -3383,7 +3383,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list valuerule="@value" traverse="item" />
      * </code>
-     * @see  binding#value
+     * @see  binding.value
      */
     this.$propHandlers["valuerule"]  =
 
@@ -3394,7 +3394,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list icon="@icon" traverse="item" />
      * </code>
-     * @see  binding#icon
+     * @see  binding.icon
      */
     this.$propHandlers["icon"]     =
 
@@ -3405,7 +3405,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list tooltip="text()" traverse="item" />
      * </code>
-     * @see  binding#tooltip
+     * @see  binding.tooltip
      */
     this.$propHandlers["tooltip"]  =
 
@@ -3416,7 +3416,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list select="self::node()[not(@disabled='1')]" traverse="item" />
      * </code>
-     * @see  binding#select
+     * @see  binding.select
      */
     this.$propHandlers["select"]   = this.$handleBindingRule;
     //#endif
