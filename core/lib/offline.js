@@ -49,13 +49,13 @@
  * @event losechanges   Fires before the offline state is removed.
  *   cancellable: Prevents the application from losing it's recorded offline state.
  * @event beforeoffline Fires before bringing the application offline.
- *   cancellabe: Prevents the application from going offline
+ *   cancellable: Prevents the application from going offline
  * @event afteroffline  Firest after the application is brought offline.
  * @event beforeonline  Fires before bringing the application online.
- *   cancellabe: Prevents the application from going online
+ *   cancellable: Prevents the application from going online
  * @event afteronline   Fires after the application is brought online.
  * @event beforeload    Fires before loading the offline state into this application.
- *   cancellabe: Prevents the application from reloading it's offline state.
+ *   cancellable: Prevents the application from reloading it's offline state.
  * @event sync          Fires at each sync item's completion.
  *   object:
  *   {Number} position 

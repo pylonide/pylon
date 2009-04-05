@@ -1257,7 +1257,7 @@ jpf.DataBinding = function(){
      *   object:
      *   {XMLElement} xmlNode the node that is loaded as the root data element.
      * @see  element.smartbinding
-     * @see  Cache#clear
+     * @see  baseclass.cache.method.clear
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
@@ -1831,12 +1831,16 @@ jpf.DataBinding = function(){
      *  </j:tree>
      * </code>
      *
-     * @see baseclass.multiselectbinding.binding.traverse
-     * @see baseclass.dragdrop.attribute.dragEnabled
-     * @see element.bindings
-     * @see element.actions
-     * @see element.dragdrop
-     * @see baseclass.multiselectbinding.method.loadinlinedata
+     * See:
+     * There are several ways to be less verbose in assigning certain rules.
+     * <ul>
+     *  <li>{@link baseclass.multiselectbinding.binding.traverse}</li>
+     *  <li>{@link baseclass.dragdrop.attribute.dragEnabled}</li>
+     *  <li>{@link element.bindings}</li>
+     *  <li>{@link element.actions}</li>
+     *  <li>{@link element.dragdrop}</li>
+     *  <li>{@link baseclass.multiselectbinding.method.loadInlineData}</li>
+     * </ul>
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;
