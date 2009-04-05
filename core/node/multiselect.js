@@ -34,6 +34,8 @@ var __MULTISELECT__ = 1 << 8;
  * @version     %I%, %G%
  * @since       0.5
  *
+ * @inherits jpf.MultiselectBinding
+ *
  * @binding select Determines wether the traverse node can be selected.
  * Example:
  * In this example the tree contains nodes that have a disabled flag set. 
@@ -45,9 +47,6 @@ var __MULTISELECT__ = 1 << 8;
  *      </j:bindings>
  *  </j:tree>
  * </code>
- *
- * @inherits jpf.MultiselectBinding
- *
  * @binding value  Determines the way the value for the element is retrieved
  * from the selected node. The value property contains this value.
  * Example:
