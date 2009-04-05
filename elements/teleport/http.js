@@ -690,8 +690,8 @@ jpf.http = function(){
 
     /**
      * Removes the item from the queue. This is usually done automatically.
-     * However when the callback returns true the queue isn't cleared. This
-     * is done when a request is retried for instance. The id of the call
+     * However when the callback returns true the queue isn't cleared, for instance
+     * when a request is retried. The id of the call
      * is found on the 'extra' object. The third argument of the callback.
      * Example:
      * <pre class="code">
