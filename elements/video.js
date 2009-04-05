@@ -359,7 +359,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * The 'playheadUpdate' event hook is called when the position of the playhead
      * that is currently active (or 'playing') is updated.
-     * This feature is currently handled by {@link jpf.video.$changeHook}
+     * This feature is currently handled by {@link element.video.method.$changeHook}
      *
      * @ignore
      * @type {void}

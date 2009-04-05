@@ -159,7 +159,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the binding rules from the j:bindings element
      *
-     * @param {Array}   rules     the rules array created using {@link jpf#getRules(xmlNode)}
+     * @param {Array}   rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
      * @see  SmartBinding
      */
@@ -217,7 +217,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the action rules from the j:actions element
      *
-     * @param {Array}       rules     the rules array created using {@link jpf#getRules(xmlNode)}
+     * @param {Array}       rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
      * @see  SmartBinding
      */
@@ -481,16 +481,16 @@ jpf.DataBinding = function(){
      *
      * @param {String}      atAction      the name of the action to be performed by the ActionTracker.
      *   Possible values:
-     *   setTextNode        sets the first text node of an xml element. {@link XmlDatabase#setTextNode}
-     *   setAttribute       sets the attribute of an xml element. {@link XmlDatabase#setAttribute}
-     *   removeAttribute    removes an attribute from an xml element. {@link XmlDatabase#removeAttribute}
+     *   setTextNode        sets the first text node of an xml element. {@link core.xmldb.method.setTextNode}
+     *   setAttribute       sets the attribute of an xml element. {@link core.xmldb.method.setAttribute}
+     *   removeAttribute    removes an attribute from an xml element. {@link core.xmldb.method.removeAttribute}
      *   setAttributes      sets multiple attribute on an xml element. Arguments are [xmlNode, Array]
-     *   replaceNode        replaces an xml child with another one. {@link XmlDatabase#replaceNode}
-     *   addChildNode       adds a new xml node to a parent node. {@link XmlDatabase#addChildNode}
-     *   appendChild        appends an xml node to a parent node. {@link XmlDatabase#appendChild}
-     *   moveNode           moves an xml node from one parent to another. {@link XmlDatabase#moveNode}
-     *   removeNode         removes a node from it's parent. {@link XmlDatabase#removeNode}
-     *   removeNodeList     removes multiple nodes from their parent. {@link XmlDatabase#removeNodeList}
+     *   replaceNode        replaces an xml child with another one. {@link core.xmldb.method.replaceNode}
+     *   addChildNode       adds a new xml node to a parent node. {@link core.xmldb.method.addChildNode}
+     *   appendChild        appends an xml node to a parent node. {@link core.xmldb.method.appendChild}
+     *   moveNode           moves an xml node from one parent to another. {@link core.xmldb.method.moveNode}
+     *   removeNode         removes a node from it's parent. {@link core.xmldb.method.removeNode}
+     *   removeNodeList     removes multiple nodes from their parent. {@link core.xmldb.method.removeNodeList}
      *   setValueByXpath    sets the nodeValue of an xml node whiche is selected by an xpath statement. Arguments are [xmlNode, xpath, value]
      *   multicall          calls multiple of these actions. Arguments is an array of argument arrays for these actions each with a func property which is the name of the action.
      * @param {Array}       args          the arguments to the function specified in <code>atAction</code>.
@@ -1246,7 +1246,7 @@ jpf.DataBinding = function(){
      *   Possible Values:
      *   {XMLElement}  an xml element loaded in to this element.
      *   {String}      an xml string which is loaded in this element.
-     *   {Null         null clears this element from it's data {@link Cache#clear}.
+     *   {Null         null clears this element from it's data {@link baseclass.cache.method.clear}.
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
      * @param {Boolean} [forceNoCache]  whether cache is checked before loading the data.
      * @event beforeload  Fires before loading data in this element.
@@ -1824,12 +1824,12 @@ jpf.DataBinding = function(){
      * </pre>
      *
      * There are several ways to be less verbose in assigning certain rules.
-     * see {@link Multiselectelement.traverse}
-     * see {@link DragDrop#dragEnabled}
-     * see {@link #bindings}
-     * see {@link #actions}
-     * see {@link #dragdrop}
-     * see {@link MultiselectBinding#loadInlineData}
+     * see {@link element.traverse}
+     * see {@link baseclass.dragdrop.attribute.dragEnabled}
+     * see {@link element.bindings}
+     * see {@link element.actions}
+     * see {@link element.dragdrop}
+     * see {@link baseclass.multiselectbinding.method.loadInlineData}
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;
@@ -2417,11 +2417,11 @@ jpf.MultiselectBinding = function(){
      * </pre>
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
-     * @attribute {String} data-type    the way sorting is executed. See {@link #sort-method} for how to specify a custom sort method.
+     * @attribute {String} data-type    the way sorting is executed. See {@link element.traverse.attribute.sort-method} for how to specify a custom sort method.
      *   Possible values:
      *   string  Sorts alphabetically
      *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
-     *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link #date-format} for how to specify the date format.
+     *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link element.traverse.attribute.date-format} for how to specify the date format.
      * @attribute {String} date-format  the format of the date on which is sorted.
      *   Possible values:
      *   YYYY   Full year

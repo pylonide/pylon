@@ -71,7 +71,7 @@
  * application it's important to have a system that prevents corruption of data
  * and data loss by either user overwriting records edited during the same period.
  * Javeline PlatForm has built in support for optimistic and pessimistic locking
- * in smartbindings. For more information please see {@link locking}.
+ * in smartbindings. For more information please see {@link term.locking}.
  * 
  * Advanced Remarks:
  * There is a very small theoretical risk that a user initiates and finishes an 

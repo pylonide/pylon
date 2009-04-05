@@ -202,11 +202,11 @@ jpf.Cache = function(){
 
     /**
      * Unloads data from this element and resets state displaying an empty message.
-     * Empty message is set on the {@link JmlNode#msg} property.
+     * Empty message is set on the {@link baseclass.jmlelement.property.msg}.
      *
      * @param {Boolean} [nomsg]   whether to display the empty message.
      * @param {Boolean} [doEvent] whether to sent select events.
-     * @see DataBinding#load
+     * @see baseclass.databinding.method.load
      */
     this.clear = function(nomsg, doEvent){
         if (this.clearSelection)

@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a paged element. (i.e. {@link tab}, {@link pages}, {@link form}).
+ * Baseclass of a paged element. (i.e. {@link element.tab}, {@link element.pages}, {@link element.form}).
  *
  * @constructor
  * @baseclass
@@ -806,7 +806,7 @@ jpf.BaseTab.SCROLL_BOTH  = 0x0004;
 // #endif
 
 /**
- * A page in a paged element. {i.e. a page in a {@link tab} element}
+ * A page in a paged element. (i.e. a page in a {@link element.tab})
  *
  * @constructor
  * @define  page

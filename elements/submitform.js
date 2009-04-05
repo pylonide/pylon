@@ -33,7 +33,7 @@
  * and over pages. Buttons placed inside this element can contain an action
  * attribute specifying whether they behave as next, previous or finish(submit)
  * buttons. This element is <u>not</u> necesary for simple forms. like the
- * normal html webforms (see {@link validation}).
+ * normal html webforms (see {@link baseclass.validation}).
  *
  * @constructor
  * @define submitform, xforms

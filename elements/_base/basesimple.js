@@ -23,7 +23,7 @@
 
 /**
  * Baseclass of a simple element. This are usually displaying elements 
- * (i.e. {@link label}, {@link picture})
+ * (i.e. {@link element.label}, {@link element.picture})
  *
  * @constructor
  * @baseclass

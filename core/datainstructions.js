@@ -152,9 +152,9 @@ jpf.namespace("datainstr", {
 
 
 /**
- * Stores data using a {@link datainstruction 'data instruction'}.
+ * Stores data using a {@link term.datainstruction data instruction}.
  *
- * @param {String}      instruction  the {@link datainstruction 'data instruction'} to be used to store the data.
+ * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to store the data.
  * @param {XMLElement}  [xmlContext] the subject of the xpath queries
  * @param {Object}      [options]    the options for this instruction
  *   Properties:
@@ -187,7 +187,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
 };
 
 /**
- * Retrieves data using a {@link datainstruction 'data instruction'}.
+ * Retrieves data using a {@link term.datainstruction data instruction}.
  * Example:
  * Several uses for a data instruction
  * <pre class="code">
@@ -217,7 +217,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
  *  <j:model load="url:load_contact.jsp" submission="save_contact.jsp" />
  * </pre>
  *
- * @param {String}      instruction  the {@link datainstruction 'data instruction'} to be used to retrieve the data.
+ * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data.
  * @param {XMLElement}  [xmlContext] the subject of the xpath queries
  * @param {Object}      [options]    the options for this instruction
  *   Properties:
@@ -317,9 +317,9 @@ jpf.getData = function(instruction, xmlContext, options, callback){
 
 //#ifdef __WITH_MODEL
 /**
- * Creates a model object based on a {@link datainstruction 'data instruction'}.
+ * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
- * @param {String} instruction  the {@link datainstruction 'data instruction'} to be used to retrieve the data for the model.
+ * @param {String} instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data for the model.
  * @param {JmlNode} jmlNode     the element the model is added to.
  * @param {Boolean} isSelection whether the model provides data that determines the selection of the element.
  */

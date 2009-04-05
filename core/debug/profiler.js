@@ -114,7 +114,7 @@ jpf.profiler = {
      * Do as if jpf.profiler is loaded all over again with its default values,
      * except for rounding precision, the total number of runs (still valid
      * count) and the active sorting method.
-     * After - memory safe - deinit, the call is passed to {@link init()} with
+     * After - memory safe - deinit, the call is passed to {@link core.profiler.method.init} with
      * the original arguments. Therefore, you should call this function exactly
      * like you call init().
      * Note : if you notice memory leakage after execution of this function,

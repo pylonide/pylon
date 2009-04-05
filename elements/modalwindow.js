@@ -99,8 +99,8 @@ jpf.WinServer = {
  *
  * @event display       Fires when the window is displayed.
  * @event close         Fires when the window is closed.
- * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal portal} widget.
- * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal portal} widget.
+ * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
+ * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
  *   cancellable:   Prevents the edit panel from being closed.
  * @event statechange   Fires after the state of this window changed.
  *   object:
@@ -145,7 +145,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Close the window. It can be reopened by using {@link show}
+     * Close the window. It can be reopened by using {@link baseclass.jmlelement.method.show}
      * @todo show should unset closed
      */
     this.close = function(){

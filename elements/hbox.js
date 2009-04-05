@@ -44,7 +44,7 @@
  * Remarks:
  * The layouting engine of Javeline PlatForm lets you store layouts and set them
  * dynamically. It's very easy to make a layout manager this way. For more 
- * information see {@link layout}
+ * information see {@link object.layout}
  * @addnode elements
  * @constructor
  *

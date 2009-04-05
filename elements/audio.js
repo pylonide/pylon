@@ -202,7 +202,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     /**
      * The 'playheadUpdate' event hook is called when the position of the playhead
      * that is currently active (or 'playing') is updated.
-     * This feature is currently handled by {@link jpf.audio.$changeHook}
+     * This feature is currently handled by {@link element.audio.method.$changeHook}
      *
      * @ignore
      * @type {void}

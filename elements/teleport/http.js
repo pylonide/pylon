@@ -162,7 +162,7 @@ jpf.http = function(){
 
     /**
      * Makes an http request that receives xml
-     * For a description of the parameters see {@link get}
+     * For a description of the parameters see {@link teleport.http.method.get}
      * @param {String}   url       the url that is called
      * @param {Function} callback  the handler of the request success, error or timed out state.
      * @param {Object}   options   the options for the http request
@@ -750,7 +750,7 @@ jpf.http = function(){
     };
 
     /**
-     * see {@link clearQueueItem}
+     * see {@link teleport.http.method.clearqueueitem}
      */
     this.cancel = function(id){
         if (id === null)

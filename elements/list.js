@@ -192,7 +192,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} more Adds a new item to the list and lets the users 
      * type in the new name. This is especially useful in the interface when 
-     * {@link #mode} is set to check or radio. For instance in a form.
+     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
      * Example:
      * This example shows a list in form offering the user several options. The
      * user can add a new option. A server script could remember the addition

@@ -23,7 +23,7 @@
 
 /**
  * Baseclass of an element that has one or two states and can be clicked on to
- * trigger an action. (i.e. {@link button} or {@link checkbox}).
+ * trigger an action. (i.e. {@link element.button} or {@link element.checkbox}).
  *
  * @constructor
  * @baseclass

@@ -494,7 +494,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Queries the jml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
-     * see {@link document#evaluate}
+     * see {@link core.jpf.object.document.method.evaluate}
      * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
      * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} list of found nodes.
@@ -507,7 +507,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Queries the jml dom using the W3C xPath query language and returns a single
      * node. This is not an official API call but can be useful in certain cases.
-     * see {@link document#evaluate}
+     * see {@link core.jpf.object.document.method.evaluate}
      * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
      * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {JmlNode} the first node that matches the query.

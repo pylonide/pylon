@@ -97,7 +97,7 @@
  * 
  * Smartbindings give rise to many other features in a Javeline PlatForm 
  * application. Actions done by the user can be undone by calling 
- * {@link actiontracker#undo} on the actiontracker of the element. The 
+ * {@link element.actiontracker.method.undo} of the element. The 
  * remote smartbinding element can send changes to data to other clients.
  *
  * This element is created especially for reuse. Multiple elements can reference

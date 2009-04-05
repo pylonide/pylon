@@ -27,7 +27,7 @@
 
 /**
  * Baseclass of elements that allows the user to select one or more items
- * out of a list. (i.e. a {@link list} or {@link dropdown})
+ * out of a list. (i.e. a {@link element.list} or {@link element.dropdown})
  *
  * @constructor
  * @baseclass
@@ -606,8 +606,8 @@ jpf.BaseList = function(){
     /**
      * Adds a new item to the list and lets the users type in the new name.
      * This functionality is especially useful in the interface when
-     * {@link list#mode} is set to check or radio. For instance in a form.
-     * @see {@link list#more}
+     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
+     * @see {@link element.list.attribute.more}
      */
     this.startMore = function(o){
         this.$setStyleClass(o, "", ["more_down"]);

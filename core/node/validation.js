@@ -292,7 +292,7 @@ jpf.Validation = function(){
      * @attribute  {Integer}  max                   the maximum value for which the value of this element is valid.
      * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
      * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull           same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
+     * @attribute  {Boolean}  notnull           same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
      * @attribute  {String}   checkequal   String specifying the id of the element to check if it has the same value as this element.
      * @attribute  {String}   invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
      * @attribute  {String}   validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
@@ -553,7 +553,16 @@ jpf.Validation = function(){
 jpf.ValidationGroup = function(name){
     jpf.makeClass(this);
 
+    /**
+     * When set to true only visible elements are validated. Default is false.
+     * @type Boolean
+     */
     this.validateVisibleOnly = false;
+    
+    /**
+     * When set to true validation doesnt stop at the first invalid element. Default is false.
+     * @type Boolean
+     */
     this.allowMultipleErrors = false;
 
     this.childNodes = [];
@@ -575,9 +584,9 @@ jpf.ValidationGroup = function(name){
 
     var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
-     * Gets the {@link Errorbox} element used for a specified element.
+     * Gets the {@link element.errorbox} element used for a specified element.
      *
-     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
+     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} property to influence when Errorboxes are created.
      * @param  {Boolean}  no_create
      * @return  {Errorbox}  the found or created Errorbox;
      */

@@ -37,10 +37,10 @@ var __DRAGDROP__ = 1 << 5;
  *      <j:actions>
  *          <j:move
  *              select = "self::folder"
- *              set    = "{@link datainstruction 'data instruction'}" />
+ *              set    = "{@link term.datainstruction data instruction}" />
  *          <j:copy
  *              select = "self::file"
- *              set    = "{@link datainstruction 'data instruction'}" />
+ *              set    = "{@link term.datainstruction data instruction}" />
  *      </j:actions>
  *      <j:dragdrop>
  *          <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
@@ -326,7 +326,7 @@ jpf.DragDrop = function(){
     /**
      * Loads the dragdrop rules from the j:dragdrop element
      *
-     * @param  {Array}      rules     the rules array created using {@link jpf#getRules(XMLElement)}
+     * @param  {Array}      rules     the rules array created using {@link core.jpf.method.getrules}
      * @param  {XMLElement} [node] the reference to the j:dragdrop element
      * @see  SmartBinding
      * @private
