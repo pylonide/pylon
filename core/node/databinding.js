@@ -1797,10 +1797,18 @@ jpf.DataBinding = function(){
      *      </j:actions>
      *      <j:dragdrop>
      *         <j:allow-drag select = "folder|file" />
-     *         <j:allow-drop select = "folder" target = "root"        operation = "tree-append" />
-     *         <j:allow-drop select = "folder" target = "folder"      operation = "insert-before" />
-     *         <j:allow-drop select = "file"   target = "folder|root" operation = "tree-append" />
-     *         <j:allow-drop select = "file"   target = "file"        operation = "insert-before" />
+     *         <j:allow-drop select = "folder" 
+     *                       target = "root"
+     *                       operation = "tree-append" />
+     *         <j:allow-drop select = "folder" 
+     *                       target = "folder"
+     *                       operation = "insert-before" />
+     *         <j:allow-drop select = "file"   
+     *                       target = "folder|root" 
+     *                       soperation = "tree-append" />
+     *         <j:allow-drop select = "file"   
+     *                       target = "file"        
+     *                       operation = "insert-before" />
      *      </j:dragdrop>
      *      <j:model load="url:get_listing.php" />
      *  </j:smartbinding>
@@ -1823,13 +1831,12 @@ jpf.DataBinding = function(){
      *  </j:tree>
      * </code>
      *
-     * There are several ways to be less verbose in assigning certain rules.
-     * see {@link element.traverse}
-     * see {@link baseclass.dragdrop.attribute.dragEnabled}
-     * see {@link element.bindings}
-     * see {@link element.actions}
-     * see {@link element.dragdrop}
-     * see {@link baseclass.multiselectbinding.method.loadInlineData}
+     * @see baseclass.multiselectbinding.binding.traverse,
+     *      baseclass.dragdrop.attribute.dragEnabled,
+     *      element.bindings,
+     *      element.actions,
+     *      element.dragdrop,
+     *      baseclass.multiselectbinding.method.loadinlinedata
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;
@@ -2384,8 +2391,8 @@ jpf.MultiselectBinding = function(){
      * specify the sort order. (N.B. The sorting mechanism is very similar to
      * that of XSLT)
      * Example:
-     * This example shows a list that displays only elements with the tagName
-     * 'mail' that do not have the deleted attribute set to 1.
+     * This example contains a list that displays elements with the tagName
+     * 'mail' that do not have a deleted attribute set to 1.
      * <code>
      *  <j:list>
      *      <j:bindings>
@@ -2417,11 +2424,11 @@ jpf.MultiselectBinding = function(){
      * </code>
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
-     * @attribute {String} data-type    the way sorting is executed. See {@link element.traverse.attribute.sort-method} for how to specify a custom sort method.
+     * @attribute {String} data-type    the way sorting is executed. See {@link baseclass.multiselectbinding.binding.traverse.attribute.sort-method} for how to specify a custom sort method.
      *   Possible values:
      *   string  Sorts alphabetically
      *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
-     *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link element.traverse.attribute.date-format} for how to specify the date format.
+     *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link baseclass.multiselectbinding.binding.traverse.attribute.date-format} for how to specify the date format.
      * @attribute {String} date-format  the format of the date on which is sorted.
      *   Possible values:
      *   YYYY   Full year
@@ -2462,16 +2469,16 @@ jpf.MultiselectBinding = function(){
      *
      * @param {Object}  options  the new sort options. These are applied incrementally. Any property not set is maintained unless the clear parameter is set to true.
      *   Properties:
-     *   {String}   order        see {@link element.traverse.attribute.order}
-     *   {String}   [xpath]      see {@link element.traverse.attribute.sort}
-     *   {String}   [type]       see {@link element.traverse.attribute.data-type}
-     *   {String}   [method]     see {@link element.traverse.attribute.sort-method}
+     *   {String}   order        see {@link baseclass.multiselectbinding.binding.traverse.attribute.order}
+     *   {String}   [xpath]      see {@link baseclass.multiselectbinding.binding.traverse.attribute.sort}
+     *   {String}   [type]       see {@link baseclass.multiselectbinding.binding.traverse.attribute.data-type}
+     *   {String}   [method]     see {@link baseclass.multiselectbinding.binding.traverse.attribute.sort-method}
      *   {Function} [getNodes]   Function that retrieves a list of nodes.
-     *   {String}   [dateFormat] see {@link element.traverse.attribute.date-format}
+     *   {String}   [dateFormat] see {@link baseclass.multiselectbinding.binding.traverse.attribute.date-format}
      *   {Function} [getValue]   Function that determines the string content based on an xml node as it's first argument.
      * @param {Boolean} clear    removes the current sort options.
      * @param {Boolean} noReload wether to reload the data of this component.
-     * @see   element.traverse
+     * @see   baseclass.multiselectbinding.binding.traverse
      */
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
@@ -2537,14 +2544,14 @@ jpf.MultiselectBinding = function(){
      *
      * @returns {Object}  the current sort options.
      *   Properties:
-     *   {String}   order      see {@link element.traverse.attribute.order}
-     *   {String}   xpath      see {@link element.traverse.attribute.sort}
-     *   {String}   type       see {@link element.traverse.attribute.data-type}
-     *   {String}   method     see {@link element.traverse.attribute.sort-method}
+     *   {String}   order      see {@link baseclass.multiselectbinding.binding.traverse.attribute.order}
+     *   {String}   xpath      see {@link baseclass.multiselectbinding.binding.traverse.attribute.sort}
+     *   {String}   type       see {@link baseclass.multiselectbinding.binding.traverse.attribute.data-type}
+     *   {String}   method     see {@link baseclass.multiselectbinding.binding.traverse.attribute.sort-method}
      *   {Function} getNodes   Function that retrieves a list of nodes.
-     *   {String}   dateFormat see {@link element.traverse.attribute.date-format}
+     *   {String}   dateFormat see {@link baseclass.multiselectbinding.binding.traverse.attribute.date-format}
      *   {Function} getValue   Function that determines the string content based on an xml node as it's first argument.
-     * @see    element.traverse
+     * @see    baseclass.multiselectbinding.binding.traverse
      */
     this.getSortSettings = function(){
         return this.$sort.get();
@@ -2553,7 +2560,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Gets a nodelist containing the xml data elements which are rendered by
-     * this element (aka. traverse nodes, see {@link element.traverse}).
+     * this element (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
      */
@@ -2571,7 +2578,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Gets the first xml data element which gets representation in this element
-     * (aka. traverse nodes, see {@link element.traverse}).
+     * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return {XMLElement}
@@ -2590,11 +2597,11 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Gets the last xml data element which gets representation in this element
-     * (aka. traverse nodes, see {@link element.traverse}).
+     * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return {XMLElement} the last xml data element
-     * @see    element.traverse
+     * @see    baseclass.multiselectbinding.binding.traverse
      */
     this.getLastTraverseNode = function(xmlNode){
         var nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);//.selectNodes(this.traverse);
@@ -2602,11 +2609,11 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines whether an xml data element is a traverse node (see {@link element.traverse})
+     * Determines whether an xml data element is a traverse node (see {@link baseclass.multiselectbinding.binding.traverse})
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return  {Boolean}  whether the xml element is a traverse node.
-     * @see  element.traverse
+     * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.isTraverseNode = function(xmlNode){
         /*
@@ -2624,7 +2631,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next traverse node (see {@link element.traverse}) to be selected
+     * Gets the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}) to be selected
      * from a given traverse node. The method can do this in either direction and
      * also return the Nth node for this algorithm.
      *
@@ -2632,7 +2639,7 @@ jpf.MultiselectBinding = function(){
      * @param {Boolean}     [up]     the direction of the selection. Default is false.
      * @param {Integer}     [count]  the distance in number of nodes. Default is 1.
      * @return  {XMLElement} the xml data element to be selected next.
-     * @see  element.traverse
+     * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
         if (!xmlNode)
@@ -2655,14 +2662,14 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next traverse node (see {@link element.traverse}).
+     * Gets the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}).
      * The method can do this in either direction and also return the Nth next node.
      *
      * @param {XMLElement}  xmlNode     the starting point for determining the next node.
      * @param {Boolean}     [up]        the direction. Default is false.
      * @param {Integer}     [count]     the distance in number of nodes. Default is 1.
      * @return  {XMLElement} the next traverse node
-     * @see  element.traverse
+     * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.getNextTraverse = function(xmlNode, up, count){
         if (!count)
@@ -2679,7 +2686,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the parent traverse node (see {@link element.traverse}). In some
+     * Gets the parent traverse node (see {@link baseclass.multiselectbinding.binding.traverse}). In some
      * cases the traverse rules has a complex form like 'children/item'. In those
      * cases the generated tree has a different structure from that of the xml
      * data. For these situations the xmlNode.parentNode property won't return
@@ -2687,7 +2694,7 @@ jpf.MultiselectBinding = function(){
      *
      * @param {XMLElement} xmlNode the node for which the parent element will be determined.
      * @return  {XMLElement} the parent node or null if none was found.
-     * @see  element.traverse
+     * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
@@ -3334,7 +3341,7 @@ jpf.MultiselectBinding = function(){
     /**
      * @attribute {String} traverse the xpath statement that determines which
      * xml data elements are rendered by this element. See
-     * {@link element.traverse} for more information.
+     * {@link baseclass.multiselectbinding.binding.traverse} for more information.
      * Example:
      * <code>
      *  <j:label>Country</j:label>
@@ -3354,7 +3361,7 @@ jpf.MultiselectBinding = function(){
      *      </countries>
      *  </j:model>
      * </code>
-     * @see  element.traverse
+     * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.$propHandlers["traverse"] =
 
