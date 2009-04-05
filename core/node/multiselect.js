@@ -45,6 +45,9 @@ var __MULTISELECT__ = 1 << 8;
  *      </j:bindings>
  *  </j:tree>
  * </code>
+ *
+ * @inherits jpf.MultiselectBinding
+ *
  * @binding value  Determines the way the value for the element is retrieved
  * from the selected node. The value property contains this value.
  * Example:
@@ -64,8 +67,6 @@ var __MULTISELECT__ = 1 << 8;
  *      </j:model>
  *  </j:dropdown>
  * </code>
- *
- * @inherits jpf.MultiselectBinding
  */
 jpf.MultiSelect = function(){
     var noEvent;
