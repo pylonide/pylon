@@ -48,7 +48,7 @@
  * @binding css       Determines a css class for a node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
- * <pre class="code">
+ * <code>
  *  <j:list>
  *      <j:bindings>
  *          <j:caption select="@caption" />
@@ -58,7 +58,7 @@
  *          <j:traverse select="folder" />
  *      </j:bindings>
  *  </j:list>
- * </pre>
+ * </code>
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
  * @binding description Determines the text that is displayed under the expanded row.
  * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
@@ -80,7 +80,7 @@
  *   {XMLElement} xmlNode   the selected node.
  *   {XMLElement} dataNode  the xml data element.
  *   Example:
- *   <pre class="code">
+ *   <code>
  *      <j:propedit 
  *        lookupjml      = "tmpLookup"
  *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
@@ -122,7 +122,7 @@
  *              </j:bar>
  *          </j:toolbar>
  *      </j:template>
- *   </pre>
+ *   </code>
  */
 jpf.propedit    =
 jpf.spreadsheet = 

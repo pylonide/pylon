@@ -44,18 +44,18 @@
  * from the bound data.
  * Example:
  * Sets the color based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:palette>
  *      <j:bindings>
  *          <j:value select="@color" />
  *      </j:bindings>
  *  </j:palette>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:palette ref="@color" />
- * </pre>
+ * </code>
  */
 jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
     

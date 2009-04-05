@@ -28,12 +28,12 @@
  * modal can be reset to it's original state. It has support for offline use and
  * synchronization between multiple clients.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:model load="url:products.xml" />
- * </pre>
+ * </code>
  * Example:
  * A small form where a form is submitted using a model.
- * <pre class="code">
+ * <code>
  *  <j:model id="mdlForm" submission="url:save_form.asp" />
  *
  *  <j:bar model="mdlForm">
@@ -45,7 +45,7 @@
  *
  *      <j:button default="true" action="submit">Submit</j:button>
  *  </j:bar>
- * </pre>
+ * </code>
  *
  * @event beforeretrieve    Fires before a request is made to retrieve data.
  *   cancellable: Prevents the data from being retrieved.
@@ -655,9 +655,9 @@ jpf.model = function(data, caching){
      * Only relevant for models that are a connect proxy.
      * A connect proxy is set up like this:
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:model connect="element_name" type="select" select="xpath" />
-     * </pre>
+     * </code>
      *
      * @param  {JMLElement} jmlNode  the jml element to be registered.
      * @param  {String}     [type]   select

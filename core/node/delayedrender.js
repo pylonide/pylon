@@ -34,7 +34,7 @@ var __DELAYEDRENDER__ = 1 << 11
  * the startup time of the application.
  * Example:
  * In this example the button isn't rendered until the advanced tab becomes active.
- * <pre class="code">
+ * <code>
  *  <j:tab>
  *      <j:page caption="General">
  *          ...
@@ -43,7 +43,7 @@ var __DELAYEDRENDER__ = 1 << 11
  *          <j:button>OK</j:button>
  *      </j:page>
  *  </j:tab>
- * </pre>
+ * </code>
  *
  * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
  *   cancellable: Prevents rendering of the childNodes

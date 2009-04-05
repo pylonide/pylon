@@ -29,7 +29,7 @@
  * dragged and dropped (dragdrop). 
  * Example:
  * A simple example of a smartbinding transforming data into representation
- * <pre class="code">
+ * <code>
  *  <j:smartbinding id="sbUsers">
  *      <j:bindings>
  *          <j:caption select="text()" />
@@ -39,7 +39,7 @@
  *  </j:smartbinding>
  * 
  *  <j:list smartbinding="sbUsers" />
- * </pre>
+ * </code>
  * Example:
  * This is an elaborate example showing how to create a filesystem tree with
  * files and folders in a tree. The smartbinding element describes how the
@@ -47,7 +47,7 @@
  * the tree are sent to the data source. In this case webdav is used. The drag
  * and drop rules specify which elements can be dragged and where they can be
  * dropped.
- * <pre class="code">
+ * <code>
  *  <j:smartbinding id="sbFilesystem" model="webdav:getRoot()">
  *      <j:bindings>
  *          <j:insert select="self::folder" get="webdav:readdir({@path})" />
@@ -87,7 +87,7 @@
  *              : "unknown.png");
  *      }
  *  </j:script>
- * </pre>
+ * </code>
  * Remarks:
  * Each element has it's own set of binding rules it uses to render the data 
  * elements. The same goes for it's actions. To give an example, a slider has 
@@ -108,7 +108,7 @@
  * Example:
  * This example shows a smartbinding element which references it's children as
  * stand alone elements.
- * <pre class="code">
+ * <code>
  *  <j:bindings id="bndExample">
  *      ...
  *  </j:bindings>
@@ -128,11 +128,11 @@
  *
  *  <j:list smartbinding="sbExample" />
  *  <j:tree binding="bndExample" action="actExample" model="url:example.php" />
- * </pre>
+ * </code>
  * Example:
  * This example shows the children of the smartbinding directly as a child of 
  * the element that they apply on.
- * <pre class="code">
+ * <code>
  *  <j:tree>
  *      <j:bindings>
  *          ...
@@ -144,12 +144,12 @@
  *          ...
  *      </j:dragdrop>
  *  </j:tree>
- * </pre>
+ * </code>
  * Example:
  * The shortest way to add binding rules to an element is as follows:
- * <pre class="code">
+ * <code>
  *  <j:tree traverse="file|folder" caption="@name" icon="@icon" />
- * </pre>
+ * </code>
  * 
  * @define smartbinding
  * @allowchild bindings, actions, ref, action, dragdrop, model
@@ -449,7 +449,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @define bindings element containing all the binding rules for the data 
      * bound elements referencing this element.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:bindings id="bndFolders" >
      *      <j:caption select="@name" />
      *      <j:icon select="@icon" />
@@ -457,14 +457,14 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      *  </j:bindings>
      *
      *  <j:tree bindings="bndFolders" />
-     * </pre>
+     * </code>
      * @see smartbinding
      * @allowchild {bindings}
      * @addnode smartbinding, global
      * @define actions  element containing all the action rules for the data 
      * bound elements referencing this element.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:actions id="actPerson" >
      *      <j:add set="rpc:comm.addPerson({.})">
      *          <person name="New person" />
@@ -474,7 +474,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      *  </j:actions>
      *
      *  <j:tree actions="actPerson" />
-     * </pre>
+     * </code>
      * @allowchild {actions}
      * @addnode smartbinding, global
      * @define dragdrop element containing all the dragdrop rules for the data 
@@ -484,13 +484,13 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * office elements. A person can be dragged to an office. An office can be
      * dragged but not dropped within this element. Possible an other element
      * does allow receiving an office element.
-     * <pre class="code">
+     * <code>
      *  <j:dragdrop>
      *      <j:allow-drag select="person|office" /> 
      *      <j:allow-drop select="person" target="office" 
      *          operation="tree-append" copy-condition="event.ctrlKey" /> 
      *  </j:dragdrop>
-     * </pre>
+     * </code>
      * @allowchild allow-drag, allow-drop
      * @addnode smartbinding, global
      * @define ref      shorthand for the default binding rule

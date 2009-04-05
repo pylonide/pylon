@@ -26,7 +26,7 @@ var __VALIDATION__ = 1 << 6;
 /**
  * Baseclass adding validation to this element.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:bar validgroup="vgExample">
  *      <j:label>Number</j:label>
  *      <j:textbox required="true" min="3" max="10" invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
@@ -36,7 +36,7 @@ var __VALIDATION__ = 1 << 6;
  *      <j:textarea required="true" invalidmsg="Invalid Message;Please enter a message!" />
  *          <j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
  *  </j:bar>
- * </pre>
+ * </code>
  *
  * @event invalid    Fires when this component goes into an invalid state.
  *
@@ -508,7 +508,7 @@ jpf.Validation = function(){
 /**
  * Object allowing for a set of JML elements to be validated. an element that goes into an error state will
  * show the errorbox.
- * <pre class="code">
+ * <code>
  *  <j:bar validgroup="vgForm">
  *      <j:label>Phone number</j:label>
  *      <j:textbox id="txtPhone"
@@ -523,24 +523,24 @@ jpf.Validation = function(){
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
  *  </j:bar>
- * </pre>
+ * </code>
  *
  * To check if the element has valid information entered, leaving the textbox
  * (focussing another element) will trigger a check. Programmatically a check
  * can be done using the following code:
- * <pre class="code">
+ * <code>
  *  txtPhone.validate();
  *
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
- * </pre>
+ * </code>
  *
  * To check for the entire group of elements use the validation group. For only
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <pre class="code">
+ * <code>
  *  vgForm.validate();
- * </pre>
+ * </code>
  *
  * @event validation Fires when the validation group isn't validated.
  *

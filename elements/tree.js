@@ -33,7 +33,7 @@
  * can grow by fetching more data when the user requests it.
  * Example:
  * A tree with inline items.
- * <pre class="code">
+ * <code>
  *  <j:tree id="tree" align="right">
  *      <j:item caption="root" icon="icoUsers.gif">
  *          <j:item icon="icoUsers.gif" caption="test">
@@ -46,9 +46,9 @@
  *          <j:item icon="icoUsers.gif" caption="test" />
  *      </j:item>
  *  </j:tree>
- * </pre>
+ * </code>
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:tree model="url:items.xml">
  *      <j:bindings>
  *          <j:caption select="@name" />
@@ -56,7 +56,7 @@
  *          <j:traverse select="file|folder" />
  *      </j:bindings>
  *  </j:tree>
- * </pre>
+ * </code>
  *
  * @constructor
  * @define tree
@@ -84,19 +84,19 @@
  * This example shows an insert rule that only works on folder elements. It will
  * read the directory contents using webdav and insert it under the selected 
  * tree node.
- * <pre class="code">
+ * <code>
  *  <j:bindings>
  *      <j:caption select="@caption" />
  *      <j:insert select="self::folder" get="webdav:readdir({@id})" />
  *      <j:traverse select="folder" />
  *  </j:bindings>
- * </pre>
+ * </code>
  * @binding caption  Determines the caption of a tree node.
  * @binding icon     Determines the icon of a tree node.
  * @binding css      Determines a css class for a tree node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
- * <pre class="code">
+ * <code>
  *  <j:tree>
  *      <j:bindings>
  *          <j:caption select="@caption" />
@@ -106,13 +106,13 @@
  *          <j:traverse select="folder" />
  *      </j:bindings>
  *  </j:tree>
- * </pre>
+ * </code>
  * @binding tooltip  Determines the tooltip of a tree node.
  * @binding empty    Determines the empty message of a node.
  * Example:
  * This example shows a gouped contact list, that displays a message under 
  * empty groups.
- * <pre class="code">
+ * <code>
  *  <j:tree>
  *      <j:bindings>
  *          <j:caption select="@caption" />
@@ -122,7 +122,7 @@
  *          <j:traverse select="group|contact" />
  *      </j:bindings>
  *  </j:tree>
- * </pre>
+ * </code>
  */
 jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options

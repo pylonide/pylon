@@ -32,7 +32,7 @@ var __DRAGDROP__ = 1 << 5;
  * should be dragged and/or dropped and where.
  *
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:smartbinding>
  *      <j:actions>
  *          <j:move
@@ -56,15 +56,15 @@ var __DRAGDROP__ = 1 << 5;
  *              copy-condition = "event.ctrlKey" />
  *      </j:dragdrop>
  *  </j:smartbinding>
- * </pre>
+ * </code>
  *
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:list
  *      dragEnabled     = "true"
  *      dropEnabled     = "true"
  *      dragMoveEnabled = "true" />
- * </pre>
+ * </code>
  *
  * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
  *   object:
@@ -444,33 +444,33 @@ jpf.DragDrop = function(){
     /**
      * @attribute  {Boolean}  dragEnabled       whether the element allows dragging of it's items.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:list dragEnabled="true">
      *      <j:item>item 1</j:item>
      *      <j:item>item 2</j:item>
      *      <j:item>item 3</j:item>
      *  </j:list>
-     * </pre>
+     * </code>
      * @attribute  {Boolean}  dragMoveEnabled   whether dragged items are moved or copied when holding the Ctrl key.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:list dragMoveEnabled="true">
      *      <j:item>item 1</j:item>
      *      <j:item>item 2</j:item>
      *      <j:item>item 3</j:item>
      *  </j:list>
-     * </pre>
+     * </code>
      * @attribute  {Boolean}  dropEnabled       whether the element allows items to be dropped.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:list dropEnabled="true">
      *      <j:item>item 1</j:item>
      *      <j:item>item 2</j:item>
      *      <j:item>item 3</j:item>
      *  </j:list>
-     * </pre>
+     * </code>
      * @attribute  {String}   dragdrop          the name of the j:dragdrop element for this element.
-     * <pre class="code">
+     * <code>
      *  <j:list dragdrop="bndDragdrop" />
      *
      *  <j:dragdrop id="bndDragdrop">
@@ -481,7 +481,7 @@ jpf.DragDrop = function(){
      *          action         = "tree-append"
      *          copy-condition = "event.ctrlKey" />
      *  </j:dragdrop>
-     * </pre>
+     * </code>
      */
     this.$propHandlers["dragenabled"]     =
     this.$propHandlers["dragmoveenabled"] =

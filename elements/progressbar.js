@@ -30,11 +30,11 @@
  * This example shows a progress bar that is only visible when an application is
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
- * <pre class="code">
+ * <code>
  *  <j:progressbar
  *     value="{jpf.offline.progress}"
  *     visible="{jpf.offline.syncing}" />
- * </pre>
+ * </code>
  *
  * @constructor
  * @allowchild {smartbinding}
@@ -51,18 +51,18 @@
  * from the bound data.
  * Example:
  * Sets the progress position based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:progressbar>
  *      <j:bindings>
  *          <j:value select="@progress" />
  *      </j:bindings>
  *  </j:progressbar>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:progressbar ref="@progress" />
- * </pre>
+ * </code>
  */
 jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = false; // This object can get the focus

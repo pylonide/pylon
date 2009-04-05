@@ -27,17 +27,17 @@ var __INTERACTIVE__ = 1 << 21;
  * Baseclass giving interactive features to this element, it makes an
  * element draggable and resizable.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:textarea draggable="true" resizable="true" />
- * </pre>
+ * </code>
  * 
  * @attribute {Boolean} draggable makes an element draggable. The user will 
  * able to move the element around while holding the mouse button down on the 
  * element.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:bar draggable="true" />
- * </pre>
+ * </code>
  * @attribute {Boolean} resizable makes an element resizable. The user will able 
  * to resize the element by grabbing one of the four edges of the element and 
  * pulling it in either direction. Grabbing the corners allow the users the 
@@ -45,9 +45,9 @@ var __INTERACTIVE__ = 1 << 21;
  * is special because it offers an especially big grab area. The size of this 
  * area can be configured in the skin of the element.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:window resizable="true" />
- * </pre>
+ * </code>
  * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
  * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
  * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.

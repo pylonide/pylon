@@ -49,18 +49,18 @@
  * from the bound data.
  * Example:
  * Sets the value based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:textbox>
  *      <j:bindings>
  *          <j:value select="@name" />
  *      </j:bindings>
  *  </j:textbox>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:textbox ref="@name" />
- * </pre>
+ * </code>
  *
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
@@ -146,29 +146,29 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   \  Cancel the special meaning of a character.
      * Example:
      * An american style phone number.
-     * <pre class="code">
+     * <code>
      *  <j:textbox mask="(000)0000-0000;;_" />
-     * </pre>
+     * </code>
      * Example:
      * A dutch postal code
-     * <pre class="code">
+     * <code>
      *  <j:textbox mask="0000 AA;;_" />
-     * </pre>
+     * </code>
      * Example:
      * A date
-     * <pre class="code">
+     * <code>
      *  <j:textbox mask="00-00-0000;;_" datatype="xsd:date" />
-     * </pre>
+     * </code>
      * Example:
      * A serial number
-     * <pre class="code">
+     * <code>
      *  <j:textbox mask="'WCS74'0000-00000;1;_" />
-     * </pre>
+     * </code>
      * Example:
      * A MAC address
-     * <pre class="code">
+     * <code>
      *  <j:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
-     * </pre>
+     * </code>
      * Remarks:
      * This currently only works in internet explorer.
      */

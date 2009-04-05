@@ -39,18 +39,18 @@
  * from the bound data.
  * Example:
  * Sets the flash source text based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:flashplayer>
  *      <j:bindings>
  *          <j:value select="@src" />
  *      </j:bindings>
  *  </j:flashplayer>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:flashplayer ref="@src" />
- * </pre>
+ * </code>
  */
 jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE

@@ -48,7 +48,7 @@
  * @binding image    Determines the image of a node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
- * <pre class="code">
+ * <code>
  *  <j:thumbnail>
  *      <j:bindings>
  *          <j:caption select="@caption" />
@@ -57,11 +57,11 @@
  *          <j:traverse select="images" />
  *      </j:bindings>
  *  </j:thumbnail>
- * </pre>
+ * </code>
  * @binding css      Determines a css class for a node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
- * <pre class="code">
+ * <code>
  *  <j:list>
  *      <j:bindings>
  *          <j:caption select="@caption" />
@@ -71,7 +71,7 @@
  *          <j:traverse select="folder" />
  *      </j:bindings>
  *  </j:list>
- * </pre>
+ * </code>
  * @binding tooltip  Determines the tooltip of a node.
  * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
  *   object:
@@ -99,9 +99,9 @@ jpf.BaseList = function(){
      * element. A start and an end seperated by a -.
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <pre class="code">
+     * <code>
      *  <j:dropdown fill="1980-2050" />
-     * </pre>
+     * </code>
      */
     this.$propHandlers["fill"] = function(value){
         if (value)
@@ -737,9 +737,9 @@ jpf.BaseList = function(){
      * @param {String} str the description of the items. A start and an end seperated by a -.
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <pre class="code">
+     * <code>
      *  lst.loadFillData("1980-2050");
-     * </pre>
+     * </code>
      */
     this.loadFillData = function(str){
         var parts = str.split("-");

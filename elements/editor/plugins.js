@@ -285,7 +285,7 @@ jpf.editor.CMDMACRO      = "commandmacro";
  *     }
  *     // That's it! you can add more code below to your liking...
  * });
- * </pre>
+ * </code>
  */
 jpf.editor.plugin = function(sName, fExec) {
     jpf.editor.plugin[sName] = function() {

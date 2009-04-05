@@ -32,7 +32,7 @@ var __RENAME__ = 1 << 10;
  * Example:
  * This example shows a list containing products. Only products that have the
  * editable attribute set to 1 can be renamed by the user.
- * <pre class="code">
+ * <code>
  *  <j:list model="url:/cgi-bin/products.cgi">
  *      <j:bindings>
  *          <j:caption select="@name" />
@@ -44,7 +44,7 @@ var __RENAME__ = 1 << 10;
  *            set    = "rpc:comm.update('product', {@id}, {@name})" />
  *      </j:actions>
  *  </j:list>
- * </pre>
+ * </code>
  *
  * @event stoprename Fires when a rename action is cancelled.
  *

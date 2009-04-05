@@ -26,14 +26,14 @@
  * Element displaying a frame with a caption containing other elements. This
  * element is called a fieldset in html.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:frame caption="Options">
  *      <j:radiobutton value="1">Option 1</j:radiobutton>
  *      <j:radiobutton value="2">Option 2</j:radiobutton>
  *      <j:radiobutton value="3">Option 3</j:radiobutton>
  *      <j:radiobutton value="4">Option 4</j:radiobutton>
  *  </j:frame>
- * </pre>
+ * </code>
  *
  * @constructor
  * @define fieldset, frame

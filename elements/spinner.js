@@ -30,9 +30,9 @@
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
  * 
- * <pre class="code">
+ * <code>
  *     <j:spinner value="6" min="-99" max="199"></j:spinner>
- * </pre>
+ * </code>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000
  * @attribute {Number}   min       minimal allowed value, default is -64000
@@ -53,18 +53,18 @@
  * from the bound data.
  * Example:
  * Sets the value based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:spinner>
  *      <j:bindings>
  *          <j:value select="@value" />
  *      </j:bindings>
  *  </j:spinner>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:spinner ref="@value" />
- * </pre>
+ * </code>
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.max           = 64000;

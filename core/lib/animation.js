@@ -225,20 +225,20 @@ jpf.tween = {
      * Tweens a single property of a single element or html element from a
      * start to an end value.
      * Example:
-     * <pre class="code">
+     * <code>
      * jpf.tween.single(myDiv, {
      *     type : "left",
      *     from : 10,
      *     to   : 100,
      *     anim : jpf.tween.EASEIN
      * });
-     * </pre>
+     * </code>
      * Example:
      * Multiple animations can be run after eachother
      * by calling this function multiple times.
-     * <pre class="code">
+     * <code>
      *  jpf.tween.single(myDiv, options).single(myDiv2, options2);
-     * </pre>
+     * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {Object}   info  the animation settings.
      *   Properties:
@@ -336,7 +336,7 @@ jpf.tween = {
      * start to an end value.
      * Example:
      * Animating both the left and width at the same time.
-     * <pre class="code">
+     * <code>
      *  jpf.tween.multi(myDiv, {
      *      anim   : jpf.tween.EASEIN
      *      tweens : [{
@@ -350,13 +350,13 @@ jpf.tween = {
      *          to   : 400,
      *      }]
      *  });
-     * </pre>
+     * </code>
      * Example:
      * Multiple animations can be run after eachother
      * by calling this function multiple times.
-     * <pre class="code">
+     * <code>
      *  jpf.tween.multi(myDiv, options).multi(myDiv2, options2);
-     * </pre>
+     * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {Object} info the settings of the animation.
      *   Properties:
@@ -437,9 +437,9 @@ jpf.tween = {
      * Example:
      * Multiple animations can be run after eachother by calling this function
      * multiple times.
-     * <pre class="code">
+     * <code>
      *  jpf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
-     * </pre>
+     * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {String} className the classname that defines the css properties to be set or removed.
      * @param {Object} info the settings of the animation.

@@ -38,17 +38,17 @@ var __MULTISELECT__ = 1 << 8;
  * Example:
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
- * <pre class="code">
+ * <code>
  *  <j:tree>
  *      <j:bindings>
  *          <j:select select="self::node()[not(@disabled)]" />
  *      </j:bindings>
  *  </j:tree>
- * </pre>
+ * </code>
  * @binding value  Determines the way the value for the element is retrieved
  * from the selected node. The value property contains this value.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:dropdown onafterchange="alert(this.value)">
  *      <j:bindings>
  *          <j:caption select="text()" />
@@ -63,7 +63,7 @@ var __MULTISELECT__ = 1 << 8;
  *          </items>
  *      </j:model>
  *  </j:dropdown>
- * </pre>
+ * </code>
  *
  * @inherits jpf.MultiselectBinding
  */
@@ -104,7 +104,7 @@ jpf.MultiSelect = function(){
      * Removes an xml data element from the data of this element.
      * Example:
      * A simple list showing products. This list is used in all following examples.
-     * <pre class="code">
+     * <code>
      *  <j:list id="myList">
      *      <j:bindings>
      *          <j:caption select="@name" />
@@ -122,24 +122,24 @@ jpf.MultiSelect = function(){
      *          </products>
      *      </j:model>
      *  </j:list>
-     * </pre>
+     * </code>
      * Example:
      * This example selects a product by it's value and then removes the
      * selection.
-     * <pre class="code">
+     * <code>
      *  myList.setValue("product20");
      *  myList.remove();
-     * </pre>
+     * </code>
      * Example:
      * This example gets a product by it's value and then removes it.
-     * <pre class="code">
+     * <code>
      *  var xmlNode = myList.findXmlNodeByValue("product20");
      *  myList.remove(xmlNode);
-     * </pre>
+     * </code>
      * Example:
      * This example retrieves all nodes from a list. All items with a length
      * greater than 10 are singled out and removed.
-     * <pre class="code">
+     * <code>
      *  var list = myList.getTraverseNodes(); //get all nodes from a list.
      *  var removeList = [];
      *  for (var i = 0; i < list.length; i++) {
@@ -147,29 +147,29 @@ jpf.MultiSelect = function(){
      *          removeList.push(list[i]);
      *  }
      *  myList.remove(removeList); //remove the list of nodes
-     * </pre>
+     * </code>
      * Remarks:
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <pre class="code">
+     * <code>
      *  <j:button action="remove" target="myList">Remove item</j:button>
-     * </pre>
+     * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user removed an item.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:remove set="url:remove_product.php?id={@id}" />
      *  </j:actions>
-     * </pre>
+     * </code>
      * For undo this action should be extended and the server should maintain a
      * copy of the deleted item.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:remove set="url:remove_product.php?id={@id}">
      *          <j:undo set="url:undo_remove_product.php?id={@id}" />
      *      </j:remove>
      *  </j:actions>
-     * </pre>
+     * </code>
      * @action
      * @param  {mixed} [nodeList]  the data element(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
@@ -222,7 +222,7 @@ jpf.MultiSelect = function(){
      * Adds an xml data element to the data of this element.
      * Example:
      * A simple list showing products. This list is used in all following examples.
-     * <pre class="code">
+     * <code>
      *  <j:list id="myList">
      *      <j:bindings>
      *          <j:caption select="@name" />
@@ -240,61 +240,61 @@ jpf.MultiSelect = function(){
      *          </products>
      *      </j:model>
      *  </j:list>
-     * </pre>
+     * </code>
      * Example:
      * This example adds a product to this element.
      * selection.
-     * <pre class="code">
+     * <code>
      *  myList.add('<product name="USB drive" type="storage" />');
-     * </pre>
+     * </code>
      * Example:
      * This example copy's the selected product, changes it's name and then
      * adds it. After selecting the new node the user is offered a rename input
      * box.
-     * <pre class="code">
+     * <code>
      *  var xmlNode = jpf.xmldb.copy(myList.selected);
      *  xmlNode.setAttribute("name", "New product");
      *  myList.add(xmlNode);
      *  myList.select(xmlNode);
      *  myList.startRename();
-     * </pre>
+     * </code>
      * Remarks:
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <pre class="code">
+     * <code>
      *  <j:button action="add" target="myList">Add new product</j:button>
-     * </pre>
+     * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user added an item.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:add set="rpc:comm.addProduct({.})" />
      *  </j:actions>
-     * </pre>
+     * </code>
      * For undo this action should be extended as follows.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:add set="url:add_product.php?id={.}">
      *          <j:undo set="url:remove_product.php?id={@id}" />
      *      </j:add>
      *  </j:actions>
-     * </pre>
+     * </code>
      * In some cases the server needs to create the new product before it's
      * added. This is done as follows.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:add get="rpc:comm.createNewProduct()" />
      *  </j:actions>
-     * </pre>
+     * </code>
      * Alternatively the template for the addition can be provided as a child of
      * the action rule.
-     * <pre class="code">
+     * <code>
      *  <j:actions>
      *      <j:add set="url:add_product.php?id={.}">
      *          <product name="USB drive" type="storage" />
      *      </j:add>
      *  </j:actions>
-     * </pre>
+     * </code>
      * @action
      * @param  {XMLElement} [xmlNode]    the xml data element which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
      * @param  {XMLElement} [pNode]      the parent node of the added xml data element.

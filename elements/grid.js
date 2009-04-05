@@ -30,7 +30,7 @@
  * orientation of the grid runtime. The textarea and it's label have a span set
  * to '*'. This means they will span the entire width of all columns, no matter
  * how many columns there are.
- * <pre class="code">
+ * <code>
  *  <j:window>
  *      <j:grid id="gridTest" 
  *        columns = "80, *"
@@ -59,7 +59,7 @@
  *          caption = "Four Columns"
  *          onclick = "gridTest.setAttribute('columns', '60, 120, 60, *');"/>
  *  </j:window>
- * </pre>
+ * </code>
  * Remarks:
  * This is one of three positioning methods.
  * See {@link baseclass.alignment}
@@ -98,15 +98,15 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:grid columns="150, *, 20%" />
-     * </pre>
+     * </code>
      * @attribute {String} padding      the space between each element.
      * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:grid margin="10 10 40 10" />
-     * </pre>
+     * </code>
      * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row.
      */
     this.$supportedProperties.push("columns", "padding", "margin", 

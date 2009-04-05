@@ -25,7 +25,7 @@
  * @see hbox
  * @define hbox Container that stacks it's children horizontally.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:hbox>
  *      <j:vbox>
  *          <j:bar caption="Some Window"/>
@@ -40,7 +40,7 @@
  *      </j:vbox>
  *      <j:bar caption="Down Window"/>
  *  </j:hbox>
- * </pre>
+ * </code>
  * Remarks:
  * The layouting engine of Javeline PlatForm lets you store layouts and set them
  * dynamically. It's very easy to make a layout manager this way. For more 

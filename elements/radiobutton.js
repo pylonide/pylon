@@ -146,17 +146,17 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * Element displaying a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:frame title="Options">
  *      <j:radiobutton>Option 1</j:radiobutton>
  *      <j:radiobutton>Option 2</j:radiobutton>
  *      <j:radiobutton>Option 3</j:radiobutton>
  *      <j:radiobutton>Option 4</j:radiobutton>
  *  </j:frame>
- * </pre>
+ * </code>
  * Example:
  * This example shows radio buttons with an explicit group set:
- * <pre class="code">
+ * <code>
  *  <j:label>Options</j:label>
  *  <j:radiobutton group="g1">Option 1</j:radiobutton>
  *  <j:radiobutton group="g1">Option 2</j:radiobutton>
@@ -164,7 +164,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  *  <j:label>Choices</j:label>
  *  <j:radiobutton group="g2">Choice 1</j:radiobutton>
  *  <j:radiobutton group="g2">Choice 2</j:radiobutton>
- * </pre>
+ * </code>
  *
  * @constructor
  * @define radiobutton
@@ -181,20 +181,20 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * from the bound data.
  * Example:
  * Sets the selection based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</j:radiobutton>
  *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
  *
  *  <j:bindings id="bndExample">
  *      <j:value select="@value" />
  *  </j:bindings>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:radiobutton group="g2" ref="@value" value="1">Choice 1</j:radiobutton>
  *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
- * </pre>
+ * </code>
  *
  * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  * @see baseclass.jmlnode.event.afterchange

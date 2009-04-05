@@ -28,7 +28,7 @@
  * This example shows an rpc element using the xmlrpc protocol. It contains
  * two methods which can be called. The return of the first method is handled
  * by a javascript function called processSearch.
- * <pre class="code">
+ * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="xmlrpc">
  *          <j:method
@@ -48,7 +48,7 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </j:script>
- * </pre>
+ * </code>
  *
  * @define rpc
  * @attribute {String} soap-xmlns   the url that uniquely identifies the xml namespace for the message
@@ -238,7 +238,7 @@ jpf.rpc = function(){
      * @allowchild variable
      * @attribute {String}  name             the name of the method. This name will be available on the rpc object as a javascript method.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:teleport>
      *      <j:rpc id="comm" protocol="xmlrpc">
      *          <j:method name="save" />
@@ -248,7 +248,7 @@ jpf.rpc = function(){
      *  <j:script>
      *      comm.save(data);
      *  </j:script>
-     * </pre>
+     * </code>
      * @attribute {String}  [url]            the location of the server that is recipient of the rpc message.
      * @attribute {String}  [callback]       the name of the method that handles the return of the call.
      * @attribute {Boolean} [ignore-offline] whether the method should not be stored for later execution when offline.

@@ -28,9 +28,9 @@
  * In most cases the functionality of this object will be managed from within 
  * the offline element in JML.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:offline ontransactioncancel="alert('You are currently offline')" />
- * </pre>
+ * </code>
  *
  * @define offline
  * @event transactioncancel Fires before installation of an offline provider

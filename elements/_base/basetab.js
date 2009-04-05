@@ -78,7 +78,7 @@ jpf.BaseTab = function(){
      * Example
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
-     * <pre class="code">
+     * <code>
      *  <j:dropdown id="ddMenu">
      *      <j:item value="0">Home</j:item>
      *      <j:item value="1">General</j:item>
@@ -96,14 +96,14 @@ jpf.BaseTab = function(){
      *          <h1>Advanced Page</h1>
      *      </j:page>
      *  </j:pages>
-     * </pre>
+     * </code>
      */
     this.$propHandlers["activepagenr"] =
 
     /**
      * @attribute {String} activepage the name of the active page.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:tab activepage="general">
      *      <j:page id="home">
      *          ...
@@ -115,7 +115,7 @@ jpf.BaseTab = function(){
      *          ...
      *      </j:page>
      *  </j:tab>
-     * </pre>
+     * </code>
      */
     this.$propHandlers["activepage"]   = function(next, noEvent){
         if (!inited) return;

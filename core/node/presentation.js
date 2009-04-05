@@ -348,7 +348,7 @@ jpf.skins = {
  * skin to display thumbnails of the data elements.
  *
  * A skin for an element is always build up out of a standard set of parts.
- * <pre class="code">
+ * <code>
  *   <j:textbox name="textbox">
  *      <j:alias>
  *          ...
@@ -364,7 +364,7 @@ jpf.skins = {
  *          ...
  *      </j:presentation>
  *   </j:textbox>
- * </pre>
+ * </code>
  * The alias contains a name that contains alternative names for the skin. The
  * style tags contain the css. The main tag contains the html elements that are
  * created when the component is created. Any other skin items are used to render
@@ -394,9 +394,9 @@ jpf.Presentation = function(){
      * of <j:appsettings /> is used. When not defined the default skinset
      * is accessed.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:list skinset="perspex" />
-     * </pre>
+     * </code>
      */
     this.$propHandlers["skinset"] =
 
@@ -406,13 +406,13 @@ jpf.Presentation = function(){
      * element is kept including it's selection, all the
      * jml attributes, loaded data, focus and disabled state.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:list id="lstExample" skin="thumbnails" />
-     * </pre>
+     * </code>
      * Example:
-     * <pre class="code">
+     * <code>
      *  lstExample.setAttribute("skin", "list");
-     * </pre>
+     * </code>
      */
     this.$propHandlers["skin"] = function(value){
         if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent

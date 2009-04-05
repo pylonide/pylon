@@ -26,7 +26,7 @@
  * Based on the context of the menu, items can be shown and hidden. That's
  * why this element is often called a contextmenu.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:iconmap id="tbicons" src="toolbar.icons.gif"
  *      type="horizontal" size="20" offset="2,2"></j:iconmap>
  *
@@ -54,7 +54,7 @@
  *  <j:window contextmenu="mmain">
  *      ...
  *  </j:window>
- * </pre>
+ * </code>
  * @see {@link baseclass.jmlelement.event.contextmenu oncontextmenu}
  *
  * @event display   Fires when the contextmenu is shown.
@@ -546,7 +546,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              * @attribute {String} [submenu] the id of the menu that is shown
              * when the user hovers over this menu item.
              * Example:
-             * <pre class="code">
+             * <code>
              *  <j:menu id="msub">
              *      <j:item icon="tbicons:12">test</j:item>
              *      <j:item icon="tbicons:14">test2</j:item>
@@ -555,7 +555,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              *  <j:menu id="mmain">
              *      <j:item submenu="msub">Sub menu</j:item>
              *  </j:menu>
-             * </pre>
+             * </code>
              */
             case "submenu":
                 jpf.setStyleClass(this.oExt, "submenu");
@@ -571,7 +571,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              * item is shown.
              * Example:
              * This example shows a list
-             * <pre class="code">
+             * <code>
              *  <j:list>
              *     [...]
              *
@@ -591,7 +591,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              *  <j:menu id="mnuXY">
              *     <j:item>Reboot</j:Item>
              *  </j:menu>
-             * </pre>
+             * </code>
              */
             case "select":
                 this.select = value
@@ -602,14 +602,14 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              * @attribute {String} [group] the name of the group this item belongs
              * to.
              * Example:
-             * <pre class="code">
+             * <code>
              *  <j:menu>
              *      <j:radio group="example">item 1</j:radio>
              *      <j:radio group="example">item 2</j:radio>
              *      <j:radio group="example">item 3</j:radio>
              *      <j:radio group="example">item 4</j:radio>
              *  </j:menu>
-             * </pre>
+             * </code>
              */
             case "group":
                 break;
@@ -620,9 +620,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
              * space, a minus or plus sign as a seperator.
              * Example:
-             * <pre class="code">
+             * <code>
              *      <j:item hotkey="Ctrl+Q">Quit</j:item>
-             * </pre>
+             * </code>
              */
             case "hotkey":
                 if (this.oHotkey)

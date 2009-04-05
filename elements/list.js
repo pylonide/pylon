@@ -31,22 +31,22 @@
  * a more website like interface.
  * Example:
  * A simple list with inline items.
- * <pre class="code">
+ * <code>
  *  <j:list multiselect="false">
  *      <j:item>The Netherlands</j:item>
  *      <j:item>United States of America</j:item>
  *      <j:item>United Kingdom</j:item>
  *      ...
  *  </j:list>
- * </pre>
+ * </code>
  * Example:
  * A databound list with items loaded from an xml file.
- * <pre class="code">
+ * <code>
  *  <j:list model="url:users.xml" traverse="user" caption="@name" />
- * </pre>
+ * </code>
  * Example:
  * A databound list using the j:bindings element
- * <pre class="code">
+ * <code>
  *  <j:list model="url:users.xml">
  *      <j:bindings>
  *          <j:caption  select="@name" />
@@ -54,10 +54,10 @@
  *          <j:traverse select="users" />
  *      </j:bindings>
  *  </j:list>
- * </pre>
+ * </code>
  * Example:
  * A small product search application using a list to display results.
- * <pre class="code">
+ * <code>
  *  <j:bar>
  *      <h1>Search for a product</h1>
  *      
@@ -87,7 +87,7 @@
  *          mdlSearch.loadFrom("url:search.php?keyword=" + txtSearch.getValue());
  *      }
  *  </j:script>
- * </pre>
+ * </code>
  *
  * @event click Fires when a user presses a mouse button while over this element.
  *
@@ -197,7 +197,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
      * This example shows a list in form offering the user several options. The
      * user can add a new option. A server script could remember the addition
      * and present it to all new users of the form.
-     * <pre class="code">
+     * <code>
      *  <j:label>Which newspapers do you read?</j:label>
      *  <j:list ref="krant" 
      *    more  = "caption:Other newspaper" 
@@ -215,7 +215,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
      *          </j:add>
      *      </j:actions>
      *  </j:list>
-     * </pre>
+     * </code>
      */
     this.$propHandlers["more"] = function(value){
         if (value) {

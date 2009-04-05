@@ -26,9 +26,9 @@
  * most cases the functionality of this object will be managed from within the
  * offline element in JML.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:offline realtime="true" />
- * </pre>
+ * </code>
  *
  * @define offline
  * @attribute {Boolean} [realtime]  whether changes are stored realtime.

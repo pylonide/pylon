@@ -28,22 +28,22 @@
  * displayed when the user clicks a button.
  * Example:
  * A simple dropdown with inline items.
- * <pre class="code">
+ * <code>
  *  <j:dropdown>
  *      <j:item>The Netherlands</j:item>
  *      <j:item>United States of America</j:item>
  *      <j:item>United Kingdom</j:item>
  *      ...
  *  </j:dropdown>
- * </pre>
+ * </code>
  * Example:
  * A databound dropdown with items loaded from an xml file.
- * <pre class="code">
+ * <code>
  *  <j:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
- * </pre>
+ * </code>
  * Example:
  * A databound list using the j:bindings element
- * <pre class="code">
+ * <code>
  *  <j:list model="url:friends.xml">
  *      <j:bindings>
  *          <j:caption  select="@name" />
@@ -51,10 +51,10 @@
  *          <j:traverse select="friend" />
  *      </j:bindings>
  *  </j:list>
- * </pre>
+ * </code>
  * Example:
  * A small form.
- * <pre class="code">
+ * <code>
  *  <j:model id="mdlForm" submission="url:save_form.asp" />
  *
  *  <j:bar model="mdlForm">
@@ -72,7 +72,7 @@
  *
  *      <j:button default="true" action="submit">Submit</j:button>
  *  </j:bar>
- * </pre>
+ * </code>
  *
  * @event slidedown Fires when the calendar slides open.
  *   cancellable: Prevents the calendar from sliding open

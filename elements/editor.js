@@ -26,7 +26,7 @@
  * make it behave that way, simply because it is considered to be the market leader among
  * word-processors.
  * Example:
- * <pre class="code">
+ * <code>
  *     <j:editor
  *         id="myEditor"
  *         left="100"
@@ -34,7 +34,7 @@
  *         height="90%-10">
  *         Default value...
  *     </j:editor>
- * </pre>
+ * </code>
  *
  * @constructor
  * @addnode elements:editor
@@ -52,18 +52,18 @@
  * from the bound data.
  * Example:
  * Sets the text based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:editor>
  *      <j:bindings>
  *          <j:value select="body/text()" />
  *      </j:bindings>
  *  </j:editor>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:colorpicker ref="body/text()" />
- * </pre>
+ * </code>
  */
 jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var inited, complete, oButtons = {};

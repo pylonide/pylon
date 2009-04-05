@@ -27,7 +27,7 @@
  * Example:
  * This example shows a list with pictures. When one is selected its displayed
  * in the img element.
- * <pre class="code">
+ * <code>
  *  <j:model id="mdlPictures">
  *      <pictures>
  *          <picture title="Landscape" src="http://example.com/landscape.jpg" />
@@ -42,7 +42,7 @@
  *    model    = "mdlPictures" />
  *
  *  <j:img ref="@src" model="#lstPics" />
- * </pre>
+ * </code>
  *
  * @constructor
  * @define img
@@ -61,18 +61,18 @@
  * from the bound data.
  * Example:
  * Sets the image source based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:img>
  *      <j:bindings>
  *          <j:value select="@src" />
  *      </j:bindings>
  *  </j:img>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:img ref="@src" />
- * </pre>
+ * </code>
  */
 
 jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){

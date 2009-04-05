@@ -24,7 +24,7 @@
  * Notification element, which shows popups when events occur. Similar
  * to growl on the OSX platform.
  * Example:
- * <pre class="code">
+ * <code>
  * <j:notifier position="bottom-right" margin="10 10">
  *     <j:event 
  *         when    = "{offline.onLine}"
@@ -43,7 +43,7 @@
  *         message = "Syncing done"
  *         icon    = "icoDone.gif" />
  * </j:notifier>
- * </pre>
+ * </code>
  * Example:
  * Notifier with 4 notifications which will be appears and stays over the 3 seconds
  * begins to the top right corner and goes to the left. First notification will
@@ -51,14 +51,14 @@
  * notification will be shown when notifier's position or arrange attribute will 
  * be changed. In the last case notification will be shown when date 2008-12-24 
  * will be selected on calendar.
- * <pre class="code">
+ * <code>
  * <j:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
  *     <j:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></j:event>
  *     <j:event when="{notiTest.position}" message="Notifier display position has been changed"></j:event>
  *     <j:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></j:event>
  *     <j:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></j:event>
  * </j:notifier>
- * </pre>
+ * </code>
  * 
  * @define notifier
  * @attribute   {String}   position     Vertical and horizontal element's start position, it can be changed in any time, default is 'top-right'

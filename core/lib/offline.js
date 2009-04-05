@@ -33,7 +33,7 @@
  * train start the application and continue working as if the application
  * was never closed.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:appsettings>
  *      <j:offline providers="gears"
  *        resources     = "application|models|transactions|queue|state"
@@ -44,7 +44,7 @@
  *        onrestore     = "return confirm('Continue your previous session?');"
  *        onlosechanges = "" />
  *  </j:appsettings>
- * </pre>
+ * </code>
  *
  * @event losechanges   Fires before the offline state is removed.
  *   cancellable: Prevents the application from losing it's recorded offline state.
@@ -63,14 +63,14 @@
  *
  * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
  * Example:
- * <pre class="code">
+ * <code>
  * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
  *    <j:Label>Synchronizing your changes</j:label>
  *    <j:progressbar value="{offline.progress}" />
  *    <j:button onclick="jpf.offline.stopSync()">Cancel</j:button>
  *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
  * </j:modalwindow>
- * </pre>
+ * </code>
  * @attribute {Number}  position  the progress of the sync. 
  * @attribute {Number}  length    the total length of items to sync.
  * @attribute {Boolean} syncing   wether the application is syncing while coming online.

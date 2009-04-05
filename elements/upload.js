@@ -30,7 +30,7 @@
  * This example shows an upload element that pushes an image to the server. The
  * asp script returns an xml string which is added to the list of images on a
  * successfull upload.
- * <pre class="code">
+ * <code>
  *  <j:list id="lstImages" smartbinding="..." model="..." />
  *
  *  <j:upload id="flLogoUpload"
@@ -38,7 +38,7 @@
  *    ontimeout = "alert('It seems the server went away')"
  *    oncancel  = "alert('Could not upload logo')"
  *    onreceive = "lstImages.add(arguments[0])" />
- * </pre>
+ * </code>
  *
  * @event afterbrowse Fires after the user has made a selection.
  *   object:
@@ -59,18 +59,18 @@
  * from the bound data.
  * Example:
  * Sets the value based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:upload>
  *      <j:bindings>
  *          <j:value select="@filename" />
  *      </j:bindings>
  *  </j:upload>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:upload ref="@filename" />
- * </pre>
+ * </code>
  *
  * @todo get server side information to update the progressbar.
  */
@@ -91,10 +91,10 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
      * Example:
      * When the skin doesn't have a progressbar you can use property binding to
      * update a seperate or central progressbar.
-     * <pre class="code">
+     * <code>
      *  <j:upload id="upExample" />
      *  <j:progressbar value="{upExample.progress}" />
-     * </pre>
+     * </code>
      */
     this.$supportedProperties.push("value", "target", "progress", "uploading");
 

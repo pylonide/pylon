@@ -27,7 +27,7 @@
  * This example shows a slider that influences the position of a video. The
  * value attribute of the slider is set using property binding. The square
  * brackets imply a bidirectional binding.
- * <pre class="code">
+ * <code>
  *  <j:video id="player1"
  *    src      = "elements/video/demo_video.flv"
  *    autoplay = "true">
@@ -38,10 +38,10 @@
  *  <j:button onclick="player1.pause()">pause</j:button>
  *
  *  <j:slider value="[player1.position]" />
- * </pre>
+ * </code>
  * Example:
  * This example shows two slider which lets the user indicate a value in a form.
- * <pre class="code">
+ * <code>
  *  <j:label>How would you grade the opening hours of the helpdesk</j:label>
  *  <j:slider ref="hours_hd"
  *    mask  = "no opinion|bad|below average|average|above average|good"
@@ -57,7 +57,7 @@
  *    max   = "5"
  *    step  = "1"
  *    slide = "snap" />
- * </pre>
+ * </code>
  *
  * @constructor
  * @define slider, range
@@ -77,18 +77,18 @@
  * from the bound data.
  * Example:
  * Sets the slider position based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:slider>
  *      <j:bindings>
  *          <j:value select="@value" />
  *      </j:bindings>
  *  </j:slider>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:slider ref="@value" />
- * </pre>
+ * </code>
  */
 jpf.range  =
 jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
@@ -114,14 +114,14 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {Boolean} realtime whether the slider updates it's value realtime, or just when the user stops dragging.
      * @attribute {Number}  step     specifying the step size of a discreet slider.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:label>How much money do you make annualy.</j:label>
      *  <j:range ref="salary"
      *    min   = "0"
      *    max   = "50000"
      *    step  = "1000"
      *    slide = "snap" />
-     * </pre>
+     * </code>
      */
     this.$propHandlers["step"] = function(value){
         this.step = parseInt(value) || 0;
@@ -156,7 +156,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String} mask a pipe '|' seperated list of strings that are
      * used as the caption of the slider when their connected value is picked.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:label>How big is your cat?</j:label>
      *  <j:slider ref="decide_buy"
      *    mask  = "don't know|20cm|25cm|30cm|35cm|&gt; 35cm"
@@ -164,7 +164,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      *    max   = "5"
      *    step  = "1"
      *    slide = "snap" />
-     * </pre>
+     * </code>
      */
     this.$propHandlers["mask"] = function(value){
         if (!value)
@@ -179,8 +179,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * inside the slider. This can be used to show a progress indicator for
      * the download of movies or other media.
      * Example:
-     * <pre class="code">
-     * </pre>
+     * <code>
+     * </code>
      */
     this.$propHandlers["progress"] = function(value){
         if (!this.oProgress) {

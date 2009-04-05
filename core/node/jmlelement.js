@@ -786,12 +786,12 @@ jpf.JmlElement.propHandlers = {
      * element directly. This identifier is also the way to get a reference to
      * this element using jpf.document.getElementById.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:bar id="barExample" />
      *  <j:script>
      *      alert(barExample);
      *  </j:script>
-     * </pre>
+     * </code>
      */
     "id": function(value){
         if (this.name == value)
@@ -1046,12 +1046,12 @@ jpf.JmlElement.propHandlers = {
      * be shown when the user right clicks or uses the context menu keyboard
      * shortcut.
      * Example:
-     * <pre class="code">
+     * <code>
      *  <j:menu id="mnuExample" />
      *
      *  <j:list contextmenu="mnuExample" />
      *  <j:bar contextmenu="mnuExample" />
-     * </pre>
+     * </code>
      */
     "contextmenu": function(value){
         this.contextmenus = [value];
@@ -1078,14 +1078,14 @@ jpf.JmlElement.propHandlers = {
      * In this example the list uses a different actiontracker than the two
      * textboxes which determine their actiontracker based on the one that
      * is defined on the bar.
-     * <pre class="code">
+     * <code>
      *  <j:list actiontracker="newAT" />
      *
      *  <j:bar actiontracker="someAT">
      *      <j:textbox />
      *      <j:textbox />
      *  </j:bar>
-     * </pre>
+     * </code>
      */
     "actiontracker": function(value){
         if (!value)

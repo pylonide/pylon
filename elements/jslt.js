@@ -25,14 +25,14 @@
  * the bound dataset. For more information on jslt see 
  * {@link object.jsltimplementation}.
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:jslt model="mdlChat"><![CDATA[
  *      [foreach('message'){]
  *          <strong>[%$'@from'.split("@")[0]] says:</strong> <br />
  *          {text()}<br />
  *      [}]
  *  ]]></j:jslt>
- * </pre>
+ * </code>
  *
  * @constructor
  * @allowchild [cdata]

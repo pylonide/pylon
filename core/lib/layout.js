@@ -29,7 +29,7 @@
  *
  * Example:
  * This example shows 5 windows which have a layout defined in layout.xml.
- * <pre class="code">
+ * <code>
  *  <j:appsettings layout="url:layout.xml:layout[1]" />
  *
  *  <j:window title="Main Window" id="b1" />
@@ -37,10 +37,10 @@
  *  <j:window title="Window of Oppertunity" id="b3" />
  *  <j:window title="Small window" id="b4" />
  *  <j:window title="Some Window" id="b5" />
- * </pre>
+ * </code>
  *
  * This is the layout file containing two layouts (layout.xml).
- * <pre class="code">
+ * <code>
  *  <layouts>
  *      <layout name="Layout 1" margin="2,2,2,2">
  *          <vbox edge="splitter">
@@ -68,10 +68,10 @@
  *          </vbox>
  *      </layout>
  *  </layouts>
- * </pre>
+ * </code>
  *
  * By binding on the layout.xml you can easily create a layout manager.
- * <pre class="code">
+ * <code>
  *  <j:list id="lstLayouts"
  *    model          = "mdlLayouts"
  *    allowdeselect  = "false"
@@ -107,7 +107,7 @@
  *    ">
  *      Add Layout
  *  </j:button>
- * </pre>
+ * </code>
  *
  * @default_private
  * @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
@@ -202,9 +202,9 @@ jpf.layout = {
      * Loads a layout using a data instruction.
      * @param {String} instruction the data instruction specifying where to load the data from.
      * Example:
-     * <pre class="code">
+     * <code>
      *  jpf.layout.loadFrom("mdlLayout:layout[1]");
-     * </pre>
+     * </code>
      * Remarks:
      * The jml elements referenced in the layout definition should exist when
      * this function is called.

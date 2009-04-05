@@ -32,7 +32,7 @@
  *
  * Syntax:
  * Using data instructions to retrieve data
- * <pre class="code">
+ * <code>
  * get="name_of_model"
  * get="name_of_model:xpath"
  * get="#element"
@@ -49,18 +49,18 @@
  * get="xmpp:login(username, password)"
  * get="webdav:getRoot()"
  * get="eval:10+5"
- * </pre>
+ * </code>
  *
  * Syntax:
  * Using data instructions to store data
- * <pre class="code">
+ * <code>
  * set="url:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
  * set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
  * set="rpc:comm.submit('abc', {/bar})"
  * set="call:submit('abc', {/bar})"
  * set="eval:example=5"
  * set="cookie:name.subname = {.}"
- * </pre>
+ * </code>
  */
 
 /**
@@ -190,7 +190,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
  * Retrieves data using a {@link term.datainstruction data instruction}.
  * Example:
  * Several uses for a data instruction
- * <pre class="code">
+ * <code>
  *  <!-- loading jml from an xml file -->
  *  <j:bar jml="url:morejml.xml" />
  *
@@ -215,7 +215,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
  *
  *  <!-- loads data into a model and when submitted sends the altered data back -->
  *  <j:model load="url:load_contact.jsp" submission="save_contact.jsp" />
- * </pre>
+ * </code>
  *
  * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data.
  * @param {XMLElement}  [xmlContext] the subject of the xpath queries
@@ -394,13 +394,13 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
  * Parses argument list
  * Example:
  * Javascript
- * <pre class="code">
+ * <code>
  *  jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
- * </pre>
+ * </code>
  * Jml
- * <pre class="code">
+ * <code>
  *  <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
- * </pre>
+ * </code>
  * @private
  */
 jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){

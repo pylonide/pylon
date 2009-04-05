@@ -43,18 +43,18 @@
  * from the bound data.
  * Example:
  * Sets the color based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:colorpicker>
  *      <j:bindings>
  *          <j:value select="@color" />
  *      </j:bindings>
  *  </j:colorpicker>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:colorpicker ref="@color" />
- * </pre>
+ * </code>
  *
  * @attribute {String} color the color that is selected in the color picker.
  */

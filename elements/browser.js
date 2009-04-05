@@ -42,18 +42,18 @@
  * from the bound data.
  * Example:
  * Sets the url based on data loaded into this component.
- * <pre class="code">
+ * <code>
  *  <j:browser>
  *      <j:bindings>
  *          <j:value select="@url" />
  *      </j:bindings>
  *  </j:browser>
- * </pre>
+ * </code>
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  *  <j:colorpicker ref="@url" />
- * </pre>
+ * </code>
  */
 jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     /**

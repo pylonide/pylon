@@ -27,7 +27,7 @@
  * plugin of jpf.teleport.
  * Example:
  * Javeline Markup Language
- * <pre class="code">
+ * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="cgi">
  *          <j:method
@@ -56,14 +56,14 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </j:script>
- * </pre>
+ * </code>
  * Remarks:
  * Calls can be made to a server using cgi variables with a special {@link term.datainstruction data instruction}
  * format.
- * <pre class="code">
+ * <code>
  *  get="url:http://www.bla.nl?blah=10&foo={@bar}&example=[10+5]"
  *  set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- * </pre>
+ * </code>
  *
  * @addenum rpc[@protocol]:cgi
  *

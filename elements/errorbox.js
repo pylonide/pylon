@@ -28,16 +28,16 @@
  * In most cases the errorbox element is implicit and will be created 
  * automatically. 
  * Example:
- * <pre class="code">
+ * <code>
  *  <j:errorbox>
  *      Invalid e-mail address entered.
  *  </j:errorbox>
- * </pre>
+ * </code>
  * Remarks:
  * In most cases the errorbox element is not created directly but implicitly
  * by a validationgroup. an element that goes into an error state will
  * show the errorbox.
- * <pre class="code">
+ * <code>
  *  <j:bar validgroup="vgForm">
  *      <j:label>Phone number</j:label>
  *      <j:textbox id="txtPhone"
@@ -52,24 +52,24 @@
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
  *  </j:bar>
- * </pre>
+ * </code>
  *
  * To check if the element has valid information entered, leaving the textbox
  * (focussing another element) will trigger a check. Programmatically a check
  * can be done using the following code:
- * <pre class="code">
+ * <code>
  *  txtPhone.validate();
  * 
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
- * </pre>
+ * </code>
  *
  * To check for the entire group of elements use the validation group. For only 
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <pre class="code">
+ * <code>
  *  vgForm.validate();
- * </pre>
+ * </code>
  *
  * @constructor
  * @define errorbox

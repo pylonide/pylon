@@ -57,25 +57,25 @@
  *
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
- * <pre class="code">
+ * <code>
  * <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
- * </pre>
+ * </code>
  * 
  * Example:
  * Sets the date based on data loaded into this component.
- * <pre class="code">
+ * <code>
  * <j:caldropdown>
  *     <j:bindings>
  *         <j:value select="@date" />
  *     </j:bindings>
  * </j:caldropdown>
- * </pre>
+ * </code>
  * 
  * Example:
  * A shorter way to write this is:
- * <pre class="code">
+ * <code>
  * <j:caldropdown ref="@date" />
- * </pre>
+ * </code>
  */
 jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$animType        = 1;
