@@ -129,7 +129,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             this.clearError();
         // #endif
         
-        if (!this.createModel && !this.xmlRoot) { //!this.$jml.getAttribute("ref")
+        if ((!this.createModel || !this.dataParent && !this.getModel()) && !this.xmlRoot) { //!this.$jml.getAttribute("ref")
             //Not databound
             if (this.dispatchEvent("beforechange", {value : value}) === false)
                 return;

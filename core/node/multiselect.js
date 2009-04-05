@@ -832,7 +832,8 @@ jpf.MultiSelect = function(){
             this.dispatchEvent("afterdeselect", {xmlNode : clSel});
         
             //#ifdef __WITH_PROPERTY_BINDING
-            this.setProperty("value", "");
+            if (this.value)
+                this.setProperty("value", "");
             //#endif
         }
     };

@@ -508,8 +508,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
-        
-        if (!this.width)
+
+        if (!this.width && (jpf.getStyle(this.oExt, "position") == "absolute"
+          || this.left || this.top || this.right || this.bottom || this.anchors))
             this.oExt.style.width  = "100%"
         
         var jmlNode, nodes = this.childNodes;

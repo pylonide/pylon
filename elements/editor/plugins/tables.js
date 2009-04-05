@@ -266,7 +266,7 @@ jpf.editor.plugin('tablewizard', function() {
         var pos = jpf.getAbsolutePosition(editor.iframe);
         if (!e.client)
             e = new jpf.AbstractEvent(e);
-        jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1]);
+        jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1], true);
 
         e.stop();
 
@@ -429,8 +429,11 @@ jpf.editor.plugin('tablewizard', function() {
                 case "deletecol":
                     if (!_self.oCell || _self.oTable.rows[0].cells.length == 1)
                         return;
-                    for (i = 0, j = _self.oTable.rows.length; i < j; i++)
-                        _self.oTable.rows[i].deleteCell(idx);
+                    //@todo: fix this to understand cell spanning
+                    for (i = 0, j = _self.oTable.rows.length; i < j; i++) {
+                        if (_self.oTable.rows[i].cells[idx])
+                            _self.oTable.rows[i].deleteCell(idx);
+                    }
                     break;
                 case "splitcells":
                     if (!_self.oRow || !_self.oCell)
@@ -648,6 +651,8 @@ jpf.editor.plugin('tablewizard', function() {
                     }
                     break;
            }
+           
+           _self.editor.change(_self.editor.getValue());
         });
     };
 });

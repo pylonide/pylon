@@ -18,8 +18,8 @@ this distribution for details.
   
   Javeline Platform comes in two flavors. Debug and Release. These contain all
 that is JPF. For a project you only need a subset of JPF. Usually resulting in
-a zipped download of 100KB. The up and coming packager application will help
-packaging JPF for your project.
+a zipped download of 100KB or less. The up and coming packager application will 
+help packaging JPF for your project.
 
   Hints on Usage
   ==============
