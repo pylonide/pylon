@@ -1831,12 +1831,12 @@ jpf.DataBinding = function(){
      *  </j:tree>
      * </code>
      *
-     * @see baseclass.multiselectbinding.binding.traverse,
-     *      baseclass.dragdrop.attribute.dragEnabled,
-     *      element.bindings,
-     *      element.actions,
-     *      element.dragdrop,
-     *      baseclass.multiselectbinding.method.loadinlinedata
+     * @see baseclass.multiselectbinding.binding.traverse
+     * @see baseclass.dragdrop.attribute.dragEnabled
+     * @see element.bindings
+     * @see element.actions
+     * @see element.dragdrop
+     * @see baseclass.multiselectbinding.method.loadinlinedata
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;

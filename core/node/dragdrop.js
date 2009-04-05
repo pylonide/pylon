@@ -98,7 +98,9 @@ var __DRAGDROP__ = 1 << 5;
  *   {JMLElement}  host      the jml source element.
  *   {Boolean}     candrop   wether the data can be inserted at the point hovered over by the user
  *
- * @see element.allow-drag, element.allow-drop, element.dragdrop
+ * @see element.allow-drag
+ * @see element.allow-drop
+ * @see element.dragdrop
  *
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
