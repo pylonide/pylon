@@ -27,12 +27,12 @@
  * within the current application.
  * Example:
  * <code>
- *  http://www.example.com/index.php#products
+ *  www.example.com/index.php#products
  * </code>
  * Remarks:
- * In future browsers (2008) the location hash can be set by script and the
- * {@link element.history.event.hashchange} event is called when it's changed by using the back or forward
- * button of the browsers. In the current (2008) browsers this is not the case.
+ * In future browsers (2008) the location hash can be set by script and 
+ * {@link element.history.event.hashchange} is called when it's changed by using the back or forward
+ * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
  *

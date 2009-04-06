@@ -23,6 +23,7 @@
 
 /**
  * @constructor
+ * @private
  */
 jpf.AbstractEvent = function(event, win) {
     win = win || window;

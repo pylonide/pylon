@@ -256,6 +256,9 @@ jpf.runIE = function(){
     };
 
     // #ifdef __WITH_POPUP_IE
+    /**
+     * @private
+     */
     jpf.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){

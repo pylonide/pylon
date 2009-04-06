@@ -321,7 +321,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * @event beforereceive Fires before data is received.
-     *   cancellabel: Prevents the data from being received.
+     *   cancellable: Prevents the data from being received.
      *   object:
      *   {String} data the data that was returned by the upload post.
      *   {HTMLFrameElement} frame the iframe serving as the target to the form post.

@@ -590,6 +590,10 @@ jpf.actiontracker = function(parentNode){
 };
 
 /**
+ * UndoData is a storage node for the actiontracker. Each instance of this class
+ * contains information about a single event in the application. It can be undone
+ * and it knows how to synchronize the change to a remove data source. 
+ *
  * @constructor
  */
 jpf.UndoData = function(settings, at){

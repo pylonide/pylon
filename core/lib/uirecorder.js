@@ -1,3 +1,6 @@
+/**
+ * @experimental
+ */
 jpf.uirecorder = {
     actionStack : [],
     playStack   : [],

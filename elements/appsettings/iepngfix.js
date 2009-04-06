@@ -21,6 +21,9 @@
 
 //#ifdef __WITH_IEPNGFIX
 
+/**
+ * @private
+ */
 jpf.iepngfix = (function() {
 	var sNodes           = null, 
         aNodes           = null,

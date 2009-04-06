@@ -91,6 +91,7 @@
  *      <j:traverse select="folder" />
  *  </j:bindings>
  * </code>
+ * @attribute {String} get the {@link term.datainstruction data instruction} that is used to load the new data.
  * @binding caption  Determines the caption of a tree node.
  * @binding icon     Determines the icon of a tree node.
  * @binding css      Determines a css class for a tree node.
