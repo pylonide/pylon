@@ -267,7 +267,7 @@ jpf.XSDImplementation = function(){
         //Javeline PlatForm datatypes
         "jpf:url": function(value){
             //@todo please make this better
-            return /^\w+:\/\/([\w-]+\.)+\w{2,4}$/.test(value.trim());
+            return /\w*:\/\/w*\.?([\w-_]*\.?[A-Za-z]*):?\d*\//.test(value.trim());
         },
         "jpf:website": function(value){
             //@todo please make this better
