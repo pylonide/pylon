@@ -360,7 +360,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.modal) {
                 this.bringToFront();
                 // #ifdef __WITH_FOCUS
-                this.focus(false, {mouse:true});
+                if (!jpf.isParsing)
+                    this.focus(false, {mouse:true});
                 // #endif
             }
             
@@ -907,6 +908,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.oCover)
                 this.oCover.style.display = "none";
         }
+        //#ifdef __WITH_FOCUS
+        else if (this.modal)
+            this.focus(false, {mouse:true});
+        //#endif
 
         this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
@@ -927,12 +932,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 name  : "visible",
                 value : "true"
             });
-        }
-        
-        if (!this.hasFeature(__DATABINDING__)
-          && !this.transaction && (this.$jml.getAttribute("smartbinding")
-          || this.$jml.getAttribute("actions"))) {
-            this.$propHandlers.transaction.call(this, true);
         }
     };
 

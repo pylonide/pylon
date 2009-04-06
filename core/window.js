@@ -904,7 +904,8 @@ jpf.WindowImplementation = function(){
             if (jmlNode.$focussable === jpf.KEYBOARD_MOUSE)
                 jpf.window.$focus(jmlNode, {mouse: true});
             else if (jmlNode.canHaveChildren == 2) {
-                if (!jpf.appsettings.allowBlur)
+                if (!jpf.appsettings.allowBlur || !jpf.window.focussed 
+                  || jpf.window.focussed.$focusParent != jmlNode)
                     jpf.window.$focusLast(jmlNode, {mouse: true});
             }
             else
@@ -1137,6 +1138,12 @@ jpf.WindowImplementation = function(){
             //Window focus handling
             if (e.ctrlKey) {
                 if (jpf.window.focussed) {
+                    var w = jpf.window.focussed.$focusParent;
+                    if (w.modal) {
+                        e.returnValue = false;
+                        return false;
+                    }
+                    
                     jpf.window.moveNext(e.shiftKey,
                         jpf.window.focussed.$focusParent, true);
 

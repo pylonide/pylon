@@ -420,10 +420,10 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 this.lookup.str += String.fromCharCode(key);
                 
-                var nodes = this.getTraverseNodes();
+                var caption, nodes = this.getTraverseNodes();
                 for (var i = 0; i < nodes.length; i++) {
-                    if (this.applyRuleSetOnNode("caption", nodes[i])
-                      .indexOf(this.lookup.str) > -1) {
+                    caption = this.applyRuleSetOnNode("caption", nodes[i]);
+                    if (caption && caption.indexOf(this.lookup.str) > -1) {
                         this.select(nodes[i]);
                         return;
                     }
