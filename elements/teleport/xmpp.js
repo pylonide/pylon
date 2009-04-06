@@ -24,7 +24,36 @@
 
 /**
  * Element implementing XMPP IM protocol.
- * Depends on implementation of XMPP server supporting bosh or http-poll
+ * Depends on implementation of XMPP server supporting bosh or http-poll,
+ * because jpf.xmpp creates connections through the HTTP protocol via jpf.http.
+ *
+ * @event authfailure Fires when the authentication process failed or halted.
+ *   bubbles: yes
+ *   cancellable: Prevents an authentication failure to be thrown
+ *   object:
+ *     {String}        username   the username used for the login attempt
+ *     {String}        server     the server address (URI) of the XMPP server
+ *     {String}        message    a more detailed explanation of the error
+ * @event connectionerror Fires when the connection with the XMPP server dropped.
+ *   bubbles: yes
+ *   cancellable: Prevents an connection error to be thrown
+ *   object:
+ *     {String}        username   the username used for the last-active session
+ *     {String}        server     the server address (URI) of the XMPP server
+ *     {String}        message    a more detailed explanation of the error
+ * @event connected Fires when a login attempt has succeeded, and a session has been setup.
+ *   bubbles: yes
+ *   object:
+ *     {String}        username   the username used for the last-active session
+ * @event receivechat Fires when the user received a chat message from a contact.
+ *   bubbles: yes
+ *   object:
+ *     {String}        from       the username of the contact that sent the message
+ *     {String}        message    the body of the chat message
+ * @event datachange Fires when a data-change message is received from one of the contacts.
+ *   bubbles: yes
+ *   object:
+ *     {String}        data       the data-instruction of the changed data that the RSB implementation can grok
  *
  * @define xmpp
  * @addnode teleport
@@ -1149,7 +1178,6 @@ jpf.xmpp = function(){
      * @param {String} status Message describing the status
      * @param {String} custom Custom status type
      * @type  {void}
-     * @public
      */
     this.setPresence = function(type, status, custom) {
         if (!getVar('connected')) return false;
