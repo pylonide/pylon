@@ -79,12 +79,18 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
      * @private
      */
     this.addRadio = function(oRB){
-        this.radiobuttons.push(oRB);
+        var id = this.radiobuttons.push(oRB) - 1;
         if (!this.visible) {
             oRB.hide();
             //if(oRB.tNode)
             //oRB.tNode.style.display = "none";
         }
+        
+        if (!oRB.value)
+            oRB.value = String(id);
+
+        if (this.value && oRB.value == this.value)
+            this.setCurrent(oRB);
     };
 
     /**
@@ -207,7 +213,6 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     // #endif
 
     this.$focussable = true; // This object can get the focus
-    this.value       = this.uniqueId;
     var _self = this;
 
     /**** Properties and Attributes ****/
@@ -249,6 +254,9 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
                 || "radio" + this.radiogroup.uniqueId);
         }
 
+        if (!this.value && this.$jml)
+            this.value = this.$jml.getAttribute("value");
+        
         this.radiogroup.addRadio(this);
         
         if (this.checked)
