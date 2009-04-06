@@ -83,7 +83,7 @@ jpf.textbox.masking = function(){
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
-        var key      = e.keyCode;
+        var key      = e.which || e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
 
@@ -141,9 +141,10 @@ jpf.textbox.masking = function(){
         this.$keyHandler = null; //temp solution
         masking = true;
 
-        this.oInt.onkeypress = function(){
-            var chr = String.fromCharCode(self.event.keyCode);
-            chr = (self.event.shiftKey ? chr.toUpperCase() : chr.toLowerCase());
+        this.oInt.onkeypress = function(e){
+            e = e || window.event;
+            var chr = String.fromCharCode(e.which || e.keyCode);
+            chr = (e.shiftKey ? chr.toUpperCase() : chr.toLowerCase());
 
             if (setCharacter(chr))
                 setPosition(lastPos + 1);
@@ -180,7 +181,7 @@ jpf.textbox.masking = function(){
             if (this.includeNonTypedChars) {
                 for (var data = "", i = 0; i < initial.length; i++) {
                     if (initial.substr(i,1) != value.substr(i,1))
-                        data += value.substr(i,1);//initial.substr(i,1) == replaceChar
+                        data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
                 }
             }
             this.$insertData(data);
@@ -191,12 +192,16 @@ jpf.textbox.masking = function(){
         if (!masking)
             this.$initMasking();
         
-        var m = m.split(";");
+        m = m.split(";");
         replaceChar = m.pop();
         this.includeNonTypedChars = parseInt(m.pop()) !== 0;
         var mask = m.join(""); //why a join here???
-        var validation = "", visual="", mode_case = "-",
-            strmode = false, startRight = false, chr;
+        var validation = "",
+            visual     = "",
+            mode_case  = "-",
+            strmode    = false,
+            startRight = false,
+            chr;
         pos = [], format = "", fcase = "";
         
         for (var looppos = -1, i = 0; i < mask.length; i++) {
@@ -251,26 +256,35 @@ jpf.textbox.masking = function(){
             return chr.toLowerCase();
         return chr;
     }
-    
+
     function setPosition(p){
         if (p < 0)
             p = 0;
 
-        var range = oExt.createTextRange();
-        range.expand("textedit");
-        range.select();
         
-        if (pos[p] == null) {
-            range.collapse(false);
+        if (jpf.hasMsRangeObject) {
+            var range = oExt.createTextRange();
+            range.expand("textedit");
             range.select();
-            lastPos = pos.length;
-            return false;
+
+            if (pos[p] == null) {
+                range.collapse(false);
+                range.select();
+                lastPos = pos.length;
+                return false;
+            }
+
+            range.collapse();
+            range.moveStart("character", pos[p]);
+            range.moveEnd("character", 1);
+            range.select();
         }
-        
-        range.collapse();
-        range.moveStart("character", pos[p]);
-        range.moveEnd("character", 1);
-        range.select();
+        else {
+            if (typeof pos[p] == "undefined")
+                p = pos.length - 1;
+            oExt.selectionStart = pos[p];
+            oExt.selectionEnd   = pos[p] + 1;
+        }
 
         lastPos = p;
     }
@@ -281,14 +295,25 @@ jpf.textbox.masking = function(){
         chr = checkChar(chr, lastPos);
         if (chr == _FALSE_) return false;
 
-        var range = oExt.createTextRange();
-        range.expand("textedit");
-        range.collapse();
-        range.moveStart("character", pos[lastPos]);
-        range.moveEnd("character", 1);
-        range.text = chr;
-        if (jpf.window.focussed == this)
+        if (jpf.hasMsRangeObject) {
+            var range = oExt.createTextRange();
+            range.expand("textedit");
             range.select();
+            
+            range.moveStart("character", pos[lastPos]);
+            range.moveEnd("character", 1);
+            range.text = chr;
+            if (jpf.window.focussed == this)
+                range.select();
+        }
+        else {
+            var val    = oExt.value,
+                start  = oExt.selectionStart,
+                end    = oExt.selectionEnd;
+            oExt.value = val.substr(0, start) + chr + val.substr(end);
+            oExt.selectionStart = start;
+            oExt.selectionEnd   = end;
+        }
         
         myvalue[lastPos] = chr;
         
@@ -298,48 +323,76 @@ jpf.textbox.masking = function(){
     function deletePosition(p){
         if(pos[p] == null) return false;
         
-        var range = oExt.createTextRange();
-        range.expand("textedit");
-        range.collapse();
-        range.moveStart("character", pos[p]);
-        range.moveEnd("character", 1);
-        range.text = replaceChar;
-        range.select();
+        if (jpf.hasMsRangeObject) {
+            var range = oExt.createTextRange();
+            range.expand("textedit");
+            range.select();
+
+            range.moveStart("character", pos[p]);
+            range.moveEnd("character", 1);
+            range.text = replaceChar;
+            range.select();
+        }
+        else {
+            var val    = oExt.value,
+                start  = pos[p],
+                end    = pos[p] + 1;
+            oExt.value = val.substr(0, start) + replaceChar + val.substr(end);
+            oExt.selectionStart = start;
+            oExt.selectionEnd   = end;
+        }
         
         //ipv lastPos
         myvalue[p] = " ";
     }
     
     this.$insertData = function(str){
+        if (oExt.selectionStart == oExt.selectionEnd) {
+            setPosition(0); // is this always correct? practice will show...
+        }
+
         if (str == this.getValue()) return;
         str = this.dispatchEvent("insert", { data : str }) || str;
         
+        var i, j;
         if (!str) {
             if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
-            for (var i = this.getValue().length - 1; i >= 0; i--)
+            for (i = this.getValue().length - 1; i >= 0; i--)
                 deletePosition(i);
             setPosition(0);	
             return;
         }
         
-        for (var i = 0; i < str.length; i++) {
+        for (i = 0, j = str.length; i < j; i++) {
             lastPos = i;
-            setCharacter(str.substr(i,1));
+            setCharacter(str.substr(i, 1));
+            if (!jpf.hasMsRangeObject)
+                setPosition(i + 1);
         }
         if (str.length)
             lastPos++;
     };
     
     function calcPosFromCursor(){
-        var range = document.selection.createRange();
-        r2 = range.duplicate();
-        r2.expand("textedit");
-        r2.setEndPoint("EndToStart", range);
-        var lt = r2.text.length;
+        var range, lt = 0;
+
+        if (!jpf.hasMsRangeObject) {
+            lt = oExt.selectionStart;
+        }
+        else {
+            range  = document.selection.createRange();
+            var r2 = range.duplicate();
+            r2.expand("textedit");
+            r2.setEndPoint("EndToStart", range);
+            lt = r2.text.length;
+        }
     
-        for (var i = 0; i < pos.length; i++)
+        for (var i = 0; i < pos.length; i++) {
             if (pos[i] > lt)
                 return (i == 0) ? 0 : i - 1;
+        }
+
+        return 0; // always return -a- value...
     }
 };
 
