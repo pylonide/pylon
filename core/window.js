@@ -642,7 +642,7 @@ jpf.WindowImplementation = function(){
             else if (next < 0)
                 next = list.length - 1;
 
-            if (start == next)
+            if (start == next && jmlNode)
                 return false; //No visible enabled element was found
 
             jmlNode = list[next];
@@ -1136,21 +1136,19 @@ jpf.WindowImplementation = function(){
         //Focus handling
         else if ((!jpf.appsettings.disableTabbing || jpf.window.focussed) && e.keyCode == 9) {
             //Window focus handling
-            if (e.ctrlKey) {
-                if (jpf.window.focussed) {
-                    var w = jpf.window.focussed.$focusParent;
-                    if (w.modal) {
-                        e.returnValue = false;
-                        return false;
-                    }
-                    
-                    jpf.window.moveNext(e.shiftKey,
-                        jpf.window.focussed.$focusParent, true);
-
-                    var w = jpf.window.focussed.$focusParent;
-                    if (w && w.bringToFront)
-                        w.bringToFront();
+            if (e.ctrlKey && jpf.window.focussed) {
+                var w = jpf.window.focussed.$focusParent;
+                if (w.modal) {
+                    e.returnValue = false;
+                    return false;
                 }
+
+                jpf.window.moveNext(e.shiftKey,
+                    jpf.window.focussed.$focusParent, true);
+
+                var w = jpf.window.focussed.$focusParent;
+                if (w && w.bringToFront)
+                    w.bringToFront();
             }
             //Element focus handling
             else if(!jpf.window.focussed || jpf.window.focussed.tagName != "menu")
@@ -1367,6 +1365,7 @@ jpf.DocumentImplementation = function(){
         $jmlLoaded    : true,
         $focussable   : jpf.KEYBOARD,
         focussable    : true,
+        visible       : true,
 
         isWindowContainer : true,
         canHaveChildren   : true,
