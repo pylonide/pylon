@@ -92,9 +92,9 @@
  * for this type of timeout. By setting the rsb-timeout attribute it is aware
  * of when the server has timed out. When this timeout is reached the application 
  * will reload all it's data from the server and discard all offline rsb 
- * messages before reconnecting to the hyve.
+ * messages before reconnecting to the server.
  * 
- * @see object.auth
+ * @see element.auth
  *
  * @define remote
  * @allowchild unique, {any}

@@ -44,25 +44,6 @@
  * @inherits jpf.DragDrop
  * @inherits jpf.Rename
  *
- * @binding caption   Determines the caption of a node.
- * @binding css       Determines a css class for a node.
- * Example:
- * In this example a node is bold when the folder contains unread messages:
- * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:css select="message[@unread]" value="highlighUnread" />
- *          <j:icon select="@icon" />
- *          <j:icon select="self::folder" value="icoFolder.gif" />
- *          <j:traverse select="folder" />
- *      </j:bindings>
- *  </j:list>
- * </code>
- * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
- * @binding description Determines the text that is displayed under the expanded row.
- * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
- *
  * @event beforelookup  Fires before the value lookup UI is shown..
  *  cancellable: Prevents the lookup value from being processed.
  *  object:
@@ -123,6 +104,25 @@
  *          </j:toolbar>
  *      </j:template>
  *   </code>
+ * @binding caption   Determines the caption of a node.
+ * @binding css       Determines a css class for a node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <code>
+ *  <j:list>
+ *      <j:bindings>
+ *          <j:caption select="@caption" />
+ *          <j:css select="message[@unread]" value="highlighUnread" />
+ *          <j:icon select="@icon" />
+ *          <j:icon select="self::folder" value="icoFolder.gif" />
+ *          <j:traverse select="folder" />
+ *      </j:bindings>
+ *  </j:list>
+ * </code>
+ * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
+ * @binding description Determines the text that is displayed under the expanded row.
+ * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
+
  */
 jpf.propedit    =
 jpf.spreadsheet = 

@@ -59,7 +59,7 @@ jpf.Cache = function(){
      *   Possible values:
      *   true   the cache element is found and set active
      *   false  otherwise
-     * @see    DataBinding#load
+     * @see    baseclass.databinding.method.load
      */
     this.getCache = function(id, xmlNode){
         //Checking Current
@@ -298,7 +298,7 @@ jpf.Cache = function(){
      *
      * @param {String}  id       the id of the HTMLElement which is looked up.
      * @param {Boolean} [remove] whether to destroy the Fragment.
-     * @see DataBinding#clear
+     * @see baseclass.databinding.method.clear
      */
     this.clearCacheItem = function(id, remove){
         cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
@@ -312,7 +312,7 @@ jpf.Cache = function(){
     /**
      * Removes all items from the cache
      *
-     * @see DataBinding#clearCacheItem
+     * @see baseclass.databinding.method.clearCacheItem
      */
     this.clearAllCache = function(){
         for (var prop in cache) {
@@ -325,7 +325,7 @@ jpf.Cache = function(){
      * Gets the cache item by it's id
      *
      * @param {String} id  the id of the HTMLElement which is looked up.
-     * @see DataBinding#clearCacheItem
+     * @see baseclass.databinding.method.clearCacheItem
      */
     this.getCacheItem = function(id){
         return cache[id];
@@ -335,7 +335,7 @@ jpf.Cache = function(){
      * Checks whether a cache item exists by the specified id
      *
      * @param {String} id  the id of the cache item to check.
-     * @see DataBinding#clearCacheItem
+     * @see baseclass.databinding.method.clearCacheItem
      */
     this.isCached = function(id){
         return cache[id] || this.cacheID == id ? true : false;

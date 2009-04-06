@@ -728,7 +728,7 @@ jpf.DataBinding = function(){
                 if (o.clear && !o.hasFeature(__MULTIBINDING__))
                     o.clear(); //adding o.hasFeature(__MULTIBINDING__) is a quick fix. should be only with the bind="" level
                 if (o.disable && o.createModel)
-                    o.disable();
+                    o.setProperty("disabled", true);
             }
         }
     };
@@ -791,7 +791,7 @@ jpf.DataBinding = function(){
                 ? xmlNode.selectSingleNode(xpath)
                 : xmlNode);
             if (xmlNode && o.disabled && o.createModel)
-                o.enable();
+                o.setProperty("disabled", false);
         }
 
         //Set Onload Connections only Once
@@ -1296,7 +1296,7 @@ jpf.DataBinding = function(){
             this.clear(noClearMsg, true);
 
             if (jpf.appsettings.autoDisable && !this.createModel)
-                this.disable();
+                this.setProperty("disabled", true);
 
             this.setConnections();
             return;
@@ -1380,7 +1380,7 @@ jpf.DataBinding = function(){
 
         if (!this.createModel) {
             this.disabled = true;
-            this.enable();
+            this.setProperty("disabled", false);
         }
         else
             this.disabled = disabled;
@@ -1456,7 +1456,7 @@ jpf.DataBinding = function(){
             ) {
                 this.clear(true);
                 if (jpf.appsettings.autoDisable)
-                    this.disable();
+                    this.setProperty("disabled", true);
                 this.setConnections(null, "select"); //causes strange behaviour
             }
         }

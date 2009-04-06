@@ -51,7 +51,8 @@
  * Remarks:
  * A docklet xml is a piece of jml that should be in the following form:
  * <code>
- *  <j:docklet xmlns:j="http://www.javeline.com/2005/jml" caption="Billing History" icon="icoBilling.gif" name="BillHistory">
+ *  <j:docklet xmlns:j="http://www.javeline.com/2005/jml" 
+ *    caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <j:script><![CDATA[
  *          function BillHistory(){
  *              //Create a Javeline class

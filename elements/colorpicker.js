@@ -39,6 +39,8 @@
  * @inherits jpf.Validation
  * @inherits jpf.XForms
  *
+ * @attribute {String} color the color that is selected in the color picker.
+ *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  * Example:
@@ -55,8 +57,6 @@
  * <code>
  *  <j:colorpicker ref="@color" />
  * </code>
- *
- * @attribute {String} color the color that is selected in the color picker.
  */
 jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options

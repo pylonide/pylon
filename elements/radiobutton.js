@@ -61,8 +61,8 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     }
 
     this.$propHandlers["disabled"] = function(value){
-        this.disabled = false;
-        /*
+        this.disabled = value;
+
         if (value) {
             for (var i = 0; i < this.radiobuttons.length; i++) {
                 this.radiobuttons[i].disable();
@@ -72,7 +72,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
             for (var i = 0; i < this.radiobuttons.length; i++) {
                 this.radiobuttons[i].enable();
             }
-        }*/
+        }
     }
 
     /**
