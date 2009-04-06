@@ -423,7 +423,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     else {
                         if ((bdepth.length || lastBlockClosed) && br.indexOf("_jpf_marker") > -1) {
-                            debugger;
+                            //debugger;
                             //donothing
                         }
                         else
