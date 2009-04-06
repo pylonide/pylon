@@ -59,6 +59,10 @@
  * @attribute {String} defaultimage   it will be showing if some slide haven't path to image
  * @attribute {String} defaulttitle   this text will be showing for each picture without description
  * @attribute {String} loadmsg        this text will be displayd when picture is loading
+ * @attribute {String} scalewidth     thumbnails width is scaled relatively to its height
+ *     Possible values: 
+ *     true    is scaled
+ *     false   is not scaled, width and height of thumbnail is the same
  * 
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
@@ -166,9 +170,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
     
     /**
-     * Selects image by image number or its xml representation
+     * Selects image by its xml representation
      * 
-     * @param {Number|XMLElement}   badge  picture number or its xml representation
+     * @param {Number|XMLElement}   badge  xml representation of image
      */
     this.select = function(badge) {
         current = badge;
@@ -178,7 +182,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * Draw slideshow component and repaint every single picture when
      * its choosen
      */
-    this.paint = function() {
+    this.$paint = function() {
         current = _self.getFirstTraverseNode();
 
         this.oInt.style.display    = "block";
@@ -285,7 +289,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             _self.oTitle.style.visibility = "visible";
                             _self.oConsole.style.visibility = "visible";
 
-                            _self.checkThumbSize();
+                            _self.$checkThumbSize();
 
                             if (thumbnails) {
                                 _self.oThumbnails.style.visibility = "visible";
@@ -392,11 +396,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Adds selection to thumbnail of actual selected image, in the same time
-     * remove it from previous. When the "move" param is set, selected thumbnail
+     * Adds selection to thumbnail of actual selected image and removes it from
+     * previous. When the "move" param is set, selected thumbnail
      * is always in displayed area.
      * 
-     * @param {Number} thumbnail bar scrolling direction
+     * @param {Number}   thumbnail bar scrolling direction
      *     Possible values:
      *     1    when thumbnails are scrolling in right
      *     -1   when thumbnails are scrolling in left
@@ -469,7 +473,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
            _self.otBody.firstChild); 
     };
 
-    this.showLast = function() {
+    this.$showLast = function() {
         var timer8;
         clearInterval(timer8);
         timer8 = setInterval(function() {
@@ -497,7 +501,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (onuse) {
             lastChoose.push(current);
-            this.showLast();
+            this.$showLast();
             return;
         }
 
@@ -834,13 +838,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {HTMLElement}   oThumb   html representation of thumbnail element
      */
-    this.clickThumb = function(oThumb) {
+    this.$clickThumb = function(oThumb) {
         current = jpf.xmldb.getNode(oThumb);
         this.addSelection();
         this.$refresh();
     }
     
-    this.checkThumbSize = function() {
+    this.$checkThumbSize = function() {
         /*if(parseInt(this.otBody.childNodes[0].style.width) > 0) {
             return;
         }*/
@@ -933,7 +937,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.xmldb.nodeConnect(this.documentId, nodes[i], pictureBox, this);
 
             pictureBox.onclick = function(e) {
-                _self.clickThumb(this);
+                _self.$clickThumb(this);
             }
         }
 
@@ -942,7 +946,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             this.setProperty("length", length);
         //#endif
 
-        this.paint();
+        this.$paint();
     }
     
     this.$show = function() {
