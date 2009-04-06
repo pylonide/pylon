@@ -1429,7 +1429,6 @@ jpf.debugwin = {
                 <div onclick='event.cancelBubble=true'>\
                     <textarea id='" + this.debugConsole + "' onkeydown='return jpf.debugwin.consoleTextHandler(event);'\
                       onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
-                      onmousedown='if(jpf.window) jpf.window.$focusRoot();'\
                       class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie('jsexec') + "</textarea>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
                         <div id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(jpf.debugwin.debugConsole.value)' title='Run Code'\
