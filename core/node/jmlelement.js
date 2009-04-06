@@ -874,7 +874,7 @@ jpf.JmlElement.propHandlers = {
         if (this.canHaveChildren) {
             //@todo Fix focus here first.. else it will jump whilst looping
 
-            value = jpf.isTrue(value);
+            value = this.disabled = jpf.isTrue(value);
 
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {

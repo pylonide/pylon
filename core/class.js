@@ -428,36 +428,38 @@ jpf.Class = function(){
         else if (!e)
             e = new jpf.Event(eventName, options);
 
-        if (!e.originalElement) {
-            e.originalElement = this;
-
-            //Capture support
-            if (arr = capture_stack[eventName]) {
-                for (var i = 0; i < arr.length; i++) {
-                    rValue = arr[i].call(this, e);
-                    if (rValue != undefined)
-                        result = rValue;
+        if (this.disabled)
+            result = false;
+        else {
+            if (!e.originalElement) {
+                e.originalElement = this;
+    
+                //Capture support
+                if (arr = capture_stack[eventName]) {
+                    for (var i = 0; i < arr.length; i++) {
+                        rValue = arr[i].call(this, e);
+                        if (rValue != undefined)
+                            result = rValue;
+                    }
+                }
+            }
+            
+            if (options && options.captureOnly)
+                return e.returnValue || rValue;
+            else {
+                if (this["on" + eventName])
+                    result = this["on" + eventName].call(this, e); //Backwards compatibility
+    
+                if (arr = events_stack[eventName]) {
+                    for (var i = 0; i < arr.length; i++) {
+                        rValue = arr[i].call(this, e);
+                        if (rValue != undefined)
+                            result = rValue;
+                    }
                 }
             }
         }
         
-        if (options && options.captureOnly)
-            return e.returnValue || rValue;
-        else if (this.disabled)
-            result = false;
-        else {
-            if (this["on" + eventName])
-                result = this["on" + eventName].call(this, e); //Backwards compatibility
-
-            if (arr = events_stack[eventName]) {
-                for (var i = 0; i < arr.length; i++) {
-                    rValue = arr[i].call(this, e);
-                    if (rValue != undefined)
-                        result = rValue;
-                }
-            }
-        }
-
         //#ifdef __WITH_EVENT_BUBBLING
         if (e.bubbles && !e.cancelBubble && this != jpf) {
             rValue = (this.parentNode || jpf).dispatchEvent(eventName, null, e);
