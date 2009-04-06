@@ -252,7 +252,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var nodes, isValid = true;
                 var cacheId = this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag);
-                if (!vRules[cacheId])
+                if (!vRules[cacheId] || !vRules[cacheId].length)
                     vRules[cacheId] = cacheValidRules(cacheId, 
                         (nodes = this.getTraverseNodes()));
                 else 
