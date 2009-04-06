@@ -45,12 +45,11 @@ jpf.textbox.masking = function(){
         "A" : "[A-Za-z0-9]",
         "a" : "[A-Za-z0-9 ]",
         "X" : "[0-9A-Fa-f]",
-        "V" : "[0-9A-Fa-fV]", //Vonage virtual mac address
         "x" : "[0-9A-Fa-f ]",
         "&" : "[^\s]",
         "C" : "."
     };
-
+    
     var lastPos = -1;
     var masking = false;
     var oExt    = this.oExt
