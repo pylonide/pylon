@@ -142,7 +142,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * @attribute {String} style of returned date
      * 
-     * recognized masks:
+     * Possible values:
      *     d      day of the month as digits, no leading zero for single-digit days
      *     dd     day of the month as digits, leading zero for single-digit days
      *     ddd    day of the week as a three-letter abbreviation
@@ -174,7 +174,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * @attribute {String} style of returned date
      * 
-     * recognized masks:
+     * Possible values
      *     d      day of the month as digits, no leading zero for single-digit days
      *     dd     day of the month as digits, leading zero for single-digit days
      *     ddd    day of the week as a three-letter abbreviation
