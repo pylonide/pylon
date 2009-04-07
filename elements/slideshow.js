@@ -172,7 +172,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Selects image by its xml representation
      * 
-     * @param {Number|XMLElement}   badge  xml representation of image
+     * @param {XMLElement}   badge  xml representation of image
      */
     this.select = function(badge) {
         current = badge;
