@@ -129,7 +129,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   0  Any digit
      *   1  The number 1 or 2.
      *   9  Any digit or a space.
-     *   #  Any digit, space, plus or minus.
+     *   #  User can enter a digit, space, plus or minus sign.
      *   L  Any alpha character, case insensitive.
      *   ?  Any alpha character, case insensitive or space.
      *   A  Any alphanumeric character.
@@ -138,11 +138,11 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   x  Hexadecimal character, case insensitive or space.
      *   &  Any whitespace.
      *   C  Any character.
-     *   !  The string is right aligned.
+     *   !  Causes the input mask to fill from left to right instead of from right to left.
      *   '  The start or end of a literal part.
      *   "  The start or end of a literal part.
-     *   <  The following characters will be lowercase, event though typed uppercase.
-     *   >  The following characters will be uppercase, event though typed lowercase.
+     *   >  Converts all characters that follow to uppercase.
+     *   <  Converts all characters that follow to lowercase.
      *   \  Cancel the special meaning of a character.
      * Example:
      * An american style phone number.
@@ -169,8 +169,6 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      * <code>
      *  <j:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
      * </code>
-     * Remarks:
-     * This currently only works in internet explorer.
      */
     this.$propHandlers["mask"] = function(value){
         if (this.mask == "PASSWORD")// || !jpf.hasMsRangeObject)
