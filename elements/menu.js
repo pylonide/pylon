@@ -90,8 +90,6 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             this.oExt.style.display = "none";
 
-            //Ah oui, c'est tres difficile
-
             var lastFocus = jpf.menu.lastFocus;
 
             //@todo test this with a list being the opener of the menu
@@ -103,7 +101,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.$hideTree = -1
                 this.opener.parentNode.focus();
             }
-
+            
+            //#ifdef __WITH_FOCUS
             else if (lastFocus) {
                 //We're being hidden because some other object gets focus
                 if (jpf.window.$settingFocus) {
@@ -150,6 +149,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     jpf.menu.lastFocus = null;
                 }
             }
+            //#endif
 
             if (this.$showingSubMenu) {
                 this.$showingSubMenu.hide();
@@ -222,7 +222,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oOverlay) {
             if (btnWidth) {
                 this.oOverlay.style.display = "block";
-                this.oOverlay.style.width = btnWidth + "px";
+                this.oOverlay.style.width   = btnWidth + "px";
             }
             else
                 this.oOverlay.style.display = "none";
@@ -234,7 +234,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             x            : x,
             y            : y,
             animate      : noanim ? false : "fade",
-            ref          : document.documentElement,
+            ref          : this.oExt.offsetParent,
             allowTogether: openMenuId
         });
 

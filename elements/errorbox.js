@@ -110,15 +110,23 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             pos[1] += pos2[1];
         }
         
-        var left = (pos[0] + parseFloat(host.$getOption("main", "erroffsetx") || 0))
-        this.oExt.style.left = left + "px"
-        this.oExt.style.top  = (pos[1] + parseFloat(host.$getOption("main", "erroffsety") || 0)) + "px"
-        this.show();
+        var x = (pos[0] + parseFloat(host.$getOption("main", "erroffsetx") || 0));
+        var y = (pos[1] + parseFloat(host.$getOption("main", "erroffsety") || 0));
+        //this.oExt.style.left = x + "px"
+        //this.oExt.style.top  = y + "px"
 
         this.$setStyleClass(this.oExt, 
-            left + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
+            x + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
                 ? "rightbox"
                 : "leftbox", ["leftbox", "rightbox"]);
+        
+        this.show();
+        jpf.popup.show(this.uniqueId, {
+            x            : x,
+            y            : y,
+            animate      : false,
+            ref          : this.oExt.offsetParent
+        });
     }
     
     /**
@@ -164,6 +172,8 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         this.hide();
+        
+        jpf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
     
     this.$loadJml = function(x){
@@ -187,6 +197,8 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oClose.onclick = null;
         
         this.oExt.onmousedown = null;
+        
+        jpf.popup.removeContent(this.uniqueId);
     }
 }).implement(
     jpf.Presentation
