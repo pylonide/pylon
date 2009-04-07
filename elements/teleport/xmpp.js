@@ -25,7 +25,35 @@
 /**
  * Element implementing XMPP IM protocol.
  * Depends on implementation of XMPP server supporting bosh or http-poll,
- * because jpf.xmpp creates connections through the HTTP protocol via jpf.http.
+ * because jpf.xmpp creates connections through the HTTP protocol via {@link teleport.http}.
+ * Example:
+ * Javeline Markup Language
+ * <code>
+ *  <j:teleport>
+ *      <j:xmpp id="myXMPP"
+ *        url           = "http://my-jabber-server.com:5280/http-bind"
+ *        model         = "mdlRoster"
+ *        connection    = "bosh"
+ *        onreceivechat = "messageReceived(arguments[0].from)" />
+ *  </j:teleport>
+ *
+ *  <j:script>
+ *      // This function is called when a message has arrived
+ *      function messageReceived(from){
+ *          alert('Received message from ' + from);
+ *      }
+ *
+ *      // Send a message to John
+ *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '', jpf.xmpp.MSG_CHAT);
+ *  </j:script>
+ * </code>
+ * Remarks:
+ * Calls can be made to a server using a special {@link term.datainstruction data instruction}
+ * format.
+ * <code>
+ *  submission="xmpp:notify({@bar}, 'john@my-jabber-server.com')"
+ *  submission="xmpp:login({@foo}, {@bar})"
+ * </code>
  *
  * @event authfailure Fires when the authentication process failed or halted.
  *   bubbles: yes
