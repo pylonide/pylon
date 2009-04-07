@@ -3109,7 +3109,7 @@ jpf.MultiselectBinding = function(){
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && xmlNode == this.selected
+            if (action == "remove" && jpf.xmldb.isChildOf(xmlNode, this.selected, true)
               || xmlNode == selectTimer.nextNode)
                 selectTimer.nextNode = this.getDefaultNext(xmlNode);
 
