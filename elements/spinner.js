@@ -29,9 +29,40 @@
  * Example:
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
- * 
  * <code>
- *     <j:spinner value="6" min="-99" max="199"></j:spinner>
+ * <j:spinner value="6" min="-99" max="199"></j:spinner>
+ * </code>
+ * 
+ * Example:
+ * Sets the value based on data loaded into this component.
+ * <code>
+ * <j:spinner>
+ *     <j:bindings>
+ *         <j:value select="@value" />
+ *     </j:bindings>
+ * </j:spinner>
+ * </code>
+ * 
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ * <j:spinner ref="@value" />
+ * </code>
+ * 
+ * Example:
+ * Is showing usage of model in spinner connected with textbox
+ * <code>
+ * <j:model id="mdlTest">
+ *     <overview page="1" pages="50" />
+ * </j:model>
+ * <j:spinner id="spinner" min="0" model="mdlTest">
+ *     <j:bindings>
+ *         <j:value select = "@page" />
+ *         <j:max select   = "@pages" />
+ *         <j:caption><![CDATA[{@page} of {@pages}, it's possible to add more text]]></j:caption>
+ *     </j:bindings>
+ * </j:spinner>
+ * <j:textbox value="{spinner.caption}"></j:textbox>
  * </code>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000
@@ -51,20 +82,6 @@
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
- * Sets the value based on data loaded into this component.
- * <code>
- *  <j:spinner>
- *      <j:bindings>
- *          <j:value select="@value" />
- *      </j:bindings>
- *  </j:spinner>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <j:spinner ref="@value" />
- * </code>
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.max           = 64000;
@@ -111,10 +128,16 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      PUBLIC METHODS
      *********************************************************************/
 
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value) {
        this.setProperty("value", value);
     };
 
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function() {
         return this.value;
     };
