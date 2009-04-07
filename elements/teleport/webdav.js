@@ -25,27 +25,69 @@
 /**
  * Element implementing WebDAV remote filesystem protocol.
  * Depends on implementation of WebDAV server.
+ * Example:
+ * Javeline Markup Language
+ * <code>
+ *     <j:teleport>
+ *         <j:webdav id="myWebDAV"
+ *           url   = "http://my-webdav-server.com/dav_files/"
+ *           model = "mdlFoo" />
+ *     </j:teleport>
+ * </code>
+ *
+ * <j:script>
+ *     // write the text 'bar' to a file on the server called 'foo.txt'
+ *     myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ * </j:script>
+ * Remarks:
+ * Calls can be made to a server using a special {@link term.datainstruction data instruction}
+ * format.
+ * <code>
+ *  get="webdav:authenticate({@username}, {@password})"
+ *  get="webdav:login(...alias for authenticate...)"
+ *  set="webdav:logout()"
+ *  get="webdav:read({@id})"
+ *  get="webdav:create({@id}, 'New File.txt', '')"
+ *  set="webdav:write({@id}, {@data})"
+ *  set="webdav:store(...alias for write...)"
+ *  set="webdav:save(...alias for write...)"
+ *  set="webdav:copy({@id}, {../@id})"
+ *  set="webdav:cp(...alias for copy...)"
+ *  set="webdav:rename({@name}, {@id})"
+ *  set="webdav:move({@id}, {../@id})"
+ *  set="webdav:mv(...alias for move...)"
+ *  set="webdav:remove({@id})"
+ *  set="webdav:rmdir(...alias for remove...)"
+ *  set="webdav:rm(...alias for remove...)"
+ *  get="webdav:readdir({@id})"
+ *  get="webdav:scandir(...alias for readdir...)"
+ *  load="webdav:getroot()"
+ *  set="webdav:lock({@id})"
+ *  set="webdav:unlock({@id})"
+ * </code>
+ *
+ * @event authfailure Fires when the authentication process failed or halted.
+ *   bubbles: yes
+ *   cancellable: Prevents an authentication failure to be thrown
+ *   object:
+ *     {String}        username   the username used for the login attempt
+ *     {String}        server     the server address (URI) of the XMPP server
+ *     {String}        message    a more detailed explanation of the error
+ * @event connectionerror Fires when the connection with the WebDAV server dropped.
+ *   bubbles: yes
+ *   cancellable: Prevents an connection error to be thrown
+ *   object:
+ *     {String}        username   the username used for the last-active session
+ *     {String}        server     the server address (URI) of the WebDAV server
+ *     {String}        message    a more detailed explanation of the error
+ * @event onfilecontents Fires when a {teleport.webdav.method.read} request has
+ * completed successfully and returns the content-body of the requested file
+ *   bubbles: yes
+ *   object:
+ *      {String}       data       the ASCI representation of the file content-body
  *
  * @define webdav
  * @addnode teleport
- * 
- * @event error             Fires when a communication error has occured while making a request for this element.
- *   cancellable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *   {Number}         state     the state of the call
- *     Possible values:
- *     jpf.SUCCESS  the request was successfull
- *     jpf.TIMEOUT  the request has timed out.
- *     jpf.ERROR    an error has occurred while making the request.
- *     jpf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -132,6 +174,20 @@ jpf.webdav = function(){
         return oServerVars[name] || "";
     }
 
+    /**
+     * Wrapper function that handles and executes each HTTP request. It also takes
+     * care of streams that are incomplete or different than usual, thus produce
+     * invalid XML that needs to be tidied prior to processing.
+     * It also takes care of processing authentication process/ negotiation
+     *
+     * @param {Function}  fCallback    Function to execute when the request was successful
+     * @param {String}    sPath        Path to the WebDAV resource
+     * @param {sBody}     [sBody]      Optional body text (used for PUTs, for example)
+     * @param {Object}    [oHeaders]   Additional headers in key: value format
+     * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
+     * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
+     * @type  {void}
+     */
     this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, fCallback2) {
         if (!getVar("authenticated")) {
             return onAuth({
@@ -260,11 +316,26 @@ jpf.webdav = function(){
         return _self.dispatchEvent("connectionerror", extra);
     }
 
+    /**
+     * Wrapper function for generation WebDAV-specific Error reporting
+     * 
+     * @param {String} sMsg Message that lists the error details
+     * @type  {Error}
+     * @private
+     */
     function WebDAVError(sMsg) {
         return new Error(jpf.formatErrorString(0, _self,
                          "WebDAV Communication error", sMsg));
     }
 
+    /**
+     * Integration with {@link auth} to implement application wide single
+     * sign-on for WebDAV
+     *
+     * @param {Function} callback Will be executed upon successful authentication
+     * @type  {void}
+     * @private
+     */
     function onAuth(callback) {
         var oDoc, authRequired = false;
         if (jpf.isIE) {
@@ -299,6 +370,15 @@ jpf.webdav = function(){
         }
     }
 
+    /**
+     * Attempts to authenticate the session using HTTP-AUTH (simple
+     * authentication mechanism)
+     *
+     * @param {String}   username Username of the password-protected WebDAV resource
+     * @param {String}   password Password in plaintext format
+     * @param {Function} callback Function to be executed when the authentication succeeded
+     * @type  {void}
+     */
     this.authenticate = function(username, password, callback) {
         register("auth-username", username);
         register("auth-password", password);
@@ -316,6 +396,11 @@ jpf.webdav = function(){
         }, this.rootPath, null, {}, false, null);
     };
 
+    /**
+     * Unset all cached values.
+     * 
+     * @type {void}
+     */
     this.reset = function() {
         unregister("authenticated");
         unregister("auth-username");
@@ -325,6 +410,14 @@ jpf.webdav = function(){
 
     //------------ Filesystem operations ----------------//
 
+    /**
+     * Read the content of a file as plaintext and pass the data to a callback
+     * function
+     * 
+     * @param {String}   sPath    Path to the file on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
     this.read = function(sPath, callback) {
         this.method = "GET";
         this.doRequest(function(data, state, extra) {
@@ -346,12 +439,28 @@ jpf.webdav = function(){
         }, sPath);
     };
 
+    /**
+     * Reads the contents of a directory resource (one level deep) and passes
+     * the resulting XML to a  callback function to be processed further.
+     * see {@link teleport.webdav.method.getProperties}
+     *
+     * @param {String}   sPath    Path to the file on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
     this.readDir = function(sPath, callback) {
         if (sPath.charAt(sPath.length - 1) != "/")
             sPath += "/";
         return this.getProperties(sPath, 1, callback);
     };
 
+    /**
+     * Creates a new directory resource on the WebDAV server.
+     * 
+     * @param {String}   sPath    Path of the new directory on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
     this.mkdir = function(sPath, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
@@ -380,10 +489,27 @@ jpf.webdav = function(){
             : null, true, callback);
     };
 
+    /**
+     * Reads the properties of a resource on the server.
+     * see {@link teleport.webdav.method.getProperties}
+     *
+     * @param {String}   sPath    Path to the resource on the WebDAV server
+     * @type  {void}
+     */
     this.list = function(sPath) {
         return this.getProperties(sPath, 0);
     };
 
+    /**
+     * Write new contents (plaintext) to a file resource on the server, with or
+     * without an existing lock on the resource.
+     * 
+     * @param {String}   sPath    Path to the file on the WebDAV server
+     * @param {String}   sContent New content-body of the file
+     * @param {String}   [sLock]  Lock token that MAY be omitted in preference of a lock refresh
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
     this.write = function(sPath, sContent, sLock, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
@@ -410,6 +536,16 @@ jpf.webdav = function(){
             : null);
     };
 
+    /**
+     * Copies a file or directory resource to any location on the same WebDAV
+     * server.
+     * 
+     * @param {String}   sFrom      Path to the file on the WebDAV server to be copied
+     * @param {String}   sTo        New location to place the copy at
+     * @param {Boolean}  bOverwrite Tells whether to overwrite any existing resource
+     * @param {Function} callback   Function to execute when the request was successful
+     * @type  {void}
+     */
     this.copy = function(sFrom, sTo, bOverwrite, callback) {
         if (!sTo || sFrom == sTo) return;
         
@@ -450,6 +586,16 @@ jpf.webdav = function(){
         }, sFrom, null, oHeaders);
     };
 
+    /**
+     * Moves a file or directory resource to any location on the same WebDAV
+     * server.
+     * 
+     * @param {String}   sFrom      Path to the file on the WebDAV server to be moved
+     * @param {String}   sTo        New location to move the resource to
+     * @param {Boolean}  bOverwrite Tells whether to overwrite any existing resource
+     * @param {Function} callback   Function to execute when the request was successful
+     * @type  {void}
+     */
     this.move = function(sFrom, sTo, bOverwrite, callback) {
         if (!sTo || sFrom == sTo) return;
         
@@ -488,6 +634,13 @@ jpf.webdav = function(){
         }, sFrom, null, oHeaders);
     };
 
+    /**
+     * Removes an existing directory or file resource from the WebDAV server.
+     * 
+     * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
     this.remove = function(sPath, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
@@ -514,20 +667,24 @@ jpf.webdav = function(){
     };
 
     /**
+     * Wrapper function that centrally manages locking of resources. Files and
+     * directories (resources) can be locked prior to any modifying operation to
+     * prevent the resource being modified by another user before the transaction
+     * of this user has finished or even started.
      *
-     * @param {String} sPath
-     * @param {String} sOwner   URL of the owning party (e.g. 'javeline.com')
-     * @param {Number} iDepth   Depth of lock recursion down the tree, should be '1' or 'Infinity'
-     * @param {String} sType    Type of the lock, default is 'write' (no other possibility)
-     * @param {Number} iTimeout
-     * @param {String} sLock    Previous lock token
-     * @type  {void}
+     * @see teleport.webdav.methods.unlock
+     * @param {String}   sPath      Path to the resource on the server to be locked
+     * @param {Number}   [iDepth]   Depth of lock recursion down the tree, should be '1' or 'Infinity'
+     * @param {Number}   [iTimeout] Lifetime of the lock, in seconds. Defaults to Infinite.
+     * @param {String}   [sLock]    Previous lock token
+     * @param {Function} [callback] Function that is executed upon a successful LOCK request
+     * @type  {Object}
      */
     this.lock = function(sPath, iDepth, iTimeout, sLock, callback) {
         // first, check for existing lock
         var oLock = getLock(sPath);
         if (oLock && oLock.token) {
-            // renew the lock (if needed - check timeout)...
+            //@todo renew the lock (if needed - check timeout)...
             return oLock;
         }
 
@@ -553,6 +710,15 @@ jpf.webdav = function(){
         return newLock(sPath);
     };
 
+    /**
+     * Wrapper function that centrally manages the unlocking of resources that
+     * have been locked earlier on.
+     *
+     * @see teleport.webdav.method.lock
+     * @param {Object}   oLock    Object representing a Lock on a resource
+     * @param {Function} callback Function that is executed upon a successful UNLOCK request
+     * @type  {void}
+     */
     this.unlock = function(oLock, callback) {
         if (typeof oLock == "string")
             oLock = getLock(oLock);
@@ -566,6 +732,13 @@ jpf.webdav = function(){
         }, true, callback);
     };
 
+    /**
+     * Add a new lock token/ object to the stack
+     * 
+     * @path {String} sPath Path pointing to the resource on the server
+     * @type {Object}
+     * @private
+     */
     function newLock(sPath) {
         return oLocks[sPath] = {
             path : sPath,
@@ -574,6 +747,17 @@ jpf.webdav = function(){
         };
     }
 
+    /**
+     * Handler function that registers a lock globally when a LOCK request was
+     * successful. It parses all the info it received from the server response
+     * and caches that info for reuse.
+     * 
+     * @param {XmlDocument} data  Actual XML data, received from the server
+     * @param {Number}      state Internal - JPF defined - state of the request
+     * @param {Object}      extra Simple object that contains additional request data
+     * @type  {void}
+     * @private
+     */
     function registerLock(data, state, extra) {
         var iStatus = parseInt(extra.http.status),
             sPath = extra.url.replace(this.server, ''),
@@ -604,6 +788,13 @@ jpf.webdav = function(){
         purgeLockedStack(oLock);
     }
 
+    /**
+     * Removes a Lock token/ object from the stack.
+     * 
+     * @param {String} sPath Path pointing to the resource on the server
+     * @type  {void}
+     * @private
+     */
     function unregisterLock(sPath) {
         var oLock = getLock(sPath);
         if (!oLock) return;
@@ -612,10 +803,27 @@ jpf.webdav = function(){
         delete oLocks[sPath];
     }
 
+    /**
+     * Internal helper function to retrieve a lock from the stack.
+     *
+     * @param {String} sPath Path pointing to the resource on the server
+     * @type  {Object}
+     * @private
+     */
     function getLock(sPath) {
         return oLocks[sPath] || null;
     }
 
+    /**
+     * Update the stack of lock requests (NOT the stack of valid locks!) with a
+     * new Lock, or an updated one (lifetime may have changed)
+     * 
+     * @param {Object} oLock Object that contains specific info about the Lock
+     * @param {String} sFunc Name of the function that requested the lock
+     * @param {Array}  aArgs List of arguments that should get passed to that function when the lock is available
+     * @type  {Object}
+     * @private
+     */
     function updateLockedStack(oLock, sFunc, aArgs) {
         return aLockedStack.push({
             lockId: oLock.id,
@@ -624,6 +832,16 @@ jpf.webdav = function(){
         });
     }
 
+    /**
+     * Purge the stack of lock requests, called when a lock request returned a
+     * result. If bFailed is set to TRUE, the function that requested the lock
+     * will be executed.
+     *
+     * @param {Object}  oLock   Simple object that represents a validated Lock
+     * @param {Boolean} bFailed Tells whether the requesting function may be excuted
+     * @type  {void}
+     * @private
+     */
     function purgeLockedStack(oLock, bFailed) {
         for (var i = aLockedStack.length - 1; i >= 0; i--) {
             if (aLockedStack[i].lockId != oLock.id) continue;
@@ -633,6 +851,16 @@ jpf.webdav = function(){
         }
     }
 
+    /**
+     * Request the server to list the properties of a specific resource and,
+     * possibly, its children.
+     *
+     * @param {String}   sPath    Path pointing to the resource on the server
+     * @param {Number}   iDepth   Depth of lock recursion down the tree, should be '1' or 'Infinity'
+     * @param {Function} callback Function that is executed upon a successful LOCK request
+     * @param {Object}   oHeaders Additional headers in key: value format
+     * @type  {void}
+     */
     this.getProperties = function(sPath, iDepth, callback, oHeaders) {
         // Note: caching is being done by an external model
         this.method = "PROPFIND";
@@ -646,6 +874,17 @@ jpf.webdav = function(){
         this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, callback);
     };
 
+    /**
+     * Request the server to change and set properties of a specific resource
+     * with different values.
+     * @todo Untested functionality
+     * 
+     * @param {String} sPath     Path pointing to the resource on the server
+     * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
+     * @param {Object} oPropsDel A mapping from namespace to a list of names
+     * @param {String} sLock     Lock identifier
+     * @private
+     */
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
         
@@ -698,6 +937,18 @@ jpf.webdav = function(){
         return aOut.join('');
     }
 
+    /**
+     * Handler function that parses the response of a successful PROPFIND 
+     * request. It parses all the info it received from the server response
+     * and caches that info for reuse.
+     *
+     * @param {XmlDocument} data     Actual XML data, received from the server
+     * @param {Number}      state    Internal - JPF defined - state of the request
+     * @param {Object}      extra    Simple object that contains additional request data
+     * @param {Function}    callback Function to be executed when all the property packets have been parsed
+     * @type  {void}
+     * @private
+     */
     function parsePropertyPackets(oXml, state, extra, callback) {
         if (parseInt(extra.http.status) == 403) {
             // TODO: dispatch onerror event
@@ -714,6 +965,14 @@ jpf.webdav = function(){
             callback.call(_self, "<files>" + aOut.join('') + "</files>", state, extra);
     }
 
+    /**
+     * Turn an XML WebDAV node that represents a resource and turn it into a 
+     * reusable JS object, cache it so that it can be reused later.
+     * 
+     * @param {XmlNode} oNode
+     * @type  {String}
+     * @private
+     */
     function parseItem(oNode) {
         var sPath = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, '');
         
@@ -756,6 +1015,14 @@ jpf.webdav = function(){
             "'/>";
     }
 
+    /**
+     * Retrieve a file or directory resource from cache by searching for a 
+     * matching path name.
+     * 
+     * @param {String} sPath Path pointing to a resource on the server
+     * @type  {Object}
+     * @private
+     */
     function getItemByPath(sPath) {
         for (var i = 0, j = aFsCache.length; i < j; i++) {
             if (aFsCache[i].path == sPath)
@@ -764,6 +1031,14 @@ jpf.webdav = function(){
         return null;
     }
 
+    /**
+     * Retrieve a file or directory resource from cache by searching for a 
+     * matching resource identifier.
+     * 
+     * @param {Number} iId WebDAV resource identifier pointing to a resource on the server
+     * @type  {Object}
+     * @private
+     */
     this.getItemById = function(iId) {
         if (typeof iId == "string")
             iId = parseInt(iId);
@@ -957,7 +1232,6 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
             oWebDAV.read(oItem.path, callback);
             break;
         case "create":
-            window.console.log('creating file: ', oItem.path + '/' + args[1], args[2]);
             oWebDAV.write(oItem.path + "/" + args[1], args[2], null, callback);
             break;
         case "write":
@@ -975,7 +1249,6 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
             if (!oItem) break;
 
             var sBasepath = oItem.path.replace(oItem.name, '');
-            jpf.console.log('renaming: ', oItem.path, sBasepath + args[0]);
             //TODO: implement 'Overwrite' setting...
             oWebDAV.move(oItem.path, sBasepath + args[0], false, callback);
             break;
