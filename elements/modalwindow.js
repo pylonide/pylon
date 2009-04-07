@@ -842,6 +842,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         this.oExt.onmousedown = function(){
+            //#ifdef __WITH_FOCUS
+            var p = jpf.window.focussed;
+            if (p && p.$focusParent != this && p.$focusParent.modal)
+                return false;
+            //#endif
+            
             //Set ZIndex on oExt mousedown
             if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 jpf.WinServer.setTop(_self);
