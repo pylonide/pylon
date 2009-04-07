@@ -209,6 +209,7 @@ jpf.debugwin = {
     stackTrace   : "debug_panel_stacktrace",//null, //blockquote[0]
     logView      : "jvlnviewlog",
     debugConsole : "jpfDebugExpr",
+    jsltConsole  : "jpfJsltExpr",
     
     outdent : function(str, skipFirst){
         var lines = str.split("\n");
@@ -1052,11 +1053,17 @@ jpf.debugwin = {
                 background: url(" + this.resPath + "backgrounds.png) repeat-x 0 -57px;\
                 padding: 0 0 0 4px;\
                 font-size: 10px;\
+                font-family: 'Lucida Grande', 'MS Sans Serif', Arial;\
                 vertical-align: middle;\
                 overflow: hidden;\
                 -moz-user-select: none;\
                 -khtml-user-select: none;\
                 user-select: none;\
+                cursor : default;\
+            }\
+            #jpf_debugwin .debug_toolbar .input_text{\
+                border:1px solid #bfbfbf;\
+                padding : 2px;\
             }\
             #jpf_debugwin .debug_toolbar_inner{\
                 border-top: 1px solid #cacaca;\
@@ -1269,6 +1276,40 @@ jpf.debugwin = {
                 overflow: auto;\
                 font-size: 12px;\
             }\
+            #jpf_debugwin .debug_panel_body_jslt{\
+                padding : 0;\
+                font-size: 8pt;\
+                font-family: 'Lucida Grande', Verdana;\
+            }\
+            #jpf_debugwin .debug_panel_body_jslt blockquote{\
+                height : 194px;\
+                border : 0;\
+                border-right : 1px solid #bfbfbf;\
+                background : transparent;\
+                margin : 0;\
+                padding : 3px;\
+                overflow : hidden;\
+            }\
+            #jpf_debugwin .debug_panel_body_jslt .jpf_empty {\
+                color : #AAA;\
+                text-align : center;\
+                padding : 5px;\
+                display : block;\
+            }\
+            #jpf_debugwin .debug_panel_body_jslt textarea{\
+                width : 50%;\
+                float : right;\
+                height : 194px;\
+                background : url(" + this.resPath + "spacer.gif);\
+                overflow : auto;\
+                border : 0;\
+                margin : 0;\
+                border-left : 1px solid #bfbfbf;\
+                margin-left : 3px;\
+                font-size: 12px;\
+                position : relative;\
+                padding : 3px;\
+            }\
             #jpf_debugwin .debug_profilermsg{\
                 margin: 4px;\
                 font-weight: 500;\
@@ -1336,6 +1377,34 @@ jpf.debugwin = {
                 </div>\
                 <div id='" + this.stackTrace + "' class='debug_panel_body_base debug_panel_body_none'></div>\
             </div>" +
+        (jpf.JsltImplementation
+         ? "<div class='debug_panel' onclick='jpf.debugwin.toggleFold(this);'>\
+                <div class='debug_panel_head'>\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
+                    <strong>JSLT Debugger (beta)</strong>\
+                </div>\
+                <div onclick='event.cancelBubble=true' \
+                  class='debug_panel_body_base debug_panel_body_jslt debug_panel_body_none'>\
+                    <textarea id='" + this.jsltConsole + "' onkeyup='if(document.getElementById(\"dbgJsltCheck\").checked || event.keyCode==13) jpf.debugwin.run(\"jslt\");'\
+                      onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
+>/* JSLT example */\n\
+<h4>{node()/node()|text()}</h4>\n\
+\n\
+<p>This document contains [%#'//node()'] nodes.</p>\n\
+\n\
+<p>The first node is called <b>[%n.tagName]</b>, and has [%#'node()'] children.</p></textarea>\
+                    <blockquote id='jpf_jslt_output'><span class='jpf_empty'>No JSLT Parsed</span></blockquote>\
+                    <div class='debug_toolbar debug_toolbar_inner'>\
+                        <label style='float:left;padding:4px 3px 0 0;'>Data instruction: </label>\
+                        <input id='dbgJsltInput' onkeydown='if(event.keyCode==13) jpf.debugwin.run(\"jslt\");event.cancelBubble=true;' \
+                            style='margin-top:2px;width:150px;float:left;' class='input_text'\
+                            onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' />\
+                        <label for='dbgJsltCheck' style='float:right;padding:3px 5px 0 1px'>Don't update in real-time.</label>\
+                        <input id='dbgJsltCheck' style='float:right' checked='checked' type='checkbox' />\
+                    </div>\
+                </div>\
+            </div>"
+         : "") +
         (canViewMarkup
          ? "<div class='debug_panel' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
@@ -1347,7 +1416,10 @@ jpf.debugwin = {
                     <div id='jpf_markupcontainer'> </div>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
                         <label style='float:left'>Model:</label>\
-                        <label style='float:left'>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='margin-top:2px;width:90px;float:left'/>\
+                        <label style='float:left'>XPath:</label>\
+                        <input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' \
+                            style='margin-top:2px;width:90px;float:left' class='input_text'\
+                            onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true' />\
                         <div onclick='jpf.debugwin.exec(\"remove\")' class='debug_btn debug_btnright' title='Remove'\
                           onmousedown='jpf.debugwin.btnMouseDown(this)' onmouseup='jpf.debugwin.btnMouseUp(this)'>\
                             <span class='remove'> </span>\
@@ -1473,6 +1545,7 @@ jpf.debugwin = {
         this.stackTrace   = document.getElementById(this.stackTrace);
         this.logView      = document.getElementById(this.logView);
         this.debugConsole = document.getElementById(this.debugConsole);
+        this.jsltConsole  = document.getElementById(this.jsltConsole);
 
         if (!this.oExt && jpf.Interactive) {
             this.oExt     = elError;
@@ -1523,8 +1596,10 @@ jpf.debugwin = {
         else
             this.oExt = elError;
 
-        if (jpf.hasFocusBug)
+        if (jpf.hasFocusBug) {
             jpf.sanitizeTextbox(this.debugConsole);
+            jpf.sanitizeTextbox(this.jsltConsole);
+        }
 
         clearInterval(jpf.Init.interval);
         ERROR_HAS_OCCURRED = true;
@@ -1570,6 +1645,59 @@ jpf.debugwin = {
                 }
 
                 jpf.offline.goOffline()
+                break;
+            case "jslt":
+                if (!jpf.debugwin.$jslt) {
+                    jpf.debugwin.$jslt = new jpf.JsltImplementation();
+                    jpf.debugwin.$jslt.modelcache = {};
+                }
+                
+                var ds = document.getElementById("dbgJsltInput").value;
+                if (!ds)
+                    return alert("Missing data instruction");
+                
+                var xml = jpf.debugwin.$jslt.modelcache[ds];
+                var jsltCode, result = document.getElementById("jpf_jslt_output");
+                if (!xml) {
+                    jpf.debugwin.$jslt.modelcache[ds] = -1;
+                    
+                    jpf.getData(ds, null, null, function(data, state, extra){
+                        if (state != jpf.SUCCESS) {
+                            delete jpf.debugwin.$jslt.modelcache[ds];
+                            result.innerHTML = "<span class='jpf_empty'>Retrieving data by the data instruction given '" + ds + "' has failed.\n" + extra.message + "</span>";
+                            return true;
+                        }
+                        
+                        try {
+                            jpf.debugwin.$jslt.modelcache[ds] = data.nodeType 
+                                ? data 
+                                : data && jpf.getXml(data.replace(/\<\!DOCTYPE[^>]*>/, "")) || -10;
+                        }
+                        catch(e) {
+                            jpf.debugwin.$jslt.modelcache[ds] = -10;
+                        }
+                        
+                        jpf.debugwin.run("jslt");
+                    }); //Can this error?
+                    
+                    return;
+                }
+                else if (!xml.nodeType && xml == -1)
+                    return;
+
+                try{
+                    if (!xml.nodeType && xml == -10)
+                        jsltCode = "<span class='jpf_empty'>Data source did not return any data</span>";
+                    else 
+                        jsltCode = jpf.debugwin.$jslt.apply(this.jsltConsole.value, xml) 
+                }
+            	catch(e){
+            		result.innerHTML = "JSLT Compilation occured:\n" + e.message;
+            		return;
+            	}
+                
+                result.innerHTML = jsltCode;
+
                 break;
         }
     },

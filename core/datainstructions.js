@@ -177,10 +177,13 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
     options.instruction = instruction;
 
     //#ifdef __DEBUG
-    if (!this.datainstr[instrType])
-        throw new Error(jpf.formatErrorString(0, null,
+    if (!this.datainstr[instrType]) {
+        /*throw new Error(jpf.formatErrorString(0, null,
             "Processing a data instruction",
-            "Unknown data instruction format: " + instrType));
+            "Unknown data instruction format: " + instrType));*/
+        
+        return false;
+    }
     //#endif
 
     this.datainstr[instrType].call(this, xmlContext, options, callback);
@@ -230,7 +233,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
 //instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.getData = function(instruction, xmlContext, options, callback){
     var instrParts = instruction.match(/^(.*?)(?:\!\{(.*)$|$)/);//\[([^\]\[]*)\]
-    var operators  = instrParts[2] ? instrParts[2].splitSafe("\}\s*,|,") : "";//\{|
+var operators  = instrParts[2] ? instrParts[2].splitSafe("\}\s*,|,|\}\s*") : "";//\{|
 
     var gCallback  = function(data, state, extra){
         if (state != jpf.SUCCESS)
@@ -272,31 +275,44 @@ jpf.getData = function(instruction, xmlContext, options, callback){
         instrType = instrType.substr(1);
         var retvalue, oJmlNode = self[instrType];
 
-        //#ifdef __DEBUG
-        if (!oJmlNode)
-            throw new Error(jpf.formatErrorString(0, null, "Loading data",
+        if (!oJmlNode) {
+            var err = new Error(jpf.formatErrorString(0, null, "Loading data",
                 "Could not find object '" + instrType + "' referenced in \
                 process instruction '" + instruction + "' with error "
                 + e.message));
-        //#endif
+            
+            if (callback && callback(null, jpf.ERROR, {
+                message : err.description || err.message,
+                error   : err
+            } === true))
+                return;
+
+            throw err;
+        }
 
         if (!oJmlNode.value)
             retvalue = null;
         else
             retvalue = data[2]
-                ? oJmlNode.value.selectSingleNode(data[2])
-                : oJmlNode.value;
+              ? oJmlNode.value.selectSingleNode(data[2])
+              : oJmlNode.value;
     }
     else {
         var model = jpf.nameserver.get("model", instrType);
 
-        //#ifdef __DEBUG
         if (!model) {
-            throw new Error(jpf.formatErrorString(1068, jmlNode,
+            var err = new Error(jpf.formatErrorString(1068, null,
                 "Loading data", "Could not find model by name: "
-                + instrType, x));
+                + instrType));
+
+            if (callback && callback(null, jpf.ERROR, {
+                message : err.description || err.message,
+                error   : err
+            } === true))
+                return;
+            
+            throw err;
         }
-        //#endif
 
         if (!model.data)
             retvalue = null;

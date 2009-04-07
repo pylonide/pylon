@@ -786,6 +786,9 @@ jpf.model = function(data, caching){
                     Info: " + extra.message + "\n\n" + data));
                 //#endif
 
+                if (callback && callback.apply(this, arguments) === true)
+                    return true;
+
                 if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                     return true;
 
