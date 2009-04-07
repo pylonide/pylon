@@ -26,50 +26,45 @@
  * It's possible to add connections between them.
  *
  * Example:
- * Flowchart element:
+ * Flowchart component:
  * <code>
- *     <j:flowchart id="WF" template="url:template.xml" model="modelName">
- *         <j:css default="red" />
- *         <j:bindings>
- *             <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
- *             <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
- *             <j:css        select = "self::node()[@lock='1']" default="locked"/>
- *             <j:left       select = "@left" />
- *             <j:top        select = "@top" />
- *             <j:id         select = "@id" />
- *             <j:width      select = "@width" />
- *             <j:height     select = "@height" />
- *             <j:flipv      select = "@flipv" />
- *             <j:fliph      select = "@fliph" />
- *             <j:rotation   select = "@rotation" />
- *             <j:lock       select = "@lock" />
- *             <j:type       select = "@type" />
- *             <j:type       value  = "" />
- *             <j:zindex     select = "@zindex" />
- *             <j:image      select = "@src" />
- *             <j:traverse select="block" />
+ * <j:model id="modelName" save-original="true">
+ *     <flowchart>
+ *         <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="false" flipv="true" fliph="false"></block>
+ *         <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
+ *             <connection ref="b1" output="3" input="3" />
+ *         </block>
+ *     </flowchart>
+ * </j:model>
+ * <j:flowchart id="WF" template="url:template.xml" model="modelName">
+ *     <j:css default="red" />
+ *     <j:bindings>
+ *         <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
+ *         <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
+ *         <j:css        select = "self::node()[@lock='1']" default="locked"/>
+ *         <j:left       select = "@left" />
+ *         <j:top        select = "@top" />
+ *         <j:id         select = "@id" />
+ *         <j:width      select = "@width" />
+ *         <j:height     select = "@height" />
+ *         <j:flipv      select = "@flipv" />
+ *         <j:fliph      select = "@fliph" />
+ *         <j:rotation   select = "@rotation" />
+ *         <j:lock       select = "@lock" />
+ *         <j:type       select = "@type" />
+ *         <j:type       value  = "" />
+ *         <j:zindex     select = "@zindex" />
+ *         <j:image      select = "@src" />
+ *         <j:traverse select="block" />
  *
- *             <!-- Connection Binding Rules -->
- *             <j:connection select = "connection" />
- *             <j:ref        select = "@ref" />
- *             <j:input      select = "@input" />
- *             <j:output     select = "@output" />
- *             <j:ttype      select = "@type" />
- *         </j:bindings>
- *     </j:flowchart>
- * </code>
- *
- * Example:
- * Flowchat model
- * <code>
- *     <j:model id="modelName" save-original="true">
- *         <flowchart>
- *             <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="false" flipv="true" fliph="false"></block>
- *             <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
- *                 <connection ref="b1" output="3" input="3" />
- *             </block>
- *         </flowchart>
- *     </j:model>
+ *         <!-- Connection Binding Rules -->
+ *         <j:connection select = "connection" />
+ *         <j:ref        select = "@ref" />
+ *         <j:input      select = "@input" />
+ *         <j:output     select = "@output" />
+ *         <j:ttype      select = "@type" />
+ *     </j:bindings>
+ * </j:flowchart>
  * </code>
  *
  * @define flowchart
@@ -317,18 +312,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
 
     /**
-     * Moves block to new x, y position and update his xmlNode. This is an
-     * action. It's possible to return to previous state with Undo/Redo.
+     * Moves block on [x y] vector and update his xmlNode. It's possible to 
+     * return to previous state with Undo/Redo.
      *
-     * @param {Object}       xmlNodeArray   xml representations of blocks elements list
-     * @param {Number}       dl             New horizontal coordinate
-     * @param {Number}       dt             New vertical coordinate
+     * @param {Object}       xmlNodeArray   array with xml representations of blocks elements
+     * @param {Number}       dl             horizontal alteration
+     * @param {Number}       dt             vertical alteration
      */
     this.moveTo = function(xmlNodeArray, dl, dt) {
         if (!xmlNodeArray.length) {
             xmlNodeArray = [xmlNodeArray];
         }
-//jpf.flow.alert_r(xmlNodeArray[0])
 
         var props = changes = [];
         var setNames = ["top", "left"];
@@ -337,7 +331,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             for (var j = 0; j < setNames.length; j++) {
                 var node = this.getNodeFromRule(setNames[j], xmlNodeArray[i], false, false, this.createModel),
                     value = (setNames[j] == "left" ? dl : dt) + (parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0);
-//alert((setNames[j] == "left" ? dl : dt) + (parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0))
+
                 if (node) {
                     var atAction = node.nodeType == 1 || node.nodeType == 3
                                 || node.nodeType == 4
@@ -375,13 +369,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Sets mode to canvas object. Modes adds new features. For example,
      * if connection-change mode is active, possible is deleting connections
-     * between blocks. All operations from "normal" mode are allowed in other
-     * modes.
-     *
+     * between blocks. 
+     * 
      * Modes:
      *     normal             - all operations are allowed except operations from different modes
-     *     connection-add     - it's possible to add new connection between blocks
-     *     connection-change  - it's possible to change existing connection
+     *     connection-add     - it's possible to add new connection between blocks, all operations from "normal" mode its allowed
+     *     connection-change  - it's possible to change existing connection, all operations from "normal" mode its allowed
      *
      * @param {String}   mode   Operations mode
      */
@@ -389,6 +382,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         _self.objCanvas.setMode(mode);
     };
 
+    /**
+     * Returns mode from canvas object. Modes adds new features. For example,
+     * if connection-change mode is active, possible is deleting connections
+     * between blocks. 
+     *
+     * Modes:
+     *     normal             - all operations are allowed except operations from different modes
+     *     connection-add     - it's possible to add new connection between blocks, all operations from "normal" mode its allowed
+     *     connection-change  - it's possible to change existing connection, all operations from "normal" mode its allowed
+     *
+     * @return {String}   Operation mode
+     */
     this.getMode = function() {
         return _self.objCanvas.getMode();
     };
@@ -449,7 +454,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        this.executeMulticallAction("rotate", names, xmlNode, values);
+        this.$executeMulticallAction("rotate", names, xmlNode, values);
     };
 
     /**
@@ -474,7 +479,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             ? ["false", "false", (prevRotate + 180) % 360]
             : [String(prevFlipH), String(newFlipV), prevRotate];
 
-        this.executeMulticallAction(
+        this.$executeMulticallAction(
             "verticalFlip", ["fliph", "flipv", "rotation"], xmlNode, values);
     };
 
@@ -503,7 +508,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             ? ["false", "false", (prevRotate + 180) % 360]
             : [String(newFlipH), String(prevFlipV), prevRotate];
 
-        this.executeMulticallAction(
+        this.$executeMulticallAction(
             "horizontalFlip", ["fliph", "flipv", "rotation"], xmlNode, values);
     };
 
@@ -518,7 +523,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number}       newLeft     horizontal position of block element
      */
     this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
-            this.executeMulticallAction(
+            this.$executeMulticallAction(
                 "resize",
                 ["top", "left", "width", "height"],
                 xmlNode,
@@ -535,7 +540,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Object}      values     the new values list of the node
      * @type {String}
      */
-    this.executeMulticallAction = function(atName, setNames, xmlNode, values) {
+    this.$executeMulticallAction = function(atName, setNames, xmlNode, values) {
         var props = changes = [], l = setNames.length;
         for (var i = 0; i < l; i++) {
             var node = this.getNodeFromRule(setNames[i], xmlNode, false, false,
@@ -1172,6 +1177,14 @@ jpf.console.info("FILL");
         };
     };
 
+    /**
+     * Loads elements template, which define type, size and other properties for
+     * elements 
+     * 
+     * @see Template attribute
+     * 
+     * @param {XMLElement}   data   xml representation of template
+     */
     this.loadTemplate = function(data) {
         template = jpf.xmldb.getBindXmlNode(data);
         this.$checkLoadQueue();
