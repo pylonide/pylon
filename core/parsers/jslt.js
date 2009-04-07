@@ -569,7 +569,7 @@ jpf.JsltImplementation = function(){
                 eval("var f = function(n){" + str + "};");
             // #ifdef __DEBUG
             } catch(e) {
-                jpf.console.info(jpf.formatJS(str));
+                //jpf.console.info(jpf.formatJS(str));
                 throw new Error(jpf.formatErrorString(0, this,
                     "Selecting node in JSLT",
                     "Could not parse Precompiled JSLT with: \n" + e.message + "'"));
@@ -978,7 +978,7 @@ jpf.JsltImplementation = function(){
         catch (e) {
             //var treedump=[];
             //dump_tree(tree,treedump,'');	
-            jpf.console.info(jpf.formatJS(strJS));
+            //jpf.console.info(jpf.formatJS(strJS));
             throw new Error("Could not parse JSLT with: " + e.message /*+ "\n" + treedump.join('')*/);
         }
         
