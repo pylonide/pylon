@@ -33,12 +33,13 @@
  *           url   = "http://my-webdav-server.com/dav_files/"
  *           model = "mdlFoo" />
  *     </j:teleport>
+ *     
+ *     <j:script>
+ *         // write the text 'bar' to a file on the server called 'foo.txt'
+ *         myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ *     </j:script>
  * </code>
  *
- * <j:script>
- *     // write the text 'bar' to a file on the server called 'foo.txt'
- *     myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
- * </j:script>
  * Remarks:
  * Calls can be made to a server using a special {@link term.datainstruction data instruction}
  * format.
