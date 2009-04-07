@@ -1392,7 +1392,7 @@ jpf.debugwin = {
 \n\
 <p>This document contains [%#'//node()'] nodes.</p>\n\
 \n\
-<p>The first node is called <b>[%n.tagName]</b>, and has [%#'node()'] children.</p></textarea>\
+<p>The first node is called <b>[%n.tagName]</b>, and has [%#'node()'] child[%#'node()' == 1 ? '' : 'ren'].</p></textarea>\
                     <blockquote id='jpf_jslt_output'><span class='jpf_empty'>No JSLT Parsed</span></blockquote>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
                         <label style='float:left;padding:4px 3px 0 0;'>Data instruction: </label>\
@@ -1409,7 +1409,7 @@ jpf.debugwin = {
          ? "<div class='debug_panel' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
-                    <strong>Live Data Debugger (beta)</strong>\
+                    <strong>Data Editor (beta)</strong>\
                 </div>\
                 <div onclick='event.cancelBubble=true' onselectstart='if (jpf.dragmode.mode) return false; event.cancelBubble=true'\
                   class='debug_panel_body_base debug_panel_body_markup debug_panel_body_none'>\
@@ -1692,7 +1692,7 @@ jpf.debugwin = {
                         jsltCode = jpf.debugwin.$jslt.apply(this.jsltConsole.value, xml) 
                 }
             	catch(e){
-            		result.innerHTML = "JSLT Compilation occured:\n" + e.message;
+            		result.innerHTML = "JSLT Compilation error:\n" + e.message;
             		return;
             	}
                 
