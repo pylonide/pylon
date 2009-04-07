@@ -1288,7 +1288,7 @@ jpf.debugwin = {
                 background : transparent;\
                 margin : 0;\
                 padding : 3px;\
-                overflow : hidden;\
+                overflow : auto;\
             }\
             #jpf_debugwin .debug_panel_body_jslt .jpf_empty {\
                 color : #AAA;\
