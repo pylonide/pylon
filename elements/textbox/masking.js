@@ -80,6 +80,17 @@ jpf.textbox.masking = function(){
     /* ***********************
             Keyboard Support
     ************************/
+
+    function isCharacter(e) {
+        if (!e) return false;
+        var key = e.which || e.keyCode;
+        return !(e.ctrlKey || e.altKey || e.metaKey)
+            && ((key >= 65 && key <= 90) // latin characters (A-Za-z)
+            || (key >= 48 && key<= 57) // numbers (0-9)
+            || (key == 32) // space
+            || (key > 128));
+    }
+
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -152,10 +163,11 @@ jpf.textbox.masking = function(){
             return false;
         };
         
-        this.oInt.onmouseup = function(){
+        this.oInt.onmouseup = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
-            return false;
+            if (isCharacter(e || window.event))
+                return false;
         };
         
         this.oInt.onpaste = function(e){
@@ -279,8 +291,11 @@ jpf.textbox.masking = function(){
             range.select();
         }
         else {
-            if (typeof pos[p] == "undefined")
-                p = pos.length - 1;
+            if (typeof pos[p] == "undefined") {
+                oExt.selectionStart = oExt.selectionEnd = pos[pos.length - 1] + 1;
+                lastPos = pos.length;
+                return false;
+            }
             oExt.selectionStart = pos[p];
             oExt.selectionEnd   = pos[p] + 1;
         }
