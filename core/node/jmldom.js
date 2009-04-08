@@ -110,7 +110,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             "reparent" : [], "removechild" : []};
 
     /**
-     * {JMLDocument} ownerDocument the document of this application
+     * the document of this application
      */
     if (jpf.document)
         this.ownerDocument = jpf.document;

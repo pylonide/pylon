@@ -22,9 +22,9 @@
 //#ifdef __WITH_CLASS
 
 /**
- * @term propertybinding <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
- * With property binding you can define the way a 
- * property is calculated. This statement is usually based on a javascript 
+ * @term propertybinding With property binding you can define the way a 
+ * property is calculated. <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
+ * This statement is usually based on a javascript 
  * expression including one or more properties on other objects. The value of 
  * the property will always be kept up to date. This means that when one of the 
  * dependent properties changes, the property is recalculated. See the picture 

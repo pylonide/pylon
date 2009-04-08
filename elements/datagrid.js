@@ -1286,6 +1286,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     var lastcell, lastcol = 0, lastrow;
     /**
      * Returns a column definition object based on the column number.
+     * @param {Number} hid the heading number; this number is based on the sequence of the j:column elements.
      */
     this.getColumn = function(nr){
         return headings[nr || lastcol || 0];

@@ -76,6 +76,7 @@ jpf.windowManager = {
  *
  * @constructor
  * @inherits jpf.Class
+ * @default_private
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
