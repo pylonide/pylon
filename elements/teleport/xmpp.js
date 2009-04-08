@@ -44,7 +44,8 @@
  *      }
  *
  *      // Send a message to John
- *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '', jpf.xmpp.MSG_CHAT);
+ *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
+ *          jpf.xmpp.MSG_CHAT);
  *  </j:script>
  * </code>
  * Remarks:
@@ -53,6 +54,7 @@
  * <code>
  *  submission="xmpp:notify({@bar}, 'john@my-jabber-server.com')"
  *  submission="xmpp:login({@foo}, {@bar})"
+ *  submission="xmpp:logout()"
  * </code>
  *
  * @event authfailure Fires when the authentication process failed or halted.
@@ -94,6 +96,8 @@
  * @inherits jpf.BaseComm
  * @inherits jpf.http
  * @namespace jpf
+ *
+ * @default_private
  */
 
 jpf.xmpp = function(){
@@ -1338,10 +1342,20 @@ jpf.xmpp = function(){
      * Teleport module. If specified, it will also setup the Remote SmartBinding
      * feature.
      *
-     * Sample JML:
-     *   <j:teleport>
-     *       <j:xmpp id="myXMPP" url="http://jabber.org:5280/http-bind" roster-model="myRoster" connection="poll|bosh" />
-     *   </j:teleport>
+     * @attribute {String}   url              The URL to the XMPP/ Jabber server, including protocol, hostname and port number
+     * @attribute {String}   [connection]     The type of method used to connect to the server. Defaults to 'bosh'
+     *   Possible values:
+     *   poll
+     *   bosh
+     * @attribute {Number}   [poll-timeout]   The number of milliseconds between each poll-request
+     * @attribute {String}   [resource]       Name that will identify this client as it logs on the the Jabber network. Defaults to the application name.
+     * @attribute {String}   model            Name of the model which will store the Roster items
+     * @attribute {String}   [model-contents] Specifies the items that will be stored inside the model. Defaults to 'all'
+     *   Possible values:
+     *   all
+     *   roster
+     *   chat
+     *   typing
      *
      * @param     {XMLDom} x An XML document element that contains xmpp metadata
      * @type      {void}

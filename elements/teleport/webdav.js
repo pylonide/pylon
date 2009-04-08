@@ -24,20 +24,23 @@
 
 /**
  * Element implementing WebDAV remote filesystem protocol.
- * Depends on implementation of WebDAV server.
+ * WebDAV stands for "Web-based Distributed Authoring and Versioning". It is a
+ * set of extensions to the HTTP protocol which allows users to collaboratively
+ * edit and manage files on remote web servers (from: {@link http://www.webdav.org}.
+ * This Object aims to be a complete implementation of {@link http://www.webdav.org/specs/rfc4918.html RFC4981}
+ * and provides a scriptable interface to any WebDAV server.
  * Example:
  * Javeline Markup Language
  * <code>
- *     <j:teleport>
- *         <j:webdav id="myWebDAV"
- *           url   = "http://my-webdav-server.com/dav_files/"
- *           model = "mdlFoo" />
- *     </j:teleport>
+ *  <j:teleport>
+ *      <j:webdav id="myWebDAV"
+ *        url   = "http://my-webdav-server.com/dav_files/" />
+ *  </j:teleport>
  *     
- *     <j:script>
- *         // write the text 'bar' to a file on the server called 'foo.txt'
- *         myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
- *     </j:script>
+ *  <j:script>
+ *      // write the text 'bar' to a file on the server called 'foo.txt'
+ *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ *  </j:script>
  * </code>
  *
  * Remarks:
@@ -98,6 +101,8 @@
  * @inherits jpf.BaseComm
  * @inherits jpf.http
  * @namespace jpf
+ *
+ * @default_private
  */
 
 jpf.webdav = function(){
@@ -1059,10 +1064,8 @@ jpf.webdav = function(){
      * Teleport module. If specified, it will also setup the Remote SmartBinding
      * feature.
      *
-     * Sample JML:
-     *   <j:teleport>
-     *       <j:webdav id="myWebDAV" url="http://http://test.webdav.org" model="myFilesystem" model-contents="all" />
-     *   </j:teleport>
+     * @attribute {String}  url    The URL to the WebDAV server, including protocol and hostname
+     * @attribute {
      *
      * @param     {XMLDom} x An XML document element that contains WebDAV metadata
      * @type      {void}
@@ -1084,14 +1087,13 @@ jpf.webdav = function(){
         this.tagName  = "webdav";
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.resource = x.getAttribute('resource') || jpf.appsettings.name;
 
-        var sModel    = x.getAttribute('model') || null;
+        /*var sModel    = x.getAttribute('model') || null;
         if (sModel)
             this.model = self[sModel] || null;
         this.useModel = this.model ? true : false;
         if (this.useModel)
-            jpf.xmldb.addNodeListener(this.model, this);
+            jpf.xmldb.addNodeListener(this.model, this);*/
 
         //TODO: implement model updating mechanism (model="mdlFoo")
         //      with corresponding 'this.$xmlUpdate' handler function for model updates
