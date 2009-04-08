@@ -87,7 +87,7 @@ Function.prototype.toHTMLNode = function(highlight){
 
             for (var i = 0; i < this.arguments.length; i++) {
                 //if(i != 0 && arr[i]) args += ", ";
-                argName  = (namedArgs[i] || "__NOT_NAMED__").trim();// args += "<b>" + arr[i] + "</b>";
+                argName  = (namedArgs[i] || "NOT_NAMED").trim();// args += "<b>" + arr[i] + "</b>";
 
                 var info = ["Name: " + argName];
                 var id   = jpf.DebugInfoStack.push(info) - 1;
