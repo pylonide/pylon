@@ -30,7 +30,7 @@
  * This Object aims to be a complete implementation of {@link http://www.webdav.org/specs/rfc4918.html RFC4981}
  * and provides a scriptable interface to any WebDAV server.
  * Example:
- * Javeline Markup Language
+ * Writing to a file with a WebDAV connector
  * <code>
  *  <j:teleport>
  *      <j:webdav id="myWebDAV"

@@ -27,7 +27,7 @@
  * Depends on implementation of XMPP server supporting bosh or http-poll,
  * because jpf.xmpp creates connections through the HTTP protocol via {@link teleport.http}.
  * Example:
- * Javeline Markup Language
+ * XMPP connector with new message notification
  * <code>
  *  <j:teleport>
  *      <j:xmpp id="myXMPP"
