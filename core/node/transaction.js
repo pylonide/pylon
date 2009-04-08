@@ -397,13 +397,11 @@ jpf.Transaction = function(){
                 if (state != jpf.SUCCESS) {
                     var oError;
     
-                    //#ifdef __DEBUG
                     oError = new Error(jpf.formatErrorString(1032, dataParent,
                         "Loading xml data",
                         "Could not add data for control " + dataParent.name
                         + "[" + dataParent.tagName + "] \nUrl: " + extra.url
                         + "\nInfo: " + extra.message + "\n\n" + xmlNode));
-                    //#endif
     
                     if (extra.tpModule.retryTimeout(extra, state, dataParent, oError) === true)
                         return true;

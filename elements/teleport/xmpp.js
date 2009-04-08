@@ -406,11 +406,9 @@ jpf.xmpp = function(){
                 if (state != jpf.SUCCESS) {
                     var oError;
                     
-                    //#ifdef __DEBUG
                     oError = new Error(jpf.formatErrorString(0, 
                         _self, "XMPP Communication error", 
                         "Url: " + extra.url + "\nInfo: " + extra.message));
-                    //#endif
                     
                     if (typeof callback == "function") {
                         callback.call(_self, data, state, extra);

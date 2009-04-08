@@ -1542,12 +1542,9 @@ var jpf = {
             return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
                     if (state != jpf.SUCCESS) {
-                        var oError;
-                        //#ifdef __DEBUG
-                        oError = new Error(jpf.formatErrorString(0, null,
+                        var oError = new Error(jpf.formatErrorString(0, null,
                             "Loading XML application data", "Could not load \
                             XML from remote source: " + extra.message));
-                        //#endif
 
                         if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                             return true;
@@ -1776,13 +1773,10 @@ var jpf = {
         this.oHttp.get(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
                  if (state != jpf.SUCCESS) {
-                    var oError;
-                    //#ifdef __DEBUG
-                    oError = new Error(jpf.formatErrorString(1007,
+                    var oError = new Error(jpf.formatErrorString(1007,
                         null, "Loading Includes", "Could not load Include file '"
                         + (path || extra.userdata[0].getAttribute("src"))
                         + "'\nReason: " + extra.message, node));
-                    //#endif
 
                     if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                         return true;

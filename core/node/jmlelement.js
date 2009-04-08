@@ -587,12 +587,10 @@ jpf.JmlElement = function(){
             if (state != jpf.SUCCESS) {
                 var oError;
 
-                //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(1019, _self,
                     "Loading extra jml from datasource",
                     "Could not load JML from remote resource \n\n"
                     + extra.message));
-                //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                     return true;

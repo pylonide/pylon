@@ -326,11 +326,9 @@ jpf.settings = function(){
             if (state != jpf.SUCCESS) {
                 var oError;
 
-                //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(0,
                     oSettings, "Saving settings",
                     "Error saving settings: " + extra.message));
-                //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                     return true;

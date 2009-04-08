@@ -213,9 +213,7 @@ jpf.webdav = function(){
                 if (state != jpf.SUCCESS) {
                     var oError;
 
-                    //#ifdef __DEBUG
                     oError = WebDAVError("Url: " + extra.url + "\nInfo: " + extra.message);
-                    //#endif
 
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;

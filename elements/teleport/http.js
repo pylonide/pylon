@@ -673,12 +673,10 @@ jpf.http = function(){
           && extra.retries < (maxRetries || jpf.maxHttpRetries))
             return extra.tpModule.retry(extra.id);
 
-        //#ifdef __DEBUG
         oError = oError || new Error(jpf.formatErrorString(0,
             this, "Communication " + (state == jpf.TIMEOUT
                 ? "timeout"
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
-        //#endif
 
         if ((jmlNode || jpf).dispatchEvent("error", jpf.extend({
             error   : oError,

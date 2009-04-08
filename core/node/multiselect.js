@@ -345,13 +345,11 @@ jpf.MultiSelect = function(){
             if (state != jpf.SUCCESS) {
                 var oError;
 
-                //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(1032, jmlNode,
                     "Loading xml data",
                     "Could not add data for control " + jmlNode.name
                     + "[" + jmlNode.tagName + "] \nUrl: " + extra.url
                     + "\nInfo: " + extra.message + "\n\n" + xmlNode));
-                //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, jmlNode, oError) === true)
                     return true;

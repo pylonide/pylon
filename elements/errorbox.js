@@ -114,11 +114,6 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         var y = (pos[1] + parseFloat(host.$getOption("main", "erroffsety") || 0));
         //this.oExt.style.left = x + "px"
         //this.oExt.style.top  = y + "px"
-
-        this.$setStyleClass(this.oExt, 
-            x + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
-                ? "rightbox"
-                : "leftbox", ["leftbox", "rightbox"]);
         
         this.show();
         jpf.popup.show(this.uniqueId, {
@@ -127,6 +122,11 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             animate      : false,
             ref          : this.oExt.offsetParent
         });
+
+        this.$setStyleClass(this.oExt,
+            x + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
+                ? "rightbox"
+                : "leftbox", ["leftbox", "rightbox"]);
     }
     
     /**

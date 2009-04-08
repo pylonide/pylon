@@ -778,13 +778,11 @@ jpf.model = function(data, caching){
             if (state != jpf.SUCCESS) {
                 var oError;
 
-                //#ifdef __DEBUG
                 oError = new Error(jpf.formatErrorString(1032,
                     _self, "Inserting xml data", "Could not load data \
                     Instruction:" + instruction + "\n\
                     Url: " + extra.url + "\n\
                     Info: " + extra.message + "\n\n" + data));
-                //#endif
 
                 if (callback && callback.apply(this, arguments) === true)
                     return true;
