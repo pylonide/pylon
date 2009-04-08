@@ -298,8 +298,7 @@ jpf.textbox.masking = function(){
         if (jpf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
-            range.select();
-            
+            range.collapse();
             range.moveStart("character", pos[lastPos]);
             range.moveEnd("character", 1);
             range.text = chr;
@@ -326,7 +325,7 @@ jpf.textbox.masking = function(){
         if (jpf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
-            range.select();
+            range.collapse();
 
             range.moveStart("character", pos[p]);
             range.moveEnd("character", 1);
@@ -347,7 +346,7 @@ jpf.textbox.masking = function(){
     }
     
     this.$insertData = function(str){
-        if (oExt.selectionStart == oExt.selectionEnd) {
+        if (!jpf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
             setPosition(0); // is this always correct? practice will show...
         }
 
