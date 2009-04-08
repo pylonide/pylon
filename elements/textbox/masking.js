@@ -90,11 +90,11 @@ jpf.textbox.masking = function(){
         switch (key) {
             case 39:	
                 //RIGHT
-                setPosition(lastPos+1);
+                setPosition(lastPos + 1);
                 break;
             case 37:
                 //LEFT
-                setPosition(lastPos-1);
+                setPosition(lastPos - 1);
                 break;
             case 35:
             case 34:
@@ -106,8 +106,8 @@ jpf.textbox.masking = function(){
                 break;
             case 8:
                 //BACKSPACE
-                deletePosition(lastPos-1);
-                setPosition(lastPos-1);
+                deletePosition(lastPos - 1);
+                setPosition(lastPos - 1);
                 break;
             case 46:
                 //DEL
@@ -261,7 +261,6 @@ jpf.textbox.masking = function(){
         if (p < 0)
             p = 0;
 
-        
         if (jpf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
@@ -391,7 +390,7 @@ jpf.textbox.masking = function(){
                 return (i == 0) ? 0 : i - 1;
         }
 
-        return 0; // always return -a- value...
+        return myvalue.length; // always return -a- value...
     }
 };
 
