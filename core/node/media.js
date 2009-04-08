@@ -27,6 +27,13 @@ var __MEDIA__ = 1 << 20;
  * Interface that adds Media node features and dynamics to this Element.
  * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#media7
  *
+ * @attribute {Boolean} seeking
+ * @attribute {Boolean} autoplay
+ * @attribute {Boolean} controls
+ * @attribute {Boolean} ready
+ * @attribute {Number}  bufferedBytes
+ * @attribute {Number}  totalBytes
+ *
  * @constructor
  * @baseclass
  * @author      Mike de Boer
@@ -51,6 +58,9 @@ jpf.Media = function(){
 
     this.mainBind = "src";
 
+    /**
+     * @attribute {Number} readyState 
+     */
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
@@ -80,15 +90,26 @@ jpf.Media = function(){
         }
     };
 
+    /**
+     * @attribute {Object} bufferedBytes
+     *   Object:
+     *    {Number} start
+     *    {Number} end
+     *    {Number} total
+     */
     this.$propHandlers["bufferedBytes"] = function(value) {
         this.setProperty("progress", this.totalBytes
             ? value.end / this.totalBytes
             : 0);
     };
 
+    /**
+     * @attribute {Number} position
+     */
     this.$propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
-            // first, check if the seek action doesn't go beyond the download progress of the media element.
+            // first, check if the seek action doesn't go beyond the download
+            // progress of the media element.
             if (value >= this.progress)
                 value = this.progress - 0.05;
 
@@ -107,11 +128,17 @@ jpf.Media = function(){
         }
     };
 
+    /**
+     * @attribute {Number} currentTime
+     */
     this.$propHandlers["currentTime"] = function(value){ //in milliseconds
         if (value >= 0 && this.seek)
             this.seek(value);
     };
 
+    /**
+     * @attribute {Number} volume
+     */
     this.$propHandlers["volume"] = function(value){
         if (!this.player) return;
         // #ifdef __DEBUG
@@ -130,6 +157,9 @@ jpf.Media = function(){
 
     var oldVolume = null;
 
+    /**
+     * @attribute {Boolean} muted
+     */
     this.$propHandlers["muted"] = function(value){
         if (!this.player || !this.setVolume) return;
 
@@ -141,6 +171,9 @@ jpf.Media = function(){
             this.setVolume(oldVolume || 20);
     };
 
+    /**
+     * @attribute {Boolean} paused
+     */
     this.$propHandlers["paused"] = function(value){
         if (!this.player) return;
 
@@ -153,6 +186,9 @@ jpf.Media = function(){
 
     var loadTimer = null;
 
+    /**
+     * @attribute {String} type
+     */
     this.$propHandlers["type"] = function(value){
         if (loadTimer) return;
 
@@ -162,6 +198,9 @@ jpf.Media = function(){
         });
     };
 
+    /**
+     * @attribute {String} src
+     */
     this.$propHandlers["src"] = function(value){
         if (loadTimer || !value) return; //@todo for mike: please check if this is the best behaviour for setting an empty value
 
@@ -195,6 +234,9 @@ jpf.Media = function(){
         }
     };
 
+    /**
+     * @attribute {Object} ID3
+     */
     this.$propHandlers["ID3"] = function(value){
         if (!this.player) return;
         // usually this feature is only made available BY media as getters
