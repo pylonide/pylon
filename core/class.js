@@ -29,7 +29,6 @@
  * the property will always be kept up to date. This means that when one of the 
  * dependent properties changes, the property is recalculated. See the picture 
  * for a graphical explanation. 
- *
  * Example:
  * Let me give you an example to make it a bit straightforward. This example 
  * sets the visibility of the slider based on the state of the checkbox.
@@ -38,13 +37,13 @@
  * <j:checkbox id="myCheckbox">Toggle this</j:checkbox>
  * </code>
  *
- * Single direction binds:
+ * Syntax:
  * The use of { and } tell Javeline PlatForm(JPF) that the visible property will 
  * be bound. By specifying myCheckbox.value JPF knows that the value of 
  * myCheckbox should be retrieved for this property. Whenever the checkbox 
  * changes, the slider will show or hide.
  *
- * Dual direction binds:
+ * Syntax:
  * Sometimes it's necesary to make a binding from one property to another one, 
  * and vice verse. This works in the same way, but instead of using curly braces 
  * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
