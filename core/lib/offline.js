@@ -58,8 +58,8 @@
  *   cancellable: Prevents the application from reloading it's offline state.
  * @event sync          Fires at each sync item's completion.
  *   object:
- *   {Number} position 
- *   {Number} length   
+ *   {Number} position the number of the item in the list that is currently processed.
+ *   {Number} length   the total number of items in the list.
  *
  * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
  * Example:
@@ -88,12 +88,14 @@
  */
 jpf.namespace("offline", {
     /**
-     * {Boolean} whether offline support is enabled.
+     * whether offline support is enabled.
+     * @type {Boolean}
      */
     enabled     : false,
 
     /**
-     * {Boolean} whether the application is online.
+     * whether the application is online.
+     * @type {Boolean}
      */
     onLine      : -1,
     resources   : ["application", "models", "transactions", "queue", "state"],

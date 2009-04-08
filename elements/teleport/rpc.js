@@ -51,8 +51,6 @@
  * </code>
  *
  * @define rpc
- * @attribute {String} soap-xmlns   the url that uniquely identifies the xml namespace for the message
- * @attribute {String} soap-prefix  the prefix that is paired with the message xml namespace
  * @addnode teleport
  * @allowchild method
  *
@@ -234,6 +232,16 @@ jpf.rpc = function(){
      * @attribute {Boolean} [autoroute]      whether the call should be routed through a proxy when a permission error occurs due to the same domein policy.
      * @attribute {Boolean} [async]          whether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
      * @attribute {Boolean} [caching]        whether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
+     * @attribute {String}  [http-method]    the http method used to send the data. This attribute is only used by the cgi protocol.
+     *   Possible values:
+     *   post   Used to store large chunks of data (on a resource).
+     *   get    Used to retrieve data from a resource.
+     *   delete Used to delete a resource.
+     *   head   Returns only the headers.
+     *   put    Used to store data at a resource.
+     * @attribute {String}  [method-name]    the variable name used to sent the name of the method called to the server. This attribute is only used by the cgi protocol.
+     * @attribute {String}  [soap-xmlns]     the url that uniquely identifies the xml namespace for the message. This attribute is only used by the soap protocol.
+     * @attribute {String}  [soap-prefix]    the prefix that is paired with the message xml namespace. This attribute is only used by the soap protocol.
      * @define method   element specifying a method available within the rpc element.
      * @allowchild variable
      * @attribute {String}  name             the name of the method. This name will be available on the rpc object as a javascript method.

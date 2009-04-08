@@ -344,11 +344,63 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
+    this.startRenameThis = function(oHtml, Lid, isName){
+        this.$getCaptionElement = function(){
+            return oHtml;
+        }
+        
+        var attrName = oHtml.getAttribute("aname");
+        
+        var xmlNode = jpf.xmldb.getNodeById(Lid);
+        this.$getCaptionXml = function(){ //@todo
+            return attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild;
+        }
+        
+        this.getSelectFromRule = function(setname, cnode){
+            return [null, attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild];
+        };
+        
+        if (isName) {
+            var renCallback = function(e){
+                this.removeEventListener("beforerename", renCallback, true);
+                this.removeEventListener("stoprename", renRemove, true);
+
+                if (e.args[2] == attrName)
+                    return false;
+                    
+                var changes = [];
+                changes.push({
+                    func : "removeAttribute",
+                    args : [xmlNode, attrName]
+                });
+                
+                changes.push({
+                    func : "setAttribute",
+                    args : [xmlNode, e.args[2], xmlNode.getAttribute(attrName) || ""]
+                });
+                
+                e.action = "multicall";
+                e.args   = changes;
+            };
+            var renRemove = function(){
+                this.removeEventListener("beforerename", renCallback, true);
+                this.removeEventListener("stoprename", renRemove, true);
+            };
+            this.addEventListener("beforerename", renCallback, true);
+            this.addEventListener("stoprename", renRemove, true);
+        }
+        
+        this.startRename();
+        
+        if (isName)
+            this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] = attrName;
+    }
+    
     /**
      * @todo  Make it xmlNode locked
      * @todo  Use escape(27) key to cancel change (see rename)
      */
-    function addAttribute(pNode, name, value, htmlNode){
+    function addAttribute(pNode, name, value, htmlNode, Lid){
         _self.$getNewContext("attribute");
         var elName = _self.$getLayoutNode("attribute", "name");
         var elValue = _self.$getLayoutNode("attribute", "value");
@@ -357,11 +409,10 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value.length > 50)
             elValue.setAttribute("title", value);
         
-        elName.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.selectTextHtml(this);\
-            this.className='textedit';\
+        elName.setAttribute("aname", name);
+        elName.setAttribute("onmousedown", "jpf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
-        elName.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
+        elName.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");
         elName.setAttribute("onkeydown", "if (event.keyCode==13) {\
@@ -371,14 +422,9 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             event.cancelBubble=true;");
         elName.setAttribute("onselectstart", "event.cancelBubble = true;");
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
-        elName.setAttribute("onblur", "var o = jpf.lookup(" + _self.uniqueId + ");\
-            var xmlNode = o.selected;\
-            o.renameAttribute(xmlNode, '" + name + "', this.innerHTML);\
-            this.contentEditable=false;this.className=''");
         
-        elValue.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.selectTextHtml(this);\
-            this.className='textedit';\
+        elValue.setAttribute("aname", name);
+        elValue.setAttribute("onmousedown", "jpf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "');\
             event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
@@ -390,10 +436,6 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             event.cancelBubble=true;");
         elValue.setAttribute("onselectstart", "event.cancelBubble = true;");
         elValue.setAttribute("ondblclick", "event.cancelBubble = true;");
-        elValue.setAttribute("onblur", "var o = jpf.lookup(" + _self.uniqueId + ");\
-            var xmlNode = o.selected;\
-            o.setAttributeValue(xmlNode, '" + name + "', this.innerHTML);\
-            this.contentEditable=false;this.className=''");
         
         if (pNode.style) {
             htmlNode = jpf.xmldb.htmlImport(
@@ -409,7 +451,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             pNode.appendChild(_self.$getLayoutNode("attribute"));
     }
     
-    function addTextnode(pNode, value){
+    function addTextnode(pNode, value, Lid){
         _self.$getNewContext("textnode");
         var elTextNode = _self.$getLayoutNode("textnode", "text");
         var elTag = _self.$getLayoutNode("textnode", "tag");
@@ -417,10 +459,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
         
-        elTextNode.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.selectTextHtml(this);\
-            this.className='textedit'");
-        elTextNode.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
+        elTextNode.setAttribute("onmousedown", "jpf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "');");
+        elTextNode.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");
         elTextNode.setAttribute("onkeydown", "if (event.keyCode==13) {\
@@ -430,10 +470,6 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             event.cancelBubble=true;");
         elTextNode.setAttribute("onselectstart", "event.cancelBubble = true;");
         elTextNode.setAttribute("ondblclick", "event.cancelBubble = true;");
-        elTextNode.setAttribute("onblur", "var o = jpf.lookup(" + _self.uniqueId + ");\
-            var xmlNode = o.selected;\
-            o.setTextNode(xmlNode, this.innerHTML);\
-            this.contentEditable=false;this.className=''");
         
         jpf.xmldb.setNodeValue(elTag, "&gt;");
         
@@ -515,7 +551,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
                 continue;
             
             addAttribute(elAttributes, attr.nodeName, 
-                attr.nodeValue);
+                attr.nodeValue, null, Lid);
         }
         
         var elBeginTail = this.$getLayoutNode("item", "begintail");
@@ -524,7 +560,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             elEnd.setAttribute("style", "display:none");
 
             if (xmlNode.childNodes.length) {
-                addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue);
+                addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue, Lid);
                 jpf.xmldb.setNodeValue(elBeginTail, "&lt;/" + xmlNode.tagName + "&gt;");
             }
             else
@@ -597,8 +633,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         var elAttributes = this.$getLayoutNode("item", "attributes", htmlNode);
         var elEnd        = this.$getLayoutNode("item", "endtag", htmlNode);
         var elBeginTail  = this.$getLayoutNode("item", "begintail", htmlNode);
-        
-        if (typeof len == "function")
+
+        //if (typeof len == "function")
             len = xmlNode.attributes.length;
         for (var i = 0; i < len; i++) {
             var attr = xmlNode.attributes.item(i);
@@ -645,21 +681,23 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!aLookup[name])
                 nodes[i].parentNode.removeChild(nodes[i]);//jpf.removeChild here??
             //Change it
-            else
-                if(aLookup[name] != elValue.innerHTML) {
-                    elValue.innerHTML = aLookup[name];
-                    animHighlight(elValue);
-                    //Animate change here...
-                    delete aLookup[name];
-                } 
-            else
-                if(aLookup[name])
-                    delete aLookup[name];
+            else if(aLookup[name] != elValue.innerHTML) {
+                elValue.innerHTML = aLookup[name];
+                
+                animHighlight(elValue);
+                //Animate change here...
+                delete aLookup[name];
+            } 
+            else if(aLookup[name])
+                delete aLookup[name];
+            
+            elName.setAttribute("aname", name);
+            elValue.setAttribute("aname", name);
         }
         
         //Add the remaining attributes
         for (var attr in aLookup) {
-            addAttribute(elAttributes, attr, aLookup[attr], htmlNode);
+            addAttribute(elAttributes, attr, aLookup[attr], htmlNode, xmlNode.getAttribute(jpf.xmldb.xmlIdTag));
         }
         
         //Add textnode if its not there yet
@@ -1133,6 +1171,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     //#ifdef __WITH_XFORMS
     jpf.XForms,
     //#endif
+    jpf.Rename,
     jpf.MultiSelect, 
     jpf.Cache,
     jpf.Presentation, 

@@ -75,14 +75,14 @@ jpf.windowManager = {
  * @event focus             Fires when the browser window receives focus.
  *
  * @constructor
- * @jpfclass
+ * @inherits jpf.Class
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
 jpf.WindowImplementation = function(){
-    jpf.register(this, "window", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
+    jpf.register(this, "window", jpf.NODE_HIDDEN);
     this.jpf = jpf;
 
     /**
@@ -1214,56 +1214,6 @@ jpf.WindowImplementation = function(){
     //@todo maybe generalize this to pub/sub event system??
     var hotkeys = {}, keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
 
-    /**
-     * Registers a hotkey handler to a key combination.
-     * Example:
-     * <code>
-     *   jpf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
-     * @param {String}   hotkey  the key combination to user. This is a
-     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
-     * seperate the keys.
-     * @param {Function} handler the code to be executed when the key
-     * combination is pressed.
-     */
-    jpf.registerHotkey = function(hotkey, handler){
-        var hashId = 0, key;
-
-        var keys = hotkey.splitSafe("\\-|\\+| ", null, true),
-            bHasCtrl = false,
-            bHasMeta = false;
-        for (var i = 0; i < keys.length; i++) {
-            if (keyMods[keys[i]]) {
-                hashId = hashId | keyMods[keys[i]];
-                if (jpf.isMac) {
-                    bHasCtrl = (keyMods[keys[i]] === keyMods["ctrl"]);
-                    bHasMeta = (keyMods[keys[i]] === keyMods["meta"]);
-                }
-            }
-            else
-                key = keys[i];
-        }
-
-        if (bHasCtrl && !bHasMeta) //for improved Mac hotkey support
-            hashId = hashId | keyMods["meta"];
-
-        //#ifdef __DEBUG
-        if (!key) {
-            throw new Error("missing key for hotkey: " + hotkey);
-        }
-        //#endif
-
-        (hotkeys[hashId] || (hotkeys[hashId] = {}))[key] = handler;
-    };
-
-    /**
-     * Removes a registered hotkey.
-     * @param {String} hotkey the hotkey combination.
-     */
-    jpf.removeHotkey = function(hotkey){
-        jpf.registerHotkey(hotkey, null);
-    };
-
     jpf.addEventListener("hotkey", function(e){
         // enable meta-hotkey support for macs, like for Apple-Z, Apple-C, etc.
         if (jpf.isMac && e.metaKey)
@@ -1284,6 +1234,9 @@ jpf.WindowImplementation = function(){
     });
     //#endif
 
+    /**
+     * @private
+     */
     this.destroy = function(){
         this.$at = null;
 
@@ -1321,11 +1274,64 @@ jpf.WindowImplementation = function(){
     };
 };
 
+//#ifdef __WITH_HOTKEY
+/**
+ * Registers a hotkey handler to a key combination.
+ * Example:
+ * <code>
+ *   jpf.registerHotkey('Ctrl-Z', undoHandler);
+ * </code>
+ * @param {String}   hotkey  the key combination to user. This is a
+ * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
+ * seperate the keys.
+ * @param {Function} handler the code to be executed when the key
+ * combination is pressed.
+ */
+jpf.registerHotkey = function(hotkey, handler){
+    var hashId = 0, key;
+
+    var keys = hotkey.splitSafe("\\-|\\+| ", null, true),
+        bHasCtrl = false,
+        bHasMeta = false;
+    for (var i = 0; i < keys.length; i++) {
+        if (keyMods[keys[i]]) {
+            hashId = hashId | keyMods[keys[i]];
+            if (jpf.isMac) {
+                bHasCtrl = (keyMods[keys[i]] === keyMods["ctrl"]);
+                bHasMeta = (keyMods[keys[i]] === keyMods["meta"]);
+            }
+        }
+        else
+            key = keys[i];
+    }
+
+    if (bHasCtrl && !bHasMeta) //for improved Mac hotkey support
+        hashId = hashId | keyMods["meta"];
+
+    //#ifdef __DEBUG
+    if (!key) {
+        throw new Error("missing key for hotkey: " + hotkey);
+    }
+    //#endif
+
+    (hotkeys[hashId] || (hotkeys[hashId] = {}))[key] = handler;
+};
+
+/**
+ * Removes a registered hotkey.
+ * @param {String} hotkey the hotkey combination.
+ */
+jpf.removeHotkey = function(hotkey){
+    jpf.registerHotkey(hotkey, null);
+};
+//#endif
+
 /**
  * The jml document. This is the jml node with nodeType 9. It is the root of
  * the application and has a refererence to the documentElement.
  *
  * @constructor
+ * @inherits jpf.JmlDom
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -1335,7 +1341,7 @@ jpf.DocumentImplementation = function(){
     jpf.makeClass(this);
 
     //#ifdef __WITH_JMLDOM
-    this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
+    this.inherit(jpf.JmlDom); 
     //#endif
 
     this.nodeType   = jpf.NODE_DOCUMENT;

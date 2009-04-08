@@ -22,6 +22,45 @@
 //#ifdef __WITH_CLASS
 
 /**
+ * @term propertybinding <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
+ * With property binding you can define the way a 
+ * property is calculated. This statement is usually based on a javascript 
+ * expression including one or more properties on other objects. The value of 
+ * the property will always be kept up to date. This means that when one of the 
+ * dependent properties changes, the property is recalculated. See the picture 
+ * for a graphical explanation. 
+ *
+ * Let me give you an example to make it a bit straightforward. This example 
+ * sets the visibility of the slider based on the state of the checkbox.
+ * <code>
+ * <j:slider visible="{myCheckbox.value}" />
+ * <j:checkbox id="myCheckbox">Toggle the visibility of the slider</j:checkbox>
+ * </code>
+ *
+ * The use of { and } tell Javeline PlatForm(JPF) that the visible property will 
+ * be bound. By specifying myCheckbox.value JPF knows that the value of 
+ * myCheckbox should be retrieved for this property. Whenever the checkbox 
+ * changes, the slider will show or hide.
+ *
+ * Sometimes it’s necesary to make a binding from one property to another one, 
+ * and vice verse. This works in the same way, but instead of using curly braces 
+ * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
+ * sync with the state of the tab page.
+ * <code>
+ *  <j:tab activepage="[myDropdown.value]">
+ *     <j:page caption="Page 1" />
+ *     <!-- etc -->
+ *  </j:tab>
+ *  <j:dropdown id="myDropdown">
+ *     <j:item value="0">Page 1</j:item>
+ *     <!-- etc -->
+ *  </j:dropdown>
+ * </code>
+ *
+ * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
+ */
+
+/**
  * BaseClass for any object offering property binding,
  * event handling, constructor and destructor hooks.
  *

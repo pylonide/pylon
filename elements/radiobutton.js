@@ -101,7 +101,9 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     }
 
     /**
-     * @copy Widget#setValue
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         for (var i = 0; i < this.radiobuttons.length; i++) {
@@ -131,7 +133,8 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     };
 
     /**
-     * @copy Widget#getValue
+     * Returns the current value of this element.
+     * @return {String}
      */
     this.getValue = function(){
         return this.current ? this.current.value : "";
@@ -317,7 +320,24 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @copy basebutton#background
+     * @attribute {string} background sets a multistate background. The arguments
+     * are seperated by pipes '|' and are in the order of:
+     * 'imagefilename|mapdirection|nrofstates|imagesize'
+     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
+     * The nrofstates argument specifies the number of states the iconfile contains:
+     * 1 - normal
+     * 2 - normal, hover
+     * 3 - normal, hover, down
+     * 4 - normal, hover, down, disabled
+     * The imagesize argument specifies how high or wide each icon is inside the
+     * map, depending of the mapdirection argument.
+     *
+     * Example:
+     * A 3 state picture where each state is 16px high, vertically spaced
+     * <code>
+     * background="threestates.gif|vertical|3|16"
+     * </code>
+     * @see baseclass.basebutton
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.oExt);
@@ -338,35 +358,38 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Public methods ****/
 
     /**
-     * @copy Widget#setValue
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value);
     };
 
     /**
-     * @copy Widget#getValue
+     * Returns the current value of this element.
+     * @return {String}
      */
     this.getValue = function(){
         return this.value;
     };
 
     /**
-     * @copy validation#setError
+     *    @private
      */
     this.setError = function(value){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
     };
 
     /**
-     * @copy validation#clearError
+     *    @private
      */
     this.clearError = function(value){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
     };
 
     /**
-     * @copy checkbox#check
+     * Sets the checked state and related value
      */
     this.check = function(visually){
         if (visually) {

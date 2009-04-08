@@ -151,10 +151,71 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.dynCssClasses = [];
     // #endif
 
+    /**
+     * @attribute {Boolean} cellselect wether this element has selectable rows (false) or selected cells (true). Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
+     * @attribute {Boolean} celledit   wether this element has editable cells. This requires cellselect to be true. Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
+     * @attribute {Boolean} namevalue  wether each row only contains a name and a value column. Default is false for j:datagrid and j:spreadsheet and true for j:propedit.
+     * @attribute {Boolean} iframe     wether this element is rendered inside an iframe. This is only supported for IE. Default is false for j:datagrid and true for j:spreadsheet and j:propedit.
+     */
     this.$booleanProperties["cellselect"] = true;
     this.$booleanProperties["celledit"]   = true;
+    this.$booleanProperties["namevalue"]  = true;
     this.$booleanProperties["iframe"]     = true;
 
+    /**
+     * @attribute {String} template the {@link terms.datainstruction data instruction} 
+     * to fetch a template definition of the layout for this component. A template
+     * consists of descriptions of columns (or rows for j:propedit) for which
+     * several settings are determined such as validation rules, edit component 
+     * and selection rules.
+     * Example:
+     * This example contains a template that describes the fields in a property
+     * editor for xml data representing a news article.
+     * <code>
+     *  <news>
+     *      <prop caption="Title *" type="text" select="title" required="true" 
+     *        minlength="4" invalidmsg="Incorrect title;The title is required."/>
+     *      <prop caption="Subtitle *" type="text" select="subtitle" 
+     *        required="true" minlength="4" 
+     *        invalidmsg="Incorrect subtitle;The subtitle is required."/>
+     *      <prop caption="Source" type="text" select="source" minlength="4" 
+     *        invalidmsg="Incorrect source;The source is required."/>
+     *      <prop select="editors_choice" caption="Show on homepage"
+     *        overview="overview" type="dropdown">
+     *          <item value="1">Yes</item> 
+     *          <item value="0">No</item> 
+     *      </prop>
+     *      <prop caption="Auteur*" select="author" descfield="name" 
+     *        overview="overview" maxlength="10" type="lookup" 
+     *        foreign_table="author" required="true" /> 
+     *      <prop select="categories/category" descfield="name" type="lookup" 
+     *        multiple="multiple" caption="Categorie" overview="overview" 
+     *        foreign_table="category" /> 
+     *      <prop caption="Image" type="custom" 
+     *        exec="showUploadWindow('news', 'setNewsImage', selected)" 
+     *        select="pictures/picture/file" />
+     *      <prop select="comments" descfield="title" caption="Comments" 
+     *        type="children" multiple="multiple">
+     *          <props table="news_comment" descfield="title">
+     *              <prop select="name" datatype="string" caption="Name*" 
+     *                required="1" maxlength="255" 
+     *                invalidmsg="Incorrect name;The name is required."/> 
+     *              <prop select="email" datatype="jpf:email" caption="Email" 
+     *                maxlength="255" 
+     *                invalidmsg="Incorrect e-mail;Please retype."/> 
+     *              <prop select="date" datatype="xsd:date" caption="Date*" 
+     *                required="1" 
+     *                invalidmsg="Incorrect date;Format is dd-mm-yyyy."/> 
+     *              <prop select="title" datatype="string" caption="Title*" 
+     *                required="1" maxlength="255" 
+     *                invalidmsg="Incorrect title;Title is required."/> 
+     *              <prop select="body" caption="Message*" required="1" 
+     *                invalidmsg="Incorrect message;Message is required."/> 
+     *          </props>
+     *      </prop>
+     *  </news>
+     * </code>
+     */
     this.$propHandlers["template"] = function(value){
         this.smartBinding = value ? true : false;
         this.namevalue    = true;
@@ -1223,10 +1284,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     var lastcell, lastcol = 0, lastrow;
+    /**
+     * Returns a column definition object based on the column number.
+     */
     this.getColumn = function(nr){
         return headings[nr || lastcol || 0];
     }
     
+    /**
+     * @private
+     */
     this.selectCell = function(e, rowHtml, wasSelected) {
         var htmlNode = e.srcElement || e.target;
         if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
@@ -1350,6 +1417,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag.style.display  = "none";
     };
 
+    /**
+     * @private
+     */
     this.findValueNode = function(el){
         if (!el) return null;
 
@@ -1404,6 +1474,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
           caption="Author" description="Author id" overview="overview" 
           maxlength="10" type="lookup" foreign_table="author" />
     */
+    /** 
+     * @private
+     */
     this.stopLookup = function(propNode, dataNode){
         if (!dataNode)
             return;
@@ -1578,6 +1651,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         return xmlNode.selectSingleNode(h.select || ".");
     };
     
+    /** 
+     * @private
+     */
     var $getSelectFromRule = this.getSelectFromRule;
     this.getSelectFromRule = function(setname, cnode){
         if (setname == "caption") {
@@ -1602,6 +1678,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     if (this.tagName == "spreadsheet") {
         var binds = {};
         
+        /** 
+         * @private
+         */
         var $applyRuleSetOnNode = this.applyRuleSetOnNode;
         this.applyRuleSetOnNode = function(setname, cnode, def){
             var value = $applyRuleSetOnNode.apply(this, arguments);
@@ -1631,6 +1710,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Column management ****/
 
     var lastSorted;
+    /**
+     * Sorts a column.
+     * @param {Number} hid the heading number; this number is based on the sequence of the j:column elements.
+     */
     this.sortColumn = function(hid){
         var h;
         
@@ -1661,7 +1744,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         lastSorted = hid;
     };
     
-    //@todo optimize but bringing down the string concats
+    /** 
+     * Resizes a column.
+     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     * @param {Number} newsize  the new size of the column.
+     * @todo optimize but bringing down the string concats
+     */
     this.resizeColumn = function(nr, newsize){
         var hN, h = headings[nr];
 
@@ -1731,6 +1819,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
 
+    /**
+     * Hides a column.
+     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     */
     this.hideColumn = function(nr){
         var h = headings[nr];
         jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
@@ -1739,6 +1831,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //Change percentages here
     };
     
+    /**
+     * Shows a hidden column.
+     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     */
     this.showColumn = function(nr){
         var h = headings[nr];
         jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
@@ -1747,6 +1843,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //Change percentages here
     };
     
+    /**
+     * Moves a column to another position.
+     * @param {Number} fromHid the heading number of the column to move; this number is based on the sequence of the j:column elements.
+     * @param {Number} toHid   the position the column is moved to;
+     */
     this.moveColumn = function(from, to){
         if (to && from == to) 
             return;

@@ -112,14 +112,17 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Public methods ****/
 
     /**
-     * @copy Widget#setValue
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value);
     };
 
     /**
-     * @copy Widget#getValue
+     * Returns the current value of this element.
+     * @return {String}
      */
     this.getValue = function(){
         return this.oInt.innerHTML;

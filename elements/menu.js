@@ -253,7 +253,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @copy Widget#getValue
+     * Returns the current value of this element.
+     * @return {String}
      */
     this.getValue = function(group){
         return this.getSelected(group).value || "";
@@ -710,7 +711,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     /**** Public Methods ****/
 
     /**
-     * @copy jmlElement#enable
+     * @private
      */
     this.enable = function(list){
         jpf.setStyleClass(this.oExt,
@@ -718,7 +719,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     };
 
     /**
-     * @copy jmlElement#disable
+     * @private
      */
     this.disable = function(list){
         jpf.setStyleClass(this.oExt, null,
@@ -726,14 +727,14 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     };
 
     /**
-     * @copy jmlElement#show
+     * @private
      */
     this.show = function(){
         this.oExt.style.display = "block";
     }
 
     /**
-     * @copy jmlElement#hide
+     * @private
      */
     this.hide = function(){
         this.oExt.style.display = "none";
