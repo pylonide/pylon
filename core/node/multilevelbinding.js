@@ -153,9 +153,10 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.clear = function(nomsg, do_event){
         this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
 
-        if (!nomsg && jmlNode["default"])
+        //@todo fix 'default' behaviour
+        /*if (!nomsg && jmlNode["default"])
             jmlNode.setValue(jmlNode["default"]); //@todo setting action
-        else
+        else*/
             jmlNode.clearSelection();
         //else if (jmlNode.$showSelection) 
             //jmlNode.$showSelection("");
@@ -177,8 +178,9 @@ jpf.MultiLevelBinding = function(jmlNode){
         
         this.$updateSelection();
         
-        if (jmlNode["default"] && !jmlNode.getValue())
-            jmlNode.setValue(jmlNode["default"]);
+        //@todo fix 'default' behaviour
+        //if (jmlNode["default"] && !jmlNode.getValue())
+            //jmlNode.setValue(jmlNode["default"]);
         
         this.dispatchEvent("xmlupdate", {
             action    : action,
@@ -194,8 +196,9 @@ jpf.MultiLevelBinding = function(jmlNode){
 
         this.$updateSelection();
         
-        if (jmlNode["default"] && !jmlNode.getValue())
-            jmlNode.setValue(jmlNode["default"]);
+        //@todo fix 'default' behaviour
+        //if (jmlNode["default"] && !jmlNode.getValue())
+            //jmlNode.setValue(jmlNode["default"]);
         
         if (!this.createModel && this.disabled != jmlNode.disabled)
             jmlNode.setProperty("disabled", this.disabled);
