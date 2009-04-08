@@ -35,7 +35,7 @@
  * sets the visibility of the slider based on the state of the checkbox.
  * <code>
  * <j:slider visible="{myCheckbox.value}" />
- * <j:checkbox id="myCheckbox">Toggle the visibility of the slider</j:checkbox>
+ * <j:checkbox id="myCheckbox">Toggle this</j:checkbox>
  * </code>
  *
  * Single direction binds:
