@@ -1,3 +1,4 @@
+//#ifdef __JACCORDION
 jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
