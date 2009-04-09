@@ -2537,7 +2537,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Change sorting from ascending to descending and vice verse.
+     * Change sorting from ascending to descending and vice versa.
      */
     this.toggleSortOrder = function(){
         return this.resort({"ascending" : !this.$sort.get().ascending}).ascending;
@@ -2563,7 +2563,7 @@ jpf.MultiselectBinding = function(){
     //#endif
 
     /**
-     * Gets a nodelist containing the xml data elements which are rendered by
+     * Retrieves a nodelist containing the xml data elements which are rendered by
      * this element (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
@@ -2581,7 +2581,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the first xml data element which gets representation in this element
+     * Retrieves the first xml data element which gets representation in this element
      * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2600,7 +2600,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the last xml data element which gets representation in this element
+     * Retrieves the last xml data element which gets representation in this element
      * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2635,7 +2635,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}) to be selected
+     * Retrieves the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}) to be selected
      * from a given traverse node. The method can do this in either direction and
      * also return the Nth node for this algorithm.
      *
@@ -2666,7 +2666,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}).
+     * Retrieves the next traverse node (see {@link baseclass.multiselectbinding.binding.traverse}).
      * The method can do this in either direction and also return the Nth next node.
      *
      * @param {XMLElement}  xmlNode     the starting point for determining the next node.
@@ -2690,7 +2690,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the parent traverse node (see {@link baseclass.multiselectbinding.binding.traverse}). In some
+     * Retrieves the parent traverse node (see {@link baseclass.multiselectbinding.binding.traverse}). In some
      * cases the traverse rules has a complex form like 'children/item'. In those
      * cases the generated tree has a different structure from that of the xml
      * data. For these situations the xmlNode.parentNode property won't return
