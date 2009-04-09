@@ -360,14 +360,36 @@ jpf.textbox.masking = function(){
     }
     
     this.$insertData = function(str){
-        if (!jpf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
-            setPosition(0); // is this always correct? practice will show...
-        }
-
         if (str == this.getValue()) return;
-        str = this.dispatchEvent("insert", { data : str }) || str;
         
         var i, j;
+        
+        try {
+            if (!jpf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
+                setPosition(0); // is this always correct? practice will show...
+            }
+        }
+        catch (ex) {
+            // in FF (as we know it), we cannot access the selectStart property
+            // when the control/ input doesn't have the focus or is not visible.
+            // A workaround is provided here...
+            if (!str) return;
+            var chr, val;
+            for (i = 0, j = str.length; i < j; i++) {
+                lastPos = i;
+                if (pos[lastPos] == null) continue;
+                chr = checkChar(str.substr(i, 1), i);
+                if (chr == _FALSE_) continue;
+                val = oExt.value;
+                oExt.value = val.substr(0, pos[i]) + chr + val.substr(pos[i] + 1);
+            }
+            if (str.length)
+                lastPos++;
+            return; // job done, bail out
+        }
+
+        str = this.dispatchEvent("insert", { data : str }) || str;
+        
         if (!str) {
             if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
             for (i = this.getValue().length - 1; i >= 0; i--)
