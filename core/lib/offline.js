@@ -73,8 +73,8 @@
  * </code>
  * @attribute {Number}  position  the progress of the sync. 
  * @attribute {Number}  length    the total length of items to sync.
- * @attribute {Boolean} syncing   wether the application is syncing while coming online.
- * @attribute {Boolean} onLine    wether the application is online. This property is false during sync.
+ * @attribute {Boolean} syncing   whether the application is syncing while coming online.
+ * @attribute {Boolean} onLine    whether the application is online. This property is false during sync.
  * @attribute {String} resources the resources that should be
  * kept offline and synced later. This is a pipe '|' seperated list.
  *   Possible values:
