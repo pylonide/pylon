@@ -44,8 +44,8 @@
  * changes, the slider will show or hide.
  *
  * Syntax:
- * Sometimes it's necesary to make a binding from one property to another one, 
- * and vice verse. This works in the same way, but instead of using curly braces 
+ * Sometimes it's necessary to make a binding from one property to another one, 
+ * and vice versa. This works in the same way, but instead of using curly braces 
  * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
  * sync with the state of the tab page.
  * <code>
