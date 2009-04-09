@@ -2481,7 +2481,7 @@ jpf.MultiselectBinding = function(){
      *   {String}   [dateFormat] see {@link baseclass.multiselectbinding.binding.traverse.attribute.date-format}
      *   {Function} [getValue]   Function that determines the string content based on an xml node as it's first argument.
      * @param {Boolean} clear    removes the current sort options.
-     * @param {Boolean} noReload wether to reload the data of this component.
+     * @param {Boolean} noReload whether to reload the data of this component.
      * @see   baseclass.multiselectbinding.binding.traverse
      */
     this.resort = function(options, clear, noReload){

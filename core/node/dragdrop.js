@@ -96,7 +96,7 @@ var __DRAGDROP__ = 1 << 5;
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
  *   {JMLElement}  host      the jml source element.
- *   {Boolean}     candrop   wether the data can be inserted at the point hovered over by the user
+ *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
  *
  * @see element.allow-drag
  * @see element.allow-drop

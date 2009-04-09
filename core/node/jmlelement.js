@@ -47,9 +47,9 @@ var __VALIDATION__ = 1 << 6;
  *   cancellable: Prevents the default key action.
  *   bubbles:
  *   object:
- *   {Boolean} ctrlKey   wether the ctrl key was pressed.
- *   {Boolean} shiftKey  wether the shift key was pressed.
- *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Boolean} ctrlKey   whether the ctrl key was pressed.
+ *   {Boolean} shiftKey  whether the shift key was pressed.
+ *   {Boolean} altKey    whether the alt key was pressed.
  *   {Number}  keyCode   which key was pressed. This is an ascii number.
  *   {Event}   htmlEvent the html event object that triggered this event from being called.
  */
@@ -1133,7 +1133,7 @@ jpf.JmlElement.propHandlers = {
    
     //#ifdef __WITH_ALIAS
     ,"alias" : function(value){
-        if (!value) //@todo think about wether this has more meaning
+        if (!value) //@todo think about whether this has more meaning
             return;
 
         var cg = jpf.nameserver.get("alias", value);

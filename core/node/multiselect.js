@@ -36,7 +36,7 @@ var __MULTISELECT__ = 1 << 8;
  *
  * @inherits jpf.MultiselectBinding
  *
- * @binding select Determines wether the traverse node can be selected.
+ * @binding select Determines whether the traverse node can be selected.
  * Example:
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
@@ -93,7 +93,7 @@ jpf.MultiSelect = function(){
     this.$indicator   = null;
     
     /**
-     * wether to use a caret in the interaction of this element.
+     * whether to use a caret in the interaction of this element.
      * @type {Boolean} 
      */
     this.useindicator = true;

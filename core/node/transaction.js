@@ -275,7 +275,7 @@ jpf.Transaction = function(){
         if (!lastAction) {
             throw new Error(jpf.formatErrorString(0, this, 
                 "Starting Transaction", 
-                "Could not determine wether to add or update."));
+                "Could not determine whether to add or update."));
         }
         //#endif
         

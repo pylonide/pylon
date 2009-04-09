@@ -53,7 +53,7 @@ var __DELAYEDRENDER__ = 1 << 11
  *   Possible values:
  *   init     elements are rendered during init of the application.
  *   runtime  elements are rendered when the user requests them.
- * @attribute {Boolean} use-render-delay wether there's a short delay between showing this element and rendering it's contents.
+ * @attribute {Boolean} use-render-delay whether there's a short delay between showing this element and rendering it's contents.
  *   Possible values:
  *   true   The elements are rendered immediately
  *   false  There is a delay between showing this element and the actual rendering, allowing the browsers' render engine to draw (for instance a loader).
