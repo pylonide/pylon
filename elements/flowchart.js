@@ -87,11 +87,11 @@
  *  </template>
  * </code>
  *
- * @binding lock    prohibit block move, default is false.
+ * @binding lock    Determines prohibit block move, default is false.
  *     Possible values:
  *     false   block element is unlocled
  *     true    block element is locked
- * @binding fliph   whether to mirror the block over the horizontal axis, default is false
+ * @binding fliph   Determines whether to mirror the block over the horizontal axis, default is false
  *     Possible values:
  *     true    block element is flipped
  *     false   block element is not flipped
@@ -105,19 +105,19 @@
  *     90    90  degrees rotation
  *     180   180 degrees rotation
  *     270   270 degrees rotation
- * @binding id          unique block element name
- * @binding image       path to block image file
- * @binding width       block element horizontal size
- * @binding height      block element vertical size
- * @binding type        name of block with special abilities, which could be set in template file
- * @binding ttype       relation to block with special abilities defined in template file
- * @binding zindex      block's z-index number
- * @binding left        horizontal position of block element
- * @binding top         vertical position of block element
- * @binding connection  xml representation of connection element
- * @binding ref         unique name of destination block which will be connected with source block
- * @binding input       source block input number
- * @binding output      destination block input number
+ * @binding id          Determines unique block element name
+ * @binding image       Determines path to block image file
+ * @binding width       Determines block element horizontal size
+ * @binding height      Determines block element vertical size
+ * @binding type        Determines name of block with special abilities, which could be set in template file
+ * @binding ttype       Determines relation to block with special abilities defined in template file
+ * @binding zindex      Determines block's z-index number
+ * @binding left        Determines horizontal position of block element
+ * @binding top         Determines vertical position of block element
+ * @binding connection  Determines xml representation of connection element
+ * @binding ref         Determines unique name of destination block which will be connected with source block
+ * @binding input       Determines source block input number
+ * @binding output      Determines destination block input number
  *
  * @constructor
  *
