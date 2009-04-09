@@ -1200,7 +1200,7 @@ jpf.XmlDatabase = function(){
      * @param {DOMNode} contextNode  the dom node that is subject to the query.
      * @param {String}  xPath        the xpath query.
      * @param {Array}   [addedNodes] this array is filled with the nodes added.
-     * @param (Boolean) [forceNew]   wether a new node is always created.
+     * @param (Boolean) [forceNew]   whether a new node is always created.
      * @return {DOMNode} the last element found.
      * @todo generalize this to include attributes in if format []
      */
