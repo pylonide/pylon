@@ -828,7 +828,7 @@ jpf.model = function(data, caching){
      * Loads data in this model
      *
      * @param  {XMLElement} [xmlNode]  the data to load in this model. null will clear the data from this model.
-     * @param  {Boolean}    [nocopy]   Wether the data loaded will not overwrite the reset point.
+     * @param  {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
      */
     var doc;
     this.load = function(xmlNode, nocopy){

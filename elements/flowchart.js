@@ -458,7 +458,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Wether to mirror the block over the vertical axis. This is an action.
+     * Whether to mirror the block over the vertical axis. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -484,7 +484,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Wether to mirror the block over the horizontal axis. This is an action.
+     * Whether to mirror the block over the horizontal axis. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element

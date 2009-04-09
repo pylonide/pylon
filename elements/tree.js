@@ -162,11 +162,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
 
     /**
-     * @attribute {Boolean} openadd         wether the tree expands the parent to which a node is added. Defaults to true.
-     * @attribute {Boolean} startcollapsed  wether the tree collapses all nodes that contain children on load. Defaults to true.
-     * @attribute {Boolean} nocollapse      wether the user cannot collapse a node. Defaults to false.
-     * @attribute {Boolean} singleopen      wether the tree will expand a node by a single click. Defaults to false.
-     * @attribute {Boolean} prerender       wether the tree will render all the nodes at load. Defaults to true.
+     * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
+     * @attribute {Boolean} startcollapsed  whether the tree collapses all nodes that contain children on load. Defaults to true.
+     * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
+     * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
+     * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
      */
     this.$booleanProperties["openadd"]        = true;
     this.$booleanProperties["startcollapsed"] = true;

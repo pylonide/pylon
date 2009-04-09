@@ -94,7 +94,7 @@
  * @since       0.9
  *
  * @binding src       Determines the data instruction that loads the docklet from it's datasource.
- * @binding collapsed Determines wether the docklet is collapsed after init.
+ * @binding collapsed Determines whether the docklet is collapsed after init.
  * @binding icon      Determines the icon of the docklet.
  * @binding column    Determines the column in which the docklet is created.
  * @binding caption   Determines the caption of the docklet.

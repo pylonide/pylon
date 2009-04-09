@@ -306,7 +306,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @attribute {String} checked wether this radiobutton is the checked one in the group it belongs to.
+     * @attribute {String} checked whether this radiobutton is the checked one in the group it belongs to.
      */
     this.$propHandlers["checked"] = function(value){
         if (!this.radiogroup)

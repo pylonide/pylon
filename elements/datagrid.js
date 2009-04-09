@@ -152,10 +152,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     // #endif
 
     /**
-     * @attribute {Boolean} cellselect wether this element has selectable rows (false) or selected cells (true). Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
-     * @attribute {Boolean} celledit   wether this element has editable cells. This requires cellselect to be true. Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
-     * @attribute {Boolean} namevalue  wether each row only contains a name and a value column. Default is false for j:datagrid and j:spreadsheet and true for j:propedit.
-     * @attribute {Boolean} iframe     wether this element is rendered inside an iframe. This is only supported for IE. Default is false for j:datagrid and true for j:spreadsheet and j:propedit.
+     * @attribute {Boolean} cellselect whether this element has selectable rows (false) or selected cells (true). Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
+     * @attribute {Boolean} celledit   whether this element has editable cells. This requires cellselect to be true. Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
+     * @attribute {Boolean} namevalue  whether each row only contains a name and a value column. Default is false for j:datagrid and j:spreadsheet and true for j:propedit.
+     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for j:datagrid and true for j:spreadsheet and j:propedit.
      */
     this.$booleanProperties["cellselect"] = true;
     this.$booleanProperties["celledit"]   = true;

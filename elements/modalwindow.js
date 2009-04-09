@@ -104,11 +104,11 @@ jpf.WinServer = {
  *   cancellable:   Prevents the edit panel from being closed.
  * @event statechange   Fires after the state of this window changed.
  *   object:
- *   {Boolean} minimized  wether the window is minimized.
- *   {Boolean} maximized  wether the window is maximized.
- *   {Boolean} normal     wether the window has it's normal size and position.
- *   {Boolean} edit       wether the window is in the edit state.
- *   {Boolean} closed     wether the window is closed.
+ *   {Boolean} minimized  whether the window is minimized.
+ *   {Boolean} maximized  whether the window is maximized.
+ *   {Boolean} normal     whether the window has it's normal size and position.
+ *   {Boolean} edit       whether the window is in the edit state.
+ *   {Boolean} closed     whether the window is closed.
  */
 jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
