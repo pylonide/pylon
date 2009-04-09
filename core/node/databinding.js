@@ -2389,7 +2389,7 @@ jpf.MultiselectBinding = function(){
     /**
      * @define bindings
      * @allowchild traverse
-     * @binding traverse Determines the list of elements which for which each
+     * @binding traverse Determines the list of elements for which each
      * gets a visual representation within the element. It also can determine
      * the sequence of how the elements are visualized by offering a way to
      * specify the sort order. (N.B. The sorting mechanism is very similar to
