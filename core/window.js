@@ -1054,7 +1054,8 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
-        if (jpf.appsettings.useUndoKeys && e.ctrlKey) {
+        var ctrlKey = jpf.isMac ? e.metaKey : e.ctrlKey;
+        if (jpf.appsettings.useUndoKeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 var o = jpf.window.focussed;
@@ -1161,8 +1162,9 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //Disable backspace behaviour triggering the backbutton behaviour
+        var altKey = jpf.isMac ? e.metaKey : e.altKey;
         if (jpf.appsettings.disableBackspace
-          && (e.keyCode == 8 || ((e.altKey || e.metaKey) && (e.keyCode == 37 || e.keyCode == 39)))
+          && (e.keyCode == 8 || altKey && (e.keyCode == 37 || e.keyCode == 39))
           && !ta[(e.srcElement || e.target).tagName]) {
             if (jpf.canDisableKeyCodes) {
                 try {
