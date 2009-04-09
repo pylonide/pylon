@@ -1162,7 +1162,7 @@ jpf.WindowImplementation = function(){
 
         //Disable backspace behaviour triggering the backbutton behaviour
         if (jpf.appsettings.disableBackspace
-          && (e.keyCode == 8 || e.altKey && (e.keyCode == 37 || e.keyCode == 39))
+          && (e.keyCode == 8 || ((e.altKey || e.metaKey) && (e.keyCode == 37 || e.keyCode == 39)))
           && !ta[(e.srcElement || e.target).tagName]) {
             if (jpf.canDisableKeyCodes) {
                 try {
