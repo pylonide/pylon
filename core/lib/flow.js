@@ -22,24 +22,24 @@
 //#ifdef __WITH_FLOW
 
 /**
- * This abstraction is using for creating block elements which can be move by
- * mouse or keyboard, rotate with 90 degrees step, flip horizontal and vertical
- * and resize on the fly using mouse. Each block could have inputs defined in
- * template file. Inputs allows creating stiff connections between block
- * elements. If block haven't inputs, connection is created in most optimal way.
+ * This abstraction is used for creating block elements which can be moved by
+ * mouse or keyboard, rotated with 90 degreed steps, flipped horizontally and vertically
+ * and resized on the fly using the mouse. Each block can have inputs defined in
+ * a template file. Inputs allow creating stiff connections between block
+ * elements. If a block does not have inputs, the connection is created in the most optimal way.
  *
  * @event onmousedown   Fires when mouse button is pressed on document body
- * @event onmousemove   Fires when mouse cursor is moving over document body
- * @event onmouseup     Fires when mouse button is hold off over the document body
+ * @event onmousemove   Fires when mouse pointer is moving over document body
+ * @event onmouseup     Fires when mouse button is released while the pointer is over the document body
  *
- * @attribute {Boolean} ismoved              When connection is moving, this attribute is set to true. It gives information to other methods what happends with connection element.
+ * @attribute {Boolean} ismoved              the state of movement. When connection is moving, this attribute is set to true. It gives information to other methods what happens with the connection element.
  *     Possible values:
  *     true   block moves
  *     false  block don't move
- * @attribute {Object}  objCanvases          storage workareas objects, it allows to easy access to them if need be
+ * @attribute {Object}  objCanvases          storage workareas objects, it allows an easy access to them if need 
  * @attribute {Object}  connectionsTemp      when work mode is set to "connection-add", it keeps informations about block and his input from which connection will be created to other block
  * @attribute {Object}  connectionsManager   create connection when connectionsTemp variable is set
- * @attribute {Number}  sSize                define connection line width
+ * @attribute {Number}  sSize                connection line width
  * @attrubite {Number}  fsSize               define size of first and last connection segment
  *
  * @default_private
@@ -125,8 +125,7 @@ jpf.flow = {
 };
 
 /**
- * This class creates workarea on which possible is work with blocks and
- * connections.
+ * Workarea for blocks and connections.
  *
  * @param {HTMLElement}   htmlElement    the html representation of a workarea
  * @constructor
@@ -177,10 +176,10 @@ jpf.flow.canvas = function(htmlElement) {
 };
 
 /**
- * Creates new block object which can be move by mouse or keyboard, rotate
- * with 90 degrees step, flip horizontal and vertical and resize on the fly
- * using mouse. Each block could have inputs, background picture and minimal
- * dimension defined in template file. It's possible to create connections
+ * Creates a new block object which can be moved by mouse or keyboard, rotated
+ * with 90 degrees steps, flipped horizontally and vertically and resized on the fly
+ * using the mouse. Each block can have inputs, background picture and minimal
+ * dimension defined in the template file. It is possible to create connections
  * between blocks.
  *
  * @param {HTMLElement}   htmlElement   the html representation of block
@@ -223,7 +222,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {Boolean}      scaley       resizing in vertical plane
  *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
- *    {String}       caption      discription placed under block element
+ *    {String}       caption      description placed under block element
  * @constructor
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
@@ -362,9 +361,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Sets new discription which is placed under block element
+     * Sets new description which is placed under block element
      *
-     * @param {String}   caption   block discription
+     * @param {String}   caption   block description
      */
     this.setCaption = function(caption) {
         var c = this.caption;
@@ -455,7 +454,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Function repaint default block's image with new rotation and flip.
+     * Function repaints default block's image with new rotation and flip.
      *
      * @param {String}   flip    whether to mirror the image over the vertical or horizontal axis
      *     Possible values:
@@ -561,6 +560,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
         canvas.angle = p.angle;
         this.imageContainer.replaceChild(canvas, p);
+        this.imageContainer.replaceChild(canvas, p);
         this.image = canvas;
     };
 
@@ -576,7 +576,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Calculate new input position if block is resized, flipped or rotated.
+     * Calculates the new input position if block is resized, flipped or rotated.
      * Base on default informations about block element from template.
      *
      * @param {Object}   input   object representation of input element
@@ -700,8 +700,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 };
 
 /**
- * Creates object representation of input element. Each block could have no
- * limited number of inputs.
+ * Creates object representation for input elements. Each block can have 
+ * unlimited inputs.
  *
  * @param {Object}   objBlock   object representation of block element
  * @constructor
@@ -1518,7 +1518,7 @@ jpf.flow.isCanvas = function(htmlNode) {
  * @param {Object}   objBlock2   object representation of block element
  * @param {Number}   iNumber2    block input number
  *
- * @return {Object}   object representation of connector element and source discription
+ * @return {Object}   object representation of connector element and source description
  *     Properties:
  *     {Object}  connector   object representation of connector element
  *     {Boolean} source      infortmation about which block is a source block
@@ -1646,7 +1646,7 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *    {Boolean}      scaley       Allows only vertical resizing
  *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
  *    {XMLElement}   xmlNode      xml representation of block from model
- *    {String}       caption      discription placed under block element
+ *    {String}       caption      description placed under block element
  * @return {Object}   object representation of block element
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {

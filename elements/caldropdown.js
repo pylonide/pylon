@@ -42,13 +42,12 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  * 
- * @attribute {String}   output-format    style of returned date
- * @attribute {String}   caption-format   style of displayed date, default yyyy-mm-dd
- * @attribute {String}   default          the name which represent some date
+ * @attribute {String}   output-format    the format of the date value. See {@link term.dateformat more about the date format}.
+ * @attribute {String}   caption-format   the format of the displayed date. Default yyyy-mm-dd. See {@link term.dateformat more about the date format}. 
+ * @attribute {String}   default          the default date set when the calendar is opened.
  *     Possible values:
  *     today   calendar is set on today's date
- * @attribute {String}   value   the date returned by calendar; should be in the 
- *                               same format as output-format
+ * @attribute {String}   value            the date returned by calendar; should be in the format specified by the output-format attribute.
  *
  * @event slidedown Fires when the calendar slides open.
  *   cancellable: Prevents the calendar from sliding open

@@ -29,19 +29,18 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *     <j:calendar top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06" />
+ *  <j:calendar top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-05" />
  * </code>
  * 
  * @constructor
  * @define calendar
  * @addnode elements
  *
- * @attribute {String}   output-format    style of returned date
- * @attribute {String}   default          name which represent some date
+ * @attribute {String}   output-format    the format of the date value. See {@link term.dateformat more about the date format}.
+ * @attribute {String}   default          the default date set when the calendar is opened.
  *     Possible values:
  *     today   calendar is set on today's date
- * @attribute {String}   value   the date returned by calendar; should be in the 
- *                               same format as output-format
+ * @attribute {String}   value            the date returned by calendar; should be in the format specified by the output-format attribute.
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding

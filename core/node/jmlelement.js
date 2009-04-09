@@ -25,7 +25,7 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_JMLNODE
 
 /**
- * Baseclass for jml elements.
+ * All elements inheriting from this {@link term.baseclass} are a jml component.
  *
  * @constructor
  * @baseclass

@@ -24,7 +24,7 @@ var __XFORMS__ = 1 << 17;
 //#ifdef __WITH_XFORMS
 
 /**
- * Baseclass adding xforms features to jml elements.
+ * All elements inheriting from this {@link term.baseclass} have xforms support.
  *
  * @constructor
  * @todo possible ideas on how to extend xpath

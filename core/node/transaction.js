@@ -24,7 +24,7 @@ var __TRANSACTION__ = 1 << 3;
 // #ifdef __WITH_TRANSACTION
 
 /**
- * Baseclass adding transaction features to this element. A transaction is a 
+ * All elements inheriting from this {@link term.baseclass} have transaction support. A transaction is a 
  * set of changes to data which are treated as one change. When one of the 
  * changes in the set fails, all the changes will be cancelled. In the case of
  * a gui this is mostly relevant when a user decides to cancel after 
@@ -72,7 +72,7 @@ var __TRANSACTION__ = 1 << 3;
  *      </j:model>
  *  </j:list>
  *  
- *  <j:button onclick="winMail.begin('add');">add new item</j:button>
+ *  <j:button onclick="winEdit.begin('add');">add new item</j:button>
  *  
  *  <j:window id="winEdit" 
  *    transaction = "true"
@@ -113,7 +113,7 @@ jpf.Transaction = function(){
     this.$supportedProperties.push("autoshow");
     
     /**
-     * @attribute {Boolean} autoshow whether this element is shown when an transaction begins.
+     * @attribute {Boolean} autoshow whether this element is shown when a transaction begins.
      */
     this.$booleanProperties["autoshow"] = true;
 

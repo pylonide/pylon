@@ -168,6 +168,7 @@ jpf.KernelModules = [
     "lib/util/abstractevent.js",
     "lib/util/utilities.js",
     "lib/util/cookie.js",
+    "lib/util/hotkey.js",
     "lib/util/css.js",
     "lib/util/dragmode.js",
     "lib/util/ecmaext.js",

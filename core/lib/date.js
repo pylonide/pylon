@@ -19,6 +19,32 @@
  *
  */
 
+/**
+ * @term dateformat Format a date based on small strings of characters representing
+ * a variable.
+ * Syntax:
+ * <code>
+ * d      day of the month as digits, no leading zero for single-digit days
+ * dd     day of the month as digits, leading zero for single-digit days
+ * ddd    day of the week as a three-letter abbreviation
+ * dddd   day of the week as its full name
+ * m      month as digits, no leading zero for single-digit months
+ * mm     month as digits, leading zero for single-digit months
+ * mmm    month as a three-letter abbreviation
+ * mmmm   month as its full name
+ * yy     year as last two digits, leading zero for years less than 2010
+ * yyyy   year represented by four digits
+ * h      hours, no leading zero for single-digit hours (12-hour clock)
+ * hh     hours, leading zero for single-digit hours (12-hour clock)
+ * H      hours, no leading zero for single-digit hours (24-hour clock)
+ * HH     hours, leading zero for single-digit hours (24-hour clock)
+ * M      minutes, no leading zero for single-digit minutes
+ * MM     minutes, leading zero for single-digit minutes
+ * s      seconds, no leading zero for single-digit seconds
+ * ss     seconds, leading zero for single-digit seconds
+ * </code>
+ */
+
 // #ifdef __WITH_DATE
 // Some common format strings
 jpf.date = {
@@ -152,7 +178,7 @@ jpf.date.dateFormat = (function () {
 
 
 /**
- * Create a object representation of date from datetime string parsing it with
+ * @term dataformat Create a object representation of date from datetime string parsing it with
  * datetime format string
  * 
  * @param {String}   datetime   the date and time wrote in allowed format

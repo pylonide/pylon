@@ -63,8 +63,50 @@
  */
 
 /**
- * BaseClass for any object offering property binding,
- * event handling, constructor and destructor hooks.
+ * @term baseclass Javascript doesn't have most object oriented concepts like
+ * classes, class inheritance, interfaces, protected members and so on. When
+ * using Javeline Platform (jpf) you will find that some of these concepts have
+ * been implemented in a way that enables the core developers of jpf to think in
+ * those concepts. The most important one is class inheritance. Because of the
+ * freedoms that javascript allows, it is possible to implement {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
+ * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
+ * 
+ * Usage:
+ * In jpf multiple inheritance is used on all elements to assign specific traits
+ * to jml elements. Check the list of baseclasses on the right to familiarize 
+ * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
+ * databinding, alignment, etc). At the article of each element that inherits
+ * from a baseclass you will find an inheritance tree on the right. This tree
+ * will show you <strong>from which baseclasses that element has received traits</strong>.
+ * Compared to Java and other strict OOP languages, the inheritance tree is
+ * inverted. To give an example, in Java for instance, a Lamborghini inherits from 
+ * Car which inherits from Vehicle. In jpf Audi inherits from Engine, Wheels,
+ * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
+ *
+ * Class:
+ * The jpf.Class baseclass provides all basic features a jpf element needs.
+ * By calling {@link core.jpf.method.makeClass} an object is created that inherits
+ * all <i title="an inherited characteristic (merriam-webster)">traits</i> from
+ * jpf.Class. It adds an event system, property binding and a constructor / destructor.
+ * More importantly two functions are added that help with dealing with multiple
+ * inheritance.
+ *
+ * API:
+ * The first method is the one that tells an object to inherit from a baseclass.
+ * It works as follows:
+ * <code>
+ *  myObj.inherit(jpf.Presentation);
+ * </code>
+ * That lines causes all traits of jpf.Presentation to be added to myObj. Now we
+ * can check if myObj actually has inherited from this baseclass.
+ * <code>
+ *  myObj.hasFeature(__PRESENTATION__);
+ * </code>
+ */
+
+/**
+ * All elements inheriting from this {@link term.baseclass} have property binding,
+ * event handling and constructor & destructor hooks.
  *
  * @constructor
  * @baseclass

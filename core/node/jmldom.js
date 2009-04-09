@@ -24,7 +24,7 @@ var __WITH_JMLDOM__ = 1 << 14;
 // #ifdef __WITH_JMLDOM
 
 /**
- * Baseclass adding the Document Object Model (DOM) to this element. The DOM
+ * All elements inheriting from this {@link term.baseclass} have Document Object Model (DOM) support. The DOM
  * is the primary method for accessing and manipulating an xml document. This
  * includes html documents and jml documents. Every element in the javeline
  * markup language can be manipulated using the W3C DOM. This means
@@ -100,7 +100,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.$regbase      = this.$regbase | __WITH_JMLDOM__;
 
     /**
-     * {NodeList} childNodes containing all the child nodes of this element.
+     * Nodelist containing all the child nodes of this element.
      */
     this.childNodes    = [];
     var _self          = this;
@@ -110,7 +110,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             "reparent" : [], "removechild" : []};
 
     /**
-     * the document of this application
+     * The document node of this application
      */
     if (jpf.document)
         this.ownerDocument = jpf.document;
@@ -120,6 +120,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             if (tagName == jpf.NODE_DOCUMENT_FRAGMENT) {
                 this.nodeType = jpf.NODE_DOCUMENT_FRAGMENT;
                 
+                /**
+                 * @private
+                 */
                 this.hasFeature = function(){
                     return false;
                 }
@@ -150,17 +153,17 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this.nodeFunc   = nodeFunc;
     
             /**
-             * {String} tagName the name of the class of this element
+             * The name of the class of this element
              */
             this.tagName    = tagName;
     
             /**
-             * {String} name the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
+             * The unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
              */
             this.name       = jml && jml.getAttribute("id");
     
             /**
-             * {mixed} content special content for this object
+             * Special content for this object
              */
             this.content    = content;
         }

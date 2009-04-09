@@ -337,7 +337,7 @@ jpf.skins = {
 };
 
 /**
- * Baseclass adding skinning features to this element. A skin is a description
+ * All elements inheriting from this {@link term.baseclass} have skinning features. A skin is a description
  * of how the element is rendered. In the web browser this is done using html
  * elements and css.
  * Remarks:
@@ -389,8 +389,8 @@ jpf.Presentation = function(){
 
     this.$supportedProperties.push("skin");
     /**
-     * @attribute {string} skinset Specifies the skinset where the skin for
-     * this element is found. If none is specified the skinset attribute
+     * @attribute {string} skinset the skinset for
+     * this element. If none is specified the skinset attribute
      * of <j:appsettings /> is used. When not defined the default skinset
      * is accessed.
      * Example:
@@ -401,8 +401,8 @@ jpf.Presentation = function(){
     this.$propHandlers["skinset"] =
 
     /**
-     * @attribute {string} skin Specifies the skin that defines the rendering
-     * of this element. When a skin is changed the full state of the
+     * @attribute {string} skin the name of the skin in the skinset that defines 
+     * how this element is rendered. When a skin is changed the full state of the
      * element is kept including it's selection, all the
      * jml attributes, loaded data, focus and disabled state.
      * Example:
@@ -428,7 +428,7 @@ jpf.Presentation = function(){
     }
 
     /**
-     * @attribute {String} style css style properties applied to the this element.
+     * @attribute {String} style the css style applied to the this element. This can be a string containing one or more css rules.
      */
     this.$propHandlers["style"] = function(value){
         if (!jpf.isParsing)
@@ -437,7 +437,7 @@ jpf.Presentation = function(){
 
     var oldClass;
     /**
-     * @attribute {String} class css style class applied to the this element.
+     * @attribute {String} class the name of the css style class applied to the this element.
      */
     this.$propHandlers["class"] = function(value){
         this.$setStyleClass(this.oExt, value, [oldClass || ""])

@@ -24,8 +24,8 @@ var __ALIGNMENT__ = 1 << 12;
 // #ifdef __WITH_ALIGNMENT
 
 /**
- * Baseclass adding Alignment features to this Element. The element can be
- * alignment to each side of it's parent's rectangle. Multiple elements can
+ * All elements inheriting from this {@link term.baseclass} have alignment features. 
+ * The element can be alignment to each side of it's parent's rectangle. Multiple elements can
  * be aligned to the same side. These are then stacked. Layouts created using
  * alignment, with or without vbox/hbox elements can be stored in an external
  * xml format. These can then be loaded and saved for later use. Using this

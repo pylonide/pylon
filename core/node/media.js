@@ -24,7 +24,7 @@ var __MEDIA__ = 1 << 20;
 // #ifdef __WITH_MEDIA
 
 /**
- * Interface that adds Media node features and dynamics to this Element.
+ * All elements inheriting from this {@link term.baseclass} have media node features and dynamics.
  * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#media7
  *
  * @attribute {Boolean} seeking

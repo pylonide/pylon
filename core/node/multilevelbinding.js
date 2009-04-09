@@ -24,7 +24,8 @@ var __MULTIBINDING__ = 1 << 7;
 // #ifdef __WITH_MULTIBINDING
 
 /**
- * Baseclass adding the ability to databind the selection of this Element.
+ * All elements inheriting from this {@link term.baseclass} have the ability to databind 
+ * the selection of this Element.
  * Example:
  * In this example the selection of the dropdown determines the value of the city
  * xml element in mdlForm. The dropdown is filled with information from mdlCities.

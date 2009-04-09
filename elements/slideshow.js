@@ -21,48 +21,45 @@
 
 // #ifdef __JSLIDESHOW || __INC_ALL
 /** 
- * This element is used to browsing images. It's possible to add thumbnail and 
- * description to each of them. We could choose displayed image in a few ways.
- * With mouse buttons, mousewheel or keyboard arrows. Thumbnails allows to
- * very quick choosing an image.
+ * This element is used for viewing images. It's possible to add thumbnails and 
+ * a description to each of them. You can select a displayed image in several ways.
+ * With a mouse buttons, the mousewheel or keyboard arrows. The thumbnails allow 
+ * the user to quickly select the image from the displayed list.
  * 
  * Example:
- * Slideshow component with 3 pictures. Each of images have its own thumbnail 
- * and description which compose with picture number and description added by
- * creator. Switching speed is 5 seconds.
+ * Slideshow component with 3 pictures. Each image has its own thumbnail 
+ * and description. A new image is shown every 5 seconds.
+ * <code>
+ *  <j:model id="mdlImages" save-original="true" >
+ *      <slideshow>
+ *          <picture src="img1.jpg" thumb="thumb1.jpg" title="First Picture"></picture>
+ *          <picture src="img2.jpg" thumb="thumb2.jpg" title="Second Picture"></picture>
+ *          <picture src="img3.jpg" thumb="thumb3.jpg" title="Third Picture"></picture>
+ *      </slideshow>
+ *  </j:model>
+ *  
+ *  <j:slideshow title="number+text" delay="5" model="mdlImages">
+ *      <j:bindings>
+ *          <j:src   select="@src"></j:src>
+ *          <j:title select="@title"></j:title>
+ *          <j:thumb select="@thumb"></j:thumb>
+ *          <j:traverse select="picture"></j:traverse>
+ *      </j:bindings>
+ *  </j:slideshow>
+ * </code>
  * 
- * <j:model id="mdlImages" save-original="true" >
- *     <slideshow>
- *         <picture src="img1.jpg" thumb="thumb1.jpg" title="First Picture"></picture>
- *         <picture src="img2.jpg" thumb="thumb2.jpg" title="Second Picture"></picture>
- *         <picture src="img3.jpg" thumb="thumb3.jpg" title="Third Picture"></picture>
- *     </slideshow>
- * </j:model>
- * 
- * <j:slideshow title="number+text" delay="5" model="mdlImages">
- *     <j:bindings>
- *         <j:src   select="@src"></j:src>
- *         <j:title select="@title"></j:title>
- *         <j:thumb select="@thumb"></j:thumb>
- *         <j:traverse select="picture"></j:traverse>
- *     </j:bindings>
- * </j:slideshow>
- * 
- * @attribute {String} title          describes picture on slide, default is "number"
- *     Possible values:
- *     number        description contains only slide number on a list
- *     text          description contains only text added by creator
- *     number+text   description contains slide number on a list and text added by creator
- * @attribute {Number} delay          switching speed between slides, default is 5 seconds
- * @attribute {Number} thumbheight    vertical size of thumbnails bar, default is 50px
- * @attribute {String} defaultthumb   it will be showing in thumbnails bar if some slide haven't thumbnail
- * @attribute {String} defaultimage   it will be showing if some slide haven't path to image
- * @attribute {String} defaulttitle   this text will be showing for each picture without description
- * @attribute {String} loadmsg        this text will be displayd when picture is loading
- * @attribute {String} scalewidth     thumbnails width is scaled relatively to its height
- *     Possible values: 
- *     true    is scaled
- *     false   is not scaled, width and height of thumbnail is the same
+ * @attribute {String} title          the description of the picture on the slide. Default is "number".
+ *   Possible values:
+ *   number        the description contains only slide number on a list.
+ *   text          the description contains only text added by creator.
+ *   number+text   the description contains slide number on a list and text added by creator.
+ * @attribute {Number}  delay          the delay between slides when the play button is pressed. Default is 5 seconds.
+ * @attribute {Number}  thumbheight    the vertical size of thumbnail bar. Default is 50px.
+ * @attribute {String}  defaultthumb   the thumbnail shown when a slide doesn't have one.
+ * @attribute {String}  defaultimage   the image shown when a slide doesn't have an image.
+ * @attribute {String}  defaulttitle   the text shown when a slide doesn't have a description.
+ * @attribute {String}  loadmsg        this text displayd while the picture is loading.
+ * @attribute {Boolean} scalewidth     wether the width of the thumbnail is scaled relative to its height.
  * 
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
@@ -78,9 +75,9 @@
  * @define bindings
  * @allowchild src, title, thumb
  *
- * @binding src      path to image file
- * @binding title    image description
- * @binding thumb    path to thumbnail file
+ * @binding src      Determines the url to image file.
+ * @binding title    Determines the image description text.
+ * @binding thumb    Determines the url to thumbnail file.
  */
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;

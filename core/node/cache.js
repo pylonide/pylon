@@ -24,7 +24,7 @@ var __CACHE__ = 1 << 2;
 // #ifdef __WITH_CACHE
 
 /**
- * Baseclass adding caching features to databound elements. It takes care of
+ * All elements inheriting from this {@link term.baseclass} have caching features. It takes care of
  * storing, retrieving and updating rendered data (in html form)
  * to overcome the waiting time while rendering the contents every time the
  * data is loaded.
