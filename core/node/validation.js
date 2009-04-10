@@ -554,13 +554,13 @@ jpf.ValidationGroup = function(name){
     jpf.makeClass(this);
 
     /**
-     * When set to true only visible elements are validated. Default is false.
+     * When set to true, only visible elements are validated. Default is false.
      * @type Boolean
      */
     this.validateVisibleOnly = false;
     
     /**
-     * When set to true validation doesnt stop at the first invalid element. Default is false.
+     * When set to true, validation doesn't stop at the first invalid element. Default is false.
      * @type Boolean
      */
     this.allowMultipleErrors = false;
@@ -584,10 +584,10 @@ jpf.ValidationGroup = function(name){
 
     var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
-     * Gets the {@link element.errorbox} element used for a specified element.
+     * Retrieves the {@link element.errorbox} element used for a specified element.
      *
-     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} property to influence when Errorboxes are created.
-     * @param  {Boolean}  no_create
+     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
      * @return  {Errorbox}  the found or created Errorbox;
      */
     this.getErrorBox = function(o, no_create){
@@ -601,7 +601,7 @@ jpf.ValidationGroup = function(name){
     };
 
     /**
-     * Hide all Errorboxes for the elements using this element as it's validation group.
+     * Hide all Errorboxes for the elements using this element as their validation group.
      *
      */
     this.hideAllErrors = function(){

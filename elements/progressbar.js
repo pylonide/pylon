@@ -23,8 +23,8 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element graphically representing a percentage value which time based
- * increases automatically. This element is ofter used to show the progress
+ * Element graphically representing a percentage value which increases
+ * automatically with time. This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
  * Example:
  * This example shows a progress bar that is only visible when an application is
@@ -101,16 +101,16 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @attribute {Number} min the minimal value the progressbar can have. This is
-     * the value that the progressbar has when it's at it's begin position.
+     * @attribute {Number} min the minimum value the progressbar may have. This is
+     * the value that the progressbar has when it's at its start position.
      */
     this.$propHandlers["min"] = function(value){
         this.min = parseFloat(value);
     }
 
     /**
-     * @attribute {Number} max the maximal value the progressbar can have. This is
-     * the value that the progressbar has when it's at it's end position.
+     * @attribute {Number} max the maximum value the progressbar may have. This is
+     * the value that the progressbar has when it's at its end position.
      */
     this.$propHandlers["max"] = function(value){
         this.max = parseFloat(value);
@@ -179,7 +179,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Stops the progress indicator.
+     * Stops the progress indicator from moving.
      * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
      */
     this.stop = function(restart, time, restart_time){
