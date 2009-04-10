@@ -288,14 +288,14 @@ jpf.Validation = function(){
      *   jpf:phonenumber
      *   jpf:faxnumber
      *   jpf:mobile
-     * @attribute  {Integer}  min                 the minimal value for which the value of this element is valid.
-     * @attribute  {Integer}  max                   the maximum value for which the value of this element is valid.
+     * @attribute  {Integer}  min          the minimal value for which the value of this element is valid.
+     * @attribute  {Integer}  max          the maximum value for which the value of this element is valid.
      * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
      * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull           same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}   checkequal   String specifying the id of the element to check if it has the same value as this element.
-     * @attribute  {String}   invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
-     * @attribute  {String}   validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
+     * @attribute  {Boolean}  notnull      whether the value is filled. Same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
+     * @attribute  {String}   checkequal   the id of the element to check if it has the same value as this element.
+     * @attribute  {String}   invalidmsg   the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
+     * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
      */
     this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);

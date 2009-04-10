@@ -95,10 +95,11 @@
  * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
  *
  * Class:
- * The jpf.Class baseclass provides all basic features a jpf element needs.
+ * The jpf.Class baseclass provides all basic features a jpf element needs, such
+ * as event system, property binding and a constructor / destructor.
  * By calling {@link core.jpf.method.makeClass} an object is created that inherits
  * all <i title="an inherited characteristic (merriam-webster)">traits</i> from
- * jpf.Class. It adds an event system, property binding and a constructor / destructor.
+ * jpf.Class. 
  * More importantly two functions are added that help with dealing with multiple
  * inheritance.
  *
@@ -112,6 +113,16 @@
  * can check if myObj actually has inherited from this baseclass.
  * <code>
  *  myObj.hasFeature(__PRESENTATION__);
+ * </code>
+ * Another way to set up inheritance is using the implement method on a class
+ * generated using the jpf.component function.
+ * <code>
+ *  var x = jpf.component(jpf.NODE_VISIBLE, function(){
+ *      //code
+ *  }).implement(
+ *      jpf.Presentation,
+ *      jpf.Rename
+ *  );
  * </code>
  */
 

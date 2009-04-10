@@ -134,6 +134,22 @@
  * determine which nodes are rendered. This is done using the 
  * {@link element.multiselectbinding.binding.traverse traverse binding rule} and
  * the selected nodes are called {@link term.traversenode traverse nodes}.
+ *
+ * When the set of traverse nodes is determined, each is rendered based on other
+ * binding rules that determine whatever is deemed necesary by the component. 
+ * This can be the caption, icon, tooltip, wether an item is seletable and so on.
+ * In the next example a list is bound to some data representing a contact list.
+ * Each contact's name is displayed as the caption of the item.
+ * <code>
+ *  <j:list>
+ *      <j:bindings>
+ *          <j:caption select="name" />
+ *          <j:icon value="contact.png" />
+ *          <j:tooltip select="company" />
+ *          <j:traverse select="contact" />
+ *      </j:bindings>
+ *  </j:list>
+ * </code>
  * 
  * Fallbacks:
  * By stacking multiple binding rules it's possible to define different ways to
@@ -168,6 +184,25 @@
  *  <j:bindings>
  *      <j:caption select="body" method="insertSmileys" />
  *  </j:bindings>
+ * </code>
+ *
+ * Extending:
+ * Two special binding rules are the {@link baseclass.databinding.binding.load load)
+ * and the {@link element.tree.binding.insert insert) bindings. These bindings
+ * are used to load and insert new data into the data bound to the element that
+ * uses them. With these rules an application can start out with only a bit of
+ * data and when the user needs it extends the data. A simple example is that of
+ * a tree element that loads subnodes whenever a user expands a node. This can
+ * be achieved in the following way:
+ * <code>
+ *  <j:tree>
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:insert select = "self::category[not(@leaf)]" 
+ *                    get    = "url:get_categories.php?parent={@id}" />
+ *          <j:traverse select="category" />
+ *      </j:bindings>
+ *  </j:tree>
  * </code>
  */
 
