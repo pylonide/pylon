@@ -42,18 +42,19 @@
  * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
- * @attribute {String}  baseurl                 The basepath for any relative url used throughout your application. This included teleport definitions and data instrutions.
- * @attribute {String}  loading-message         Specifying the global value for the loading message of elements during a loading state.
- * @attribute {String}  offline-message         Specifying the global value for the offline message of elements not able to display content while offline.
- * @attribute {String}  empty-message           Specifying the global value for the empty message of elements containing no contents.
- * @attribute {String}  model                   Specifying the default model for this application.
- * @attribute {String}  realtime                Specifying the global value which enables or disabled realtime updating of bound data while changing the value. When set to false elements don't update until they loose focus.
+ * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and data instrutions.
+ * @attribute {String}  loading-message         the global value for the loading message of elements during a loading state.
+ * @attribute {String}  offline-message         the global value for the offline message of elements not able to display content while offline.
+ * @attribute {String}  empty-message           the global value for the empty message of elements containing no contents.
+ * @attribute {String}  model                   the default model for this application.
+ * @attribute {String}  realtime                the global value which enables or disables realtime updating of bound data while changing the value. When set to false elements don't update until they loose focus.
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
  * @attribute {String}  offline                 the storage provider to be used for offline support.
  * @attribute {String}  login                   the datainstruction which logs a user into the application.
  * @attribute {String}  logout                  the datainstruction which logs a user out of the application.
- * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should applied
+ * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied
+ * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied
  * @allowchild auth, authentication, offline, printer, defaults
  * @todo describe defaults
  */

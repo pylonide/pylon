@@ -25,8 +25,8 @@
  * Element containing information on how databound elements should deal with 
  * data. The smartbinding element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
- * send to their original data source (actions) and which data elements can be 
- * dragged and dropped (dragdrop). 
+ * send to their original data source ({@link element.actions actions}) and
+ * which data elements can be dragged and dropped ({@link element.dragdrop dragdrop}).
  * Example:
  * A simple example of a smartbinding transforming data into representation
  * <code>
@@ -44,9 +44,9 @@
  * This is an elaborate example showing how to create a filesystem tree with
  * files and folders in a tree. The smartbinding element describes how the
  * files and folders are transformed to tree elements and how actions within
- * the tree are sent to the data source. In this case webdav is used. The drag
- * and drop rules specify which elements can be dragged and where they can be
- * dropped.
+ * the tree are sent to the data source. In this case {@link teleport.webdav WebDAV}
+ * is used. The drag and drop rules specify which elements can be dragged and
+ * where they can be dropped.
  * <code>
  *  <j:smartbinding id="sbFilesystem" model="webdav:getRoot()">
  *      <j:bindings>
@@ -92,21 +92,22 @@
  * Each element has it's own set of binding rules it uses to render the data 
  * elements. The same goes for it's actions. To give an example, a slider has 
  * one action called 'change'. This action is called when then value of the 
- * slider changes. A tree elements has several actions amongs others 'add',
+ * slider changes. A tree element has several actions - among others: 'add',
  * 'remove', 'move', 'copy' and 'rename'. 
  * 
- * Smartbindings give rise to many other features in a Javeline PlatForm 
+ * Smartbindings enable many other features in a Javeline PlatForm
  * application. Actions done by the user can be undone by calling 
  * {@link element.actiontracker.method.undo} of the element. The 
- * remote smartbinding element can send changes to data to other clients.
+ * Remote Smartbinding element can send changes on data to other clients.
  *
  * This element is created especially for reuse. Multiple elements can reference
- * this elements by setting the smartbinding attribute. If an element is sonly
- * used to for a single element it can be set as it's child. Moreover each of
- * the children of the smartbinding element can exist outside the smartbinding
- * element and referenced indepently. 
+ * a single smartbinding element by setting the value of the 'smartbinding'
+ * attribute to the ID of this smartbinding element. If an element is only used
+ * for a single other element it can be set as it's child. In fact, each of the
+ * children of the smartbinding element can exist outside the smartbinding
+ * element and referenced indepently.
  * Example:
- * This example shows a smartbinding element which references it's children as
+ * This example shows a smartbinding element which references to its children as
  * stand alone elements.
  * <code>
  *  <j:bindings id="bndExample">
@@ -130,8 +131,8 @@
  *  <j:tree binding="bndExample" action="actExample" model="url:example.php" />
  * </code>
  * Example:
- * This example shows the children of the smartbinding directly as a child of 
- * the element that they apply on.
+ * This example shows the children of the smartbinding directly as a children of
+ * the element that they apply to.
  * <code>
  *  <j:tree>
  *      <j:bindings>
@@ -146,7 +147,7 @@
  *  </j:tree>
  * </code>
  * Example:
- * The shortest way to add binding rules to an element is as follows:
+ * The shortest method to add binding rules to an element is as follows:
  * <code>
  *  <j:tree traverse="file|folder" caption="@name" icon="@icon" />
  * </code>
