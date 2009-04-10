@@ -806,7 +806,7 @@ jpf.BaseTab.SCROLL_BOTH  = 0x0004;
 // #endif
 
 /**
- * A page in a paged element. (i.e. a page in a {@link element.tab})
+ * A page in a pageable element. (i.e. a page in {@link element.tab})
  *
  * @constructor
  * @define  page
@@ -925,7 +925,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
 
     /**
      * @attribute {Boolean} fake whether this page actually contains elements or
-     * only provides a button in the paged parent element.
+     * only provides a button in the pageable parent element.
      */
     this.$propHandlers["fake"] = function(value){
         if (this.oExt) {

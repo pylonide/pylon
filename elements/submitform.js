@@ -29,10 +29,10 @@
  * Element allowing special form functionality to a set of JML
  * elements. This element is an alias for j:xforms offering
  * xform compatible strategies with relation to submitting the form's data.
- * This element also offers form paging, including validation between
- * and over pages. Buttons placed inside this element can contain an action
+ * This element also offers form paging, including validation across pages.
+ * Buttons placed inside this element can contain an action
  * attribute specifying whether they behave as next, previous or finish(submit)
- * buttons. This element is <u>not</u> necesary for simple forms. like the
+ * buttons. This element is <u>not</u> necesary for simple forms, like the
  * normal html webforms (see {@link baseclass.validation}).
  *
  * @constructor

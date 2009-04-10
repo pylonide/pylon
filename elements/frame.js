@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element displaying a frame with a caption containing other elements. This
+ * Element displaying a frame with a caption, containing other elements. This
  * element is called a fieldset in html.
  * Example:
  * <code>

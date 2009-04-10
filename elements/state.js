@@ -83,7 +83,7 @@ jpf.StateServer = {
  * Element that specifies a certain state of (a part of) the application. With
  * state we mean a collection of properties on objects that have a certain
  * value at one time. This element allows you to specify which properties on
- * which elements should be set when this state is actived. This element can
+ * which elements should be set when a state is activated. This element can
  * belong to a state-group containing multiple elements with a default state.
  * Example:
  * This example shows a log in window and four state elements in a state-group.

@@ -24,7 +24,7 @@
 /**
  * Element that defines a template of jml which is repeated for a list of 
  * selected xml data elements. Each template instance is databound to the
- * xml data element.
+ * same xml data element.
  * Example:
  * Simple example of some jml which is repeated. The button removes an item
  * from the model when pressed.
@@ -70,7 +70,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     this.traverse = "node()";
     
     /**
-     * @attribute {String} nodeset the xpath querey which selects the nodes for each which the template is rendered.
+     * @attribute {String} nodeset the xpath query which selects the nodes; template is rendered for each of them.
      */
     this.$propHandlers["nodeset"] = function(value){
         this.traverse = value;
