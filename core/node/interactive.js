@@ -31,18 +31,18 @@ var __INTERACTIVE__ = 1 << 21;
  *  <j:textarea draggable="true" resizable="true" />
  * </code>
  * 
- * @attribute {Boolean} draggable makes an element draggable. The user will 
+ * @attribute {Boolean} draggable whether an element is draggable. The user will
  * able to move the element around while holding the mouse button down on the 
  * element.
  * Example:
  * <code>
  *  <j:bar draggable="true" />
  * </code>
- * @attribute {Boolean} resizable makes an element resizable. The user will able 
+ * @attribute {Boolean} resizable whether an element is resizable. The user will able
  * to resize the element by grabbing one of the four edges of the element and 
- * pulling it in either direction. Grabbing the corners allow the users the 
+ * pulling it in either direction. Grabbing the corners allows users to 
  * resize horizontally and vertically at the same time. The right bottom corner 
- * is special because it offers an especially big grab area. The size of this 
+ * is special, because it offers an especially big grab area. The size of this
  * area can be configured in the skin of the element.
  * Example:
  * <code>

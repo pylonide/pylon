@@ -30,7 +30,7 @@
  *  www.example.com/index.php#products
  * </code>
  * Remarks:
- * In future browsers (2008) the location hash can be set by script and 
+ * In future browsers (> 2009) the location hash can be set by script and
  * {@link element.history.event.hashchange} is called when it's changed by using the back or forward
  * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user

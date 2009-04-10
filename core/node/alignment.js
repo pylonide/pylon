@@ -25,15 +25,15 @@ var __ALIGNMENT__ = 1 << 12;
 
 /**
  * All elements inheriting from this {@link term.baseclass} have alignment features. 
- * The element can be alignment to each side of it's parent's rectangle. Multiple elements can
- * be aligned to the same side. These are then stacked. Layouts created using
- * alignment, with or without vbox/hbox elements can be stored in an external
- * xml format. These can then be loaded and saved for later use. Using this
- * technique it's possible to offer a layout manager to your users from within
- * your application. This layout manager could then allow the user to choose
- * from layouts and save new ones.
+ * An element can be aligned to any side of its parent's rectangle. Multiple elements can
+ * be aligned to the same side; these are then stacked. Layouts created using
+ * alignment, with or without vbox/hbox elements can be stored in xml format.
+ * These can then be loaded and saved for later use. Using this technique it's
+ * possible to offer a layout manager to your users from within your application.
+ * This layout manager could then allow the user to choose between several
+ * layouts and save new ones.
  * Example:
- * An Outlook like layout in JML
+ * An Outlook-like layout in JML
  * <code>
  * <j:toolbar   align = "top-1"          height = "40" />
  * <j:tree      align = "left-splitter"  width  = "20%" />
@@ -139,7 +139,7 @@ jpf.Alignment = function(){
     };
 
     /**
-     * Calculate the rules for this element and activates them.
+     * Calculates the rules for this element and activates them.
      *
      */
     this.purgeAlignment = function(){
@@ -186,11 +186,11 @@ jpf.Alignment = function(){
          *   Possible values:
          *   right  the element leans towards the right
          *   bottom the element leans towards the bottom
-         * @attribute  {Number} edge        the size of the edge of the space between this and the neighbour element to the right or top. If this attribute is smaller than the splitter attribute, the edge is the size of the splitter.
+         * @attribute  {Number} edge        the size of the edge of the space between this and the neighbouring element to the right or top. If the value of this attribute is smaller than that of the splitter, the edge will be the size of the splitter.
          * @attribute  {Number} weight      the factor (between 0 and 1) this element takes when no width is specified. The factor is calculated by doing (weight/totalweight) * space available in parent. Based on the parent being a vbox or hbox this attribute calculates either the element's width or height.
-         * @attribute  {Number} splitter    the size of splitter in between this and the neighbour element to the right or top. When not specified the splitter is not displayed.
-         * @attribute  {Number} minwidth    the minimal horizontal size of this element.
-         * @attribute  {Number} minheight   the minimal vertical size of this element.
+         * @attribute  {Number} splitter    the size of splitter that is placed between this and the neighbouring element to the right or top. When not specified, the splitter is not displayed.
+         * @attribute  {Number} minwidth    the minimum horizontal size of this element.
+         * @attribute  {Number} minheight   the minimum vertical size of this element.
          */
         this.$supportedProperties.push("align", "lean", "edge", "weight",
             "splitter", "width", "height", "minwidth", "minheight");

@@ -2,7 +2,7 @@
 jpf.runXpath = function(){
 
 /**
- *    Workaround for the lack of having an XPath parser on safari
+ *    Workaround for the lack of having an XPath parser on safari.
  *    It works on Safari's document and XMLDocument object.
  *
  *    It doesn't support the full XPath spec, but just enought for
