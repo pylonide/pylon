@@ -64,7 +64,7 @@
  *     {Http}           tpModule  the teleport module that is making the request.
  *     {Number}         id        the id of the request.
  *     {String}         message   the error message.
- * @event actionsuccess Fires when an action fails to be sent to the server.
+ * @event actionsuccess Fires when an action is successfully sent to the server.
  *   bubles: true
  *   object:
  *     {Number}         state     the state of the call

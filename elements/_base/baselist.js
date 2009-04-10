@@ -44,8 +44,12 @@
  * @since       0.8
  *
  * @binding caption  Determines the caption of a node.
- * @binding icon     Determines the icon of a node.
- * @binding image    Determines the image of a node.
+ * @binding icon     Determines the icon of a node. This binding rule is used
+ * to determine the icon displayed when using a list skin. The {baseclass.baselist.binding.image image binding}
+ * is used to determine the image in the thumbnail skin.
+ * @binding image    Determines the image of a node. This binding rule is used
+ * to determine the image displayed when using a thumbnail skin. The {baseclass.baselist.binding.icon icon binding}
+ * is used to determine the icon in the list skin.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>

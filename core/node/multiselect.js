@@ -24,9 +24,48 @@ var __MULTISELECT__ = 1 << 8;
 // #ifdef __WITH_MULTISELECT
 
 /**
+ * @term traversenode A traverse node is a data node that is in the set selected by the 
+ * {@link baseclass.multiselectbinding.binding.traverse traverse binding rule}.
+ * These data nodes get representation within the visual element. For instance
+ * each item in a list is connected to such a traverse node. A traverse node
+ * can be selected, removed, added, dragged, dropped and so on. 
+ * Example:
+ * In this example the person nodes that have the show attribute set to 1 are the 
+ * traverse nodes of the list. This list will display three items.
+ * <code>
+ *  <j:list>
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:traverse select="person[@show='1']" />
+ *      </j:bindings>
+ *      <j:model>
+ *          <data>
+ *              <person name="test 5"/>
+ *              <person show="1" name="test 3"/>
+ *              <person name="test 4"/>
+ *              <person show="1" name="test 2"/>
+ *              <person show="1" name="test 1"/>
+ *          </data>
+ *      </j:model>
+ *  </j:list>
+ * </code>
+ * Remarks:
+ * A somewhat advanced topic is understanding how an element can use the 
+ * traverse {@link term.binding binding rule}. For the tree this binding rules
+ * can be used to create a virtual tree mapping of the xml.
+ */
+
+/**
+ * @term caret When selecting nodes in a list using the keyboard, the caret is 
+ * the indication of the position within that list. The item that the caret is
+ * on might or might not be selected. This feature is especially useful when 
+ * holding the control key or using the shift key to multi select items.
+ */
+
+/**
  * All elements inheriting from this {@link term.baseclass} have selection features. This includes handling
  * for multiselect and several keyboard based selection interaction. It also
- * takes care of caret handling when multiselect is enabled. Furthermore features 
+ * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 
  * data nodes.
  *
@@ -38,7 +77,7 @@ var __MULTISELECT__ = 1 << 8;
  *
  * @inherits jpf.MultiselectBinding
  *
- * @binding select Determines whether the traverse node can be selected.
+ * @binding select Determines whether the {@link term.traversenode traverse node} can be selected.
  * Example:
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
@@ -88,14 +127,14 @@ jpf.MultiSelect = function(){
     this.$selected    = null;
     
     /**
-     * the xml element that has the caret.
+     * the xml element that has the {@link term.caret caret}.
      * @type {XMLElement} 
      */
     this.indicator    = null;
     this.$indicator   = null;
     
     /**
-     * whether to use a caret in the interaction of this element.
+     * whether to use a {@link term.caret caret} in the interaction of this element.
      * @type {Boolean} 
      */
     this.useindicator = true;
@@ -276,7 +315,7 @@ jpf.MultiSelect = function(){
      * For undo this action should be extended as follows.
      * <code>
      *  <j:actions>
-     *      <j:add set="url:add_product.php?id={.}">
+     *      <j:add set="url:add_product.php?xml={.}">
      *          <j:undo set="url:remove_product.php?id={@id}" />
      *      </j:add>
      *  </j:actions>
@@ -292,7 +331,7 @@ jpf.MultiSelect = function(){
      * the action rule.
      * <code>
      *  <j:actions>
-     *      <j:add set="url:add_product.php?id={.}">
+     *      <j:add set="url:add_product.php?xml={.}">
      *          <product name="USB drive" type="storage" />
      *      </j:add>
      *  </j:actions>
@@ -538,7 +577,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects a single, or set of {@info TraverseNodes "Traverse Nodes"}.
+     * Selects a single, or set of {@info TraverseNodes "{@link term.traversenode traverse nodes}"}.
      * The selection can be visually represented in this element.
      *
      * @param {mixed}   xmlNode      the identifier to determine the selection.
@@ -553,11 +592,11 @@ jpf.MultiSelect = function(){
      * @param {Boolean} [noEvent]    whether to not call any events
      * @return  {Boolean}  whether the selection could be made
      *
-     * @event  beforeselect  Fires before a selection is made
+     * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that will be selected.
      *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
-     * @event  afterselect  Fires after a selection is made
+     * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that was selected.
      *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
@@ -773,10 +812,10 @@ jpf.MultiSelect = function(){
      *
      * @param {Boolean} [singleNode] whether to only deselect the indicated node
      * @param {Boolean} [noEvent]    whether to not call any events
-     * @event  beforedeselect  before a choice is made
+     * @event  beforedeselect  Fires before a {@link baseclass.multiselect.method.choose choice} is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that will be deselected.
-     * @event  afterdeselect   after a choice is made
+     * @event  afterdeselect   Fires after a {@link baseclass.multiselect.method.choose choice} is made
      *   object:
      *   {XMLElement} xmlNode   the xml data element that is deselected.
      */
@@ -901,7 +940,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Sets the caret on an item to indicate to the user that the keyboard
+     * Sets the {@link term.caret caret} on an item to indicate to the user that the keyboard
      * actions are done relevant to that item. Using the keyboard
      * a user can change the position of the indicator using the Ctrl and arrow
      * keys while not making a selection. When making a selection with the mouse
@@ -1004,7 +1043,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects all the {@info TraverseNodes "Traverse Nodes"} of this element
+     * Selects all the {@info TraverseNodes "{@link term.traversenode traverse nodes}"} of this element
      *
      */
     this.selectAll = function(){
@@ -1171,18 +1210,13 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * @attribute {Boolean} [multiselect]  whether the user may select multiple items. Default is true, false for j:dropdown
-     * @attribute {mixed} [autoselect]
-     *   Possible values:
-     *   {Boolean} whether a selection is made after data is loaded. Default is true, false for j:Dropdown.
-     *   {String}
-     *     Possible values:
-     *     all  all items are selected after data is loaded.
-     * @attribute {Boolean} [selectable]    whether this element can receive a selection.
-     * @attribute {Boolean} [ctrlselect]    whether the user makes a selection as if it was holding the Ctrl key.
-     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of an element.
-     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again such that the select events are called.
-     * @attribute {String}  [default]       the value that this component has when no selection is made, or no value is loaded.
+     * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for j:dropdown. 
+     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all data nodes are selected.
+     * @attribute {Boolean} [selectable]    whether the data nodes of this element can be selected. Default is true.
+     * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
+     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected data node.
+     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected data node cannot be selected again.
+     * @attribute {String}  [default]       the value that this component has when no selection is made.
      */
     this.selectable = true;
     if (this.ctrlselect === undefined)

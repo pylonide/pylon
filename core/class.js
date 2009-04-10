@@ -45,7 +45,10 @@
  *
  * Syntax:
  * Sometimes it's necessary to make a binding from one property to another one, 
- * and vice versa. This works in the same way, but instead of using curly braces 
+ * and vice versa. Think of a slider that is connected to the position property
+ * of a video element. When the video plays, the value of the slider should be 
+ * updated. When the slider is dragged the video should be updated. This works 
+ * in the same way as above, but instead of using curly braces 
  * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
  * sync with the state of the tab page.
  * <code>
@@ -60,6 +63,14 @@
  * </code>
  *
  * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
+ *
+ * Internals:
+ * Property binding in jpf a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
+ * system. When a binding is established the element that receives the value sets
+ * a listener on the property of another element. There can be any number of 
+ * elements referenced in a single expression. When any of the properties that 
+ * are listened to change, the subscriber gets notified to update the value
+ * of it's property.
  */
 
 /**

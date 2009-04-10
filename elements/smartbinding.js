@@ -22,6 +22,169 @@
 //#ifdef __WITH_DATABINDING
 
 /**
+ * @term smartbinding Smartbinding is a type of bidirectional databinding where 
+ * rules specify how data is rendered in a component <i>and</i> how changes to
+ * the bound data are sent back to the server (or other data source). 
+ * Smartbindings are specifically designed to solve the problem of databinding
+ * for Ajax applications that connect to remote (non-local) datasources.
+ * A j:smartbinding element can contain three elements; {@link element.bindings j:bindings}, 
+ * {@link element.actions j:actions} and {@link element.model j:model}.
+ *
+ * Model:
+ * The model is the place where your xml data resides. Data is loaded into the
+ * model using a {@link term.datainstruction data instruction} as the following
+ * example shows:
+ * <code>
+ *  <j:model load="url:get_person.php?id=10" />
+ * </code>
+ * An element can connect directly to a model in order to bind to data.
+ * <code>
+ *  <j:model id="mdlExample" />
+ *  <j:tree model="mdlExample" />
+ * </code>
+ *
+ * The model can also be part of a smartbinding that is used by the element. 
+ * A smartbinding can be used by multiple elements referenced by id:
+ * <code>
+ *  <j:smartbinding id="sbExample">
+ *      <j:model />
+ *      ...
+ *  </j:smartbinding>
+ *  <j:tree smartbinding="sbExample" />
+ * </code>
+ *
+ * Bindings:
+ * The bindings element is a container for binding rules. Binding rules determine
+ * how an element renders the data that it's bound to. Some binding rules specify
+ * how data can be interacted with (i.e. {@link baseclass.multiselect.binding.select the select rule}).
+ * Check the {@link term.binding term binding rules} for more information.
+ *
+ * Actions:
+ * The actions element is a container for action rules. Action rules are have 
+ * several functions. 
+ * <ol>
+ *  <li>It determines whether a user action can be executed on the bound and/or selected {@link term.datanode data node}.</li>
+ *  <li>It dispatches events before and after executing the change to data.</li>
+ *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} that is pushed on the undo stack of the {@link element.actiontracker actiontracker} connected to the element that triggered the action.</li>
+ *  <li>The command object contains all the information to send the change to back to the server</li>
+ * </ol>
+ * So in short, an action rule is always triggered by the user, creates an 
+ * undo item and sends the change back to the server.
+ * Check the {@link term.action term action rules} for more information.
+ *
+ * See:
+ * {@link baseclass.databinding.attribute.smartbinding}
+ */
+
+/**
+ * @term binding Binding rules determine how an element renders the data that 
+ * it's bound to. Some binding rules specify how data can be interacted with 
+ * (i.e. {@link baseclass.multiselect.binding.select the select rule}).
+ * Binding rules are part of the {@link term.smartbinding smartbinding concept}.
+ * 
+ * Basic:
+ * Let's take a simple example, that of a {@link element.textbox textbox). A 
+ * textbox has a {@link element.textbox.attribute.value value attribute}. This
+ * attribute can be set like this:
+ * <code>
+ *  <j:textbox value="The text" />
+ * </code>
+ * In many cases it's handy to bind the value of the textbox to data. Imagine
+ * you are editing a contact's name in a textbox. In this case you would want to 
+ * bind the value of the textbox to the xml data. The binding rule is configured
+ * to determine this value based on the bound xml. Let's look at an example:
+ * <code>
+ *  <j:model id="mdlExample">
+ *      <contact>
+ *          <name>Test</name>
+ *      </contact>
+ *  </j:model>
+ *
+ *  <j:textbox model="mdlExample">
+ *      <j:bindings>
+ *          <j:value select="name" />
+ *      </j:bindings>
+ *  </j:textbox>
+ * </code>
+ * The textbox binds to the data of the model. The bind rule sets how the value
+ * is retrieved from the bound data. In this case the value of the name node is
+ * retrieved. <strong>When the user changes the value of the textbox, the name
+ * node is updated with that value.</strong> Subsequently <strong>when the xml
+ * changes the value of the textbox is updated</strong>.
+ *
+ * Each attribute on an element can be bound to data by using the attribute
+ * name as the name of the binding rule. In the next example, the visible
+ * attribute of a textbox is based on the availability of a data element:
+ * <code>
+ *  <j:textbox>
+ *      <j:bindings>
+ *          <j:visible select="name" value="true" />
+ *      </j:bindings>
+ *  </j:textbox>
+ * </code>
+ * Each element has a primary bind rule that can be accessed in a short format.
+ * This is usually the value bind rule. The short format works as follows:
+ * <code>
+ *  <j:textbox ref="name" model="mdlExample" />
+ * </code>
+ *
+ * Advanced:
+ * For multi node components databinding adds another conceptual step. The basics
+ * stay the same, though a way is introduced to do 'foreach' on the data to 
+ * determine which nodes are rendered. This is done using the 
+ * {@link element.multiselectbinding.binding.traverse traverse binding rule} and
+ * the selected nodes are called {@link term.traversenode traverse nodes}.
+ * 
+ * Fallbacks:
+ * By stacking multiple binding rules it's possible to define different ways to
+ * determine the value for an attribute. Let's say we have a tree that displays
+ * files and folders. A file and a folder can have custom icons. If these are 
+ * not specified, they each default to an icon representing their type. This would
+ * be encoded like this:
+ * <code>
+ *  <j:bindings>
+ *      <j:icon select="@icon" />
+ *      <j:icon select="self::folder" value="folder.png" />
+ *      <j:icon select="self::file" value="file.png" />
+ *  </j:bindings>
+ * </code>
+ *
+ * Processors:
+ * There are several ways to convert the data retrieved from the xml data into
+ * the needed string or boolean. The following example uses {@link object.jslt jslt}
+ * to determine the icon by the extension of the filename:
+ * <code>
+ *  <j:bindings>
+ *      <j:icon select="."><![CDATA[
+ *          [var ext = $'@filename'.split(".").pop();
+ *           %ext == $'@filename' ? "unknown.png" : ext + ".png";]
+ *      ]]></j:icon>
+ *  </j:bindings>
+ * </code>
+ * Instead of jslt you can use xslt as well. Furthermore you can apply some
+ * javascript to the result by calling a method. The following examples shows
+ * a caption where a javascript method inserts smileys.
+ * <code>
+ *  <j:bindings>
+ *      <j:caption select="body" method="insertSmileys" />
+ *  </j:bindings>
+ * </code>
+ */
+
+/**
+ * @term action 
+ * It is part of the concept of {@link term.smartbinding smartbinding}.
+ */
+ 
+/**
+ * @term datanode 
+ */
+ 
+/**
+ * @term set 
+ */
+
+/**
  * Element containing information on how databound elements should deal with 
  * data. The smartbinding element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
