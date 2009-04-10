@@ -80,66 +80,66 @@ jpf.textbox.masking = function(){
     /* ***********************
             Keyboard Support
     ************************/
-
-    function isCharacter(e) {
-        if (!e) return false;
-        var key = e.which || e.keyCode;
-        return !(e.ctrlKey || e.altKey || e.metaKey)
-            && ((key >= 65 && key <= 90) // latin characters (A-Za-z)
-            || (key >= 48 && key<= 57) // numbers (0-9)
-            || (key == 32) // space
-            || (key > 128));
-    }
-
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
-        var key      = e.which || e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
+        var key  = e.keyCode,
+            stop = false;
 
         switch (key) {
             case 39:	
                 //RIGHT
                 setPosition(lastPos + 1);
+                stop = true;
                 break;
             case 37:
                 //LEFT
                 setPosition(lastPos - 1);
+                stop = true;
                 break;
             case 35:
             case 34:
                 setPosition(myvalue.length);
+                stop = true;
                 break;
             case 33:
             case 36:
                 setPosition(0);
+                stop = true;
                 break;
             case 8:
                 //BACKSPACE
                 deletePosition(lastPos - 1);
                 setPosition(lastPos - 1);
+                stop = true;
                 break;
             case 46:
                 //DEL
                 deletePosition(lastPos);
                 setPosition(lastPos);
+                stop = true;
                 break;
             default:
-                if (key == 67 && ctrlKey)
+                if (key == 67 && e.ctrlKey) {
                     window.clipboardData.setData("Text", this.getValue());  
+                    stop = true;
+                }
                 /*
                 else if ((key == 86 && ctrlKey) || (shiftKey && key == 45)) {
                     this.setValue(window.clipboardData.getData("Text"));
                     setPosition(lastPos);
                 }
-                */
                 else
-                    return;
+                    return;*/
             break;
         }
-            
-        return false;
+
+        var chr = String.fromCharCode(key);
+        if (setCharacter(chr))
+            setPosition(lastPos + 1);
+
+        if (e.isCharacter() || stop)
+            return false;
     }, true);
     //#endif
     
@@ -151,23 +151,11 @@ jpf.textbox.masking = function(){
         ///this.keyHandler = this._keyHandler;
         this.$keyHandler = null; //temp solution
         masking = true;
-
-        this.oInt.onkeypress = function(e){
-            e = e || window.event;
-            var chr = String.fromCharCode(e.which || e.keyCode);
-            chr = (e.shiftKey ? chr.toUpperCase() : chr.toLowerCase());
-
-            if (setCharacter(chr))
-                setPosition(lastPos + 1);
-
-            return false;
-        };
         
         this.oInt.onmouseup = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
-            if (isCharacter(e || window.event))
-                return false;
+            return false;
         };
         
         this.oInt.onpaste = function(e){
