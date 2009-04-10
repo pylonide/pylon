@@ -1012,37 +1012,6 @@ jpf.WindowImplementation = function(){
     document.onmousewheel = wheel; //@todo 2 keer events??
     //#endif
 
-    //#ifdef __WITH_HOTKEY_PROPERTY || __WITH_HOTKEY
-    var keyNames = {
-        "32" : "Spacebar",
-        "13" : "Enter",
-        "9"  : "Tab",
-        "27" : "Esc",
-        "46" : "Del",
-        "36" : "Home",
-        "35" : "End",
-        "107": "+",
-        "37" : "Left Arrow",
-        "38" : "Up Arrow",
-        "39" : "Right Arrow",
-        "40" : "Down Arrow",
-        "33" : "Page Up",
-        "34" : "Page Down",
-        "112": "F1",
-        "113": "F2",
-        "114": "F3",
-        "115": "F4",
-        "116": "F5",
-        "117": "F6",
-        "118": "F7",
-        "119": "F8",
-        "120": "F9",
-        "121": "F10",
-        "122": "F11",
-        "123": "F12"
-    };
-    //#endif
-
     document.onkeydown = function(e){
         if (!e)
             e = event;
@@ -1108,8 +1077,8 @@ jpf.WindowImplementation = function(){
         if (e.metaKey)
             keys.push("Meta");
 
-        if (keyNames[e.keyCode])
-            keys.push(keyNames[e.keyCode]);
+        if (jpf.keyNames[e.keyCode])
+            keys.push(jpf.keyNames[e.keyCode]);
 
         if (keys.length) {
             if (e.keyCode > 46)

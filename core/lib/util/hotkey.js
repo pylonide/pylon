@@ -11,6 +11,38 @@ jpf.hotkeys = {};
 jpf.keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
 
 /**
+ * @private
+ */
+jpf.keyNames = {
+    "32" : "Spacebar",
+    "13" : "Enter",
+    "9"  : "Tab",
+    "27" : "Esc",
+    "46" : "Del",
+    "36" : "Home",
+    "35" : "End",
+    "107": "+",
+    "37" : "Left Arrow",
+    "38" : "Up Arrow",
+    "39" : "Right Arrow",
+    "40" : "Down Arrow",
+    "33" : "Page Up",
+    "34" : "Page Down",
+    "112": "F1",
+    "113": "F2",
+    "114": "F3",
+    "115": "F4",
+    "116": "F5",
+    "117": "F6",
+    "118": "F7",
+    "119": "F8",
+    "120": "F9",
+    "121": "F10",
+    "122": "F11",
+    "123": "F12"
+};
+
+/**
  * Registers a hotkey handler to a key combination.
  * Example:
  * <code>
@@ -67,7 +99,7 @@ jpf.addEventListener("hotkey", function(e){
     var hashId = 0 | (e.ctrlKey ? 1 : 0)
         | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
 
-    var key = keyNames[e.keyCode];
+    var key = jpf.keyNames[e.keyCode];
     if (!hashId && !key) //Hotkeys should always have one of the modifiers
         return;
 
