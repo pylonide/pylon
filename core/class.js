@@ -401,8 +401,8 @@ jpf.Class = function(){
      *
      * @param  {String}  prop        the name of the property of this element to set using a dynamic rule.
      * @param  {String}  value       the value of the property to set.
-     * @param  {Boolean} [reqValue]  Wether the method should return when value is null.
-     * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
+     * @param  {Boolean} [reqValue]  Whether the method should return when value is null.
+     * @param  {Boolean} [forceOnMe] Whether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
         if (reqValue && !value || !jpf || this.$ignoreSignals)
@@ -698,19 +698,24 @@ jpf.Event = function(name, data){
 
     this.preventDefault = function(){
         this.returnValue = false;
-    }
+    };
 
     // #ifdef __WITH_EVENT_BUBBLING
     this.stopPropagation = function(){
         this.cancelBubble = true;
-    }
+    };
     // #endif
+
+    this.stop = function() {
+        this.returnValue = false;
+        // #ifdef __WITH_EVENT_BUBBLING
+        this.cancelBubble = true;
+        // #endif
+    };
     
-    //@todo should be implemented;
     this.isCharacter = function(){
-        return (this.keyCode < 112 || this.keyCode > 122) 
-          && (this.keyCode < 33  && this.keyCode > 31 || this.keyCode > 42 || this.keyCode == 8);
-        
+        return (this.keyCode < 112 || this.keyCode > 122)
+          && (this.keyCode == 32 || (this.keyCode > 42 || this.keyCode == 8));
     }
 
     jpf.extend(this, data);
