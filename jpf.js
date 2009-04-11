@@ -908,9 +908,6 @@ var jpf = {
             }
         },
 
-        /**
-         * @private
-         */
         cache : [],
 
         /**
@@ -1065,14 +1062,7 @@ var jpf = {
 
         //#ifdef __DEBUG
         ,
-        /**
-         * @private
-         */
         debugInfo : [],
-
-        /**
-         * @private
-         */
         debugType : "",
 
         /**

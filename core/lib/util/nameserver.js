@@ -84,6 +84,7 @@ jpf.namespace("nameserver", {
 //#ifdef __WITH_REGISTRY
 /**
  * Object which provides a means to store key values pairs in a named context.
+ * @see core.storage
  */
 jpf.registry = jpf.extend({
     /**
@@ -97,7 +98,7 @@ jpf.registry = jpf.extend({
     },
     
     /**
-     * @notimplemented
+     * @private
      */
     getNamespaces : function(){
         
@@ -122,7 +123,7 @@ jpf.registry = jpf.extend({
     },
     
     /**
-     * @notimplemented
+     * @private
      */
     clear : function(namespace){
         this.lookup = {}; //@todo
@@ -139,6 +140,9 @@ jpf.registry = jpf.extend({
     }
 }, jpf.nameserver);
 
+/**
+ * @private
+ */
 jpf.registry.lookup = {};
 
 /**
@@ -147,7 +151,7 @@ jpf.registry.lookup = {};
  * @param {String} namespace the named context of the keys to retrieve.
  * @return {mixed} the value that correspond to the key in the namespace.
  */
-jpf.registry.get    = function(key, namespace){
+jpf.registry.get = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };
 
