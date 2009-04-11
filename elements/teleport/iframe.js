@@ -23,9 +23,8 @@
 // #define __WITH_TELEPORT 1
 // #begindef __CONTENT_IFRAME
 
-/**
- * @private
- * This file intends create a compatibility layer for environments where the
+/*
+ * This object create a compatibility layer for environments where the
  * native XMLHttpRequest object isn't available. It fall backs on an iframe for
  * it's communication
  */
