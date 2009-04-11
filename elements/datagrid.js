@@ -59,7 +59,7 @@
  * @event multiedit     Fires before a multiedit request is done. Used to display the UI.
  *   object:
  *   {XMLElement} xmlNode   the selected node.
- *   {XMLElement} dataNode  the xml data element.
+ *   {XMLElement} dataNode  the {@link term.datanode data node}.
  *   Example:
  *   <code>
  *      <j:propedit 

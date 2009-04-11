@@ -232,8 +232,8 @@ jpf.Transaction = function(){
      * Starts a transaction for this element. This is either an add or update.
      * @param {String}     strAction the type of transaction to start
      *   Possible values:
-     *   add    the transaction is started to add a new data element.
-     *   update the transaction is started to update an existing data element.
+     *   add    the transaction is started to add a new {@link term.datanode data node}.
+     *   update the transaction is started to update an existing {@link term.datanode data node}.
      * @param {XMLElement} xmlNode 
      * @param {JMLElement} dataParent 
      */

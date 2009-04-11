@@ -186,7 +186,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
      * @param {Number}     y        the top position of the menu.
      * @param {Boolean}    noanim   whether to animate the showing of this menu.
      * @param {JMLElement} opener   the element that is the context of this menu.
-     * @param {XMLElement} xmlNode  the xml data element that provides data context to the menu child nodes.
+     * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
      * @see baseclass.jmlelement.event.contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){

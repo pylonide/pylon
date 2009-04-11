@@ -163,7 +163,7 @@ jpf.XmlDatabase = function(){
     /**
      * Finds the html representation of an xml node for a certain element.
      *
-     * @param {XMLNode} xmlNode  the data element which is represented by the hml element.
+     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
      * @param {JMLNode} oComp    the element that has created the representation.
      * @return {HTMLNode} the html node representing the xml node.
      */
@@ -184,10 +184,10 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Finds the xml data node that is represented by the html node.
+     * Finds the {@link term.datanode data node} that is represented by the html node.
      *
      * @param {HTMLNode} htmlNode  the html node representing the an xml node.
-     * @return {XMLNode} the xml data element for which the html node is it's representation.
+     * @return {XMLNode} the {@link term.datanode data node} for which the html node is it's representation.
      */
     this.findXMLNode = function(htmlNode){
         if (!htmlNode)
@@ -486,7 +486,7 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Returns a cleaned copy of the passed xml data element.
+     * Returns a cleaned copy of the passed {@link term.datanode data node}.
      *
      * @param {XMLElement} xmlNode the xml element to copy.
      * @return {XMLElement} the copy of the xml element.
@@ -1110,7 +1110,7 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Returns a string version of the xml data element.
+     * Returns a string version of the {@link term.datanode data node}.
      *
      * @param {XMLElement} xmlNode the xml element to serialize.
      * @return {String} the serilized version of the xml element.

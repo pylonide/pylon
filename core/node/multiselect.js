@@ -24,9 +24,9 @@ var __MULTISELECT__ = 1 << 8;
 // #ifdef __WITH_MULTISELECT
 
 /**
- * @term traversenode A traverse node is a data node that is in the set selected by the 
+ * @term traversenode A traverse node is a {@link term.datanode data node} that is in the set selected by the 
  * {@link baseclass.multiselectbinding.binding.traverse traverse binding rule}.
- * These data nodes get representation within the visual element. For instance
+ * These {@link term.datanode data node}s get representation within the visual element. For instance
  * each item in a list is connected to such a traverse node. A traverse node
  * can be selected, removed, added, dragged, dropped and so on. 
  * Example:
@@ -67,7 +67,7 @@ var __MULTISELECT__ = 1 << 8;
  * for multiselect and several keyboard based selection interaction. It also
  * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 
- * data nodes.
+ * {@link term.datanode data node}s.
  *
  * @constructor
  * @baseclass
@@ -142,7 +142,7 @@ jpf.MultiSelect = function(){
     // #ifdef __WITH_DATABINDING
 
     /**
-     * Removes an xml data element from the data of this element.
+     * Removes an {@link term.datanode data node} from the data of this element.
      * Example:
      * A simple list showing products. This list is used in all following examples.
      * <code>
@@ -206,16 +206,16 @@ jpf.MultiSelect = function(){
      * copy of the deleted item.
      * <code>
      *  <j:actions>
-     *      <j:remove set="url:remove_product.php?id={@id}">
-     *          <j:undo set="url:undo_remove_product.php?id={@id}" />
+     *      <j:remove set  = "url:remove_product.php?id={@id}"
+     *                undo = "url:undo_remove_product.php?id={@id}" />
      *      </j:remove>
      *  </j:actions>
      * </code>
      * @action
-     * @param  {mixed} [nodeList]  the data element(s) to be removed. If none are specified, the current selection is removed.
+     * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
-     *   {NodeList}   the xml data elements to be removed.
-     *   {XMLElement} the data element to be removed.
+     *   {NodeList}   the {@link term.datanode data node}s to be removed.
+     *   {XMLElement} the {@link term.datanode data node} to be removed.
      * @return  {Boolean}  specifies if the removal succeeded
      */
     this.remove = function(nodeList){
@@ -260,7 +260,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Adds an xml data element to the data of this element.
+     * Adds an {@link term.datanode data node} to the data of this element.
      * Example:
      * A simple list showing products. This list is used in all following examples.
      * <code>
@@ -315,8 +315,8 @@ jpf.MultiSelect = function(){
      * For undo this action should be extended as follows.
      * <code>
      *  <j:actions>
-     *      <j:add set="url:add_product.php?xml={.}">
-     *          <j:undo set="url:remove_product.php?id={@id}" />
+     *      <j:add set  = "url:add_product.php?xml={.}"
+     *             undo = "url:remove_product.php?id={@id}" />
      *      </j:add>
      *  </j:actions>
      * </code>
@@ -337,10 +337,10 @@ jpf.MultiSelect = function(){
      *  </j:actions>
      * </code>
      * @action
-     * @param  {XMLElement} [xmlNode]    the xml data element which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
-     * @param  {XMLElement} [pNode]      the parent node of the added xml data element.
+     * @param  {XMLElement} [xmlNode]    the {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
+     * @param  {XMLElement} [pNode]      the parent node of the added {@link term.datanode data node}.
      * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
-     * @return  {XMLElement} the added xml data element or false on failure.
+     * @return  {XMLElement} the added {@link term.datanode data node} or false on failure.
      */
     this.add = function(xmlNode, pNode, beforeNode){
         var node;
@@ -464,8 +464,8 @@ jpf.MultiSelect = function(){
     if (!this.setValue) {
         /**
          * Sets the value of this element.The value
-         * corresponds to an item in the list of loaded data elements. This
-         * element will receive the selection. If no data element is found, the
+         * corresponds to an item in the list of loaded {@link term.datanode data node}s. This
+         * element will receive the selection. If no {@link term.datanode data node} is found, the
          * selection is cleared.
          *
          * @param  {String}  value  the new value for this element.
@@ -480,7 +480,7 @@ jpf.MultiSelect = function(){
     }
 
     /**
-     * Retrieves an xml data element that has a value that corresponds to the
+     * Retrieves an {@link term.datanode data node} that has a value that corresponds to the
      * string that is searched on.
      * @param {String} value the value to match.
      */
@@ -499,7 +499,7 @@ jpf.MultiSelect = function(){
     if (!this.getValue) {
         /**
          * Retrieves the value of this element. This is the value of the
-         * first selected data element.
+         * first selected {@link term.datanode data node}.
          * @see #setValue
          */
         this.getValue = function(xmlNode){
@@ -582,9 +582,9 @@ jpf.MultiSelect = function(){
      *
      * @param {mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
-     *   {XMLElement}  the xml data element to be used in the selection as a start/end point or to toggle the selection on the node.
-     *   {HTMLElement} the html element node used as visual representation of data node. Used to determine the xml data element for selection.
-     *   {String}      the value of the xml data element to be select.
+     *   {XMLElement}  the {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
+     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node} for selection.
+     *   {String}      the value of the {@link term.datanode data node} to be select.
      * @param {Boolean} [ctrlKey]    whether the Ctrl key was pressed
      * @param {Boolean} [shiftKey]   whether the Shift key was pressed
      * @param {Boolean} [fakeselect] whether only visually a selection is made
@@ -594,12 +594,12 @@ jpf.MultiSelect = function(){
      *
      * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that will be selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be selected.
+     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that was selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was selected.
+     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
     var buffered = null;
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
@@ -783,15 +783,15 @@ jpf.MultiSelect = function(){
      *
      * @param {mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
-     *   {XMLElement}  the xml data element to be choosen.
-     *   {HTMLElement} the html element node used as visual representation of data node. Used to determine the xml data element.
-     *   {String}      the value of the xml data element to be choosen.
+     *   {XMLElement}  the {@link term.datanode data node} to be choosen.
+     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
+     *   {String}      the value of the {@link term.datanode data node} to be choosen.
      * @event  beforechoose  Fires before a choice is made.
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that was choosen.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
      * @event  afterchoose   Fires after a choice is made.
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that was choosen.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
      */
     this.choose = function(xmlNode){
         if (!this.selectable || this.disabled) return;
@@ -814,10 +814,10 @@ jpf.MultiSelect = function(){
      * @param {Boolean} [noEvent]    whether to not call any events
      * @event  beforedeselect  Fires before a {@link baseclass.multiselect.method.choose choice} is made
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that will be deselected.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
      * @event  afterdeselect   Fires after a {@link baseclass.multiselect.method.choose choice} is made
      *   object:
-     *   {XMLElement} xmlNode   the xml data element that is deselected.
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
      */
     this.clearSelection = function(singleNode, noEvent){
         if (!this.selectable || this.disabled) 
@@ -880,7 +880,7 @@ jpf.MultiSelect = function(){
     /**
      * Selects a set of items
      *
-     * @param {Array} xmlNodeList the xml data elements that will be selected.
+     * @param {Array} xmlNodeList the {@link term.datanode data node}s that will be selected.
      */
     //@todo I think there are missing events here?
     this.selectList = function(xmlNodeList, noEvent, selected){
@@ -949,9 +949,9 @@ jpf.MultiSelect = function(){
      *
      * @param {mixed}   xmlNode      the identifier to determine the indicator.
      *   Possible values:
-     *   {XMLElement}  the xml data element to be set as indicator.
-     *   {HTMLElement} the html element node used as visual representation of data node. Used to determine the xml data element.
-     *   {String}      the value of the xml data element to be set as indicator.
+     *   {XMLElement}  the {@link term.datanode data node} to be set as indicator.
+     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
+     *   {String}      the value of the {@link term.datanode data node} to be set as indicator.
      * @event indicate Fires when an item becomes the indicator.
      */
     this.setIndicator = function(xmlNode){
@@ -1059,7 +1059,7 @@ jpf.MultiSelect = function(){
 
     /**
      * Retrieves an array or a document fragment containing all the selected
-     * xml data elements from this element.
+     * {@link term.datanode data node}s from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
      * @return {mixed} the selection of this element.
@@ -1082,9 +1082,9 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects the next xml data element to be selected.
+     * Selects the next {@link term.datanode data node} to be selected.
      *
-     * @param  {XMLElement}  xmlNode  the context data element.
+     * @param  {XMLElement}  xmlNode  the context {@link term.datanode data node}.
      * @param  {Boolean}     isTree
      */
     this.defaultSelectNext = function(xmlNode, isTree){
@@ -1099,7 +1099,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects the next xml data element when available.
+     * Selects the next {@link term.datanode data node} when available.
      */
     this.selectNext = function(){
         var xmlNode = this.getNextTraverse();
@@ -1108,7 +1108,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects the previous xml data element when available.
+     * Selects the previous {@link term.datanode data node} when available.
      */
     this.selectPrevious = function(){
         var xmlNode = this.getNextTraverse(null, -1);
@@ -1133,7 +1133,7 @@ jpf.MultiSelect = function(){
     /**
      * Determines whether a node is selected.
      *
-     * @param  {XMLElement} xmlNode  The xml data element to be checked.
+     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
      * @return  {Boolean} whether the element is selected.
      */
     this.isSelected = function(xmlNode){
@@ -1211,11 +1211,11 @@ jpf.MultiSelect = function(){
 
     /**
      * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for j:dropdown. 
-     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all data nodes are selected.
-     * @attribute {Boolean} [selectable]    whether the data nodes of this element can be selected. Default is true.
+     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all {@link term.datanode data node}s are selected.
+     * @attribute {Boolean} [selectable]    whether the {@link term.datanode data node}s of this element can be selected. Default is true.
      * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
-     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected data node.
-     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected data node cannot be selected again.
+     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected {@link term.datanode data node}.
+     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected {@link term.datanode data node} cannot be selected again.
      * @attribute {String}  [default]       the value that this component has when no selection is made.
      */
     this.selectable = true;

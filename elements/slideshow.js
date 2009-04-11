@@ -59,7 +59,7 @@
  * @attribute {String}  defaultimage   the image shown when a slide doesn't have an image.
  * @attribute {String}  defaulttitle   the text shown when a slide doesn't have a description.
  * @attribute {String}  loadmsg        this text displayd while the picture is loading.
- * @attribute {Boolean} scalewidth     wether the width of the thumbnail is scaled relative to its height.
+ * @attribute {Boolean} scalewidth     whether the width of the thumbnail is scaled relative to its height.
  * 
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding

@@ -998,7 +998,7 @@ jpf.JmlParser = {
          * contextmenu is requested by a user for a jml node.
          * Example:
          * This example shows a list that shows the mnuRoot menu when the user
-         * right clicks on the root data element. Otherwise the mnuItem menu is
+         * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
          * shown.
          * <code>
          *  <j:list>

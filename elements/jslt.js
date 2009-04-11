@@ -22,7 +22,7 @@
 
 /**
  * Element displaying the contents of a jslt transformation on
- * the bound dataset. For more information on jslt see 
+ * the bound data. For more information on jslt see 
  * {@link object.jsltimplementation}.
  * Example:
  * <code>

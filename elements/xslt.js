@@ -22,7 +22,7 @@
 
 /**
  * Element displaying the contents of an xslt transformation on
- * the bound dataset. 
+ * the bound data. 
  *
  * @todo please test this, especially the clear function.
  * @constructor

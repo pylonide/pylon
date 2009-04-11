@@ -345,7 +345,7 @@ jpf.skins = {
  * changed at run time. Other than just changing the look of an element, a skin
  * change can help the user to perceive information in a different way. For 
  * example a list element has a default skin, but can also use the thumbnail 
- * skin to display thumbnails of the data elements.
+ * skin to display thumbnails of the {@link term.datanode data node}s.
  *
  * A skin for an element is always build up out of a standard set of parts.
  * <code>

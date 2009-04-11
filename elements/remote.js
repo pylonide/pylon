@@ -25,7 +25,7 @@
  * Element allowing data synchronization between multiple clients using the same
  * application or application part. This element is designed as thecore of 
  * collaborative application logic for Javeline PlatForm. The children of this
- * element specify how the uniqueness of data elements is determined. By pointing
+ * element specify how the uniqueness of {@link term.datanode data node}s is determined. By pointing
  * models to this element, all changes to their data will be streamed through
  * this element to all listening client over a choosen protocol. 
  * Example:
@@ -104,7 +104,7 @@
  * elements. This enables remote smartbindings to point to xml data in 
  * the same way on all clients. This way changes that happen to these 
  * elements are described non-ambiguously. The tagName can be replaced
- * by the tagName of the data element for which the uniqueness is specified.
+ * by the tagName of the {@link term.datanode data node} for which the uniqueness is specified.
  * Example:
  * This example shows a complex data set and a remote smartbinding that
  * specifies the uniqueness of all nodes concerned.
@@ -131,8 +131,8 @@
  *      <j:species unique="text()" />
  *  </j:remote>
  * </code>
- * @attribute {String} select   the xpath that selects the set of data elements that share a similar uniqueness trait.
- * @attribute {String} unique   the xpath that retrieves the unique value for a specific data element.
+ * @attribute {String} select   the xpath that selects the set of {@link term.datanode data node}s that share a similar uniqueness trait.
+ * @attribute {String} unique   the xpath that retrieves the unique value for a specific {@link term.datanode data node}.
  */
 /**
  * @author      Ruben Daniels

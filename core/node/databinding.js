@@ -769,7 +769,7 @@ jpf.DataBinding = function(){
     /**
      * Pushes data to connected elements
      *
-     * @param {XMLElement}  xmlNode  the xml data element to be pushed to the connected elements.
+     * @param {XMLElement}  xmlNode  the {@link term.datanode data node} to be pushed to the connected elements.
      * @param {String}      [type]
      *   Possible Values:
      *   select  pushes data to the elements registered for selection
@@ -1124,13 +1124,13 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Gets the data element or binding / action rule of a binding set.
+     * Gets the {@link term.datanode data node} or binding / action rule of a binding set.
      *
      * @param {String}      setname       the name of the binding/action rule set.
      * @param {XMLElement}  cnode         the xml element to which the binding rules are applied.
      * @param {Boolean}     [isAction]    whether search is for an action rule.
      * @param {Boolean}     [getRule]     whether search is for a binding rule.
-     * @param {Boolean}     [createNode]  whether the xml data elementis created when it doesn't exist.
+     * @param {Boolean}     [createNode]  whether the {@link term.datanode data node}is created when it doesn't exist.
      * @returns  {XMLElement}  the requested node.
      * @see  element.smartbinding
      */
@@ -1252,10 +1252,10 @@ jpf.DataBinding = function(){
      * @event beforeload  Fires before loading data in this element.
      *   cancellable: Prevents the data from being loaded.
      *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root data element.
+     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
      * @event afterload   Fires after loading data in this element.
      *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root data element.
+     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
      * @see  element.smartbinding
      * @see  baseclass.cache.method.clear
      */
@@ -2563,7 +2563,7 @@ jpf.MultiselectBinding = function(){
     //#endif
 
     /**
-     * Retrieves a nodelist containing the xml data elements which are rendered by
+     * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
      * this element (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
@@ -2581,7 +2581,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the first xml data element which gets representation in this element
+     * Retrieves the first {@link term.datanode data node} which gets representation in this element
      * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2600,11 +2600,11 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the last xml data element which gets representation in this element
+     * Retrieves the last {@link term.datanode data node} which gets representation in this element
      * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
-     * @return {XMLElement} the last xml data element
+     * @return {XMLElement} the last {@link term.datanode data node}
      * @see    baseclass.multiselectbinding.binding.traverse
      */
     this.getLastTraverseNode = function(xmlNode){
@@ -2613,7 +2613,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines whether an xml data element is a traverse node (see {@link baseclass.multiselectbinding.binding.traverse})
+     * Determines whether an {@link term.datanode data node} is a traverse node (see {@link baseclass.multiselectbinding.binding.traverse})
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return  {Boolean}  whether the xml element is a traverse node.
@@ -2642,7 +2642,7 @@ jpf.MultiselectBinding = function(){
      * @param {XMLElement}  xmlNode  the starting point for determining the next selection.
      * @param {Boolean}     [up]     the direction of the selection. Default is false.
      * @param {Integer}     [count]  the distance in number of nodes. Default is 1.
-     * @return  {XMLElement} the xml data element to be selected next.
+     * @return  {XMLElement} the {@link term.datanode data node} to be selected next.
      * @see  baseclass.multiselectbinding.binding.traverse
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
@@ -3344,7 +3344,8 @@ jpf.MultiselectBinding = function(){
     // #ifdef __WITH_INLINE_DATABINDING
     /**
      * @attribute {String} traverse the xpath statement that determines which
-     * xml data elements are rendered by this element. See
+     * {@link term.datanode data nodes} are rendered by this element (also known
+     * as {@link term.traversenode traverse nodes}. See
      * {@link baseclass.multiselectbinding.binding.traverse} for more information.
      * Example:
      * <code>

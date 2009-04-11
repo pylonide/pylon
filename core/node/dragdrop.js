@@ -24,46 +24,56 @@ var __DRAGDROP__ = 1 << 5;
 // #ifdef __WITH_DRAGDROP
 
 /**
- * All elements inheriting from this {@link term.baseclass} have drag&drop features. This baseclass
- * operates on the bound data of this element. When a rendered item is dragged
- * and dropped the bound data is moved or copied from one element to another,
- * or to the same element but at a different position. Drag&drop can be turned
- * on with a simple boolean, or detailed rules can be specified which data
- * should be dragged and/or dropped and where.
+ * All elements inheriting from this {@link term.baseclass} have drag&drop 
+ * features. This baseclass operates on the bound data of this element. 
+ * When a rendered item is dragged and dropped the bound data is moved or 
+ * copied from one element to another, or to the same element but at a different 
+ * position. This is possible because the rendered item has a 
+ * {@link term.smartbinding bidirectional connection} to the data. Drag&drop can 
+ * be turned on with a simple boolean, or by specifying detailed rules to set 
+ * which data can be dragged and dropped and where.
  *
  * Example:
- * <code>
- *  <j:smartbinding>
- *      <j:actions>
- *          <j:move
- *              select = "self::folder"
- *              set    = "{@link term.datainstruction data instruction}" />
- *          <j:copy
- *              select = "self::file"
- *              set    = "{@link term.datainstruction data instruction}" />
- *      </j:actions>
- *      <j:dragdrop>
- *          <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
- *          <j:allow-drop
- *              select         = "person"
- *              target         = "company|office"
- *              action         = "list-append"
- *              copy-condition = "event.ctrlKey" />
- *          <j:allow-drop
- *              select         = "offer"
- *              target         = "person"
- *              action         = "tree-append"
- *              copy-condition = "event.ctrlKey" />
- *      </j:dragdrop>
- *  </j:smartbinding>
- * </code>
- *
- * Example:
+ * This is a simple example, enabling drag&drop for a list.
  * <code>
  *  <j:list
  *      dragEnabled     = "true"
  *      dropEnabled     = "true"
  *      dragMoveEnabled = "true" />
+ * </code>
+ *
+ * Example:
+ * This example shows a smartbinding that represents files and folders. It uses 
+ * {@link term.datainstruction data instruction} to tell communicat to the webdav
+ * server when an item is copied or moved.
+ * <code>
+ *  <j:smartbinding>
+ *      <j:bindings>
+ *          <j:caption select="@filename" />
+ *          <j:traverse select="file|folder" />
+ *      </j:bindings>
+ *      <j:actions>
+ *          <j:move
+ *              select = "self::folder"
+ *              set    = "webdav:move({@path}, {../@path})" />
+ *          <j:copy
+ *              select = "self::file"
+ *              set    = "webdav:copy({@path}, {../@path})" />
+ *      </j:actions>
+ *      <j:dragdrop>
+ *          <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
+ *          <j:allow-drop
+ *              select         = "file"
+ *              target         = "folder"
+ *              action         = "tree-append"
+ *              copy-condition = "event.ctrlKey" />
+ *          <j:allow-drop
+ *              select         = "folder"
+ *              target         = "folder"
+ *              action         = "insert-before"
+ *              copy-condition = "event.ctrlKey" />
+ *      </j:dragdrop>
+ *  </j:smartbinding>
  * </code>
  *
  * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
@@ -104,17 +114,78 @@ var __DRAGDROP__ = 1 << 5;
  *
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
- * @define allow-drag   Specifies when nodes can be dragged from this element.
- * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @define allow-drag   Determines whether a {@link term.datanode data node} can 
+ * be dragged from this element. 
+ * Example:
+ * This example shows a small mail application. The tree element displays a root
+ * node, accounts and folders in a tree. The datagrid contains the mails. This
+ * rule specifies which data nodes you can drag. Folders can be dragged but not
+ * accounts. Mails can be dragged from the datagrid.
+ * <code>
+ *  <j:tree align="left" width="200">
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:traverse select="root|account|folder" />
+ *      </j:bindings>
+ *      <j:dragdrop>
+ *          <j:allow-drag select = "folder" />
+ *          <j:allow-drop select = "folder" 
+ *                        target = "folder|account" />
+ *          <j:allow-drop select = "mail" 
+ *                        target = "folder" />
+ *      </j:dragdrop>
+ *  </j:tree>
+ *  <j:datagrid align="right">
+ *      <j:bindings>
+ *          ...
+ *      </j:bindings>
+ *      <j:dragdrop>
+ *          <j:allow-drag select="mail" />
+ *      </j:dragdrop>
+ *  </j:datagrid>
+ * </code>
+ *
+ * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
  * @attribute {String} copy-condition  a javascript expression that determines whether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
- * @define allow-drop   Specifies when nodes can be dropped into this element.
- * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} action          the action to perform when the xml data element is inserted.
+ *
+ * @define allow-drop   Determines whether a {@link term.datanode data node} can 
+ * be dropped on a data node bound to this element. 
+ * Example:
+ * This example shows a small mail application. The tree element displays a root
+ * node, accounts and folders in a tree. The datagrid contains the mails. This
+ * rule specifies which data nodes can be dropped where. Folders can be dropped 
+ * in folders and accounts. Mails can be dropped in folders.
+ * <code>
+ *  <j:tree align="left" width="200">
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:traverse select="root|account|folder" />
+ *      </j:bindings>
+ *      <j:dragdrop>
+ *          <j:allow-drag select = "folder" />
+ *          <j:allow-drop select = "folder" 
+ *                        target = "folder|account" />
+ *          <j:allow-drop select = "mail" 
+ *                        target = "folder" />
+ *      </j:dragdrop>
+ *  </j:tree>
+ *  <j:datagrid align="right">
+ *      <j:bindings>
+ *          ...
+ *      </j:bindings>
+ *      <j:dragdrop>
+ *          <j:allow-drag select="mail" />
+ *      </j:dragdrop>
+ *  </j:datagrid>
+ * </code>
+ 
+ * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} target          an xpath statement determining the new parent of the dropped {@link term.datanode data node}. The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} action          the action to perform when the {@link term.datanode data node} is inserted.
  *   Possible values:
- *   tree-append    Appends the xml data element to the element it's dropped on.
- *   list-append    Appends the xml data element to the root element of this element.
- *   insert-before  Inserts the xml data element before the elements it's dropped on.
+ *   tree-append    Appends the {@link term.datanode data node} to the element it's dropped on.
+ *   list-append    Appends the {@link term.datanode data node} to the root element of this element.
+ *   insert-before  Inserts the {@link term.datanode data node} before the elements it's dropped on.
  * @attribute {String} copy-condition  a javascript expression that determines whether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
  */
 /**
@@ -132,12 +203,12 @@ jpf.DragDrop = function(){
     ***********************/
 
     /**
-     * Copies a data element to the dataset of this element.
+     * Copies a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement} xmlNode      the xml data element which is copied.
-     * @param  {XMLElement} pNode        the new parent element of the copied data element. If none specified the root element of the data loaded in this element is used.
-     * @param  {XMLElement} [beforeNode] the position where the data element is inserted.
+     * @param  {XMLElement} xmlNode      the {@link term.datanode data node} which is copied.
+     * @param  {XMLElement} pNode        the new parent element of the copied {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
+     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node} is inserted.
      */
     this.copy = function(xmlNode, pNode, beforeNode){
         xmlNode = xmlNode.cloneNode(true);
@@ -153,12 +224,12 @@ jpf.DragDrop = function(){
     };
 
     /**
-     * Moves a data element to the dataset of this element.
+     * Moves a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement}  xmlNode      the xml data element which is copied.
-     * @param  {XMLElement}  pNode        the new parent element of the moved data element. If none specified the root element of the data loaded in this element is used.
-     * @param  {XMLElement}  [beforeNode] the position where the data element is inserted.
+     * @param  {XMLElement}  xmlNode      the {@link term.datanode data node} which is copied.
+     * @param  {XMLElement}  pNode        the new parent element of the moved {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
+     * @param  {XMLElement}  [beforeNode] the position where the {@link term.datanode data node} is inserted.
      */
     this.move = function(xmlNode, pNode, beforeNode){
         //Use Action Tracker
@@ -170,10 +241,18 @@ jpf.DragDrop = function(){
     };
 
     /**
-     * Determines whether the user is allowed to drag the passed XML node.
+     * Determines whether the user is allowed to drag the passed 
+     * {@link term.datanode data node}. The decision is made based on the 
+     * {@link element.allow-drag allow-drag} and {@link element.allow-drag allow-drag} 
+     * rules. These elements determine when a data node can be dropped on 
+     * another data node. For instance, imagine a mail application with a root
+     * node, accounts and folders in a tree, and mails in a datagrid. The rules
+     * would specify you can drag&drop folders within an account, and emails between
+     * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} x the xml data element subject to the test.
+     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
      * @return {Boolean} result of the test
+     * @see baseclass.dragdrop.method.isDragAllowed
      */
     this.isDragAllowed = function(x){
         //#ifdef __WITH_OFFLINE
@@ -202,11 +281,19 @@ jpf.DragDrop = function(){
     };
 
     /**
-     * Determines whether the user is allowed to dropped the passed XML node.
+     * Determines whether the user is allowed to dropped the passed 
+     * {@link term.datanode data node}. The decision is made based on the 
+     * {@link element.allow-drag allow-drag} and {@link element.allow-drag allow-drag} 
+     * rules. These elements determine when a data node can be dropped on 
+     * another data node. For instance, imagine a mail application with a root
+     * node, accounts and folders in a tree, and mails in a datagrid. The rules
+     * would specify you can drag&drop folders within an account, and emails between
+     * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} x the xml data element subject to the test.
-     * @param  {Object} target
+     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
+     * @param  {XMLElement} target   the {@link term.datanode data node} on which the dragged data node is dropped.
      * @return {Boolean} result of the test
+     * @see baseclass.dragdrop.method.isDragAllowed
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE

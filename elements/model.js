@@ -723,7 +723,7 @@ jpf.model = function(data, caching){
     /**
      * Loads data into this model using a data instruction.
      * @param {String}     instruction  the data instrution how to retrieve the data.
-     * @param {XMLElement} xmlContext   the xml data element that provides context to the data instruction.
+     * @param {XMLElement} xmlContext   the {@link term.datanode data node} that provides context to the data instruction.
      * @param {Object}     options
      *   Properties:
      *   {Function} callback   the code executed when the data request returns.
@@ -873,7 +873,7 @@ jpf.model = function(data, caching){
     /**
      * Inserts data into the data of this model using a data instruction.
      * @param {String}     instruction  the data instrution how to retrieve the data.
-     * @param {XMLElement} xmlContext   the xml data element that provides context to the data instruction.
+     * @param {XMLElement} xmlContext   the {@link term.datanode data node} that provides context to the data instruction.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} insertPoint  the parent element for the inserted data.
@@ -938,7 +938,7 @@ jpf.model = function(data, caching){
     /**
      * Inserts data in this model as a child of the currently loaded data.
      *
-     * @param  {XMLElement} XMLRoot         the xml data element to insert into this model.
+     * @param  {XMLElement} XMLRoot         the {@link term.datanode data node} to insert into this model.
      * @param  {XMLElement} [parentXMLNode] the parent element for the inserted data.
      */
     this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){

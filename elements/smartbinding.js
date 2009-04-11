@@ -60,13 +60,17 @@
  * Check the {@link term.binding term binding rules} for more information.
  *
  * Actions:
- * The actions element is a container for action rules. Action rules are have 
- * several functions. 
+ * The actions element is a container for action rules. Action rules influence 
+ * and trigger several parts of the user interaction. 
  * <ol>
- *  <li>It determines whether a user action can be executed on the bound and/or selected {@link term.datanode data node}.</li>
- *  <li>It dispatches events before and after executing the change to data.</li>
- *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} that is pushed on the undo stack of the {@link element.actiontracker actiontracker} connected to the element that triggered the action.</li>
- *  <li>The command object contains all the information to send the change to back to the server</li>
+ *  <li>It determines whether a user action can be executed on the bound and/or 
+ *      selected {@link term.datanode data node}.</li>
+ *  <li>It dispatches events, before and after the data is changed.</li>
+ *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} 
+ *      that is pushed on the undo stack of the {@link element.actiontracker actiontracker} 
+ *      connected to the element that triggered the action.</li>
+ *  <li>The command object contains all the information to send the change back 
+ *      to the server</li>
  * </ol>
  * So in short, an action rule is always triggered by the user, creates an 
  * undo item and sends the change back to the server.
@@ -114,7 +118,7 @@
  *
  * Each attribute on an element can be bound to data by using the attribute
  * name as the name of the binding rule. In the next example, the visible
- * attribute of a textbox is based on the availability of a data element:
+ * attribute of a textbox is based on the availability of a {@link term.datanode data node}:
  * <code>
  *  <j:textbox>
  *      <j:bindings>
@@ -137,7 +141,7 @@
  *
  * When the set of traverse nodes is determined, each is rendered based on other
  * binding rules that determine whatever is deemed necesary by the component. 
- * This can be the caption, icon, tooltip, wether an item is seletable and so on.
+ * This can be the caption, icon, tooltip, whether an item is seletable and so on.
  * In the next example a list is bound to some data representing a contact list.
  * Each contact's name is displayed as the caption of the item.
  * <code>
@@ -167,7 +171,7 @@
  *
  * Processors:
  * There are several ways to convert the data retrieved from the xml data into
- * the needed string or boolean. The following example uses {@link object.jslt jslt}
+ * the needed string or boolean. The following example uses {@link core.jpf.object.jsltImplementation jslt}
  * to determine the icon by the extension of the filename:
  * <code>
  *  <j:bindings>
@@ -204,27 +208,189 @@
  *      </j:bindings>
  *  </j:tree>
  * </code>
+ * For more information about how data can be loaded into jml elements please
+ * check {@link term.datainstruction data instructions}.
  */
 
 /**
- * @term action 
- * It is part of the concept of {@link term.smartbinding smartbinding}.
+ * @term action Action rules determine whether a user can execute an action and
+ * take care of executing the change both locally and on a remote server. Each
+ * triggered action creates an item on the undo stack.
+ * Action rules are part of the {@link term.smartbinding smartbinding concept}.
+ *
+ * Syntax:
+ * Actions are added to {@link element.actions}. The <i>select</i> attribute specifies
+ * whether an action can be executed. The <i>set</i> attribute specifies how the change
+ * to the data is send to the server. The following example shows a remove 
+ * action on a datagrid. A jsp script is called to process the change. This is
+ * specified using a {@link term.datainstruction data instruction}.
+ * <code>
+ *  <j:datagrid>
+ *      <j:actions>
+ *          <j:remove select = "self::contact[not(@readonly)]"
+ *                    set      "url:remove_contact.jsp?id={@dbid}" />
+ *      </j:actions>
+ *  </j:datagrid>
+ * </code>
+ *
+ * Defaults:
+ * The default behaviour for all components is to enable all actions when no
+ * j:actions element has been assigned. This can be change by setting 
+ * {@link element.appsettings.attribute.auto-disable-actions}. When a j:actions
+ * element <i>is</i> assigned, all actions are disabled unless they are specified.
+ * When the select attribute on an action is not set the action will always be
+ * allowed. 
+ * 
+ * Flow:
+ * Action rules influence and trigger several parts of the user interaction. 
+ * <ol>
+ *  <li>It determines whether a user action can be executed on the bound and/or 
+ *      selected {@link term.datanode data node}.</li>
+ *  <li>It dispatches events, before and after the data is changed.</li>
+ *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} 
+ *      that is pushed on the undo stack of the {@link element.actiontracker actiontracker} 
+ *      connected to the element that triggered the action.</li>
+ *  <li>The command object ({@link core.undodata UndoData}) contains all the 
+ *      information to send the change back to the server.</li>
+ * </ol>
+ *
+ * Fallbacks:
+ * By stacking multiple action rules it's possible to define different ways to
+ * deal with user actions. Let's say we have a tree that displays
+ * files and folders. Renaming a file and a folder might have different handlers. 
+ * This would be encoded like this:
+ * <code>
+ *  <j:actions>
+ *      <j:rename select = "self::file"   
+ *                set    = "url:rename_folder.php?path={@path}&name={@name}" />
+ *      <j:rename select = "self::folder" 
+ *                set    = "url:rename_file.php?path={@path}&name={@name}" />
+ *  </j:actions>
+ * </code>
+ *
+ * Undo:
+ * When an action is execute it creates an entry on the undostack of an 
+ * actiontracker. Undo can be triggered by calling the undo method.
+ * <code>
+ *  myTree.getActionTracker().undo();
+ * </code>
+ * Executing will revert the change to the data. This will also be communicated
+ * to the server. In some cases the call to the server is not symmetric; the set
+ * call cannot be used to revert. For these situations set the undo attribute.
+ * <code>
+ *  <j:actions>
+ *      <j:remove set  = "url:remove.php?id={@id}"
+ *                undo = "url:undo_remove.php?id={@id}" />
+ *      </j:remove>
+ *  </j:actions>
+ * </code>
+ * In the example above the server is required to support reverting remove. 
+ * Another possibility is to add the item again as shown in this example:
+ * <code>
+ *  <j:actions>
+ *      <j:remove set  = "url:remove.php?id={@id}"
+ *                undo = "url:add.php?xml={.}" />
+ *      </j:remove>
+ *  </j:actions>
+ * </code>
+ *
+ * Javascript:
+ * Each action has a method associated with it that exists on the element that
+ * the action rule is assigned to. The method has the same name as the action 
+ * and can be called from javascript. For instance, the {@link baseclass.multiselect.binding.remove remove action}:
+ * <code>
+ *  myTree.remove();
+ *  myTree.remove(dataNode);
+ * </code>
+ *
+ * Add:
+ * Adding {@link term.datanode data node}s to an element is a bit more advanced because the origin of
+ * the new data can be encoded in {@link baseclass.multiselect.binding.add the add action rule}. 
+ * There are three ways to provide the data to add a node. 
+ * 
+ * The first is by calling the add method using javascript.
+ * <code>
+ *  <j:list id="myList">
+ *      <j:actions>
+ *          <j:add set="rpc:comm.addProduct({.})" />
+ *      </j:actions>
+ *  </j:list>
+ *  <j:script>
+ *      myList.add('<product name="USB drive" type="storage" />');
+ *  </j:script>
+ * </code>
+ *
+ * The second by specifying the template as a child of the add action
+ * rule:
+ *  <j:actions>
+ *      <j:add set="rpc:comm.addProduct({.})">
+ *          <product name="USB drive" type="storage" />
+ *      </j:add>
+ *  </j:actions>
+ *
+ * The third way gets the added node from the server.
+ * <code>
+ *  <j:actions>
+ *      <j:add get="rpc:comm.createNewProduct()" />
+ *  </j:actions>
+ * </code>
+ *
+ * Purging:
+ * Sometimes it's necesary to not send the changes directly to the server. For
+ * instance when the application offers a <i>save</i> button. To achieve this
+ * set the {@link element.actiontracker.attribute.realtime realtime attribute}
+ * of the actiontracker to false. The save button can call the 
+ * {@link element.actiontracker.method.purge purge method} to have the 
+ * actiontracker send the calls.
+ * <code>
+ *  <j:actiontracker id="myAt" realtime="false" />
+ *  <j:list actiontracker="myAt" />
+ *  <j:button onclick="myAt.purge()">Save</j:button>
+ * </code>
+ * N.B. At a certain amount of changes this way will become inefficient and 
+ * you'll want to send the state of your data to the server directly. You can
+ * do that like this:
+ * <code>
+ *  <j:list id="myList">
+ *      <j:actions>
+ *          <j:rename />
+ *          <j:remove />
+ *      </j:actions>
+ *  </j:list>
+ *  <j:button onclick="myList.getModel().submit('url:save.php', myList.xmlRoot)">
+ *      Save
+ *  </j:button>
+ * </code>
+ * See also {@link element.model.method.submit}.
+ * 
+ * Transactions:
+ * A transaction is a 
+ * set of changes to data which are treated as one change. When one of the 
+ * changes in the set fails, all the changes will be cancelled. In the case of
+ * a gui this is happens when a user decides to cancel after 
+ * making several changes. A good example are the well known <i>Properties</i> 
+ * windows with an ok, cancel and apply button. 
+ *
+ * When a user edits data, for instance user information, all the changes are
+ * seen as one edit and put on the undo stack as a single action. Thus clicking
+ * undo will undo the entire transaction, not just the last change done by that
+ * user in the edit window. Transaction support both optimistic and pessimistic 
+ * locking. For more information on transactions see {@link baseclass.transaction}.
  */
  
 /**
- * @term datanode 
+ * @term datanode A data node is the term used for any xml node (attribute, 
+ * element, textnode or otherwise) that is used in a databound context. So when
+ * xml is loaded into a {@link element.model model} we refer to those xml nodes 
+ * as data nodes.
  */
  
-/**
- * @term set 
- */
-
 /**
  * Element containing information on how databound elements should deal with 
  * data. The smartbinding element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
  * send to their original data source ({@link element.actions actions}) and
- * which data elements can be dragged and dropped ({@link element.dragdrop dragdrop}).
+ * which {@link term.datanode data node}s can be dragged and dropped ({@link element.dragdrop dragdrop}).
  * Example:
  * A simple example of a smartbinding transforming data into representation
  * <code>
@@ -630,7 +796,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * 
      * @param  {mixed}  xmlNode
      *   Possible values:
-     *   {XMLElement} the xml data element loaded in the model of this smartbinding element. 
+     *   {XMLElement} the {@link term.datanode data node} loaded in the model of this smartbinding element. 
      *   {String}     the serialized xml which is loaded in the model of this smartbinding element. 
      *   {null}       clears this element.
      */

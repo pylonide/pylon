@@ -1087,7 +1087,6 @@ jpf.WindowImplementation = function(){
         }
         //#endif
 
-
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
         if (jpf.window.focussed && !jpf.window.focussed.disableKeyboard

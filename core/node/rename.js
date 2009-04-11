@@ -27,7 +27,7 @@ var __RENAME__ = 1 << 10;
  * All elements inheriting from this {@link term.baseclass} have the rename features. Rename is triggered by
  * pressing F2 on an item or by clicking once on an already selected item. This
  * will show an input element in place where the user can change the name of the
- * item to a new one. When the caption is changed the xml data element is
+ * item to a new one. When the caption is changed the {@link term.datanode data node} is
  * changed accordingly.
  * Example:
  * This example shows a list containing products. Only products that have the
@@ -103,12 +103,12 @@ jpf.Rename = function(){
     //#endif
 
     /**
-     * Changes the data presented as the caption of a specified xml data element.
+     * Changes the data presented as the caption of a specified {@link term.datanode data node}.
      * If none is specified the indicated node is used.
      *
      * @action
      * @param  {XMLElement} xmlNode the element to change the caption of.
-     * @param  {String}     value   the value to set as the caption of the xml data element.
+     * @param  {String}     value   the value to set as the caption of the {@link term.datanode data node}.
      */
     this.rename = function(xmlNode, value){
         if (!xmlNode)

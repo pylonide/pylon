@@ -46,7 +46,7 @@
  *   {Array}   args             the arguments for the action
  *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
  *   {JmlNode} [jmlNode]        the GUI element that triggered the action
- *   {XmlNode} [selNode]        the relevant data node to which the action node works on
+ *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
  * @event actionfail Fires when an action fails to be sent to the server.
  *   bubles: true
@@ -181,7 +181,7 @@ jpf.actiontracker = function(parentNode){
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
      *   {JmlNode} [jmlNode]        the GUI element that triggered the action
-     *   {XmlNode} [selNode]        the relevant data node to which the action node works on
+     *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
      */
     this.execute = function(options){
@@ -624,17 +624,6 @@ jpf.UndoData = function(settings, at){
 
     var options, _self = this;
 
-    this.getActionXmlNode = function(undo){
-        if (!this.xmlActionNode)  return false;
-        if (!undo) return this.xmlActionNode;
-
-        var xmlNode = $xmlns(this.xmlActionNode, "undo", jpf.ns.jml)[0];
-        if (!xmlNode)
-            xmlNode = this.xmlActionNode;
-
-        return xmlNode;
-    };
-
     // #ifdef __WITH_OFFLINE_TRANSACTIONS
     var serialState;
     this.$export = function(){
@@ -831,8 +820,13 @@ jpf.UndoData = function(settings, at){
             return at.$queueNext(this);
         }
 
-        var xmlActionNode = this.getActionXmlNode(undo);
-        if (!xmlActionNode || !xmlActionNode.getAttribute("set"))
+        var dataInstruction;
+        if (this.xmlActionNode)
+            dataInstruction = this.xmlActionNode.getAttribute(undo 
+                ? "undo" 
+                : "set");
+
+        if (!dataInstruction)
             return at.$queueNext(this);
 
         this.state = undo ? "restoring" : "saving";
@@ -844,15 +838,20 @@ jpf.UndoData = function(settings, at){
         //#endif
         options.preparse = false;
 
-        jpf.saveData(xmlActionNode.getAttribute("set"), null, options,
+        jpf.saveData(dataInstruction, null, options,
             function(data, state, extra){
                 return at.$receive(data, state, extra, _self, callback);
             }, {ignoreOffline: true});
     };
 
     this.preparse = function(undo, at, multicall){
-        var xmlActionNode = this.getActionXmlNode(undo);
-        if (!xmlActionNode || !xmlActionNode.getAttribute("set"))
+        var dataInstruction;
+        if (this.xmlActionNode)
+            dataInstruction = this.xmlActionNode.getAttribute(undo 
+                ? "undo" 
+                : "set");
+
+        if (!dataInstruction)
             return this;
 
         options = jpf.extend({
@@ -869,7 +868,7 @@ jpf.UndoData = function(settings, at){
         }
         //#endif
 
-        jpf.saveData(xmlActionNode.getAttribute("set"),
+        jpf.saveData(dataInstruction,
             this.selNode || this.xmlNode, options); //@todo please check if at the right time selNode is set
 
         return this;
