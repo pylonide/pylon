@@ -22,8 +22,7 @@
 //#ifdef __WITH_AUTH
 
 /**
- * @define auth
- * Centralized authentication handling. Not being logged in, after being
+ * @define auth Centralized authentication handling. Not being logged in, after being
  * offline for a while can put the application
  * in a complex undefined state. The auth element makes sure the state is always
  * properly managed. When it gets signalled 'authentication required' it dispatches the
@@ -51,7 +50,7 @@
  *  <j:appsettings>
  *      <j:auth login  = "xmpp:login(username, password)"
  *              logout = "xmpp:logout()"
- *              autostart    = "true"
+ *              autostart     = "true"
  *              window        = "winLogin"
  *              fail-state    = "stFail"
  *              error-state   = "stError"

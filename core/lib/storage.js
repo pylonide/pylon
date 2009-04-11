@@ -172,13 +172,14 @@ jpf.storage = {
     
     // #ifndef __PACKAGED
     //This code is only here for documentation purpose
+    ,
     /**
      * Stores a key value pair in a namespace.
      * @param {String} key       the identifier of the information.
      * @param {mixed}  value     the information to store.
      * @param {String} namespace the named context into which to store the key value pair.
      */
-    ,put: function(key, value, namespace){},
+    put: function(key, value, namespace){},
     
     /**
      * Retrieves a keys in a namespace.
