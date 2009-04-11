@@ -386,8 +386,8 @@
  */
  
 /**
- * Element containing information on how databound elements should deal with 
- * data. The smartbinding element specifies how data is transformed and rendered 
+ * Element containing information on how databound elements process data.
+ * The {@link term.smartbinding smartbinding} element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
  * send to their original data source ({@link element.actions actions}) and
  * which {@link term.datanode data node}s can be dragged and dropped ({@link element.dragdrop dragdrop}).
@@ -515,6 +515,11 @@
  * <code>
  *  <j:tree traverse="file|folder" caption="@name" icon="@icon" />
  * </code>
+ * @see baseclass.databinding
+ * @see baseclass.databinding.attribute.smartbinding
+ * @see term.smartbinding
+ * @see term.bindingrules
+ * @see term.actionrules
  * 
  * @define smartbinding
  * @allowchild bindings, actions, ref, action, dragdrop, model
@@ -794,11 +799,10 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     /**
      * Loads xml data in the model of this smartbinding element.
      * 
-     * @param  {mixed}  xmlNode
-     *   Possible values:
-     *   {XMLElement} the {@link term.datanode data node} loaded in the model of this smartbinding element. 
-     *   {String}     the serialized xml which is loaded in the model of this smartbinding element. 
-     *   {null}       clears this element.
+     * @param  {mixed}  xmlNode the {@link term.datanode data node} loaded into
+     * the model of this smartbinding element. This can be an XMLElement, a 
+     * string or null. 
+     * @private
      */
     this.load = function(xmlNode){
         this.setModel(new jpf.model().load(xmlNode));
@@ -807,10 +811,47 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     /**
      * @private
      *
-     * @attribute {String} bindings the id of the bindings element that provides the binding rules for all elements connected to this smartbinding element
-     * @attribute {String} actions  the id of the actions element that provides the action rules for all elements connected to this smartbinding element
-     * @attribute {String} dragdrop the id of the dragdrop element that provides the drag and drop rules for all elements connected to this smartbinding element
-     * @attribute {String} model    the id of the model element that provides the data for all elements connected to this smartbinding element.
+     * @attribute {String} bindings the id of the bindings element that contains 
+     * the {@link term.bindingrule binding rules} for all elements connected to 
+     * this smartbinding element
+     * Example:
+     * <code>
+     *  <j:smartbinding id="sbExample" bindings="bndExample" />
+     * </code>
+     * @see element.bindings
+     * @see term.bindingrule
+     * @see term.smartbinding
+     *
+     * @attribute {String} actions  the id of the actions element that provides 
+     * the {@link term.actionrule action rules} for all elements connected to 
+     * this smartbinding element
+     * Example:
+     * <code>
+     *  <j:smartbinding id="sbExample" bindings="actExample" />
+     * </code>
+     * @see element.actions
+     * @see term.actionrule
+     * @see term.smartbinding
+     *
+     * @attribute {String} dragdrop the id of the dragdrop element that provides 
+     * the drag and drop rules for all elements connected to this smartbinding 
+     * element
+     * Example:
+     * <code>
+     *  <j:smartbinding id="sbExample" dragdrop="ddExample" />
+     * </code>
+     * @see element.dragdrop
+     * @see term.smartbinding
+     *
+     * @attribute {String} model    the id of the model element that provides 
+     * the data for all elements connected to this smartbinding element.
+     * Example:
+     * <code>
+     *  <j:smartbinding id="sbExample" model="mdlExample" />
+     * </code>
+     * @see element.model
+     * @see term.smartbinding
+     *
      * @define bindings element containing all the binding rules for the data 
      * bound elements referencing this element.
      * Example:

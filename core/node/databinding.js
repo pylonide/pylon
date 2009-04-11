@@ -57,7 +57,6 @@ var __DATABINDING__ = 1 << 1;
  *   {Http}           tpModule  the teleport module that is making the request.
  *   {Number}         id        the id of the request.
  *   {String}         message   the error message.
- 
  *
  * @constructor
  * @baseclass
@@ -78,12 +77,13 @@ jpf.DataBinding = function(){
     /**** Public Methods ****/
 
     /**
-     * Gets the xpath statement from the main bind rule. Each databound
-     * element which does not implement jpf.MultiSelect has a main bind rule.
+     * Gets the xpath statement from the primary bind rule. Each databound
+     * element which does not implement jpf.MultiSelect has a primary bind rule.
      * This method gets the xpath statement in the select attribute of this rule.
      *
      * @return  {String}  the xpath statement
      * @see  element.smartbinding
+     * @private
      */
     this.getMainBindXpath = function(){
         if (this.hasFeature(__MULTIBINDING__))
@@ -100,6 +100,7 @@ jpf.DataBinding = function(){
      * Checks whether this element is completely bound.
      *
      * @return  {Boolean}
+     * @private
      */
     this.isBoundComplete = function(){
         if (!this.smartBinding) return true;
@@ -144,7 +145,6 @@ jpf.DataBinding = function(){
 		return n?n.selectSingleNode(xpath):null;
     };
 
-
     /**
      * Executes an xpath statement on the data of this model
      *
@@ -162,6 +162,7 @@ jpf.DataBinding = function(){
      * @param {Array}   rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
      * @see  element.smartbinding
+     * @private
      */
     this.loadBindings = function(rules, node){
         if (this.bindingRules)
@@ -193,6 +194,7 @@ jpf.DataBinding = function(){
      * Unloads the binding rules from this element
      *
      * @see  element.smartbinding
+     * @private
      */
     this.unloadBindings = function(){
         if (this.$unloaddatabinding)
@@ -220,6 +222,7 @@ jpf.DataBinding = function(){
      * @param {Array}       rules     the rules array created using {@link core.jpf.method.getrules}
      * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
      * @see  element.smartbinding
+     * @private
      */
     this.loadActions = function(rules, node){
         if (this.actionRules)
@@ -280,6 +283,7 @@ jpf.DataBinding = function(){
      * Unloads the action rules from this element
      *
      * @see  element.smartbinding
+     * @private
      */
     this.unloadActions = function(){
         this.xmlActions  = null;
@@ -305,23 +309,74 @@ jpf.DataBinding = function(){
     var actions = {};
 
     /**
+     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock} 
+     * is a mechanism for enforcing limits on access to a resource in a 
+     * multi-user environment. Locks are one way of enforcing concurrency 
+     * control policies. Javeline Platform (jpf) has support for locking in 
+     * combination with {@link term.actionrule action rules}. There are two 
+     * types of locks; pessimistic and optimistic locks. Descriptions below is
+     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
+     *
+     * Optimistic:
+     * This allows multiple concurrent users access to the database whilst the 
+     * system keeps a copy of the initial-read made by each user. When a user 
+     * wants to update a record, the application determines whether another user 
+     * has changed the record since it was last read. The application does this 
+     * by comparing the initial-read held in memory to the database record to 
+     * verify any changes made to the record. Any discrepancies between the 
+     * initial-read and the database record violates concurrency rules and hence 
+     * causes the system to disregard any update request. An error message is 
+     * generated and the user is asked to start the update process again. 
+     * It improves database performance by reducing the amount of locking 
+     * required, thereby reducing the load on the database server. It works 
+     * efficiently with tables that require limited updates since no users are 
+     * locked out. However, some updates may fail. The downside is constant 
+     * update failures due to high volumes of update requests from multiple 
+     * concurrent users - it can be frustrating for users.
+     *
+     * For optimistic locking jpf can run as if there would be no locking. 
+     * Changed data is send to the server and is either successfully saved or
+     * not. When the action isn't changed and the server returns an error code
+     * the {@link element.actiontracker actiontracker} <strong>automatically 
+     * reverts the change</strong>. 
+     *
+     * Pessimistic:
+     * This is whereby a user who reads a record with the intention of updating 
+     * it, places an exclusive lock on the record to prevent other users from 
+     * manipulating it. This means no one else can manipulate that record until 
+     * the user releases the lock. The downside is that users can be locked out 
+     * for a long time thereby causing frustration. 
+     * 
+     * For pessimistic locking add the locking attribute to the {@link term.actionrule action rules}
+     * that need it. The following example shows a lock request for a rename
+     * action on a file browser tree.
+     * <code>
+     *  <j:rename set="..." lock="rpc:comm.lockFile({@path}, unlock)" />
+     * </code>
+     * The unlock variable is true when the lock needs to be released. This is
+     * done when the action was cancelled after getting a lock. For instance
+     * when the user presses escape while renaming.
+     *
+     * MultiUser:
+     * In multi user environments it can be handy
+     * to be signalled of changes by others within the application. For more 
+     * information on this please look at {@link element.remote}.
+     *
+     * Remarks:
+     * During offline works pessimistic locks will always fail. If the application
+     * does not use {@link element.remote remote smart bindings} the developer
+     * should reload the part of the content for which the lock failed. See
+     * {@link baseclass.databinding.event.lockfailed}.
+     *
+     * Note: JFF understands the status codes specified in RFC4918 for the locking implementation
+     *       http://tools.ietf.org/html/rfc4918#section-9.10.6
+     */
+     
+    /**
      *  Start the specified action, does optional locking and can be offline aware
-     *  - This method can be cancelled by events, offline etc
-     *  - This method can execute pessimistic locking calls (<j:name locking="datainstr" /> rule)
      *  - or for optimistic locking it will record the timestamp (a setting <j:appsettings locking="optimistic")
-     *  - During offline work, pessimistic locks will always fail
      *  - During offline work, optimistic locks will be handled by taking the timestamp of going offline
      *  - This method is always optional! The server should not expect locking to exist.
-     *  Single Client Locking
-     *   - Because of the increased complexity of this, when a lock fails (either pessimistic or optimistic)
-     *     the developer should handle this by reloading that part of the content for which the lock failed.
-     *     It is impossible for JPF to know which part this is and what to update
-     * Example:
-     * <code>
-     *     <j:rename set="..." lock="rpc:comm.lockFile(xpath:@path, unlock)" />
-     * </code>
-     * Note: I am expecting the status codes specified in RFC4918 for the locking implementation
-     *       http://tools.ietf.org/html/rfc4918#section-9.10.6
      *
      * @event locksuccess   Fires when a lock request succeeds
      *   bubbles: yes
@@ -477,7 +532,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Executes an action using action rules set in the j:actions element
+     * Executes an action using action rules set in the {@link element.actions actions element}.
      *
      * @param {String}      atAction      the name of the action to be performed by the ActionTracker.
      *   Possible values:
@@ -500,6 +555,7 @@ jpf.DataBinding = function(){
      * @param {XMLElement}  [contextNode] the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
      * @see  element.smartbinding
+     * @private
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         if (this.disabled) return; //hack
@@ -580,6 +636,7 @@ jpf.DataBinding = function(){
      * @param {String}      setName  the name of the binding rule defined in j:bindings for this element.
      * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
      * @param {String}      value    the new value of the node
+     * @private
      */
     this.executeActionByRuleSet = function(atName, setName, xmlNode, value){
         var xpath, args, selInfo = this.getSelectFromRule(setName, xmlNode);
@@ -668,6 +725,7 @@ jpf.DataBinding = function(){
      *   choice  sents data when a node is chosen (by double clicking, or pressing enter)
      * @see  element.smartbinding
      * @see  baseclass.databinding.method.disconnect
+     * @private
      */
     this.connect = function(o, dataOnly, xpath, type, noselect){
         if (o.dataParent)
@@ -743,6 +801,7 @@ jpf.DataBinding = function(){
      *   choice  disconnects the choice connection
      * @see  element.smartbinding
      * @see  baseclass.databinding.method.connect
+     * @private
      */
     this.disconnect = function(o, type){
         //User action - Select || Choice
@@ -777,6 +836,7 @@ jpf.DataBinding = function(){
      * @see  element.smartbinding
      * @see  baseclass.databinding.method.connect
      * @see  baseclass.databinding.method.disconnect
+     * @private
      */
     this.setConnections = function(xmlNode, type){
         var a = type == "both"
@@ -1133,6 +1193,7 @@ jpf.DataBinding = function(){
      * @param {Boolean}     [createNode]  whether the {@link term.datanode data node}is created when it doesn't exist.
      * @returns  {XMLElement}  the requested node.
      * @see  element.smartbinding
+     * @private
      */
     this.getNodeFromRule = function(setname, cnode, isAction, getRule, createNode){
         //Get Rules from Array
@@ -1180,6 +1241,7 @@ jpf.DataBinding = function(){
      * @param {String}      setname  the name of the binding/action rule set.
      * @param {XMLElement}  cnode    the xml element to which the binding rules are applied.
      * @returns {String}
+     * @private
      */
     this.getSelectFromRule = function(setname, cnode){
         var rules = this.bindingRules && this.bindingRules[setname];
@@ -1258,6 +1320,7 @@ jpf.DataBinding = function(){
      *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
      * @see  element.smartbinding
      * @see  baseclass.cache.method.clear
+     * @private
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
@@ -2379,9 +2442,28 @@ jpf.StandardBinding = function(){
 
 //#ifdef __WITH_MULTISELECT
 /**
+ * All elements inheriting from this {@link term.baseclass} can bind to data 
+ * which contains multiple nodes.
+ *
+ * @allowchild  item, choices
+ * @define  choices     Container for item nodes which receive presentation. 
+ * This element is part of the XForms specification. It is not necesary for 
+ * the javeline markup language.
+ * Example:
+ * <code>
+ *  <j:list>
+ *      <j:choices>
+ *          <j:item>red</j:item>
+ *          <j:item>blue</j:item>
+ *          <j:item>green</j:item>
+ *      </j:choices>
+ *  </j:list>
+ * </code>
+ * @allowchild  item
+ *
  * @constructor
  * @baseclass
- * @private
+ * @default_private
  */
 jpf.MultiselectBinding = function(){
     this.length = 0;
@@ -2564,7 +2646,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
-     * this element (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
+     * this element (see traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
      */
@@ -2582,7 +2664,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Retrieves the first {@link term.datanode data node} which gets representation in this element
-     * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
+     * (see traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return {XMLElement}
@@ -2601,7 +2683,7 @@ jpf.MultiselectBinding = function(){
 
     /**
      * Retrieves the last {@link term.datanode data node} which gets representation in this element
-     * (aka. traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
+     * (see traverse nodes, see {@link baseclass.multiselectbinding.binding.traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
      * @return {XMLElement} the last {@link term.datanode data node}
@@ -3282,16 +3364,6 @@ jpf.MultiselectBinding = function(){
         }, 10);
     });
 
-    /**
-     * @allowchild  item, choices
-     * @define item         xml element which is rendered by this element.
-     * @attribute {String} value    the value that the element gets when this element is selected.
-     * @attribute {String} icon     the url to the icon used in the representation of this node.
-     * @attribute {String} image    the url to the image used in the representation of this node.
-     * @allowchild  [cdata], label
-     * @define  choices     container for item nodes which receive presentation. This element is part of the XForms specification. It is not necesary for the javeline markup language.
-     * @allowchild  item
-     */
     this.$loadInlineData = function(x){
         if (!$xmlns(x, "item", jpf.ns.jml).length)
             return jpf.JmlParser.parseChildren(x, null, this);
@@ -3377,7 +3449,6 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list caption="text()" traverse="item" />
      * </code>
-     * @see  binding.caption
      */
     this.$propHandlers["caption"]  =
     
@@ -3388,7 +3459,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list valuerule="@value" traverse="item" />
      * </code>
-     * @see  binding.value
+     * @see  baseclass.multiselect.binding.value
      */
     this.$propHandlers["valuerule"]  =
 
@@ -3399,7 +3470,6 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list icon="@icon" traverse="item" />
      * </code>
-     * @see  binding.icon
      */
     this.$propHandlers["icon"]     =
 
@@ -3410,7 +3480,6 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list tooltip="text()" traverse="item" />
      * </code>
-     * @see  binding.tooltip
      */
     this.$propHandlers["tooltip"]  =
 
@@ -3421,7 +3490,7 @@ jpf.MultiselectBinding = function(){
      * <code>
      *  <j:list select="self::node()[not(@disabled='1')]" traverse="item" />
      * </code>
-     * @see  binding.select
+     * @see  baseclass.multiselect.binding.select
      */
     this.$propHandlers["select"]   = this.$handleBindingRule;
     //#endif

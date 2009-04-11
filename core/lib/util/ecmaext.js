@@ -38,6 +38,10 @@ String.prototype.dataType   = "string";
 RegExp.prototype.dataType   = "regexp";
 Function.prototype.dataType = "function";
 
+/**
+ * Converts a javascript object to a cgi string.
+ * @see core.xmldatabase.method.convertXml
+ */
 jpf.getCgiString = function(args, multicall, mcallname){
     var vars = [];
 
@@ -76,6 +80,10 @@ jpf.getCgiString = function(args, multicall, mcallname){
     return vars.join("&");
 }
 
+/**
+ * Converts a cgi string to a javascript object.
+ * @see core.xmldatabase.method.convertXml
+ */
 jpf.fromCgiString = function(args) {
     if (!args)
         return false;

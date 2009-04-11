@@ -92,15 +92,16 @@
  * @attribute  {Boolean} init         whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
  * @attribute  {Boolean} save-original whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
- * @define instance
+ * @define instance     Element defining a container for data. This element is optional for normal use, but is required for xforms compatibility.
  * @attribute  {String}  src          the url to retrieve the data from.
- * @define load
+ * @see element.model
+ * @define load         Element defining how data is loaded into a model.
  * @attribute  {String}  get          the data instruction on how to load data from the data source into this model.
- * @define submission
- * @attribute  {String}  ref          not implemented.
- * @attribute  {String}  bind         not implemented.
- * @attribute  {String}  action       the url to sent the data to.
- * @attribute  {String}  method       how to serialize the data, and how to sent it.
+ * @see element.model
+ * @see element.model.attribute.load
+ * @define submission   Element serving as a referencable entry to a way of submitting data to the server.
+ * @attribute  {String}  action       the url to post the data to.
+ * @attribute  {String}  method       the way of data serializing, and the transport method.
  *   Possible values:
  *   post            sent xml using the http post protocol. (application/xml)
  *   get             sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
@@ -108,7 +109,9 @@
  *   multipart-post  not implemented (multipart/related)
  *   form-data-post  not implemented (multipart/form-data)
  *   urlencoded-post sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
- * @attribute  {String}  set          the data instruction on how to record the data from the data source from this model.
+ * @attribute  {String}  set          the {@link term.datainstruction data instruction} on how to record the data from the data source from this model.
+ * @see element.model
+ * @see element.model.attribute.submission
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

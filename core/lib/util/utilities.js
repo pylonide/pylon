@@ -91,6 +91,11 @@ jpf.highlightCode = function(strCode){
        .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
 }
 
+/**
+ * Syntax highlights a code string using html.
+ * @param {String} strCode the code to highlight.
+ * @return {String} the highlighted string.
+ */
 jpf.highlightCode2 = function(strCode){
   var comment=[];
   return strCode

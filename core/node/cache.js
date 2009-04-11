@@ -60,6 +60,7 @@ jpf.Cache = function(){
      *   true   the cache element is found and set active
      *   false  otherwise
      * @see    baseclass.databinding.method.load
+     * @private
      */
     this.getCache = function(id, xmlNode){
         //Checking Current
@@ -132,6 +133,7 @@ jpf.Cache = function(){
      *
      * @param {String}           id        the id of the cache element to be stored.
      * @param {DocumentFragment} fragment  the data to be stored.
+     * @private
      */
     this.setCache = function(id, fragment){
         if (!this.caching) return;
@@ -185,6 +187,7 @@ jpf.Cache = function(){
      *
      * @param {String} id  the id of the HTMLElement which is looked up.
      * @return {DocumentFragment} the cached element. When no object is found, null is returned.
+     * @private
      */
     this.getCacheItemByHtmlId = function(id){
         var node = this.$findNode(null, id);
@@ -207,6 +210,7 @@ jpf.Cache = function(){
      * @param {Boolean} [nomsg]   whether to display the empty message.
      * @param {Boolean} [doEvent] whether to sent select events.
      * @see baseclass.databinding.method.load
+     * @private
      */
     this.clear = function(nomsg, doEvent){
         if (this.clearSelection)
@@ -299,6 +303,7 @@ jpf.Cache = function(){
      * @param {String}  id       the id of the HTMLElement which is looked up.
      * @param {Boolean} [remove] whether to destroy the Fragment.
      * @see baseclass.databinding.method.clear
+     * @private
      */
     this.clearCacheItem = function(id, remove){
         cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
@@ -313,6 +318,7 @@ jpf.Cache = function(){
      * Removes all items from the cache
      *
      * @see baseclass.databinding.method.clearCacheItem
+     * @private
      */
     this.clearAllCache = function(){
         for (var prop in cache) {
@@ -326,6 +332,7 @@ jpf.Cache = function(){
      *
      * @param {String} id  the id of the HTMLElement which is looked up.
      * @see baseclass.databinding.method.clearCacheItem
+     * @private
      */
     this.getCacheItem = function(id){
         return cache[id];
@@ -336,6 +343,7 @@ jpf.Cache = function(){
      *
      * @param {String} id  the id of the cache item to check.
      * @see baseclass.databinding.method.clearCacheItem
+     * @private
      */
     this.isCached = function(id){
         return cache[id] || this.cacheID == id ? true : false;

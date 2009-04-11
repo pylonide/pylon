@@ -140,7 +140,7 @@ jpf.Alignment = function(){
 
     /**
      * Calculates the rules for this element and activates them.
-     *
+     * @private
      */
     this.purgeAlignment = function(){
         var layout = l.get(this.pHtmlNode);
@@ -181,7 +181,9 @@ jpf.Alignment = function(){
         /**
          * @attribute  {String} align       the edge of the parent to which this element aligns. Possible values are a combination of: "left", "middle", "right", "top", "bottom" and "slider" and optionally a size.
          * Example:
-         * <j:tree align="left-splitter-3" />
+         * <code>
+         *  <j:tree align="left-splitter-3" />
+         * </code>
          * @attribute  {String} lean        the position of element when it is ambiguous.
          *   Possible values:
          *   right  the element leans towards the right

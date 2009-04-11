@@ -2701,6 +2701,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
 //#endif
 
+/**
+ * @private
+ */
 jpf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;

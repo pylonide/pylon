@@ -63,7 +63,7 @@ jpf.Rename = function(){
     var lastCursor;
     
     /**
-     * @attribute  {Boolean}  rename  whether the user can rename items in this element.
+     * @attribute  {Boolean}  rename  whether the user can start renaming rendered nodes in this element.
      */
     this.$booleanProperties["canrename"] = true;
     this.$booleanProperties["autorename"] = true;

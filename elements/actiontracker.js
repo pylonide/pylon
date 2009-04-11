@@ -49,7 +49,7 @@
  *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
  * @event actionfail Fires when an action fails to be sent to the server.
- *   bubles: true
+ *   bubbles: true
  *   object:
  *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *     {Number}         state     the state of the call
@@ -64,8 +64,9 @@
  *     {Http}           tpModule  the teleport module that is making the request.
  *     {Number}         id        the id of the request.
  *     {String}         message   the error message.
+ * @see term.locking
  * @event actionsuccess Fires when an action is successfully sent to the server.
- *   bubles: true
+ *   bubbles: true
  *   object:
  *     {Number}         state     the state of the call
  *       Possible values:
@@ -590,11 +591,12 @@ jpf.actiontracker = function(parentNode){
 };
 
 /**
- * UndoData is a storage node for the actiontracker. Each instance of this class
+ * UndoData is the command object for the actiontracker. Each instance of this class
  * contains information about a single event in the application. It can be undone
- * and it knows how to synchronize the change to a (removed) data source.
+ * and it knows how to synchronize the change to a (remote) data source.
  *
  * @constructor
+ * @default_private
  */
 jpf.UndoData = function(settings, at){
     this.tagName = "UndoData";
@@ -812,6 +814,10 @@ jpf.UndoData = function(settings, at){
         this.rsbModel = null;
     };
 
+    /**
+     * Save the change to a data source.
+     * @param {Boolean} undo whether the change is undone.
+     */
     this.saveChange = function(undo, at, callback){
         //Grouped undo/redo support
         if (this.action == "group") {

@@ -1838,6 +1838,9 @@ jpf.debugwin = {
     }
 }
 
+/**
+ * Displays the debug window. Same as pressing F9 or Ctrl-Shift-D.
+ */
 jpf.showDebugWindow = function(){
     jpf.debugwin.activate();
 }

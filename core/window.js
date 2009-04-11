@@ -94,7 +94,7 @@ jpf.WindowImplementation = function(){
     };
 
     /**
-     * Retrieves the root action tracker of the application.
+     * Retrieves the primary {@link element.actiontracker action tracker} of the application.
      */
     this.getActionTracker = function(){
         return this.$at
@@ -706,7 +706,7 @@ jpf.WindowImplementation = function(){
 
     //#endif
 
-    /** Set Window Events **/
+    /**** Set Window Events ****/
 
     window.onbeforeunload = function(){
         return jpf.dispatchEvent("exit");
@@ -1222,11 +1222,13 @@ jpf.WindowImplementation = function(){
 };
 
 /**
- * The jml document. This is the jml node with nodeType 9. It is the root of
- * the application and has a refererence to the documentElement.
+ * The jml document, this is the root of the DOM Tree and has a nodeType with 
+ * value 9 (jpf.NODE_DOCUMENT). 
  *
  * @constructor
  * @inherits jpf.JmlDom
+ * @default_private 
+ * @see {baseclass.jmldom}
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -1239,6 +1241,22 @@ jpf.DocumentImplementation = function(){
     this.inherit(jpf.JmlDom); 
     //#endif
 
+    /**
+     * {Number} nodeType the type of node within the document.
+     *   Possible values:
+     *   jpf.NODE_ELEMENT
+     *   jpf.NODE_ATTRIBUTE
+     *   jpf.NODE_TEXT
+     *   jpf.NODE_CDATA_SECTION
+     *   jpf.NODE_ENTITY_REFERENCE
+     *   jpf.NODE_ENTITY
+     *   jpf.NODE_PROCESSING_INSTRUCTION
+     *   jpf.NODE_COMMENT
+     *   jpf.NODE_DOCUMENT
+     *   jpf.NODE_DOCUMENT_TYPE
+     *   jpf.NODE_DOCUMENT_FRAGMENT
+     *   jpf.NODE_NOTATION
+     */
     this.nodeType   = jpf.NODE_DOCUMENT;
     this.nodeFunc   = jpf.NODE_HIDDEN;
     this.$jmlLoaded = true;
@@ -1294,6 +1312,11 @@ jpf.DocumentImplementation = function(){
     jpf.inherit.call(this.documentElement, jpf.JmlDom);
     //#endif
 
+    /**
+     * Gets a jml element based on it's id.
+     * @param {String} id the id of the jml element to return.
+     * @return {JMLElement} the jml element with the id specified.
+     */
     this.getElementById = function(id){
         return self[id];
     };
@@ -1449,6 +1472,9 @@ jpf.DocumentImplementation = function(){
         var result = jpf.XPath.selectNodes(sExpr,
             contextNode || this.documentElement);
 
+        /**
+         * @private
+         */
         return {
             snapshotLength : result.length,
             snapshotItem   : function(i){
@@ -1469,6 +1495,9 @@ jpf.DocumentImplementation = function(){
 // #endif
 
 //#ifdef __WITH_WINDOW_FOCUS
+/**
+ * @private
+ */
 jpf.sanitizeTextbox = function(oTxt){
     oTxt.onfocus = function(){
         jpf.window.$focusfix2();

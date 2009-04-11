@@ -25,34 +25,61 @@
  * Element specifying the settings of the application.
  * @define appsettings
  * @addnode global
- * @attribute {Boolean} debug                   whether the debug screen is shown and debug logging is enabled.
+ * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
+ * @see core.jpf.object.debugwin
+ * @see core.jpf.object.console
  * @attribute {Boolean} debug-teleport          whether teleport messages are displayed in the log.
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
  * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
- * @attribute {Boolean} allow-select            whether any text in the application can be selected.
+ * @see element.contextmenu
+ * @attribute {Boolean} allow-select            whether general text in the application can be selected.
  * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element
  * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
+ * @see term.actionrule
  * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
- * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden.
+ * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
+ * <code>
+ *  jpf.loadscreen.hide();
+ * </code>
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
+ * @see element.history
  * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
+ * @see element.actiontracker
  * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
+ * @see baseclass.interactive
  * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
+ * @see baseclass.interactive
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
- * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
- * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and data instrutions.
+ * @see baseclass.interactive
+ * @attribute {String}  layout                  the {@link term.datainstruction data instruction} to retrieve the layout xml definition.
+ * @see core.layout
+ * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instruction}.
+ * @see teleport.http
+ * @see term.datainstruction
  * @attribute {String}  loading-message         the global value for the loading message of elements during a loading state.
+ * @see baseclass.databinding.attribute.loading-message
  * @attribute {String}  offline-message         the global value for the offline message of elements not able to display content while offline.
+ * @see baseclass.databinding.attribute.offline-message
  * @attribute {String}  empty-message           the global value for the empty message of elements containing no contents.
+ * @see baseclass.databinding.attribute.empty-message
  * @attribute {String}  model                   the default model for this application.
- * @attribute {String}  realtime                the global value which enables or disables realtime updating of bound data while changing the value. When set to false elements don't update until they loose focus.
+ * @see element.model
+ * @attribute {String}  realtime                the global value whether bound values are realtime updated. When set to false elements do not update until they lose focus.
+ * @see element.editor.attribute.realtime
+ * @see element.textbox.attribute.realtime
+ * @see element.slider.attribute.realtime
  * @attribute {String}  skinset                 the skin set used by the application.
+ * @see baseclass.presentation.attribute.skinset
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
+ * @see core.storage
  * @attribute {String}  offline                 the storage provider to be used for offline support.
+ * @see core.offline
  * @attribute {String}  login                   the datainstruction which logs a user into the application.
+ * @see element.auth
  * @attribute {String}  logout                  the datainstruction which logs a user out of the application.
+ * @see element.auth
  * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied
  * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied
  * @allowchild auth, authentication, offline, printer, defaults

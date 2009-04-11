@@ -22,14 +22,7 @@
 // #ifdef __WITH_PRINTER
 
 /**
- * @define printer
- * Element providing printer control.
- * Example:
- * <code>
- *  <j:appsettings>
- *      <j:printer onbeforeprint="jpf.printer.preview(getHtml())" />
- *  </j:appsettings>
- * </code>
+ * @private
  */
 jpf.printer = {
     //#ifdef __WITH_JMLDOM_FULL
@@ -94,14 +87,14 @@ jpf.printer = {
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(true);
             // #endif
-            jpf.dispatchEvent("onbeforeprint");
+            jpf.dispatchEvent("beforeprint");
         };
         
         window.onafterprint = function(){
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(false);
             // #endif
-            jpf.dispatchEvent("onafterprint");
+            jpf.dispatchEvent("afterprint");
         };
     },
     

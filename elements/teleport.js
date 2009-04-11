@@ -28,6 +28,107 @@
  * @define teleport
  * @addnode global
  * @allowchild {teleport}
+ * Example:
+ * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
+ * <code>
+ *  <j:teleport>
+ *      <j:rpc id="comm" protocol="cgi">
+ *          <j:method
+ *            name    = "searchProduct"
+ *            url     = "http://example.com/search.php"
+ *            receive = "processSearch">
+ *              <j:variable name="search" />
+ *              <j:variable name="page" />
+ *              <j:variable name="textbanner" value="1" />
+ *          </j:method>
+ *          <j:method
+ *            name = "loadProduct"
+ *            url  = "http://example.com/show-product.php">
+ *              <j:variable name="id" />
+ *              <j:variable name="search_id" />
+ *          </j:method>
+ *      </j:rpc>
+ *  </j:teleport>
+ *
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </code>
+ * Example:
+ * Example of the {@link teleport.soap rpc module with the soap protocol}.
+ * <code>
+ *  <j:teleport>
+ *      <j:rpc id="comm" 
+ *        protocol    = "soap" 
+ *        url         = "http://example.com/show-product.php" 
+ *        soap-prefix = "m" 
+ *        soap-xmlns  = "http://example.com">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            receive = "processSearch">
+ *              <j:variable name="search" />
+ *              <j:variable name="page" />
+ *              <j:variable name="textbanner" value="1" />
+ *          </j:method>
+ *          <j:method 
+ *            name = "loadProduct">
+ *              <j:variable name="id" />
+ *              <j:variable name="search_id" />
+ *          </j:method>
+ *      </j:rpc>
+ *  </j:teleport>
+ *
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </code>
+ * Example:
+ * Writing to a file with a WebDAV connector
+ * <code>
+ *  <j:teleport>
+ *      <j:webdav id="myWebDAV"
+ *        url   = "http://my-webdav-server.com/dav_files/" />
+ *  </j:teleport>
+ *     
+ *  <j:script>
+ *      // write the text 'bar' to a file on the server called 'foo.txt'
+ *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ *  </j:script>
+ * </code>
+ * Example:
+ * XMPP connector with new message notification
+ * <code>
+ *  <j:teleport>
+ *      <j:xmpp id="myXMPP"
+ *        url           = "http://my-jabber-server.com:5280/http-bind"
+ *        model         = "mdlRoster"
+ *        connection    = "bosh"
+ *        onreceivechat = "messageReceived(arguments[0].from)" />
+ *  </j:teleport>
+ *
+ *  <j:script>
+ *      // This function is called when a message has arrived
+ *      function messageReceived(from){
+ *          alert('Received message from ' + from);
+ *      }
+ *
+ *      // Send a message to John
+ *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
+ *          jpf.xmpp.MSG_CHAT);
+ *  </j:script>
+ * </code>
  *
  * @default_private
  */

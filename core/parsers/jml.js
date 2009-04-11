@@ -26,6 +26,14 @@
  * the xsd parser.
  * @parser
  * @private
+ *
+ * @define include element that loads another jml files.
+ * Example:
+ * <code>
+ *   <j:include src="bindings.jml" />
+ * </code>
+ * @attribute {String} src the location of the jml file to include in this application.
+ * @addnode global, anyjml
  */
 jpf.JmlParser = {
     // #ifdef __WITH_DATABINDING
@@ -323,15 +331,6 @@ jpf.JmlParser = {
         this.nsHandler[xmlns] = func;
     },
 
-    /**
-     * @define include element that loads another jml files.
-     * Example:
-     * <code>
-     *   <j:include src="bindings.jml" />
-     * </code>
-     * @attribute {String} src the location of the jml file to include in this application.
-     * @addnode global, anyjml
-     */
     /**
      * @private
      */

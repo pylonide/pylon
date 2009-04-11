@@ -22,9 +22,12 @@
 // #define __WITH_TELEPORT 1
 
 /**
- * Object allowing for easy http communication from within the browser. This
- * object does what is commonly known as Ajax. It Asynchronously communicates
- * using Javascript And in most cases it sends or receives Xml.
+ * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
+ * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
+ * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
+ * communication from within the browser. This object provides {@link teleport.http.method.savecache caching} on top of
+ * the browser's cache. This enables you to optimize your application, because
+ * this can be set on a per call basis. 
  * Example:
  * Retrieving content over http synchronously:
  * <code>
@@ -113,7 +116,7 @@ jpf.http = function(){
     var namespace = jpf.appsettings.name + ".jpf.http";
 
     /**
-     * Saves the jpf http cache to the available javeline storage engine.
+     * Saves the jpf http cache to the available {@link core.storage storage engine}.
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
@@ -133,7 +136,7 @@ jpf.http = function(){
     };
 
     /**
-     * Loads the jpf http cache from the available javeline storage engine.
+     * Loads the jpf http cache from the available {@link core.storage storage engine}.
      */
     this.loadCache = function(){
         var strResult = jpf.storage.get("cache_" + _self.name,
@@ -152,7 +155,7 @@ jpf.http = function(){
     };
 
     /**
-     * Removes the stored http cache from the available javeline storage engine.
+     * Removes the stored http cache from the available {@link core.storage storage engine}.
      */
     this.clearCache = function(){
         jpf.storage.remove("cache_" + _self.name,
@@ -163,24 +166,33 @@ jpf.http = function(){
     /**
      * Makes an http request that receives xml
      * For a description of the parameters see {@link teleport.http.method.get}
-     * @param {String}   url       the url that is called
-     * @param {Function} callback  the handler of the request success, error or timed out state.
+     * @param {String}   url       the url that is accessed.
+     * @param {Function} callback  the handler that gets called whenever the request completes succesfully or with an error, or when the request times out.
      * @param {Object}   options   the options for the http request
+     *   Properties:
+     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
+     *   {mixed}   userdata       custom data that is available to the callback function.
+     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   {Boolean} nocache        whether browser caching is prevented.
+     *   {String}  data           the data sent in the body of the message.
+     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
+     *   {Boolean} caching        whether the request should use internal caching.
+     *   {Boolean} ignoreOffline  whether to ignore offline catching.
      */
     this.getXml = function(url, callback, options){
-        if(!options) options = {};
+        if (!options) options = {};
         options.useXML = true;
         return this.get(url, callback, options);
     };
 
     /**
      * Makes an http request.
-     * @param {String}   url       the url that is called
-     * @param {Function} callback  the handler of the request success, error or timed out state.
+     * @param {String}   url       the url that is accessed.
+     * @param {Function} callback  the handler that gets called whenever the request completes succesfully or with an error, or when the request times out.
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       passed to the callback function.
+     *   {mixed}   userdata       custom data that is available to the callback function.
      *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   {Boolean} nocache        whether browser caching is prevented.
      *   {String}  data           the data sent in the body of the message.
@@ -190,7 +202,7 @@ jpf.http = function(){
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
      */
     this.get = function(url, callback, options, id){
-        if(!options)
+        if (!options)
             options = {};
 
         //#ifdef __WITH_OFFLINE

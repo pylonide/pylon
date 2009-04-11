@@ -33,7 +33,8 @@
  * Buttons placed inside this element can contain an action
  * attribute specifying whether they behave as next, previous or finish(submit)
  * buttons. This element is <u>not</u> necesary for simple forms, like the
- * normal html webforms (see {@link baseclass.validation}).
+ * normal html webforms (see {@link baseclass.validation}). This element should
+ * be used when multi page forms are required, or a wizard style form.
  *
  * @constructor
  * @define submitform, xforms
@@ -47,6 +48,8 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @default_private
  *
  * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
  */

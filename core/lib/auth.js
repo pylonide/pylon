@@ -29,9 +29,10 @@
  * properly managed. When it gets signalled 'authentication required' it dispatches the
  * appropriate events to display a login box. It can automatically retry logging
  * in to one or more services using in memory stored username/password
- * combinations. it will queue all requests that require authentication until
- * we're logged in again and will then empty the queue.
+ * combinations. It will queue all requests that require authentication until
+ * the application is logged in again and will then empty the queue.
  * Example:
+ * This example sets up j:auth with two services that it can log into. 
  * <code>
  * <j:appsettings>
  *     <j:auth>
@@ -107,8 +108,8 @@
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
  *   bubbles: yes
  *
- * @attribute {String}  login           the datainstruction on how to log in to a service.
- * @attribute {String}  logout          the datainstruction on how to log out of a service.
+ * @attribute {String}  login           the {@link term.datainstruction data instruction} on how to log in to a service.
+ * @attribute {String}  logout          the {@link term.datainstruction data instruction} on how to log out of a service.
  * @attribute {Boolean} autostart      whether to fire authrequired at startup.
  * @attribute {String}  window          the id of the window element that offers a log in form to the user.
  * @attribute {String}  fail-state      the id of the state element which is activated when logging in failed because the credentials where incorrect.
@@ -120,9 +121,9 @@
  * @allowchild service
  * @define service  Element specifying a server to log into.
  * @attribute {String} name     the unique identifier of the service
- * @attribute {String} login    the datainstruction on how to log in to a service
- * @attribute {String} logout   the datainstruction on how to log out of a service
- * @see element.auth
+ * @attribute {String} login    the {@link term.datainstruction data instruction} on how to log in to a service
+ * @attribute {String} logout   the {@link term.datainstruction data instruction} on how to log out of a service
+ * @see element.appsettings
  *
  * @default_private
  */
@@ -269,7 +270,7 @@ jpf.auth = {
      * @param {String}   username   the username portion of the credentials used to log in with
      * @param {String}   password   the password portion of the credentials used to log in with
      * @param {Function} [callback] code to be called when the application succeeds or fails logging in
-     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available in the datainstruction which is called to execute the actual log in.
+     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available in the {@link term.datainstruction data instruction} which is called to execute the actual log in.
      *   Properties:
      *   {Array} services   a list of names of services to be logged in to
      *   {String} service   the name of a single service to log in to
@@ -477,7 +478,7 @@ jpf.auth = {
     /**
      * Log out of one or more services
      * @param {Function} [callback] code to be called when the application succeeds or fails logging out
-     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available out the datainstruction which is called to execute the actual log out.
+     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available out the {@link term.datainstruction data instruction} which is called to execute the actual log out.
      *   Properties:
      *   {Array} services   a list of names of services to be logged out of
      *   {String} service   the name of a single service to log out of

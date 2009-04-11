@@ -32,7 +32,7 @@
  * @version     %I%, %G%
  * @since       0.8
  * 
- * @event beforeswitch
+ * @event beforeswitch  Fires before this element switches to another page.
  *   cancellable: Prevents the page to become active.
  *   object:
  *   {Mixed}    previous     the name or number of the current page.
@@ -41,7 +41,7 @@
  *   {Mixed}    next         the name or number of the page the will become active.
  *   {Number}   nextId       the number of the page the will become active.
  *   {jpf.page} nextpage     the page the will become active.
- * @event afterswitch
+ * @event afterswitch   Fires after this element has switched to another page.
  *   object:
  *   {Mixed}    previous     the name or number of the previous page.
  *   {Number}   previousId   the number of the previous page.

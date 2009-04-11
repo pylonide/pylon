@@ -34,7 +34,8 @@ var __WITH_JMLDOM__ = 1 << 14;
  * from this specification are .appendChild .removeChild .setAttribute and
  * insertBefore to name a few. Javeline PlatForm aims to implement DOM1
  * completely and parts of DOM2. Which should be extended in the future to fully
- * implement DOM Level 2. For more information see http://www.w3.org/DOM/.
+ * implement DOM Level 2. For more information see {@link http://www.w3.org/DOM/} 
+ * or {@link http://www.w3schools.com/dom/default.asp}.
  * Example:
  * Javeline Markup Language
  * <code>
@@ -497,9 +498,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Queries the jml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
-     * see {@link core.jpf.object.document.method.evaluate}
-     * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
-     * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
+     * see {@link core.documentimplementation.method.evaluate evaluate on the jpf.document}
+     * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
+     * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} list of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
@@ -510,9 +511,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Queries the jml dom using the W3C xPath query language and returns a single
      * node. This is not an official API call but can be useful in certain cases.
-     * see {@link core.jpf.object.document.method.evaluate}
-     * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
-     * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
+     * see {@link core.documentimplementation.method.evaluate evaluate on the jpf.document}
+     * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
+     * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {JmlNode} the first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
@@ -525,7 +526,16 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
 
     //#ifdef __WITH_JMLDOM_FULL
     /**
-     * {NodeList} list of all attributes
+     * Nodelist containing all attributes. This is implemented according to the
+     * W3C specification.
+     * Example:
+     * <code>
+     *  for (var i = 0; i < obj.attributes.lenght; i++) {
+     *      alert(obj.attributes.item(i));
+     *  }
+     * </code>
+     * @see baseclass.jmldom.method.getAttribute
+     * @see baseclass.jmldom.method.setAttribute
      */
     this.attributes = {
         getNamedItem    : function(name){

@@ -200,7 +200,6 @@ jpf.layout = {
 
     /**
      * Loads a layout using a data instruction.
-     * @param {String} instruction the data instruction specifying where to load the data from.
      * Example:
      * <code>
      *  jpf.layout.loadFrom("mdlLayout:layout[1]");
@@ -208,6 +207,7 @@ jpf.layout = {
      * Remarks:
      * The jml elements referenced in the layout definition should exist when
      * this function is called.
+     * @param {String} instruction the {@link term.datainstruction data instruction} specifying where to load the data from.
      */
     loadFrom : function(instruction){
         jpf.setModel(instruction, {
@@ -241,10 +241,10 @@ jpf.layout = {
     cacheXml  : {},
     /**
      * Loads a layout from an xml element.
-     * @param {XMLElement} xmlNode the xml element containing the layout description.
      * Remarks:
      * The jml elements referenced in the layout definition should exist when
      * this function is called.
+     * @param {XMLElement} xmlNode the xml element containing the layout description.
      */
     loadXml   : function(xmlNode){
         var nodes   = xmlNode.childNodes;
@@ -1501,9 +1501,15 @@ jpf.layout = {
 
 // #ifdef __WITH_ALIGNMENT
 
+/**
+ * @private
+ */
 jpf.getWindowWidth = function(){
     return jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
 }
+/**
+ * @private
+ */
 jpf.getWindowHeight = function(){
     return jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
 }

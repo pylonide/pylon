@@ -61,6 +61,14 @@
  * set="eval:example=5"
  * set="cookie:name.subname = {.}"
  * </code>
+ *
+ * See:
+ * <ul>
+ *  <li>{@link teleport.cgi the cgi teleport module}</li>
+ *  <li>{@link teleport.rpc the rpc teleport module}</li>
+ *  <li>{@link teleport.webdav the webdav teleport module}</li>
+ *  <li>{@link teleport.xmpp the xmpp teleport module}</li>
+ * </ul>
  */
 
 /**

@@ -40,6 +40,12 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
     return false;
 };
 
+/**
+ * This method gets a single css rule
+ * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
+ * @param {String} type         the css property to change.
+ * @param {String} [stylesheet] the name of the stylesheet to change.
+ */
 jpf.getStyleRule = function(name, type, stylesheet, win){
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;

@@ -27,6 +27,8 @@ var __VALIDATION__ = 1 << 6;
 /**
  * All elements inheriting from this {@link term.baseclass} are a jml component.
  *
+ * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels
@@ -1008,6 +1010,9 @@ jpf.JmlElement.propHandlers = {
      * @attribute {mixed} width the different between the left edge and the
      * right edge of this element. Depending on the choosen layout method the
      * unit can be pixels, a percentage or an expression.
+     * Remarks:
+     * When used as a child of a grid element the width can also be set as '*'. 
+     * This will fill the rest space.
      */
     "width": function(value){
         this.oExt.style.width = Math.max(0, value
@@ -1018,6 +1023,9 @@ jpf.JmlElement.propHandlers = {
      * @attribute {mixed} height the different between the top edge and the
      * bottom edge of this element. Depending on the choosen layout method the
      * unit can be pixels, a percentage or an expression.
+     * Remarks:
+     * When used as a child of a grid element the height can also be set as '*'. 
+     * This will fill the rest space.
      */
     "height": function(value){
         this.oExt.style.height = Math.max(0,

@@ -87,42 +87,141 @@
  *   {Http}           tpModule  the teleport module that is making the request.
  *   {Number}         id        the id of the request.
  *   {String}         message   the error message.
+ * @default_private
  */
 var jpf = {
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
+    /**
+     * The url to the content delivery network.
+     * @type {String}
+     */
     CDN            : "",
     /* #else
     CDN            : "http://cdn.ajax.org/platform/",
     #endif */
 
+    /**
+     * Boolean specifying whether jpf is ready for dom operations.
+     * @type {Boolean}
+     */
     READY          : false,
 
     //JML nodeFunc constants
+    /**
+     * Constant for a hidden jml element.
+     * @type {Number}
+     */
     NODE_HIDDEN    : 101,
+    /**
+     * Constant for a visible jml element.
+     * @type {Number}
+     */
     NODE_VISIBLE   : 102,
-    NODE_MEDIAFLOW : 103,
+    /**
+     * Constant for an o3 widget.
+     * @type {Number}
+     */
+    NODE_O3 : 103,
 
     //DOM nodeType constants
+    /**
+     * Constant for a dom element node.
+     * @type {Number}
+     */
     NODE_ELEMENT                : 1,
+    /**
+     * Constant for a dom attribute node.
+     * @type {Number}
+     */
     NODE_ATTRIBUTE              : 2,
+    /**
+     * Constant for a dom text node.
+     * @type {Number}
+     */
     NODE_TEXT                   : 3,
+    /**
+     * Constant for a dom cdata section node.
+     * @type {Number}
+     */
     NODE_CDATA_SECTION          : 4,
+    /**
+     * Constant for a dom entity reference node.
+     * @type {Number}
+     */
     NODE_ENTITY_REFERENCE       : 5,
+    /**
+     * Constant for a dom entity node.
+     * @type {Number}
+     */
     NODE_ENTITY                 : 6,
+    /**
+     * Constant for a dom processing instruction node.
+     * @type {Number}
+     */
     NODE_PROCESSING_INSTRUCTION : 7,
+    /**
+     * Constant for a dom comment node.
+     * @type {Number}
+     */
     NODE_COMMENT                : 8,
+    /**
+     * Constant for a dom document node.
+     * @type {Number}
+     */
     NODE_DOCUMENT               : 9,
+    /**
+     * Constant for a dom document type node.
+     * @type {Number}
+     */
     NODE_DOCUMENT_TYPE          : 10,
+    /**
+     * Constant for a dom document fragment node.
+     * @type {Number}
+     */
     NODE_DOCUMENT_FRAGMENT      : 11,
+    /**
+     * Constant for a dom notation node.
+     * @type {Number}
+     */
     NODE_NOTATION               : 12,
 
+    /**
+     * Constant for specifying that a widget is using only the keyboard to receive focus.
+     * @type {Number}
+     * @see baseclass.jmlelement.method.focus
+     */
     KEYBOARD       : 2,
+    /**
+     * Constant for specifying that a widget is using the keyboard or the mouse to receive focus.
+     * @type {Boolean}
+     * @see baseclass.jmlelement.method.focus
+     */
     KEYBOARD_MOUSE : true,
 
+    /**
+     * Constant for specifying success.
+     * @type {Number}
+     * @see element.teleport
+     */
     SUCCESS : 1,
+    /**
+     * Constant for specifying a timeout.
+     * @type {Number}
+     * @see element.teleport
+     */
     TIMEOUT : 2,
+    /**
+     * Constant for specifying an error.
+     * @type {Number}
+     * @see element.teleport
+     */
     ERROR   : 3,
+    /**
+     * Constant for specifying the application is offline.
+     * @type {Number}
+     * @see element.teleport
+     */
     OFFLINE : 4,
 
     //#ifdef __DEBUG
@@ -135,15 +234,25 @@ var jpf = {
 
     includeStack  : [],
     initialized   : false,
+    
+    /**
+     * Boolean specifying whether jpf tries to load a skin from skins.xml when no skin element is specified.
+     * @type {Boolean}
+     */
     autoLoadSkin  : false,
     crypto        : {}, //namespace
     _GET          : {},
+    
+    /**
+     * String specifying the basepath for loading jpf from seperate files.
+     * @type {String}
+     */
     basePath      : "./",
 
     //#ifdef __PARSER_JML
     /**
      * {Object} contains several known and often used namespace URI's.
-         * @private
+     * @private
      */
     ns : {
         jpf    : "http://www.javeline.com/2005/jml",
@@ -167,12 +276,30 @@ var jpf = {
         var sAgent = navigator.userAgent.toLowerCase();
 
         //Browser Detection
+        /**
+         * Specifies whether the application is running in the Opera browser.
+         * @type {Boolean}
+         */
         this.isOpera = sAgent.indexOf("opera") != -1;
-
+        
+        /**
+         * Specifies whether the application is running in the Konqueror browser.
+         * @type {Boolean}
+         */
         this.isKonqueror = sAgent.indexOf("konqueror") != -1;
+        
+        /**
+         * Specifies whether the application is running in the Safari browser.
+         * @type {Boolean}
+         */
         this.isSafari    = !this.isOpera && ((navigator.vendor
             && navigator.vendor.match(/Apple/) ? true : false)
             || sAgent.indexOf("safari") != -1 || this.isKonqueror);
+        
+        /**
+         * Specifies whether the application is running in the Safari browser version 2.4 or below.
+         * @type {Boolean}
+         */
         this.isSafariOld = false;
 
         if (this.isSafari) {
@@ -181,21 +308,69 @@ var jpf = {
                 this.isSafariOld = parseInt(matches[1]) < 420;
         }
 
+        /**
+         * Specifies whether the application is running in the Chrome browser.
+         * @type {Boolean}
+         */
         this.isChrome    = sAgent.indexOf("chrome/") != -1;
+        /**
+         * Specifies whether the application is running in a Gecko based browser.
+         * @type {Boolean}
+         */
         this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
+        /**
+         * Specifies whether the application is running in the Firefox browser version 3.
+         * @type {Boolean}
+         */
         this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
         
         var found;
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser, any version.
+         * @type {Boolean}
+         */
         this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 8.
+         * @type {Boolean}
+         */
         this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 7.
+         * @type {Boolean}
+         */
         this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 6.
+         * @type {Boolean}
+         */
         this.isIE6       = this.isIE && !found && sAgent.indexOf("msie 6.") != -1 && (found = true);
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 5.5.
+         * @type {Boolean}
+         */
         this.isIE55      = this.isIE && !found && sAgent.indexOf("msie 5.5") != -1 && (found = true);
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 5.0.
+         * @type {Boolean}
+         */
         this.isIE50      = this.isIE && !found && sAgent.indexOf("msie 5.0") != -1 && (found = true);
 
+        /**
+         * Specifies whether the application is running on the Windows operating system.
+         * @type {Boolean}
+         */
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
+        /**
+         * Specifies whether the application is running in the OSX operating system..
+         * @type {Boolean}
+         */
         this.isMac       = sAgent.indexOf("mac") != -1;
 
+        /**
+         * Specifies whether the application is running in the AIR runtime.
+         * @type {Boolean}
+         */
         this.isAIR       = sAgent.indexOf("adobeair") != -1;
 
         //#ifdef __DESKRUN
@@ -203,6 +378,10 @@ var jpf = {
             //this.isDeskrun = window.external.shell.runtime == 2;
         }
         catch(e) {
+            /**
+             * Specifies whether the application is running in the Deskrun runtime.
+             * @type {Boolean}
+             */
             this.isDeskrun = false;
         }
         //#endif
@@ -317,6 +496,7 @@ var jpf = {
 
     /**
      * Starts the application.
+     * @private
      */
     start : function(){
         this.started = true;
@@ -325,7 +505,6 @@ var jpf = {
         //Set Variables
         this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
-        this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
 
         //#ifdef __DEBUG
         jpf.console.info("Starting Javeline PlatForm Application...");
@@ -439,9 +618,6 @@ var jpf = {
             }", 100);
     },
 
-    /**
-     * @private
-     */
     nsqueue   : {},
 
     /**
@@ -543,6 +719,7 @@ var jpf = {
     /**
     * This method inherit all properties and methods to this object from another class
     * @param {Function}    classRef    Class reference
+    * @private
     */
     inherit : function(classRef){
         for (var i=0; i<arguments.length; i++) {
@@ -1126,13 +1303,15 @@ var jpf = {
     //#endif
 
     /**
-     * {Number} parseStrategy
+     * Determines the way jpf tries to render this application. Set this value
+     * before jpf is starts parsing.
      *   Possible values:
      *   0    auto
      *   1    partial
      *   11   partial from a comment
      *   2    full from serialized document or file fallback
      *   21   full from file
+     * @type {Number}
      */
     parseStrategy : 0,
 

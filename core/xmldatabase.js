@@ -98,7 +98,8 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Gets the child position of a dom node.
+     * Gets the position of a dom node within the list of child nodes of it's
+     * parent.
      *
      * @param {DOMNode} node the node for which the child position is determined.
      * @return {Number} the child position of the node.
@@ -250,16 +251,19 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Creates an xml node from an xml string.
+     * Creates xml nodes from an xml string recursively.
      *
      * @param {String}  strXml     the xml definition.
-     * @param {Boolean} [noError]  whether an exception is thrown the parser throws an error.
+     * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
      * @return {XMLNode} the created xml node.
      */
     this.getXml = function(strXml, noError, preserveWhiteSpace){
         return jpf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
     };
 
+    /**
+     * @private
+     */
     this.getXmlId = function(xmlNode){
         return xmlNode.getAttribute(this.xmlIdTag) ||
           this.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode);
@@ -475,6 +479,7 @@ jpf.XmlDatabase = function(){
 
     /**
      * @private
+     * @deprecated
      * @description  Integrates current xmldb with parent xmldb
      *
      *    - assuming transparency of XMLDOM elements cross windows
@@ -486,10 +491,12 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Returns a cleaned copy of the passed {@link term.datanode data node}.
+     * Returns a copy of the passed {@link term.datanode data node}. Bound
+     * data nodes contain special attributes to track them. These attributes
+     * are removed from the copied node when using this method.
      *
-     * @param {XMLElement} xmlNode the xml element to copy.
-     * @return {XMLElement} the copy of the xml element.
+     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
+     * @return {XMLElement} the copy of the {@link term.datanode data node}.
      */
     this.copyNode = function(xmlNode){
         return this.clearConnections(xmlNode.cloneNode(true));
@@ -541,7 +548,7 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Retrieves the node value of an xml element. When an element node is passed
+     * Retrieves the node value of an {@link term.datanode data node}. When an element node is passed
      * the value of the first text node is returned.
      * @returns {String} the node value found.
      */
@@ -697,7 +704,7 @@ jpf.XmlDatabase = function(){
      * to the databound elements listening for changes on the data changed.
      *
      * @param {XMLElement} pNode       the parent xml node to add the new element to.
-     * @param {String}     tagName     the tagName of the xml element to add.
+     * @param {String}     tagName     the tagName of the {@link term.datanode data node} to add.
      * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
      * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
      * @param {String}     [xpath]     the xpath statement to select the attribute.
@@ -1112,8 +1119,8 @@ jpf.XmlDatabase = function(){
     /**
      * Returns a string version of the {@link term.datanode data node}.
      *
-     * @param {XMLElement} xmlNode the xml element to serialize.
-     * @return {String} the serilized version of the xml element.
+     * @param {XMLElement} xmlNode the {@link term.datanode data node} to serialize.
+     * @return {String} the serilized version of the {@link term.datanode data node}.
      */
     this.serializeNode = function(xmlNode){
         var xml = this.clearConnections(xmlNode.cloneNode(true));
@@ -1484,7 +1491,7 @@ jpf.XmlDatabase = function(){
     /**
      * Converts xml to another format.
      *
-     * @param {XMLElement} xml  the xml element to convert.
+     * @param {XMLElement} xml  the {@link term.datanode data node} to convert.
      * @param {String}     to   the format to convert the xml to.
      *   Possible values:
      *   json       converts to a json string
@@ -1497,7 +1504,7 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Returns the first text or cdata child of an xml element.
+     * Returns the first text or cdata child of an {@link term.datanode data node}.
      *
      * @param {XMLElement} x the xml node to search.
      * @return {XMLNode} the found xml node, or null.
@@ -1589,7 +1596,11 @@ jpf.XmlDatabase = function(){
 };
 
 /**
- * @alias XmlDatabase#getXml
+ * Creates xml nodes from an xml string recursively.
+ *
+ * @param {String}  strXml     the xml definition.
+ * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
+ * @return {XMLNode} the created xml node.
  */
 jpf.getXml = function(){
     return jpf.xmldb.getXml.apply(jpf.xmldb, arguments);

@@ -29,12 +29,18 @@ var __VALIDATION__ = 1 << 6;
  * <code>
  *  <j:bar validgroup="vgExample">
  *      <j:label>Number</j:label>
- *      <j:textbox required="true" min="3" max="10" invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *      <j:textbox required="true" min="3" max="10" 
+ *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
  *      <j:label>Name</j:label>
- *      <j:textbox required="true" invalidmsg="Invalid Entry;Please enter your name" minlength="3" />
+ *      <j:textbox required="true" minlength="3" 
+ *        invalidmsg="Invalid Entry;Please enter your name" />
  *      <j:label>Message</j:label>
- *      <j:textarea required="true" invalidmsg="Invalid Message;Please enter a message!" />
- *          <j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
+ *      <j:textarea required="true" 
+ *        invalidmsg="Invalid Message;Please enter a message!" />
+ *
+ *      <j:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *          Validate
+ *      </j:button>
  *  </j:bar>
  * </code>
  *
@@ -107,6 +113,12 @@ jpf.Validation = function(){
     };
 
     //#ifdef __WITH_HTML5
+    /**
+     * Object containing information about the validation state. It contains
+     * properties that specify whether a certain validation was passed.
+     * Remarks:
+     * This is part of {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#validitystatethe HTML 5 specification}.
+     */
     this.validityState = {
         valueMissing    : false,
         typeMismatch    : false,
@@ -250,44 +262,44 @@ jpf.Validation = function(){
      * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any 
      * of a set of predefined types, or a simple type created by an XML Schema definition.
      *   Possible values:
-     *   xsd:dateTime
-     *   xsd:time
-     *   xsd:date
-     *   xsd:gYearMonth
-     *   xsd:gYear
-     *   xsd:gMonthDay
-     *   xsd:gDay
-     *   xsd:gMonth
-     *   xsd:string
-     *   xsd:boolean
-     *   xsd:base64Binary
-     *   xsd:hexBinary
-     *   xsd:float
-     *   xsd:decimal
-     *   xsd:double
-     *   xsd:anyURI
-     *   xsd:integer
-     *   xsd:nonPositiveInteger
-     *   xsd:negativeInteger
-     *   xsd:long
-     *   xsd:int
-     *   xsd:short
-     *   xsd:byte
-     *   xsd:nonNegativeInteger
-     *   xsd:unsignedLong
-     *   xsd:unsignedInt
-     *   xsd:unsignedShort
-     *   xsd:unsignedByte
-     *   xsd:positiveInteger
-     *   jpf:url
-     *   jpf:website
-     *   jpf:email
-     *   jpf:creditcard
-     *   jpf:expdate
-     *   jpf:wechars
-     *   jpf:phonenumber
-     *   jpf:faxnumber
-     *   jpf:mobile
+     *   {String} xsd:dateTime
+     *   {String} xsd:time
+     *   {String} xsd:date
+     *   {String} xsd:gYearMonth
+     *   {String} xsd:gYear
+     *   {String} xsd:gMonthDay
+     *   {String} xsd:gDay
+     *   {String} xsd:gMonth
+     *   {String} xsd:string
+     *   {String} xsd:boolean
+     *   {String} xsd:base64Binary
+     *   {String} xsd:hexBinary
+     *   {String} xsd:float
+     *   {String} xsd:decimal
+     *   {String} xsd:double
+     *   {String} xsd:anyURI
+     *   {String} xsd:integer
+     *   {String} xsd:nonPositiveInteger
+     *   {String} xsd:negativeInteger
+     *   {String} xsd:long
+     *   {String} xsd:int
+     *   {String} xsd:short
+     *   {String} xsd:byte
+     *   {String} xsd:nonNegativeInteger
+     *   {String} xsd:unsignedLong
+     *   {String} xsd:unsignedInt
+     *   {String} xsd:unsignedShort
+     *   {String} xsd:unsignedByte
+     *   {String} xsd:positiveInteger
+     *   {String} jpf:url
+     *   {String} jpf:website
+     *   {String} jpf:email
+     *   {String} jpf:creditcard
+     *   {String} jpf:expdate
+     *   {String} jpf:wechars
+     *   {String} jpf:phonenumber
+     *   {String} jpf:faxnumber
+     *   {String} jpf:mobile
      * @attribute  {Integer}  min          the minimal value for which the value of this element is valid.
      * @attribute  {Integer}  max          the maximum value for which the value of this element is valid.
      * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
@@ -506,8 +518,9 @@ jpf.Validation = function(){
 };
 
 /**
- * Object allowing for a set of JML elements to be validated. an element that goes into an error state will
- * show the errorbox.
+ * Object allowing for a set of JML elements to be validated, an element that 
+ * is not valid shows the errorbox.
+ * Example:
  * <code>
  *  <j:bar validgroup="vgForm">
  *      <j:label>Phone number</j:label>
@@ -545,6 +558,7 @@ jpf.Validation = function(){
  * @event validation Fires when the validation group isn't validated.
  *
  * @constructor
+ * @default_private
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -566,7 +580,15 @@ jpf.ValidationGroup = function(name){
     this.allowMultipleErrors = false;
 
     this.childNodes = [];
+    
+    /**
+     * Adds a jml element to this validation group.
+     */
     this.add        = function(o){ this.childNodes.push(o); };
+    
+    /**
+     * Removes a jml element from this validation group.
+     */
     this.remove     = function(o){ this.childNodes.remove(o); };
 
     if (name)
@@ -584,7 +606,7 @@ jpf.ValidationGroup = function(name){
 
     var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
-     * Retrieves the {@link element.errorbox} element used for a specified element.
+     * Retrieves {@link element.errorbox} used for a specified element.
      *
      * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
@@ -658,7 +680,31 @@ jpf.ValidationGroup = function(name){
     // #ifdef __WITH_HTML5
     this.checkValidity =
     //#endif
+    
+    /**
+     * Checks if (part of) the set of element's registered to this element are
+     * valid. When an element is found with an invalid value the error state can
+     * be set for that element.
+     *
+     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
+     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @return  {Boolean}  specifying whether the checked elements are valid.
+     * @method isValid, validate, checkValidity
+     */
     this.validate =
+    
+    /**
+     * Checks if (part of) the set of element's registered to this element are
+     * valid. When an element is found with an invalid value the error state can
+     * be set for that element.
+     *
+     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
+     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @return  {Boolean}  specifying whether the checked elements are valid.
+     * @method isValid, validate, checkValidity
+     */
     this.isValid = function(ignoreReq, nosetError, page){
         var found = checkValidChildren.call(this, page || this, ignoreReq,
             nosetError);

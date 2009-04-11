@@ -166,17 +166,6 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             jmlNode.disableAnchoring();
         //#endif
         
-        /**
-         * @define jpf.JmlElement
-         * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
-         * @attribute {String} width
-         * Remarks:
-         * When used as a child of a grid element the width can also be set as '*'. This will fill the rest space.
-         * @attribute {String} height   
-         * Remarks:
-         * When used as a child of a grid element the height can also be set as '*'. This will fill the rest space.
-         */
-        
         jmlNode.$propHandlers["width"]  = 
         jmlNode.$propHandlers["height"] = 
         jmlNode.$propHandlers["span"]   = updateTrigger;

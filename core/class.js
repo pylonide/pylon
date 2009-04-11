@@ -37,13 +37,13 @@
  * <j:checkbox id="myCheckbox">Toggle this</j:checkbox>
  * </code>
  *
- * Syntax:
+ * Expressions:
  * The use of { and } tell Javeline PlatForm(JPF) that the visible property will 
  * be bound. By specifying myCheckbox.value JPF knows that the value of 
  * myCheckbox should be retrieved for this property. Whenever the checkbox 
  * changes, the slider will show or hide.
  *
- * Syntax:
+ * Bidirectional:
  * Sometimes it's necessary to make a binding from one property to another one, 
  * and vice versa. Think of a slider that is connected to the position property
  * of a video element. When the video plays, the value of the slider should be 
@@ -127,8 +127,10 @@
  */
 
 /**
- * All elements inheriting from this {@link term.baseclass} have property binding,
- * event handling and constructor & destructor hooks.
+ * All elements inheriting from this {@link term.baseclass} have {@link term.propertybinding property binding},
+ * event handling and constructor & destructor hooks. The event system is 
+ * implemented following the W3C specification, similar to the 
+ * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
  *
  * @constructor
  * @baseclass
@@ -156,6 +158,10 @@ jpf.Class = function(){
     this.$jmlDestroyers   = [];
 
     this.$regbase         = 0;
+    /**
+     * Tests whether this object is inheriting from a certain class.
+     * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
+     */
     this.hasFeature       = function(test){
         return this.$regbase&test;
     };
@@ -199,6 +205,7 @@ jpf.Class = function(){
      * @param  {Class}  bObject          the object which will receive the property change message.
      * @param  {String} bProp            the property of <code>bObject</code> which will be set using the value of <code>myProp</code> optionally processed using <code>strDynamicProp</code>.
      * @param  {String} [strDynamicProp] a javascript statement which contains the value of <code>myProp</code>. The string is used to calculate a new value.
+     * @private
      */
     this.bindProperty = function(myProp, bObject, bProp, strDynamicProp){
         //#--ifdef __DEBUG
@@ -236,6 +243,7 @@ jpf.Class = function(){
      * @param  {String} myProp  the name of the property of this element for which the property bind was registered.
      * @param  {Class}  bObject the object receiving the property change message.
      * @param  {String} bProp   the property of <code>bObject</code>.
+     * @private
      */
     this.unbindProperty = function(myProp, bObject, bProp){
         //#--ifdef __DEBUG
@@ -254,14 +262,17 @@ jpf.Class = function(){
     
     //#ifdef __WITH_PROPERTY_WATCH
     /**
-     * Implemented as Mozilla.
-     * https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch
+     * Adds a listener to listen for changes to a certain property. 
+     * Implemented as Mozilla suggested see {https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
      */
     this.watch = function(propName, callback){
         (watchCallbacks[propName] || (watchCallbacks[propName] = []))
             .push(callback);
     }
     
+    /**
+     * Removes a listener to listen for changes to a certain property. 
+     */
     this.unwatch = function(propName, callback){
         if (!watchCallbacks[propName])
             return;
@@ -271,7 +282,8 @@ jpf.Class = function(){
     //#endif
 
     /**
-     * Unbinds all bound properties for this componet.
+     * Unbinds all bound properties for this component.
+     * @private
      */
     this.unbindAllProperties = function(){
         var prop;
@@ -513,7 +525,7 @@ jpf.Class = function(){
 
     var capture_stack = {}, events_stack = {};
     /**
-     * Calls all functions associated with the event.
+     * Calls all functions that are registered as listeners for an event.
      *
      * @param  {String}  eventName  the name of the event to dispatch.
      * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
@@ -697,7 +709,11 @@ jpf.Class = function(){
 };
 
 /**
+ * Implementation of W3C event object. An instance of this class is passed as
+ * the first argument of any event handler. Per event it will contain different
+ * properties giving context based information about the event.
  * @constructor
+ * @default_private
  */
 jpf.Event = function(name, data){
     this.name = name;
@@ -707,11 +723,18 @@ jpf.Event = function(name, data){
     this.cancelBubble = false;
     // #endif
 
+    /**
+     * Cancels the event if it is cancelable, without stopping further 
+     * propagation of the event. 
+     */
     this.preventDefault = function(){
         this.returnValue = false;
     };
 
     // #ifdef __WITH_EVENT_BUBBLING
+    /**
+     * Prevents further propagation of the current event. 
+     */
     this.stopPropagation = function(){
         this.cancelBubble = true;
     };
@@ -724,6 +747,10 @@ jpf.Event = function(name, data){
         // #endif
     };
     
+    /**
+     * Determines whether the keyboard input was a character that can influence
+     * the value of an element (like a textbox).
+     */
     this.isCharacter = function(){
         return (this.keyCode < 112 || this.keyCode > 122)
           && (this.keyCode == 32 || (this.keyCode > 42 || this.keyCode == 8));

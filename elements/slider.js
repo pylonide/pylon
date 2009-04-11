@@ -26,7 +26,7 @@
  * Example:
  * This example shows a slider that influences the position of a video. The
  * value attribute of the slider is set using property binding. The square
- * brackets imply a bidirectional binding.
+ * brackets imply a {@link term.propertybinding bidirectional binding}.
  * <code>
  *  <j:video id="player1"
  *    src      = "elements/video/demo_video.flv"
@@ -180,6 +180,13 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * the download of movies or other media.
      * Example:
      * <code>
+     *  <j:video id="player1"
+     *    src      = "elements/video/demo_video.flv"
+     *    autoplay = "true">
+     *      Unsupported video codec.
+     *  </j:video>
+     *
+     *  <j:slider value="[player1.position]" progress="{player1.progress}" />
      * </code>
      */
     this.$propHandlers["progress"] = function(value){
