@@ -123,7 +123,8 @@ jpf.history = {
             }, 20);
         }
     },
-
+    to_name : null,
+    
     /**
      * Sets the hash value of the location bar in the browser. This is used
      * to represent the state of the application for use by the back and forward
@@ -131,7 +132,6 @@ jpf.history = {
      * @param {String}  name    the new hash value.
      * @param {Boolean} timed   whether to add a delay to setting the value.
      */
-    to_name : null,
     setHash : function(name, timed){
         if (this.changing || this.page == name || location.hash == "#" + name) {
             this.to_name = name;

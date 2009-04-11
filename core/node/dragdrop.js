@@ -607,6 +607,7 @@ jpf.DragDrop = function(){
 };
 
 /**
+ * Central object for dragdrop handling.
  * @private
  */
 jpf.DragServer = {

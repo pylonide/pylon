@@ -79,7 +79,6 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Sets an attribute to an xml node
      *
-     * @action
      */
     this.setAttributeValue = function(xmlNode, name, value){
         if (!xmlNode)
@@ -95,7 +94,6 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Renames an attribute of an xml node
      *
-     * @action
      */
     this.renameAttribute = function(xmlNode, name, newName){
         if (!xmlNode)
@@ -113,7 +111,6 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Sets a text node to an xml node
      *
-     * @action
      */
     this.setTextNode = function(xmlNode, value){
         if (!xmlNode)

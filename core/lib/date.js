@@ -47,6 +47,9 @@
 
 // #ifdef __WITH_DATE
 // Some common format strings
+/**
+ * @private
+ */
 jpf.date = {
     masks : {
         "default":      "ddd mmm dd yyyy HH:MM:ss",
@@ -178,7 +181,7 @@ jpf.date.dateFormat = (function () {
 
 
 /**
- * @term dataformat Create a object representation of date from datetime string parsing it with
+ * Create a object representation of date from datetime string parsing it with
  * datetime format string
  * 
  * @param {String}   datetime   the date and time wrote in allowed format

@@ -151,6 +151,9 @@ jpf.Validation = function(){
         }
     }
 
+    /**
+     * @private
+     */
     this.setCustomValidity = function(message){
         //do stuff
     }
@@ -184,6 +187,19 @@ jpf.Validation = function(){
     // #ifdef __WITH_HTML5
     this.checkValidity =
     //#endif
+    
+    /**
+     * Puts this element in the error state, optionally showing the
+     * error box if this element's is invalid.
+     *
+     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
+     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
+     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
+     * @return  {Boolean}  boolean specifying whether the value is valid
+     * @see  object.validationgroup
+     * @see  element.submitform
+     * @method
+     */
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
 

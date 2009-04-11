@@ -35,7 +35,7 @@
  * @attribute {Boolean} allow-select            whether general text in the application can be selected.
  * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element
  * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
- * @see term.actionrule
+ * @see term.action
  * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:

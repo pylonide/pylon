@@ -276,18 +276,21 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @notimplemented
      * @todo who's volunteering?
+     * @private
      */
     this.openAll    = function(){};
     
     /**
      * @notimplemented
      * @todo who's volunteering?
+     * @private
      */
     this.closeAll   = function(){};
     
     /**
      * @notimplemented
      * @todo who's volunteering?
+     * @private
      */
     this.selectPath = function(path){};
     
@@ -439,6 +442,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag.style.display  = "none";
     };
     
+    /**
+     * @private
+     */
     this.findValueNode = function(el){
         if (!el) return null;
 

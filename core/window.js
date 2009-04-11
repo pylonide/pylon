@@ -1242,7 +1242,7 @@ jpf.DocumentImplementation = function(){
     //#endif
 
     /**
-     * {Number} nodeType the type of node within the document.
+     * The type of node within the document.
      *   Possible values:
      *   jpf.NODE_ELEMENT
      *   jpf.NODE_ATTRIBUTE

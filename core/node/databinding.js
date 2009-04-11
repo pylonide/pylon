@@ -313,7 +313,7 @@ jpf.DataBinding = function(){
      * is a mechanism for enforcing limits on access to a resource in a 
      * multi-user environment. Locks are one way of enforcing concurrency 
      * control policies. Javeline Platform (jpf) has support for locking in 
-     * combination with {@link term.actionrule action rules}. There are two 
+     * combination with {@link term.action action rules}. There are two 
      * types of locks; pessimistic and optimistic locks. Descriptions below is
      * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
      *
@@ -347,7 +347,7 @@ jpf.DataBinding = function(){
      * the user releases the lock. The downside is that users can be locked out 
      * for a long time thereby causing frustration. 
      * 
-     * For pessimistic locking add the locking attribute to the {@link term.actionrule action rules}
+     * For pessimistic locking add the locking attribute to the {@link term.action action rules}
      * that need it. The following example shows a lock request for a rename
      * action on a file browser tree.
      * <code>
@@ -369,7 +369,7 @@ jpf.DataBinding = function(){
      * {@link baseclass.databinding.event.lockfailed}.
      *
      * Note: JFF understands the status codes specified in RFC4918 for the locking implementation
-     *       http://tools.ietf.org/html/rfc4918#section-9.10.6
+     *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
      
     /**

@@ -20,6 +20,9 @@
  */
 // #ifdef __WITH_DRAW
 
+/**
+ * @private
+ */
 jpf.draw = {
     
     initDriver : function(){

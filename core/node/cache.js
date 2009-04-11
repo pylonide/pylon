@@ -83,6 +83,9 @@ jpf.Cache = function(){
 
                 var oHtml = this.getNodeFromCache(
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
+                /**
+                 * @private
+                 */
                 subTreeCacheContext = {
                     oHtml      : oHtml,
                     parentNode : oHtml.parentNode,

@@ -87,7 +87,7 @@
  * Binding rules are part of the {@link term.smartbinding smartbinding concept}.
  * 
  * Basic:
- * Let's take a simple example, that of a {@link element.textbox textbox). A 
+ * Let's take a simple example, that of a {@link element.textbox textbox}. A 
  * textbox has a {@link element.textbox.attribute.value value attribute}. This
  * attribute can be set like this:
  * <code>
@@ -191,7 +191,7 @@
  * </code>
  *
  * Extending:
- * Two special binding rules are the {@link baseclass.databinding.binding.load load)
+ * Two special binding rules are the {@link baseclass.databinding.binding.load load}
  * and the {@link element.tree.binding.insert insert) bindings. These bindings
  * are used to load and insert new data into the data bound to the element that
  * uses them. With these rules an application can start out with only a bit of
@@ -235,7 +235,7 @@
  *
  * Defaults:
  * The default behaviour for all components is to enable all actions when no
- * j:actions element has been assigned. This can be change by setting 
+ * actions element has been assigned. This can be change by setting 
  * {@link element.appsettings.attribute.auto-disable-actions}. When a j:actions
  * element <i>is</i> assigned, all actions are disabled unless they are specified.
  * When the select attribute on an action is not set the action will always be
@@ -518,8 +518,8 @@
  * @see baseclass.databinding
  * @see baseclass.databinding.attribute.smartbinding
  * @see term.smartbinding
- * @see term.bindingrules
- * @see term.actionrules
+ * @see term.binding
+ * @see term.action
  * 
  * @define smartbinding
  * @allowchild bindings, actions, ref, action, dragdrop, model
@@ -812,25 +812,25 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      *
      * @attribute {String} bindings the id of the bindings element that contains 
-     * the {@link term.bindingrule binding rules} for all elements connected to 
+     * the {@link term.binding binding rules} for all elements connected to 
      * this smartbinding element
      * Example:
      * <code>
      *  <j:smartbinding id="sbExample" bindings="bndExample" />
      * </code>
      * @see element.bindings
-     * @see term.bindingrule
+     * @see term.binding
      * @see term.smartbinding
      *
      * @attribute {String} actions  the id of the actions element that provides 
-     * the {@link term.actionrule action rules} for all elements connected to 
+     * the {@link term.action action rules} for all elements connected to 
      * this smartbinding element
      * Example:
      * <code>
      *  <j:smartbinding id="sbExample" bindings="actExample" />
      * </code>
      * @see element.actions
-     * @see term.actionrule
+     * @see term.action
      * @see term.smartbinding
      *
      * @attribute {String} dragdrop the id of the dragdrop element that provides 

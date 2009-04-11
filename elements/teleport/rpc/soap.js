@@ -72,8 +72,6 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
- *
- * @private
  */
 jpf.soap = function(){
     this.supportMulticall = false;

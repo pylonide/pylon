@@ -44,18 +44,18 @@
  * @inherits jpf.DragDrop
  * @inherits jpf.Rename
  *
- * @event beforelookup  Fires before the value lookup UI is shown..
- *  cancellable: Prevents the lookup value from being processed.
- *  object:
- *  {String}      value     the value that has been found.
- *  {XMLElement}  xmlNode   the selected node.
- *  {HTMLElement} htmlNode  the node that is updated.
+ * @event beforelookup  Fires before the value lookup UI is shown.
+ *   cancellable: Prevents the lookup value from being processed.
+ *   object:
+ *   {String}      value     the value that has been found.
+ *   {XMLElement}  xmlNode   the selected node.
+ *   {HTMLElement} htmlNode  the node that is updated.
  * @event afterlookup   Fires after a lookup value is processed.
  *   object:
- *  {Mixed}       value     the value that has been found.
- *  {XMLElement}  xmlNode   the selected node.
- *  {HTMLElement} htmlNode  the node that is updated.
- *  {Nodeset}     nodes     ???.
+ *   {Mixed}       value     the value that has been found.
+ *   {XMLElement}  xmlNode   the selected node.
+ *   {HTMLElement} htmlNode  the node that is updated.
+ *   {Nodeset}     nodes     ???.
  * @event multiedit     Fires before a multiedit request is done. Used to display the UI.
  *   object:
  *   {XMLElement} xmlNode   the selected node.
@@ -307,6 +307,17 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 return contexts;
             }
             
+            /**
+             * Checks if (part of) the set of element's registered to this element are
+             * valid. When an element is found with an invalid value the error state can
+             * be set for that element.
+             *
+             * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
+             * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
+             * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+             * @return  {Boolean}  specifying whether the checked elements are valid.
+             * @method isValid, validate, checkValidity
+             */
             this.isValid = function(checkRequired, node){
                 if (!this.xmlRoot || !this.xmlData || this.disabled)
                     return true;
@@ -999,6 +1010,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     ? "size"
                     : "sort|size|move");
 
+            /**
+             * @private
+             */
             h = {
                 width        : parseFloat(width),
                 isPercentage : width.indexOf("%") > -1,
@@ -2575,6 +2589,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             var vRules = {};
             this.$_load = this.load;
+            /**
+             * @private
+             */
             this.load   = function(xmlRoot, cacheId){
                 var template = this.template || this.applyRuleSetOnNode("template", xmlRoot);
 
