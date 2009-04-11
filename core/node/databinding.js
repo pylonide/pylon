@@ -1848,30 +1848,30 @@ jpf.DataBinding = function(){
      *
      *  <j:smartbinding id="sbExample">
      *      <j:bindings>
-     *         <j:caption  select = "@name"/>
-     *         <j:icon     select = "self::file"
-     *                     value  = "icoFile.gif" />
-     *         <j:icon     value  = "icoFolder.gif" />
-     *         <j:traverse select = "file|folder|root" />
+     *          <j:caption  select = "@name"/>
+     *          <j:icon     select = "self::file"
+     *                      value  = "icoFile.gif" />
+     *          <j:icon     value  = "icoFolder.gif" />
+     *          <j:traverse select = "file|folder|root" />
      *      </j:bindings>
      *      <j:actions>
      *          <j:remove set = "url:remove.php?path={@path}" />
      *          <j:rename set = "url:move.php?from=oldValue&to={@path}" />
      *      </j:actions>
      *      <j:dragdrop>
-     *         <j:allow-drag select = "folder|file" />
-     *         <j:allow-drop select = "folder" 
-     *                       target = "root"
-     *                       operation = "tree-append" />
-     *         <j:allow-drop select = "folder" 
-     *                       target = "folder"
-     *                       operation = "insert-before" />
-     *         <j:allow-drop select = "file"   
-     *                       target = "folder|root" 
-     *                       soperation = "tree-append" />
-     *         <j:allow-drop select = "file"   
-     *                       target = "file"        
-     *                       operation = "insert-before" />
+     *          <j:allow-drag select = "folder|file" />
+     *          <j:allow-drop select = "folder" 
+     *                        target = "root"
+     *                        operation = "tree-append" />
+     *          <j:allow-drop select = "folder" 
+     *                        target = "folder"
+     *                        operation = "insert-before" />
+     *          <j:allow-drop select = "file"   
+     *                        target = "folder|root" 
+     *                        soperation = "tree-append" />
+     *          <j:allow-drop select = "file"   
+     *                        target = "file"        
+     *                        operation = "insert-before" />
      *      </j:dragdrop>
      *      <j:model load="url:get_listing.php" />
      *  </j:smartbinding>
