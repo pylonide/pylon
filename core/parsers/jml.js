@@ -1173,7 +1173,6 @@ jpf.JmlParser = {
         this.sbInit = {};
         //#endif
 
-        //#ifdef __WITH_PROPERTY_BINDING
         //Initialize property bindings
         var s = this.stateStack;
         for (var i = 0; i < s.length; i++) {
@@ -1186,7 +1185,6 @@ jpf.JmlParser = {
             #endif */
         }
         this.stateStack = [];
-        //#endif
 
         //#ifdef __WITH_MODEL || __WITH_XFORMS
         //Initialize Models
