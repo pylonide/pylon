@@ -30,6 +30,9 @@
  * A j:smartbinding element can contain three elements; {@link element.bindings j:bindings}, 
  * {@link element.actions j:actions} and {@link element.model j:model}.
  *
+ * See also more information about {@link term.binding binding rules} and
+ * {@link term.action action rules}.
+ *
  * Model:
  * The model is the place where your xml data resides. Data is loaded into the
  * model using a {@link term.datainstruction data instruction} as the following
@@ -81,8 +84,9 @@
  */
 
 /**
- * @term binding Binding rules determine how an element renders the data that 
- * it's bound to. Some binding rules specify how data can be interacted with 
+ * @term binding Binding rules determine how an element displays the data that 
+ * its bound to (i.e. {@link element.tree.binding.caption the caption rule}), 
+ * and determines how it can be interacted with 
  * (i.e. {@link baseclass.multiselect.binding.select the select rule}).
  * Binding rules are part of the {@link term.smartbinding smartbinding concept}.
  * 
@@ -214,7 +218,7 @@
 
 /**
  * @term action Action rules determine whether a user can execute an action and
- * take care of executing the change both locally and on a remote server. Each
+ * takes care of executing the change both locally and on a remote server. Each
  * triggered action creates an item on the undo stack.
  * Action rules are part of the {@link term.smartbinding smartbinding concept}.
  *
@@ -304,7 +308,7 @@
  * </code>
  *
  * Add:
- * Adding {@link term.datanode data node}s to an element is a bit more advanced because the origin of
+ * Adding {@link term.datanode data nodes} to an element is a bit more advanced because the origin of
  * the new data can be encoded in {@link baseclass.multiselect.binding.add the add action rule}. 
  * There are three ways to provide the data to add a node. 
  * 
@@ -389,7 +393,7 @@
  * The {@link term.smartbinding smartbinding} element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
  * send to their original data source ({@link element.actions actions}) and
- * which {@link term.datanode data node}s can be dragged and dropped ({@link element.dragdrop dragdrop}).
+ * which {@link term.datanode data nodes} can be dragged and dropped ({@link element.dragdrop dragdrop}).
  * Example:
  * A simple example of a smartbinding transforming data into representation
  * <code>

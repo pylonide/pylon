@@ -23,7 +23,7 @@
 
 /**
  * Element that defines a template of jml which is repeated for a list of 
- * selected {@link term.datanode data node}s. Each template instance is databound to the
+ * selected {@link term.datanode data nodes}. Each template instance is databound to the
  * same {@link term.datanode data node}.
  * Example:
  * Simple example of some jml which is repeated. The button removes an item

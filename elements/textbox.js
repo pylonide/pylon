@@ -29,7 +29,7 @@
  * user to type information. The information typed can be
  * restricted by using masking. The information can also
  * be hidden from view when used in password mode. By adding an 
- * {@link element.element.autocomplete autocomplete element} as a child the 
+ * {@link element.autocomplete autocomplete element} as a child the 
  * value for the textbox can be looked up as you type. By setting the 
  * {@link element.textbox.attribute.mask mask atribute}, complex data input 
  * validation is done while the users types.

@@ -26,7 +26,7 @@ var __MULTISELECT__ = 1 << 8;
 /**
  * @term traversenode A traverse node is a {@link term.datanode data node} that is in the set selected by the 
  * {@link baseclass.multiselectbinding.binding.traverse traverse binding rule}.
- * These {@link term.datanode data node}s get representation within the visual element. For instance
+ * These {@link term.datanode data nodes} get representation within the visual element. For instance
  * each item in a list is connected to such a traverse node. A traverse node
  * can be selected, removed, added, dragged, dropped and so on. 
  * Example:
@@ -67,7 +67,7 @@ var __MULTISELECT__ = 1 << 8;
  * for multiselect and several keyboard based selection interaction. It also
  * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 
- * {@link term.datanode data node}s.
+ * {@link term.datanode data nodes}.
  *
  * @constructor
  * @baseclass
@@ -214,7 +214,7 @@ jpf.MultiSelect = function(){
      * @action
      * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
-     *   {NodeList}   the {@link term.datanode data node}s to be removed.
+     *   {NodeList}   the {@link term.datanode data nodes} to be removed.
      *   {XMLElement} the {@link term.datanode data node} to be removed.
      * @return  {Boolean}  specifies if the removal succeeded
      */
@@ -464,7 +464,7 @@ jpf.MultiSelect = function(){
     if (!this.setValue) {
         /**
          * Sets the value of this element.The value
-         * corresponds to an item in the list of loaded {@link term.datanode data node}s. This
+         * corresponds to an item in the list of loaded {@link term.datanode data nodes}. This
          * element will receive the selection. If no {@link term.datanode data node} is found, the
          * selection is cleared.
          *
@@ -880,7 +880,7 @@ jpf.MultiSelect = function(){
     /**
      * Selects a set of items
      *
-     * @param {Array} xmlNodeList the {@link term.datanode data node}s that will be selected.
+     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
      */
     //@todo I think there are missing events here?
     this.selectList = function(xmlNodeList, noEvent, selected){
@@ -1059,7 +1059,7 @@ jpf.MultiSelect = function(){
 
     /**
      * Retrieves an array or a document fragment containing all the selected
-     * {@link term.datanode data node}s from this element.
+     * {@link term.datanode data nodes} from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
      * @return {mixed} the selection of this element.
@@ -1211,8 +1211,8 @@ jpf.MultiSelect = function(){
 
     /**
      * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for j:dropdown. 
-     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all {@link term.datanode data node}s are selected.
-     * @attribute {Boolean} [selectable]    whether the {@link term.datanode data node}s of this element can be selected. Default is true.
+     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
+     * @attribute {Boolean} [selectable]    whether the {@link term.datanode data nodes} of this element can be selected. Default is true.
      * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
      * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected {@link term.datanode data node}.
      * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected {@link term.datanode data node} cannot be selected again.

@@ -131,7 +131,7 @@
  *      <j:species unique="text()" />
  *  </j:remote>
  * </code>
- * @attribute {String} select   the xpath that selects the set of {@link term.datanode data node}s that share a similar uniqueness trait.
+ * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes} that share a similar uniqueness trait.
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific {@link term.datanode data node}.
  */
 /**
