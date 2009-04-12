@@ -24,7 +24,7 @@ var __WITH_JMLDOM__ = 1 << 14;
 // #ifdef __WITH_JMLDOM
 
 /**
- * All elements inheriting from this {@link term.baseclass} have Document Object Model (DOM) support. The DOM
+ * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM
  * is the primary method for accessing and manipulating an xml document. This
  * includes html documents and jml documents. Every element in the javeline
  * markup language can be manipulated using the W3C DOM. This means

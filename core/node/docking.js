@@ -24,7 +24,7 @@ var __DOCKING__ = 1 << 18;
 // #ifdef __WITH_DOCKING
 
 /**
- * All elements inheriting from this {@link term.baseclass} have docking features.
+ * All elements inheriting from this {@link term.baseclass baseclass} have docking features.
  *
  * @constructor
  * @baseclass

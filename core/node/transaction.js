@@ -24,7 +24,7 @@ var __TRANSACTION__ = 1 << 3;
 // #ifdef __WITH_TRANSACTION
 
 /**
- * All elements inheriting from this {@link term.baseclass} have transaction support. A transaction is a 
+ * All elements inheriting from this {@link term.baseclass baseclass} have transaction support. A transaction is a 
  * set of changes to data which are treated as one change. When one of the 
  * changes in the set fails, all the changes will be cancelled. In the case of
  * a gui this is mostly relevant when a user decides to cancel after 

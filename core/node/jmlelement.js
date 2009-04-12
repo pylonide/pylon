@@ -25,7 +25,7 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_JMLNODE
 
 /**
- * All elements inheriting from this {@link term.baseclass} are a jml component.
+ * All elements inheriting from this {@link term.baseclass baseclass} are a jml component.
  *
  * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
  *

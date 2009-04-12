@@ -25,7 +25,7 @@
  * Element allowing data synchronization between multiple clients using the same
  * application or application part. This element is designed as thecore of 
  * collaborative application logic for Javeline PlatForm. The children of this
- * element specify how the uniqueness of {@link term.datanode data node}s is determined. By pointing
+ * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
  * models to this element, all changes to their data will be streamed through
  * this element to all listening client over a choosen protocol. 
  * Example:
@@ -73,7 +73,7 @@
  * Javeline PlatForm has built in support for optimistic and pessimistic locking
  * in smartbindings. For more information please see {@link term.locking}.
  * 
- * Advanced Remarks:
+ * Advanced:
  * There is a very small theoretical risk that a user initiates and finishes an 
  * action during the latency period of the rsb communication. Usually this 
  * latency is no more than 100 to 300ms which is near impossible for such action

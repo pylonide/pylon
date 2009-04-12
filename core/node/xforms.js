@@ -24,7 +24,7 @@ var __XFORMS__ = 1 << 17;
 //#ifdef __WITH_XFORMS
 
 /**
- * All elements inheriting from this {@link term.baseclass} have xforms support.
+ * All elements inheriting from this {@link term.baseclass baseclass} have xforms support.
  *
  * @constructor
  * @todo possible ideas on how to extend xpath

@@ -24,7 +24,7 @@ var __DELAYEDRENDER__ = 1 << 11
 // #ifdef __WITH_DELAYEDRENDER
 
 /**
- * All elements inheriting from this {@link term.baseclass} have delayed rendering features. Any element
+ * All elements inheriting from this {@link term.baseclass baseclass} have delayed rendering features. Any element
  * that is (partially) hidden at startup has the possibility to delay rendering
  * it's childNodes by setting render="runtime" on the element. These elements
  * include window, tab, pages, form and container.

@@ -337,7 +337,7 @@ jpf.skins = {
 };
 
 /**
- * All elements inheriting from this {@link term.baseclass} have skinning features. A skin is a description
+ * All elements inheriting from this {@link term.baseclass baseclass} have skinning features. A skin is a description
  * of how the element is rendered. In the web browser this is done using html
  * elements and css.
  * Remarks:

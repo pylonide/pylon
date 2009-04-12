@@ -24,7 +24,7 @@ var __MULTIBINDING__ = 1 << 7;
 // #ifdef __WITH_MULTIBINDING
 
 /**
- * All elements inheriting from this {@link term.baseclass} have the ability to databind 
+ * All elements inheriting from this {@link term.baseclass baseclass} have the ability to databind 
  * the selection of this Element.
  * Example:
  * In this example the selection of the dropdown determines the value of the city

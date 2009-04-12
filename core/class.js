@@ -65,7 +65,7 @@
  * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
  *
  * Internals:
- * Property binding in jpf a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
+ * Property binding in jpf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
  * system. When a binding is established the element that receives the value sets
  * a listener on the property of another element. There can be any number of 
  * elements referenced in a single expression. When any of the properties that 
@@ -127,7 +127,7 @@
  */
 
 /**
- * All elements inheriting from this {@link term.baseclass} have {@link term.propertybinding property binding},
+ * All elements inheriting from this {@link term.baseclass baseclass} have {@link term.propertybinding property binding},
  * event handling and constructor & destructor hooks. The event system is 
  * implemented following the W3C specification, similar to the 
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.

@@ -63,7 +63,7 @@ var __MULTISELECT__ = 1 << 8;
  */
 
 /**
- * All elements inheriting from this {@link term.baseclass} have selection features. This includes handling
+ * All elements inheriting from this {@link term.baseclass baseclass} have selection features. This includes handling
  * for multiselect and several keyboard based selection interaction. It also
  * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 

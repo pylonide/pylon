@@ -63,6 +63,7 @@ var __DATABINDING__ = 1 << 1;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ * @default_private
  */
 jpf.DataBinding = function(){
     var loadqueue;
@@ -1902,7 +1903,6 @@ jpf.DataBinding = function(){
      *  <li>{@link element.bindings}</li>
      *  <li>{@link element.actions}</li>
      *  <li>{@link element.dragdrop}</li>
-     *  <li>{@link baseclass.multiselectbinding.method.loadInlineData}</li>
      * </ul>
      */
     this.$propHandlers["smartbinding"] = function(value, forceInit){
@@ -2442,7 +2442,7 @@ jpf.StandardBinding = function(){
 
 //#ifdef __WITH_MULTISELECT
 /**
- * All elements inheriting from this {@link term.baseclass} can bind to data 
+ * All elements inheriting from this {@link term.baseclass baseclass} can bind to data 
  * which contains multiple nodes.
  *
  * @allowchild  item, choices

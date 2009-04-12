@@ -24,7 +24,7 @@ var __ANCHORING__ = 1 << 13;
 // #ifdef __WITH_ANCHORING
 
 /**
- * All elements inheriting from this {@link term.baseclass} have anchoring features. Each side of the
+ * All elements inheriting from this {@link term.baseclass baseclass} have anchoring features. Each side of the
  * element can be attached at a certain distance to it's parent's rectangle.
  * When the parent is resized the anchored side of the element stays
  * at the specified distance at all times. If both sides are anchored the

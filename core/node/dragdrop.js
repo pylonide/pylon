@@ -24,7 +24,7 @@ var __DRAGDROP__ = 1 << 5;
 // #ifdef __WITH_DRAGDROP
 
 /**
- * All elements inheriting from this {@link term.baseclass} have drag&drop 
+ * All elements inheriting from this {@link term.baseclass baseclass} have drag&drop 
  * features. This baseclass operates on the bound data of this element. 
  * When a rendered item is dragged and dropped the bound data is moved or 
  * copied from one element to another, or to the same element but at a different 

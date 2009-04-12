@@ -459,7 +459,7 @@ function EditMode(){
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
 
 /**
- * All elements inheriting from this {@link term.baseclass} have multilingual support.
+ * All elements inheriting from this {@link term.baseclass baseclass} have multilingual support.
  *
  * @see core.layout
  * @constructor

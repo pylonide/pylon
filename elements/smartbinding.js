@@ -228,7 +228,7 @@
  *  <j:datagrid>
  *      <j:actions>
  *          <j:remove select = "self::contact[not(@readonly)]"
- *                    set      "url:remove_contact.jsp?id={@dbid}" />
+ *                    set    = "url:remove_contact.jsp?id={@dbid}" />
  *      </j:actions>
  *  </j:datagrid>
  * </code>
@@ -320,8 +320,7 @@
  *  </j:script>
  * </code>
  *
- * The second by specifying the template as a child of the add action
- * rule:
+ * The second by specifying the template as a child of the add action rule:
  *  <j:actions>
  *      <j:add set="rpc:comm.addProduct({.})">
  *          <product name="USB drive" type="storage" />

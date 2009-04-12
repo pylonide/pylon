@@ -32,7 +32,7 @@
  *  <j:model load="url:products.xml" />
  * </code>
  * Example:
- * A small form where a form is submitted using a model.
+ * A small form where the bound data is submitted to a server using a model.
  * <code>
  *  <j:model id="mdlForm" submission="url:save_form.asp" />
  *

@@ -24,7 +24,7 @@ var __INTERACTIVE__ = 1 << 21;
 //#ifdef __WITH_INTERACTIVE
 
 /**
- * All elements inheriting from this {@link term.baseclass} have interactive features, making an
+ * All elements inheriting from this {@link term.baseclass baseclass} have interactive features, making an
  * element draggable and resizable.
  * Example:
  * <code>

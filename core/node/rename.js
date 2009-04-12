@@ -24,7 +24,7 @@ var __RENAME__ = 1 << 10;
 // #ifdef __WITH_RENAME
 
 /**
- * All elements inheriting from this {@link term.baseclass} have the rename features. Rename is triggered by
+ * All elements inheriting from this {@link term.baseclass baseclass} have the rename features. Rename is triggered by
  * pressing F2 on an item or by clicking once on an already selected item. This
  * will show an input element in place where the user can change the name of the
  * item to a new one. When the caption is changed the {@link term.datanode data node} is

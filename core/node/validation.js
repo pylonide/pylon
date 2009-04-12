@@ -24,7 +24,7 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_VALIDATION
 
 /**
- * All elements inheriting from this {@link term.baseclass} have validation support.
+ * All elements inheriting from this {@link term.baseclass baseclass} have validation support.
  * Example:
  * <code>
  *  <j:bar validgroup="vgExample">

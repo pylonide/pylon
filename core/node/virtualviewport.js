@@ -25,7 +25,7 @@ var __VIRTUALVIEWPORT__ = 1 << 19;
 // #define __WITH_SCROLLBAR 1
 
 /**
- * All elements inheriting from this {@link term.baseclass} can have a virtual viewport.
+ * All elements inheriting from this {@link term.baseclass baseclass} can have a virtual viewport.
  *
  * @experimental This code has never been run. 
  * @constructor
