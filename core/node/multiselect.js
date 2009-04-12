@@ -545,6 +545,7 @@ jpf.MultiSelect = function(){
     /**
      * Gets the {@link baseclass.multilevelbinding} for this element.
      * @return {MultiLevelBinding} the {@link baseclass.multilevelbinding} for this element.
+     * @private
      */
     this.getMultibinding = function(){
         return selSmartbinding;
@@ -577,7 +578,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects a single, or set of {@info TraverseNodes "{@link term.traversenode traverse nodes}"}.
+     * Selects a single, or set of {@link term.traversenode traverse nodes}.
      * The selection can be visually represented in this element.
      *
      * @param {mixed}   xmlNode      the identifier to determine the selection.
@@ -1043,7 +1044,7 @@ jpf.MultiSelect = function(){
     };
 
     /**
-     * Selects all the {@info TraverseNodes "{@link term.traversenode traverse nodes}"} of this element
+     * Selects all the {@link term.traversenode traverse nodes} of this element
      *
      */
     this.selectAll = function(){

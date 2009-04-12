@@ -42,6 +42,7 @@
  * @attribute {Number}  sSize                connection line width
  * @attrubite {Number}  fsSize               define size of first and last connection segment
  *
+ * @private
  * @default_private
  * @constructor
  *

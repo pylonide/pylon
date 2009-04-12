@@ -3,9 +3,9 @@
  * Profiler class
  * @class Profiler
  * @version $Rev$
- * @author Mike de Boer (info AT mikedeboer.nl)
+ * @author Mike de Boer (mike AT javeline.com)
+ * @private
  */
-
 jpf.profiler = {
     stackTrace     : {},    //object - keepsafe for all profiled function during a cycle
     previousStack  : null,  //object - keeping hold of the stackTrace of the previous cycle

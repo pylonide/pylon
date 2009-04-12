@@ -45,6 +45,7 @@
  * @attribute {HTMLElement}   htmlElement   html representation of resized block element
  * @attribute {Object}        squares       store object representations of inputs elements
  * 
+ * @private
  * @default_private
  * @constructor
  * 

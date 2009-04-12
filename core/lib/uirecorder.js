@@ -1,4 +1,5 @@
 /**
+ * Provides a way to record user actions, store them and play them back.
  * @experimental
  */
 jpf.uirecorder = {
@@ -437,11 +438,6 @@ function playFrame() {
     }
 };
 
-/**
- * Actually supports only vertical scrolling
- * 
- * @param {Object} frame
- */
 function fireScroll(frame) {
     var el = frame[2];
 

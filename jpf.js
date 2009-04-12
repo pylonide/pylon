@@ -240,6 +240,9 @@ var jpf = {
      * @type {Boolean}
      */
     autoLoadSkin  : false,
+    /**
+     * Namespace for all crypto libraries included with javeline platform.
+     */
     crypto        : {}, //namespace
     _GET          : {},
     

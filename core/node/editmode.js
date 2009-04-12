@@ -93,12 +93,12 @@ var __MULTILANG__ = 1 << 16;
  */
 jpf.language = {
     /**
-     * {Boolean} whether read strings are tried to match themselves if no key
+     * Boolean specifying whether read strings are tried to match themselves if no key
      * was gives.
      */
     automatch : false,
     /**
-     * {String} the prefix to the set of language symbols. This is a tree path
+     * String setting the prefix to the set of language symbols. This is a tree path
      * using a dott (.) as a seperation symbol.
      */
     prefix    : "sub.main.",

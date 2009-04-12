@@ -24,10 +24,6 @@
 /**
  * Element which specifies the ways the application can communicate to remote
  * data sources.
- * 
- * @define teleport
- * @addnode global
- * @allowchild {teleport}
  * Example:
  * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
  * <code>
@@ -129,6 +125,10 @@
  *          jpf.xmpp.MSG_CHAT);
  *  </j:script>
  * </code>
+ * 
+ * @define teleport
+ * @addnode global
+ * @allowchild {teleport}
  *
  * @default_private
  */

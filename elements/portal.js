@@ -40,10 +40,10 @@
  *      </j:bindings>
  *      <j:model>
  *          <docklets>
- *              <docklet name="Current Usage"   src="url:usage.xml"    column="0" />
- *              <docklet name="Billing History" src="url:history.xml"  column="0" />
- *              <docklet name="Orders"          src="url:orders.xml"   column="1" />
- *              <docklet name="Features"        src="url:features.xml" column="1" />
+ *              <docklet name="Usage"    src="url:usage.xml"    column="0" />
+ *              <docklet name="Billing"  src="url:history.xml"  column="0" />
+ *              <docklet name="Orders"   src="url:orders.xml"   column="1" />
+ *              <docklet name="Features" src="url:features.xml" column="1" />
  *          </docklets>
  *      </j:model>
  *  </j:portal>

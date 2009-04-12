@@ -205,9 +205,9 @@
  * <code>
  *  <j:tree>
  *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:insert select = "self::category[not(@leaf)]" 
- *                    get    = "url:get_categories.php?parent={@id}" />
+ *          <j:caption select = "@name" />
+ *          <j:insert  select = "self::category[not(@leaf)]" 
+ *                     get    = "url:get_categories.php?parent={@id}" />
  *          <j:traverse select="category" />
  *      </j:bindings>
  *  </j:tree>

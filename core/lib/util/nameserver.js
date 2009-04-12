@@ -84,6 +84,12 @@ jpf.namespace("nameserver", {
 //#ifdef __WITH_REGISTRY
 /**
  * Object which provides a means to store key values pairs in a named context.
+ * Remarks:
+ * This objects primary purpose is to provide a way to serialize the state
+ * of all the custom state you introduce when building the application. This way
+ * you can use {@link core.offline jpf.offline} to start the application in 
+ * the exact state it was when your user closed the app.
+ *
  * @see core.storage
  */
 jpf.registry = jpf.extend({
