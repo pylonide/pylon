@@ -103,7 +103,7 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
 
         document.body.appendChild(this.oExt);
         var pos = jpf.getAbsolutePosition(refHtml, document.body);
-        
+
         if (document != refHtml.ownerDocument) {
             var pos2 = jpf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
             pos[0] += pos2[0];

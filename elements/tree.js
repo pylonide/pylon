@@ -133,10 +133,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.bufferselect = true;
     
     this.startcollapsed  = true;
-    this.animType     = jpf.tween.NORMAL;
-    this.animOpenStep = 3;
-    this.animCloseStep= 1;
-    this.animSpeed    = 10;
+    this.animType        = jpf.tween.NORMAL;
+    this.animOpenStep    = 3;
+    this.animCloseStep   = 1;
+    this.animSpeed       = 10;
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
@@ -174,9 +174,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["singleopen"]     = true;
     this.$booleanProperties["prerender"]      = true;
     
-    this.openadd   = true;
+    this.openadd        = true;
     this.startcollapsed = 1;
-    this.prerender   = true;
+    this.prerender      = true;
     
     /**
      * @attribute {String} mode Sets the way this element interacts with the user.
@@ -1301,7 +1301,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
-            this.startcollapsed = this.$getOption("main", "startcollapsed");
+            this.startcollapsed = this.$getOption("main", "startcollapsed") || true;
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);

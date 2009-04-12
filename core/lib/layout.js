@@ -22,7 +22,7 @@
 // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID || __WITH_LAYOUT
 
 /**
- * Takes care of the spatial order of elements withing the display area
+ * Takes care of the spatial order of elements within the display area
  * of the browser. Layouts can be saved to xml and loaded again. Window
  * elements are dockable, which means the user can change the layout as he/she
  * wishes. The state of the layout can be saved as xml at any time.
