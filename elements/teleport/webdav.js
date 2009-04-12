@@ -138,7 +138,7 @@ jpf.webdav = function(){
         this.inherit(jpf.BaseComm, jpf.http);
     }
 
-    /**
+    /*
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
@@ -152,7 +152,7 @@ jpf.webdav = function(){
         return value;
     }
 
-    /**
+    /*
      * Simple helper function to complete remove variables that have been
      * stored in the private space by register()
      *
@@ -169,7 +169,7 @@ jpf.webdav = function(){
         }
     }
 
-    /**
+    /*
      * Simple helper function that retrieves a variable, stored in the private
      * space.
      *
@@ -257,7 +257,7 @@ jpf.webdav = function(){
             });
     };
 
-    /**
+    /*
      * Something went wrong during the authentication process; this function
      * provides a central mechanism for dealing with this situation
      *
@@ -289,7 +289,7 @@ jpf.webdav = function(){
         return _self.dispatchEvent("authfailure", extra);
     }
 
-    /**
+    /*
      * Our connection to the server has dropped, or the WebDAV server can not be
      * reached at the moment. We will cancel the authentication process and
      * dispatch a 'connectionerror' event
@@ -321,7 +321,7 @@ jpf.webdav = function(){
         return _self.dispatchEvent("connectionerror", extra);
     }
 
-    /**
+    /*
      * Wrapper function for generation WebDAV-specific Error reporting
      * 
      * @param {String} sMsg Message that lists the error details
@@ -333,7 +333,7 @@ jpf.webdav = function(){
                          "WebDAV Communication error", sMsg));
     }
 
-    /**
+    /*
      * Integration with {@link auth} to implement application wide single
      * sign-on for WebDAV
      *
@@ -793,7 +793,7 @@ jpf.webdav = function(){
         purgeLockedStack(oLock);
     }
 
-    /**
+    /*
      * Removes a Lock token/ object from the stack.
      * 
      * @param {String} sPath Path pointing to the resource on the server
@@ -808,7 +808,7 @@ jpf.webdav = function(){
         delete oLocks[sPath];
     }
 
-    /**
+    /*
      * Internal helper function to retrieve a lock from the stack.
      *
      * @param {String} sPath Path pointing to the resource on the server
@@ -819,7 +819,7 @@ jpf.webdav = function(){
         return oLocks[sPath] || null;
     }
 
-    /**
+    /*
      * Update the stack of lock requests (NOT the stack of valid locks!) with a
      * new Lock, or an updated one (lifetime may have changed)
      * 
@@ -837,7 +837,7 @@ jpf.webdav = function(){
         });
     }
 
-    /**
+    /*
      * Purge the stack of lock requests, called when a lock request returned a
      * result. If bFailed is set to TRUE, the function that requested the lock
      * will be executed.
@@ -899,7 +899,7 @@ jpf.webdav = function(){
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
 
-    /**
+    /*
      * create the XML for a PROPPATCH request.
      * 
      * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
@@ -942,7 +942,7 @@ jpf.webdav = function(){
         return aOut.join('');
     }
 
-    /**
+    /*
      * Handler function that parses the response of a successful PROPFIND 
      * request. It parses all the info it received from the server response
      * and caches that info for reuse.
@@ -970,7 +970,7 @@ jpf.webdav = function(){
             callback.call(_self, "<files>" + aOut.join('') + "</files>", state, extra);
     }
 
-    /**
+    /*
      * Turn an XML WebDAV node that represents a resource and turn it into a 
      * reusable JS object, cache it so that it can be reused later.
      * 
@@ -1020,7 +1020,7 @@ jpf.webdav = function(){
             "'/>";
     }
 
-    /**
+    /*
      * Retrieve a file or directory resource from cache by searching for a 
      * matching path name.
      * 

@@ -1229,7 +1229,7 @@ jpf.WindowImplementation = function(){
  * @inherits jpf.JmlDom
  * @inherits jpf.Class
  * @default_private 
- * @see {baseclass.jmldom}
+ * @see baseclass.jmldom
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

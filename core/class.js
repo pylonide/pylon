@@ -74,9 +74,11 @@
  */
 
 /**
- * @term baseclass Javascript doesn't have most object oriented concepts like
+ * @term baseclass A baseclass in Javeline Platform (jpf) is a class that 
+ * adds properties, methods, attributes, bindings and actions to the class that
+ * inherits from it. Javascript doesn't have most object oriented concepts like
  * classes, class inheritance, interfaces, protected members and so on. When
- * using Javeline Platform (jpf) you will find that some of these concepts have
+ * using jpf you will find that some of these concepts have
  * been implemented in a way that enables the core developers of jpf to think in
  * those concepts. The most important one is class inheritance. Because of the
  * freedoms that javascript allows, it is possible to implement {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
