@@ -61,6 +61,8 @@
  *   {Number} position the number of the item in the list that is currently processed.
  *   {Number} length   the total number of items in the list.
  *
+ * @inherits jpf.Class
+ *
  * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
  * Example:
  * <code>
@@ -83,6 +85,9 @@
  *   transactions   records the state of the actiontrackers so that these are available offline.
  *   queue          handles queuing of actions that can only be executed whilst online.
  *   state          records the state of all elements in this application on a property level.
+ * @attribute {Number} rsb-timeout the number of milliseconds
+ * after the remote smartbindings server considers a client
+ * offline and destroys all saved offline messages.
  * 
  * @default_private
  */
@@ -119,9 +124,7 @@ jpf.namespace("offline", {
                     this.providers = jml.getAttribute("resources").split("|");
 
                 /**
-                 * @attribute {Number} rsb-timeout the number of milliseconds
-                 * after the remote smartbindings server considers a client
-                 * offline and destroys all saved offline messages.
+                 * @private
                  */
                 if (jml.getAttribute("rsb-timeout"))
                     this.rsbTimeout = parseInt(jml.getAttribute("rsb-timeout"));
@@ -286,6 +289,9 @@ jpf.namespace("offline", {
 
         //#ifdef __WITH_RSB
         if (!this.initial) {
+            /**
+             * @private
+             */
             this.initial = {
                 disableRSB : jpf.xmldb.disableRSB //@todo record this in storage
             }

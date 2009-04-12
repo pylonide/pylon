@@ -28,6 +28,7 @@
  * @version     %I%, %G%
  * @since       1.0
  * @namespace jpf
+ * @private
  */
 jpf.silverlight = (function() {
     /**

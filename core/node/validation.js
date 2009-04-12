@@ -573,6 +573,7 @@ jpf.Validation = function(){
  *
  * @event validation Fires when the validation group isn't validated.
  *
+ * @inherits jpf.Class
  * @constructor
  * @default_private
  *

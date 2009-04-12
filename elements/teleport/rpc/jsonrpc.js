@@ -60,6 +60,7 @@
  *
  * @addenum rpc[@protocol]:jsonrpc
  *
+ * @inherits jpf.Class
  * @inherits jpf.BaseComm
  * @inherits jpf.http
  * @inherits jpf.rpc

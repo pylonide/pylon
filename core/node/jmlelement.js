@@ -1110,8 +1110,9 @@ jpf.JmlElement.propHandlers = {
     
     //#ifdef __WITH_TRANSACTION
     /**
-     * @attribute {Boolean} center centers the window relative to it's parent's
-     * containing rect when shown.
+     * @attribute {Boolean} transaction Whether this element provides transaction
+     * support for all it's children.
+     * @see baseclass.transaction
      */
     "transaction" : function(value){
         /**
@@ -1130,8 +1131,8 @@ jpf.JmlElement.propHandlers = {
 
     //Load subJML
     /**
-     * @attribute {String} the data instruction that loads new jml as children
-     * of this element.
+     * @attribute {String} jml the {@link term.datainstruction data instruction} 
+     * that loads new jml as children of this element.
      */
     "jml": function(value){
         //Clear??
@@ -1140,6 +1141,14 @@ jpf.JmlElement.propHandlers = {
     }
    
     //#ifdef __WITH_ALIAS
+    /**
+     * @attribute {String} alias the alternative name for this element. The 
+     * alias attribute can be set on another element. Only one element can have
+     * the alias at one time. This way it's easy to use different elements in
+     * the same function (for instance a thumbail and a datagrid) while keeping
+     * all the binding rules and events on the active element.
+     * @experimental
+     */
     ,"alias" : function(value){
         if (!value) //@todo think about whether this has more meaning
             return;

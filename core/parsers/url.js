@@ -30,14 +30,13 @@
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
+ *
  * </code>
  *
- * @link http://tools.ietf.org/html/rfc3986
- * @classDescription This class creates a new URL object, divided into chunks
- * @return {jpf.url} Returns a new jpf.uri instance
- * @type {jpf.url}
+ * @see http://tools.ietf.org/html/rfc3986
  * @constructor
  * @parser
+ * @default_private
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -66,16 +65,14 @@ jpf.url = function(str) {
         if ($1)
             _self[o.q.name][$1] = $2;
     });
-};
 
-jpf.url.prototype = {
     /**
      * Checks if the same origin policy is in effect for this URI.
-     * @link http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
+     * @see http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
      *
-     * @type {Boolean}
+     * @returns {Boolean}
      */
-    isSameLocation: function(){
+    this.isSameLocation = function(){
         // filter out anchors
         if (this.uri.length && this.uri.charAt(0) == "#")
             return false;

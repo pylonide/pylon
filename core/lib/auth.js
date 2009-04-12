@@ -107,6 +107,8 @@
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
  *   bubbles: yes
  *
+ * @inherits jpf.Class
+ *
  * @attribute {String}  login           the {@link term.datainstruction data instruction} on how to log in to a service.
  * @attribute {String}  logout          the {@link term.datainstruction data instruction} on how to log out of a service.
  * @attribute {Boolean} autostart      whether to fire authrequired at startup.

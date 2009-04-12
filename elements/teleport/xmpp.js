@@ -93,6 +93,7 @@
  * @since       1.0
  * @constructor
  *
+ * @inherits jpf.Class
  * @inherits jpf.BaseComm
  * @inherits jpf.http
  * @namespace jpf

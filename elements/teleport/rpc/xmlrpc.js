@@ -53,6 +53,7 @@
  *
  * @addenum rpc[@protocol]:xmlrpc
  *
+ * @inherits jpf.Class
  * @inherits jpf.BaseComm
  * @inherits jpf.http
  * @inherits jpf.rpc

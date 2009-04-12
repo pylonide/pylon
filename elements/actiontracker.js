@@ -33,6 +33,7 @@
  * will be synchronized to the data store when the application comes online.
  *
  * @constructor
+ * @inherits jpf.Class
  *
  * @define actiontracker
  * @addnode smartbinding, global
@@ -884,6 +885,7 @@ jpf.UndoData = function(settings, at){
 /**
  * Default actions, that are known to the actiontracker
  * @todo test if .extra has impact on speed
+ * @private
  */
 jpf.actiontracker.actions = {
     "setTextNode" : function(UndoObj, undo){

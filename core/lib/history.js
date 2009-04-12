@@ -46,7 +46,8 @@
  *
  *      switch(info[0]) {
  *          case "product": //hash is for instance 'product:23849'
- *              //Sets the state to displaying product information see {@link element.state}
+ *              //Sets the application state to display product info
+ *              //For more information see {@link element.state}
  *              stProduct.activate(); 
  *              //Loads a product by id
  *              loadProduct(info[1]); 

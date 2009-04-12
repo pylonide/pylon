@@ -248,6 +248,11 @@ jpf.namespace("offline.transactions", {
     }
 });
 
+/**
+ * Determines whether it's possible to start a new action.
+ * @private
+ * @method
+ */
 jpf.namespace("offline.canTransact", function(){
     if(!jpf.offline.enabled || this.onLine || this.transactions.enabled)
         return true;

@@ -72,13 +72,13 @@
  * @see element.slider.attribute.realtime
  * @attribute {String}  skinset                 the skin set used by the application.
  * @see baseclass.presentation.attribute.skinset
- * @attribute {String}  storage                 the storage provider to be used for key/value storage.
+ * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
  * @see core.storage
- * @attribute {String}  offline                 the storage provider to be used for offline support.
+ * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
  * @see core.offline
- * @attribute {String}  login                   the datainstruction which logs a user into the application.
+ * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
  * @see element.auth
- * @attribute {String}  logout                  the datainstruction which logs a user out of the application.
+ * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.
  * @see element.auth
  * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied
  * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied

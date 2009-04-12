@@ -1818,7 +1818,11 @@ jpf.DataBinding = function(){
      *      <j:textarea ref="address" />
      *
      *      <j:label>Country</j:label>
-     *      <j:dropdown ref="country" model="url:countries.xml" traverse="country" caption="@name" />
+     *      <j:dropdown 
+     *        ref      = "country" 
+     *        model    = "url:countries.xml" 
+     *        traverse = "country" 
+     *        caption  = "@name" />
      *
      *      <j:button action="submit">Submit</j:button>
      *  </j:bar>
