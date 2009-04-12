@@ -737,7 +737,7 @@ jpf.webdav = function(){
         }, true, callback);
     };
 
-    /**
+    /*
      * Add a new lock token/ object to the stack
      * 
      * @path {String} sPath Path pointing to the resource on the server
@@ -752,7 +752,7 @@ jpf.webdav = function(){
         };
     }
 
-    /**
+    /*
      * Handler function that registers a lock globally when a LOCK request was
      * successful. It parses all the info it received from the server response
      * and caches that info for reuse.
