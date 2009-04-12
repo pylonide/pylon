@@ -192,7 +192,7 @@
  *
  * Extending:
  * Two special binding rules are the {@link baseclass.databinding.binding.load load}
- * and the {@link element.tree.binding.insert insert) bindings. These bindings
+ * and the {@link element.tree.binding.insert insert} bindings. These bindings
  * are used to load and insert new data into the data bound to the element that
  * uses them. With these rules an application can start out with only a bit of
  * data and when the user needs it extends the data. A simple example is that of
