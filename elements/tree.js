@@ -445,7 +445,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @private
      */
-    this.findValueNode = function(el){
+    this.$findValueNode = function(el){
         if (!el) return null;
 
         while(el && el.nodeType == 1 
@@ -474,7 +474,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
             "dragInsert", "dragAppend", "selected", "indicate"]);
         
-        this.$setStyleClass(this.lastel = this.findValueNode(el), extra 
+        this.$setStyleClass(this.lastel = this.$findValueNode(el), extra 
             ? (extra[1] && extra[1].getAttribute("operation") == "insert-before" 
                 ? "dragInsert" 
                 : "dragAppend") 

@@ -99,6 +99,40 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      */
     this.nodeType      = jpf.NODE_ELEMENT;
     this.$regbase      = this.$regbase | __WITH_JMLDOM__;
+    
+    //#ifndef __PACKAGED
+    /**
+     * the parent in the tree of this element.
+     */
+    this.parentNode = null;
+    
+    /**
+     * Returns the node immediately preceding the specified one in its parent's 
+     * childNodes list, null if the specified node is the first in that list. 
+     */
+    this.previousSibling = null;
+    
+    /**
+     * Returns the node immediately following the specified one in its parent's 
+     * childNodes list, or null if the specified node is the last node in that 
+     * list. 
+     */
+    this.nextSibling = null;
+    
+    /**
+     * Returns the node's first child in the tree, or null if the node is 
+     * childless. If the node is a Document, it returns the first node in the 
+     * list of its direct children.
+     */
+    this.firstChild = null;
+    
+    /**
+     * Returns the node's last child in the tree, or null if the node is 
+     * childless. If the node is a Document, it returns the last node in the 
+     * list of its direct children.
+     */
+    this.lastChild = null;
+    //#endif
 
     /**
      * Nodelist containing all the child nodes of this element.
@@ -140,13 +174,10 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             };
             //#endif
     
-            /**
-             * {JmlNode} the parent in the tree of this element.
-             */
             this.parentNode = parentNode;
             this.$jml        = jml;
             /**
-             * {Number} nodeFunc the function of this element
+             * the purpose of this element
              * Possible values:
              * jpf.NODE_VISIBLE     this element has a gui representation
              * jpf.NODE_HIDDEN      this element does not display a gui
@@ -583,9 +614,17 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
     //#endif
 
+    /**
+     * Returns the value of the current node. 
+     */
     this.nodeValue    = "";
+    /**
+     * The namespace URI of the node, or null if it is unspecified (read-only). 
+     * When the node is a document, it returns the XML namespace for the current 
+     * document.
+     */
     this.namespaceURI = jpf.ns.jml;
-
+    
     this.$setParent = function(pNode){
         if (pNode && pNode.childNodes.indexOf(this) > -1)
             return;

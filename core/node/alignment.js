@@ -46,20 +46,21 @@ var __ALIGNMENT__ = 1 << 12;
  * See {@link element.grid}
  * See {@link baseclass.anchoring}
  *
+ * @attribute {Boolean} docking whether this element can function as a dockable section of the layout.
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @default_private
  */
 jpf.Alignment = function(){
     this.$regbase = this.$regbase | __ALIGNMENT__;
 
     var l = jpf.layout;
 
-    /**
-     * @attribute {Boolean} docking whether this element can function as a dockable section of the layout.
-     */
     this.dock = false;
     this.dockable = false;
     this.$booleanProperties["dock"] = true;

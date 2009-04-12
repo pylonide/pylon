@@ -459,8 +459,8 @@ jpf.DragDrop = function(){
             //MultiSelect must have carret behaviour AND deselect at clicking white
             //for(prop in e) if(prop.match(/x/i)) str += prop + "\n";
             //alert(str);
-            if (this.host.findValueNode)
-                fEl = this.host.findValueNode(srcEl);
+            if (this.host.$findValueNode)
+                fEl = this.host.$findValueNode(srcEl);
             var el = (fEl
                 ? jpf.xmldb.getNode(fEl)
                 : jpf.xmldb.findXMLNode(srcEl));
@@ -686,8 +686,8 @@ jpf.DragServer = {
     dragover : function(o, el, e){
         if(!e) e = event;
         var fEl;
-        if (o.findValueNode)
-            fEl = o.findValueNode(el);
+        if (o.$findValueNode)
+            fEl = o.$findValueNode(el);
         //if(!fEl) return;
 
         //Check Permission
@@ -735,8 +735,8 @@ jpf.DragServer = {
 
     dragdrop : function(o, el, srcO, e){
         //Check Permission
-        var elSel   = (o.findValueNode
-            ? jpf.xmldb.getNode(o.findValueNode(el))
+        var elSel   = (o.$findValueNode
+            ? jpf.xmldb.getNode(o.$findValueNode(el))
             : jpf.xmldb.findXMLNode(el));
         var candrop = (o.isDropAllowed)//elSel && 
             ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)

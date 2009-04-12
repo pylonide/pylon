@@ -85,9 +85,9 @@
 
 /**
  * @term binding Binding rules determine how an element displays the data that 
- * its bound to (i.e. {@link element.tree.binding.caption the caption rule}), 
+ * its bound to (ex.: {@link element.tree.binding.caption the caption rule}), 
  * and determines how it can be interacted with 
- * (i.e. {@link baseclass.multiselect.binding.select the select rule}).
+ * (ex.: {@link baseclass.multiselect.binding.select the select rule}).
  * Binding rules are part of the {@link term.smartbinding smartbinding concept}.
  * 
  * Basic:

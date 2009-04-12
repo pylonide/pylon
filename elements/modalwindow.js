@@ -96,6 +96,7 @@ jpf.WinServer = {
  * @inherits jpf.Presentation
  * @inherits jpf.DelayedRender
  * @inherits jpf.Docking
+ * @inherits jpf.Transaction
  *
  * @event display       Fires when the window is displayed.
  * @event close         Fires when the window is closed.
