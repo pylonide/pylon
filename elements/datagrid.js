@@ -36,7 +36,7 @@
  *      <j:bindings>
  *          <j:column type="icon" width="16" value="newspaper.png" />
  *          <j:column caption="Date" select="publication/@date" width="70" />
- *		    <j:column caption="Title" width="180" select="title" />
+ *            <j:column caption="Title" width="180" select="title" />
  *          <j:column caption="Subtitle" select="subtitle" width="100%" />
  *          <j:traverse select="news" />
  *      </j:bindings>

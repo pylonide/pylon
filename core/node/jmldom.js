@@ -82,7 +82,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
-     * {Number} nodeType the type of node within the document.
+     * Number specifying the type of node within the document.
      *   Possible values:
      *   jpf.NODE_ELEMENT
      *   jpf.NODE_ATTRIBUTE
