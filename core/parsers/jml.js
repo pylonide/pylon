@@ -63,7 +63,14 @@ jpf.JmlParser = {
         // #endif
 
         //Create window and document
+        /**
+         * The window object of the application representing the browser window.
+         */
         jpf.window          = new jpf.WindowImplementation();
+        
+        /**
+         * The DOM document element for this application.
+         */
         jpf.document        = new jpf.DocumentImplementation();
         jpf.window.document = jpf.document;
         //#ifdef __WITH_ACTIONTRACKER

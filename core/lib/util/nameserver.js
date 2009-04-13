@@ -84,7 +84,6 @@ jpf.namespace("nameserver", {
 //#ifdef __WITH_REGISTRY
 /**
  * Object which provides a means to store key values pairs in a named context.
- * Remarks:
  * This objects primary purpose is to provide a way to serialize the state
  * of all the custom state you introduce when building the application. This way
  * you can use {@link core.offline jpf.offline} to start the application in 
@@ -135,6 +134,17 @@ jpf.registry = jpf.extend({
         this.lookup = {}; //@todo
     },
     
+    //#ifndef __PACKAGED
+    //here for doc purposes only
+    /**
+     * Retrieves a keys in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {String} namespace the named context of the keys to retrieve.
+     * @return {mixed} the value that correspond to the key in the namespace.
+     */
+    get : function(){},
+    //#endif
+    
     $export : function(storage){
         var namespace, key;
 
@@ -151,12 +161,6 @@ jpf.registry = jpf.extend({
  */
 jpf.registry.lookup = {};
 
-/**
- * Retrieves a keys in a namespace.
- * @param {String} key       the identifier of the information.
- * @param {String} namespace the named context of the keys to retrieve.
- * @return {mixed} the value that correspond to the key in the namespace.
- */
 jpf.registry.get = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };

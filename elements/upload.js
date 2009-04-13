@@ -22,10 +22,11 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element allowing the user to upload a file to a server. When the file is
- * being uploaded this element shows a virtual progressbar. The element
- * can also provides a visual representation of the uploaded file depending on
- * the skin.
+ * Element allowing the user to upload a file to a server. This element does 
+ * not have a visual representation. By adding buttons, a progressbar and other
+ * elements you can fully customize your upload component. Use {@link term.propertybinding property binding}
+ * to update those elements with the state of the upload element.
+ * 
  * Example:
  * This example shows an upload element that pushes an image to the server. The
  * asp script returns an xml string which is added to the list of images on a
@@ -38,6 +39,16 @@
  *    ontimeout = "alert('It seems the server went away')"
  *    oncancel  = "alert('Could not upload logo')"
  *    onreceive = "lstImages.add(arguments[0])" />
+ *
+ *  <j:button caption="Browse file..." onclick="uplMain.browse()" 
+ *    disabled="{uplMain.uploading}" />
+ *  <j:button caption="{uplMain.uploading ? 'Cancel' : 'Send'}" 
+ *    disabled="{!uplMain.value}" onclick="
+ *      if (uplMain.uploading)
+ *          uplMain.cancel();
+ *      else
+ *          uplMain.upload();
+ *    " />
  * </code>
  *
  * @event afterbrowse Fires after the user has made a selection.
@@ -139,16 +150,17 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     //#endif
 
     /**
-     * @ref global#getValue
-     * @todo set these global descriptions
+     * Returns the current value of this element.
+     * @return {String}
      */
     this.getValue = function(){
         return this.value;
     };
 
     /**
-     * @ref global#setValue
-     * @todo set these global descriptions
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value);
@@ -170,6 +182,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
 
+    /**
+     * Starts uploading the selected file.
+     */
     this.upload = function(){
         if (this.value != this.inpFile.value || !this.inpFile.value)
             return;

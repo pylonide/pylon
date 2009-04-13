@@ -53,7 +53,7 @@ jpf.namespace("offline.transactions", {
         //#endif
     },
         
-    /**
+    /*
      * data GET requests aren't synced but disallowed, 
      * such as j:load/j:insert bindings and model load=""
      * This function will sent the ontransactioncancel event which 

@@ -168,6 +168,7 @@ jpf.model = function(data, caching){
      * @param  {JMLElement}  jmlNode  The jml element to be registered.
      * @param  {String}      [xpath]  the xpath query which is executed on the data of the model to select the node to be loaded in the <code>jmlNode</code>.
      * @return  {Model}  this model
+     * @private
      */
     this.register = function(jmlNode, xpath){
         if (!jmlNode)
@@ -204,6 +205,7 @@ jpf.model = function(data, caching){
      * the data loaded in the jml element is not unloaded.
      *
      * @param  {JMLElement}  jmlNode  The jml element to be unregistered.
+     * @private
      */
     this.unregister = function(jmlNode){
         //if (this.connect)
@@ -214,6 +216,9 @@ jpf.model = function(data, caching){
         delete jmlNodes[jmlNode.uniqueId]
     };
 
+    /**
+     * @private
+     */
     this.getXpathByJmlNode = function(jmlNode){
         var n = jmlNodes[jmlNode.uniqueId];
         if (!n)
@@ -668,6 +673,7 @@ jpf.model = function(data, caching){
      *   default  sents data when a node is selected
      *   choice   sents data when a node is chosen (by double clicking, or pressing enter)
      * @param  {String}     [select] an xpath query which is executed on the data of the model to select the node to be loaded in the jml element.
+     * @private
      */
     //Only when model is a connect proxy
     this.setConnection = function(jmlNode, type, select){
@@ -687,7 +693,8 @@ jpf.model = function(data, caching){
     };
 
     /**
-     * Loads the initial data into this model
+     * Loads the initial data into this model.
+     * @see element.model.attribute.init
      */
     //callback here is private
     this.init = function(callback){
@@ -817,6 +824,9 @@ jpf.model = function(data, caching){
         return this;
     };
     
+    /**
+     * Loads the data from the datasource specified for init.
+     */
     this.reload = function(){
         if (!this.data)
             return;
