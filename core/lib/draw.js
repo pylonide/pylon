@@ -222,7 +222,7 @@ jpf.draw = {
                 open?"":this.close()].join(''));
             } 
         }
-        s.push("}}");
+        s.push("}};");
         return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
     },
     // draw a 3D polygon
@@ -1009,6 +1009,11 @@ jpf.draw = {
 		}
 		return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"
 	},
+    ang : function(a){
+        if(a == parseFloat(a))return a * (Math.PI / 180);
+        //alert("("+a+"(p/180))");
+        return "(("+a+")*p/180)";
+    },
 	snap : function(a,b){
 		return "(__round(("+a+")/(__t=("+b+")))*__t)";
 	},

@@ -132,7 +132,7 @@ jpf.draw.vml = {
     //----------------------------------------------------------------------
 
     beginShape : function(style) {
-        if(!style)return -1;
+        if(!style)return "";
         var l=this.l, html = l._htmljoin, i, t,
             shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
         style._path = [];
@@ -144,8 +144,8 @@ jpf.draw.vml = {
         // find a suitable same-styled other shape so we minimize the VML nodes
         for(i = l._styles.length-2;i>=0;i--){
             if(!l._styles[i]._prev && 
-                this.$equalStyle( l._styles[i], style )){
-                style._prev = i;
+                this.$equalStyle( t=l._styles[i], style )){
+                style._prev = (t._prev !== undefined)?t._prev:i;
                 break;
             }
         }       
@@ -218,7 +218,7 @@ jpf.draw.vml = {
                            "/>\"].join(''))){",
                            "_s._vmlnode.removeChild(_s._vmlfill);",
                            "_s._vmlnode.insertAdjacentHTML( 'beforeend',_s._vmldata=_t);",
-                           "_s._vmlfill = _s._vmlnode.lastChild;}");
+                           "_s._vmlfill = _s._vmlnode.lastChild;};");
                         child.push("<v:fill opacity='0' color='black' type='fill'/>");
                     }else{
                         if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
@@ -291,13 +291,12 @@ jpf.draw.vml = {
             }
             html.push(["<v:shape alignshape='f' ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
                     path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
-        }  
-        /*
-        if(style._prev !== undefined){
-            if(this.last !== style._prev)
-                s.push("_p=(_s=_styles[",style._prev,"])._path;");
-        }    */
-       
+        }else{
+            if(style._prev !== undefined){
+                if(this.last !== style._prev)
+                    s.push("_p=(_s=_styles[",style._prev,"])._path;");
+            }    
+        }
         return s.join('');
     },
        
