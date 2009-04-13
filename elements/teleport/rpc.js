@@ -23,7 +23,9 @@
 
 /**
  * Baseclass for rpc in teleport. Modules are available for
- * SOAP, XML-RPC, CGI, JSON-RPC and several proprietary protocols.
+ * {@link teleport.soap SOAP}, {@link teleport.xmlrpc XML-RPC}, 
+ * {@link teleport.cgi CGI}, {@link teleport.jsonrpc JSON-RPC} 
+ * and several proprietary protocols.
  * Example:
  * This example shows an rpc element using the xmlrpc protocol. It contains
  * two methods which can be called. The return of the first method is handled

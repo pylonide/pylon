@@ -80,11 +80,6 @@ jpf.jphp = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        /**
-         * @inherits jpf.BaseComm
-         * @inherits jpf.http
-         * @inherits jpf.rpc
-         */
         this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
     }
     

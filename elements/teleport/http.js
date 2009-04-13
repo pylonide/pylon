@@ -113,9 +113,9 @@ jpf.http = function(){
      * String specifying the url to the route script. 
      * Remarks:
      * The route script will receive the route information in 3 extra headers:
-     *   X-Route-Request     - Containing the destination url.
-     *   X-Proxy-Request     - Containing the destination url.
-     *   X-Compress-Response - Set to 'gzip'.
+     *   X-Route-Request     - Containing the destination url.<br />
+     *   X-Proxy-Request     - Containing the destination url.<br />
+     *   X-Compress-Response - Set to 'gzip'.<br />
      */
     this.routeServer = null;
     
