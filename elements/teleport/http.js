@@ -86,6 +86,7 @@
  * @constructor
  * @define http
  * @addnode teleport
+ * @default_private
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -97,9 +98,27 @@ jpf.http = function(){
     this.cache     = {};
 
     /**
-     * {Numbers} Sets the timeout of http requests in milliseconds
+     * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
      */
-    this.timeout   = 10000; //default 10 seconds
+    this.timeout     = 10000; //default 10 seconds
+    
+    /**
+     * Sets whether this element routes traffic through a server proxy.
+     * Remarks:
+     * This can also be set on a per call basis. See {@link teleport.http.method.get}.
+     */
+    this.autoroute   = false;
+    
+    /**
+     * String specifying the url to the route script. 
+     * Remarks:
+     * The route script will receive the route information in 3 extra headers:
+     *   X-Route-Request     - Containing the destination url.
+     *   X-Proxy-Request     - Containing the destination url.
+     *   X-Compress-Response - Set to 'gzip'.
+     */
+    this.routeServer = null;
+    
     if (!this.uniqueId)
         this.uniqueId = jpf.all.push(this) - 1;
 
@@ -165,7 +184,6 @@ jpf.http = function(){
 
     /**
      * Makes an http request that receives xml
-     * For a description of the parameters see {@link teleport.http.method.get}
      * @param {String}   url       the url that is accessed.
      * @param {Function} callback  the handler that gets called whenever the request completes succesfully or with an error, or when the request times out.
      * @param {Object}   options   the options for the http request

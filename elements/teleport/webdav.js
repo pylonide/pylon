@@ -84,7 +84,7 @@
  *     {String}        username   the username used for the last-active session
  *     {String}        server     the server address (URI) of the WebDAV server
  *     {String}        message    a more detailed explanation of the error
- * @event onfilecontents Fires when a {teleport.webdav.method.read} request has
+ * @event onfilecontents Fires when a {@link teleport.webdav.method.read read} request has
  * completed successfully and returns the content-body of the requested file
  *   bubbles: yes
  *   object:
