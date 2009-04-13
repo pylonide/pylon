@@ -226,6 +226,7 @@ jpf.rpc = function(){
     /**
      * Loads jml definition
      * @todo opt to rename this to .$loadJml()
+     * @private
      *
      * @attribute {String}  url              the location of the server that is recipient of the rpc messages.
      * @attribute {String}  protocol         the name of the plugin that is used to provide the messages.

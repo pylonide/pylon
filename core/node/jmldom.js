@@ -562,7 +562,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * W3C specification.
      * Example:
      * <code>
-     *  for (var i = 0; i < obj.attributes.lenght; i++) {
+     *  for (var i = 0; i < obj.attributes.length; i++) {
      *      alert(obj.attributes.item(i));
      *  }
      * </code>

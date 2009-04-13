@@ -22,7 +22,7 @@
 // #ifdef __WITH_STORAGE
 /**
  * Stores javascript structures based on a name and a namespace. This object
- * is used by {@link core.offline jpf offline support} as well as the 
+ * is used by {@link element.offline jpf offline support} as well as the 
  * {@link core.registry registry} and the {@link teleport.http http object} for 
  * caching. All but the memory storage provider, provide persistent storage. 
  * This means the data is kept between browser sessions. This allows jpf to

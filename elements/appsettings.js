@@ -75,7 +75,7 @@
  * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
  * @see core.storage
  * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
- * @see core.offline
+ * @see element.offline
  * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
  * @see element.auth
  * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.
