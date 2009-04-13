@@ -26,7 +26,7 @@
  * retrieved from any data source using data instructions. Data can be
  * submitted using data instructions in a similar way to html form posts. The
  * modal can be reset to it's original state. It has support for offline use and
- * synchronization between multiple clients.
+ * {@link element.remove synchronization between multiple clients}.
  * Example:
  * <code>
  *  <j:model load="url:products.xml" />
