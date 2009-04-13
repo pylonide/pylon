@@ -47,8 +47,9 @@ var __WITH_JMLDOM__ = 1 << 14;
  * <code>
  *  //The following line is only there for completeness sake. In fact jpf
  *  //automatically adds a reference in javascript called winExample based
- *  //on the is it has.
+ *  //on the id it has.
  *  var winExample = jpf.document.getElementById("winExample");
+ *  winExample.setAttribute("title", "Example");
  *  winExample.setAttribute("icon", "icoFolder.gif");
  *  winExample.setAttribute("left", "100");
  *
@@ -177,7 +178,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this.parentNode = parentNode;
             this.$jml        = jml;
             /**
-             * the purpose of this element
+             * The purpose of this element
              * Possible values:
              * jpf.NODE_VISIBLE     this element has a gui representation
              * jpf.NODE_HIDDEN      this element does not display a gui

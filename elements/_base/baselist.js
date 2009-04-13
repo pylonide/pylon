@@ -42,6 +42,7 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ * @default_private
  *
  * @binding caption  Determines the caption of a node.
  * @binding icon     Determines the icon of a node. This binding rule is used
