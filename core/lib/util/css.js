@@ -29,14 +29,31 @@
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */
 jpf.setStyleRule = function(name, type, value, stylesheet, win){
-    var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
-    for (var i = 0; i < rules.length; i++) {
-        if (rules.item(i).selectorText == name) {
-            rules.item(i).style[type] = value;
-            return true;
+    if (!stylesheet) {
+        var sheets = (win || self).document.styleSheets;
+        for (var j = sheets.length - 1; j >= 0; j--) {
+            try {
+                var rules = sheets[j][jpf.styleSheetRules];
+                for (var i = 0; i < rules.length; i++) {
+                    if (rules.item(i).selectorText == name) {
+                        rules.item(i).style[type] = value;
+                        return true;
+                    }
+                }
+            }
+            catch(e){}
         }
     }
-
+    else {
+        var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
+        for (var i = 0; i < rules.length; i++) {
+            if (rules.item(i).selectorText == name) {
+                rules.item(i).style[type] = value;
+                return true;
+            }
+        }
+    }
+    
     return false;
 };
 

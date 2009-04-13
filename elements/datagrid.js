@@ -1044,6 +1044,25 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         //#endif
         
+        //@todo This should support multiple color rules, by inserting the rules at the right place.
+        if (this.bindingRules && this.bindingRules.color) {
+            var clr = this.bindingRules.color[0];
+            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+                ? " .records .highlight SPAN"
+                : " .records .highlight span"), "color", clr.getAttribute("text"));
+            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+                ? " .records .highlight SPAN"
+                : " .records .highlight span"), "backgroundColor", clr.getAttribute("row"));
+            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+                ? " .records .highlight"
+                : " .records .highlight"), "backgroundColor", clr.getAttribute("row"));
+            /*jpf.importCssString(document, 
+                "." + this.baseCSSname + " .records div.highlight{background-color:" 
+                + clr.getAttribute("row") + ";} ." 
+                + this.baseCSSname + " .records div.highlight span{color:" 
+                + clr.getAttribute("text") + ";}");*/
+        }
+        
         var found, options, xml, width, h, fixed = 0, oHead, hId, nodes = [];
         for (var i = 0; i < heads.length; i++) {
             xml     = heads[i];
@@ -1223,6 +1242,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         
+        if (this.bindingRules && this.bindingRules.color) {
+            var colorRule = this.getNodeFromRule("color", xmlNode, false, true);
+            this.$setStyleClass(oRow, colorRule ? "highlight" : null, colorRule ? ["highlight"] : null);
+        }
+        
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
@@ -1286,6 +1310,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             htmlNodes = htmlNode.childNodes,
             node;
         
+        var p;
+        if (!this.namevalue && curBtn) {
+            p = curBtn.parentNode;
+        }
+        
         for (var i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
             h = headings[nodes[i].getAttribute("hid")];
             
@@ -1307,7 +1336,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         
+        if (!this.namevalue && p)
+            p.appendChild(curBtn);
+        
         //return; //@todo fake optimization
+        
+        if (this.bindingRules && this.bindingRules.color) {
+            var colorRule = this.getNodeFromRule("color", xmlNode, false, true);
+            this.$setStyleClass(htmlNode, colorRule ? "highlight" : null, colorRule ? ["highlight"] : null);
+        }
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
@@ -1397,10 +1434,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var col = jpf.xmldb.getChildNumber(htmlNode);
         var h   = headings[this.oHead.childNodes[col].getAttribute("hid")];
-        
-        if (this.namevalue) {
-            jpf.setStyleClass(htmlNode.parentNode.childNodes[0], "celllabel");
-            jpf.setStyleClass(htmlNode.parentNode.childNodes[1], "cellselected");
+
+        if (this.namevalue || h.type == "dropdown") {
+            if (this.namevalue) {
+                jpf.setStyleClass(htmlNode.parentNode.childNodes[0], "celllabel");
+                jpf.setStyleClass(htmlNode.parentNode.childNodes[1], "cellselected");
+                
+                var type     = this.selected.getAttribute("type");
+                var multiple = this.selected.getAttribute("multiple") == "multiple";
+            }
+            else {
+                var type     = h.type;
+                var multiple = false;
+
+                jpf.setStyleClass(htmlNode, "cellselected");
+            }
             
             if (jpf.popup.isShowing(this.uniqueId))
                 jpf.popup.forceHide();
@@ -1408,15 +1456,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (curBtn && curBtn.parentNode)
                 curBtn.parentNode.removeChild(curBtn);
             
-            var type     = this.selected.getAttribute("type");
-            var multiple = this.selected.getAttribute("multiple") == "multiple";
             if (type && type != "text" && (type != "lookup" || !multiple)) {
                 if (type == "set") 
                     type = "dropdown";
                 if (type != "lookup") {
                     curBtn = editors[type] || editors["custom"];
                     if (curBtn) {
-                        htmlNode.parentNode.appendChild(curBtn);
+                        if (this.namevalue)
+                            htmlNode.parentNode.appendChild(curBtn);
+                        else
+                            htmlNode.firstChild.appendChild(curBtn);
                         curBtn.style.display = "block"; //@todo see why only showing this onfocus doesnt work in IE
                     }
                 }
@@ -1424,6 +1473,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             jpf.setStyleClass(htmlNode, "cellselected");
+            
+            if (jpf.popup.isShowing(this.uniqueId))
+                jpf.popup.forceHide();
+            
+            if (curBtn && curBtn.parentNode)
+                curBtn.parentNode.removeChild(curBtn);
         }
         
         lastcell = htmlNode;
@@ -1680,6 +1735,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             else {
                 this.$autocomplete = false;
             }
+        }
+        else {
+            var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
+            if (h.type == "dropdown")
+                return;
         }
         
         var node = this.$getLayoutNode("cell", "caption", this.namevalue
@@ -1952,6 +2012,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(oHtml, "down");
         
         var type = this.selected.getAttribute("type");//oHtml.getAttribute("type");
+        
+        if (!type) {
+            var h = headings[this.oHead.childNodes[lastcol].getAttribute("hid")];
+            type = h.type;
+        }
+        
         if (type == "dropdown" || type == "set") {
             if (jpf.popup.isShowing(this.uniqueId)){
                 jpf.popup.forceHide();
@@ -1962,7 +2028,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (self[this.lookupjml]) 
                     self[this.lookupjml].detach();
                 
-                var mirrorNode = oHtml.parentNode.childNodes[1];
+                var mirrorNode = this.namevalue
+                    ? oHtml.parentNode.childNodes[1]
+                    : oHtml.parentNode;
                 //this.$setStyleClass(oContainer, mirrorNode.className);
                 oContainer.className = "propeditcontainer" + type;
                 oContainer.style[jpf.supportOverflowComponent 
@@ -1972,9 +2040,20 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 str   = [];
                 var s = this.selected.selectNodes("item");
                 if (type == "dropdown") {
-                    for (var i = 0, l = s.length; i < l; i++) {
-                        str.push("<div tag='", s[i].getAttribute("value"), "'>",
-                            s[i].firstChild.nodeValue, "</div>");
+                    if (!this.namevalue) {
+                        s = self[h.xml.getAttribute("model")].queryNodes("item");
+                        
+                        for (var i = 0, l = s.length; i < l; i++) {
+                            str.push("<div tag='", (s[i].getAttribute("value") 
+                              || s[i].firstChild.nodeValue), "'>",
+                                s[i].firstChild.nodeValue, "</div>");
+                        }
+                    }
+                    else {
+                        for (var i = 0, l = s.length; i < l; i++) {
+                            str.push("<div tag='", s[i].getAttribute("value"), "'>",
+                                s[i].firstChild.nodeValue, "</div>");
+                        }
                     }
                 }
                 else {
@@ -2046,11 +2125,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var sel = this.selected;
                 jpf.popup.show(this.uniqueId, {
-                    x       : -1,
+                    x       : this.namevalue ? -1 : 0,
                     y       : mirrorNode.offsetHeight - 1,
                     animate : true,
                     ref     : mirrorNode,
-                    width   : mirrorNode.offsetWidth - this.widthdiff + 3,
+                    width   : mirrorNode.offsetWidth - this.widthdiff + (this.namevalue ? 3 : 1),
                     height  : s.length * this.itemHeight,
                     onclose : function(e){
                         if (type == "set") {
@@ -2547,9 +2626,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         //@todo move this to the handler of the namevalue attribute
-        if (this.namevalue) {
+        if (this.namevalue || this.editdropdown) {
             var edits = ["dropdown", "custom", "dropdown_container"];
-            
+
             for (var edit, c, i = 0; i < edits.length; i++) {
                 c = this.$getLayoutNode(edits[i]);
                 edit = edits[i];
@@ -2579,7 +2658,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.widthdiff  = this.$getOption(edit, "width-diff") || 0;
                 }
             }
-
+        }
+        
+        if (this.namevalue) {
             var changeListener = {
                 $xmlUpdate : function(action, xmlNode, loopNode, undoObj, oParent){
                     if (!_self.xmlRoot)
