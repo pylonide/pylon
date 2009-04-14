@@ -863,7 +863,7 @@ jpf.UndoData = function(settings, at){
 
         options = jpf.extend({
             //undoObj   : this,
-            userdata  : jpf.isTrue(dataInstruction.getAttribute("ignore-fail")),
+            userdata  : jpf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             preparse  : true
         }, this.extra);
