@@ -21,17 +21,34 @@
 
 // #ifdef __JFLOWCHART || __INC_ALL
 /**
- * Element is implementing adding and removing block elements.
- * Every block could be rotated, flipped, resized, renamed, locked and moved.
- * It's possible to add connections between them.
+ * Element with which you can add and remove graphical blocks and create 
+ * connections between them. Block could be rotated, flipped, resized, 
+ * renamed, locked and moved.
  *
  * Example:
  * Flowchart component:
  * <code>
  * <j:model id="modelName" save-original="true">
  *     <flowchart>
- *         <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="false" flipv="true" fliph="false"></block>
- *         <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
+ *         <block
+ *             id     = "b1"
+ *             type   = "current_source_cc"
+ *             left   = "500"
+ *             top    = "520" 
+ *             width  = "56"
+ *             height = "56"
+ *             lock   = "false"
+ *             flipv  = "true"
+ *             fliph  = "false">
+ *         </block>
+ *         <block
+ *             id     = "b5" 
+ *             type   = "mosfet_p" 
+ *             left   = "800" 
+ *             top    = "400" 
+ *             width  = "56" 
+ *             height = "56" 
+ *             lock   = "0">
  *             <connection ref="b1" output="3" input="3" />
  *         </block>
  *     </flowchart>
@@ -39,63 +56,71 @@
  * <j:flowchart id="WF" template="url:template.xml" model="modelName">
  *     <j:css default="red" />
  *     <j:bindings>
- *         <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
- *         <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
- *         <j:css        select = "self::node()[@lock='1']" default="locked"/>
- *         <j:left       select = "@left" />
- *         <j:top        select = "@top" />
- *         <j:id         select = "@id" />
- *         <j:width      select = "@width" />
- *         <j:height     select = "@height" />
- *         <j:flipv      select = "@flipv" />
- *         <j:fliph      select = "@fliph" />
- *         <j:rotation   select = "@rotation" />
- *         <j:lock       select = "@lock" />
- *         <j:type       select = "@type" />
- *         <j:type       value  = "" />
- *         <j:zindex     select = "@zindex" />
- *         <j:image      select = "@src" />
+ *         <j:move select="self::node()[not(@move='0') and not(@lock='1')]" />
+ *         <j:resize select="self::node()[@resize='1' and not(@lock='1')]" />
+ *         <j:css select="self::node()[@lock='1']" default="locked"/>
+ *         <j:left select="@left" />
+ *         <j:top select="@top" />
+ *         <j:id select="@id" />
+ *         <j:width select="@width" />
+ *         <j:height select="@height" />
+ *         <j:flipv select="@flipv" />
+ *         <j:fliph select="@fliph" />
+ *         <j:rotation select="@rotation" />
+ *         <j:lock select="@lock" />
+ *         <j:type select="@type" />
+ *         <j:type value="" />
+ *         <j:zindex select="@zindex" />
+ *         <j:image select="@src" />
  *         <j:traverse select="block" />
  *
  *         <!-- Connection Binding Rules -->
- *         <j:connection select = "connection" />
- *         <j:ref        select = "@ref" />
- *         <j:input      select = "@input" />
- *         <j:output     select = "@output" />
- *         <j:ttype      select = "@type" />
+ *         <j:connection select="connection" />
+ *         <j:ref select="@ref" />
+ *         <j:input select="@input" />
+ *         <j:output select="@output" />
+ *         <j:ttype select="@type" />
  *     </j:bindings>
  * </j:flowchart>
  * </code>
  *
  * @define flowchart
  * @attribute {String}   template   the data instruction to load the xml for the
- * template that defines all the elements which are available in the flowchart.
+ * template that defines all the elements which are available on the flowchart.
  * Example:
- * A template describing a single transistor element
+ * A template describing a single capacitor element
  * <code>
  *  <template>
- *      <element type="capacitor"
+ *      <element type = "capacitor"
  *        picture     = "elements/capacitor.png"
  *        dwidth      = "56"
  *        dheight     = "56"
  *        scaley      = "false"
  *        scalex      = "false"
- *        scaleration = "true">
- *          <input x="28" y="0" position="top" name="1" />
- *          <input x="28" y="56" position="bottom" name="2" />
+ *        scaleratio  = "true">
+ *          <input
+ *              x        = "28"
+ *              y        = "0"
+ *              position = "top"
+ *              name     = "1" />
+ *          <input 
+ *              x        = "28"
+ *              y        = "56"
+ *              position = "bottom"
+ *              name     = "2" />
  *      </element>
  *  </template>
  * </code>
  *
- * @binding lock    Determines prohibit block move, default is false.
+ * @binding lock    immobilize block element on workarea, default is false.
  *     Possible values:
- *     false   block element is unlocled
- *     true    block element is locked
+ *     false   block element is not immobilized
+ *     true    block element is immobilized
  * @binding fliph   Determines whether to mirror the block over the horizontal axis, default is false
  *     Possible values:
  *     true    block element is flipped
  *     false   block element is not flipped
- * @binding flipv   whether to mirror the block over the vertical axis, default is false
+ * @binding flipv   Determines whether to mirror the block over the vertical axis, default is false
  *     Possible values:
  *     true    block element is flipped
  *     false   block element is not flipped
@@ -105,19 +130,19 @@
  *     90    90  degrees rotation
  *     180   180 degrees rotation
  *     270   270 degrees rotation
- * @binding id          Determines unique block element name
- * @binding image       Determines path to block image file
- * @binding width       Determines block element horizontal size
- * @binding height      Determines block element vertical size
- * @binding type        Determines name of block with special abilities, which could be set in template file
- * @binding ttype       Determines relation to block with special abilities defined in template file
- * @binding zindex      Determines block's z-index number
- * @binding left        Determines horizontal position of block element
- * @binding top         Determines vertical position of block element
+ * @binding id          Determines unique name
+ * @binding image       Determines path to background image file 
+ * @binding width       Determines horizontal size
+ * @binding height      Determines vertical size
+ * @binding type        Determines name of block with special abilities, which can be defined in separate file
+ * @binding zindex      Determines z-index number
+ * @binding left        Determines horizontal position
+ * @binding top         Determines vertical position
+ * 
  * @binding connection  Determines xml representation of connection element
  * @binding ref         Determines unique name of destination block which will be connected with source block
- * @binding input       Determines source block input number
- * @binding output      Determines destination block input number
+ * @binding input       Determines input number of source block 
+ * @binding output      Determines input number of destination block
  *
  * @constructor
  *
@@ -312,9 +337,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
 
     /**
-     * Moves block on [x y] vector and update his xmlNode. It's possible to 
-     * return to previous state with Undo/Redo.
-     *
+     * Updates the position of a block to vector [x, y] and the XML it is bound 
+     * to. It's possible to return to previous state with Undo/Redo.
+     * 
      * @param {Object}       xmlNodeArray   array with xml representations of blocks elements
      * @param {Number}       dl             horizontal alteration
      * @param {Number}       dt             vertical alteration
@@ -350,13 +375,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
         }
-//jpf.flow.alert_r(changes[0].args[1]+" "+changes[0].args[2]);
-//jpf.flow.alert_r(changes[1].args[1]+" "+changes[1].args[2]);
+
         this.executeAction("multicall", changes, "moveTo", xmlNodeArray);
     };
 
     /**
-     * Set to block xmlNode new z-index propertie. This is an action. It's
+     * Set a new z-index of a block and the XML it is bound to. It's
      * possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -368,8 +392,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Sets mode to canvas object. Modes adds new features. For example,
-     * if connection-change mode is active, possible is deleting connections
-     * between blocks. 
+     * if connection-change mode is active, deleting connections
+     * between blocks is possible. 
      * 
      * Modes:
      *     normal             - all operations are allowed except operations from different modes
@@ -383,7 +407,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Returns mode from canvas object. Modes adds new features. For example,
+     * Returns current mode type. Modes adds new features. For example,
      * if connection-change mode is active, possible is deleting connections
      * between blocks. 
      *
@@ -399,7 +423,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Immobilise block element on flowchart element. This is an action.
+     * Immobilise block element on workarea. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -423,18 +447,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *     90    90 degrees rotation
      *     180   180 degrees rotation
      *     270   270 degrees rotation
-     * @param {Number}       start
      */
-    this.rotate = function(xmlNode, newRotation, start) {
+    this.rotate = function(xmlNode, newRotation/*, start*/) {
         var prevFlipV = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
                 ? true
                 : false,
             prevFlipH = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
                 ? true
                 : false,
-            prevRotation = start
+            prevRotation = parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,
+            /*prevRotation = start
                 ? 0
-                : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,
+                : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,*/
             names = ["fliph", "flipv", "rotation"],
             values;
 
@@ -458,7 +482,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Whether to mirror the block over the vertical axis. This is an action.
+     * Mirrors the block over the vertical axis. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -484,11 +508,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Whether to mirror the block over the horizontal axis. This is an action.
+     * Mirrors the block over the horizontal axis. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
-     * @param {Number}       newFlipV  new flip value, default is false
+     * @param {Number}       newFlipH  new flip value, default is false
      *     Possible values:
      *     true    block element is flipped
      *     false   block element is not flipped
@@ -513,7 +537,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Resize block element in vertical and horiznontal plane. This is an
+     * Resize block element in vertical and horizontal plane. This is an
      * action. It's possible to return to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode     xml representation of block element
@@ -612,12 +636,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Creates new xml representation of block element
      *
      * @param {XMLElement}   parentXmlNode   xml representation of block parent node
-     * @param {Number}       left            horizontal position of block element
-     * @param {Number}       top             vertical position of block element
-     * @param {String}       type            name of block with special abilities, which could be set in template file
-     * @param {Number}       width           block element horizontal size
-     * @param {Number}       height          block element vertical size
-     * @param {String}       id              unique block element name
+     * @param {Number}       left            horizontal position
+     * @param {Number}       top             vertical position
+     * @param {String}       type            determines name of block with special abilities, which can be defined in separate file
+     * @param {Number}       width           horizontal size
+     * @param {Number}       height          vertical size
+     * @param {String}       id              unique name
      */
     this.addBlock = function(type, left, top, caption) {
         if (!type)
@@ -719,8 +743,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
-jpf.console.info("UPDATE");
-//alert("update")
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
         objBlock = objBlocks[blockId];
@@ -1178,8 +1200,8 @@ jpf.console.info("FILL");
     };
 
     /**
-     * Loads elements template, which define type, size and other properties for
-     * elements 
+     * Loads a template for elements, which defines the type, size and other 
+     * properties of blocks.
      * 
      * @see Template attribute
      * 
