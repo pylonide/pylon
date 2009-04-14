@@ -27,7 +27,7 @@
 
 /**
  * Baseclass of elements that allows the user to select one or more items
- * out of a list. (i.e. a {@link element.list} or {@link element.dropdown})
+ * out of a list.
  *
  * @constructor
  * @baseclass

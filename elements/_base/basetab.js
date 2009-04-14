@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a paged element. (i.e. {@link element.tab}, {@link element.pages}, {@link element.form}).
+ * Baseclass of a paged element. 
  *
  * @constructor
  * @baseclass
