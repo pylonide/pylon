@@ -155,10 +155,18 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**** Public methods ****/
 
+    /**
+     * @method  Sets calendar date
+     */
     this.setValue = function(value) {
         this.setProperty("value", value);
     };
     
+    /**
+     * @method  
+     * 
+     * @return {String} date indicated by calendar
+     */
     this.getValue = function() {
         return this.value;
     };

@@ -26,25 +26,6 @@
  * with square elements in vertical, horizontal or both planes. Symmetric
  * resizing is possible with SHIFT button.
  * 
- * @attribute {Object} scales
- *     Properties:
- *     {Boolean} scalex       resizing in horizontal plane, default is true
- *         Possible values:
- *         true   resizing in horizontal plane is allowed
- *         false  resizing in horizontal plane is not allowed
- *     {Boolean} scaley       resizing in vertical plane, default is true
- *         Possible values:
- *         true   resizing in vertical plane is allowed
- *         false  resizing in vertical plane is not allowed
- *     {Boolean} scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
- *         Possible values:
- *         true   resizing in two dimensions plane at the same time is allowed
- *         false  Resizing in two dimensions plane at the same time is not allowed
- *     {Number}  dwidth       the minimal horizontal size of Block element, default is 56 pixels
- *     {Number}  dheight      the minimal vertical size of Block element, default is 56 pixels
- * @attribute {HTMLElement}   htmlElement   html representation of resized block element
- * @attribute {Object}        squares       store object representations of inputs elements
- * 
  * @private
  * @default_private
  * @constructor
@@ -56,6 +37,22 @@
  */
 
 jpf.resize = function() {
+    /** 
+     *     {Boolean} scalex       resizing in horizontal plane, default is true
+     *         Possible values:
+     *         true   resizing in horizontal plane is allowed
+     *         false  resizing in horizontal plane is not allowed
+     *     {Boolean} scaley       resizing in vertical plane, default is true
+     *         Possible values:
+     *         true   resizing in vertical plane is allowed
+     *         false  resizing in vertical plane is not allowed
+     *     {Boolean} scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
+     *         Possible values:
+     *         true   resizing in two dimensions plane at the same time is allowed
+     *         false  Resizing in two dimensions plane at the same time is not allowed
+     *     {Number}  dwidth       the minimal horizontal size of Block element, default is 56 pixels
+     *     {Number}  dheight      the minimal vertical size of Block element, default is 56 pixels
+     */
     this.scales = {
         scalex    : false,
         scaley    : false,
@@ -64,8 +61,14 @@ jpf.resize = function() {
         dheight   : 0
     };
 
+    /**
+     * html representation of resized block element
+     */
     this.htmlElement;
 
+    /**
+     * store object representations of inputs elements
+     */
     var squares = [];
 
     this.init = function() {
@@ -79,7 +82,13 @@ jpf.resize = function() {
             new jpf.resize.square("bottom", "middle", this),
             new jpf.resize.square("bottom", "right",  this)];
     };
-
+    
+    /**
+     * Links block element with resize feature
+     * 
+     * @param {HTMLElement}   oHtml    html representation of block element
+     * @param {Object}        scales   blocks scale settings
+     */
     this.grab = function(oHtml, scales) {
         this.htmlElement = oHtml;
         this.scales = scales;
@@ -89,6 +98,9 @@ jpf.resize = function() {
         this.show();
     };
 
+    /**
+     * Hides all block squares
+     */
     this.hide = function() {
         for (var i = 0, l = squares.length; i < l; i++) {
             squares[i].visible = false;
@@ -96,6 +108,9 @@ jpf.resize = function() {
         }
     };
 
+    /**
+     * Shows all block squares
+     */
     this.show = function() {
         var sx = this.scales.scalex;
         var sy = this.scales.scaley;
@@ -147,20 +162,35 @@ jpf.resize = function() {
  *     left     square is on the left of resized block element
  *     middle   square is in the middle of the resized block element
  *     right    square is on the right of resized block element
- * @param {Object}   objResize   resize class constructor
+ * @param {Object}   objResize   object of resize class
  * @constructor
  */
 jpf.resize.square = function(posY, posX, objResize) {
+    /**
+     * Square visibility
+     */
     this.visible  = true;
+    /**
+     * square vertical align relative to resized block element
+     */
     this.posX     = posX;
+    /**
+     * square vertical align relative to resized block element
+     */
     this.posY     = posY;
 
     var margin = 0;
     var _self  = this;
 
+    /**
+     * html represenation of square element
+     */
     this.htmlElement = objResize.htmlElement.parentNode.appendChild(document.createElement('div'));
     jpf.setStyleClass(this.htmlElement, "square");
 
+    /**
+     * Repaints square
+     */
     this.repaint = function() {
         if (this.visible) {
             var block = objResize.htmlElement;

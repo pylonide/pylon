@@ -32,13 +32,13 @@
  * @event onmousemove   Fires when mouse pointer is moving over document body
  * @event onmouseup     Fires when mouse button is released while the pointer is over the document body
  *
- * @attribute {Boolean} ismoved              the state of movement. When connection is moving, this attribute is set to true. It gives information to other methods what happens with the connection element.
+ * @attribute {Boolean} isMoved              the state of movement. When connection is moving, this attribute is set to true. It gives information to other methods what happens with the connection element.
  *     Possible values:
  *     true   block moves
  *     false  block don't move
  * @attribute {Object}  objCanvases          storage workareas objects, it allows an easy access to them if need 
- * @attribute {Object}  connectionsTemp      when work mode is set to "connection-add", it keeps informations about block and his input from which connection will be created to other block
- * @attribute {Object}  connectionsManager   create connection when connectionsTemp variable is set
+ * @attribute {Object}  connectionsTemp      keeps information about source block and its input in moment of connection creation. (mode must be set to "connection-add")
+ * @attribute {Object}  connectionsManager   manage of entire connection creation process
  * @attribute {Number}  sSize                connection line width
  * @attrubite {Number}  fsSize               define size of first and last connection segment
  *
@@ -53,7 +53,7 @@
  */
 
 jpf.flow = {
-    ismoved            : false,
+    isMoved            : false,
     objCanvases        : {},
     connectionsTemp    : null,
     connectionsManager : null,
@@ -126,7 +126,7 @@ jpf.flow = {
 };
 
 /**
- * Workarea for blocks and connections.
+ * Workarea where blocks and connections its placed
  *
  * @param {HTMLElement}   htmlElement    the html representation of a workarea
  * @constructor
@@ -705,6 +705,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
  * unlimited inputs.
  *
  * @param {Object}   objBlock   object representation of block element
+ * @param {Number}   number     unique input number for block element
  * @constructor
  */
 jpf.flow.input = function(objBlock, number) {
@@ -717,14 +718,26 @@ jpf.flow.input = function(objBlock, number) {
 
     jpf.setStyleClass(this.htmlElement, "input");
 
+    /**
+     * Hides inpiut
+     */
     this.hide = function() {
         this.htmlElement.style.display = "none";
     };
-
+    
+    /**
+     * Shows input
+     */
     this.show = function() {
         this.htmlElement.style.display = "block";
     };
 
+    /**
+     * Moves input to new position
+     * 
+     * @param {Number}   x   new horizontal position
+     * @param {Number}   y   new vertical position
+     */
     this.moveTo = function(x, y) {
         this.htmlElement.style.left = x + "px";
         this.htmlElement.style.top  = y + "px";
@@ -735,7 +748,7 @@ jpf.flow.input = function(objBlock, number) {
     this.htmlElement.onmousedown = function(e) {
         e              = (e || event);
         e.cancelBubble = true;
-        jpf.flow.ismoved = true;
+        jpf.flow.isMoved = true;
 
         var pn         = _self.htmlElement.parentNode,
             canvas     = _self.objBlock.canvas,
@@ -795,7 +808,7 @@ jpf.flow.input = function(objBlock, number) {
             e = (e || event);
             var t = e.target || e.srcElement;
             document.onmousemove = null;
-            jpf.flow.ismoved = false;
+            jpf.flow.isMoved = false;
 
             if (t && canvas.mode == "connection-change") {
                 if ((t.className || "").indexOf("input") == -1) {
@@ -824,7 +837,6 @@ jpf.flow.input = function(objBlock, number) {
         if (mode == "connection-add" || mode == "connection-change") {
             jpf.setStyleClass(_self.htmlElement, "inputHover");
         }
-
     };
 
     this.htmlElement.onmouseout = function(e) {
@@ -866,7 +878,7 @@ jpf.flow.connectionsManager = function() {
 };
 
 /**
- * Simulate block element. Temporary connection is created between source
+ * Simulate block element to create temporary connection between source
  * block and mouse cursor, until destination block is not clicked.
  *
  * @param {Object}   canvas   object representation of canvas element
@@ -931,13 +943,39 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  * @constructor
  */
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
+    /**
+     * Connection segments
+     */
     this.htmlSegments    = [];
+    
+    /**
+     * Array used when connection is repainting
+     */
     var htmlSegmentsTemp = [];
+    
+    /**
+     * Connection label - text defined by user in the middle of connection
+     */
     this.htmlLabel       = null;
+    
+    /**
+     * Connector-start object, it could be an arrow
+     */
     this.htmlStart       = null;
+    
+    /**
+     * Connector-end object, it could be an arrow
+     */
     this.htmlEnd         = null;
 
+    /**
+     * Object of source block
+     */
     this.objSource       = objSource;
+    
+    /**
+     * Object of destination block
+     */
     this.objDestination  = objDestination;
     this.other           = other;
 
@@ -1280,7 +1318,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             var canvas = this.objSource.canvas;
             /* Segment events */
             segment.onmouseover = function(e) {
-                if (!jpf.flow.ismoved && ((canvas.mode == "connection-change"
+                if (!jpf.flow.isMoved && ((canvas.mode == "connection-change"
                     && _self.selected) || canvas.mode == "connection-add")) {
                     _self.select("hover");
                 }
