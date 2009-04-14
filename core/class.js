@@ -161,7 +161,7 @@ jpf.Class = function(){
 
     this.$regbase         = 0;
     /**
-     * Tests whether this object is inheriting from a certain class.
+     * Tests whether this object has inherited from a {@link term.baseclass baseclass}.
      * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
      */
     this.hasFeature       = function(test){

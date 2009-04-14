@@ -154,14 +154,16 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
 
             var q = this.$signalElements;
             for (var i = 0; i < q.length; i++) {
-                //#ifdef __DEBUG
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
+                    //#ifdef __DEBUG
                     throw new Error(jpf.formatErrorString(1013, this,
                         "Setting State",
                         "Could not find object to give state: '"
                         + q[i][0] + "' on property '" + q[i][1] + "'"));
+                    //#endif
+                    
+                    continue;
                 }
-                //#endif
 
                 self[q[i][0]].setProperty(q[i][1], this[q[i].join(".")]);
             }
