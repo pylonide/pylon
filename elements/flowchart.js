@@ -85,8 +85,9 @@
  * </code>
  *
  * @define flowchart
- * @attribute {String}   template   the data instruction to load the xml for the
+ * @attribute {String} template   the data instruction to load the xml for the
  * template that defines all the elements which are available on the flowchart.
+ * 
  * Example:
  * A template describing a single capacitor element
  * <code>
@@ -113,23 +114,23 @@
  * </code>
  *
  * @binding lock    immobilize block element on workarea, default is false.
- *     Possible values:
+ * Possible values:
  *     false   block element is not immobilized
  *     true    block element is immobilized
  * @binding fliph   Determines whether to mirror the block over the horizontal axis, default is false
- *     Possible values:
+ * Possible values:
  *     true    block element is flipped
  *     false   block element is not flipped
  * @binding flipv   Determines whether to mirror the block over the vertical axis, default is false
- *     Possible values:
+ * Possible values:
  *     true    block element is flipped
  *     false   block element is not flipped
  * @binding rotation   the rotation in degrees clockwise, default is 0
- *     Possible values:
- *     0     0   degrees rotation
- *     90    90  degrees rotation
- *     180   180 degrees rotation
- *     270   270 degrees rotation
+ * Possible values:
+ *     0       0   degrees rotation
+ *     90     90   degrees rotation
+ *     180   180   degrees rotation
+ *     270   270   degrees rotation
  * @binding id          Determines unique name
  * @binding image       Determines path to background image file 
  * @binding width       Determines horizontal size
@@ -340,9 +341,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Updates the position of a block to vector [x, y] and the XML it is bound 
      * to. It's possible to return to previous state with Undo/Redo.
      * 
-     * @param {Object}       xmlNodeArray   array with xml representations of blocks elements
-     * @param {Number}       dl             horizontal alteration
-     * @param {Number}       dt             vertical alteration
+     * @param {Object} xmlNodeArray   array with xml representations of blocks elements
+     * @param {Number} dl             horizontal alteration
+     * @param {Number} dt             vertical alteration
      */
     this.moveTo = function(xmlNodeArray, dl, dt) {
         if (!xmlNodeArray.length) {
@@ -383,8 +384,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Set a new z-index of a block and the XML it is bound to. It's
      * possible to return to previous state with Undo/Redo.
      *
-     * @param {XMLElement}   xmlNode   xml representation of block element
-     * @param {Number}       value     new z-index number
+     * @param {XMLElement} xmlNode   xml representation of block element
+     * @param {Number}     value     new z-index number
      */
     this.setZindex = function(xmlNode, value) {
         this.executeActionByRuleSet("setzindex", "zindex", xmlNode, value);
@@ -395,12 +396,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * if connection-change mode is active, deleting connections
      * between blocks is possible. 
      * 
-     * Modes:
-     *     normal             - all operations are allowed except operations from different modes
-     *     connection-add     - it's possible to add new connection between blocks, all operations from "normal" mode its allowed
-     *     connection-change  - it's possible to change existing connection, all operations from "normal" mode its allowed
-     *
-     * @param {String}   mode   Operations mode
+     * @private
+     * @param {String} mode   Operations mode
+     * 
+     * Possible values:
+     *     normal              all operations are allowed except operations from different modes
+     *     connection-add      it's possible to add new connection between blocks, all operations from "normal" mode its allowed
+     *     connection-change   it's possible to change existing connection, all operations from "normal" mode its allowed
      */
     this.setMode = function(mode) {
         _self.objCanvas.setMode(mode);
@@ -410,13 +412,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Returns current mode type. Modes adds new features. For example,
      * if connection-change mode is active, possible is deleting connections
      * between blocks. 
+     * 
+     * @private
+     * @return {String} Operation mode
+     * 
+     * Possible values:
+     *     normal             all operations are allowed except operations from different modes
+     *     connection-add     it's possible to add new connection between blocks, all operations from "normal" mode its allowed
+     *     connection-change  it's possible to change existing connection, all operations from "normal" mode its allowed
      *
-     * Modes:
-     *     normal             - all operations are allowed except operations from different modes
-     *     connection-add     - it's possible to add new connection between blocks, all operations from "normal" mode its allowed
-     *     connection-change  - it's possible to change existing connection, all operations from "normal" mode its allowed
-     *
-     * @return {String}   Operation mode
+     * 
      */
     this.getMode = function() {
         return _self.objCanvas.getMode();
@@ -426,11 +431,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Immobilise block element on workarea. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      *
-     * @param {XMLElement}   xmlNode   xml representation of block element
-     * @param {Boolean}      value     prohibit block move, default is false.
-     *     Possible values:
-     *     true  block is locked
-     *     false block is unlocked
+     * @param {XMLElement} xmlNode   xml representation of block element
+     * @param {Boolean}    value     prohibit block move, default is false.
+     * Possible values:
+     *     true    block is locked
+     *     false   block is unlocked
      */
     this.setLock = function(xmlNode, value) {
         this.executeActionByRuleSet("setlock", "lock", xmlNode, String(value));
@@ -442,9 +447,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *
      * @param {XMLElement}   xmlNode       xml representation of block element
      * @param {Number}       newRotation   the rotation in degrees clockwise, default is 0
-     *     Possible values:
-     *     0     0 degrees rotation
-     *     90    90 degrees rotation
+     * Possible values:
+     *     0       0 degrees rotation
+     *     90     90 degrees rotation
      *     180   180 degrees rotation
      *     270   270 degrees rotation
      */
@@ -487,7 +492,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipV  new flip value, default is false
-     *     Possible values:
+     * Possible values:
      *     true    block element is flipped
      *     false   block element is not flipped
      */
@@ -513,7 +518,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipH  new flip value, default is false
-     *     Possible values:
+     * Possible values:
      *     true    block element is flipped
      *     false   block element is not flipped
      */
