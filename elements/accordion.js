@@ -5,6 +5,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     
     var content = null;
     var _self = this;
+    /**
+     * Keeps all panels
+     * panels[oTitle.id] = {}
+     */
+    var panels = {};
     
     /**** DOM Hooks ****/
     var insertChild;
@@ -50,56 +55,131 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$disable = function() {
         
     };
+    
+    /**
+     * Toggles the visibility of the container with content. It opens
+     * or closes it using a slide effect.
+     * 
+     * @param {Mixed} e   
+     * Possible values
+     *     {Object}   onmousedown event
+     *     {String}   title bar unique name
+     */
+    this.slideToggle = function(e) {
+        e = e || event;
+        var id = e.target ? e.target.id : e;
+
+        if (panels[id].opened) 
+            this.slideUp(e);
+        else
+            this.slideDown(e);
+    };
+
+    this.slideDown = function(e) {
+        var id = e.target ? e.target.id : e;
+        var panel = panels[id];
+
+        _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
+
+        panel.opened = true;
+        
+        panel.oBody.style.display = "block";
+
+        panel.oBody.style.height = "1px";
+
+        jpf.tween.single(panel.oBody, {
+            steps : 30,
+            type  : "scrollheight",
+            from  : 0,
+            to    : panel.oBody.scrollHeight,
+            anim  : jpf.tween.NORMAL,
+            onfinish : function() {
+                panel.oBody.style.height = "auto";
+            }
+        });
+    };
+
+    this.slideUp = function(e) {
+        var id = e.target ? e.target.id : e;
+        var panel = panels[id];
+
+        if (!panel.opened)
+            return false;
+
+        _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
+        
+        panel.opened = false;
+        
+        jpf.tween.single(panel.oBody, {
+            steps : 30,
+            type  : "scrollheight",
+            from  : panel.oBody.scrollHeight,
+            to    : 0,
+            anim  : jpf.tween.NORMAL,
+            onfinish : function() {
+                panel.oBody.style.display = "none";
+            }
+        });
+      
+        return false;
+    };
 
     /**** Init ****/
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
+        this.oExt = this.$getExternal("main");
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        this.oTitle = 
 
         this.$dir = this.$getOption("main", "direction") || "horizontal";
     };
 
-    this.$loadJml = function(x){
-        var bar, tagName, i, l, node, nodes = this.$jml.childNodes;
-        
-        //Let's not parse our children, when we've already have them
-        if (!this.oInt && this.childNodes.length) 
-            return;
-        
-        //@todo Skin switching here...
-        
+    this.$loadJml = function(x) {
+        var node, panel, nodes = this.$jml.childNodes;
+            
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
+                
             if (node.nodeType != 1) 
                 continue;
-            
-            tagName = node[jpf.TAGNAME];
-            if (tagName == "panel") {
-                bar = new jpf.panel(this.oInt, tagName);
-                
-                this.$getNewContext("title");
-                var oTitle = this.oInt.appendChild(this.$getLayoutNode("title"));
-                
-                bar.skinName = this.skinName
-                insertChild.call(this, bar);
-                bar.loadJml(node, this);
-                
 
-            }
-            else if (tagName == "progressbar") {
-                new jpf.progressbar(this.oInt, tagName).loadJml(node, this);
+            if (node[jpf.TAGNAME] == "panel") {
+                //create panel and load JML to element called container in skin file
+                var panel = new jpf.panel(this.oInt, "panel");
+                var opened = node.getAttribute("startcollapsed")
+                    ? (node.getAttribute("startcollapsed") == "true"
+                        ? true
+                        : false)
+                    : false;
+                
+                panel.skinName = this.skinName;
+                insertChild.call(this, panel);
+                panel.loadJml(node, this);
+
+                var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
+                jpf.setUniqueHtmlId(oTitle);
+                oTitle.innerHTML = node.getAttribute("title");
+                oTitle.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').slideToggle(event);');
+                this.$setStyleClass(oTitle, opened ? "Active" : "NotActive");
+                
+                var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
+                jpf.setUniqueHtmlId(oBody);
+
+                panels[oTitle.id] = {
+                    panel  : panel,
+                    opened : opened,
+                    oTitle : oTitle,
+                    oBody  : oBody
+                };
+                
+                if (opened) {
+                    this.slideDown(oTitle.id);
+                }
             }
         }
-        
-        /*if (bar) {
-            this.$setStyleClass(bar.oExt, bar.baseCSSname + "Last");
-        }*/
     };
 
-    this.$destroy = function(){
+    this.$destroy = function() {
 
     };
 }).implement(jpf.Presentation);

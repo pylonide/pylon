@@ -49,6 +49,7 @@ jpf.Elements = [
     "_base/basetab",
 
     "actiontracker",
+    "accordion",
     "appsettings",
     "audio",
     "bar",

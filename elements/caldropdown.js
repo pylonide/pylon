@@ -847,7 +847,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         }
 
-        this.oSlider    = this.$getExternal("container", null, function(oExt1) {
+        this.oSlider = this.$getExternal("container", null, function(oExt1) {
             var i, oSlider = this.$getLayoutNode("container", "contents", oExt1);
 
             for (i = 0; i < 6; i++) {
