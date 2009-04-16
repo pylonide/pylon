@@ -122,7 +122,7 @@ jpf.language = {
      * Loads the symbol list using a {@link term.datainstruction data instruction}
      * @param {String} instruction  the {@link term.datainstruction data instruction} to load the symbol xml from.
      */
-    loadForm  : function(instruction) {
+    loadFrom  : function(instruction) {
         jpf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) return;

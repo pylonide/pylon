@@ -334,7 +334,7 @@ jpf.DragDrop = function(){
                 
             strTgt = rules[i].getAttribute("target");
             if (!strTgt || strTgt == ".") {
-                op = rules[i].getAttribute("operation");
+                op = rules[i].getAttribute("action");
                 tgt = (op == "list-append" || target == this.xmlRoot
                   ? this.xmlRoot
                   : null);
@@ -360,7 +360,7 @@ jpf.DragDrop = function(){
             list-append          : xmlNode.parentNode.appendChild(movedNode);
             insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
         */
-        var action = rule && rule.getAttribute("operation") || defaction;
+        var action = rule && rule.getAttribute("action") || defaction;
         
         //copy-condition convenience variables
         var internal = jpf.DragServer.dragdata.host == this;
@@ -749,9 +749,9 @@ jpf.DragServer = {
                 candrop = false;
             else {
                 var action = candrop[1]
-                    && candrop[1].getAttribute("operation")
+                    && candrop[1].getAttribute("action")
                     || (o.isTreeArch ? "tree-append" : "list-append");
-                if (action == "list-append" && o == this.dragdata.host)
+                if (action == "list-append" && (!o.isTreeArch && o == this.dragdata.host))
                     candrop = false;
             }
         }
