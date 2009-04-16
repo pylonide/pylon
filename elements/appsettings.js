@@ -254,6 +254,12 @@ jpf.appsettings = {
         this.layout  = x.getAttribute("layout") || null;
         this.skinset = x.getAttribute("skinset") || "default";
 
+        //#ifdef __WITH_LANG_SUPPORT
+        this.language = x.getAttribute("undokeys");
+        if (this.language)
+            jpf.language.loadFrom(this.language);
+        //#endif
+
         //#ifdef __WITH_STORAGE
         this.storage = x.getAttribute("storage") || null;
         if (this.storage)

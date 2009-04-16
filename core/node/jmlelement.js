@@ -1127,7 +1127,7 @@ jpf.JmlElement.propHandlers = {
 
             if (this.actions)
                 this.$propHandlers["actions"].call(this, this.actions);
-            else
+            else if (!this.$jml.getAttribute("actions"))
                 this.smartBinding = true;
         }
          

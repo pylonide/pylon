@@ -65,8 +65,8 @@ var __MULTILANG__ = 1 << 16;
  *
  *   <j:appsettings language="mdlLang:english" />
  *
- *   <j:window title="$sub.main.title$">
- *       <j:tab>
+ *   <j:window title="$sub.main.title$" width="400" height="300" visible="true">
+ *       <j:tab anchors="10 10 10 10">
  *           <j:page caption="$sub.main.tab0$">
  *               <j:label>$sub.main.1$</j:label>
  *               <j:textbox />
