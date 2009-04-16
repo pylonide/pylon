@@ -3,10 +3,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
 
-    this.animType      = jpf.tween.NORMAL;
-    this.animDelay     = 10;
-    this.multiCollapse = true;
-    this.expand        = "click";
+    this.animType       = jpf.tween.NORMAL;
+    this.animDelay      = 10;
+    this.multiCollapse  = true;
+    this.expand         = "click";
+    this.startcollapsed = false;
 
     var _self = this;
     /**
@@ -20,8 +21,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     var lastOpened = [];
 
     this.$booleanProperties["multicollapse"] = true;
+    this.$booleanProperties["startcollapsed"] = true;
     
-    this.$supportedProperties.push("animtype", "animdelay", "multicollapse", "expand");
+    this.$supportedProperties.push("animtype", "animdelay", "multicollapse",
+        "expand", "startcollapsed");
     
     /**** DOM Hooks ****/
     var insertChild;
@@ -69,6 +72,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$propHandlers["multicollapse"] = function(value) {
         this.multiCollapse = value;
+    };
+    
+    this.$propHandlers["startcollapsed"] = function(value) {
+        this.startcollapsed = value;
     };
     
     this.$propHandlers["expand"] = function(value) {
@@ -183,7 +190,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal("main");
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        this.$dir = this.$getOption("main", "direction") || "horizontal";
+        this.$dir = this.$getOption("main", "direction") || "vertical";
     };
 
     this.$loadJml = function(x) {
@@ -198,8 +205,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             if (node[jpf.TAGNAME] == "panel") {
                 //create panel and load JML to element called container in skin file
                 var panel = new jpf.panel(this.oInt, "panel");
-                var opened = node.getAttribute("startcollapsed")
-                    ? (node.getAttribute("startcollapsed") == "true"
+                var opened = node.getAttribute("collapsed")
+                    ? (node.getAttribute("collapsed") == "true"
                         ? true
                         : false)
                     : false;
@@ -237,7 +244,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                     oBody    : oBody
                 };
                 
-                if (opened && this.multiCollapse) {
+                if ((opened || this.startcollapsed) && this.multiCollapse) {
                     this.slideDown(oTitle.id);
                 }
             }
