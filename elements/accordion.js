@@ -20,6 +20,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$booleanProperties["multi-collapse"] = true;
     
+    this.$supportedProperties.push("animation-type", "animation-speed", "multi-collapse");
+    
     /**** DOM Hooks ****/
     var insertChild;
     
