@@ -3,24 +3,25 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
 
-    this.animType  = jpf.tween.NORMAL;
-    this.animSpeed = 10;
+    this.animType      = jpf.tween.NORMAL;
+    this.animDelay     = 10;
     this.multiCollapse = true;
+    this.expand        = "click";
 
     var _self = this;
     /**
      * Keeps all panels
      * panels[oTitle.id] = {}
      */
-    var panels     = {};
+    var panels = {};
     /**
      * Id of title from last opened panel
      */
-    var lastOpened = null;
+    var lastOpened = [];
 
-    this.$booleanProperties["multi-collapse"] = true;
+    this.$booleanProperties["multicollapse"] = true;
     
-    this.$supportedProperties.push("animation-type", "animation-speed", "multi-collapse");
+    this.$supportedProperties.push("animtype", "animdelay", "multicollapse", "expand");
     
     /**** DOM Hooks ****/
     var insertChild;
@@ -48,7 +49,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     });
     
-    this.$propHandlers["animation-type"] = function(value) {
+    this.$propHandlers["animtype"] = function(value) {
         switch(value) {
             case "normal":
                 this.animType = jpf.tween.NORMAL;
@@ -62,12 +63,16 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$propHandlers["animation-speed"] = function(value) {
-        this.animSpeed = parseInt(value);
+    this.$propHandlers["animdelay"] = function(value) {
+        this.animDelay = parseInt(value);
     };
     
-    this.$propHandlers["multi-collapse"] = function(value) {
+    this.$propHandlers["multicollapse"] = function(value) {
         this.multiCollapse = value;
+    };
+    
+    this.$propHandlers["expand"] = function(value) {
+        this.expand = value;
     };
 
     /**** Private Methods *****/
@@ -100,28 +105,29 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             this.slideUp(e);
         else
             this.slideDown(e);
+
     };
 
     this.slideDown = function(e) {
         e = e || event;
         var target = e.target || e.srcElement;
         var id = target ? target.id : e;
-        
-        if (!panels[id])
+
+        if (!panels[id]) {
             return;
-        
-        var panel = panels[id];
-
-        _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
-
-        //close opened panel because only one can be opened
-        if (!_self.multiCollapse && lastOpened) {
-            _self.slideUp(lastOpened);
         }
 
-        lastOpened = id;
-        panel.opened = true;
+        var panel = panels[id];
+
+        //close opened panel because only one can be opened
+        if (!_self.multiCollapse && lastOpened.length > 0) {
+            _self.slideUp(lastOpened.shift());
+        }
         
+        lastOpened.push(id);
+        
+        _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
+
         panel.oBody.style.display = "block";
         panel.oBody.style.height = "1px";
 
@@ -131,9 +137,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             from     : 0,
             to       : panel.oBody.scrollHeight,
             anim     : _self.animType,
-            interval : _self.animSpeed,
+            interval : _self.animDelay,
             onfinish : function() {
+                _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
                 panel.oBody.style.height = "auto";
+                panels[id].opened = true;
             }
         });
     };
@@ -142,28 +150,26 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         e = e || event;
         var target = e.target || e.srcElement;
         var id = target ? target.id : e;
-        
-        if (!panels[id])
+
+        if (!panels[id]) {
             return;
-            
+        }
+
         var panel = panels[id];
 
-        if (!panel.opened)
-            return false;
-
         _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
-        
-        panel.opened = false;
-        
+
         jpf.tween.single(panel.oBody, {
             steps    : 30,
             type     : "scrollheight",
             from     : panel.oBody.scrollHeight,
             to       : 0,
             anim     : _self.animType,
-            interval : _self.animSpeed,
+            interval : _self.animDelay,
             onfinish : function() {
+                _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
                 panel.oBody.style.display = "none";
+                panels[id].opened = false;
             }
         });
       
@@ -206,29 +212,33 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.setUniqueHtmlId(oTitle);
                 oTitle.appendChild(document.createTextNode(node.getAttribute("title")));
                 
-                oTitle.onmousedown = function(e) {
-                    e = e || event;
-                    jpf.lookup(_self.uniqueId).slideToggle(e);
-                }
-                
                 this.$setStyleClass(oTitle, "NotActive");
                 
+                if (this.expand == "click") {
+                    oTitle.onmousedown = function(e) {
+                        e = e || event;
+                        jpf.lookup(_self.uniqueId).slideToggle(e);
+                    }
+                }
+                else if (this.expand == "hover") {
+                    oTitle.onmouseover = function(e) {
+                        e = e || event;
+                        jpf.lookup(_self.uniqueId).slideToggle(e);
+                    }
+                }
+
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
                 jpf.setUniqueHtmlId(oBody);
 
                 panels[oTitle.id] = {
-                    panel  : panel,
-                    opened : opened,
-                    oTitle : oTitle,
-                    oBody  : oBody
+                    panel    : panel,
+                    opened   : false,
+                    oTitle   : oTitle,
+                    oBody    : oBody
                 };
                 
                 if (opened && this.multiCollapse) {
-                    this.$setStyleClass(oTitle, opened ? "Active" : "NotActive");
                     this.slideDown(oTitle.id);
-                }
-                else if(opened && !this.multiCollapse) {
-                    panels[oTitle.id]["opened"] = false;
                 }
             }
         }
