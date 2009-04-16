@@ -2,41 +2,40 @@
 jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
-    
-    var content = null;
+
+    this.animType  = jpf.tween.NORMAL;
+    this.animSpeed = 10;
+    this.multiCollapse = true;
+
     var _self = this;
     /**
      * Keeps all panels
      * panels[oTitle.id] = {}
      */
-    var panels = {};
+    var panels     = {};
+    /**
+     * Id of title from last opened panel
+     */
+    var lastOpened = null;
+
+    this.$booleanProperties["multi-collapse"] = true;
     
     /**** DOM Hooks ****/
     var insertChild;
     
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin) {
         if (doOnlyAdmin)
             return;
-
     });
     
-    this.$domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent){
+    this.$domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent) {
         if (jmlNode.tagName != "panel")
             return;
-        
-        jmlNode.$propHandlers["caption"] = function(value){
-            jpf.xmldb.setNodeValue(
-                this.$getLayoutNode("panel", "caption", this.oExt), value);
-        }
-        jmlNode.$propHandlers["icon"] = function(value){
+
+        jmlNode.$propHandlers["icon"] = function(value) {
             var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
             if (!oIcon) return;
-        
-            if (value)
-                this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
-            else
-                this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
-            
+
             if (oIcon.tagName == "img") 
                 oIcon.setAttribute("src", value ? this.iconPath + value : "");
             else {
@@ -46,6 +45,28 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
     });
+    
+    this.$propHandlers["animation-type"] = function(value) {
+        switch(value) {
+            case "normal":
+                this.animType = jpf.tween.NORMAL;
+                break;
+            case "easein":
+                this.animaType = jpf.tween.EASEIN;
+                break;
+            case "easeout":
+                this.animType = jpf.tween.EASEOUT;
+                break;
+        }
+    };
+    
+    this.$propHandlers["animation-speed"] = function(value) {
+        this.animSpeed = parseInt(value);
+    };
+    
+    this.$propHandlers["multi-collapse"] = function(value) {
+        this.multiCollapse = value;
+    };
 
     /**** Private Methods *****/
 
@@ -58,7 +79,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**
      * Toggles the visibility of the container with content. It opens
-     * or closes it using a slide effect.
+     * or closes it using a slide effect. (the same for slideDown and slideUp)
      * 
      * @param {Mixed} e   
      * Possible values
@@ -68,6 +89,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.slideToggle = function(e) {
         e = e || event;
         var id = e.target ? e.target.id : e;
+        
+        if (!panels[id])
+            return;
 
         if (panels[id].opened) 
             this.slideUp(e);
@@ -77,22 +101,31 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.slideDown = function(e) {
         var id = e.target ? e.target.id : e;
+        if (!panels[id])
+            return;
+        
         var panel = panels[id];
 
         _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
 
+        //close opened panel because only one can be opened
+        if (!_self.multiCollapse && lastOpened) {
+            _self.slideUp(lastOpened);
+        }
+
+        lastOpened = id;
         panel.opened = true;
         
         panel.oBody.style.display = "block";
-
         panel.oBody.style.height = "1px";
 
         jpf.tween.single(panel.oBody, {
-            steps : 30,
-            type  : "scrollheight",
-            from  : 0,
-            to    : panel.oBody.scrollHeight,
-            anim  : jpf.tween.NORMAL,
+            steps    : 30,
+            type     : "scrollheight",
+            from     : 0,
+            to       : panel.oBody.scrollHeight,
+            anim     : _self.animType,
+            interval : _self.animSpeed,
             onfinish : function() {
                 panel.oBody.style.height = "auto";
             }
@@ -101,6 +134,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.slideUp = function(e) {
         var id = e.target ? e.target.id : e;
+        
+        if (!panels[id])
+            return;
+            
         var panel = panels[id];
 
         if (!panel.opened)
@@ -111,11 +148,12 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         panel.opened = false;
         
         jpf.tween.single(panel.oBody, {
-            steps : 30,
-            type  : "scrollheight",
-            from  : panel.oBody.scrollHeight,
-            to    : 0,
-            anim  : jpf.tween.NORMAL,
+            steps    : 30,
+            type     : "scrollheight",
+            from     : panel.oBody.scrollHeight,
+            to       : 0,
+            anim     : _self.animType,
+            interval : _self.animSpeed,
             onfinish : function() {
                 panel.oBody.style.display = "none";
             }
@@ -158,9 +196,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
                 jpf.setUniqueHtmlId(oTitle);
-                oTitle.innerHTML = node.getAttribute("title");
+                oTitle.appendChild(document.createTextNode(node.getAttribute("title")));
                 oTitle.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').slideToggle(event);');
-                this.$setStyleClass(oTitle, opened ? "Active" : "NotActive");
+                this.$setStyleClass(oTitle, "NotActive");
                 
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
                 jpf.setUniqueHtmlId(oBody);
@@ -172,8 +210,12 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                     oBody  : oBody
                 };
                 
-                if (opened) {
+                if (opened && this.multiCollapse) {
+                    this.$setStyleClass(oTitle, opened ? "Active" : "NotActive");
                     this.slideDown(oTitle.id);
+                }
+                else if(opened && !this.multiCollapse) {
+                    panels[oTitle.id]["opened"] = false;
                 }
             }
         }
