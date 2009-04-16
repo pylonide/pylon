@@ -90,8 +90,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.slideToggle = function(e) {
         e = e || event;
-        var id = e.target ? e.target.id : e;
-        
+        var target = e.target || e.srcElement;
+        var id = target ? target.id : e;
+
         if (!panels[id])
             return;
 
@@ -102,7 +103,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.slideDown = function(e) {
-        var id = e.target ? e.target.id : e;
+        e = e || event;
+        var target = e.target || e.srcElement;
+        var id = target ? target.id : e;
+        
         if (!panels[id])
             return;
         
@@ -135,7 +139,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.slideUp = function(e) {
-        var id = e.target ? e.target.id : e;
+        e = e || event;
+        var target = e.target || e.srcElement;
+        var id = target ? target.id : e;
         
         if (!panels[id])
             return;
@@ -195,11 +201,16 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                 panel.skinName = this.skinName;
                 insertChild.call(this, panel);
                 panel.loadJml(node, this);
-
+                
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
                 jpf.setUniqueHtmlId(oTitle);
                 oTitle.appendChild(document.createTextNode(node.getAttribute("title")));
-                oTitle.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').slideToggle(event);');
+                
+                oTitle.onmousedown = function(e) {
+                    e = e || event;
+                    jpf.lookup(_self.uniqueId).slideToggle(e);
+                }
+                
                 this.$setStyleClass(oTitle, "NotActive");
                 
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
