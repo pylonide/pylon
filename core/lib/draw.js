@@ -73,10 +73,10 @@ jpf.draw = {
                     ",m20=",m[8],",m21=",m[9],",m22=",m[10],",m23=",m[11],";"];
         if(l.style.persp<0){ // we have ortho perspective
             this.ortho = 1;
-            s.push("var persp = __max(dw,dh) / l.style.persp/-v.tz;");
+            s.push("var persp = __max(dw,dh) / l.style.persp/-v.tz, perspd = persp / ",l.ds,";");
         } else {
             this.ortho = 0;
-            s.push("var persp = __max(dw,dh) / l.style.persp;");
+            s.push("var persp = __max(dw,dh) / l.style.persp, perspd = persp / ",l.ds,";");
         }
         return s.join('');
     },
@@ -157,6 +157,19 @@ jpf.draw = {
     },
 
     //----------------------------------------------------------------------
+        
+    text3D : function( p, cm, zc, text) {
+        var i = 0, d, pt, q, s = ["__n=0;"], x = 0, y = 1, z = 2, sx, sy, vx, vy, vxi, vyi;
+        if(cm) x = cm[0], y = cm[1], z = cm[2];        
+
+        // lets project, clip and print
+        return [
+            "if((__z = m20*",p[x],"+m21*",p[y],"+m22*",p[z],"+m23) < ",zc,"){",
+               this.text(["dw12+(m00*",p[x],"+m01*",p[y],"+m02*",p[z],"+m03)*",this.ortho?"persp":"(persp/__z)"].join(''),
+                       ["dh12+(m10*",p[x],"+m11*",p[y],"+m12*",p[z],"+m13)*",this.ortho?"persp":"(persp/__z)"].join(''),text),
+            "}"
+        ].join('');
+   },
     
     // 3D API
     // draw a 3D polygon clipped against a z-plane
@@ -273,6 +286,7 @@ jpf.draw = {
     moveTo3D : function(x,y,z,sx,sy,fl){
         return this.$do3D("moveTo",x,y,z,sx,sy,fl);
     },
+    
     $store3D : function(x,y){
       return x+";"+y+";";
     },
@@ -320,6 +334,8 @@ jpf.draw = {
         function styleinit(d){
             if(d.line === null || d.line=='null') delete d.line;
             if(d.fill === null || d.fill=='null') delete d.fill;
+            if(d.family === null || d.family=='null') delete d.family;
+
             if( (d.isshape && d.fill === undefined && 
                 d.line === undefined && d.tile === undefined) || 
                 (d.isfont && d.family === undefined) ) return false; 
@@ -623,7 +639,6 @@ jpf.draw = {
         var b = a.toLowerCase();
         return (this.colors[b])?"'"+this.colors[b]+"'":a;
     },
-    
     getX : function( s, pre, val, post, def){    
         var v; return (typeof(v=s[val+'-x'])=='undefined' && 
                (typeof(v=s[val])!='object' || typeof(v=v[0])=='undefined'))?
@@ -1035,7 +1050,11 @@ jpf.draw = {
 	two : function(a){
 		return "(0.5+0.5*("+a+"))"; 
 	},
-    
+    fontz : function(a,b) {
+        // we multiply b*l.ds and then 
+        return (-a/b)+(this.ortho?"*perspd":"*(perspd/__z)");
+    },
+
     $equalStyle : function( a, b){
         if(a.isfont && b.isfont)
             return  a.family === b.family &&
@@ -1368,17 +1387,21 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     
     // generic htmlText
     beginFont: function( style, needed, ml,mt,mr,mb ) {
-        if(!style || needed===undefined)return -1;
+        if(!style || needed===undefined)return "document.title='beginFont Failed';";
         var l = this.l, html = l._htmljoin, s=[this.$endDraw()];
         this.style = style;
         style._id = l._styles.push(style)-1;
 
-        ml = ml!==undefined?ml:0;
-        mt = mt!==undefined?mt:0;
-        mr = mr!==undefined?mr:0;
-        mb = mb!==undefined?mb:0;
-        this.mx = ml?"-"+(ml*l.ds):"";
-        this.my = mt?"-"+(mt*l.ds):"";    
+        ml = ml!==undefined?ml/l.ds:0;
+        mt = mt!==undefined?mt/l.ds:0;
+        mr = mr!==undefined?mr/l.ds:0;
+        mb = mb!==undefined?mb/l.ds:0;
+       
+       
+        if(parseInt(style.left)!=style.left) this.mx = "+("+style.left+")"+(ml?"-"+ml:"");
+        else this.mx = "+"+(style.left-ml);
+        if(parseInt(style.top)!=style.top) this.my = "+("+style.top+")"+(mt?"-"+mt:"");
+        else this.my = "+"+(style.top-mt);
         // find a suitable same-styled other text so we minimize the textdivs
         /*
         for(i = l._styles.length-2;i>=0;i--){
@@ -1388,13 +1411,15 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                 break;
             }
         }
+        s
         if(style._prev===undefined){*/
+        this.dynsize = (parseInt(style.size)!=style.size);
         style._txtdiv = ["<div style='",
                 (style.vertical)?
                 "filter: flipv() fliph(); writing-mode: tb-rl;":"",
     "position:absolute;cursor:default;overflow:hidden;left:0;top:0;display:none;font-family:",
                 style.family, ";color:",style.color,";font-weight:",
-                style.weight,";",";font-size:",style.size,"px;",
+                style.weight,";",";font-size:",this.dynsize?10:style.size,"px;",
                 (style.line!==undefined)?"border:1px solid "+style.line+";" : "",
                 (style.fill!==undefined)?"background:"+style.fill+";" : "",
 
@@ -1421,14 +1446,15 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     text : function( x, y, text) {
         var t = ((this.l.ds>1)?"/"+this.l.ds:"");
         return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
-                "if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=((_v",
-                this.mx,")",t,")+'px'",
-                ";if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=((_v",
-                this.my,")",t,")+'px';\n"
-                ].join('');
+                "if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=(_v",t,this.mx,")+'px';",
+                "if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=(_v",t,this.my,")+'px';",
+                this.dynsize?[
+                    "if(_t.sz!=(_v=__round(",this.style.size,"))&&_v>0)_t.n.style.fontSize=_t.sz=_v+'px';"
+                ].join(''):""].join('');
     
     },
 
+    
     
     $allocText : function(style, needed){
         var t, tn = style._txtnode, ts = style._txtnodes;

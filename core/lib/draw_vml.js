@@ -132,7 +132,7 @@ jpf.draw.vml = {
     //----------------------------------------------------------------------
 
     beginShape : function(style) {
-        if(!style)return "";
+        if(!style)return "document.title='beginShape Failed';";
         var l=this.l, html = l._htmljoin, i, t,
             shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
         style._path = [];

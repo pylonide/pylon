@@ -63,23 +63,27 @@ jpf.draw.canvas = {
 
     beginLayer : function(l){
         this.l = l,this.mx="",this.my="",this.last=null; this.tiletrans = 0;
-        this.doclose = 0; 
-        return [ "var _c=l.canvas,_styles=l._styles,",
+        this.dodraw = 0;
+
+        var s =  [ "var _c=l.canvas,_styles=l._styles,",
                 "_s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
                 "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
                 "_s,_sh,_sp,_sl,_sv,_st,_dx,_dy,_td,_l,_lc,",
-                "_tc,_cv,_t,_u,_r,_q,_o,_m,_sr,_cr;"].join('');
-             
-    },
-    
-    clear : function(){
-        var l = this.l;
-        var s = ["if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
+                "_tc,_cv,_t,_u,_r,_q,_o,_m,_sr,_cr;"];
         if ( l.dx != 0 )s.push(
             "_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
             "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
             "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();\n");
+        return s.join('');
+    },    
+    clear : function(){
+        var l = this.l;
+        var s = ["if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
+/*        if ( l.dx != 0 )s.push(
+            "_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
+            "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
+            "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();\n");*/
         return s.join('');
     },
 
@@ -350,31 +354,31 @@ jpf.draw.canvas = {
         return "_c.moveTo("+x+this.mx+","+y+this.my+");\n";
     },
     lineTo : function(x, y){
-        this.doclose= 1;
+        this.dodraw= 1;
         return "_c.lineTo("+x+this.mx+","+y+this.my+");\n";
     },
     lineH : function(x,y,w){
-        this.doclose = 1;
+        this.dodraw = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
                 "_c.lineTo(",x,this.mx,"+",w,",",y,this.my,");\n"].join('');
     },
     lineV : function(x,y,h){
-        this.doclose = 1;
+        this.dodraw = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
                 "_c.lineTo(",x,this.mx,",",y,this.my,"+",h,");\n"].join('');
     },    
     dot : function(x,y){
-        this.doclose = 1;
+        this.dodraw = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
                 "_c.lineTo(",x,this.mx,",",y,this.my,");\n"].join('');
     },
     circle : function( x,y,r,s,e,c ){
-        this.doclose = 1;
+        this.dodraw = 1;
         if(!s)s='0'; if(!e)e='3.141593';c=c?1:0;
         return["_c.arc(",x,",",y,",",r,",",s,",",e,",",c,");"].join('');
     },
     ellipse : function( x,y,w,h,s,e,c){
-        this.doclose = 1;
+        this.dodraw = 1;
         if(!s) s = '0'; if(!e) e = 'Math.PI*2';c=c?1:0;
         return["_c.translate(_x1=(",x,"),_y1=(",y,"));_c.scale(_x2=(",w,"),_y2=(",h,"));",
                "_c.arc(0,0,1,",s,",",e,",",!c,");_c.scale(1/_x2,1/_y2);_c.translate(-_x1,-_y1);"].join('');
@@ -401,17 +405,20 @@ jpf.draw.canvas = {
         }
     },    
     close : function (){
-        this.doclose = 0;
+        return ["_c.closePath();",this.$dodraw()].join('');
+    },
+    $dodraw : function (){
+        this.dodraw = 0;
         switch(this.fillmode){ 
-            case 3: return this.fillalpha+"_c.closePath();_c.fill();"+
+            case 3: return this.fillalpha+"_c.fill();"+
                            this.linealpha+"_c.stroke();_c.beginPath();\n";
-            case 2: return "_c.closePath();_c.stroke();_c.beginPath();\n";
-            case 1: return "_c.closePath();_c.fill();_c.beginPath();\n";
+            case 2: return "_c.stroke();_c.beginPath();\n";
+            case 1: return "_c.fill();_c.beginPath();\n";
         }    
     },
     
     $endShape : function(){
-        var s = this.doclose?[this.close()]:[];
+        var s = this.dodraw?[this.$dodraw()]:[];
         
         this.mx="",this.my="";
         this.last = this.style._id;
