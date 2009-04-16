@@ -136,18 +136,29 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
 
         panel.oBody.style.display = "block";
-        panel.oBody.style.height = "1px";
+        if (_self.$dir == "vertical") {
+            panel.oBody.style.height = "1px";
+        }
+        else {
+            panel.oBody.style.width = "1px";
+        }
 
         jpf.tween.single(panel.oBody, {
             steps    : 30,
-            type     : "scrollheight",
+            type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
             from     : 0,
-            to       : panel.oBody.scrollHeight,
+            to       : _self.$dir == "vertical" ? panel.oBody.scrollHeight : panel.oBody.scrollWidth,
             anim     : _self.animType,
             interval : _self.animDelay,
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
-                panel.oBody.style.height = "auto";
+                if (_self.$dir == "vertical") {
+                    panel.oBody.style.height = "auto";
+                }
+                else {
+                    panel.oBody.style.width = "auto";
+                }
+                
                 panels[id].opened = true;
             }
         });
@@ -168,8 +179,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
         jpf.tween.single(panel.oBody, {
             steps    : 30,
-            type     : "scrollheight",
-            from     : panel.oBody.scrollHeight,
+            type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+            from     : _self.$dir == "vertical" ? panel.oBody.scrollHeight : panel.oBody.scrollWidth,
             to       : 0,
             anim     : _self.animType,
             interval : _self.animDelay,
@@ -195,7 +206,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$loadJml = function(x) {
         var node, panel, nodes = this.$jml.childNodes;
-            
+ 
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
                 
@@ -217,7 +228,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
                 jpf.setUniqueHtmlId(oTitle);
-                oTitle.appendChild(document.createTextNode(node.getAttribute("title")));
+                var oHeader = this.$getLayoutNode("panel", "header", panel.oExt);
+                oHeader.appendChild(document.createTextNode(node.getAttribute("title")));
                 
                 this.$setStyleClass(oTitle, "NotActive");
                 
