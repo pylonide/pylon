@@ -753,7 +753,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         this.xmlactions = xmlNode;
         
         if (!jpf.isParsing)
-            this.markForUpdate(null, "bindings");
+            this.markForUpdate(null, "actions");
     };
     
     /**

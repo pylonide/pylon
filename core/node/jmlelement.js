@@ -1115,13 +1115,20 @@ jpf.JmlElement.propHandlers = {
      * @see baseclass.transaction
      */
     "transaction" : function(value){
+        if (!value)
+            return;
+        
         /**
          * @inherits jpf.DataBinding
          * @inherits jpf.Transaction
          */
         if (!this.hasFeature(__DATABINDING__)) {
             this.inherit(jpf.DataBinding);
-            this.smartBinding = true;
+
+            if (this.actions)
+                this.$propHandlers["actions"].call(this, this.actions);
+            else
+                this.smartBinding = true;
         }
          
         if (!this.hasFeature(__TRANSACTION__))

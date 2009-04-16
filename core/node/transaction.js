@@ -152,7 +152,8 @@ jpf.Transaction = function(){
             if (lastAction == "add") {
                 //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
                 if (transactionSubject.executeAction("appendChild", 
-                  [addParent, transactionNode], "add", transactionNode)) {
+                  [addParent, transactionNode], "add", transactionNode)
+                  && transactionSubject.hasFeature(__MULTISELECT__)) {
                     transactionSubject.select(transactionNode);
                 }
                 
@@ -432,7 +433,7 @@ jpf.Transaction = function(){
                 }
     
                 if (!addParent)
-                    addParent = dataParent.xmlRoot;
+                    addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
     
                 if (jpf.isSafari && addParent.ownerDocument != addXmlNode.ownerDocument)
                     addXmlNode = addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes

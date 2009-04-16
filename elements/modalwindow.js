@@ -389,7 +389,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$hide();
 
             if (this.hasFocus())
-                jpf.window.moveNext(null, this, true)
+                jpf.window.moveNext(true, this, true);//go backward to detect modals
 
             this.dispatchEvent("close");
         }
