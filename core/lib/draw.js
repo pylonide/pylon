@@ -23,7 +23,7 @@
 /**
  * @private
  */
-jpf.draw = {
+jpf.namespace("draw", {
     
     initDriver : function(){
         // initialize by copying either canvas of VML into my object.
@@ -1539,5 +1539,5 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         violet:'#ee82ee',wheat:'#f5deb3',white:'#ffffff',whitesmoke:'#f5f5f5',
         yellow:'#ffff00',yellowgreen:'#9acd32'
     }
-};
+});
 //#endif

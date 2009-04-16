@@ -21,7 +21,7 @@
 // #ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_CANVAS
 
-jpf.draw.canvas = {
+jpf.namespace("draw.canvas",{
    
    //----------------------------------------------------------------------
     
@@ -518,6 +518,6 @@ jpf.draw.canvas = {
         return s.join('');
     } 
     
-}
+});
 //#endif
 //#endif

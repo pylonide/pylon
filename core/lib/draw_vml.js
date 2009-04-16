@@ -20,7 +20,7 @@
  */
 // #ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_VML
-jpf.draw.vml = {
+jpf.namespace("draw.vml",{
    //----------------------------------------------------------------------
     
     // initialization
@@ -465,6 +465,6 @@ jpf.draw.vml = {
         return s.join('');
     } 
        
-}
+});
 //#endif
 //#endif

@@ -82,6 +82,28 @@ jpf.registerHotkey = function(hotkey, handler){
     //#endif
 
     (jpf.hotkeys[hashId] || (jpf.hotkeys[hashId] = {}))[key] = handler;
+
+    if (!jpf.initHotkey) {
+        jpf.initHotkey = true;
+        jpf.addEventListener("hotkey", function(e){
+            // enable meta-hotkey support for macs, like for Apple-Z, Apple-C, etc.
+            if (jpf.isMac && e.metaKey)
+                e.ctrlKey = true;
+            var hashId = 0 | (e.ctrlKey ? 1 : 0)
+                | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
+
+            var key = jpf.keyNames[e.keyCode];
+            if (!hashId && !key) //Hotkeys should always have one of the modifiers
+                return;
+
+            var handler = (jpf.hotkeys[hashId] || {})[(key
+                || String.fromCharCode(e.keyCode)).toLowerCase()];
+            if (handler) {
+                handler();
+                e.returnValue = false;
+            }
+        });
+    }
 };
 
 /**
@@ -91,23 +113,4 @@ jpf.registerHotkey = function(hotkey, handler){
 jpf.removeHotkey = function(hotkey){
     jpf.registerHotkey(hotkey, null);
 };
-
-jpf.addEventListener("hotkey", function(e){
-    // enable meta-hotkey support for macs, like for Apple-Z, Apple-C, etc.
-    if (jpf.isMac && e.metaKey)
-        e.ctrlKey = true;
-    var hashId = 0 | (e.ctrlKey ? 1 : 0)
-        | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
-
-    var key = jpf.keyNames[e.keyCode];
-    if (!hashId && !key) //Hotkeys should always have one of the modifiers
-        return;
-
-    var handler = (jpf.hotkeys[hashId] || {})[(key
-        || String.fromCharCode(e.keyCode)).toLowerCase()];
-    if (handler) {
-        handler();
-        e.returnValue = false;
-    }
-});
 //#endif
