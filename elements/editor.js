@@ -412,9 +412,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             strP.push(br);
                         }
                         else {
-                            str.push(jpf.editor.ALTP.start, 
+                            /*str.push(jpf.editor.ALTP.start,
                                 strP.join(""), 
-                                jpf.editor.ALTP.end);
+                                jpf.editor.ALTP.end);*/
+                            str.push("<p>", strP.join(""), "</p>");
                             strP = [];
                         }
                         
@@ -462,9 +463,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 strP = [];
                             }
                             else {
-                                str.push(jpf.editor.ALTP.start, 
+                                /*str.push(jpf.editor.ALTP.start,
                                     strP.join(""), 
-                                    jpf.editor.ALTP.end);
+                                    jpf.editor.ALTP.end);*/
+                                str.push("<p>", strP.join(""), "</p>");
                                 strP = [];
                             }
                         }
@@ -482,7 +484,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((s = strP.join("")).trim())
                 str.push(bNoEnclosing
                  ? s
-                 : jpf.editor.ALTP.start + s + jpf.editor.ALTP.end);
+                 : "<p>" + s + "</p>"); //jpf.editor.ALTP.start + s + jpf.editor.ALTP.end);
             html = str.join("");
         }
 
@@ -1674,7 +1676,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
         this.plugins.$destroy();
         this.selection.$destroy();
-        jpf.editor.ALTP.node = null;
         this.plugins = this.selection = this.oDoc.host = this.oToobar = 
             this.oDoc = this.oWin = this.iframe = prepareRE = exportRE = null;
     };
@@ -1697,12 +1698,12 @@ jpf.editor.DISABLED       = -1;
 jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
-jpf.editor.ALTP           = {
+/*jpf.editor.ALTP           = {
     start: '<p>',//<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
     end  : '</p>', //'</div>',
     text : '{jpf_placeholder}',
     node : null
-};
+};*/
 
 jpf.editor.i18n = {
     'en_GB': {
@@ -1732,6 +1733,7 @@ jpf.editor.i18n = {
         'listitem': 'List item',
         'nbsp': 'Non-breaking space',
         'break': 'Linebreak',
+        'paragraph': 'Paragraph',
         'forecolor': 'Font color',
         'backcolor': 'Highlight color',
         'insertdate': 'Insert current date',
@@ -1742,7 +1744,7 @@ jpf.editor.i18n = {
         'fonts': 'Font',
         'fontsize': 'Font size',
         'fontstyle': 'Font style',
-        'paragraph': 'Paragraph style',
+        'blockformat': 'Paragraph style',
         'help': 'Help',
         'hr': 'Insert horizontal rule',
         'image': 'Insert image',
@@ -1792,6 +1794,7 @@ jpf.editor.i18n = {
         'listitem': 'Lijst item',
         'nbsp': 'Niet-brekende spatie',
         'break': 'Regelafbreuk',
+        'paragraph': 'Paragraaf',
         'forecolor': 'Tekstkleur',
         'backcolor': 'Markeerkleur',
         'insertdate': 'Huidige datum invoegen',
@@ -1802,7 +1805,7 @@ jpf.editor.i18n = {
         'fonts': 'Lettertype',
         'fontsize': 'Letter grootte',
         'fontstyle': 'Tekststijl',
-        'paragraph': 'Paragraafstijl',
+        'blockformat': 'Paragraafstijl',
         'help': 'Hulp',
         'hr': 'Horizontale lijn invoegen',
         'image': 'Afbeelding invoegen',
@@ -1816,7 +1819,7 @@ jpf.editor.i18n = {
         'paste_keyboardmsg': 'Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.',
         'print': 'Printen',
         'preview': 'Voorbeeldvertoning',
-        'scayt': 'Spelling check aan/ uit',
+        'scayt': 'Spellingscontrole aan/ uit',
         'search': 'Zoeken',
         'replace': 'Zoeken en vervangen',
         'sub': 'Subscript',

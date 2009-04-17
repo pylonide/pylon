@@ -279,9 +279,9 @@ jpf.editor.plugin('fontstyle', function() {
 
 //##############################################################################
 
-jpf.editor.plugin('paragraph', function() {
-    this.name         = 'paragraph';
-    this.icon         = 'paragraph';
+jpf.editor.plugin('blockformat', function() {
+    this.name         = 'blockformat';
+    this.icon         = 'blockformat';
     this.type         = jpf.editor.TOOLBARITEM;
     this.subType      = jpf.editor.TOOLBARPANEL;
     this.hook         = 'ontoolbar';
@@ -313,7 +313,7 @@ jpf.editor.plugin('paragraph', function() {
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(jpf.formatErrorString(0, editor,
-                    "Initializing plugin: Paragraph (blockformats)",
+                    "Initializing plugin: Blockformat",
                     "No block formats found in skin definition"));
             // #endif
             for (i = 0, j = oNode.childNodes.length; i < j; i++) {
@@ -332,9 +332,9 @@ jpf.editor.plugin('paragraph', function() {
     }
 
     this.init = function(editor) {
-        this.buttonNode.className = this.buttonNode.className + " paragraphpicker";
+        this.buttonNode.className = this.buttonNode.className + " blockformatpicker";
         this.blockPreview = this.buttonNode.getElementsByTagName('span')[0];
-        this.blockPreview.className += " paragraphpreview";
+        this.blockPreview.className += " blockformatpreview";
         var blockArrow = this.buttonNode.appendChild(document.createElement('span'));
         blockArrow.className = "selectarrow";
     };
@@ -566,7 +566,7 @@ jpf.editor.plugin('paragraph', function() {
         var aHtml = [],
             aFormats = getFormats(editor);
         for (var i = 0, j = aFormats.length; i < j; i++) {
-            aHtml.push('<a class="editor_panelcell editor_paragraph" rel="',
+            aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
                 aFormats[i], '" href="javascript:;" onmouseup="jpf.lookup(',
                 this.uniqueId, ').submit(event);"><', aFormats[i], '>',
                 blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
