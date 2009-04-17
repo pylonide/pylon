@@ -305,10 +305,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
 
-                if (_self.$dir == "vertical") {
-                    panel.oBody.style.height = "auto";
-                }
-                else {
+                if (_self.$dir == "horizontal") {
                     panel.oBody.style.width = "auto";
                 }
 
@@ -424,7 +421,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
 
                 this.$setStyleClass(oTitle, "NotActive");
-                
+
                 if (this.expand == "click") {
                     oTitle.onmousedown = function(e) {
                         e = e || event;
