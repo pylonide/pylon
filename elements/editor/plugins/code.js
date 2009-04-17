@@ -224,8 +224,10 @@ jpf.editor.plugin('code', function() {
                 val = oPreview.value;
                 end = oPreview.selectionEnd;
                 oPreview.selectionStart = end;
-                oPreview.value = val.substr(0, end) + sStart + val.substr(end);
-                oPreview.selectionStart = oPreview.selectionEnd = end + sStart.length;
+                oPreview.value          = val.substr(0, end) + sStart
+                    + val.substr(end);
+                oPreview.selectionStart = oPreview.selectionEnd = end
+                    + sStart.length;
             }
         }
         else {
