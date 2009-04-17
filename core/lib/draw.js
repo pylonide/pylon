@@ -323,6 +323,7 @@ jpf.namespace("draw", {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         // first we parse our style string
         if ( (o = this.parseJSS(str,err)) === null ) return null;
+        jpf.alert_r(o.axis);
         var _self = this;
         if(!(t=_self.stateTransition)[0x40001]){
             s = {};
@@ -1463,7 +1464,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                                     join(style._txtdiv));
         while(needed-->0){
             t=tn.childNodes[ts.length];
-            ts.push({ n: t, v: t.firstChild,x:0,y:0,s:null});
+            ts.push({ x:-10000000000,y:-10000000000, n: t, v: t.firstChild,sz:-1,s:null});
         }
     },
     
