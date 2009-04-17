@@ -1,3 +1,25 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
 //#ifdef __JACCORDION
 jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
@@ -5,6 +27,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.animType       = jpf.tween.NORMAL;
     this.animDelay      = 10;
+    this.hoverDelay     = 500;
     this.multiCollapse  = true;
     this.expand         = "click";
     this.startcollapsed = false;
@@ -19,6 +42,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
      * Id of title from last opened panel
      */
     var lastOpened = [];
+    var hoverTimer = null;
 
     this.$booleanProperties["multicollapse"] = true;
     this.$booleanProperties["startcollapsed"] = true;
@@ -128,7 +152,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //close opened panel because only one can be opened
         if (!_self.multiCollapse && lastOpened.length > 0) {
-            _self.slideUp(lastOpened.shift());
+            var _temp = lastOpened.shift();
+            if (_temp !== id) {
+                _self.slideUp(_temp);
+            }
         }
         
         lastOpened.push(id);
@@ -138,9 +165,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         panel.oBody.style.display = "block";
         if (_self.$dir == "vertical") {
             panel.oBody.style.height = "1px";
-        }
-        else {
-            panel.oBody.style.width = "1px";
         }
 
         jpf.tween.single(panel.oBody, {
@@ -176,6 +200,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         var panel = panels[id];
 
         _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
+        
 
         jpf.tween.single(panel.oBody, {
             steps    : 30,
@@ -187,6 +212,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
                 panel.oBody.style.display = "none";
+                
+                if (_self.$dir == "horizontal") {
+                    panel.oBody.style.width = "auto";
+                }
+
                 panels[id].opened = false;
             }
         });
@@ -221,16 +251,22 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                         ? true
                         : false)
                     : false;
-                
+
                 panel.skinName = this.skinName;
                 insertChild.call(this, panel);
                 panel.loadJml(node, this);
                 
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
                 jpf.setUniqueHtmlId(oTitle);
-                var oHeader = this.$getLayoutNode("panel", "header", panel.oExt);
-                oHeader.appendChild(document.createTextNode(node.getAttribute("title")));
                 
+                if (this.$dir == "horizontal") {
+                    var oHeader = this.$getLayoutNode("panel", "header", panel.oExt);
+                    oHeader.appendChild(document.createTextNode(node.getAttribute("title")));
+                }
+                else {
+                    oTitle.appendChild(document.createTextNode(node.getAttribute("title")))
+                }
+
                 this.$setStyleClass(oTitle, "NotActive");
                 
                 if (this.expand == "click") {
@@ -242,7 +278,14 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                 else if (this.expand == "hover") {
                     oTitle.onmouseover = function(e) {
                         e = e || event;
-                        jpf.lookup(_self.uniqueId).slideToggle(e);
+                        var target = e.target || e.srcElement;
+                        var id = target.id;
+                        
+                        clearInterval(hoverTimer);
+                        hoverTimer = setInterval(function() {
+                            jpf.lookup(_self.uniqueId).slideToggle(id);
+                            clearInterval(hoverTimer);
+                        }, _self.hoverDelay);
                     }
                 }
 
@@ -255,7 +298,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                     oTitle   : oTitle,
                     oBody    : oBody
                 };
-                
+
                 if ((opened || this.startcollapsed) && this.multiCollapse) {
                     this.slideDown(oTitle.id);
                 }
