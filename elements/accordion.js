@@ -19,9 +19,56 @@
  *
  */
 
-
+/**
+ * The Accordion is component that allows you to provide multiple vertical or 
+ * horizontal panes. You can display them one or more at a time. Each panel has 
+ * a title and its content. Content can contain other components.
+ * 
+ * @define accordion
+ * 
+ * @attribute {String} animtype   the distribution of change between the step over the entire animation, default is normal
+ * Possible values:
+ *     normal    
+ *     easein    
+ *     easeout   
+ * 
+ * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
+ * 
+ * @attribute {Boolean} multicollapse   allows collapsing one or more panels, default is true
+ * Possible values:
+ *     true    one or more planels can be collapsed at a time
+ *     false   ony one panel can be collapsed at a time
+ * 
+ * @attribute {String} expand   sets event when panel will be collapsed, default is click
+ * Possible values:
+ *     click   panel will be collapsed when user click on it
+ *     hover   panel will be collapsed when user hover over it with mouse
+ * 
+ * @attribute {Boolean} startcollapsed   collapses all panels on load, default is false
+ * Possible values:
+ *     true    collapses all panels
+ *     false   any panel cannot be collapsed even if collapsed="true" is set on it
+ * 
+ * 
+ * 
+ * Panel attributes
+ * 
+ * @attribute {Boolean}   collapsed   collapse panel on load, default is false
+ * Possible values:
+ *     true    panel is collapsed
+ *     false   panel is not collapsed
+ * 
+ * @attribute {String} icon   path to icon displayed on title bar
+ * @attribute {String} title   describes content in panel
+ * 
+ * @inherits jpf.Presentation
+ *
+ * @author      Lukasz Lipinski
+ * @version     %I%, %G%
+ * @since       2.2
+ */
 //#ifdef __JACCORDION
-jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.canHaveChildren = true;
     this.$focussable     = false;
 
@@ -33,18 +80,26 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.startcollapsed = false;
 
     var _self = this;
+    
     /**
      * Keeps all panels
-     * panels[oTitle.id] = {}
+     * 
+     * panels[oTitle.id] = {
+     *     panel  : panel,
+     *     opened : false,
+     *     oTitle : oTitle,
+     *     oBody  : oBody
+     * };
      */
     var panels = {};
+    
     /**
      * Id of title from last opened panel
      */
     var lastOpened = [];
     var hoverTimer = null;
 
-    this.$booleanProperties["multicollapse"] = true;
+    this.$booleanProperties["multicollapse"]  = true;
     this.$booleanProperties["startcollapsed"] = true;
     
     this.$supportedProperties.push("animtype", "animdelay", "multicollapse",
@@ -105,24 +160,15 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["expand"] = function(value) {
         this.expand = value;
     };
-
-    /**** Private Methods *****/
-
-    this.$enable  = function() {
-        
-    };
-    this.$disable = function() {
-        
-    };
     
     /**
      * Toggles the visibility of the container with content. It opens
-     * or closes it using a slide effect. (the same for slideDown and slideUp)
+     * or closes it using a slide effect. 
      * 
-     * @param {Mixed} e   
-     * Possible values
-     *     {Object}   onmousedown event
-     *     {String}   title bar unique name
+     * @param {Mixed} e   data which allow on identifiaction of title bar
+     * Possible values:
+     *     {Object} onmousedown event
+     *     {String} unique name of title bar
      */
     this.slideToggle = function(e) {
         e = e || event;
@@ -136,9 +182,16 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             this.slideUp(e);
         else
             this.slideDown(e);
-
     };
 
+    /**
+     * Shows the container with content using a slide effect.
+     * 
+     * @param {Mixed} e   data which allow on identifiaction of title bar
+     * Possible values:
+     *     {Object} onmousedown event
+     *     {String} unique name of title bar
+     */
     this.slideDown = function(e) {
         e = e || event;
         var target = e.target || e.srcElement;
@@ -150,7 +203,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var panel = panels[id];
 
-        //close opened panel because only one can be opened
         if (!_self.multiCollapse && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
             if (_temp !== id) {
@@ -163,6 +215,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
 
         panel.oBody.style.display = "block";
+        
         if (_self.$dir == "vertical") {
             panel.oBody.style.height = "1px";
         }
@@ -171,23 +224,34 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
             steps    : 30,
             type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
             from     : 0,
-            to       : _self.$dir == "vertical" ? panel.oBody.scrollHeight : panel.oBody.scrollWidth,
+            to       : _self.$dir == "vertical"
+                           ? panel.oBody.scrollHeight
+                           : panel.oBody.scrollWidth,
             anim     : _self.animType,
             interval : _self.animDelay,
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
+
                 if (_self.$dir == "vertical") {
                     panel.oBody.style.height = "auto";
                 }
                 else {
                     panel.oBody.style.width = "auto";
                 }
-                
+
                 panels[id].opened = true;
             }
         });
     };
 
+    /**
+     * Hides the container with content using a slide effect.
+     * 
+     * @param {Mixed} e   data which allow on identifiaction of title bar
+     * Possible values:
+     *     {Object} onmousedown event
+     *     {String} unique name of title bar
+     */
     this.slideUp = function(e) {
         e = e || event;
         var target = e.target || e.srcElement;
@@ -200,19 +264,20 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
         var panel = panels[id];
 
         _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
-        
 
         jpf.tween.single(panel.oBody, {
             steps    : 30,
             type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-            from     : _self.$dir == "vertical" ? panel.oBody.scrollHeight : panel.oBody.scrollWidth,
+            from     : _self.$dir == "vertical"
+                       ? panel.oBody.scrollHeight
+                       : panel.oBody.scrollWidth,
             to       : 0,
             anim     : _self.animType,
             interval : _self.animDelay,
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
                 panel.oBody.style.display = "none";
-                
+
                 if (_self.$dir == "horizontal") {
                     panel.oBody.style.width = "auto";
                 }
@@ -220,13 +285,32 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
                 panels[id].opened = false;
             }
         });
-      
+
         return false;
+    };
+    
+    /**
+     * Returns the id of title bar
+     * 
+     * @param {Number} number   number of title bar, 1 and more for counting 
+     *                          from left to right for horizontal mode, and 
+     *                          from top to bottom for vertical mode
+     * 
+     */
+    this.$getPanelIdByNumber = function(number) {
+        var counter = 1;
+        
+        for (var id in panels) {
+            if (counter == number)
+                return id;
+        }
+        
+        return null;
     };
 
     /**** Init ****/
 
-    this.$draw = function(){
+    this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal("main");
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
@@ -239,12 +323,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function(){
  
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
-                
+
             if (node.nodeType != 1) 
                 continue;
 
             if (node[jpf.TAGNAME] == "panel") {
-                //create panel and load JML to element called container in skin file
                 var panel = new jpf.panel(this.oInt, "panel");
                 var opened = node.getAttribute("collapsed")
                     ? (node.getAttribute("collapsed") == "true"
