@@ -37,9 +37,9 @@
  * @attribute {Boolean} multicollapse   allows collapsing one or more panels, default is true
  * Possible values:
  *     true    one or more planels can be collapsed at a time
- *     false   ony one panel can be collapsed at a time
+ *     false   only one panel can be collapsed at a time
  * 
- * @attribute {String} expand   sets event when panel will be collapsed, default is click
+ * @attribute {String} expand   sets event which will activate panel, default is click
  * Possible values:
  *     click   panel will be collapsed when user click on it
  *     hover   panel will be collapsed when user hover over it with mouse
@@ -63,7 +63,7 @@
  * 
  * @inherits jpf.Presentation
  *
- * @author      Lukasz Lipinski
+ * @author      
  * @version     %I%, %G%
  * @since       2.2
  */
@@ -167,7 +167,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {Mixed} e   data which allow on identifiaction of title bar
      * Possible values:
-     *     {Object} onmousedown event
+     *     {Object} onmousedown or onmouseover event
      *     {String} unique name of title bar
      */
     this.slideToggle = function(e) {
@@ -189,7 +189,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {Mixed} e   data which allow on identifiaction of title bar
      * Possible values:
-     *     {Object} onmousedown event
+     *     {Object} onmousedown or onmouseover event
      *     {String} unique name of title bar
      */
     this.slideDown = function(e) {
@@ -249,7 +249,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {Mixed} e   data which allow on identifiaction of title bar
      * Possible values:
-     *     {Object} onmousedown event
+     *     {Object} onmousedown or onmouseover event
      *     {String} unique name of title bar
      */
     this.slideUp = function(e) {
@@ -376,10 +376,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 jpf.setUniqueHtmlId(oBody);
 
                 panels[oTitle.id] = {
-                    panel    : panel,
-                    opened   : false,
-                    oTitle   : oTitle,
-                    oBody    : oBody
+                    panel  : panel,
+                    opened : false,
+                    oTitle : oTitle,
+                    oBody  : oBody
                 };
 
                 if ((opened || this.startcollapsed) && this.multiCollapse) {
@@ -390,7 +390,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$destroy = function() {
-
+        
     };
 }).implement(jpf.Presentation);
 
