@@ -1402,27 +1402,31 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Draw all HTML elements for the editor toolbar
      *
-     * @param {HTMLElement} oParent
+     * @param {HTMLElement} oParent     DOM element which the toolbars should be inserted into
+     * @param {String}      [sSkinTag]  Tagname of a toolbar node inside the editor skin definition
+     * @param {String}      [sBtnClick] JS that will be executed when a button node is clicked
      * @type  {void}
-     * @private
      */
-    function drawToolbars(oParent) {
-        var tb, l, k, i, j, z, x, node, buttons, bIsPlugin;
-        var item, bNode, oNode = this.$getOption('toolbars');
-        var plugin, oButton, plugins = this.plugins;
+    this.drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
+        var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
+            oNode = this.$getOption('toolbars'),
+            plugin, oButton, plugins = this.plugins;
+
+        if (!sSkinTag)
+            sSkinTag = "toolbar";
 
         for (i = 0, l = oNode.childNodes.length; i < l; i++) {
             node = oNode.childNodes[i];
-            if (node.nodeType != 1)
+            if (node.nodeType != 1 || node[jpf.TAGNAME] != sSkinTag)
                 continue;
 
             //#ifdef __DEBUG
-            if (node[jpf.TAGNAME] != "toolbar") {
+            /*if (node[jpf.TAGNAME] != "toolbar") {
                 throw new Error(jpf.formatErrorString(0, this,
                     "Creating toolbars",
                     "Invalid element found in toolbars definition",
                     node));
-            }
+            }*/
             //#endif
 
             for (j = 0, k = node.childNodes.length; j < k; j++) {
@@ -1444,21 +1448,29 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 continue;
 
             this.$getNewContext("toolbar");
-            tb = oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
+            tb = bAfterRender
+                ? jpf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
+                : oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
                 item = buttons[z];
 
                 if (item == "|") { //seperator!
                     this.$getNewContext("divider");
-                    tb.appendChild(this.$getLayoutNode("divider"));
+                    if (bAfterRender)
+                        jpf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
+                    else
+                        tb.appendChild(this.$getLayoutNode("divider"));
                 }
                 else {
                     this.$getNewContext("button");
-                    oButton = tb.appendChild(this.$getLayoutNode("button"));
+                    oButton = bAfterRender
+                        ? oButton = jpf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
+                        : oButton = tb.appendChild(this.$getLayoutNode("button"));
                     
                     bIsPlugin = false;
-                    if (!this.$nativeCommands.contains(item)) {
+                    // Plugin toolbarbuttons may only be placed inside the main toolbar
+                    if (sSkinTag == "toolbar" && !this.$nativeCommands.contains(item)) {
                         plugin = plugins.add(item);
                         // #ifdef __DEBUG
                         if (!plugin)
@@ -1479,7 +1491,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
 
-                        oButton.setAttribute("title", this.translate(plugin.name, true));
+                        oButton.setAttribute("title", this.translate(plugin.name));
                     }
                     else {
                         this.$getLayoutNode("button", "label", oButton)
@@ -1488,7 +1500,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         oButton.setAttribute("title", this.translate(item));
                     }
 
-                    oButton.setAttribute("onmousedown", "jpf.all["
+                    oButton.setAttribute("onmousedown", sBtnClick || "jpf.all["
                         + _self.uniqueId + "].$buttonClick(event, this);");
                     oButton.setAttribute("onmouseover", "jpf.setStyleClass(this, 'hover');");
                     oButton.setAttribute("onmouseout", "jpf.setStyleClass(this, '', ['hover']);");
@@ -1502,7 +1514,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         if (jpf.isIE) {
             var nodes = oParent.getElementsByTagName("*");
-            for (var i = nodes.length - 1; i >= 0; i--)
+            for (i = nodes.length - 1; i >= 0; i--)
                 nodes[i].setAttribute("unselectable", "On");
         }
     };
@@ -1526,7 +1538,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.selection = new jpf.editor.selection(this);
 
         this.oExt = this.$getExternal("main", null, function(oExt){
-            drawToolbars.call(this, this.$getLayoutNode("main", "toolbar"));
+            this.drawToolbars(this.$getLayoutNode("main", "toolbar"));
         });
         this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
         var oEditor   = this.$getLayoutNode("main", "editor",  this.oExt);
@@ -1625,8 +1637,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
             
         var h = (this.oExt.offsetHeight - this.oToolbar.offsetHeight - 2);
-        if (!h || h < 0) h = 0;
-            
+        if (!h || h < 0)
+            h = 0;
+
         this.iframe.parentNode.style.height = h + "px";
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
@@ -1711,44 +1724,46 @@ jpf.editor.i18n = {
         'indent': 'Increase indent',
         'undo': 'Undo',
         'redo': 'Redo',
-        'plugins': {
-            'anchor': 'Insert anchor',
-            'blockquote': 'Blockquote',
-            'charmap': 'Character map',
-            'code': 'HTML source view',
-            'forecolor': 'Font color',
-            'backcolor': 'Highlight color',
-            'insertdate': 'Insert current date',
-            'inserttime': 'Insert current time',
-            'rtl': 'Change text direction to right-to-left',
-            'ltr': 'Change text direction to left-to-right',
-            'emotions': 'Insert emotion',
-            'fonts': 'Font',
-            'fontsize': 'Font size',
-            'fontstyle': 'Font style',
-            'paragraph': 'Paragraph style',
-            'help': 'Help',
-            'hr': 'Insert horizontal rule',
-            'image': 'Insert image',
-            'imagespecial': 'Choose an image to insert',
-            'link': 'Insert hyperlink',
-            'unlink': 'Remove hyperlink',
-            'bullist': 'Bullets',
-            'numlist': 'Numbering',
-            'media': 'Insert medium',
-            'pastetext': 'Paste plaintext',
-            'paste_keyboardmsg': 'Use %s on your keyboard to paste the text into the window.',
-            'print': 'Print document',
-            'preview': 'Preview document',
-            'scayt': 'Turn spellcheck on/ off',
-            'search': 'Search',
-            'replace': 'Search and Replace',
-            'sub': 'Subscript',
-            'sup': 'Superscript',
-            'table': 'Insert table',
-            'table_noun': 'Table',
-            'visualaid': 'Toggle visual aid on/ off'
-        }
+        // plugin keys:
+        'anchor': 'Insert anchor',
+        'blockquote': 'Blockquote',
+        'charmap': 'Character map',
+        'code': 'HTML source view',
+        'listitem': 'List item',
+        'nbsp': 'Non-breaking space',
+        'break': 'Linebreak',
+        'forecolor': 'Font color',
+        'backcolor': 'Highlight color',
+        'insertdate': 'Insert current date',
+        'inserttime': 'Insert current time',
+        'rtl': 'Change text direction to right-to-left',
+        'ltr': 'Change text direction to left-to-right',
+        'emotions': 'Insert emotion',
+        'fonts': 'Font',
+        'fontsize': 'Font size',
+        'fontstyle': 'Font style',
+        'paragraph': 'Paragraph style',
+        'help': 'Help',
+        'hr': 'Insert horizontal rule',
+        'image': 'Insert image',
+        'imagespecial': 'Choose an image to insert',
+        'link': 'Insert hyperlink',
+        'unlink': 'Remove hyperlink',
+        'bullist': 'Bullets',
+        'numlist': 'Numbering',
+        'media': 'Insert medium',
+        'pastetext': 'Paste plaintext',
+        'paste_keyboardmsg': 'Use %s on your keyboard to paste the text into the window.',
+        'print': 'Print document',
+        'preview': 'Preview document',
+        'scayt': 'Turn spellcheck on/ off',
+        'search': 'Search',
+        'replace': 'Search and Replace',
+        'sub': 'Subscript',
+        'sup': 'Superscript',
+        'table': 'Insert table',
+        'table_noun': 'Table',
+        'visualaid': 'Toggle visual aid on/ off'
     },
      'nl_NL': {
         'cancel': 'Annuleren',
@@ -1769,44 +1784,46 @@ jpf.editor.i18n = {
         'indent': 'Inspringen vergroten',
         'undo': 'Ongedaan maken',
         'redo': 'Opnieuw',
-        'plugins': {
-            'anchor': 'Anchor invoegen',
-            'blockquote': 'Blockquote',
-            'charmap': 'Speciale tekens',
-            'code': 'HTML broncode',
-            'forecolor': 'Tekstkleur',
-            'backcolor': 'Markeerkleur',
-            'insertdate': 'Huidige datum invoegen',
-            'inserttime': 'Huidige tijd invoegen',
-            'rtl': 'Verander tekstrichting naar rechts-naar-links',
-            'ltr': 'Verander tekstrichting naar links-naar-rechts',
-            'emotions': 'Emoticon invoegen',
-            'fonts': 'Lettertype',
-            'fontsize': 'Letter grootte',
-            'fontstyle': 'Tekststijl',
-            'paragraph': 'Paragraafstijl',
-            'help': 'Hulp',
-            'hr': 'Horizontale lijn invoegen',
-            'image': 'Afbeelding invoegen',
-            'imagespecial': 'Afbeelding kiezen',
-            'link': 'Link invoegen',
-            'unlink': 'Link verwijderen',
-            'bullist': 'Ongenummerd',
-            'numlist': 'Genummerd',
-            'media': 'Medium invoegen',
-            'pastetext': 'Tekst Plakken',
-            'paste_keyboardmsg': 'Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.',
-            'print': 'Printen',
-            'preview': 'Voorbeeldvertoning',
-            'scayt': 'Spelling check aan/ uit',
-            'search': 'Zoeken',
-            'replace': 'Zoeken en vervangen',
-            'sub': 'Subscript',
-            'sup': 'Superscript',
-            'table': 'Tabel invoegen',
-            'table_noun': 'Tabel',
-            'visualaid': 'Visuele hulp aan/ uit'
-        }
+        // plugin keys:
+        'anchor': 'Anchor invoegen',
+        'blockquote': 'Blockquote',
+        'charmap': 'Speciale tekens',
+        'code': 'HTML broncode',
+        'listitem': 'Lijst item',
+        'nbsp': 'Niet-brekende spatie',
+        'break': 'Regelafbreuk',
+        'forecolor': 'Tekstkleur',
+        'backcolor': 'Markeerkleur',
+        'insertdate': 'Huidige datum invoegen',
+        'inserttime': 'Huidige tijd invoegen',
+        'rtl': 'Verander tekstrichting naar rechts-naar-links',
+        'ltr': 'Verander tekstrichting naar links-naar-rechts',
+        'emotions': 'Emoticon invoegen',
+        'fonts': 'Lettertype',
+        'fontsize': 'Letter grootte',
+        'fontstyle': 'Tekststijl',
+        'paragraph': 'Paragraafstijl',
+        'help': 'Hulp',
+        'hr': 'Horizontale lijn invoegen',
+        'image': 'Afbeelding invoegen',
+        'imagespecial': 'Afbeelding kiezen',
+        'link': 'Link invoegen',
+        'unlink': 'Link verwijderen',
+        'bullist': 'Ongenummerd',
+        'numlist': 'Genummerd',
+        'media': 'Medium invoegen',
+        'pastetext': 'Tekst Plakken',
+        'paste_keyboardmsg': 'Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.',
+        'print': 'Printen',
+        'preview': 'Voorbeeldvertoning',
+        'scayt': 'Spelling check aan/ uit',
+        'search': 'Zoeken',
+        'replace': 'Zoeken en vervangen',
+        'sub': 'Subscript',
+        'sup': 'Superscript',
+        'table': 'Tabel invoegen',
+        'table_noun': 'Tabel',
+        'visualaid': 'Visuele hulp aan/ uit'
     }
 };
 

@@ -163,7 +163,7 @@ jpf.editor.plugin('table', function() {
             oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
             oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
             var sCaption = iCurrentY + " x " + iCurrentX + " " 
-                + _self.editor.translate('table_noun', true);
+                + _self.editor.translate('table_noun');
             if (sCurrentCaption != sCaption)
                 oStatus.innerHTML = sCurrentCaption = sCaption;
         }

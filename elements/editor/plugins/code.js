@@ -32,14 +32,15 @@ jpf.editor.plugin('code', function() {
     this.noDisable   = true;
     this.regex       = null;
 
-    var oPreview, protectedData, lastLoaded, _self = this;
+    var oCont, oToolbar, oButtons = {}, oPreview, protectedData, lastLoaded,
+        _self = this;
 
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
         if (!oPreview)
             this.drawPreview(editor);
 
-        if (oPreview.style.display == "none") {
+        if (oCont.style.display == "none") {
             // remember the selection for IE
             editor.selection.cache();
 
@@ -51,14 +52,14 @@ jpf.editor.plugin('code', function() {
 
             // show the textarea and position it correctly...
             this.setSize(editor);
-            oPreview.style.display = "";
+            oCont.style.display = "";
 
             oPreview.focus();
         }
         else {
             editor.plugins.active = null;
             
-            oPreview.style.display = "none";
+            oCont.style.display = "none";
             editor.setProperty('state', jpf.editor.OFF);
             
             propagateChange();
@@ -129,17 +130,35 @@ jpf.editor.plugin('code', function() {
         e = e || window.event;
         var code = e.which || e.keyCode;
         if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
-          && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
+          && (code == 32 || code > 42 || code == 8 || code == 13)) {
             resumeChangeTimer();
         }
     }
 
     this.drawPreview = function(editor) {
         this.editor = editor;
-        
-        oPreview = editor.oExt.appendChild(document.createElement('textarea'));
-        oPreview.rows = 15;
-        oPreview.cols = 10;
+
+        //this.editor.$getNewContext("code");
+        oCont = editor.$getExternal('code', editor.oExt);//.appendChild(this.editor.$getLayoutNode("code"));
+
+        oToolbar = oCont.getElementsByTagName('div')[0];
+        //oToolbar.className = "";
+        this.editor.drawToolbars(oToolbar, 'codetoolbar',
+            'jpf.all[' + this.uniqueId + '].$buttonClick(event, this);', true);
+        // @todo make this hack disappear...
+        oToolbar.innerHTML = oToolbar.innerHTML;
+        var btns = oToolbar.getElementsByTagName("div");
+        for (var item, i = btns.length - 1; i >= 0; i--) {
+            item = btns[i].getAttribute("type");
+            if (!item) continue;
+
+            oButtons[item] = btns[i];
+            jpf.setStyleClass(btns[i], 'editor_enabled',
+                ['editor_selected', 'editor_disabled']);
+            btns[i].disabled = false;
+        }
+
+        oPreview = oCont.getElementsByTagName('textarea')[0];//oCont.appendChild(document.createElement('textarea'));
         // make selections in IE possible.
         if (jpf.isIE)
             oPreview.onselectstart = function(e) {
@@ -147,16 +166,91 @@ jpf.editor.plugin('code', function() {
                 e.cancelBubble = true;
             };
         oPreview.onkeydown = onKeydown;
+
         this.setSize(editor);
-        oPreview.style.display  = "none";
+        oCont.style.display  = "none";
         jpf.sanitizeTextbox(oPreview);
     }
 
     this.setSize = function(editor) {
         if (!oPreview || !editor) return;
-        oPreview.style.width  = editor.oExt.offsetWidth - 2 + "px";
-        oPreview.style.height = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
+        
+        var w = editor.oExt.offsetWidth - 2;
+        var h = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4;
+        oCont.style.top       = editor.oToolbar.offsetHeight + "px";
+        oCont.style.width     = 
+        oToolbar.style.width  = w + "px";
+        oPreview.style.width  = w - (jpf.isIE ? 2 : 0) + "px";
+        oCont.style.height    = h + (jpf.isIE ? 2 : 3) + "px";
+        oPreview.style.height = h - (jpf.isIE ? 26 : 24) + "px";
     };
+
+    var elements = {
+        "bullist"   : ["<ul>", "</ul>"],
+        "numlist"   : ["<ol>", "</ol>"],
+        "listitem"  : ["<li>", "</li>"],
+        "nbsp"      : ["&nbsp;", null],
+        "break"     : ["<br />", null],
+        "paragraph" : ["<p>", "</p>"]
+    };
+
+    this.$buttonClick = function(e, oButton) {
+        jpf.setStyleClass(oButton, "active");
+        var item = oButton.getAttribute("type");
+        if (elements[item])
+            insertElement.apply(this, elements[item]);
+
+        this.editor.$visualFocus();
+        oPreview.focus();
+
+        jpf.setStyleClass(oButton, "", ["active"]);
+    }
+
+    function insertElement(sStart, sEnd) {
+        if (!sStart) return;
+        var range, val, end;
+        if (!sEnd) {
+            // no end tag provided, so insert sStart at the current caret position
+            if (jpf.hasMsRangeObject) {
+                range = document.selection.createRange();
+                range.collapse();
+                range.text = sStart;
+                range.moveEnd("character", sStart.length);
+                range.collapse();
+                if (jpf.window.focussed == this.editor)
+                    range.select();
+            }
+            else {
+                val = oPreview.value;
+                end = oPreview.selectionEnd;
+                oPreview.selectionStart = end;
+                oPreview.value = val.substr(0, end) + sStart + val.substr(end);
+                oPreview.selectionStart = oPreview.selectionEnd = end + sStart.length;
+            }
+        }
+        else {
+            // end tag provided, so we need to encapsulate the selection with
+            // sStart and sEnd
+            if (jpf.hasMsRangeObject) {
+                range = document.selection.createRange();
+                val   = range.text;
+                range.text = sStart + val + sEnd;
+                range.moveStart("character", -(val.length + sEnd.length));
+                range.moveEnd("character", -sEnd.length);
+                if (jpf.window.focussed == this.editor)
+                    range.select();
+            }
+            else {
+                var start  = oPreview.selectionStart;
+                val        = oPreview.value;
+                end        = oPreview.selectionEnd;
+                oPreview.value = val.substr(0, start) + sStart
+                    + val.substr(start, end - start) + sEnd + val.substr(end);
+                oPreview.selectionStart = start + sStart.length;
+                oPreview.selectionEnd   = end + sEnd.length - 1;
+            }
+        }
+    }
 
     function protect(outer, opener, data, closer) {
         return opener + "___JPFpd___" + protectedData.push(data) + closer;
