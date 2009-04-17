@@ -49,21 +49,94 @@
  *     true    collapses all panels
  *     false   any panel cannot be collapsed even if collapsed="true" is set on it
  * 
- * 
- * 
- * Panel attributes
- * 
- * @attribute {Boolean}   collapsed   collapse panel on load, default is false
- * Possible values:
- *     true    panel is collapsed
- *     false   panel is not collapsed
- * 
- * @attribute {String} icon   path to icon displayed on title bar
- * @attribute {String} title   describes content in panel
- * 
  * @inherits jpf.Presentation
+ * 
+ * Example:
+ * Horizontal acccordion component with 5 panels. First and third panel will be 
+ * collapsed on load.
+ * 
+ * <code>
+ * <j:accordion
+ *      height          = "200"
+ *      left            = "200"
+ *      top             = "20"
+ *      multicollapse   = "true"
+ *      expand          = "click"
+ *      startcollapsed  = "false"
+ *      skin            = "accordion_horizontal"
+ *      >
+ *     <j:panel title="Iron Maiden" collapsed="true" icon="icon.png">
+ *         <b>Discography</b>
+ *         <ul>
+ *             <li>Piece Of Mind</li>
+ *             <li>X Factor</li>
+ *         </ul>
+ *     </j:panel>
+ *     <j:panel title="Megadeth" icon="images/accordion_icon.png">
+ *         <b>Discography</b>
+ *         <ul>
+ *             <li>Youthanasia</li>
+ *         </ul>
+ *     </j:panel>
+ *     <j:panel title="Judas Priest" collapsed="true" icon="icon.png">
+ *         <b>Discography</b>
+ *         <ul>
+ *             <li>Painkiller</li>
+ *         </ul>
+ *     </j:panel>
+ *     <j:panel title="Metallica" icon="images/accordion_icon.png">
+ *         <b>Discography</b>
+ *         <ul>
+ *             <li>Load</li>
+ *         </ul>
+ *     </j:panel>
+ *     <j:panel title="Behemoth" icon="images/accordion_icon.png">
+ *         <b>Discography</b>
+ *         <ul>
+ *             <li>Satanica</li>
+ *         </ul>
+ *     </j:panel>
+ * </j:accordion>
+ * </code>
+ * 
+ * Example:
+ * Vertical accordion component with 2 panels. Only one panel can be collapsed
+ * at a time. Both panels conatins JPF components.
+ * 
+ * <code>
+ * <j:accordion
+ *     width           = "400"
+ *     left            = "200"
+ *     top             = "500"
+ *     animtype        = "normal"
+ *     animdelay       = "10"
+ *     multicollapse   = "false"
+ *     expand          = "click"
+ *     startcollapsed  = "false"
+ *     skin            = "accordion_vertical"
+ *     >
+ *     <j:panel title="Components" collapsed="true" icon="icon.png">
+ *         <j:label>Choose Your favourite component</j:label><br />
+ *         <j:dropdown>
+ *             <j:item>Bar</j:item>
+ *             <j:item>Notifier</j:item>
+ *             <j:item>Tree</j:item>
+ *         </j:dropdown><br />
+ *     </j:panel>
+ *     <j:panel title="Blog" icon="images/accordion_icon.png">
+ *         <j:label>Choose Your favourite blog</j:label><br />
+ *         <j:radiobutton group="g1">overthinkings</j:radiobutton> 
+ *         <j:radiobutton group="g1">Rik on code </j:radiobutton> 
+ *         <j:radiobutton group="g1">Arnolds wor(l)ds</j:radiobutton>
+ *         <j:radiobutton group="g1">MikedeBoer.nl </j:radiobutton>
+ *         <j:radiobutton group="g1">All about Javascript </j:radiobutton>
+ *         <j:radiobutton group="g1">observing the dos</j:radiobutton><br />
+ *         <j:button>Vote</j:button><br />
+ *     </j:panel>
+ * </j:accordion>
+ * </code>
  *
- * @author      
+ * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       2.2
  */

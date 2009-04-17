@@ -27,11 +27,18 @@
  * jml elements. This element is used by other elements such as the 
  * toolbar and statusbar element to specify sections within those elements
  * which in turn can contain other jml elements.
+ * Remarks:
+ * This component has been used in accordion component to create its sections.
  *
  * @constructor
  *
  * @define bar, panel, menubar
  * @attribute {String} icon the url pointing to the icon image.
+ * @attribute {Boolean} collapsed   collapse panel on load, default is false
+ * Possible values:
+ *     true    panel is collapsed
+ *     false   panel is not collapsed
+ * @attribute {String} title   describes content in panel
  * @allowchild button
  * @allowchild {elements}, {anyjml}
  * @addnode elements
