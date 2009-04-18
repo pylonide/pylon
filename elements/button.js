@@ -45,7 +45,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var useExtraDiv;
     var _self = this;
 
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {
         "main": [["caption", "text()"]]
     };
@@ -528,13 +528,6 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.setProperty("caption", x.firstChild.nodeValue);
         else if (typeof this.caption == "undefined")
             this.$propHandlers["caption"].call(this, "");
-
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
 
         if (!inited) {
             jpf.JmlParser.parseChildren(this.$jml, null, this);

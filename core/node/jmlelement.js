@@ -327,10 +327,6 @@ jpf.JmlElement = function(){
                 this.enableEditing();
             #endif */
 
-            // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
-            this.inherit(jpf.MultiLang); /** @inherits jpf.MultiLang */
-            // #endif
-
             if (this.$loadSkin)
                 this.$loadSkin();
 
@@ -414,6 +410,14 @@ jpf.JmlElement = function(){
             value = a.nodeValue;
             name  = a.nodeName;
 
+            //#ifdef __WITH_MULTILANG
+            if (/^\$(.*)\$$/.test(value)) {
+                jpf.language.addElement(RegExp.$1, {
+                    jmlNode: this,
+                    prop : name
+                });
+            }else
+            //#endif
             //#ifdef __WITH_PROPERTY_BINDING
             if (value && jpf.dynPropMatch.test(value)) {
                 jpf.JmlParser.stateStack.push({
@@ -466,7 +470,7 @@ jpf.JmlElement = function(){
                   || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value);
         }
         //#endif
-
+        
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults tag in appsettings
         if (jpf.appsettings.defaults[this.tagName]) {

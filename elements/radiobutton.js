@@ -209,7 +209,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * @see baseclass.jmlnode.event.afterchange
  */
 jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {
         "main": [["label", "text()"]]
     };
@@ -538,13 +538,6 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInput = this.$getLayoutNode("main", "input", this.oExt);
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
         this.oIcon  = this.$getLayoutNode("main", "icon", this.oExt);
-
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
 
         this.enable();
     };

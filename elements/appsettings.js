@@ -255,9 +255,10 @@ jpf.appsettings = {
         this.skinset = x.getAttribute("skinset") || "default";
 
         //#ifdef __WITH_LANG_SUPPORT
-        this.language = x.getAttribute("undokeys");
-        if (this.language)
-            jpf.language.loadFrom(this.language);
+        this.language = x.getAttribute("language");
+        if (jpf.appsettings.language) {
+            setTimeout("jpf.language.loadFrom(jpf.appsettings.language);");
+        }
         //#endif
 
         //#ifdef __WITH_STORAGE

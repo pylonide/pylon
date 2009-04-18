@@ -74,7 +74,7 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$focussable = false;
     
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {
         "main": [["caption", "text()"]]
     };
@@ -126,16 +126,9 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
-            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
+            this.setProperty("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
-        
-        /* #ifdef __WITH_EDITMODE
-         if(this.editable)
-         #endif */
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
     };
 }).implement(
     //#ifdef __WITH_DATABINDING

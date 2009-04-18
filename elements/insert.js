@@ -115,8 +115,6 @@ jpf.insert = function(pHtmlNode, tagName){
             else 
                 this.setValue(x.firstChild.nodeValue);
         }
-        
-        //this.$makeEditable("main", this.oExt, this.$jml);
     };
 }
 

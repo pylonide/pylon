@@ -42,7 +42,7 @@
  * @since       0.8
  */
 jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"Page" : [["caption","@caption"]]};
     // #endif
     
@@ -178,13 +178,6 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
                 });");
             p.push(jpf.xmldb.htmlImport(oPage, this.oInt));
             l[i] = p[p.length - 1];
-            
-            /* #ifdef __WITH_EDITMODE
-            if(this.editable)
-            #endif */
-            // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.$makeEditable("page", p[i], pages[i].$jml);
-            //#endif
         }
         
         //xmldb.htmlImport(p, this.oInt);

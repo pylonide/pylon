@@ -85,7 +85,7 @@
  */
 
 jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["container","@invalidmsg"]]};
     // #endif
     
@@ -178,18 +178,6 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
-        
-        /* #ifdef __WITH_EDITMODE
-        if (this.editable && this.form.elements[x.getAttribute("for")]) {
-            this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
-                .$jml.getAttribute("invalidmsg");
-            
-            this.$makeEditable("main", this.oExt, 
-                this.form.elements[x.getAttribute("for")].$jml);
-            
-            this.show();
-        }
-        #endif */
     };
     
     this.$destroy = function(){

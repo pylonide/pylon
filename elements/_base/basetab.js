@@ -664,7 +664,7 @@ jpf.BaseTab = function(){
 
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
 
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
 
@@ -824,7 +824,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.canHaveChildren = 2;
     this.$focussable     = false;
 
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
 
@@ -1088,13 +1088,6 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + '); o.$setStyleClass(this, "", ["over"]);');
             this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
-
-            /* #ifdef __WITH_EDITMODE
-            if(this.parentNode.editable)
-            #endif */
-            // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.parentNode.$makeEditable("button", this.oButton, this.$jml);
-            // #endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);

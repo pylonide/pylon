@@ -123,7 +123,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.edit              = false;
     var _self              = this;
 
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["title","@title"]]};
     // #endif
 
@@ -865,11 +865,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         hordiff  = diff[0];
         verdiff  = diff[1];
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        if (this.hasFeature(__MULTILANG__))
-            this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
 
         /*var v;
         if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {

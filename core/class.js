@@ -420,6 +420,10 @@ jpf.Class = function(){
 
     // #endif
 
+    //#ifdef __WITH_MULTILANG
+    var isMultiLang = {};
+    //#endif
+
     /**
      * Sets the value of a property of this element.
      * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
@@ -432,6 +436,25 @@ jpf.Class = function(){
     this.setProperty = function(prop, value, reqValue, forceOnMe){
         if (reqValue && !value || !jpf || this.$ignoreSignals)
             return;
+
+        //#ifdef __WITH_MULTI_LANG
+        if (!forceOnMe) {
+            if (isMultiLang[prop]) {
+                jpf.language.removeElement(isMultiLang[prop][0], 
+                  isMultiLang[prop][1]);
+                
+                delete isMultiLang[prop];
+            }
+            
+            if (/^\$(.*)\$$/.test(value)) {
+                isMultiLang[prop] = [value, jpf.language.addElement(RegExp.$1, {
+                    jmlNode: this,
+                    prop : prop
+                })];
+                return;
+            }
+        }
+        //#endif
 
         var oldvalue = this[prop];
         if (String(this[prop]) !== String(value) || typeof value == "object") {
@@ -701,6 +724,13 @@ jpf.Class = function(){
             jpf.console.warn("You have destroyed a Jml Node without destroying\
                               it's children. Please be aware that if you don't\
                               maintain a reference, memory might leak");
+        }
+        //#endif
+
+        //#ifdef __WITH_MULTI_LANG
+        for (prop in isMultiLang) {
+            jpf.language.removeElement(isMultiLang[prop][0], 
+                isMultiLang[prop][1]);
         }
         //#endif
 

@@ -64,7 +64,7 @@
  * </code>
  */
 jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["label","text()"]]};
     // #endif
 
@@ -215,13 +215,6 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         if (!this.label && x.firstChild)
             this.setProperty("label", x.firstChild.nodeValue);
-
-        /* #ifdef __WITH_EDITMODE
-        if(this.editable)
-        #endif */
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
 
         if (this.$values === undefined)
             this.$values = [1, 0];

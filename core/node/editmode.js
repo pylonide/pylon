@@ -125,7 +125,8 @@ jpf.language = {
     loadFrom  : function(instruction) {
         jpf.setModel(instruction, {
             load: function(xmlNode){
-                if (!xmlNode || this.isLoaded) return;
+                if (!xmlNode || this.isLoaded) 
+                    return;
 
                 //#ifdef __DEBUG
                 if (!xmlNode) {
@@ -152,7 +153,7 @@ jpf.language = {
 
     parseSection: function(xmlNode, prefix){
         if (!prefix)
-            prefix = "";
+            prefix = xmlNode.getAttribute("id") || "";
 
         if (xmlNode.tagName == "key") {
             prefix += "." + xmlNode.getAttribute("id");
@@ -177,14 +178,22 @@ jpf.language = {
      */
     update: function(key, value){
         this.words[key] = value;
-        if (!this.elements[key])
+
+        var els;
+        if (!(els = this.elements[key]))
             return;
 
-        for (var i = 0; i < this.elements[key].length; i++) {
-            if (this.elements[key][i].htmlNode.nodeType == 1)
-                this.elements[key][i].htmlNode.innerHTML = value;
-            else
-                this.elements[key][i].htmlNode.nodeValue = value;
+        for (var item, i = 0; i < els.length; i++) {
+            item = els[i];
+            if (item.prop) {
+                item.jmlNode.setProperty(item.prop, value, null, true);
+            }
+            else {
+                if (item.htmlNode.nodeType == 1)
+                    item.htmlNode.innerHTML = value;
+                else
+                    item.htmlNode.nodeValue = value;
+            }
         }
     },
 
@@ -261,7 +270,7 @@ jpf.language = {
     removeElement: function(key, id){
         this.elements[key].removeIndex(id);
     },
-
+    
     getWord: function(key){
         return this.words[key];
     }
@@ -447,77 +456,5 @@ function EditMode(){
             EditServer.register(data);
         }
     }
-}
-//setTimeout('alert("Switch to");
-//    value1 = jpf.language.getWordListXml();
-//    jpf.language.setWordListXml(jpf.language.getWordListXml(true), "sub");', 3000);
-//setTimeout('alert("Switch back");
-//    jpf.language.setWordListXml(value1, "sub");', 6000);
-*/
-// #endif
-
-// #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
-
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have multilingual support.
- *
- * @see core.layout
- * @constructor
- * @baseclass
- * @author      Ruben Daniels
- * @version     %I%, %G%
- * @since       0.5
- * @todo Make this work together with appsettings.defaults and property management
- */
-jpf.MultiLang = function(){
-    this.$regbase = this.$regbase | __MULTILANG__;
-
-    var reggedItems = [];
-    this.$makeEditable = function(type, htmlNode, jmlNode){
-        if (jmlNode.prefix != "j")
-            return;//using a non-xml format is unsupported
-
-        var config = this.editableParts[type];
-        for (var i = 0; i < config.length; i++) {
-            var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
-            if (!subNode)
-                continue;
-
-            var xmlNode = config
-                ? jpf.xmldb.selectSingleNode(config[i][1], jmlNode)
-                : jpf.xmldb.getTextNode(jmlNode);
-
-            if (!xmlNode)
-                continue;//xmlNode = jpf.xmldb.createNodeFromXpath(jmlNode, config[i][1]);
-
-            var key = xmlNode.nodeValue.match(/^\$(.*)\$$/); // is this not conflicting?
-            if (key) {
-                subNode = subNode.nodeType == 1
-                    ? subNode
-                    : (subNode.nodeType == 3 || subNode.nodeType == 4
-                        ? subNode.parentNode
-                        : subNode); //subNode.ownerElement || subNode.selectSinglesubNode("..")
-                reggedItems.push([key[1], jpf.language.addElement(key[1], {
-                    htmlNode: subNode
-                })]);
-            }
-        }
-    };
-
-    this.$removeEditable = function(){
-        for (var i = 0; i < reggedItems.length; i++) {
-            jpf.language.removeElement(reggedItems[i][0], reggedItems[i][1]);
-        }
-
-        reggedItems = [];
-    };
-
-    this.$jmlDestroyers.push(function(){
-        this.$removeEditable();
-    });
-};
-
-//setTimeout('alert("Switch");
-//    jpf.language.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
-
+}*/
 // #endif

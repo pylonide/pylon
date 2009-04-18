@@ -76,7 +76,7 @@
  */
 
 jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
+    // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
@@ -168,13 +168,6 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
-        
-        /* #ifdef __WITH_EDITMODE
-        if(this.editable)
-        #endif */
-        // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.$makeEditable("main", this.oExt, this.$jml);
-        // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);
     };
