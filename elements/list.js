@@ -221,6 +221,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value) {
             this.delayedselect = false;
             this.addEventListener("xmlupdate", $xmlUpdate);
+            this.addEventListener("afterload", $xmlUpdate);
             //this.addEventListener("afterrename", $afterRenameMore);
             //this.addEventListener("beforeselect", $beforeSelect);
             
@@ -234,13 +235,14 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             this.removeEventListener("xmlupdate", $xmlUpdate);
+            this.removeEventListener("afterload", $xmlUpdate);
             //this.removeEventListener("afterrename", $afterRenameMore);
             //this.removeEventListener("beforeselect", $beforeSelect);
         }
     };
     
     function $xmlUpdate(e){
-        if ("insert|add|synchronize|move".indexOf(e.action) > -1)
+        if (!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1)
             this.oInt.appendChild(this.moreItem);
     }
     
