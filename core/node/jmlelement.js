@@ -877,7 +877,6 @@ jpf.JmlElement.propHandlers = {
         //For child containers we only disable its children
         if (this.canHaveChildren) {
             //@todo Fix focus here first.. else it will jump whilst looping
-
             value = this.disabled = jpf.isTrue(value);
 
             function loopChildren(nodes){
@@ -900,7 +899,7 @@ jpf.JmlElement.propHandlers = {
         }
 
         if (value == -1) {
-            value = true;
+            //value = true;
         }
         else if (typeof this.$disabled == "boolean") {
             if (value === null) {
@@ -913,7 +912,7 @@ jpf.JmlElement.propHandlers = {
             }
         }
 
-        if (jpf.isTrue(value)) {
+        if (jpf.isTrue(value) || value == -1) {
             this.disabled = false;
             if (jpf.window.focussed == this) {
                 jpf.window.moveNext(true); //@todo should not include window
@@ -932,7 +931,7 @@ jpf.JmlElement.propHandlers = {
             this.dispatchEvent("xforms-readonly");
             //#endif
 
-            this.disabled = true;
+            this.disabled = value;
         }
         else {
             if (this.hasFeature(__DATABINDING__) && jpf.appsettings.autoDisable
