@@ -319,12 +319,17 @@ jpf.namespace("draw", {
     // Style parsing
     //----------------------------------------------------------------------
      
-    parseStyle : function( style, str, err ) {
+    parseStyle : function( styledef, stylestr, err ) {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
+        var styleovl; 
         // first we parse our style string
-        if ( (o = this.parseJSS(str,err)) === null ) return null;
-        jpf.alert_r(o);
+        if ( (styleovl = this.parseJSS(stylestr,err)) === null ) return null;
+        
+        jpf.alert_r(styleovl);
+        
         var _self = this;
+
+        // initialise transition table
         if(!(t=_self.stateTransition)[0x40001]){
             s = {};
             for(v1 in t)for(i = 0;i<64;i++)s[v1|i]=t[v1]|i;
@@ -375,6 +380,8 @@ jpf.namespace("draw", {
             }
         }
         
+        // we need to integrate style into o.
+        
         function stylecopy(root, d, s, noinit){
             if(!s)return;
             var k,v,t,n,m,w,p,h,q,u,o,x,y,z,r,g;
@@ -387,12 +394,19 @@ jpf.namespace("draw", {
                     d[k] = _self.isDynamic(v)?_self.parseJSS(v):v;
             }
             if(t=s.inherit){
-                stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t], 1);
+                stylecopy( root, d, root['$'+t] || root[t] || _self['$'+t], 1);
             }
 		}
-		
-        stylecopy( style, o, style, 1 );
         
+        // we should merge the styledef and styleovl into 'o'
+        //stylecopy( style, o, style, 1 );
+        for(k in styledef){
+            if( typeof(v=styledef[k]) == 'object' && v!==null ){
+                
+            }
+        }
+
+
 		// inventory classes and states we have styles for
 		p=[];
 		for(k in o)if( typeof(v=o[k])=='object' && 
