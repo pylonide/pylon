@@ -455,8 +455,9 @@ jpf.BaseList = function(){
         if (!htmlNode) return;
 
         var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling
-            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
+        var nNode      = this.getNextTraverse(xmlNode);
+        var beforeNode = nNode
+            ? jpf.xmldb.findHTMLNode(nNode, this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
