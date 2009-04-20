@@ -906,8 +906,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
-        this.$fixItem(xmlNode.parentNode,
-            jpf.xmldb.findHTMLNode(xmlNode.parentNode, this));
+        
+        var tParent = this.getTraverseParent(xmlNode);
+        this.$fixItem(tParent, jpf.xmldb.findHTMLNode(tParent, this));
         if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
             this.$fixItem(this.getNextTraverse(xmlNode, true),
                 jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
