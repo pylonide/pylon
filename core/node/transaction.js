@@ -125,7 +125,7 @@ jpf.Transaction = function(){
      * @bug  when a commit is cancelled using the onbeforecommit event, the 
      * state of the element becomes undefined.
      */
-    this.commit = function(){
+    this.commit = function(repeat){
         if (!inTransaction) 
             return false;
 
@@ -134,6 +134,9 @@ jpf.Transaction = function(){
         
         var returnValue = true;
         if (!this.$at.undolength) {
+            if (repeat)
+                return false;
+            
             this.$at.purge();
             inTransaction = false;
             

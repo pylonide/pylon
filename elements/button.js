@@ -868,7 +868,7 @@ jpf.button.actions = {
 
         if (node.autoshow)
             node.autoshow = -1;
-        if (node.commit())
+        if (node.commit(true))
             node.begin("update");
     },
     //#endif
