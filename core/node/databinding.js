@@ -186,7 +186,8 @@ jpf.DataBinding = function(){
     this.$checkLoadQueue = function(){
         // Load from queued load request
         if (loadqueue) {
-            if (this.load(loadqueue[0], loadqueue[1]) != loadqueue)
+            var q = this.load(loadqueue[0], loadqueue[1]);
+            if (!q || q.dataType != "array" || q != loadqueue)
                 loadqueue = null;
         }
     };
@@ -685,6 +686,9 @@ jpf.DataBinding = function(){
                         return false;
 
                     xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
+                    if (!xmlNode)
+                        return false;
+                    
                     xpath = (this.dataParent.xpath || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     shouldLoad = true;
@@ -1331,8 +1335,9 @@ jpf.DataBinding = function(){
 
         // If control hasn't loaded databinding yet, queue the call
         if ((!this.bindingRules && this.$jml
-            && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
-            && !this.traverse) || (this.$canLoadData && !this.$canLoadData())) {
+            && (!this.smartBinding && !this.traverse 
+            || jpf.JmlParser.stackHasBindings(this.uniqueId))) 
+            || (this.$canLoadData && !this.$canLoadData())) {
             //#ifdef __DEBUG
             if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
                 jpf.console.warn("Could not load data yet in " + this.tagName
@@ -1930,8 +1935,11 @@ jpf.DataBinding = function(){
             this.smartBinding.deinitialize(this)
 
         if (jpf.isParsing) {
-            if (forceInit === true)
-                return (this.smartBinding = sb.initialize(this));
+            if (forceInit === true) {
+                this.smartBinding = sb.initialize(this);
+                this.$checkLoadQueue();
+                return this.smartBinding;
+            }
 
             return jpf.JmlParser.addToSbStack(this.uniqueId, sb);
         }
