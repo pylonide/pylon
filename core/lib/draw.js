@@ -323,7 +323,7 @@ jpf.namespace("draw", {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         // first we parse our style string
         if ( (o = this.parseJSS(str,err)) === null ) return null;
-        jpf.alert_r(o.axis);
+        jpf.alert_r(o);
         var _self = this;
         if(!(t=_self.stateTransition)[0x40001]){
             s = {};
@@ -378,6 +378,7 @@ jpf.namespace("draw", {
         function stylecopy(root, d, s, noinit){
             if(!s)return;
             var k,v,t,n,m,w,p,h,q,u,o,x,y,z,r,g;
+			
             for(k in s){
                 if( typeof(v=s[k]) == 'object' && v!==null ){
                     if(typeof(n=d[k]) !='object') n = d[k] = {};
@@ -388,117 +389,116 @@ jpf.namespace("draw", {
             if(t=s.inherit){
                 stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t], 1);
             }
-
-            if(!( d.isshape || d.isfont) ){
-               
-                // inventory classes and states we have styles for
-                p=[];
-                for(k in d)if( typeof(v=d[k])=='object' && 
-                    !(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
-                    if(n && typeof(t=d[n[0]])=='object'){
-                        v.$base=n[0],v.$class=n[1];
-                        if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
-                        w[w.length] = (n[1].split(':'))[0];
-                    }else if(m && typeof(t=d[m[0]])=='object' && m[0].indexOf('.')==-1){
-                        v.$base=m[0],v.$state=m[1];
-                        if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
-                        w[w.length] = m[1];                    
-                    }
-                }
-                // copy base states to class states
-                for(k=p.length-1;k>=0;--k){
-                    if( (v = p[k]).$classmap  && !v.nocopy) {
-                        // lets copy our states to the other classes
-                        m = v.$statemap, n = v.$classmap, w=v.$base;
-                        for(t=m.length-1;t>=0;--t){
-                            for(u=n.length-1;u>=0;--u){
-                                if(!d[o = w+'.'+n[u]+':'+m[t]]){
-                                    objinherit( o=d[o]={}, d[w+':'+m[t]] ); 
-                                    o.$base = w, o.$class = n[u], o.$state = m[t];
-                                }
-                            }
-                        }
-                    }
-                }
-                // do all inheritance of classes and states
-                for(k in d)if( typeof(v=d[k])=='object' && v && (o=v.$base) ){
-                    m = v.$state,n = v.$class;
-                    if(!v.nobase){
-                        while(m=_self.$stateInherit[m]){
-                            if( (n && (t=d[o+'.'+n+(m==1?'':':'+m)])) || 
-                                (t=d[o+(m==1?'':':'+m)]))
-                                objinherit(v, t);
-                        }
-                    }
-                    if((t = d[o]) && n)objinherit(v,t);
-                    // lets see if we are pointless
-                    if(!t.nomerge){
-                        if(!(n=t.$merge))n=t.$merge={};
-                        if(!n[m=objtohash(v)])n[m] = v;
-                        else v.$merged = n[m];
-                    }
-                    // 
-                }
-                // hurrah now lets go and create the hashmaps CODECOMPLEXITY++
-                n = _self.stateBit, q = _self.$stateFallback;
-                for(k in d)if( typeof(v=d[k])=='object' && v && (v.isshape||v.isfont) ){
-                    
-                    var shadow = d[k+'.shadow'];
-                    if(v.$isbase){
-                        w = v.$statehash = {}, y = v.$statelist = [],
-                        r = v.$storelist = [], h = v.$speedhash={};
-                        delete v.$merge;delete v.$merged;
-                        
-                        m = v.$classmap || [], u = v.$base;
-                        m.unshift(null); // add 'normal' state
-                        for(i=m.length-1;i>=0;--i){
-                            t=u+((t=m[i])?'.'+t:'');
-                            for(p in n){
-                                o = p;
-                                while(!(x = d[ g=(o!=0?t+':'+o:t) ]))
-                                    if(!(o=q[o]))break;
-                                    
-                                if(x && (x.$class!='shadow' || x.$state)){ // it has a special rendertarget
-                                    while(x.$merged) x = x.$merged;
-                                    if(!x.$isbase){
-                                        if(!x.$inlist){
-                                            g = x.$store = [];
-                                            x.$inlist = 1;
-                                            x.join = o!=0?t+':'+o:t;
-                                            if(x.$class) y.unshift(x),r.unshift(g) ;
-                                            else y[y.length]=x, r[r.length]=g;
-                                        }
-                                        if(!(o = w[z=(n[p]|i)] = x.$store).base &&
-                                            x.overlay)o.base = (m[i]?d[t]:0) || {};
-                                        if(z&0x36EC0000)o.trans=x.trans=1;
-                                        h[z] = x.speed || 1;
-                                    }else if(shadow)w[n[p]|i] = {};
-                                }
-                            }
-                        }
-                        if(shadow){// if we have a shadow class so we need to shuffle some stuff around
-                            g = v.$store = [];
-                            // add our shadow to all the classes to be a baseclass
-                            for(x = 0, p = r.length; x<p; x++)
-                                r[x].base = ((m=y[x].$state)?((m=d[k+'.shadow:'+m])?m.$store:0):0)||{} 
-                            for(x in w)if(!w[x].sort)w[x] = g;
-
-                            r.unshift(g),y.unshift(v),g.base = {},w[0] = g;
-                            v.$shadow = shadow;
-                            shadow.$statelist = v.$statelist,shadow.$statehash = v.$statehash;
-                            shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
-                        }
-                        // lets dump this shite
-                        
-                    }
-                    // remove if we aint active
-                    if( !styleinit(v) ) delete d[k];
-                    
-                }
-            }
-        }
+		}
+		
         stylecopy( style, o, style, 1 );
         
+		// inventory classes and states we have styles for
+		p=[];
+		for(k in o)if( typeof(v=o[k])=='object' && 
+			!(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
+			if(n && typeof(t=o[n[0]])=='object'){
+				v.$base=n[0],v.$class=n[1];
+				if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
+				w[w.length] = (n[1].split(':'))[0];
+			}else if(m && typeof(t=o[m[0]])=='object' && m[0].indexOf('.')==-1){
+				v.$base=m[0],v.$state=m[1];
+				if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
+				w[w.length] = m[1];                    
+			}
+		}
+		// copy base states to class states
+		for(k=p.length-1;k>=0;--k){
+			if( (v = p[k]).$classmap  && !v.nocopy) {
+				// lets copy our states to the other classes
+				m = v.$statemap, n = v.$classmap, w=v.$base;
+				for(t=m.length-1;t>=0;--t){
+					for(u=n.length-1;u>=0;--u){
+						if(!o[d = w+'.'+n[u]+':'+m[t]]){
+							objinherit( d=o[d]={}, o[w+':'+m[t]] ); 
+							d.$base = w, d.$class = n[u], d.$state = m[t];
+						}
+					}
+				}
+			}
+		}
+		// do all inheritance of classes and states
+		for(k in o)if( typeof(v=o[k])=='object' && v && (d=v.$base) ){
+			m = v.$state,n = v.$class;
+			if(!v.nobase){
+				while(m=_self.$stateInherit[m]){
+					if( (n && (t=o[d+'.'+n+(m==1?'':':'+m)])) || 
+						(t=o[d+(m==1?'':':'+m)]))
+						objinherit(v, t);
+				}
+			}
+			if((t = o[d]) && n)objinherit(v,t);
+			// lets see if we are pointless
+			if(!t.nomerge){
+				if(!(n=t.$merge))n=t.$merge={};
+				if(!n[m=objtohash(v)])n[m] = v;
+				else v.$merged = n[m];
+			}
+			// 
+		}
+		// hurrah now lets go and create the hashmaps CODECOMPLEXITY++
+		n = _self.stateBit, q = _self.$stateFallback;
+		for(k in o)if( typeof(v=o[k])=='object' && v && (v.isshape||v.isfont) ){
+			
+			var shadow = o[k+'.shadow'];
+			if(v.$isbase){
+				w = v.$statehash = {}, y = v.$statelist = [],
+				r = v.$storelist = [], h = v.$speedhash={};
+				delete v.$merge;delete v.$merged;
+				
+				m = v.$classmap || [], u = v.$base;
+				m.unshift(null); // add 'normal' state
+				for(i=m.length-1;i>=0;--i){
+					t=u+((t=m[i])?'.'+t:'');
+					for(p in n){
+						d = p;
+						while(!(x = o[ g=(d!=0?t+':'+d:t) ]))
+							if(!(d=q[d]))break;
+							
+						if(x && (x.$class!='shadow' || x.$state)){ // it has a special rendertarget
+							while(x.$merged) x = x.$merged;
+							if(!x.$isbase){
+								if(!x.$inlist){
+									g = x.$store = [];
+									x.$inlist = 1;
+									x.join = d!=0?t+':'+d:t;
+									if(x.$class) y.unshift(x),r.unshift(g) ;
+									else y[y.length]=x, r[r.length]=g;
+								}
+								if(!(d = w[z=(n[p]|i)] = x.$store).base &&
+									x.overlay)d.base = (m[i]?o[t]:0) || {};
+								if(z&0x36EC0000)d.trans=x.trans=1;
+								h[z] = x.speed || 1;
+							}else if(shadow)w[n[p]|i] = {};
+						}
+					}
+				}
+				if(shadow){// if we have a shadow class so we need to shuffle some stuff around
+					g = v.$store = [];
+					// add our shadow to all the classes to be a baseclass
+					for(x = 0, p = r.length; x<p; x++)
+						r[x].base = ((m=y[x].$state)?((m=o[k+'.shadow:'+m])?m.$store:0):0)||{} 
+					for(x in w)if(!w[x].sort)w[x] = g;
+
+					r.unshift(g),y.unshift(v),g.base = {},w[0] = g;
+					v.$shadow = shadow;
+					shadow.$statelist = v.$statelist,shadow.$statehash = v.$statehash;
+					shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
+				}
+				// lets dump this shite
+				
+			}
+			// remove if we aint active
+			if( !styleinit(v) ) delete o[k];
+			
+		}
+
+
         // for each base object, we need to create the subobject maps and state luts
         // _statelut[state]->arrays
         // _statelist[] all states except the base in order of layering
