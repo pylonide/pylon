@@ -3391,8 +3391,10 @@ jpf.MultiselectBinding = function(){
 
         var prefix = jpf.findPrefix(x, jpf.ns.jml);
 
-        x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-            + prefix + "='" + jpf.ns.jpf + "'");
+        if (jpf.isIE) {
+            x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
+                + prefix + "='" + jpf.ns.jpf + "'");
+        }
     
         //@todo think about using setProperty for this, for consistency (at the price of speed)
         this.icon      = "@icon";
