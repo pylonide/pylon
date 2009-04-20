@@ -31,6 +31,7 @@
  *     normal    
  *     easein    
  *     easeout   
+ *     none      animation is disabled
  * 
  * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
  * 
@@ -48,6 +49,7 @@
  * Possible values:
  *     true    collapses all panels
  *     false   any panel cannot be collapsed even if collapsed="true" is set on it
+ * 
  * 
  * @inherits jpf.Presentation
  * 
@@ -145,7 +147,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.canHaveChildren = true;
     this.$focussable     = false;
 
-    this.animType       = jpf.tween.NORMAL;
+    this.animType1      = jpf.tween.NORMAL;
+    this.animType2      = jpf.tween.NORMAL;
     this.animDelay      = 10;
     this.hoverDelay     = 500;
     this.multiCollapse  = true;
@@ -171,6 +174,12 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     var lastOpened = [];
     var hoverTimer = null;
+    
+    /**
+     * when "multiCollapse" is false, only one panel with collapsed="true"
+     * can be opened
+     */
+    var startCollapsed = 0;
 
     this.$booleanProperties["multicollapse"]  = true;
     this.$booleanProperties["startcollapsed"] = true;
@@ -205,19 +214,14 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     });
     
     this.$propHandlers["animtype"] = function(value) {
-        switch(value) {
-            case "normal":
-                this.animType = jpf.tween.NORMAL;
-                break;
-            case "easein":
-                this.animaType = jpf.tween.EASEIN;
-                break;
-            case "easeout":
-                this.animType = jpf.tween.EASEOUT;
-                break;
-        }
+        value = value.split(" ");
+        
+        if (value[0])
+            this.animType1 = this.$chooseAnimation(value[0]);
+        if (value[1])
+            this.animType2 = this.$chooseAnimation(value[1]);
     };
-    
+
     this.$propHandlers["animdelay"] = function(value) {
         this.animDelay = parseInt(value);
     };
@@ -252,7 +256,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         if (panels[id].opened) 
-            this.slideUp(e);
+            _self.slideUp(e);
         else
             this.slideDown(e);
     };
@@ -266,6 +270,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      *     {String} unique name of title bar
      */
     this.slideDown = function(e) {
+        
         e = e || event;
         var target = e.target || e.srcElement;
         var id = target ? target.id : e;
@@ -300,7 +305,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             to       : _self.$dir == "vertical"
                            ? panel.oBody.scrollHeight
                            : panel.oBody.scrollWidth,
-            anim     : _self.animType,
+            anim     : _self.animType1,
             interval : _self.animDelay,
             onfinish : function() {
                 _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
@@ -335,26 +340,39 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
 
         _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
 
-        jpf.tween.single(panel.oBody, {
-            steps    : 30,
-            type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-            from     : _self.$dir == "vertical"
-                       ? panel.oBody.scrollHeight
-                       : panel.oBody.scrollWidth,
-            to       : 0,
-            anim     : _self.animType,
-            interval : _self.animDelay,
-            onfinish : function() {
-                _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
-                panel.oBody.style.display = "none";
-
-                if (_self.$dir == "horizontal") {
-                    panel.oBody.style.width = "auto";
-                }
-
-                panels[id].opened = false;
+        if (_self.animType2 == "none") {
+            _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
+            panel.oBody.style.display = "none";
+            
+            if (_self.$dir == "horizontal") {
+                panel.oBody.style.width = "auto";
             }
-        });
+    
+            panels[id].opened = false;
+        }
+        else {
+            jpf.tween.single(panel.oBody, {
+                steps    : 30,
+                type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                from     : _self.$dir == "vertical"
+                               ? panel.oBody.scrollHeight
+                               : panel.oBody.scrollWidth,
+                to       : 0,
+                anim     : _self.animType2,
+                interval : _self.animDelay,
+                onfinish : function() {
+                    _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
+                    panel.oBody.style.display = "none";
+    
+                    if (_self.$dir == "horizontal") {
+                        panel.oBody.style.width = "auto";
+                    }
+    
+                    panels[id].opened = false;
+                }
+            });
+        }
+        
 
         return false;
     };
@@ -376,6 +394,24 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         
         return null;
+    };
+    
+    /**
+     * Returns animation type depends on 
+     * 
+     * @param {Object} type
+     */
+    this.$chooseAnimation = function(type) {
+        switch(type) {
+            case "normal":
+                return jpf.tween.NORMAL;
+            case "easein":
+                return jpf.tween.EASEIN;
+            case "easeout":
+                return jpf.tween.EASEOUT;
+            case "none":
+                return "none";
+        }
     };
 
     /**** Init ****/
@@ -410,6 +446,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 panel.loadJml(node, this);
                 
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
+                var oIcon = this.$getLayoutNode("panel", "icon", panel.oExt);
+                
                 jpf.setUniqueHtmlId(oTitle);
                 
                 if (this.$dir == "horizontal") {
@@ -426,7 +464,13 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     oTitle.onmousedown = function(e) {
                         e = e || event;
                         jpf.lookup(_self.uniqueId).slideToggle(e);
-                    }
+                    };
+                    
+                    oIcon.onmousedown = function(e) {
+                        e = e || event;
+                        var target = e.target || e.srcElement;
+                        jpf.lookup(_self.uniqueId).slideToggle(target.parentNode.id);
+                    };
                 }
                 else if (this.expand == "hover") {
                     oTitle.onmouseover = function(e) {
@@ -439,7 +483,20 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                             jpf.lookup(_self.uniqueId).slideToggle(id);
                             clearInterval(hoverTimer);
                         }, _self.hoverDelay);
-                    }
+                    };
+                    /*oIcon.onmouseover = function(e) {
+                        e = e || event;
+                        
+                        var target = e.target || e.srcElement;
+                        var id = target.parentNode.id;
+
+                        clearInterval(hoverTimer2);
+                        hoverTimer2 = setInterval(function() {
+                            jpf.lookup(_self.uniqueId).slideToggle(id);
+                            clearInterval(hoverTimer2);
+                        }, _self.hoverDelay);
+                        clearInterval(hoverTimer2);
+                    };*/
                 }
 
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
@@ -452,11 +509,16 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     oBody  : oBody
                 };
 
-                if ((opened || this.startcollapsed) && this.multiCollapse) {
+                if ((opened || this.startcollapsed) && (this.multiCollapse || startCollapsed == 0)) {
                     this.slideDown(oTitle.id);
+                    startCollapsed++;
                 }
             }
         }
+        this.oEnding = this.$getExternal("ending");
+        var oEnding = this.$getLayoutNode("ending", "container", this.oEnding);
+
+        this.oInt.appendChild(oEnding);
     };
 
     this.$destroy = function() {
