@@ -129,6 +129,9 @@ jpf.Transaction = function(){
         if (!inTransaction) 
             return false;
 
+        if (!this.$validgroup && this.validgroup)
+            this.$validgroup = self[this.validgroup];
+
         if (this.$validgroup && !this.$validgroup.isValid())
             return false;
         
