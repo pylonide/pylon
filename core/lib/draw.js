@@ -71,7 +71,7 @@ jpf.namespace("draw", {
         var s = ["var m00=",m[0],",m01=",m[1],",m02=",m[2], ",m03=",m[3],
                     ",m10=",m[4],",m11=",m[5],",m12=",m[6], ",m13=",m[7],
                     ",m20=",m[8],",m21=",m[9],",m22=",m[10],",m23=",m[11],";"];
-        if(l.style.persp<0){ // we have ortho perspective
+        if(l.$style.persp<0){ // we have ortho perspective
             this.ortho = 1;
             s.push("var persp = __max(dw,dh) / l.style.persp/-v.tz, perspd = persp / ",l.ds,";");
         } else {
@@ -319,14 +319,12 @@ jpf.namespace("draw", {
     // Style parsing
     //----------------------------------------------------------------------
      
-    parseStyle : function( styledef, stylestr, err ) {
+    parseStyle : function( styledef, styleovl, err ) {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
-        var styleovl; 
-        // first we parse our style string
-        if ( (styleovl = this.parseJSS(stylestr,err)) === null ) return null;
+        var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
         
-        jpf.alert_r(styleovl);
-        
+        var styleovls = [], novls; 
+       
         var _self = this;
 
         // initialise transition table
@@ -336,76 +334,30 @@ jpf.namespace("draw", {
             _self.stateTransition = s;
             // alert( (n[p]|i).toString(16) );
         }
-        
-        function styleinit(d){
-            if(d.line === null || d.line=='null') delete d.line;
-            if(d.fill === null || d.fill=='null') delete d.fill;
-            if(d.family === null || d.family=='null') delete d.family;
 
-            if( (d.isshape && d.fill === undefined && 
-                d.line === undefined && d.tile === undefined) || 
-                (d.isfont && d.family === undefined) ) return false; 
-            if(d.isshape){
-                d.alpha = d.alpha!==undefined ? d.alpha : 1;
-                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
-                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
-                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
-                d.angle = d.angle!==undefined ? d.angle : 0;
-                d.weight = d.weight!==undefined ? d.weight : 1
-            }
-            return true;
-        }
-        
-        function objtohash(a){
-            // this spits out an object as a comparable hash
-           var k,v,n=[],s=[],i;
-           for(k in a)if(k.indexOf('$')==-1)n[n.length]=k;
-           n.sort();
-           for(i = n.length-1;i>=0;i--){
-              s[s.length] = k = n[i];
-              if( (k=typeof(v = a[k])) == 'object') s[s.length] = objtohash(v);
-              else if(k=='array') s[s.length] = v.join('');
-              else s[s.length] = v;//String(v);
-           }
-           return s.join('');
-        }
-        
-        function objinherit(d, s){
-            var k,v,n;
-            for(k in s)if(k.indexOf('$')==-1){
-                if( typeof(v=s[k]) == 'object' && v!==null ){
-                    if(typeof(n=d[k]) !='object') n = d[k] = {};
-                    objinherit(n, v);
-                }else if(d[k] === undefined)d[k] = v;
-            }
+        // parse styles
+        if(!styleovl.item){// its an array, make an overlays array
+            styleovls.push(this.parseJSS(styleovl,err));novls = 1;
+        } else for(i = 0, novls = styleovl.length; i < novls; i++){
+            styleovls.push(this.parseJSS(styleovl[i],err));
         }
         
         // we need to integrate style into o.
-        
-        function stylecopy(root, d, s, noinit){
-            if(!s)return;
-            var k,v,t,n,m,w,p,h,q,u,o,x,y,z,r,g;
-			
-            for(k in s){
-                if( typeof(v=s[k]) == 'object' && v!==null ){
-                    if(typeof(n=d[k]) !='object') n = d[k] = {};
-                    stylecopy(root, n, v);
-                }else if(d[k] === undefined)
-                    d[k] = _self.isDynamic(v)?_self.parseJSS(v):v;
-            }
-            if(t=s.inherit){
-                stylecopy( root, d, root['$'+t] || root[t] || _self['$'+t], 1);
-            }
+        function stylecopy(dest, def, key){
+            // copy into the destination 
+            var t,k,v,i,ovl;
+            for(k in def)if(dest[k] === undefined)
+                    dest[k] = _self.isDynamic(v=def[k])?_self.parseJSS(v):v;
+            if(t=def.inherit) stylecopy( dest, styledef[t]||_self['$'+t], t );
+            for(i = 0;i<novls;i++)
+                if(ovl = styleovls[i][key])for(k in ovl)dest[k] = ovl[k];
 		}
-        
-        // we should merge the styledef and styleovl into 'o'
-        //stylecopy( style, o, style, 1 );
+
         for(k in styledef){
-            if( typeof(v=styledef[k]) == 'object' && v!==null ){
-                
+            if( typeof(v=styledef[k]) == 'object' && v!==null && v['$']==1){
+                stylecopy(o[k] = {}, v, k);
             }
         }
-
 
 		// inventory classes and states we have styles for
 		p=[];
@@ -421,6 +373,17 @@ jpf.namespace("draw", {
 				w[w.length] = m[1];                    
 			}
 		}
+
+        function objinherit(d, s){
+            var k,v,n;
+            for(k in s)if(k.indexOf('$')==-1){
+                if( typeof(v=s[k]) == 'object' && v!==null ){
+                    if(typeof(n=d[k]) !='object') n = d[k] = {};
+                    objinherit(n, v);
+                }else if(d[k] === undefined)d[k] = v;
+            }
+        }
+
 		// copy base states to class states
 		for(k=p.length-1;k>=0;--k){
 			if( (v = p[k]).$classmap  && !v.nocopy) {
@@ -436,6 +399,21 @@ jpf.namespace("draw", {
 				}
 			}
 		}
+        
+        function objtohash(a){
+            // this spits out an object as a comparable hash
+           var k,v,n=[],s=[],i;
+           for(k in a)if(k.indexOf('$')==-1)n[n.length]=k;
+           n.sort();
+           for(i = n.length-1;i>=0;i--){
+              s[s.length] = k = n[i];
+              if( (k=typeof(v = a[k])) == 'object') s[s.length] = objtohash(v);
+              else if(k=='array') s[s.length] = v.join('');
+              else s[s.length] = v;//String(v);
+           }
+           return s.join('');
+        }        
+        
 		// do all inheritance of classes and states
 		for(k in o)if( typeof(v=o[k])=='object' && v && (d=v.$base) ){
 			m = v.$state,n = v.$class;
@@ -455,6 +433,26 @@ jpf.namespace("draw", {
 			}
 			// 
 		}
+ 
+        function styleinit(d){
+            if(d.line === null || d.line=='null') delete d.line;
+            if(d.fill === null || d.fill=='null') delete d.fill;
+            if(d.family === null || d.family=='null') delete d.family;
+
+            if( (d.isshape && d.fill === undefined && 
+                d.line === undefined && d.tile === undefined) || 
+                (d.isfont && d.family === undefined) ) return false; 
+            if(d.isshape){
+                d.alpha = d.alpha!==undefined ? d.alpha : 1;
+                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
+                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
+                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
+                d.angle = d.angle!==undefined ? d.angle : 0;
+                d.weight = d.weight!==undefined ? d.weight : 1
+            }
+            return true;
+        }       
+        
 		// hurrah now lets go and create the hashmaps CODECOMPLEXITY++
 		n = _self.stateBit, q = _self.$stateFallback;
 		for(k in o)if( typeof(v=o[k])=='object' && v && (v.isshape||v.isfont) ){

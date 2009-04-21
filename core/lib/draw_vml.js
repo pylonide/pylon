@@ -54,7 +54,6 @@ jpf.namespace("draw.vml",{
         var tag = "<div style='position:absolute;left:"+l.left+
                   ";top:"+l.top+";width:"+l.width+";height:"+l.height+
                   ";overflow:hidden;'/>";
- 
         l.ds = 4;
         l.dx = 0;
         l.dy = 0;

@@ -79,7 +79,7 @@ jpf.namespace("draw.canvas",{
     },    
     clear : function(){
         var l = this.l;
-        var s = ["if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
+        var s = ["_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
 /*        if ( l.dx != 0 )s.push(
             "_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
             "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
