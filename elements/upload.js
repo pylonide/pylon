@@ -99,6 +99,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {Boolean} target     the url the form is posted to.
      * @attribute {Number}  !progress  the position of the progressbar indicating the position in the upload process.
      * @attribute {Boolean} !uploading whether this upload element is uploading.
+     * @attribute {String}  [rel]      the JML element the file input should retrieve its dimensions from
      * Example:
      * When the skin doesn't have a progressbar you can use property binding to
      * update a seperate or central progressbar.
@@ -107,7 +108,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
      *  <j:progressbar value="{upExample.progress}" />
      * </code>
      */
-    this.$supportedProperties.push("value", "target", "progress", "uploading");
+    this.$supportedProperties.push("value", "target", "progress", "uploading", "rel");
 
     this.$propHandlers["value"] = function(value){
         if (!this.value)
@@ -322,9 +323,12 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             .setAttribute("value", this.uniqueId);
         this.inpFile = this.$getLayoutNode("form", "inp_file", this.form);
 
-        var jmlNode = this;
-        this.inpFile.onchange = function(){
-            //jmlNode.$startUpload();
+        if (!jpf.isIE) {
+            //var jmlNode = this;
+            this.inpFile.onchange = function(){
+                //jmlNode.$startUpload();
+                _self.setProperty('value', this.value);
+            }
         }
 
         if (jpf.debug == 2) {
@@ -332,6 +336,28 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
         }
+
+        if (jpf.isIE) return;
+        
+        setTimeout(function() {
+            var oNode = _self.rel ? self[_self.rel] : null;
+            if (oNode && oNode.oExt && oNode.oExt.style.position) {
+                if (oNode.oExt.offsetWidth == 0 || oNode.oExt.offsetHeight == 0)
+                    return;
+                var z = parseInt(oNode.oExt.style.zIndex) || 1;
+                oNode.oExt.style.zIndex      = z;
+                _self.inpFile.style.zIndex   = ++z;
+                _self.inpFile.style.margin   = "0";
+                _self.inpFile.style.position = oNode.oExt.style.position;
+                _self.inpFile.style.width    = oNode.oExt.offsetWidth + "px";
+                _self.inpFile.style.height   = oNode.oExt.offsetHeight + "px";
+                _self.inpFile.style.top      = oNode.oExt.offsetTop + "px";
+                _self.inpFile.style.left     = oNode.oExt.offsetLeft + "px";
+                if (oNode.oExt.style.cursor)
+                    _self.inpFile.style.cursor = oNode.oExt.style.cursor;
+                // @todo: resize/ move on browser resize
+            }
+        });
     };
 
     /**
@@ -358,7 +384,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 return;
 
             var data = "";
-            try{
+            try {
                 data = jpf.html_entity_decode(_self.oFrame.contentWindow.document.body.innerHTML.replace(/<PRE>|<\/PRE>/g, ""));
             }
             catch(e){}
@@ -366,7 +392,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             var hasFailed = _self.dispatchEvent("beforereceive", {
                 data  : data,
                 frame : _self.oFrame
-            } === false);
+            }) === false;
 
             if (hasFailed)
                 _self.$cancel();
