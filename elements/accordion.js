@@ -282,13 +282,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         var panel = panels[id];
-
-        /*if (!_self.multicollapse && lastOpened.length > 0) {
-            var _temp = lastOpened.shift();
-            if (_temp !== id) {
-                _self.slideUp(_temp);
-            }
-        }*/
         
         if (!_self.multicollapse && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
@@ -449,7 +442,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             });
         }
-        
 
         return false;
     };
@@ -460,7 +452,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number} number   number of title bar, 1 and more for counting 
      *                          from left to right for horizontal mode, and 
      *                          from top to bottom for vertical mode
-     * 
      */
     this.$getPanelIdByNumber = function(number) {
         var counter = 1;
@@ -469,7 +460,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             if (counter == number)
                 return id;
         }
-        
+
         return null;
     };
     
