@@ -408,7 +408,7 @@ jpf.tween = {
 
             try {
                 for (var i = 0; i < steps.length; i++) {
-                    tweens[i].method(info.tweens[i].oHtml || oHtml, 
+                    tweens[i].method(tweens[i].oHtml || oHtml, 
                       steps[i][step], tweens[i]);
                 }
             } catch (e) {}
