@@ -365,6 +365,7 @@ jpf.tween = {
      *   {Number}   [anim]      the distribution of change between the step over the entire animation
      *   {Function} [onfinish]  a function that is called at the end of the animation
      *   {Function} [oneach]    a function that is called at each step of the animation
+     *   {HTMLElement} [oHtml]  another html element to animate.
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
      *     {Boolean} stop       whether the animation should stop.
@@ -407,7 +408,8 @@ jpf.tween = {
 
             try {
                 for (var i = 0; i < steps.length; i++) {
-                    tweens[i].method(oHtml, steps[i][step], tweens[i]);
+                    tweens[i].method(info.tweens[i].oHtml || oHtml, 
+                      steps[i][step], tweens[i]);
                 }
             } catch (e) {}
 
