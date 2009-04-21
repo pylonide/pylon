@@ -123,8 +123,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                   {name : "November",  number : 30},
                   {name : "December",  number : 31}];
 
-    var _self = this; //NOT USED
-
     this.$supportedProperties.push("initial-message", "output-format",
                                    "default", "caption-format", "value");
 
@@ -205,7 +203,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["value"] = function(value) {
         if (!this.outputFormat) {
             _temp = value;
-            jpf.console.info("return: "+value+" "+this.outputFormat);
             return;
         }
 

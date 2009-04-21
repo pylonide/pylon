@@ -29,7 +29,27 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- *  <j:calendar top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-05" />
+ * <j:calendar
+ *     top           = "200"
+ *     left          = "400"
+ *     output-format = "yyyy-mm-dd"
+ *     value         = "2008-12-05" />
+ * </code>
+ * 
+ * Example:
+ * Sets the date based on data loaded into this component.
+ * <code>
+ *  <j:calendar>
+ *      <j:bindings>
+ *          <j:value select="@date" />
+ *      </j:bindings>
+ *  </j:calendar>
+ * </code>
+ * 
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <j:calendar ref="@date" />
  * </code>
  * 
  * @constructor
@@ -41,6 +61,9 @@
  *     Possible values:
  *     today   calendar is set on today's date
  * @attribute {String}   value            the date returned by calendar; should be in the format specified by the output-format attribute.
+ * 
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
@@ -51,22 +74,6 @@
  * @version     %I%, %G%
  * @since       1.0
  *
- * @binding value  Determines the way the value for the element is retrieved 
- * from the bound data.
- * Example:
- * Sets the date based on data loaded into this component.
- * <code>
- *  <j:calendar>
- *      <j:bindings>
- *          <j:value select="@date" />
- *      </j:bindings>
- *  </j:calendar>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <j:calendar ref="@date" />
- * </code>
  */
 jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
@@ -118,6 +125,29 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _self.redraw(_month, _year);
     }
 
+    /**
+     * @attribute {String} style of returned date
+     * 
+     * Possible values:
+     *     d      day of the month as digits, no leading zero for single-digit days
+     *     dd     day of the month as digits, leading zero for single-digit days
+     *     ddd    day of the week as a three-letter abbreviation
+     *     dddd   day of the week as its full name
+     *     m      month as digits, no leading zero for single-digit months
+     *     mm     month as digits, leading zero for single-digit months
+     *     mmm    month as a three-letter abbreviation
+     *     mmmm   month as its full name
+     *     yy     year as last two digits, leading zero for years less than 2010
+     *     yyyy   year represented by four digits
+     *     h      hours, no leading zero for single-digit hours (12-hour clock)
+     *     hh     hours, leading zero for single-digit hours (12-hour clock)
+     *     H      hours, no leading zero for single-digit hours (24-hour clock)
+     *     HH     hours, leading zero for single-digit hours (24-hour clock)
+     *     M      minutes, no leading zero for single-digit minutes
+     *     MM     minutes, leading zero for single-digit minutes
+     *     s      seconds, no leading zero for single-digit seconds
+     *     ss     seconds, leading zero for single-digit seconds
+     */
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
             this.setProperty("value", new Date(_year, _month, _day, _hours,
@@ -568,13 +598,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.setProperty("value", new Date().format(this.outputFormat));
                     break;
                 default :
-                    var date =  new Date();
-                    _day   = date.getDate();
-                    _month = date.getMonth();
-                    _year  = date.getFullYear();
-
-                    if (!this.selected && this.initialMsg)
-                        this.$setLabel();
+                    this.setProperty("value", new Date().format(this.outputFormat));
                     break;
             }
         }
