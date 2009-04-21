@@ -322,13 +322,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         var rows = this.oNavigation.childNodes;
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
-                if (_width < 300) {
-                    rows[i].style.width = "10px";
-                    rows[i].innerHTML = "T";
-                }
-                else {
-                    rows[i].innerHTML = "Today";
-                }
+                rows[i].innerHTML = _width < 300 ? "T" : "Today";
             }
             else if ((rows[i].className || "").indexOf("status") != -1) {
                 if (_width >= 300)
