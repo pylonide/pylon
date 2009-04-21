@@ -26,7 +26,7 @@
  * 
  * @define accordion
  * 
- * @attribute {String} animtype   animation effect for slide in  and slide out, default is "normal normal"
+ * @attribute {String} animtype   animation effect for slide in and slide out, default is "normal normal"
  * Possible values:
  *     normal    
  *     easein    
@@ -40,7 +40,7 @@
  *     true    one or more planels can be collapsed at a time
  *     false   only one panel can be collapsed at a time
  * 
- * @attribute {String} expand   sets event which will activate panel, default is click
+ * @attribute {String} expand   sets event which activate panel, default is click
  * Possible values:
  *     click   panel will be collapsed when user click on it
  *     hover   panel will be collapsed when user hover over it with mouse
@@ -48,8 +48,8 @@
  * @attribute {Boolean} startcollapsed   collapses all panels on load, default is false
  * Possible values:
  *     true    collapses all panels
- *     false   any panel cannot be collapsed even if collapsed="true" is set on it
- * 
+ *     false   only choosen panels will be collapsed
+ * @see panel collapsed="true" 
  * 
  * @inherits jpf.Presentation
  * 
@@ -59,6 +59,7 @@
  * 
  * <code>
  * <j:accordion
+ *      width           = "400"
  *      height          = "200"
  *      left            = "200"
  *      top             = "20"
@@ -147,11 +148,11 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.canHaveChildren = true;
     this.$focussable     = false;
 
-    this.animType1      = jpf.tween.NORMAL;
-    this.animType2      = jpf.tween.NORMAL;
-    this.animDelay      = 10;
-    this.hoverDelay     = 500;
-    this.multiCollapse  = true;
+    this.animtype1      = jpf.tween.NORMAL;
+    this.animtype2      = jpf.tween.NORMAL;
+    this.animdelay      = 10;
+    this.hoverdelay     = 500;
+    this.multicollapse  = true;
     this.expand         = "click";
     this.startcollapsed = false;
 
@@ -176,7 +177,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     var hoverTimer = null;
     
     /**
-     * when "multiCollapse" is false, only one panel with collapsed="true"
+     * when "multicollapse" is false, only one panel with collapsed="true"
      * can be opened
      */
     var startCollapsed = 0;
@@ -217,17 +218,17 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
         value = value.split(" ");
         
         if (value[0])
-            this.animType1 = this.$chooseAnimation(value[0]);
+            this.animtype1 = this.$chooseAnimation(value[0]);
         if (value[1])
-            this.animType2 = this.$chooseAnimation(value[1]);
+            this.animtype2 = this.$chooseAnimation(value[1]);
     };
 
     this.$propHandlers["animdelay"] = function(value) {
-        this.animDelay = parseInt(value);
+        this.animdelay = parseInt(value);
     };
     
     this.$propHandlers["multicollapse"] = function(value) {
-        this.multiCollapse = value;
+        this.multicollapse = value;
     };
     
     this.$propHandlers["startcollapsed"] = function(value) {
@@ -282,14 +283,14 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var panel = panels[id];
 
-        /*if (!_self.multiCollapse && lastOpened.length > 0) {
+        /*if (!_self.multicollapse && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
             if (_temp !== id) {
                 _self.slideUp(_temp);
             }
         }*/
         
-        if (!_self.multiCollapse && lastOpened.length > 0) {
+        if (!_self.multicollapse && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
             if (_temp !== id) {
                 id2 = _temp;
@@ -306,7 +307,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             panel.oBody.style.height = "1px";
         }
 
-        if (_self.animType1 == "none") {
+        if (_self.animtype1 == "none") {
             if (id2) {
                 _self.$setStyleClass(panels[id2].oTitle, "NotActive", ["Active"]);
                 panels[id2].oBody.style.display = "none";
@@ -328,12 +329,14 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         else {
             if (id2) {
+                jpf.console.info(_self.animdelay);
                 _self.$setStyleClass(panels[id2].oTitle, "NotActive", ["Active"]);
                 jpf.tween.multi(panel.oBody, {
-                     anim     : _self.animType1,
+                     steps    : 30,
+                     anim     : _self.animtype1,
+                     interval : _self.animdelay,
                      tweens : [{
                         type : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-                        interval : _self.animDelay,
                         from : 0,
                         to   : _self.$dir == "vertical"
                                    ? panel.oBody.scrollHeight
@@ -341,7 +344,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     },
                     {
                         type  : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-                        interval : _self.animDelay,
                         from  : _self.$dir == "vertical"
                                    ? panels[id2].oBody.scrollHeight
                                    : panels[id2].oBody.scrollWidth,
@@ -378,8 +380,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     to       : _self.$dir == "vertical"
                                    ? panel.oBody.scrollHeight
                                    : panel.oBody.scrollWidth,
-                    anim     : _self.animType1,
-                    interval : _self.animDelay,
+                    anim     : _self.animtype1,
+                    interval : _self.animdelay,
                     onfinish : function() {
                         _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
 
@@ -415,7 +417,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
 
         _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
 
-        if (_self.animType2 == "none") {
+        if (_self.animtype2 == "none") {
             _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
             panel.oBody.style.display = "none";
             
@@ -433,8 +435,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                                ? panel.oBody.scrollHeight
                                : panel.oBody.scrollWidth,
                 to       : 0,
-                anim     : _self.animType2,
-                interval : _self.animDelay,
+                anim     : _self.animtype2,
+                interval : _self.animdelay,
                 onfinish : function() {
                     _self.$setStyleClass(panel.oTitle, "NotActive", ["Active"]);
                     panel.oBody.style.display = "none";
@@ -557,7 +559,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                         hoverTimer = setInterval(function() {
                             jpf.lookup(_self.uniqueId).slideToggle(id);
                             clearInterval(hoverTimer);
-                        }, _self.hoverDelay);
+                        }, _self.hoverdelay);
                     };
                     oIcon.onmouseover = function(e) {
                         e = e || event;
@@ -570,7 +572,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                         hoverTimer = setInterval(function() {
                             jpf.lookup(_self.uniqueId).slideToggle(id);
                             clearInterval(hoverTimer);
-                        }, _self.hoverDelay);
+                        }, _self.hoverdelay);
                        
                     };
                 }
@@ -585,7 +587,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     oBody  : oBody
                 };
 
-                if ((opened || this.startcollapsed) && (this.multiCollapse || startCollapsed == 0)) {
+                if ((opened || this.startcollapsed) && (this.multicollapse || startCollapsed == 0)) {
                     this.slideDown(oTitle.id);
                     startCollapsed++;
                 }
