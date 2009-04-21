@@ -484,19 +484,20 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                             clearInterval(hoverTimer);
                         }, _self.hoverDelay);
                     };
-                    /*oIcon.onmouseover = function(e) {
+                    oIcon.onmouseover = function(e) {
                         e = e || event;
-                        
+                        e.cancelBubble = true;
                         var target = e.target || e.srcElement;
+
                         var id = target.parentNode.id;
 
-                        clearInterval(hoverTimer2);
-                        hoverTimer2 = setInterval(function() {
+                        clearInterval(hoverTimer);
+                        hoverTimer = setInterval(function() {
                             jpf.lookup(_self.uniqueId).slideToggle(id);
-                            clearInterval(hoverTimer2);
+                            clearInterval(hoverTimer);
                         }, _self.hoverDelay);
-                        clearInterval(hoverTimer2);
-                    };*/
+                       
+                    };
                 }
 
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
