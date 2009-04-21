@@ -274,6 +274,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
         e = e || event;
         var target = e.target || e.srcElement;
         var id = target ? target.id : e;
+        var id2 = null;
 
         if (!panels[id]) {
             return;
@@ -281,10 +282,17 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var panel = panels[id];
 
-        if (!_self.multiCollapse && lastOpened.length > 0) {
+        /*if (!_self.multiCollapse && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
             if (_temp !== id) {
                 _self.slideUp(_temp);
+            }
+        }*/
+        
+        if (!_self.multiCollapse && lastOpened.length > 0) {
+            var _temp = lastOpened.shift();
+            if (_temp !== id) {
+                id2 = _temp;
             }
         }
         
@@ -298,25 +306,74 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             panel.oBody.style.height = "1px";
         }
 
-        jpf.tween.single(panel.oBody, {
-            steps    : 30,
-            type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-            from     : 0,
-            to       : _self.$dir == "vertical"
-                           ? panel.oBody.scrollHeight
-                           : panel.oBody.scrollWidth,
-            anim     : _self.animType1,
-            interval : _self.animDelay,
-            onfinish : function() {
-                _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
-
-                if (_self.$dir == "horizontal") {
-                    panel.oBody.style.width = "auto";
+        if (id2) {
+            _self.$setStyleClass(panels[id2].oTitle, "NotActive", ["Active"]);
+            jpf.tween.multi(panel.oBody, {
+                 anim     : _self.animType1,
+                 tweens : [{
+                    type : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                    interval : _self.animDelay,
+                    from : 0,
+                    to   : _self.$dir == "vertical"
+                               ? panel.oBody.scrollHeight
+                               : panel.oBody.scrollWidth
+                },
+                {
+                    type  : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                    interval : _self.animDelay,
+                    from  : _self.$dir == "vertical"
+                               ? panels[id2].oBody.scrollHeight
+                               : panels[id2].oBody.scrollWidth,
+                    to    : 0,
+                    oHtml : panels[id2].oBody
+                }],
+                onfinish : function() {
+                    //Slide down
+                    _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
+    
+                    if (_self.$dir == "horizontal") {
+                        panel.oBody.style.width = "auto";
+                    }
+    
+                    panels[id].opened = true;
+                    
+                    //Slide up
+                    _self.$setStyleClass(panels[id2].oTitle, "NotActive", ["Active"]);
+                    panels[id2].oBody.style.display = "none";
+    
+                    if (_self.$dir == "horizontal") {
+                        panels[id2].oBody.style.width = "auto";
+                    }
+    
+                    panels[id2].opened = false;
                 }
+            });
+        }
+        else {
+            jpf.tween.single(panel.oBody, {
+                steps    : 30,
+                type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                from     : 0,
+                to       : _self.$dir == "vertical"
+                               ? panel.oBody.scrollHeight
+                               : panel.oBody.scrollWidth,
+                anim     : _self.animType1,
+                interval : _self.animDelay,
+                onfinish : function() {
+                    _self.$setStyleClass(panel.oTitle, "Active", ["NotActive"]);
+    
+                    if (_self.$dir == "horizontal") {
+                        panel.oBody.style.width = "auto";
+                    }
+    
+                    panels[id].opened = true;
+                }
+            });
+        }
+        
 
-                panels[id].opened = true;
-            }
-        });
+
+        
     };
 
     /**
