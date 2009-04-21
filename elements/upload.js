@@ -325,9 +325,10 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (!jpf.isIE) {
             //var jmlNode = this;
+            this.inpFile.setAttribute("size", "0");
             this.inpFile.onchange = function(){
                 //jmlNode.$startUpload();
-                _self.setProperty('value', this.value);
+                _self.setProperty("value", this.value);
             }
         }
 
@@ -349,10 +350,10 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.inpFile.style.zIndex   = ++z;
                 _self.inpFile.style.margin   = "0";
                 _self.inpFile.style.position = oNode.oExt.style.position;
-                _self.inpFile.style.width    = oNode.oExt.offsetWidth + "px";
+                _self.inpFile.style.width    = oNode.oExt.offsetWidth  + "px";
                 _self.inpFile.style.height   = oNode.oExt.offsetHeight + "px";
-                _self.inpFile.style.top      = oNode.oExt.offsetTop + "px";
-                _self.inpFile.style.left     = oNode.oExt.offsetLeft + "px";
+                _self.inpFile.style.top      = oNode.oExt.offsetTop    + "px";
+                _self.inpFile.style.left     = oNode.oExt.offsetLeft   + "px";
                 if (oNode.oExt.style.cursor)
                     _self.inpFile.style.cursor = oNode.oExt.style.cursor;
                 // @todo: resize/ move on browser resize
