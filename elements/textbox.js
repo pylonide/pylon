@@ -445,7 +445,8 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            if (this.$jml.getAttribute("mask").toLowerCase() == "password"
+            var mask = this.$jml.getAttribute("mask");
+            if ((typeof mask == "string" && mask.toLowerCase() == "password")
               || "secret|password".indexOf(this.tagName) > -1
               || this.$jml.getAttribute("type") == "password") {
                 this.$jml.removeAttribute("mask");
