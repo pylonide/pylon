@@ -821,6 +821,8 @@ jpf.DragServer = {
         e = e || window.event;
         if (jpf.isIphone) {
             e.preventDefault();
+            if (!e.targetTouches)
+                return jpf.DragServer.stop(true);
             e = e.targetTouches[0];
         }
         
@@ -872,6 +874,8 @@ jpf.DragServer = {
         e = e || window.event;
         if (jpf.isIphone) {
             e.preventDefault();
+            if (!e.changedTouches)
+                return jpf.DragServer.stop(true);
             e = e.changedTouches[0];
         }
 
