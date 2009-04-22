@@ -410,7 +410,7 @@ jpf.JmlElement = function(){
             value = a.nodeValue;
             name  = a.nodeName;
 
-            //#ifdef __WITH_MULTILANG
+            //#ifdef __WITH_MULTI_LANG
             if (/^\$(.*)\$$/.test(value)) {
                 jpf.language.addElement(RegExp.$1, {
                     jmlNode: this,

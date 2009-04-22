@@ -420,7 +420,7 @@ jpf.Class = function(){
 
     // #endif
 
-    //#ifdef __WITH_MULTILANG
+    //#ifdef __WITH_MULTI_LANG
     var isMultiLang = {};
     //#endif
 
@@ -785,7 +785,7 @@ jpf.Event = function(name, data){
      */
     this.isCharacter = function(){
         return (this.keyCode < 112 || this.keyCode > 122)
-          && (this.keyCode == 32 || (this.keyCode > 42 || this.keyCode == 8));
+          && (this.keyCode == 32 || this.keyCode > 42 || this.keyCode == 8);
     }
 
     jpf.extend(this, data);

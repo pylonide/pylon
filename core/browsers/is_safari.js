@@ -91,6 +91,64 @@ jpf.runSafari = function(){
     if (jpf.runNonIe)
         jpf.runNonIe();
     //jpf.importClass(jpf.runNonIe, true, self);
-}
+};
+
+// #ifdef __SUPPORT_IPHONE
+
+jpf.runIphone = function() {
+    if (!jpf.isIphone) return;
+
+    jpf.makeClass(this);
+    
+    var head = document.getElementsByTagName("head")[0];
+    if (jpf.appsettings.iphoneIcon) {
+        var link = document.createElement("link");
+        link.setAttribute("rel", "apple-touch-icon" 
+            + (jpf.appsettings.iphoneIconIsGlossy ? "" : "-precomposed"));
+        link.setAttribute("href", "jpf.appsettings.iphoneIcon");
+        head.appendChild(link);
+    }
+
+    function appendMeta(name, content) {
+        var meta = document.createElement("meta");
+        meta.setAttribute("name", name);
+        meta.setAttribute("content", content);
+        head.appendChild(meta);
+    }
+
+    if (jpf.appsettings.iphoneFixedViewport) {
+        appendMeta("viewport",
+            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;");
+    }
+
+    if (jpf.appsettings.iphoneFullScreen) {
+        appendMeta("apple-mobile-web-app-capable", "yes");
+
+        if (jpf.appsettings.iphoneStatusBar)
+            appendMeta("apple-mobile-web-app-status-bar-style",
+                "jpf.appsettings.iphoneStatusBar");
+    }
+
+    /* register event listeners:
+     * - touchstart
+     * - touchmove
+     * - touchend
+     * - touchcancel
+     * - gesturestart
+     * - gesturechange
+     * - gestureend
+     * - orientationchange
+     */
+    ["touchstart", "touchmove", "touchend", "touchcancel",
+     "gesturestart", "gesturechange", "gestureend",
+     "orientationchange"].forEach(function(type) {
+        document["on" + type] = function(evt) {
+            if (jpf.dispatchEvent)
+                jpf.dispatchEvent(type, evt);
+        };
+    });
+};
+
+// #endif
 
 // #endif
