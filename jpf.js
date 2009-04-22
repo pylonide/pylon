@@ -312,6 +312,12 @@ var jpf = {
         }
 
         /**
+         * Specifies whether the application is running on the Iphone.
+         * @type {Boolean}
+         */
+        this.isIphone = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
+
+        /**
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
