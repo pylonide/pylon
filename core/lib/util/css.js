@@ -247,7 +247,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;
 
-    var z, bw, bh, foundPosRel = 0;
+    var bw, bh;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
         bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
@@ -276,6 +276,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             wt -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0) * 2;
         }
         else if (o.tagName.toLowerCase() == "tr") {
+            var cp;
             ht -= (cp = parseInt(o.parentNode.parentNode.cellSpacing));
             while (o.previousSibling)
                 ht -= (o = o.previousSibling).offsetHeight + cp;
