@@ -47,7 +47,11 @@ jpf.namespace("draw.vml",{
         r.vmlroot = r.oInt.lastChild;
         return this;
     },
-        
+    resizeRoot : function(r){
+	
+	
+	},
+	
     initLayer : function(l , r){ 
 
         var vmlroot = r.vmlroot;
@@ -71,10 +75,11 @@ jpf.namespace("draw.vml",{
         l._vmlgroup = vmlgroup;
     },
 
-    updateLayer : function(l){
+    resizeLayer : function(l, r){
         // update layer position, and perhaps z-order?
     },
-     
+
+
     deinitLayer : function(l){
         // we should remove the layer from the output group.
         l._vmlgroup.removeNode();
@@ -82,6 +87,11 @@ jpf.namespace("draw.vml",{
     },
 
     beginLayer : function(l){
+		// if we already had a layer, we need to clean up
+		if(l._styles){
+			// clean that shit up
+		}
+		
         this.l = l,this.mx="",this.my="",this.last=null;
         return [ this.jssVars,
                 "var _s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
