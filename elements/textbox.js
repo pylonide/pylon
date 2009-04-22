@@ -179,7 +179,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      * </code>
      */
     this.$propHandlers["mask"] = function(value){
-        if (this.mask == "PASSWORD")// || !jpf.hasMsRangeObject)
+        if (this.mask.toLowerCase() == "password")// || !jpf.hasMsRangeObject)
             return;
 
         if (!value) {
@@ -445,7 +445,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            if (this.$jml.getAttribute("mask") == "PASSWORD"
+            if (this.$jml.getAttribute("mask").toLowerCase() == "password"
               || "secret|password".indexOf(this.tagName) > -1
               || this.$jml.getAttribute("type") == "password") {
                 this.$jml.removeAttribute("mask");
