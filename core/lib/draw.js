@@ -435,9 +435,9 @@ jpf.namespace("draw", {
 		}
  
         function styleinit(d){
-            if(d.line === null || d.line=='null') delete d.line;
-            if(d.fill === null || d.fill=='null') delete d.fill;
-            if(d.family === null || d.family=='null') delete d.family;
+            if(d.line === null || d.line=='null' || d.line==0) delete d.line;
+            if(d.fill === null || d.fill=='null' || d.fill==0) delete d.fill;
+            if(d.family === null || d.family=='null' || d.family==0) delete d.family;
 
             if( (d.isshape && d.fill === undefined && 
                 d.line === undefined && d.tile === undefined) || 

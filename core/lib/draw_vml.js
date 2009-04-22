@@ -28,55 +28,64 @@ jpf.namespace("draw.vml",{
     //----------------------------------------------------------------------
      
     initRoot : function(r){
-        
         jpf.importCssString(document, "v\\:* {behavior: url(#default#VML);}");
         
-        r.oExt.onselectstart = function(){
-            return false;
-        }
         r.oInt.innerHTML = "\
             <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                         background:url(images/spacer.gif);width:"+
-                        r.oExt.offsetWidth+"px;height:"+r.oExt.offsetHeight+"px;'>\
+                        r.width+"px;height:"+r.height+"px;'>\
             </div>\
             <div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
                         position:absolute;left:0;top:0;width:"+
-                        r.oExt.offsetWidth+';height:'+r.oExt.offsetHeight+
+                        r.width+';height:'+r.height+
                         ";overflow:hidden;'>\
             </div>";
         r.vmlroot = r.oInt.lastChild;
         return this;
     },
     resizeRoot : function(r){
-	
-	
+       var t = r.vmlroot;
+       t.style.width = r.width;
+       t.style.height = r.height;
+       t = t.previousSibling;
+       t.style.width=r.width,t.style.height=r.height;
 	},
-	
     initLayer : function(l , r){ 
 
         var vmlroot = r.vmlroot;
         var tag = "<div style='position:absolute;left:"+l.left+
                   ";top:"+l.top+";width:"+l.width+";height:"+l.height+
                   ";overflow:hidden;'/>";
-        l.ds = 4;
-        l.dx = 0;
-        l.dy = 0;
+        l.ds = 1;
+        l.dx = 0,l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
         
         l.vmltag = "style='position:absolute;display:block;left:0;top:0;width:"+
-                   (l.width)+";height:"+(l.height)+
+                  (l.width)+";height:"+(l.height)+
         ";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;
 
         l._styles       = [];
         l._htmljoin     = [];
-        l._vmlgroup = vmlgroup;
+        l._vmlgroup    = vmlgroup;
     },
 
     resizeLayer : function(l, r){
-        // update layer position, and perhaps z-order?
+        // update layer position, and perhaps z-order or all items in a _vmlgroup.
+        var lx,ly,lw,lh,t;
+        l.dx = 0, l.dy = 0;
+        l.dw = parseFloat(lw=l.width)*l.ds;
+        l.dh = parseFloat(lh=l.height)*l.ds;
+        var coord = (l.dw+1)+","+(l.dh+1);
+        (t=l._vmlgroup).style.left=lx=l.left,t.style.top=ly=l.top,t.style.width=lw,t.style.height=lh;
+        for(var n = l._vmlgroup.childNodes, l = n.length, i = 0;i<l;i++){
+            (t=n[i]).style.width = lw, t.style.height = lh;
+            if(t.coordsize){
+                t.coordsize = coord;
+            }
+        }
     },
 
 
@@ -87,7 +96,7 @@ jpf.namespace("draw.vml",{
     },
 
     beginLayer : function(l){
-		// if we already had a layer, we need to clean up
+		// if we already had a layer, we need to clean that shit up
 		if(l._styles){
 			// clean that shit up
 		}
