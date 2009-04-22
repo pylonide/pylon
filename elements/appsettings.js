@@ -80,8 +80,13 @@
  * @see element.auth
  * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.
  * @see element.auth
- * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied
- * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied
+ * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied. Default is false.
+ * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied.
+ * @attribute {Boolean} iphone-fullscreen       whether the application should cover the entire screen of the iPhone. Default is true.
+ * @attribute {String}  iphone-statusbar        the style of the statusbar of the iPhone webbrowser. Posssible values: 'default', black-translucent' or 'black'.
+ * @attribute {String}  iphone-icon             path pointing to the icon that should be used when this application is put on the iPhone Dashboard.
+ * @attribute {Boolean} iphone-icon-is-glossy   whether the icon specified with 'iphone-icon' already is glossy or if the iPhone OS should apply that effect. Default is false.
+ * @attribute {Boolean} iphone-fixed-viewport   whether the viewport of the application is fixed and whether the zoom should be enabled. Default is true.
  * @allowchild auth, authentication, offline, printer, defaults
  * @todo describe defaults
  */
@@ -114,6 +119,13 @@ jpf.appsettings = {
     resourcePath       : null,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
+    // #endif
+    // #ifdef __SUPPORT_IPHONE
+    iphoneFullscreen   : true,
+    iphoneStatusbar    : 'default', //other options: black-translucent, black
+    iphoneIcon         : null,
+    iphoneIconIsGlossy : false,
+    iphoneFixedViewport: true,
     // #endif
     skinset            : "default",
     name               : "",
@@ -242,6 +254,18 @@ jpf.appsettings = {
             setTimeout(function() {
                 jpf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
             });
+        }
+        // #endif
+
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone) {
+            this.iphoneFullscreen    = !jpf.isFalse(x.getAttribute("iphone-fullscreen"));
+            this.iphoneStatusbar     = x.getAttribute("iphone-statusbar") || "default";
+            this.iphoneIcon          = x.getAttribute("iphone-icon") || null;
+            this.iphoneIconIsGlossy  = jpf.isTrue(x.getAttribute("iphone-icon-is-glossy"));
+            this.iphoneFixedViewport = !jpf.isFalse(x.getAttribute("iphone-fixed-viewport"));
+
+            jpf.runIphone();
         }
         // #endif
 
