@@ -442,16 +442,24 @@ jpf.DragDrop = function(){
         //Setup External Object
         this.oExt.dragdrop = false;
 
-        this.oExt.onmousedown = function(e){
-            if (!e)
-                e = event;
+        this.oExt[jpf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
+            e = e || window.event;
+            if (jpf.isIphone) {
+                //e.preventDefault();
+                var old_e = e;
+                e = e.targetTouches[0];
+                var pos = jpf.getAbsolutePosition(e.target, this);
+                e.offsetX = pos[0];
+                e.offsetY = pos[1];
+            }
+
             var fEl, srcEl = e.originalTarget || e.srcElement || e.target;
             if (this.host.hasFeature(__MULTISELECT__) && srcEl == this.host.oInt)
                 return;
             this.host.dragging = 0;
 
             var srcElement = e.srcElement || e.target;
-            if (this.host.allowdeselect
+            if (!jpf.isIphone && this.host.allowdeselect
               && (srcElement == this
               || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
                 return this.host.clearSelection(); //hacky
@@ -470,6 +478,9 @@ jpf.DragDrop = function(){
             if (this.host.isDragAllowed(this.selectable ? this.host.selected : el)) {
                 this.host.dragging = 1;
 
+                if (jpf.isIphone)
+                    old_e.preventDefault();
+
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
                     offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX), //|| jpf.event.layerX - srcEl.offsetLeft,
@@ -482,10 +493,10 @@ jpf.DragDrop = function(){
             }
 
             //e.cancelBubble = true;
-        }
+        };
 
-        this.oExt.onmousemove = function(e){
-            if (!e) e = event;
+        this.oExt[jpf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
+            //if (!e) e = event;
             if (this.host.dragging != 1) return;//e.button != 1 ||
             //if(Math.abs(jpf.DragServer.coordinates.offsetX - (e.layerX ? e.layerX - jpf.DragServer.coordinates.srcElement.offsetLeft : e.offsetX)) < 6 && Math.abs(jpf.DragServer.coordinates.offsetY - (e.layerX ? e.layerY - jpf.DragServer.coordinates.srcElement.offsetTop : e.offsetY)) < 6)
                 //return;
@@ -493,12 +504,19 @@ jpf.DragDrop = function(){
             //jpf.DragServer.start(this.host);
         };
 
-        this.oExt.onmouseup = function(){
-            this.host.dragging = 0;
-        };
+        if (jpf.isIphone) {
+            this.oExt.ontouchend = this.oExt.ontouchcancel = function(){
+                this.host.dragging = 0;
+            };
+        }
+        else {
+            this.oExt.onmouseup = function(){
+                this.host.dragging = 0;
+            };
 
-        this.oExt.ondragmove  =
-        this.oExt.ondragstart = function(){ return false; };
+            this.oExt.ondragmove  =
+            this.oExt.ondragstart = function(){ return false; };
+        }
 
         if(document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);
@@ -517,10 +535,17 @@ jpf.DragDrop = function(){
      * @private
      */
     this.unloadDragDrop = function(){
-        this.xmlDragDrop = this.dragdropRules = this.icoAllowed = this.icoDenied
-          = this.oExt.dragdrop = this.oExt.onmousedown = this.oExt.onmousemove
-          = this.oExt.onmouseup = this.oExt.ondragmove = this.oExt.ondragstart
-          = null;
+        this.xmlDragDrop = this.dragdropRules = this.icoAllowed 
+          = this.icoDenied = this.oExt.dragdrop = this.oExt.ondragmove
+          = this.oExt.ondragstart = null;
+        if (jpf.isIphone) {
+            this.oExt.ontouchstart = this.oExt.ontouchmove
+                = this.oExt.ontouchend = this.oExt.ontouchcancel = null;
+        }
+        else {
+            this.oExt.onmousedown = this.oExt.onmousemove
+                = this.oExt.onmouseup = null;
+        }
 
         if (document.elementFromPointRemove)
             document.elementFromPointRemove(this.oExt);
@@ -612,6 +637,11 @@ jpf.DragDrop = function(){
  */
 jpf.DragServer = {
     Init : function(){
+        if (jpf.isIphone) {
+            this.ontouchmove = this.onmousemove;
+            this.ontouchend = this.ontouchcancel = this.onmouseup;
+        }
+
         jpf.dragmode.defineMode("dragdrop", this);
 
         jpf.addEventListener("hotkey", function(e){
@@ -684,7 +714,8 @@ jpf.DragServer = {
     },
 
     dragover : function(o, el, e){
-        if(!e) e = event;
+        e = e || window.event;
+        
         var fEl;
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
@@ -787,7 +818,12 @@ jpf.DragServer = {
 
     onmousemove : function(e){
         if (!jpf.DragServer.dragdata) return;
-        if (!e) e = event;
+        e = e || window.event;
+        if (jpf.isIphone) {
+            e.preventDefault();
+            e = e.targetTouches[0];
+        }
+        
         var dragdata = jpf.DragServer.dragdata;
 
         if (!dragdata.started
@@ -803,7 +839,7 @@ jpf.DragServer = {
         
         //dragdata.indicator.style.top = e.clientY+"px";
         //dragdata.indicator.style.left = e.clientX+"px";
-        
+
         var storeIndicatorTopPos = dragdata.indicator.style.top;
         //jpf.console.info("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
         //get Element at x, y
@@ -833,7 +869,11 @@ jpf.DragServer = {
     },
 
     onmouseup : function(e){
-        if(!e) e = event;
+        e = e || window.event;
+        if (jpf.isIphone) {
+            e.preventDefault();
+            e = e.changedTouches[0];
+        }
 
         if (!jpf.DragServer.dragdata.started
           && Math.abs(jpf.DragServer.coordinates.clientX - e.clientX) < 6
