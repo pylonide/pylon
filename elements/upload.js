@@ -342,6 +342,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         
         setTimeout(function() {
             var oNode = _self.rel ? self[_self.rel] : null;
+
+            _self.inpFile.onchange = function() { _self.browse(); };
+
             if (oNode && oNode.oExt && oNode.oExt.style.position) {
                 if (oNode.oExt.offsetWidth == 0 || oNode.oExt.offsetHeight == 0)
                     return;
