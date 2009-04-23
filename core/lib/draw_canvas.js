@@ -32,17 +32,25 @@ jpf.namespace("draw.canvas",{
     initRoot : function(r){
                   
         var canvas = document.createElement("canvas");
-        canvas.setAttribute("width",r.canvaswidth =r.oInt.offsetWidth);
-        canvas.setAttribute("height",r.canvasheight =r.oInt.offsetHeight);
+        canvas.setAttribute("width",r.canvaswidth = r.width);
+        canvas.setAttribute("height",r.canvasheight = r.height);
         canvas.className = "canvas";        
         r.oInt.appendChild(canvas);
-        r.canvas = canvas.getContext('2d');
+        r.canvaselem = canvas;
+		r.canvas = canvas.getContext('2d');
         r.canvas.translate(0.5,0.5);
         r.imgcache = {};
         return this;
     },
      
-
+    resizeRoot : function(r){
+	   r.canvaselem.setAttribute("width",r.width);
+	   r.canvaselem.setAttribute("height",r.height);
+	   for(var n = r.canvaselem.nextSibling;n != null;n = n.nextSibling){
+           n.style.width = r.width+'px', n.style.height = r.height+'px';
+       }
+	},
+	
     initLayer : function(l, r){ 
         l.imgcache 	= r.imgcache;
         l.canvas 	= r.canvas;
@@ -58,6 +66,14 @@ jpf.namespace("draw.canvas",{
         return this;
     },
     
+    resizeLayer : function(l, r){
+        // update layer position, and perhaps z-order or all items in a _vmlgroup.
+        l.dx = l.left; 
+		l.dy = l.top;
+        l.dw = l.width;
+        l.dh = l.height;
+    },
+
     destroyLayer : function(l){
     },
 
