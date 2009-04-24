@@ -152,7 +152,7 @@ jpf.textbox.masking = function(){
         this.$keyHandler = null; //temp solution
         masking = true;
         
-        this.oInt.onmouseup = function(e){
+        this.oInt[jpf.isIphone ? "onclick" : "onmouseup"] = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;

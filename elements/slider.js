@@ -364,14 +364,18 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oSlider.style.left = (parseInt(jpf.getBox(
             jpf.getStyle(this.oExt, "padding"))[3])) + "px";
 
-        this.oSlider.onmousedown = function(e){
+        this.oSlider[jpf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             if (_self.disabled)
                 return false;
 
             //@todo use start action here
 
-            if (!e)
-                e = event;
+            e = e || window.event;
+            if (jpf.isIphone) {
+                if (e.touches.length != 1) return;
+                e.preventDefault();
+                e = e.touches[0];
+            }
             document.dragNode = this;
 
             this.x   = (e.clientX || e.x);
@@ -417,29 +421,44 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
             dragging = true;
 
-            document.onmousemove = function(e){
+            document[jpf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
+                e = e || window.event;
                 var o = this.dragNode;
+                if (jpf.isIphone) {
+                    e.preventDefault();
+                    e = e.touches[0];
+                }
+
 
                 if (!o) {
-                    document.onmousemove =
-                    document.onmouseup   =
-                    jpf.dragmode.mode    = null;
+                    jpf.dragmode.mode = null;
+                    if (jpf.isIphone) {
+                        document.ontouchmove = document.ontouchend
+                            = document.ontouchcancel = null;
+                    }
+                    else
+                        document.onmousemove = document.onmouseup = null;
 
                     return; //?
                 }
 
                 if (_self.realtime) {
                     _self.value = -1; //reset value
-                    _self.setValue(getValue(o, e || event, _self.slideDiscreet));
+                    _self.setValue(getValue(o, e, _self.slideDiscreet));
                 }
 
-                _self.$propHandlers["value"].call(_self, getValue(o, e || event, _self.slideDiscreet), true);
+                _self.$propHandlers["value"].call(_self, getValue(o, e, _self.slideDiscreet), true);
             }
 
-            document.onmouseup = function(e){
+            function dragMouseup(e){
                 var o = this.dragNode;
                 this.dragNode = null;
-                o.onmouseout();
+
+                if (jpf.isIphone) {
+                    e = e.touches[0];
+                }
+                else
+                    o.onmouseout();
 
                 dragging = false;
 
@@ -449,14 +468,24 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 }*/
 
                 _self.$ignoreSignals = _self.realtime;
-                _self.change(getValue(o, e || event,
+                _self.change(getValue(o, e || window.event,
                     _self.slideDiscreet || _self.slideSnap));
                 _self.$ignoreSignals = false;
 
-                document.onmousemove =
-                document.onmouseup   =
-                jpf.dragmode.mode    = null;
+                jpf.dragmode.mode = null;
+                if (jpf.isIphone) {
+                    document.ontouchmove = document.ontouchend
+                        = document.ontouchcancel = null;
+                }
+                else {
+                    document.onmousemove = document.onmouseup  = null;
+                }
             }
+
+            if (jpf.isIphone)
+                document.ontouchend = document.ontouchcancel = dragMouseup;
+            else
+                document.onmouseup  = dragMouseup;
 
             //event.cancelBubble = true;
             return false;

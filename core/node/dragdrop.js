@@ -445,9 +445,9 @@ jpf.DragDrop = function(){
         this.oExt[jpf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             e = e || window.event;
             if (jpf.isIphone) {
-                //e.preventDefault();
+                if (e.touches.length == 1) return;
                 var old_e = e;
-                e = e.targetTouches[0];
+                e = e.touches[0];
                 var pos = jpf.getAbsolutePosition(e.target, this);
                 e.offsetX = pos[0];
                 e.offsetY = pos[1];
@@ -821,9 +821,9 @@ jpf.DragServer = {
         e = e || window.event;
         if (jpf.isIphone) {
             e.preventDefault();
-            if (!e.targetTouches)
+            if (!e.touches)
                 return jpf.DragServer.stop(true);
-            e = e.targetTouches[0];
+            e = e.touches[0];
         }
         
         var dragdata = jpf.DragServer.dragdata;
