@@ -179,23 +179,22 @@ jpf.runIphone = function() {
     }
 
     /* register event listeners:
-     * - touchstart
-     * - touchmove
-     * - touchend
-     * - touchcancel
+     * - touchstart (skip)
+     * - touchmove (skip)
+     * - touchend (skip)
+     * - touchcance (skip)l
      * - gesturestart
      * - gesturechange
      * - gestureend
      * - orientationchange
      */
-    ["touchstart", "touchmove", "touchend", "touchcancel",
-     "gesturestart", "gesturechange", "gestureend",
+    ["gesturestart", "gesturechange", "gestureend",
      "orientationchange"].forEach(function(type) {
         document["on" + type] = function(evt) {
             if (jpf.dispatchEvent)
                 jpf.dispatchEvent(type, evt);
         };
-    });
+    })
 };
 
 // #endif
