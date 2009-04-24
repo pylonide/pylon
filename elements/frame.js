@@ -79,7 +79,7 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt     = this.$getExternal(); 
-        this.oCaption   = this.$getLayoutNode("main", "caption", this.oExt);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         this.oInt = this.oInt 
@@ -88,6 +88,7 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
+        // not implement now.
     };
 }).implement(jpf.Presentation);
 
