@@ -373,7 +373,8 @@ jpf.http = function(){
                 async, options.username || null, options.password || null);
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
-            http.setRequestHeader("User-Agent", "Javeline TelePort 2.0"); //@deprecated
+            if (!jpf.isSafari)
+                http.setRequestHeader("User-Agent", "Javeline TelePort 2.0"); //@deprecated
             http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             http.setRequestHeader("Content-type", this.contentType
                 || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
