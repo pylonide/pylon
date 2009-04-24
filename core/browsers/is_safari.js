@@ -129,6 +129,55 @@ jpf.runIphone = function() {
                 "jpf.appsettings.iphoneStatusBar");
     }
 
+    var hasOrientationEvent = false,
+        currentWidth        = 0,
+        portraitVal         = "portrait",
+        landscapeVal        = "landscape",
+        checkTimer          = null;
+
+    jpf.addDomLoadEvent(function() {
+        setTimeout(checkOrientAndLocation, 0);
+        checkTimer = setInterval(checkOrientAndLocation, 300);
+    });
+
+    function orientChangeHandler() {
+        switch(window.orientation) {
+            case 0:
+                setOrientation(portraitVal);
+                break;
+            case 90:
+            case -90:
+                setOrientation(landscapeVal);
+                break;
+        }
+    }
+
+    if (typeof window.onorientationchange == "object") {
+        window.onorientationchange = orientChangeHandler;
+        hasOrientationEvent = true;
+        setTimeout(orientChangeHandler, 0);
+    }
+
+    function checkOrientAndLocation() {
+        if (!hasOrientationEvent) {
+            if (window.innerWidth != currentWidth) {
+                currentWidth = window.innerWidth;
+                var orient   = currentWidth == 320 ? portraitVal : landscapeVal;
+                setOrientation(orient);
+            }
+        }
+
+        /*if (location.hash != currentHash) {
+            var pageId = location.hash.substr(hashPrefix.length);
+            iui.showPageById(pageId);
+        }*/
+    }
+
+    function setOrientation(orient) {
+        document.body.setAttribute("orient", orient);
+        setTimeout("scrollTo(0,1)", 100);
+    }
+
     /* register event listeners:
      * - touchstart
      * - touchmove
