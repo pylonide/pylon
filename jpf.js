@@ -2211,29 +2211,35 @@ var jpf = {
         }
     },
 
+    load_events: [],
+    load_timer : null,
+    load_done  : false,
+    load_init  : null,
+
     addDomLoadEvent: function(func) {
         if (!this.$bdetect)
             this.browserDetect();
 
-        // create event function stack
-        var load_events = [],
-            load_timer,
-            done   = arguments.callee.done,
-            exec,
-            init   = function () {
-                if (done) return;
-                // kill the timer
-                clearInterval(load_timer);
-                load_timer = null;
-                done       = true;
-                // execute each function in the stack in the order they were added
-                var len = load_events.length;
-                while (len--) {
-                    (load_events.shift())();
-                }
-            };
+        if (jpf.load_done)
+            return func();
 
-        if (func && !load_events[0]) {
+        // create event function stack
+        //jpf.done = arguments.callee.done;
+        if (!jpf.load_init) {
+            jpf.load_init = function () {
+                if (jpf.load_done) return;
+                // kill the timer
+                clearInterval(jpf.load_timer);
+                jpf.load_timer = null;
+                jpf.load_done  = true;
+                // execute each function in the stack in the order they were added
+                var len = jpf.load_events.length;
+                while (len--)
+                    (jpf.load_events.shift())();
+            };
+        }
+
+        if (func && !jpf.load_events[0]) {
             // for Mozilla/Opera9.
             // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
             if (document.addEventListener && !jpf.isOpera) {
@@ -2243,11 +2249,11 @@ var jpf = {
                 // See also:
                 // http://bitstructures.com/2007/11/javascript-method-callbacks
                 // http://www-128.ibm.com/developerworks/web/library/wa-memleak/
-                window.addEventListener("DOMContentLoaded", init, false);
+                window.addEventListener("DOMContentLoaded", jpf.load_init, false);
             }
             // If IE is used and is not in a frame
             else if (jpf.isIE && window == top) {
-                load_timer = setInterval(function() {
+                jpf.load_timer = setInterval(function() {
                     try {
                         // If IE is used, use the trick by Diego Perini
                         // http://javascript.nwbox.com/IEContentLoaded/
@@ -2258,45 +2264,45 @@ var jpf = {
                         return;
                     }
                     // no exceptions anymore, so we can call the init!
-                    init();
+                    jpf.load_init();
                 }, 10);
             }
             else if (jpf.isOpera) {
                 document.addEventListener( "DOMContentLoaded", function () {
-                    load_timer  = setInterval(function() {
+                    jpf.load_timer  = setInterval(function() {
                         for (var i = 0; i < document.styleSheets.length; i++) {
                             if (document.styleSheets[i].disabled)
                                 return;
                         }
                         // all is fine, so we can call the init!
-                        init();
+                        jpf.load_init();
                     }, 10);
                 }, false);
             }
-            else if (jpf.isSafari) {
+            else if (jpf.isSafari && !jpf.isIphone) {
                 var aSheets = documents.getElementsByTagName("link");
                 for (var i = aSheets.length; i >= 0; i++) {
                     if (!aSheets[i] || aSheets[i].getAttribute("rel") != "stylesheet")
                         aSheets.splice(i, 0);
                 }
                 var iSheets = aSheets.length;
-                load_timer  = setInterval(function() {
+                jpf.load_timer  = setInterval(function() {
                     if (/loaded|complete/.test(document.readyState)
                       && document.styleSheets.length == iSheets)
-                        init(); // call the onload handler
+                        jpf.load_init(); // call the onload handler
                 }, 10);
             }
             // for other browsers set the window.onload, but also execute the old window.onload
             else {
                 var old_onload = window.onload;
                 window.onload  = function () {
-                    init();
+                    jpf.load_init();
                     if (old_onload)
                         old_onload();
                 };
             }
         }
-        load_events.push(func);
+        jpf.load_events.push(func);
     },
 
     /* Destroy */
