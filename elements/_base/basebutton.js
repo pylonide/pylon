@@ -147,34 +147,32 @@ jpf.BaseButton = function(pHtmlNode){
         if (refKeyDown > 0
           || (refMouseDown > 0 && mouseOver)
           || (this.isBoolean && this.value)) {
-            this.$setState ("Down", e, strEvent);
+            this.$setState("Down", e, strEvent);
         }
         else if (mouseOver)
-            this.$setState ("Over", e, strEvent);
+            this.$setState("Over", e, strEvent);
         else
-            this.$setState ("Out", e, strEvent);
+            this.$setState("Out", e, strEvent);
     }
 
     this.$setupEvents = function() {
-        this.oExt.onmousedown = function(e) {
-            if (!e) e = event;
-
-            if (_self.$notfromext && (e.srcElement || e.target) == this)
-                return;
-
-            refMouseDown = 1;
-            mouseLeft    = false;
-            _self.$updateState(e, "mousedown");
-        };
-        this.oExt.onmouseup = function(e, force) {
-            if (!e) e = event;
+        this.oExt[jpf.isIphone ? "onclick" : "onmouseup"] = function(e, force) {
+            e = e || window.event;
+            if (jpf.isIphone) {
+                /*mouseOver = true;
+                _self.$updateState(e, "mouseover");
+                refMouseDown = 1;
+                mouseLeft = false;
+                _self.$updateState(e, "mousedown");*/
+                force = true;
+            }
             //if (e)  e.cancelBubble = true;
 
-            if (!force && (!mouseOver || !refMouseDown))
+            if (!force && !jpf.isIphone && (!mouseOver || !refMouseDown))
                 return;
 
             refMouseDown = 0;
-            _self.$updateState (e, "mouseup");
+            _self.$updateState(e, jpf.isIphone ? "click" : "mouseup");
 
             // If this is coming from a mouse click, we shouldn't have left the button.
             if (_self.disabled || (e && e.type == "click" && mouseLeft == true))
@@ -185,11 +183,25 @@ jpf.BaseButton = function(pHtmlNode){
                 return false;
 
             if (_self.$clickHandler && _self.$clickHandler())
-                _self.$updateState (e || event, "click");
+                _self.$updateState(e, "click");
             else
                 _self.dispatchEvent("click", {htmlEvent : e});
 
             return false;
+        };
+
+        if (jpf.isIphone)
+            return;
+
+        this.oExt.onmousedown = function(e) {
+            if (!e) e = event;
+
+            if (_self.$notfromext && (e.srcElement || e.target) == this)
+                return;
+
+            refMouseDown = 1;
+            mouseLeft    = false;
+            _self.$updateState(e, "mousedown");
         };
 
         this.oExt.onmousemove = function(e) {
