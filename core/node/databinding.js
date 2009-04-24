@@ -903,6 +903,8 @@ jpf.DataBinding = function(){
     this.applyRuleSetOnNode = function(setname, cnode, def){
         if (!cnode) return "";
 
+        var returnValue;
+
         //Get Rules from Array
         var rules = typeof setname == "string"
             ? (this.bindingRules || {})[setname]
@@ -924,14 +926,20 @@ jpf.DataBinding = function(){
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
             if (setname == "value") setname = "valuerule";
-            return typeof this[setname] == "string" && setname != "value"
+            returnValue = typeof this[setname] == "string" && setname != "value"
                     && jpf.getXmlValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
             /* #else
-            return def && cnode.selectSingleNode(def) || false;
+            returnValue = def && cnode.selectSingleNode(def) || false;
             #endif */
+            
+            //#ifdef __WITH_MULTI_LANG_BINDING
+             
+            //#endif
+            
+            return returnValue;
         }
-
+        
         var node = null, sel, i, o, v, rule;
         for (i = 0; i < rules.length; i++) {
             rule = rules[i];
@@ -942,16 +950,8 @@ jpf.DataBinding = function(){
                 this.lastRule = rule;
 
                 if (v = rule.getAttribute("value")){ //Check for Default Value
-                    /**
-                     * @todo internationalization for <j:caption value="no value" />
-                     */
-
-                    //#ifdef __WITH_LANG_SUPPORT
-                    //jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
-                    //    "$1"), {htmlNode : pHtmlNode});
-                    //#endif
-
-                    return v;
+                    returnValue = v;
+                    break;
                 }
 
                 //#ifdef (__ENABLE_BINDING_JSLT || __ENABLE_BINDING_XSLT) && (__PARSER_XSLT || __PARSER_JSLT)
@@ -1039,7 +1039,8 @@ jpf.DataBinding = function(){
                     }
                     //#endif
 
-                    return rule.getAttribute("method") ? self[rule.getAttribute("method")](x, this) : x;
+                    returnValue = rule.getAttribute("method") ? self[rule.getAttribute("method")](x, this) : x;
+                    break;
                 }
                 // #endif
 
@@ -1054,7 +1055,8 @@ jpf.DataBinding = function(){
                         return false;
                     }
 
-                    return self[v](o, this);
+                    returnValue = self[v](o, this);
+                    break;
                 }
                 //#endif
                 //#ifdef __ENABLE_BINDING_EVAL
@@ -1065,7 +1067,8 @@ jpf.DataBinding = function(){
                     var value = func.call(this, o, this);
                     if (!value) continue;
 
-                    return value;
+                    returnValue = value;
+                    break;
                 }
                 //#endif
                 //Process XMLElement
@@ -1095,13 +1098,31 @@ jpf.DataBinding = function(){
                     if (v = rule.getAttribute("mask")) {
                         if (value.match(/^(?:true|false)$/))
                             value = value == "true" ? 1 : 0;
-                        return v.split(";")[value];
+                        
+                        returnValue = v.split(";")[value];
+                        break;
                     }
                     else
                     //#endif
-                        return value;
+                    {
+                        returnValue = value;
+                        break;
+                    }
                 }
             }
+        }
+        
+        if (returnValue) {
+            //#ifdef __WITH_MULTI_LANG_BINDING
+            //@todo speed optimize
+            var keys = jpf.language.getBinding(this, this.cacheID);
+            returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
+                keys[m1] = true;
+                return jpf.language.getWord(m1);
+            });
+            //#endif
+            
+            return returnValue;
         }
 
         // #ifdef __DEBUG

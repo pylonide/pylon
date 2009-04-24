@@ -97,6 +97,9 @@ jpf.language = {
      * was gives.
      */
     automatch : false,
+    
+    loaded    : false,
+    
     /**
      * String setting the prefix to the set of language symbols. This is a tree path
      * using a dott (.) as a seperation symbol.
@@ -116,6 +119,7 @@ jpf.language = {
         if (typeof xmlNode == "string")
             xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
+        this.loaded = true;
     },
 
     /**
@@ -273,6 +277,14 @@ jpf.language = {
     
     getWord: function(key){
         return this.words[key];
+    },
+    
+    bindings : {},
+    getBinding : function(jmlNode, cacheId){
+        var data = this.bindings[jmlNode.uniqueId]
+            || (this.bindings[jmlNode.uniqueId] = {});
+        
+        return data[cacheId] || (data[cacheId] = {});
     }
 };
 

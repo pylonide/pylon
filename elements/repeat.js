@@ -61,7 +61,6 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-
 jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable     = false; // This object can get the focus
     this.canHaveChildren = true;
@@ -99,6 +98,11 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
         jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
     };
+    
+    this.getRootData = function(jmlNode){
+        var id = jpf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
+        return jpf.getData(id);
+    }
     
     /**
      * @private
