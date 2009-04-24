@@ -64,6 +64,7 @@
  *  <j:progressbar ref="@progress" />
  * </code>
  */
+jpf.progress    =
 jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = false; // This object can get the focus
 
