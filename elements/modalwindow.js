@@ -117,7 +117,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
-    this.buttons           = "min|max|close";
+    this.buttons           = jpf.isIphone ? "" : "min|max|close";
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
@@ -667,6 +667,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
      *   edit   The button that puts the window into the edit state.
      */
     this.$propHandlers["buttons"] = function(value){
+        //#ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone) return;
+        //#endif
         var buttons = value.split("|");
         var nodes   = this.oButtons.childNodes;
         var re      = new RegExp("(" + value + ")");
@@ -714,6 +717,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Keyboard ****/
 
     //#ifdef __WITH_KEYBOARD
+    //#ifdef __SUPPORT_IPHONE
+    if (!jpf.isIphone) {
+    //#endif
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -778,6 +784,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(this.oInt);
     }, true);
+    //#ifdef __SUPPORT_IPHONE
+    }
+    //#endif
+
     //#endif
 
     function setButtonEvents(btn){
@@ -804,7 +814,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-            if (!oButtons)
+            if (!oButtons || jpf.isIphone)
                 return;
 
             var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
@@ -823,6 +833,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oIcon)
             this.oIcon.style.display = "none";
 
+        //#ifdef __SUPPORT_IPHONE
+        if (!jpf.isIphone) {
+        //#endif
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
 
@@ -860,7 +873,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!lastState.normal)
                 return false;
         }
-
+        //#ifdef __SUPPORT_IPHONE
+        }
+        //#endif
         var diff = jpf.getDiff(this.oExt);
         hordiff  = diff[0];
         verdiff  = diff[1];
@@ -881,6 +896,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
 
+        //#ifdef __SUPPORT_IPHONE
+        if (!jpf.isIphone) {
+        //#endif
         (this.oTitle.nodeType != 1
           ? this.oTitle.parentNode
           : this.oTitle).ondblclick = function(e){
@@ -897,6 +915,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 || jpf.JmlElement.propHandlers.draggable).call(this, true);
             this.draggable = true;
         }
+        //#ifdef __SUPPORT_IPHONE
+        }
+        //#endif
 
         if (this.modal === undefined && this.oCover) {
             this.$propHandlers.modal.call(this, true);

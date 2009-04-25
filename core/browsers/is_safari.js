@@ -99,6 +99,34 @@ jpf.runIphone = function() {
     if (!jpf.isIphone) return;
 
     jpf.makeClass(this);
+
+    // #ifdef __WITH_CSS
+    jpf.importCssString(document,
+       'body {\
+            margin: 0;\
+            font-family: Helvetica;\
+            background: #FFFFFF;\
+            color: #000000;\
+            overflow-x: hidden;\
+            -webkit-user-select: none;\
+            -webkit-text-size-adjust: none;\
+        }\
+        body > *:not(.toolbar) {\
+            position: absolute;\
+            margin: 0;\
+            padding: 0;\
+            left: 0;\
+            top: 45px;\
+            width: 100%;\
+            min-height: 372px;\
+        }\
+        body[orient="landscape"] > *:not(.toolbar) {\
+            min-height: 268px;\
+        }\
+        body > *[selected="true"] {\
+            display: block;\
+        }', "screen");
+    // #endif
     
     var head = document.getElementsByTagName("head")[0];
     if (jpf.appsettings.iphoneIcon) {

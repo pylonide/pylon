@@ -137,6 +137,7 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
  * @param {String} media      the media to which this css applies (i.e. 'print' or 'screen')
  */
 jpf.importCssString = function(doc, cssString, media){
+    doc = doc || document;
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
     //#ifdef __WITH_OPACITY_RUNTIME_FIX
@@ -150,8 +151,8 @@ jpf.importCssString = function(doc, cssString, media){
 
     if (jpf.canCreateStyleNode) {
         //var head  = document.getElementsByTagName("head")[0];
-        var style = document.createElement("style");
-        style.appendChild(document.createTextNode(cssString));
+        var style = doc.createElement("style");
+        style.appendChild(doc.createTextNode(cssString));
         htmlNode.appendChild(style);
     }
     else {

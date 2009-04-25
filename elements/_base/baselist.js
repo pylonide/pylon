@@ -489,7 +489,7 @@ jpf.BaseList = function(){
                 'o.stopRename();' +
                 // #endif
                 ' o.choose()');
-            elSelect.setAttribute(this.itemSelectEvent || jpf.isIphone ? "onclick" : "onmousedown",
+            elSelect.setAttribute(this.itemSelectEvent || jpf.isIphone ? "ontouchstart" : "onmousedown",
                 'var o = jpf.lookup(' + this.uniqueId
                 + ');if(!o.renaming && o.hasFocus() \
                   && jpf.xmldb.isChildOf(o.$selected, this, true) \
@@ -509,7 +509,7 @@ jpf.BaseList = function(){
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup('
                 + this.uniqueId + '); o.choose()');
             elSelect.setAttribute(this.itemSelectEvent
-                || jpf.isIphone ? "onclick" : "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
+                || jpf.isIphone ? "ontouchstart" : "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
                 + '); o.select(this, event.ctrlKey, event.shiftKey)');
         }
 
@@ -578,7 +578,7 @@ jpf.BaseList = function(){
             var elSelect  = this.$getLayoutNode("item", "select");
 
             Item.setAttribute("class", "more");
-            elSelect.setAttribute(jpf.isIphone ? "onclick" : "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
+            elSelect.setAttribute(jpf.isIphone ? "ontouchstart" : "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
                 + ');o.clearSelection();o.$setStyleClass(this, "more_down");');
             elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
                 + ').$setStyleClass(this, "", ["more_down"]);');

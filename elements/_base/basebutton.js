@@ -86,7 +86,9 @@ jpf.BaseButton = function(pHtmlNode){
     }
 
     /**** Keyboard Support ****/
-
+    //#ifdef __SUPPORT_IPHONE
+    if (!jpf.isIphone) {
+    //#endif
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -126,6 +128,10 @@ jpf.BaseButton = function(pHtmlNode){
                 return this.$updateState(e);
         }
     }, true);
+    //#ifdef __SUPPORT_IPHONE
+    }
+    //#enidf
+
     //#endif
 
     /**** Private state handling methods ****/
@@ -156,23 +162,25 @@ jpf.BaseButton = function(pHtmlNode){
     }
 
     this.$setupEvents = function() {
-        this.oExt[jpf.isIphone ? "onclick" : "onmouseup"] = function(e, force) {
+        this.oExt[jpf.isIphone ? "ontouchstart" : "onmouseup"] = function(e, force) {
             e = e || window.event;
+            //#ifdef __SUPPORT_IPHONE
             if (jpf.isIphone) {
-                /*mouseOver = true;
-                _self.$updateState(e, "mouseover");
-                refMouseDown = 1;
-                mouseLeft = false;
-                _self.$updateState(e, "mousedown");*/
-                force = true;
+                force = false;
+                if (!e.touches || e.touches.length != 1)
+                    return;
+                e = e.touches[0];
+                this.onmousemove(e);
+                this.onmousedown(e);
             }
+            //#endif
             //if (e)  e.cancelBubble = true;
 
-            if (!force && !jpf.isIphone && (!mouseOver || !refMouseDown))
+            if (!force && !mouseOver || !refMouseDown)
                 return;
 
             refMouseDown = 0;
-            _self.$updateState(e, jpf.isIphone ? "click" : "mouseup");
+            _self.$updateState(e, "mouseup");
 
             // If this is coming from a mouse click, we shouldn't have left the button.
             if (_self.disabled || (e && e.type == "click" && mouseLeft == true))
@@ -187,14 +195,17 @@ jpf.BaseButton = function(pHtmlNode){
             else
                 _self.dispatchEvent("click", {htmlEvent : e});
 
+            //#ifdef __SUPPORT_IPHONE
+            if (jpf.isIphone) {
+                e.explicitOriginalTarget = e.target;
+                this.onmouseout(e);
+            }
+            //#endif
             return false;
         };
 
-        if (jpf.isIphone)
-            return;
-
         this.oExt.onmousedown = function(e) {
-            if (!e) e = event;
+            e = e || window.event;
 
             if (_self.$notfromext && (e.srcElement || e.target) == this)
                 return;
@@ -206,7 +217,7 @@ jpf.BaseButton = function(pHtmlNode){
 
         this.oExt.onmousemove = function(e) {
             if (!mouseOver) {
-                if (!e) e = event;
+                e = e || window.event;
 
                 if (_self.$notfromext && (e.srcElement || e.target) == this)
                     return;
@@ -217,7 +228,7 @@ jpf.BaseButton = function(pHtmlNode){
         };
 
         this.oExt.onmouseout = function(e) {
-            if(!e) e = event;
+            e = e || window.event;
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
