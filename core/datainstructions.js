@@ -298,12 +298,16 @@ jpf.getData = function(instruction, xmlContext, options, callback){
             throw err;
         }
 
-        if (!oJmlNode.value)
+        var node = oJmlNode.hasFeature(__MULTISELECT__)
+            ? oJmlNode.selected
+            : oJmlNode.xmlRoot;
+        
+        if (!node)
             retvalue = null;
         else
-            retvalue = data[2]
-              ? oJmlNode.value.selectSingleNode(data[2])
-              : oJmlNode.value;
+            retvalue = data[1]
+              ? node.selectSingleNode(data[1])
+              : node;
     }
     else {
         var model = jpf.nameserver.get("model", instrType);
