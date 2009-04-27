@@ -184,8 +184,11 @@ jpf.language = {
             
             if (jmlNode.cacheID == ar[1])
                 jmlNode.reload();
-            else
-                jmlNode.clearCacheItem(ar[1]);
+            else {
+                if (jmlNode.clearCacheItem) 
+                    jmlNode.clearCacheItem(ar[1]);
+                delete this.bindings[ar[0]][ar[1]];
+            }
                 
         }
         
