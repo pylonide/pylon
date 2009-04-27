@@ -242,24 +242,31 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
 
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-        var max, min, multiplier = (this.value - this.min) / (this.max - this.min);
+        var max, min, offset, multiplier = (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
                 - jpf.getWidthDiff(this.oContainer))
-                - this.oSlider.offsetWidth;
+                - this.oKnob.offsetWidth;
             min = parseInt(jpf.getBox(
                 jpf.getStyle(this.oContainer, "padding"))[3]);
 
-            this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
+            offset = (((max - min) * multiplier) + min);
+            this.oKnob.style.left = offset + "px";
+            if (this.oFill)
+                this.oFill.style.width = (offset + 3) + "px";
         }
         else {
             max = (this.oContainer.offsetHeight
                 - jpf.getHeightDiff(this.oContainer))
-                - this.oSlider.offsetHeight;
+                - this.oKnob.offsetHeight;
             min = parseInt(jpf.getBox(
                 jpf.getStyle(this.oContainer, "padding"))[0]);
-            this.oSlider.style.top = (((max - min) * (1 - multiplier)) + min) + "px";
+
+            offset = (((max - min) * (1 - multiplier)) + min);
+            this.oKnob.style.top = offset + "px";
+            if (this.oFill)
+                this.oFill.style.height = (offset + 3) + "px";
         }
 
         if (this.oLabel) {
@@ -268,7 +275,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oLabel.nodeValue = Math.round(multiplier * 100) + "%";
             }
             //Number
-            else
+            else {
                 if (this.mask == "#") {
                     status = this.value;
                     this.oLabel.nodeValue = this.step
@@ -280,7 +287,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min)
                         / (this.step || 1)]; //optional floor ??
                 }
-
+            }
         }
     };
 
@@ -355,24 +362,17 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt         = this.$getExternal();
         this.oLabel       = this.$getLayoutNode("main", "status", this.oExt);
         this.oMarkers     = this.$getLayoutNode("main", "markers", this.oExt);
-        this.oSlider      = this.$getLayoutNode("main", "slider", this.oExt);
+        this.oKnob        = this.$getLayoutNode("main", "slider", this.oExt);
+        this.oFill        = this.$getLayoutNode("main", "fill", this.oExt);
         this.oInt         = this.oContainer = this.$getLayoutNode("main",
             "container", this.oExt);
 
         this.$dir         = this.$getOption("main", "direction") || "horizontal";
 
-        this.oSlider.style.left = (parseInt(jpf.getBox(
+        this.oKnob.style.left = (parseInt(jpf.getBox(
             jpf.getStyle(this.oExt, "padding"))[3])) + "px";
 
-        this.oSlider.onmousedown = function(e){
-            if (_self.disabled)
-                return false;
-
-            //@todo use start action here
-
-            e = e || window.event;
-            document.dragNode = this;
-
+        function prepareKnob(e) {
             this.x   = (e.clientX || e.x);
             this.y   = (e.clientY || e.y);
             this.stX = this.offsetLeft;
@@ -393,26 +393,38 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.min = parseInt(jpf.getBox(
                     jpf.getStyle(_self.oContainer, "padding"))[0]);
             }
+        }
+
+        function getKnobValue(o, e, slideDiscreet){
+            var to = (_self.$dir == "horizontal")
+                ? (e.clientX || e.x) - o.x + o.stX
+                : (e.clientY || e.y) - o.y + o.stY;
+            to = (to > o.max ? o.max : (to < o.min ? o.min : to));
+            var value = (((to - o.min) * 100 / (o.max - o.min) / 100)
+                * (_self.max - _self.min)) + _self.min;
+
+            value = slideDiscreet
+                ? (Math.round(value / slideDiscreet) * slideDiscreet)
+                : value;
+            value = (_self.$dir == "horizontal") ? value : 1 - value;
+
+            return value;
+        }
+
+        this.oKnob.onmousedown = function(e){
+            if (_self.disabled)
+                return false;
+
+            //@todo use start action here
+
+            e = e || window.event;
+            document.dragNode = this;
+
+            prepareKnob.call(this, e);
 
             _self.$setStyleClass(this, "btndown", ["btnover"]);
 
             jpf.dragmode.mode = true;
-
-            function getValue(o, e, slideDiscreet){
-                var to = (_self.$dir == "horizontal")
-                    ? (e.clientX || e.x) - o.x + o.stX
-                    : (e.clientY || e.y) - o.y + o.stY;
-                to = (to > o.max ? o.max : (to < o.min ? o.min : to));
-                var value = (((to - o.min) * 100 / (o.max - o.min) / 100)
-                    * (_self.max - _self.min)) + _self.min;
-
-                value = slideDiscreet
-                    ? (Math.round(value / slideDiscreet) * slideDiscreet)
-                    : value;
-                value = (_self.$dir == "horizontal") ? value : 1 - value;
-
-                return value;
-            }
 
             dragging = true;
 
@@ -428,13 +440,13 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 if (_self.realtime) {
                     _self.value = -1; //reset value
-                    _self.setValue(getValue(o, e, _self.slideDiscreet));
+                    _self.setValue(getKnobValue(o, e, _self.slideDiscreet));
                 }
 
-                _self.$propHandlers["value"].call(_self, getValue(o, e, _self.slideDiscreet), true);
+                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true);
             }
 
-            function dragMouseup(e){
+            document.onmouseup = function(e){
                 var o = this.dragNode;
                 this.dragNode = null;
 
@@ -443,27 +455,39 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 dragging = false;
 
                 _self.$ignoreSignals = _self.realtime;
-                _self.change(getValue(o, e || window.event,
+                _self.change(getKnobValue(o, e || window.event,
                     _self.slideDiscreet || _self.slideSnap));
                 _self.$ignoreSignals = false;
 
                 jpf.dragmode.mode = document.onmousemove = document.onmouseup
                     = null;
-            }
-
-            document.onmouseup  = dragMouseup;
+            };
             //event.cancelBubble = true;
             return false;
         };
 
-        this.oSlider.onmouseup = this.oSlider.onmouseover = function(){
+        this.oKnob.onmouseup = this.oKnob.onmouseover = function(){
             if (document.dragNode != this)
                 _self.$setStyleClass(this, "btnover", ["btndown"]);
         };
 
-        this.oSlider.onmouseout = function(){
+        this.oKnob.onmouseout = function(){
             if (document.dragNode != this)
                 _self.$setStyleClass(this, "", ["btndown", "btnover"]);
+        };
+
+        this.oExt.onmousedown = function(e) {
+            e = e || window.event;
+
+            var o = _self.oKnob;
+            if ((e.srcElement || e.target) != o) {
+                var p = jpf.getAbsolutePosition(o);
+                prepareKnob.call(o, {
+                    x : p[0] + o.offsetWidth / 2,
+                    y : p[1] + o.offsetHeight / 2
+                });
+                _self.change(getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap));
+            }
         };
 
         //#ifdef __WITH_LAYOUT
@@ -480,10 +504,10 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
-        this.oSlider.onmousedown =
-        this.oSlider.onmouseup   =
-        this.oSlider.onmouseover =
-        this.oSlider.onmouseout  = null;
+        this.oKnob.onmousedown =
+        this.oKnob.onmouseup   =
+        this.oKnob.onmouseover =
+        this.oKnob.onmouseout  = null;
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
