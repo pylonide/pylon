@@ -177,19 +177,35 @@ jpf.language = {
     
     $marked : {},
     $processedMarked : function(){
-        var ar, id, jmlNode;
+        var ar, id, jmlNode, nodes;
         for (id in this.$marked) {
             ar      = id.split(":");
             jmlNode = jpf.all[ar[0]];
             
-            if (jmlNode.cacheID == ar[1])
-                jmlNode.reload();
+            if (jmlNode.cacheID == ar[1]) {
+                if (jmlNode.hasFeature(__MULTISELECT__)) {
+                    if (jmlNode.isTreeArch) {
+                        nodes = jmlNode.xmlRoot.selectNodes("//" 
+                          + jmlNode.traverse.split("|").join("|//"));
+                    }
+                    else {
+                        nodes = jmlNode.xmlRoot.selectNodes(jmlNode.traverse);
+                    }
+                    
+                    for (var i = 0; i < nodes.length; i++) {
+                        jmlNode.$updateNode(nodes[i], 
+                          jpf.xmldb.findHTMLNode(nodes[i], jmlNode));
+                    }
+                }
+                else {
+                    jmlNode.reload();
+                }
+            }
             else {
                 if (jmlNode.clearCacheItem) 
                     jmlNode.clearCacheItem(ar[1]);
                 delete this.bindings[ar[0]][ar[1]];
             }
-                
         }
         
         this.$marked = {};
@@ -306,6 +322,7 @@ jpf.language = {
     },
 
     removeElement: function(key, id){
+        if (!this.elements[key]) return;
         this.elements[key].removeIndex(id);
     },
     

@@ -934,7 +934,14 @@ jpf.DataBinding = function(){
             #endif */
             
             //#ifdef __WITH_MULTI_LANG_BINDING
-             //@todo
+            //@todo speed optimize
+            if (typeof returnValue == "string") {
+                var keys = jpf.language.getBinding(this, this.cacheID);
+                returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
+                    keys[m1] = true;
+                    return jpf.language.getWord(m1);
+                });
+            }
             //#endif
             
             return returnValue;

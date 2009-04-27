@@ -587,9 +587,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
         }
-        
+
         if (this.prerender || traverseLength < 3)
-            this.$addNodes(xmlNode, container, true); //checkChildren ???
+            this.$addNodes(xmlNode, container, false); //checkChildren ???
         /*else {
             this.setLoadStatus(xmlNode, "potential");
         }*/
