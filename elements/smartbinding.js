@@ -728,8 +728,8 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
             //@todo, dynamically update part
         }
         
-        if (!jpf.isParsing)
-            this.markForUpdate(null, "bindings");
+        //if (!jpf.isParsing)
+            //this.markForUpdate(null, "bindings");
     };
     
     /**
@@ -752,8 +752,8 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         this.actions    = rules;//jpf.getRules(xmlNode);
         this.xmlactions = xmlNode;
         
-        if (!jpf.isParsing)
-            this.markForUpdate(null, "actions");
+        //if (!jpf.isParsing)
+            //this.markForUpdate(null, "actions");
     };
     
     /**
@@ -776,8 +776,8 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         this.dragdrop    = rules;//jpf.getRules(xmlNode);
         this.xmldragdrop = xmlNode;
         
-        if (!jpf.isParsing)
-            this.markForUpdate(null, "dragdrop");
+        //if (!jpf.isParsing)
+            //this.markForUpdate(null, "dragdrop");
     };
     
     /**
