@@ -103,10 +103,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.getRootData = function(jmlNode){
-        if (!jmlNode.$jml.parentNode)
-            debugger;
         var id = jpf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
-        alert(id);
         return jpf.getData(id);
     }
     
