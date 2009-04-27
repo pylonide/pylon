@@ -73,7 +73,15 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.value = 0;
     this.min   = 0;
     this.max   = 100;
+    
+    var _self   = this;
+    var running = false;
+    var timer;
 
+    /**
+     * @attribute {Boolean} autostart whether the progressbar starts automatically.
+     * @attribute {Boolean} autohide  whether the progressbar hides when the progressbar is 100%.
+     */
     this.$booleanProperties["autostart"] = true;
     this.$booleanProperties["autohide"] = true;
 
@@ -89,7 +97,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.value >= this.max)
             jpf.setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
         else
-            jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Complete"]);
+            jpf.setStyleClass(this.oExt, this.baseCSSname + "Running", [this.baseCSSname + "Complete"]);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
@@ -140,17 +148,25 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
      * Resets the progress indicator.
      * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
      */
-    this.clear = function(restart, restart_time){
-        clearInterval(this.timer);
+    this.clear = function(){
+        this.$clear();
+    }
+
+    this.$clear = function(restart, restart_time){
+        clearInterval(timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";
         jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Running", this.baseCSSname + "Complete"]);
 
         if(restart)
-            this.timer = setInterval("jpf.lookup(" + this.uniqueId
-                + ").start(" + restart_time + ")");
+            timer = setInterval(function(){
+                _self.start(restart_time);
+            });
+        
         if (this.autohide)
             this.hide();
+        
+        running = false;
     };
 
     /**
@@ -161,14 +177,15 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.autohide)
             this.show();
 
-        clearInterval(this.timer);
+        clearInterval(timer);
         
         //if (this.value == this.max)
             //this.setValue(this.min + (this.max - this.min) * 0.5);
         
         //this.oSlider.style.display = "block";
-        this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()",
-            time || 1000);
+        timer = setInterval(function(){
+            _self.$step();
+        }, time || 1000);
         this.$setStyleClass(this.oExt, this.baseCSSname + "Running");
     };
 
@@ -176,7 +193,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
      * Pauses the progress indicator.
      */
     this.pause = function(){
-        clearInterval(this.timer);
+        clearInterval(timer);
     };
 
     /**
@@ -184,10 +201,11 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
      * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
      */
     this.stop = function(restart, time, restart_time){
-        clearInterval(this.timer);
+        clearInterval(timer);
         this.setValue(this.max);
-        this.timer = setTimeout("jpf.lookup(" + this.uniqueId + ").clear("
-            + restart + ", " + (restart_time || 0) + ")", time || 500);
+        timer = setInterval(function(){
+            _self.$clear(restart, (restart_time || 0));
+        }, time || 500);
     };
 
     /**** Private methods ****/
@@ -214,6 +232,8 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.autohide)
             this.hide();
+        
+        jpf.JmlParser.parseChildren(x, null, this);
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
