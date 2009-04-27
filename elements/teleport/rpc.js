@@ -95,6 +95,19 @@ jpf.rpc = function(){
         return true;
     }
 
+    /**
+     * Sets the callback for a method on this object.
+     * Example:
+     * <code>
+     *  comm.setCallback("login", function(data, state, extra) {
+     *      alert(data);
+     *  });
+     *
+     *  comm.login(user, pass);
+     * </code>
+     * @param {String}   name the name of the method defined on this object.
+     * @param {Function} func the function that is called when the rpc method returns.
+     */
     this.setCallback = function(name, func){
         this[name].callback = func;
     }
