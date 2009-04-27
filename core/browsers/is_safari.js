@@ -210,7 +210,7 @@ jpf.runIphone = function() {
      * - touchstart (skip)
      * - touchmove (skip)
      * - touchend (skip)
-     * - touchcance (skip)l
+     * - touchcancel (skip)
      * - gesturestart
      * - gesturechange
      * - gestureend
@@ -222,7 +222,45 @@ jpf.runIphone = function() {
             if (jpf.dispatchEvent)
                 jpf.dispatchEvent(type, evt);
         };
-    })
+    });
+
+    document.ontouchstart = function(e) {
+        if (e.touches && e.touches.length == 1) {
+            //e.preventDefault();
+            e = e.touches[0];
+            if (e.target && typeof e.target.onmousedown == "function")
+                return e.target.onmousedown(e);
+            else if (typeof document.onmousedown == "function")
+                return document.onmousedown(e);
+        }
+    };
+
+    document.ontouchmove = function(e) {
+        if (e.touches && e.touches.length == 1) {
+            //e.preventDefault();
+            e = e.touches[0];
+            if (e.target && typeof e.target.onmousemove == "function")
+                return e.target.onmousemove(e);
+            else if (typeof document.onmousemove == "function")
+                return document.onmousemove(e);
+        }
+    };
+
+    var _touching = false;
+
+    document.ontouchend = document.ontouchcancel = function(e) {
+        if (_touching) return;
+
+        e = e.touches && e.touches.length ? e.touches[0] : e.changedTouches[0];
+        if (e) {
+            _touching = true;
+            setTimeout(function() { _touching = false; });
+            if (e.target && typeof e.target.onmouseup == "function")
+                return e.target.onmouseup(e);
+            else if (typeof document.onmouseup == "function")
+                return document.onmouseup(e);
+        }
+    };
 };
 
 // #endif

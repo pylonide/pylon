@@ -118,7 +118,7 @@ jpf.WindowImplementation = function(){
      * certain conditions.
      */
     this.flash = function(){
-        if (jpf.window.hasFocus())
+        if (jpf.window.hasFocus() || jpf.isIphone)
             return;
 
         if (jpf.isDeskrun)
@@ -460,12 +460,12 @@ jpf.WindowImplementation = function(){
     var lastFocusParent;
     //#ifdef __WITH_WINDOW_FOCUS
     this.addEventListener("focus", function(e){
-        if (!jpf.window.focussed && lastFocusParent) {
+        if (!jpf.window.focussed && lastFocusParent && !jpf.isIphone) {
             jpf.window.$focusLast(lastFocusParent);
         }
     });
     this.addEventListener("blur", function(e){
-        if (!jpf.window.focussed)
+        if (!jpf.window.focussed || jpf.isIphone)
             return;
 
         jpf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
@@ -726,6 +726,9 @@ jpf.WindowImplementation = function(){
 
     var timer, state = "", last = "";
     this.$focusfix = function(){
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone) return;
+        // #endif
         state += "a";
         clearTimeout(timer);
         setTimeout("window.focus();");
@@ -733,12 +736,18 @@ jpf.WindowImplementation = function(){
     }
 
     this.$focusfix2 = function(){
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone) return;
+        // #endif
         state += "b";
         clearTimeout(timer);
         timer = setTimeout(determineAction);
     }
 
     this.$blurfix = function(){
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone) return;
+        // #endif
         state += "c";
         clearTimeout(timer);
         timer = setTimeout(determineAction);
@@ -770,6 +779,10 @@ jpf.WindowImplementation = function(){
     }
 
     window.onfocus = function(){
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone)
+            return jpf.window.dispatchEvent("focus");
+        // #endif
         if (jpf.hasFocusBug) {
             state += "d";
             clearTimeout(timer);
@@ -784,6 +797,10 @@ jpf.WindowImplementation = function(){
     };
 
     window.onblur = function(){
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone)
+            return jpf.window.dispatchEvent("blur");
+        // #endif
         if (jpf.hasFocusBug) {
             state += "e";
             clearTimeout(timer);
@@ -877,7 +894,8 @@ jpf.WindowImplementation = function(){
 
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
     document.onmousedown = function(e){
-        if (!e) e = event;
+        e = e || window.event;
+
         var jmlNode = jpf.findHost(e.srcElement || e.target);
         
         // #ifdef __WITH_POPUP
@@ -935,8 +953,8 @@ jpf.WindowImplementation = function(){
             jmlNode   : jmlNode
         });
 
-        //Non IE selection handling
-        if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
+        //Non IE/ iPhone selection handling
+        if (!jpf.isIphone && !jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
           && (!jpf.isParsingPartial || jmlNode)
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
