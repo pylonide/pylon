@@ -941,8 +941,8 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             }
 
             if (this.caption === undefined && x.firstChild) {
-                this.caption = x.firstChild.nodeValue;
-                this.$handlePropSet("caption", this.caption);
+                //this.caption = x.firstChild.nodeValue;
+                this.setProperty("caption", x.firstChild.nodeValue);
             }
         }
     }
