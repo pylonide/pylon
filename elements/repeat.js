@@ -80,7 +80,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @private
      */
-    var nodes  = {};
+    var nodes  = {}, items = [];
     this.addItem = function(xmlNode, beforeNode, nr){
         var Lid = jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.oExt.insertBefore(document.createElement("div"), beforeNode || null);
@@ -97,10 +97,16 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         var jmlNode = this.template.cloneNode(true);
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
         jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
+        
+        if (jpf.isGecko) //firefox bug fix?
+            items.push(jmlNode);
     };
     
     this.getRootData = function(jmlNode){
+        if (!jmlNode.$jml.parentNode)
+            debugger;
         var id = jpf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
+        alert(id);
         return jpf.getData(id);
     }
     
