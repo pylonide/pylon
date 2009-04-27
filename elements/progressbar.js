@@ -80,7 +80,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * @attribute {Boolean} autostart whether the progressbar starts automatically.
-     * @attribute {Boolean} autohide  whether the progressbar hides when the progressbar is 100%.
+     * @attribute {Boolean} autohide  whether the progressbar hides when the progress is at 100%. Setting this to true will hide the progressbar at start when autostart is not set to true.
      */
     this.$booleanProperties["autostart"] = true;
     this.$booleanProperties["autohide"] = true;

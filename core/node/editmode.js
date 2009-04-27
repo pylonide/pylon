@@ -119,6 +119,7 @@ jpf.language = {
         if (typeof xmlNode == "string")
             xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
+        this.$processedMarked();
         this.loaded = true;
     },
 
@@ -173,15 +174,45 @@ jpf.language = {
         for (var i = 0; i < nodes.length; i++)
             this.parseSection(nodes[i], prefix);
     },
-
+    
+    $marked : {},
+    $processedMarked : function(){
+        var ar, id, jmlNode;
+        for (id in this.$marked) {
+            ar      = id.split(":");
+            jmlNode = jpf.all[ar[0]];
+            
+            if (jmlNode.cacheID == ar[1])
+                jmlNode.reload();
+            else
+                jmlNode.clearCacheItem(ar[1]);
+                
+        }
+        
+        this.$marked = {};
+    },
+    
     /**
      * Updates a key with the value specified and reflects this immediately in
      * the user interface of the applications.
      * @param {String} key    the identifier of the element to be updated.
      * @param {String} value  the new text of the element.
+     * @private
      */
     update: function(key, value){
         this.words[key] = value;
+
+        var caches, uId, cacheId;
+        for (uId in this.bindings) {
+            caches = this.bindings[uId];
+            
+            for (cacheId in caches) {
+                if (caches[cacheId][key]) {
+                    this.$marked[uId + ":" + cacheId] = true;
+                    break;
+                }
+            }
+        }
 
         var els;
         if (!(els = this.elements[key]))
