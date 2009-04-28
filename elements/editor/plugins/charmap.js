@@ -96,6 +96,10 @@ jpf.editor.plugin('charmap', function() {
             jpf.popup.forceHide();
             //this.storeSelection();
             this.editor.insertHTML(sCode, true);
+            var _self = this;
+            setTimeout(function() { //make sure the 'change' is notified to the smartbindings
+                _self.editor.change(_self.editor.getValue());
+            });
             //this.restoreSelection();
         }
     };
