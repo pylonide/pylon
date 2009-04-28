@@ -129,7 +129,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     oNode = oParent.firstChild;
                     if (oNode.nodeType == 1) {
                         if (oNode.nodeName == "BR"
-                          && oNode.getAttribute('_moz_editor_bogus_node') == "TRUE") {
+                          && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
                             this.selection.selectNode(oNode);
                             this.selection.remove();
                             this.selection.collapse(false);
@@ -144,10 +144,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             else if (jpf.isIE) {
                 // yes, we fix hyperlinks...%&$#*@*!
-                var aLinks = this.oDoc.getElementsByTagName('a');
+                var s, aLinks = this.oDoc.getElementsByTagName("a");
                 for (var i = 0, j = aLinks.length; i < j; i++) {
-                    if (aLinks[i].getAttribute('_jpf_href'))
-                        aLinks[i].href = aLinks[i].getAttribute('_jpf_href')
+                    s = aLinks[i].getAttribute("_jpf_href");
+                    if (s) { //prefix 'http://' if it's not there yet...
+                        aLinks[i].href = (s.indexOf("http://") == -1 
+                            ? "http://" : "") + s;
+                    }
                 }
             }
         }
@@ -1689,12 +1692,6 @@ jpf.editor.DISABLED       = -1;
 jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
-/*jpf.editor.ALTP           = {
-    start: '<p>',//<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
-    end  : '</p>', //'</div>',
-    text : '{jpf_placeholder}',
-    node : null
-};*/
 
 jpf.editor.i18n = {
     'en_GB': {
