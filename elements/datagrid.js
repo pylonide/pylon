@@ -1049,13 +1049,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var clr = this.bindingRules.color[0];
             jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
                 ? " .records .highlight SPAN"
-                : " .records .highlight span"), "color", clr.getAttribute("text"));
+                : " .records .highlight span"), "color", clr.getAttribute("text"), null, this.oWin);
             jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
                 ? " .records .highlight SPAN"
-                : " .records .highlight span"), "backgroundColor", clr.getAttribute("row"));
+                : " .records .highlight span"), "backgroundColor", clr.getAttribute("row"), null, this.oWin);
             jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
                 ? " .records .highlight"
-                : " .records .highlight"), "backgroundColor", clr.getAttribute("row"));
+                : " .records .highlight"), "backgroundColor", clr.getAttribute("row"), null, this.oWin);
             /*jpf.importCssString(document, 
                 "." + this.baseCSSname + " .records div.highlight{background-color:" 
                 + clr.getAttribute("row") + ";} ." 
