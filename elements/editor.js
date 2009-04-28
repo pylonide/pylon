@@ -406,15 +406,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 else if (br) {
                     if (capture) {
                         if (depth.length) {
-                            /*strP.push(jpf.editor.ALTP.start, 
-                                strP.splice(depth[depth.length-1][1], 1).join(""), 
-                                jpf.editor.ALTP.end);*/
                             strP.push(br);
                         }
                         else {
-                            /*str.push(jpf.editor.ALTP.start,
-                                strP.join(""), 
-                                jpf.editor.ALTP.end);*/
                             str.push("<p>", strP.join(""), "</p>");
                             strP = [];
                         }
@@ -428,7 +422,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             //donothing
                         }
                         else
-                            str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                            str.push("<p>&nbsp;</p>");
                     }
                 }
                 else if (block){
@@ -463,9 +457,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                                 strP = [];
                             }
                             else {
-                                /*str.push(jpf.editor.ALTP.start,
-                                    strP.join(""), 
-                                    jpf.editor.ALTP.end);*/
                                 str.push("<p>", strP.join(""), "</p>");
                                 strP = [];
                             }
@@ -484,7 +475,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((s = strP.join("")).trim())
                 str.push(bNoEnclosing
                  ? s
-                 : "<p>" + s + "</p>"); //jpf.editor.ALTP.start + s + jpf.editor.ALTP.end);
+                 : "<p>" + s + "</p>");
             html = str.join("");
         }
 

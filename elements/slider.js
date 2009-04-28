@@ -234,7 +234,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * the position of the grabber using the following
      * formula: (value - min) / (max - min)
      */
-    this.$propHandlers["value"] = function(value, force){
+    this.$propHandlers["value"] = function(value, force, animate){
         if (!this.$dir)
             return; //@todo fix this
 
@@ -252,9 +252,25 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.getStyle(this.oContainer, "padding"))[3]);
 
             offset = (((max - min) * multiplier) + min);
-            this.oKnob.style.left = offset + "px";
-            if (this.oFill)
-                this.oFill.style.width = (offset + 3) + "px";
+            if (animate) {
+                jpf.tween.single(this.oKnob, {
+                    type    : 'left',
+                    steps   : 5,
+                    interval: 10,
+                    from    : this.oKnob.offsetLeft,
+                    to      : offset,
+                    anim    : jpf.tween.NORMAL,
+                    oneach  : function(oNode) {
+                        if (_self.oFill)
+                            _self.oFill.style.width = (oNode.offsetLeft + 3) + "px";
+                    }
+                });
+            }
+            else {
+                this.oKnob.style.left = offset + "px";
+                if (this.oFill)
+                    this.oFill.style.width = (offset + 3) + "px";
+            }
         }
         else {
             max = (this.oContainer.offsetHeight
@@ -264,9 +280,26 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.getStyle(this.oContainer, "padding"))[0]);
 
             offset = (((max - min) * (1 - multiplier)) + min);
-            this.oKnob.style.top = offset + "px";
-            if (this.oFill)
-                this.oFill.style.height = (offset + 3) + "px";
+
+            if (animate) {
+                jpf.tween.single(this.oKnob, {
+                    type    : 'top',
+                    steps   : 5,
+                    interval: 10,
+                    from    : this.oKnob.offsetTop,
+                    to      : offset,
+                    anim    : jpf.tween.NORMAL,
+                    oneach  : function(oNode) {
+                        if (_self.oFill)
+                            _self.oFill.style.height = (oNode.offsetTop + 3) + "px";
+                    }
+                });
+            }
+            else {
+                this.oKnob.style.top = offset + "px";
+                if (this.oFill)
+                    this.oFill.style.height = (offset + 3) + "px";
+            }
         }
 
         if (this.oLabel) {
@@ -486,7 +519,9 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     x : p[0] + o.offsetWidth / 2,
                     y : p[1] + o.offsetHeight / 2
                 });
-                _self.change(getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap));
+                var value = getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap);
+                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true, true);
+                _self.change(value);
             }
         };
 

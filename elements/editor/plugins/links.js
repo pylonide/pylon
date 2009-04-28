@@ -34,7 +34,7 @@ jpf.editor.plugin('link', function(){
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -47,6 +47,7 @@ jpf.editor.plugin('link', function(){
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
+        this.oUrl.value = "http://";
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 95);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
@@ -70,15 +71,16 @@ jpf.editor.plugin('link', function(){
     this.submit = function(e) {
         jpf.popup.forceHide();
 
-        if (!this.oUrl.value) return;
+        if (!this.oUrl.value.replace("http://", "")) return;
 
-        this.editor.executeCommand('CreateLink', 'javascript:jpftmp(0);');
-        var oLink, aLinks = this.editor.oDoc.getElementsByTagName('a');
+        this.editor.executeCommand("CreateLink", "javascript:jpftmp(0);");
+        var oLink, aLinks = this.editor.oDoc.getElementsByTagName("a");
         for (var i = 0; i < aLinks.length && !oLink; i++)
-            if (aLinks[i].href == 'javascript:jpftmp(0);')
+            if (aLinks[i].href == "javascript:jpftmp(0);")
                 oLink = aLinks[i];
         if (oLink) {
-            oLink.href   = this.oUrl.value;
+            var val = this.oUrl.value;
+            oLink.href   = (val.indexOf('http://') == -1 ? "http://" : "") + val;
             oLink.target = this.oTarget.value;
             oLink.title  = this.oTitle.value;
         }
