@@ -512,9 +512,8 @@ jpf.Transaction = function(){
         if (this.autoshow)
             this.autoshow = -1;
             
-        this.begin("update", e.xmlNode);
-        
-        return false;
+        if (this.begin("update", e.xmlNode) !== false)
+            return false;
     });
      
     //hmm really?

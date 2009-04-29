@@ -403,8 +403,14 @@ jpf.DataBinding = function(){
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true);
         if (jpf.appsettings.autoDisableActions && !this.actionRules 
-          || this.actionRules && !actionRule)
+          || this.actionRules && !actionRule) {
+            //#ifdef __DEBUG
+            jpf.console.warn("Tried starting new action but no '" + name 
+                + "' action rule was found.");
+            //#endif
+            
             return false;
+        }
 
         var bHasOffline = typeof jpf.offline != "undefined";
         //#ifdef __WITH_OFFLINE
