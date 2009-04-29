@@ -18,6 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+//#ifdef __JACCORDION || __INC_ALL
 
 /**
  * The Accordion is component that allows you to provide multiple vertical or 
@@ -143,7 +144,6 @@
  * @version     %I%, %G%
  * @since       2.2
  */
-//#ifdef __JACCORDION
 jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.canHaveChildren = true;
     this.$focussable     = false;
