@@ -244,11 +244,12 @@ jpf.flash = (function(){
      * @type {String}
      */
     function buildContent() {
-        var hasRequestedVersion = isEightAvailable();
+        var hasRequestedVersion = isEightAvailable(),
+            args                = Array.prototype.slice.call(arguments);
         if (isAvailable() && !hasRequestedVersion)
-            return jpf.flash.buildInstaller();
+            return buildInstaller.apply(null, args);
         if (hasRequestedVersion)
-            return AC_FL_RunContent.apply(null, Array.prototype.slice.call(arguments));
+            return AC_FL_RunContent.apply(null, args);
         return 'This content requires the \
             <a href="http://www.adobe.com/go/getflash/">Adobe Flash Player</a>.';
     }
@@ -258,10 +259,14 @@ jpf.flash = (function(){
      * upgrades.
      */
     function buildInstaller() {
-        var MMPlayerType  = (jpf.isIE == true) ? "ActiveX" : "PlugIn";
-        var MMredirectURL = window.location;
-        document.title = document.title.slice(0, 47) + " - Flash Player Installation";
-        var MMdoctitle = document.title;
+        var ret = AC_GetArgs(arguments,
+            "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
+            "application/x-shockwave-flash"),
+            MMPlayerType  = (jpf.isIE == true) ? "ActiveX" : "PlugIn",
+            MMredirectURL = window.location;
+        document.title    = document.title.slice(0, 47)
+            + " - Flash Player Installation";
+        var MMdoctitle    = document.title;
 
         return AC_FL_RunContent(
             "src", "playerProductInstall",
@@ -270,14 +275,14 @@ jpf.flash = (function(){
             "width", "100%",
             "height", "100%",
             "align", "middle",
-            "id", this.name,
+            "id", ret.embedAttrs["name"],
             "quality", "high",
             "bgcolor", "#000000",
-            "name", this.name,
+            "name", ret.embedAttrs["name"],
             "allowScriptAccess","always",
             "type", "application/x-shockwave-flash",
             "pluginspage", "http://www.adobe.com/go/getflashplayer"
-            );
+        );
     }
 
     /**
