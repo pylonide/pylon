@@ -277,10 +277,13 @@ jpf.editor.plugin('tablewizard', function() {
 
     this.queryState = function(editor) {
         var oNode = editor.selection.getSelectedNode();
-        if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
-          || oNode.tagName == "TR" || oNode.tagName == "TD") {
-            activeNode = oNode;
-            return jpf.editor.ON;
+        while (oNode.nodeType != 1 || oNode.tagName != "BODY") {
+            if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
+              || oNode.tagName == "TR" || oNode.tagName == "TD") {
+                activeNode = oNode;
+                return jpf.editor.ON;
+            }
+            oNode = oNode.parentNode;
         }
 
         return jpf.editor.OFF;
