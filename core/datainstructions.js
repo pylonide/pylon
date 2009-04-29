@@ -337,8 +337,8 @@ jpf.getData = function(instruction, xmlContext, options, callback){
     if (callback)
         gCallback(retvalue, jpf.SUCCESS, {userdata:operators});
     else {
-        jpf.console.warn("Returning data directly in jpf.getData(). \
-            This means that all callback communication ends in void!");
+        //jpf.console.warn("Returning data directly in jpf.getData(). \
+            //This means that all callback communication ends in void!");
         return retvalue;
     }
 };

@@ -199,10 +199,10 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         if (action == "remove") {
             this.removeItem(Lid);
         }
-        else if (action.match(add / insert)) {
+        /*else if (action.match(/add|insert/) && this.isTraverseNode(xmlNode)) {
             this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
             jpf.JmlParser.parseLastPass();
-        }
+        }*/
         else if (action == "synchronize") {
         
         }
