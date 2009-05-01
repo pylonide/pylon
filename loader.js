@@ -62,7 +62,7 @@ jpf.Elements = [
     "checkbox",
     "collection",
     "colorpicker",
-    "container",
+    //"container",
     "datagrid",
     //"datastore",
     "divider",

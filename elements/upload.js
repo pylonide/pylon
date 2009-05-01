@@ -34,7 +34,7 @@
  * <code>
  *  <j:list id="lstImages" smartbinding="..." model="..." />
  *
- *  <j:upload id="flLogoUpload"
+ *  <j:upload id="uplMain"
  *    target    = "../api/UploadPicture.asp"
  *    ontimeout = "alert('It seems the server went away')"
  *    oncancel  = "alert('Could not upload logo')"

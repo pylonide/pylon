@@ -91,6 +91,16 @@ jpf.MultiLevelBinding = function(jmlNode){
         var i, k, addList, removeList, xmlNode,
             selNodes      = this.getSelectionNodes(),
             traverseNodes = jmlNode.getTraverseNodes();
+        
+        //#ifdef __DEBUG
+        if (!jmlNode.bindingRules[jmlNode.mainBind]) {
+            throw new Error(jpf.formatErrorString(0, jmlNode, 
+              "Executing selection change",
+              "The default bind rule isn't set. Expected '" 
+              + jmlNode.mainBind + "' rule to exist"));
+        }
+        //#endif
+
         //Find nodes that are removed from the selection
         for (removeList = [], i = 0; i < selNodes.length; i++) {
             for (k = 0; k < traverseNodes.length; k++) {
@@ -272,7 +282,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     this.getSelectionNodes = function(){
         return this.xmlRoot 
-            ? this.xmlRoot.selectNodes(jmlNode.$jml.getAttribute("ref"))
+            ? this.xmlRoot.selectNodes(this.mode == "copy" ? jmlNode.traverse : jmlNode.$jml.getAttribute("ref"))
             : [];//This should be read from the bindingRule //this.getTraverseNodes();
     };
     
@@ -291,7 +301,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         return false;
     };
     
-    this.mode  = "default";//"copy"
+    this.mode  = "copy";//"default";//"copy"
     this.xpath = "text()";
     
     this.createSelectionNode = function(xmlNode){
@@ -303,6 +313,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.$jml.getAttribute("ref"));
             jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
             jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
+            
             return selNode;
         }
     };
