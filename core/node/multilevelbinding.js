@@ -183,11 +183,15 @@ jpf.MultiLevelBinding = function(jmlNode){
         this.disabled = false
     };
     
+    var updateTimer;
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (UndoObj) 
             UndoObj.xmlNode = this.xmlRoot;
         
-        this.$updateSelection();
+        clearTimeout(updateTimer)
+        updateTimer = setTimeout(function(){
+            mlNode.$updateSelection();
+        });
         
         //@todo fix 'default' behaviour
         //if (jmlNode["default"] && !jmlNode.getValue())
@@ -234,8 +238,9 @@ jpf.MultiLevelBinding = function(jmlNode){
                     }
                 }
                 
-                if (xmlNode && !jmlNode.isSelected(xmlNode)) 
+                if (xmlNode && !jmlNode.isSelected(xmlNode)) {
                     jmlNode.select(xmlNode, null, null, null, null, true);
+                }
             }
             
             //Check if a currently selected item should be deselected
@@ -249,8 +254,9 @@ jpf.MultiLevelBinding = function(jmlNode){
                     }
                 }
                 
-                if (!xmlNode) 
+                if (!xmlNode) {
                     jmlNode.select(jSelNodes[i], null, null, null, null, true);
+                }
             }
             
             //jmlNode.selectList(selList);
