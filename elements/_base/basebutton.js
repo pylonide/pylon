@@ -219,6 +219,11 @@ jpf.BaseButton = function(pHtmlNode){
             _self.$updateState(e, "mouseout");
         };
 
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone)
+            jpf.iphone.linkEvents(this.oExt);
+        // #endif
+
         if (jpf.hasClickFastBug)
             this.oExt.ondblclick = this.oExt.onmouseup;
     }

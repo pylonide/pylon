@@ -525,6 +525,11 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         };
 
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone)
+            jpf.iphone.linkEvents(this.oKnob);
+        // #endif
+
         //#ifdef __WITH_LAYOUT
         jpf.layout.setRules(this.oExt, "knob", "var o = jpf.all[" + this.uniqueId + "];\
             o.$propHandlers.value.call(o, o.value);", true);

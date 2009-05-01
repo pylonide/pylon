@@ -110,6 +110,7 @@ jpf.runIphone = function() {
             overflow-x: hidden;\
             -webkit-user-select: none;\
             -webkit-text-size-adjust: none;\
+            -webkit-touch-callout: none;\
         }\
         body > *:not(.toolbar) {\
             position: absolute;\
@@ -224,43 +225,61 @@ jpf.runIphone = function() {
         };
     });
 
-    document.ontouchstart = function(e) {
-        if (e.touches && e.touches.length == 1) {
-            //e.preventDefault();
-            e = e.touches[0];
-            if (e.target && typeof e.target.onmousedown == "function")
-                return e.target.onmousedown(e);
-            else if (typeof document.onmousedown == "function")
-                return document.onmousedown(e);
+    
+    jpf.iphone = {
+        linkEvents: function(el) {
+            el.ontouchstart = function(evt) {
+                if (!evt.touches || evt.touches.length != 1) return;
+
+                var found = false,
+                    e     = evt.touches[0];
+                if (typeof this.onmousedown == "function") {
+                    this.onmousedown(e);
+                    if (this != document)
+                        return false;
+                }
+            };
+
+            el.ontouchmove = function(evt) {
+                if (!evt.touches || evt.touches.length != 1) return;
+
+                var found = false,
+                    e     = evt.touches[0];
+                if (typeof this.onmousemove == "function") {
+                    this.onmousemove(e);
+                    if (this != document)
+                        return false;
+                }
+            };
+
+            var _touching = false;
+
+            el.ontouchend = el.ontouchcancel = function(evt) {
+                if (_touching) return;
+
+                var e = evt.touches && evt.touches.length
+                    ? evt.touches[0] 
+                    : evt.changedTouches[0];
+                if (!e) return;
+                
+                _touching = true;
+                setTimeout(function() { _touching = false; });
+                var found = false;
+                if (typeof this.onmouseup == "function") {
+                    this.onmouseup(e);
+                    if (this != document)
+                        return false;
+                }
+            };
+
+            return this;
         }
     };
 
-    document.ontouchmove = function(e) {
-        if (e.touches && e.touches.length == 1) {
-            //e.preventDefault();
-            e = e.touches[0];
-            if (e.target && typeof e.target.onmousemove == "function")
-                return e.target.onmousemove(e);
-            else if (typeof document.onmousemove == "function")
-                return document.onmousemove(e);
-        }
-    };
-
-    var _touching = false;
-
-    document.ontouchend = document.ontouchcancel = function(e) {
-        if (_touching) return;
-
-        e = e.touches && e.touches.length ? e.touches[0] : e.changedTouches[0];
-        if (e) {
-            _touching = true;
-            setTimeout(function() { _touching = false; });
-            if (e.target && typeof e.target.onmouseup == "function")
-                return e.target.onmouseup(e);
-            else if (typeof document.onmouseup == "function")
-                return document.onmouseup(e);
-        }
-    };
+    // make sure that document event link to mouse events already. Since the
+    // document object on top of the event bubble chain, it will probably also
+    // be hooked by other JPF elements.
+    jpf.iphone.linkEvents(document);
 };
 
 // #endif

@@ -187,6 +187,102 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             .pushUnique("normal").join("|"));
     };
 
+    this.slideIn = function(sFrom, bSticky) {
+        if (!sFrom)
+            sFrom = "bottom";
+        var _center = this.center;
+        this.center = false;
+        this.setProperty("visible", true);
+        this.center = _center;
+        
+        var iFrom  = 0,
+            iTo    = 0,
+            innerW = (jpf.isIE
+                ? this.oExt.offsetParent.offsetWidth
+                : window.innerWidth),
+            innerH = (jpf.isIE
+                ? this.oExt.offsetParent.offsetHeight
+                : window.innerHeight),
+            cX     = Math.max(0, ((innerW - this.oExt.offsetWidth)  / 2)),
+            cY     = Math.max(0, ((innerH - this.oExt.offsetHeight) / 3)),
+            sType  = "top",
+            pad    = 10;
+
+        switch(sFrom) {
+            case "top":
+                iFrom = -(this.oExt.offsetHeight) - pad;
+                iTo   = bSticky ? 0 : cY;
+                break;
+            case "left":
+                iFrom = -(this.oExt.offsetWidth) - pad;
+                iTo   = bSticky ? 0 : cX;
+                sType = "left";
+                break;
+            case "bottom":
+                iFrom = innerH + this.oExt.offsetHeight + pad;
+                iTo   = bSticky ? innerH - this.oExt.offsetHeight : cY;
+                break;
+            case "right":
+                iFrom = innerW + this.oExt.offsetLeft + pad;
+                iTo   = bSticky ? innerW - this.oExt.offsetWidth : cX;
+                sType = "left";
+                break;
+        }
+        
+        jpf.tween.single(this.oExt, {
+            steps   : 30,
+            interval: 10,
+            from    : iFrom,
+            to      : iTo,
+            type    : sType,
+            anim    : jpf.tween.EASEIN
+        });
+    };
+
+    this.slideOut = function(sTo) {
+        if (!sTo)
+            sTo = "bottom";
+        var iFrom = 0,
+            iTo   = 0,
+            sType = "top",
+            pad   = 10;
+
+        switch(sTo) {
+            case "top":
+                iFrom = this.oExt.offsetTop;
+                iTo   = -(this.oExt.offsetHeight) - pad;
+                break;
+            case "left":
+                iFrom = this.oExt.offsetLeft;
+                iTo   = -(this.oExt.offsetWidth) - pad;
+                sType = "left";
+                break;
+            case "bottom":
+                iFrom = this.oExt.offsetTop;
+                iTo = (jpf.isIE
+                    ? this.oExt.offsetParent.offsetHeight
+                    : window.innerHeight) + this.oExt.offsetHeight + pad;
+                break;
+            case "right":
+                iFrom = this.oExt.offsetLeft;
+                iTo   = (jpf.isIE
+                    ? this.oExt.offsetParent.offsetWidth
+                    : window.innerWidth) + this.oExt.offsetLeft + pad;
+                sType = "left";
+                break;
+        }
+
+        jpf.tween.single(this.oExt, {
+            steps   : 30,
+            interval: 10,
+            from    : iFrom,
+            to      : iTo,
+            type    : sType,
+            anim    : jpf.tween.EASEOUT,
+            onfinish: function() { _self.setProperty("visible", false); }
+        });
+    };
+
     /**
      * Set the window into edit state. The configuration panel is shown.
      */
