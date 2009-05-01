@@ -197,10 +197,8 @@ jpf.editor.plugin('code', function() {
     this.$buttonClick = function(e, oButton) {
         jpf.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
-        if (elements[item]) {
+        if (elements[item])
             insertElement.apply(this, elements[item]);
-            this.editor.change(oPreview.value);
-        }
 
         this.editor.$visualFocus();
         oPreview.focus();
