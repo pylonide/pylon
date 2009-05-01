@@ -1586,9 +1586,29 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     background: #fff;\
                     word-wrap: break-word;\
                 }\
+                .itemAnchor {\
+                    background:url(images/editor/items.gif) no-repeat left bottom;\
+                    line-height:6px;\
+                    overflow:hidden;\
+                    padding-left:12px;\
+                    width:12px;\
+                }\
+                .visualAid table,\
+                .visualAid table td {\
+                    border: 1px dashed #bbb;\
+                }\
+                .visualAid table td {\
+                    margin: 8px;\
+                }\
+                h1 {\
+                    margin : 15px 0 15px 0;\
+                }\
                 p {\
                     margin: 0;\
                     padding: 0;\
+                }\
+                sub, sup {\
+                    line-height: 10px;\
                 }";
         }
 
