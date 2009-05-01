@@ -606,6 +606,11 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.initAutocomplete(ac);
         }
 
+        if (this.ref)
+            this.oInt.setAttribute("name", 
+              this.ref.split("/").pop().split("::").pop()
+                .replace(/[\@\.\(\)]*/g, ""));
+
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
 
