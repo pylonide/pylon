@@ -58,14 +58,14 @@ jpf.tween = {
     mwidth: function(oHtml, value, info) {
         var diff = jpf.getDiff(oHtml);
         oHtml.style.width = value + "px";
-        oHtml.style.marginLeft = -1*(value/2 + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || diff[0]/2) +
-            (info.margin || 0)) + "px";
+        oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(jpf.getStyle(oHtml,
+            "borderLeftWidth")) || diff[0]/2) + (info.margin || 0)) + "px";
     },
     mheight: function(oHtml, value, info) {
         var diff = jpf.getDiff(oHtml);
         oHtml.style.height = value + "px";
-        oHtml.style.marginTop = (-1*value/2 - (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || diff[1]/2) +
-            (info.margin || 0)) + "px";
+        oHtml.style.marginTop = (-1 * value / 2 - (parseInt(jpf.getStyle(oHtml,
+            "borderTopWidth")) || diff[1]/2) + (info.margin || 0)) + "px";
     },
     scrollwidth: function(oHtml, value){
         oHtml.style.width = value + "px";
@@ -75,14 +75,15 @@ jpf.tween = {
         try {
             oHtml.style.height = value + "px";
             oHtml.scrollTop    = oHtml.scrollHeight;
-        } catch (e) {
+        }
+        catch (e) {
             alert(value)
         }
     },
     scrollheight: function(oHtml, value, info){
-        var diff = jpf.getHeightDiff(oHtml);
+        var diff = jpf.getHeightDiff(oHtml),
+            oInt = info.oInt || oHtml;
         oHtml.style.height = value + "px";
-        var oInt = info.oInt || oHtml;
         oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff;
     },
     scrolltop: function(oHtml, value){
@@ -121,36 +122,38 @@ jpf.tween = {
     /** Ease-out tweening method */
     EASEOUT: 2,
 
+    CSSTIMING: ["linear", "ease-in", "ease-out", "ease", "ease-in-out", "cubic-bezier"],
+
     queue : {},
 
     current: null,
 
     setQueue : function(oHtml, stepFunction){
-        if(!oHtml.getAttribute("id"))
+        if (!oHtml.getAttribute("id"))
             jpf.setUniqueHtmlId(oHtml);
 
-        if(!this.queue[oHtml.getAttribute("id")])
+        if (!this.queue[oHtml.getAttribute("id")])
             this.queue[oHtml.getAttribute("id")] = [];
 
         this.queue[oHtml.getAttribute("id")].push(stepFunction);
 
-        if(this.queue[oHtml.getAttribute("id")].length == 1)
+        if (this.queue[oHtml.getAttribute("id")].length == 1)
             stepFunction(0);
     },
 
     nextQueue : function(oHtml){
         var q = this.queue[oHtml.getAttribute("id")];
-        if(!q) return;
+        if (!q) return;
 
         q.shift(); //Remove current step function
 
-        if(q.length)
+        if (q.length)
             q[0](0);
     },
 
     clearQueue : function(oHtml, bStop){
         var q = this.queue[oHtml.getAttribute("id")];
-        if(!q) return;
+        if (!q) return;
 
         if (bStop && this.current && this.current.control)
             this.current.control.stop = true;
@@ -189,15 +192,16 @@ jpf.tween = {
      * begin and end value for colors
      */
     $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var beginEnd = [fromValue, toValue];
-        for (var i = 0; i < 2; i++) {
-            if(beginEnd[i].match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)){
+        var i, steps, beginEnd = [fromValue, toValue];
+        for (i = 0; i < 2; i++) {
+            if (beginEnd[i].match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)) {
                 beginEnd[i] = [parseInt(RegExp.$1), parseInt(RegExp.$2), parseInt(RegExp.$3)];
                 continue;
             }
 
             beginEnd[i] = beginEnd[i].replace(/^#/, "");
-            if(beginEnd[i].length == 3) beginEnd[i] += beginEnd[i];
+            if (beginEnd[i].length == 3)
+                beginEnd[i] += beginEnd[i];
 
             beginEnd[i] = [
                 Math.hexToDec(beginEnd[i].substr(0,2)),
@@ -212,7 +216,7 @@ jpf.tween = {
             jpf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
         ];
 
-        for (var steps = [], i = 0; i < stepParts[0].length; i++) {
+        for (steps = [], i = 0; i < stepParts[0].length; i++) {
             steps.push("#" + Math.decToHex(stepParts[0][i])
                            + Math.decToHex(stepParts[1][i])
                            + Math.decToHex(stepParts[2][i]));
@@ -283,15 +287,33 @@ jpf.tween = {
         if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
 
-        info.method = jpf.tween[info.type];
+        info.method = jpf.supportCSSAnim ? info.type : jpf.tween[info.type];
 
         //#ifdef __DEBUG
-        if(!info.method)
+        if (!info.method)
             throw new Error(jpf.formatErrorString(0, this,
                 "Single Value Tween",
                 "Could not find method for tweening operation '"
                 + info.type + "'"));
         //#endif
+
+        if (jpf.supportCSSAnim) {
+            oHtml.style[info.type] = info.from + (jpf.tween.needsPix[info.type] ? "px" : "");
+            setTimeout(function() {
+                oHtml.style[info.type]       = info.to + (jpf.tween.needsPix[info.type] ? "px" : "");
+                oHtml.style.webkitTransition = info.type + " " + ((info.steps
+                    * info.interval) / 1000) + "s "
+                    + jpf.tween.CSSTIMING[info.anim || 0];
+                var f = function() {
+                    if (info.onfinish)
+                        info.onfinish(oHtml, info.userdata);
+                    oHtml.style.webkitTransition = "";
+                    oHtml.removeEventListener('webkitTransitionEnd', f);
+                };
+                oHtml.addEventListener('webkitTransitionEnd', f);
+            });
+            return this;
+        }
 
         var steps = info.color
             ? jpf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
@@ -308,7 +330,8 @@ jpf.tween = {
 
             try {
                info.method(oHtml, steps[step], info);
-            } catch (e) {}
+            }
+            catch (e) {}
 
             if (info.oneach)
                 info.oneach(oHtml, info.userdata);
@@ -379,10 +402,17 @@ jpf.tween = {
             oHtml = oHtml.oExt;
         }
 
-        for (var steps = [], i = 0; i < info.tweens.length; i++) {
+        if (jpf.supportCSSAnim) {
+            info.duration = ((data.steps * data.interval) / 1000);
+            info.anim     = jpf.tween.CSSTIMING[info.anim || 0];
+        }
+
+        for (var steps = [], stepsTo = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
 
-            data.method = jpf.tween[data.type] || jpf.tween.htmlcss;
+            data.method = jpf.supportCSSAnim
+                ? data.type
+                : jpf.tween[data.type] || jpf.tween.htmlcss;
 
             //#ifdef __DEBUG
             if (!data.method)
@@ -392,9 +422,34 @@ jpf.tween = {
                     + data.type + "'"));
             //#endif
 
-            steps.push(data.color
-                ? jpf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
-                : jpf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
+            if (jpf.supportCSSAnim) {
+                oHtml.style[data.type] = data.from
+                    + (jpf.tween.needsPix[data.type] ? "px" : "");
+                stepsTo.push([data.type, data.to
+                    + (jpf.tween.needsPix[data.type] ? "px" : "")]);
+                steps.push(data.type + " " + info.duration + "s " + info.anim);
+            }
+            else {
+                steps.push(data.color
+                    ? jpf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
+                    : jpf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
+            }
+        }
+
+        if (jpf.supportCSSAnim) {
+            setTimeout(function() {
+                oHtml.style.webkitTransition = steps.join(',');
+                for (var k = 0, j = stepsTo.length; k < j; k++)
+                    oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
+                var f = function() {
+                    if (info.onfinish)
+                        info.onfinish(oHtml, info.userdata);
+                    oHtml.style.webkitTransition = "";
+                    oHtml.removeEventListener('webkitTransitionEnd', f);
+                };
+                oHtml.addEventListener('webkitTransitionEnd', f);
+            });
+            return this;
         }
 
         var tweens = info.tweens;
@@ -462,18 +517,18 @@ jpf.tween = {
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
 
-        if(remove)
+        if (remove)
             jpf.setStyleClass(oHtml, "", [className]);
 
         var callback = info.onfinish;
         info.onfinish = function(){
-            if(remove)
+            if (remove)
                 jpf.setStyleClass(oHtml, "", [className]);
             else
                 jpf.setStyleClass(oHtml, className);
 
             //Reset CSS values
-            for(var i=0;i<info.tweens.length;i++){
+            for (var i = 0; i < info.tweens.length; i++){
                 if (info.tweens[i].type == "filter")
                     continue;
 
@@ -485,7 +540,7 @@ jpf.tween = {
         }
 
         var result, newvalue, curvalue, j, isColor, style, rules, i;
-        for(i = 0; i < document.styleSheets.length; i++){
+        for (i = 0; i < document.styleSheets.length; i++) {
             rules = document.styleSheets[i][jpf.styleSheetRules];
             for (j = 0; j < rules.length; j++) {
                 var rule = rules[j];
@@ -493,8 +548,8 @@ jpf.tween = {
                 if (!rule.style || !rule.selectorText.match('\.' + className + '$'))
                     continue;
 
-                for(style in rule.style){
-                    if(!rule.style[style] || this.cssProps.indexOf("|" + style + "|") == -1)
+                for (style in rule.style) {
+                    if (!rule.style[style] || this.cssProps.indexOf("|" + style + "|") == -1)
                         continue;
 
                     if (style == "filter") {
@@ -534,7 +589,7 @@ jpf.tween = {
             }
         }
 
-        if(remove)
+        if (remove)
             jpf.setStyleClass(oHtml, className);
 
         return this.multi(oHtml, info);
