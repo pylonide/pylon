@@ -123,6 +123,21 @@ jpf.tween = {
     EASEOUT: 2,
 
     CSSTIMING: ["linear", "ease-in", "ease-out", "ease", "ease-in-out", "cubic-bezier"],
+    CSSPROPS : {
+        "left"        : "left",
+        "right"       : "right",
+        "top"         : "top",
+        "bottom"      : "bottom",
+        "width"       : "height",
+        "scrollTop"   : false,
+        "mwidth"      : false,
+        "mheight"     : false,
+        "scrollwidth" : false,
+        "scrollheight": false,
+        "fade"        : "opacity",
+        "bgcolor"     : "background-color",
+        "textcolor"   : "color"
+    },
 
     queue : {},
 
@@ -298,6 +313,10 @@ jpf.tween = {
         //#endif
 
         if (jpf.supportCSSAnim) {
+            var type = jpf.tween.CSSPROPS[info.type];
+            if (type === false)
+                return this;
+            info.type = type || info.type;
             oHtml.style[info.type] = info.from + (jpf.tween.needsPix[info.type] ? "px" : "");
             setTimeout(function() {
                 oHtml.style[info.type]       = info.to + (jpf.tween.needsPix[info.type] ? "px" : "");
@@ -423,6 +442,11 @@ jpf.tween = {
             //#endif
 
             if (jpf.supportCSSAnim) {
+                var type = jpf.tween.CSSPROPS[data.type];
+                if (type === false)
+                    continue;
+                data.type = type || data.type;
+
                 oHtml.style[data.type] = data.from
                     + (jpf.tween.needsPix[data.type] ? "px" : "");
                 stepsTo.push([data.type, data.to

@@ -307,8 +307,10 @@ var jpf = {
 
         if (this.isSafari) {
             var matches  = sAgent.match(/applewebkit\/(\d+)/);
-            if (matches)
+            if (matches) {
+                this.safariRev   = parseInt(matches[1])
                 this.isSafariOld = parseInt(matches[1]) < 420;
+            }
         }
 
         /**
@@ -443,12 +445,13 @@ var jpf = {
         this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.locale                    = (this.isIE
+        this.supportCSSAnim            = jpf.isSafari && (jpf.safariRev > 520);//jpf.isIphone;
+        this.locale                    = (jpf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
 
         //Other settings
-        this.maxHttpRetries = this.isOpera ? 0 : 3;
+        this.maxHttpRetries = jpf.isOpera ? 0 : 3;
 
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
