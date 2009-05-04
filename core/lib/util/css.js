@@ -283,7 +283,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
                 ht -= (o = o.previousSibling).offsetHeight + cp;
         }
 
-        if (!o.offsetParent && o.parentNode.nodeType == 1) {
+        if (jpf.isIE && !o.offsetParent && o.parentNode.nodeType == 1) {
             wt -= o.parentNode.scrollLeft;
             ht -= o.parentNode.scrollTop;
         }

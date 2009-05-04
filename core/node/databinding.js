@@ -405,8 +405,14 @@ jpf.DataBinding = function(){
         if (jpf.appsettings.autoDisableActions && !this.actionRules 
           || this.actionRules && !actionRule) {
             //#ifdef __DEBUG
-            jpf.console.warn("Tried starting new action but no '" + name 
-                + "' action rule was found.");
+            if (!xmlContext) {
+                jpf.console.warn("Tried starting new action but no xml \
+                    context was specified.");
+            }
+            else {
+                jpf.console.warn("Tried starting new action but no '" + name 
+                    + "' action rule was found.");
+            }
             //#endif
             
             return false;

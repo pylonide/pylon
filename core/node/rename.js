@@ -220,12 +220,12 @@ jpf.Rename = function(){
         }
         else {
             this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable
-                ? "innerHTML"
+                ? "innerText"
                 : "value"];
 
              //this.$selected.innerHTML = this.oTxt.innerHTML;
             this.rename(renameSubject,
-                this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
+                this.oTxt[jpf.hasContentEditable ? "innerText" : "value"]
                 .replace(/<.*?nobr>/gi, ""));
         }
 

@@ -110,7 +110,7 @@ jpf.popup = {
             if (options.width || o.width)
                 popup.style.width = ((options.width || o.width) - 3) + "px";
             
-            var moveUp = false;//(top + (height || o.height || o.content.offsetHeight) + y) > (p.offsetHeight + p.scrollTop);
+            var moveUp = (top + (options.height || o.height || o.content.offsetHeight) + options.y) > (p.offsetHeight + p.scrollTop);
             
             if (moveUp)
                 popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
@@ -129,7 +129,7 @@ jpf.popup = {
                     steps : jpf.isIE ? 5 : 10
                 });
             }
-            else { 
+            else {
                 var iVal, steps = 7, i = 0;
                 
                 iVal = setInterval(function(){

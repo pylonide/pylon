@@ -259,7 +259,7 @@ jpf.Transaction = function(){
                 this.autoshow = -1;
             this.rollback();
         }
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Beginning transaction on " + this.tagName + "[" + this.name + "]");
         //#endif
