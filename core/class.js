@@ -404,11 +404,13 @@ jpf.Class = function(){
                 found = true;
             }
 
-            //if (!found)
+            ///!WARNING, bound properties got a set-call twice, no idea why it was commented out before
+            if (!found){
                 //this.$handlePropSet(prop, eval(pValue));
                 var value = eval(pValue);
                 this[prop] = !value;
                 this.setProperty(prop, value);
+            }
         }
         else {
             //this.$handlePropSet(prop, pValue);

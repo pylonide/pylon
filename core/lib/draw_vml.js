@@ -50,13 +50,13 @@ jpf.namespace("draw.vml",{
        t = t.previousSibling;
        t.style.width=r.width,t.style.height=r.height;
 	},
-    initLayer : function(l , r){ 
+    initLayer : function(l , r){
 
         var vmlroot = r.vmlroot;
         var tag = "<div style='position:absolute;left:"+l.left+
                   ";top:"+l.top+";width:"+l.width+";height:"+l.height+
                   ";overflow:hidden;'/>";
-        l.ds = 1;
+        l.ds = 4;
         l.dx = 0,l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
@@ -88,7 +88,6 @@ jpf.namespace("draw.vml",{
         }
     },
 
-
     deinitLayer : function(l){
         // we should remove the layer from the output group.
         l._vmlgroup.removeNode();
@@ -97,8 +96,10 @@ jpf.namespace("draw.vml",{
 
     beginLayer : function(l){
 		// if we already had a layer, we need to clean that shit up
-		if(l._styles){
-			// clean that shit up
+		if(l._styles.length){
+            l._vmlgroup.innerHTML="";
+            l._styles = [];
+            l._htmljoin = [];
 		}
 		
         this.l = l,this.mx="",this.my="",this.last=null;

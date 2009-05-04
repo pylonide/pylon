@@ -75,12 +75,22 @@ jpf.namespace("draw.canvas",{
     },
 
     destroyLayer : function(l){
+        // lets clear our shite up
     },
 
     beginLayer : function(l){
         this.l = l,this.mx="",this.my="",this.last=null; this.tiletrans = 0;
         this.dodraw = 0;
-
+        // check if we have styles.. ifso clean that shit up
+        if(l._styles.length){
+            for(var j = l._styles.length,i=0;i<j;i++){
+                var s = l._styles[i];
+                if(s._txtnode)s._txtnode.removeNode();
+            }
+            l._styles = [];
+            l._htmljoin = [];
+            
+        }
         var s =  [ "var _c=l.canvas,_styles=l._styles,",
                 "_s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
@@ -88,14 +98,14 @@ jpf.namespace("draw.canvas",{
                 "_s,_sh,_sp,_sl,_sv,_st,_dx,_dy,_td,_l,_lc,",
                 "_tc,_cv,_t,_u,_r,_q,_o,_m,_sr,_cr;"];
         if ( l.dx != 0 )s.push(
-            "_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
-            "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
-            "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();\n");
+            "_c.save();_c.beginPath();_c.translate(l.dx,l.dy);",
+            "_c.moveTo(0,0);_c.lineTo(l.dw,0);_c.lineTo(l.dw,l.dh);",
+            "_c.lineTo(0,l.dh);_c.closePath();_c.clip();\n");
         return s.join('');
     },    
     clear : function(){
         var l = this.l;
-        var s = ["_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
+        var s = ["_c.clearRect(l.dx,l.dy,l.dw,l.dh);\n"];
 /*        if ( l.dx != 0 )s.push(
             "_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
             "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",

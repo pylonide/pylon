@@ -46,6 +46,7 @@ jpf.namespace("draw", {
                 ",vx2 = v.vx2, vy2 = v.vy2, vw = vx2-vx1, vh = vy1-vy2",
                 ",vz2 = v.vz2, vz1 = v.vz1, vd = vz2-vz1",
                 ",zoom = 1/v.zoom",
+                ",a=l.a,b=l.b,c=l.c,d=l.d",
                 ",dw = l.dw",ml?"-"+(ml+mr):"",
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
                 ",dw12 = dw*0.5, dh12 = dh*0.5",
@@ -337,7 +338,9 @@ jpf.namespace("draw", {
         }
 
         // parse styles
-        if(!styleovl.item){// its an array, make an overlays array
+        if(styleovl==null){
+            styleovls.push({});
+        }else if(!styleovl.item){// its an array, make an overlays array
             styleovls.push(this.parseJSS(styleovl,err));novls = 1;
         } else for(i = 0, novls = styleovl.length; i < novls; i++){
             styleovls.push(this.parseJSS(styleovl[i],err));
@@ -1467,8 +1470,6 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                 ].join(''):""].join('');
     
     },
-
-    
     
     $allocText : function(style, needed){
         var t, tn = style._txtnode, ts = style._txtnodes;
