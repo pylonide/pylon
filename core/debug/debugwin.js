@@ -1585,12 +1585,22 @@ jpf.debugwin = {
                     oHtml.style.left = '';\
                     document.body.style.marginRight = \
                         oHtml.offsetWidth + 'px';\
+                    if (jpf.isIE8) {\
+                        document.body.style.height = \
+                            (document.documentElement.offsetHeight \
+                            - jpf.getHeightDiff(document.body) - 4) + 'px';\
+                    }\
                     var o = document.getElementById('jpfDebugExpr');\
                     if (o.parentNode.offsetWidth)\
                         o.style.width = (o.parentNode.offsetWidth \
                             - (jpf.isGecko ? 4 : 8)) + 'px';\
                     ");
-                document.body.style.position = "static";
+                
+                if (jpf.isIE8) {
+                    document.body.style.overflow = "auto";
+                    document.body.style.position = "static";
+                }
+                
                 jpf.layout.activateRules(elError);
             }
         }
