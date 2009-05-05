@@ -387,8 +387,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     rule = rules[i];
                     type = node.getAttribute("type");
                     valueNode = this.xmlData.selectSingleNode(jpf.getXmlValue(node, "@select|field/@select"));
-                    value = (!type || type == "text")
-                        ? jpf.getXmlValue(valueNode, '.')
+                    value = valueNode && (!type || type == "text")
+                        ? valueNode.nodeType == 1 ? jpf.getXmlValue(valueNode, '.') : valueNode.nodeValue
                         : null;
 
                     //#ifdef __WITH_HTML5

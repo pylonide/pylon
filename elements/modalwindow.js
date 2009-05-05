@@ -360,7 +360,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (!this.visible)
                     this.oCover.style.display = "none";
 
-                this.oCover.style.zIndex = this.zindex;
+                if (this.zindex)
+                    this.oCover.style.zIndex = this.zindex;
             }
         }
 
@@ -420,16 +421,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
 
             if (this.center) {
+                var size = this.oExt.offsetParent.tagName == "BODY" 
+                    ? [jpf.getWindowWidth(), jpf.getWindowHeight()]
+                    : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight];
+                
                 this.oExt.style.left = Math.max(0, ((
-                    (jpf.isIE
-                        ? this.oExt.offsetParent.offsetWidth
-                        : window.innerWidth)
-                    - this.oExt.offsetWidth)/2)) + "px";
+                    size[0] - this.oExt.offsetWidth)/2)) + "px";
                 this.oExt.style.top  = Math.max(0, ((
-                    (jpf.isIE
-                        ? this.oExt.offsetParent.offsetHeight
-                        : window.innerHeight)
-                    - this.oExt.offsetHeight)/3)) + "px";
+                    size[1] - this.oExt.offsetHeight)/3)) + "px";
             }
 
             if (!this.isRendered) {
