@@ -28,7 +28,8 @@ jpf.namespace("draw.vml",{
     //----------------------------------------------------------------------
      
     initRoot : function(r){
-        jpf.importCssString(document, "v\\:* {behavior: url(#default#VML);}");
+        
+        jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
         
         r.oInt.innerHTML = "\
             <div style='z-index:10000;position:absolute;left:0px;width:0px;\
@@ -36,9 +37,9 @@ jpf.namespace("draw.vml",{
                         r.width+"px;height:"+r.height+"px;'>\
             </div>\
             <div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
-                        position:absolute;left:0;top:0;width:"+
-                        r.width+';height:'+r.height+
-                        ";overflow:hidden;'>\
+                        position:absolute;display:inline-block;left:0;top:0;width:"+
+                        r.width+'px;height:'+r.height+
+                        "px;overflow:hidden;'>\
             </div>";
         r.vmlroot = r.oInt.lastChild;
         return this;
@@ -53,17 +54,16 @@ jpf.namespace("draw.vml",{
     initLayer : function(l , r){
 
         var vmlroot = r.vmlroot;
-        var tag = "<div style='position:absolute;left:"+l.left+
-                  ";top:"+l.top+";width:"+l.width+";height:"+l.height+
-                  ";overflow:hidden;'/>";
+        var tag = "<div style='position:absolute;display:inline-block;left:"+l.left+
+                  "px;top:"+l.top+"px;width:"+l.width+"px;height:"+l.height+
+                  "px;overflow:hidden;'/>";
         l.ds = 4;
         l.dx = 0,l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
-        
-        l.vmltag = "style='position:absolute;display:block;left:0;top:0;width:"+
-                  (l.width)+";height:"+(l.height)+
-        ";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
+        l.vmltag = "style='position:absolute;display:inline-block;left:0;top:0;width:"+
+                  (l.width)+"px;height:"+(l.height)+
+        "px;overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;
 

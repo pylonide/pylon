@@ -544,7 +544,7 @@ jpf.namespace("draw", {
     },*/
     stateBit : {
         0                   : 0,
-        'init'              : 0x01000000, // 0xff0000 == statetype
+        'init'              : 0x01000000, // 0x00ff0000 == statetype
         'hidden'            : 0x00010000, // 0x0f000000 == dynamic type 0 = no dyn, 1 = in, 2 = out, 3 = inout
         'deinit'            : 0x02000000, // 0xf0000000 == automated-return-type
         'hover'             : 0x00020000,
