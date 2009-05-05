@@ -1590,6 +1590,7 @@ jpf.debugwin = {
                         o.style.width = (o.parentNode.offsetWidth \
                             - (jpf.isGecko ? 4 : 8)) + 'px';\
                     ");
+                document.body.style.position = "static";
                 jpf.layout.activateRules(elError);
             }
         }
