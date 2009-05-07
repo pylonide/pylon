@@ -38,6 +38,22 @@ jpf.iepngfix = (function() {
             else
                 aNodes = [document];
         }
+
+        function fixMe(obj) {
+            // background pngs
+            if (obj.currentStyle.backgroundImage.match(/\.png/i) !== null) {
+                bg_fnFixPng(obj);
+            }
+            // image elements
+            if (obj.tagName == 'IMG' && obj.src.match(/\.png$/i) !== null){
+                el_fnFixPng(obj);
+            }
+            // apply position to 'active' elements
+            if (applyPositioning && (obj.tagName == 'A' || obj.tagName == 'INPUT')
+              && obj.style.position === ''){
+                obj.style.position = 'relative';
+            }
+        }
 		
         for (var j = 0, l = aNodes.length, node; j < l; j++) {
             if (typeof aNodes[j] == "string")
@@ -45,20 +61,9 @@ jpf.iepngfix = (function() {
             node = aNodes[j];
             if (!node) continue;
         
+            fixMe(node);
             for (var i = node.all.length - 1, obj = null; (obj = node.all[i]); i--) {
-                // background pngs
-                if (obj.currentStyle.backgroundImage.match(/\.png/i) !== null) {
-                    bg_fnFixPng(obj);
-                }
-                // image elements
-                if (obj.tagName == 'IMG' && obj.src.match(/\.png$/i) !== null){
-                    el_fnFixPng(obj);
-                }
-                // apply position to 'active' elements
-                if (applyPositioning && (obj.tagName == 'A' || obj.tagName == 'INPUT') 
-                  && obj.style.position === ''){
-                    obj.style.position = 'relative';
-                }
+                fixMe(obj);
             }
         }
 	};
