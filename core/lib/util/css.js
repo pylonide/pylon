@@ -153,6 +153,8 @@ jpf.importCssString = function(doc, cssString, media){
         //var head  = document.getElementsByTagName("head")[0];
         var style = doc.createElement("style");
         style.appendChild(doc.createTextNode(cssString));
+        if (media)
+            style.setAttribute('media', media);
         htmlNode.appendChild(style);
     }
     else {
