@@ -288,8 +288,9 @@ jpf.rpc = function(){
         this.baseurl   = jpf.parseExpression(
                              jpf.xmldb.getInheritedAttribute(
                                 this.$jml, "baseurl")) || "";
-        this.multicall = x.getAttribute("multicall") == "true";
-        this.autoroute = x.getAttribute("autoroute") == "true";
+        this.multicall = jpf.isTrue(x.getAttribute("multicall"));
+        this.autoroute = jpf.isTrue(x.getAttribute("autoroute"));
+        this.routeServer = x.getAttribute("route-server") || this.routeServer;
 
         if (this.url)
             this.server = this.url.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";

@@ -424,7 +424,7 @@ jpf.http = function(){
                 this.shouldAutoroute = true;
 
                 options.autoroute = true;
-                return this.get(url, receive, options, id);
+                return this.get(url, callback, options, id);
             }
 
             if (!useOtherXH) {
