@@ -324,7 +324,6 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
 
-        var first;
         for (var op, strTgt, i = 0; i < rules.length; i++) {
             data = x.selectSingleNode("self::" +
                 jpf.parseExpression(rules[i].getAttribute("select"))
@@ -332,9 +331,6 @@ jpf.DragDrop = function(){
                 
             if (!data)
                 continue;
-            
-            if (!first)
-                first = x;
                 
             strTgt = rules[i].getAttribute("target");
             if (!strTgt || strTgt == ".") {
@@ -349,9 +345,6 @@ jpf.DragDrop = function(){
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
         }
-        
-        if (first)
-            return [{target : target, create : true}, rules[i]];
 
         return false;
     };
@@ -384,14 +377,6 @@ jpf.DragDrop = function(){
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
 
-        if (xmlReceiver.create) {
-            xmlReceiver = xmlReceiver.target;
-            xmlParentNode = xmlReceiver.ownerDocument
-              .createElement(rule.getAttribute("target").split("|")[0]);
-            xmlParentNode.appendChild(xmlNode);
-            xmlNode = xmlParentNode;
-        }
-
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 
         var parentXpath = rule ? rule.getAttribute("parent") : null;
@@ -400,8 +385,14 @@ jpf.DragDrop = function(){
                 xmlReceiver = (isParent 
                   ? xmlReceiver
                   : this.getTraverseParent(xmlReceiver));
-                if (parentXpath)
-                    xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                if (parentXpath) {
+                    if (xmlReceiver.selectSingleNode(parentXpath))
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    else {
+                        xmlReceiver.appendChild(xmlReceiver.ownerDocument.createElement(parentXpath));
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    }
+                }
                 sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
             case "insert-before":
@@ -410,8 +401,14 @@ jpf.DragDrop = function(){
                     : this[actRule](xmlNode, xmlReceiver.parentNode, xmlReceiver);
                 break;
             case "tree-append":
-                if (parentXpath)
-                    xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                if (parentXpath) {
+                    if (xmlReceiver.selectSingleNode(parentXpath))
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    else {
+                        xmlReceiver.appendChild(xmlReceiver.ownerDocument.createElement(parentXpath));
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    }
+                }
                 sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
         }
