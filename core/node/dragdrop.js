@@ -324,6 +324,7 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
 
+        var first;
         for (var op, strTgt, i = 0; i < rules.length; i++) {
             data = x.selectSingleNode("self::" +
                 jpf.parseExpression(rules[i].getAttribute("select"))
@@ -331,6 +332,9 @@ jpf.DragDrop = function(){
                 
             if (!data)
                 continue;
+            
+            if (!first)
+                first = x;
                 
             strTgt = rules[i].getAttribute("target");
             if (!strTgt || strTgt == ".") {
@@ -345,6 +349,9 @@ jpf.DragDrop = function(){
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
         }
+        
+        if (first)
+            return [{target : target, create : true}, rules[i]];
 
         return false;
     };
@@ -376,6 +383,14 @@ jpf.DragDrop = function(){
               && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
+
+        if (xmlReceiver.create) {
+            xmlReceiver = xmlReceiver.target;
+            xmlParentNode = xmlReceiver.ownerDocument
+              .createElement(rule.getAttribute("target").split("|")[0]);
+            xmlParentNode.appendChild(xmlNode);
+            xmlNode = xmlParentNode;
+        }
 
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 

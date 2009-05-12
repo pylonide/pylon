@@ -603,7 +603,7 @@ jpf.JmlElement = function(){
 
                 throw oError;
             }
-            
+
             //#ifdef __DEBUG
             jpf.console.info("Runtime inserting jml");
             //#endif

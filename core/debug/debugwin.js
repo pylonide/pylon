@@ -1594,7 +1594,7 @@ jpf.debugwin = {
                     if (o.parentNode.offsetWidth)\
                         o.style.width = (o.parentNode.offsetWidth \
                             - (jpf.isGecko ? 4 : 8)) + 'px';\
-                    ");
+                ");
                 
                 if (jpf.isIE8) {
                     document.body.style.overflow = "auto";
