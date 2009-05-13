@@ -123,12 +123,12 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
              ? margin[0]
              : (x[0] == "bottom"
                  ? wh - nh - margin[2]
-                 : wh/2 - nh/2));
+                 : wh/2 - nh/2)) + document.documentElement.scrollTop;
          var hor = (x[1] == "left" 
              ? margin[3]
              : (x[1] == "right"
                  ? ww - nw - margin[1]
-                 : ww/2 - nw/2));
+                 : ww/2 - nw/2)) + document.documentElement.scrollLeft;
          sign = 1;
 
          return lastPos = [ver, hor];
