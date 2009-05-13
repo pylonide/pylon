@@ -616,8 +616,15 @@ jpf.JmlElement = function(){
                 if (typeof data == "string")
                     data = jpf.xmldb.getXml("<j:jml xmlns:j='"
                         + jpf.ns.jml +"'>" + data + "</j:jml>");
-                for (var i = data.childNodes.length - 1; i >= 0; i--)
-                    jml.insertBefore(data.childNodes[i], jml.firstChild);
+                
+                if (jml.ownerDocument.importNode) {
+                    doc = jml.ownerDocument;
+                    for (var i = data.childNodes.length - 1; i >= 0; i--)
+                        jml.insertBefore(doc.importNode(data.childNodes[i], true), jml.firstChild);
+                }
+                else
+                    for (var i = data.childNodes.length - 1; i >= 0; i--)
+                        jml.insertBefore(data.childNodes[i], jml.firstChild);
             }
 
             jpf.JmlParser.parseMoreJml(jml, oInt || _self.oInt, _self,
