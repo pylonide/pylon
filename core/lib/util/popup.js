@@ -103,19 +103,23 @@ jpf.popup = {
         
         if (options.ref) {
             var pos    = jpf.getAbsolutePosition(options.ref, 
-                            o.content.offsetParent || o.content.parentNode);//[ref.offsetLeft+2,ref.offsetTop+4];//
-            var top    = (options.y || 0) + pos[1];
-            var p      = jpf.getOverflowParent(o.content); 
+                            o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
+                top    = (options.y || 0) + pos[1],
+                p      = jpf.getOverflowParent(o.content);
         
             if (options.width || o.width)
                 popup.style.width = ((options.width || o.width) - 3) + "px";
+
+            //console.log('what? ', )
+            //debugger;
+            var moveUp = (top + (options.height || o.height || o.content.offsetHeight)
+                + options.y) > (p == document.documentElement
+                  ? (jpf.isIE ? p.offsetHeight : window.innerHeight)
+                  : p.offsetHeight + p.scrollTop);
             
-            var moveUp = (top + (options.height || o.height || o.content.offsetHeight) + options.y) > (p.offsetHeight + p.scrollTop);
-            
-            if (moveUp)
-                popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
-            else
-                popup.style.top = top + "px";
+            popup.style.top = (moveUp 
+                ? (pos[1] - (options.height || o.height || o.content.offsetHeight)) 
+                : top) + "px"
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
         
