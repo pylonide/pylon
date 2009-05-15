@@ -561,7 +561,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
         canvas.angle = p.angle;
         this.imageContainer.replaceChild(canvas, p);
-        this.imageContainer.replaceChild(canvas, p);
         this.image = canvas;
     };
 
