@@ -128,7 +128,8 @@ jpf.tween = {
         "right"       : "right",
         "top"         : "top",
         "bottom"      : "bottom",
-        "width"       : "height",
+        "width"       : "width",
+        "height"      : "height",
         "scrollTop"   : false,
         "mwidth"      : false,
         "mheight"     : false,
@@ -422,7 +423,7 @@ jpf.tween = {
         }
 
         if (jpf.supportCSSAnim) {
-            info.duration = ((data.steps * data.interval) / 1000);
+            info.duration = ((info.steps * info.interval) / 1000);
             info.anim     = jpf.tween.CSSTIMING[info.anim || 0];
         }
 
@@ -451,7 +452,7 @@ jpf.tween = {
                     + (jpf.tween.needsPix[data.type] ? "px" : "");
                 stepsTo.push([data.type, data.to
                     + (jpf.tween.needsPix[data.type] ? "px" : "")]);
-                steps.push(data.type + " " + info.duration + "s " + info.anim);
+                steps.push(data.type + " " + info.duration + "s " + info.anim + " 0");
             }
             else {
                 steps.push(data.color
@@ -461,18 +462,21 @@ jpf.tween = {
         }
 
         if (jpf.supportCSSAnim) {
-            setTimeout(function() {
-                oHtml.style.webkitTransition = steps.join(',');
-                for (var k = 0, j = stepsTo.length; k < j; k++)
-                    oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
-                var f = function() {
-                    if (info.onfinish)
-                        info.onfinish(oHtml, info.userdata);
-                    oHtml.style.webkitTransition = "";
-                    oHtml.removeEventListener('webkitTransitionEnd', f);
+            oHtml.style.webkitTransition = steps.join(',');
+            var count = 0,
+                f     = function() {
+                    count++;
+                    if (count == stepsTo.length) {
+                        if (info.onfinish)
+                            info.onfinish(oHtml, info.userdata);
+                        oHtml.style.webkitTransition = "";
+                        oHtml.removeEventListener('webkitTransitionEnd', f);
+                    }
                 };
-                oHtml.addEventListener('webkitTransitionEnd', f);
-            });
+            oHtml.addEventListener('webkitTransitionEnd', f);
+            for (var k = 0, j = stepsTo.length; k < j; k++)
+                oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
+            // from here on, webkit will do the rest for us...
             return this;
         }
 
@@ -624,6 +628,8 @@ jpf.tween = {
         "top"        : true,
         "bottom"     : true,
         "right"      : true,
+        "width"      : true,
+        "height"     : true,
         "fontSize"   : true,
         "lineHeight" : true,
         "textIndent" : true
