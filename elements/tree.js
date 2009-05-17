@@ -300,7 +300,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force){
-        if(this.nocollapse) 
+        if (this.nocollapse)
             return;
         
         if (!htmlNode)
@@ -308,12 +308,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
-            var id = (htmlNode = htmlNode.parentNode)
+            id = (htmlNode = htmlNode.parentNode)
                 .getAttribute(jpf.xmldb.htmlIdTag);
-
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (jpf.getStyle(container, "display") == "block") {
-            if(force == 1) return;
+            if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.slideClose(container, jpf.xmldb.getNode(htmlNode));
         }

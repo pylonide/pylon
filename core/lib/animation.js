@@ -303,7 +303,8 @@ jpf.tween = {
         if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
 
-        info.method = jpf.supportCSSAnim ? info.type : jpf.tween[info.type];
+        var useCSSAnim = (jpf.supportCSSAnim && jpf.tween.CSSPROPS[info.type]);
+        info.method = useCSSAnim ? info.type : jpf.tween[info.type];
 
         //#ifdef __DEBUG
         if (!info.method)
@@ -313,7 +314,7 @@ jpf.tween = {
                 + info.type + "'"));
         //#endif
 
-        if (jpf.supportCSSAnim) {
+        if (useCSSAnim) {
             var type = jpf.tween.CSSPROPS[info.type];
             if (type === false)
                 return this;
@@ -422,15 +423,17 @@ jpf.tween = {
             oHtml = oHtml.oExt;
         }
 
-        if (jpf.supportCSSAnim) {
-            info.duration = ((info.steps * info.interval) / 1000);
-            info.anim     = jpf.tween.CSSTIMING[info.anim || 0];
-        }
+        var useCSSAnim  = jpf.supportCSSAnim,
+            hasCSSAnims = false,
+            cssDuration = ((info.steps * info.interval) / 1000),
+            cssAnim     = jpf.tween.CSSTIMING[info.anim || 0];
 
         for (var steps = [], stepsTo = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
 
-            data.method = jpf.supportCSSAnim
+            useCSSAnim = (jpf.supportCSSAnim && jpf.tween.CSSPROPS[data.type]);
+
+            data.method = useCSSAnim
                 ? data.type
                 : jpf.tween[data.type] || jpf.tween.htmlcss;
 
@@ -442,17 +445,17 @@ jpf.tween = {
                     + data.type + "'"));
             //#endif
 
-            if (jpf.supportCSSAnim) {
+            if (useCSSAnim) {
                 var type = jpf.tween.CSSPROPS[data.type];
-                if (type === false)
-                    continue;
                 data.type = type || data.type;
 
                 oHtml.style[data.type] = data.from
                     + (jpf.tween.needsPix[data.type] ? "px" : "");
                 stepsTo.push([data.type, data.to
                     + (jpf.tween.needsPix[data.type] ? "px" : "")]);
-                steps.push(data.type + " " + info.duration + "s " + info.anim + " 0");
+                steps.push(data.type + " " + cssDuration + "s " + cssAnim + " 0");
+
+                hasCSSAnims = true;
             }
             else {
                 steps.push(data.color
@@ -461,7 +464,7 @@ jpf.tween = {
             }
         }
 
-        if (jpf.supportCSSAnim) {
+        if (hasCSSAnims) {
             oHtml.style.webkitTransition = steps.join(',');
             var count = 0,
                 f     = function() {
