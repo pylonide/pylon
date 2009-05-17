@@ -126,7 +126,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["step"] = function(value){
         this.step = parseInt(value) || 0;
 
-        if (!this.$hasLayoutNode("marker"))
+        //if (!this.$hasLayoutNode("marker"))
             return;
 
         //Remove Markers
@@ -142,13 +142,12 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             for (var o, nodes = [], i = 0; i < count + 1; i++) {
                 this.$getNewContext("marker");
                 o = this.$getLayoutNode("marker");
-
                 leftPos = Math.max(0, (i * (1 / count) * 100) - 1);
                 o.setAttribute("style", "left:" + leftPos + "%");
                 nodes.push(o);
             }
 
-            jpf.xmldb.htmlImport(markers, this.oMarkers);
+            jpf.xmldb.htmlImport(nodes, this.oMarkers);
         }
     }
 
@@ -242,7 +241,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
 
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-        var max, min, offset, multiplier = (this.value - this.min) / (this.max - this.min);
+        var max, min, offset,
+            multiplier = (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
@@ -310,7 +310,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             //Number
             else {
                 if (this.mask == "#") {
-                    status = this.value;
+                    //status = this.value;
                     this.oLabel.nodeValue = this.step
                         ? (Math.round(this.value / this.step) * this.step)
                         : this.value;
@@ -488,7 +488,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 dragging = false;
 
                 _self.$ignoreSignals = _self.realtime;
-                _self.change(getKnobValue(o, e || window.event,
+                _self.setValue(getKnobValue(o, e || window.event,
                     _self.slideDiscreet || _self.slideSnap));
                 _self.$ignoreSignals = false;
 
@@ -521,7 +521,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 });
                 var value = getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap);
                 _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true, true);
-                _self.change(value);
+                _self.setValue(value);
             }
         };
 
