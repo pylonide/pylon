@@ -1,104 +1,6 @@
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-// #ifdef __JCALENDAR || __INC_ALL
-/**
- * Element displaying a list of day numbers in a grid, ordered by week. It
- * allows the user to choose the month and year for which to display the days.
- * Calendar returns a date in chosen date format. Minimal size of calendar is
- * 150px.
- * 
- * Example:
- * Calendar component with date set on "Saint Nicholas Day" in iso date format
- * <code>
- * <j:calendar
- *     top           = "200"
- *     left          = "400"
- *     output-format = "yyyy-mm-dd"
- *     value         = "2008-12-05" />
- * </code>
- * 
- * Example:
- * Sets the date based on data loaded into this component.
- * <code>
- *  <j:calendar>
- *      <j:bindings>
- *          <j:value select="@date" />
- *      </j:bindings>
- *  </j:calendar>
- * </code>
- * 
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <j:calendar ref="@date" />
- * </code>
- * 
- * @constructor
- * @define calendar
- * @addnode elements
- *
- * @attribute {String}   output-format    the format of the date value. See {@link term.dateformat more about the date format}.
- * @attribute {String}   default          the default date set when the calendar is opened.
- *     Possible values:
- *     today   calendar is set on today's date
- * @attribute {String}   value            the date returned by calendar; should be in the format specified by the output-format attribute.
- * 
- * @binding value  Determines the way the value for the element is retrieved 
- * from the bound data.
- *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- * 
- * @author      Lukasz Lipinski
- * @version     %I%, %G%
- * @since       1.0
- *
- */
 jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**** Properties and Attributes ****/
-    this.reselectable  = true;
-    this.$focussable   = true;
-    this.autoselect    = false;
-    this.multiselect   = false;
-    this.disableremove = true;
-    this.outputFormat  = null;
-
-    var _day          = null,
-        _month        = null,
-        _year         = null,
-        _hours        = 1,
-        _minutes      = 0,
-        _seconds      = 0,
-        _currentMonth = null,
-        _currentYear  = null,
-        _numberOfDays = null,
-        _dayNumber    = null,
-        _temp         = null;
-
-    var _width = null;
-
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
     var months = [{name : "January",   number : 31},
@@ -114,48 +16,43 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                   {name : "November",  number : 30},
                   {name : "December",  number : 31}];
 
+    var _day          = null,
+        _month        = null,
+        _year         = null,
+        
+        _hours        = 1,
+        _minutes      = 0,
+        _seconds      = 0,
+        
+        _currentMonth = null,
+        _currentYear  = null,
+        _numberOfDays = null,
+        _dayNumber    = null,
+        
+        _temp         = null;
+
     var _self = this;
+    
+    /*jpf.onload = function() {
+        _self.redraw(_month, _year);
+    }*/
 
     this.$booleanProperties["disableremove"] = true;
 
     this.$supportedProperties.push("disableremove", "initial-message", 
         "output-format", "default");
 
-    jpf.onload = function() {
-        _self.redraw(_month, _year);
-    }
-
-    /**
-     * @attribute {String} style of returned date
-     * 
-     * Possible values:
-     *     d      day of the month as digits, no leading zero for single-digit days
-     *     dd     day of the month as digits, leading zero for single-digit days
-     *     ddd    day of the week as a three-letter abbreviation
-     *     dddd   day of the week as its full name
-     *     m      month as digits, no leading zero for single-digit months
-     *     mm     month as digits, leading zero for single-digit months
-     *     mmm    month as a three-letter abbreviation
-     *     mmmm   month as its full name
-     *     yy     year as last two digits, leading zero for years less than 2010
-     *     yyyy   year represented by four digits
-     *     h      hours, no leading zero for single-digit hours (12-hour clock)
-     *     hh     hours, leading zero for single-digit hours (12-hour clock)
-     *     H      hours, no leading zero for single-digit hours (24-hour clock)
-     *     HH     hours, leading zero for single-digit hours (24-hour clock)
-     *     M      minutes, no leading zero for single-digit minutes
-     *     MM     minutes, leading zero for single-digit minutes
-     *     s      seconds, no leading zero for single-digit seconds
-     *     ss     seconds, leading zero for single-digit seconds
-     */
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
-            this.setProperty("value", new Date(_year, _month, _day, _hours,
-               _minutes, _seconds).format(this.outputFormat = value));
+            this.setProperty("value", 
+                new Date(
+                    _year, _month, _day, _hours, _minutes, _seconds
+                ).format(this.outputFormat = value)
+            );
         }
         else
             this.outputFormat = value;
-    }
+    };
 
     this.$propHandlers["value"] = function(value) {
         if (!this.outputFormat) {
@@ -181,7 +78,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.value = value;
         this.redraw(_month, _year);
-    }
+    };
 
     /**** Public methods ****/
 
@@ -201,76 +98,6 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         return this.value;
     };
 
-    /**** Keyboard Support ****/
-
-    //#ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", function(e) {
-        e = e || event;
-
-        var key      = e.keyCode,
-            ctrlKey  = e.ctrlKey,
-            shiftKey = e.shiftKey;
-
-        switch (key) {
-            case 13: /* enter */
-                this.selectDay(_day);
-                break;
-
-            case 33: /* page up */
-                this.nextMonth();
-                break;
-
-            case 34: /* page down */
-                this.prevMonth();
-                break;
-
-            case 37: /* left arrow */
-                if (ctrlKey)
-                    this.prevMonth();
-                else if (shiftKey)
-                    this.prevYear();
-                else {
-                    if (_day - 1 < 1) {
-                        this.prevMonth();
-                        this.selectDay(months[_currentMonth].number);
-                    }
-                    else {
-                        this.selectDay(_day - 1);
-                    }
-                }
-                break;
-
-            case 38: /* up arrow */
-                if (_day - 7 < 1) {
-                    this.prevMonth();
-                    this.selectDay(months[_currentMonth].number + _day - 7);
-                }
-                else {
-                    this.selectDay(_day - 7);
-                }
-                break;
-
-            case 39: /* right arrow */
-                if (ctrlKey)
-                    this.nextMonth();
-                else if (shiftKey)
-                    this.nextYear();
-                else
-                    this.selectDay(_day + 1);
-                break;
-
-            case 40: /* down arrow */
-                    this.selectDay(_day + 7);
-                break;
-
-            case 84:
-                if (ctrlKey)
-                    this.today();
-                    return false;
-                break;
-        }
-    }, true);
-    //#endif
 
     this.$blur = function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
@@ -285,85 +112,57 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             ? true
             : false;
     };
+    
+    this.$getMargin = function(oHtml) {
+        if (jpf.isIE) {
+            return [
+                (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0) + (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0),
+                (parseInt(jpf.getStyle(oHtml, "marginTop")) || 0) + (parseInt(jpf.getStyle(oHtml, "marginBottom")) || 0)
+            ];
+        }
+        else {
+            return [
+                parseInt(jpf.getStyle(oHtml, "margin-right") || 0) + parseInt(jpf.getStyle(oHtml, "margin-left") || 0),
+                parseInt(jpf.getStyle(oHtml, "margin-top") || 0) + parseInt(jpf.getStyle(oHtml, "margin-bottom") || 0)
+            ];
+        }
+    };
 
     this.redraw = function(month, year) {
-        _currentMonth = month;
-        _currentYear  = year;
+        var ctDiff = jpf.getDiff(this.oExt);
+        _width = Math.max(this.oExt.offsetWidth, this.width) - ctDiff[0];
+        
+        //Rows
+        var rows = this.oContent.childNodes;
+        for (var i = 0, pl = 0; i < rows.length; i++) {
+            if ((rows[i].className || "").indexOf("row") > -1) {
+                var rDiff = jpf.getDiff(rows[i]);
+                var rDiff2 = this.$getMargin(rows[i]);
+                var rWidth = _width - rDiff[0] - rDiff2[0];
 
-        _width = this.oExt.offsetWidth;
+                //Cells
+                var cells = rows[i].childNodes;
+                for (var j = 0; j < cells.length; j++) {
+                    if ((cells[j].className || "").indexOf("cell") > -1) {
+                        var cDiff = jpf.getDiff(cells[j]);
+                        var cDiff2 = this.$getMargin(cells[j]);
 
-        this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
-            - jpf.getDiff(this.oNavigation)[0]) + "px";
+                        var cWidthf = Math.floor(rWidth / 8) - cDiff[0] - cDiff2[0]
 
-        var w_firstYearDay = new Date(year, 0, 1);
-        var w_dayInWeek    = w_firstYearDay.getDay();
-        var w_days         = w_dayInWeek;
-
-        for (i = 0; i <= month; i++) {
-            if (isLeapYear(year) && i == 1)
-                w_days++;
-            w_days += months[i].number;
-        }
-
-        var w_weeks  = Math.ceil(w_days / 7);
-
-        var date = new Date(year, month);
-
-        _numberOfDays = months[date.getMonth()].number;
-        if (isLeapYear(year) && date.getMonth() == 1) 
-            _numberOfDays++;
-
-        _dayNumber = new Date(year, month, 1).getDay();
-        var prevMonth     = month == 0 ? 11 : month - 1;
-        var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
-
-        var nextMonthDays = 1;
-
-        var rows = this.oNavigation.childNodes;
-        for (i = 0; i < rows.length; i++) {
-            if ((rows[i].className || "").indexOf("today") != -1) {
-                rows[i].innerHTML = _width < 300 ? "T" : "Today";
-            }
-            else if ((rows[i].className || "").indexOf("status") != -1) {
-                if (_width >= 300)
-                    rows[i].innerHTML = months[_currentMonth].name
-                                      + " " + _currentYear;
-                else {
-                    rows[i].innerHTML = (_currentMonth + 1) + "/" + _currentYear;
-                    rows[i].style.width = "40px";
-                    rows[i].style.marginLeft = "-20px";
+                        cells[j].style.height = cWidthf + "px";
+                        cells[j].style.width = cWidthf + "px";
+                    }
                 }
-            }
-        }
-
-        var squareSize = Math.floor((_width - 37) / 8);
-
-        var daysofweek = this.oDow.childNodes;
-        this.oDow.style.width = (squareSize * 8 + 32) + "px";
-        this.oNavigation.style.width = (squareSize * 8 + 32) 
-                                     - jpf.getDiff(this.oNavigation)[0] + "px";
-
-        for (var z = 0, i = 0; i < daysofweek.length; i++) {
-            if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].style.width  = squareSize + "px";
-                daysofweek[i].style.height = Math.floor((squareSize / 2 + 12) / 2)
-                                           + "px";
-                daysofweek[i].style.paddingTop = Math.max(squareSize / 2 - 3 
-                    - (Math.floor((squareSize / 2 + 12 -2) / 2)), 0) + "px";
-
-                if (squareSize / 2 < 9) {
-                    daysofweek[i].style.fontSize = "9px";
+                
+                if (i == 0) {
+                    pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] - (cWidthf + cDiff[0] + cDiff2[0])*8)/2);
                 }
 
-                if (z > 0) {
-                    daysofweek[i].innerHTML = days[z - 1].substr(0, 3);
-                }
-                z++;
+                rows[i].style.paddingLeft = pl + "px";
             }
         }
-
-        rows = this.oExt.childNodes;
-        for (z = 0, y = 0, i = 0; i < rows.length; i++) {
+        
+        /*for (z = 0, y = 0, i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
@@ -430,16 +229,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     ? "hidden"
                     : "visible";
             }
-        }
+        }*/
     };
 
-    /**
-     * Change choosen date with selected and highlight its cell in calendar
-     * component
-     * 
-     * @param {Number}   nr     day number
-     * @param {String}   type   class name of html representation of selected cell
-     */
     this.selectDay = function(nr, type) {
         var newMonth = type == "prev"
             ? _currentMonth
@@ -481,17 +273,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
      * change current displayed year to next
      */
     this.nextMonth = function() {
-        var newMonth, newYear;
-        if (_currentMonth > 10) {
-            newMonth = 0;
-            newYear  = _currentYear + 1;
-        }
-        else {
-            newMonth = _currentMonth + 1;
-            newYear  = _currentYear;
-        }
-
-        this.redraw(newMonth, newYear);
+        this.redraw(
+            _currentMonth > 10 ? 0 : _currentMonth + 1, 
+            _currentMonth > 10 ? _currentYear + 1 : _currentYear
+        );
     };
 
     /**
@@ -499,17 +284,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
      * change current displayed year to previous
      */
     this.prevMonth = function() {
-        var newMonth, newYear;
-        if (_currentMonth < 1) {
-            newMonth = 11;
-            newYear  = _currentYear - 1;
-        }
-        else {
-            newMonth = _currentMonth - 1;
-            newYear  = _currentYear;
-        }
-
-        this.redraw(newMonth, newYear);
+        this.redraw(
+            _currentMonth < 1 ? 11 : _currentMonth - 1, 
+            _currentMonth < 1 ? _currentYear - 1 : _currentYear
+        );
     };
 
     /**
@@ -522,21 +300,19 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     /**** Init ****/
 
     this.$draw = function() {
-        this.$animType = this.$getOption("main", "animtype") || 1;
-        this.clickOpen = this.$getOption("main", "clickopen") || "button";
-
         //Build Main Skin
         this.oExt = this.$getExternal("main", null, function(oExt) {
-            var oExt = this.$getLayoutNode("main", "contents", oExt);
+            var oExt = this.$getLayoutNode("main", "contnainer", oExt);
+            var oContent = this.$getLayoutNode("main", "content", oExt);
 
             for (var i = 0; i < 6; i++) {
                 this.$getNewContext("row");
-                var oRow = oExt.appendChild(this.$getLayoutNode("row"));
+                var oRow = oContent.appendChild(this.$getLayoutNode("row"));
 
                 for (var j = 0; j < 8; j++) {
                     this.$getNewContext("cell");
                     var oCell = this.$getLayoutNode("cell");
-                    if (j > 0) {
+                    /*if (j > 0) {
                         oCell.setAttribute("onmouseover",
                             "if (this.className.indexOf('disabled') > -1 "
                             + "|| this.className.indexOf('active') > -1) "
@@ -552,12 +328,12 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                             + " else if (this.className.indexOf('next') > -1) {"
                             + "o.selectDay(this.innerHTML, 'next');}"
                             + " else {o.selectDay(this.innerHTML);}");
-                    }
+                    }*/
                     oRow.appendChild(oCell);
                 }
             }
 
-            var oNavigation = this.$getLayoutNode("main", "navigation", oExt);
+            /*var oNavigation = this.$getLayoutNode("main", "navigation", oExt);
 
             if (oNavigation) {
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
@@ -578,15 +354,16 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             for (var i = 0; i < days.length + 1; i++) {
                 this.$getNewContext("day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
-            }
+            }*/
         });
 
-        this.oNavigation = this.$getLayoutNode("main", "navigation",  this.oExt);
-        this.oDow        = this.$getLayoutNode("main", "daysofweek",  this.oExt);
+        //this.oNavigation = this.$getLayoutNode("main", "navigation",  this.oExt);
+        //this.oDow        = this.$getLayoutNode("main", "daysofweek",  this.oExt);
+        this.oContent = this.$getLayoutNode("main", "content",  this.oExt);
     };
 
     this.$loadJml = function(x) {
-        if (typeof this.value == "undefined") {
+        /*if (typeof this.value == "undefined") {
             switch(this["default"]) {
                 case "today":
                     this.setProperty("value", new Date().format(this.outputFormat));
@@ -603,14 +380,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             _year  = date.getFullYear();
 
             this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat));
-        }
+        }*/
     };
 
     
     this.$destroy = function() {
-        jpf.popup.removeContent(this.uniqueId);
+        /*jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oExt);
-        this.oCalendar = null;
+        this.oCalendar = null;*/
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
