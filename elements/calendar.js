@@ -270,7 +270,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
 
-    this.$focus = function(){
+    this.$focus = function() {
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }
 
@@ -307,10 +307,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$getPadding = function(oHtml) {
         return jpf.isIE
-            ? [parseInt(jpf.getStyle(oHtml, "paddingLeft")) + parseInt(jpf.getStyle(oHtml, "paddingRight")),
-              parseInt(jpf.getStyle(oHtml, "paddingTop")) + parseInt(jpf.getStyle(oHtml, "paddingBottom"))]
-            : [parseInt(jpf.getStyle(oHtml, "padding-left")) + parseInt(jpf.getStyle(oHtml, "padding-right")),
-              parseInt(jpf.getStyle(oHtml, "padding-top")) + parseInt(jpf.getStyle(oHtml, "padding-bottom"))];
+            ? [parseInt(jpf.getStyle(oHtml, "paddingLeft"))
+               + parseInt(jpf.getStyle(oHtml, "paddingRight")),
+              parseInt(jpf.getStyle(oHtml, "paddingTop"))
+               + parseInt(jpf.getStyle(oHtml, "paddingBottom"))]
+            : [parseInt(jpf.getStyle(oHtml, "padding-left"))
+               + parseInt(jpf.getStyle(oHtml, "padding-right")),
+              parseInt(jpf.getStyle(oHtml, "padding-top")) 
+               + parseInt(jpf.getStyle(oHtml, "padding-bottom"))];
     }
 
     this.redraw = function(month, year) {
@@ -355,10 +359,12 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             else if ((navi[i].className || "").indexOf("status") != -1) {
                 if (_width >= 300) {
-                    navi[i].innerHTML = months[_currentMonth].name + " " + _currentYear;
+                    navi[i].innerHTML = months[_currentMonth].name
+                        + " " + _currentYear;
                 }
                 else {
-                    navi[i].innerHTML = (_currentMonth + 1) + "/" + _currentYear;
+                    navi[i].innerHTML = (_currentMonth + 1)
+                        + "/" + _currentYear;
                     navi[i].style.width = "40px";
                     navi[i].style.marginLeft = "-20px";
                 }
@@ -383,30 +389,42 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                             var cDiff = jpf.getDiff(cells[j]);
                             var cDiff2 = this.$getMargin(cells[j]);
     
-                            cWidthf = Math.floor(rWidth / 8) - cDiff[0] - cDiff2[0];
+                            cWidthf = Math.floor(rWidth / 8)
+                                - cDiff[0] - cDiff2[0];
                             
                             var width = cWidthf;
                             var height = cWidthf 
-                                + (cDiff[1] > cDiff[0] ? cDiff[0] - cDiff[1] : 0) 
-                                + (cDiff2[1] > cDiff2[0] ? cDiff2[0] - cDiff2[1] : 0);
+                                + (cDiff[1] > cDiff[0]
+                                    ? cDiff[0] - cDiff[1]
+                                    : 0) 
+                                + (cDiff2[1] > cDiff2[0]
+                                    ? cDiff2[0] - cDiff2[1]
+                                    : 0);
     
                             var paddingBottom = 
-                                paddingTop = Math.ceil((height - this.$getFontSize(cells[j]))/2);
+                                paddingTop = Math.ceil((height
+                                    - this.$getFontSize(cells[j])) / 2);
     
                             height -= (paddingTop + paddingBottom - cDiff[1]);
                             
                             cells[j].style.width         = width + "px";
                             cells[j].style.height        = height + "px";
-                            cells[j].style.paddingTop    = (paddingTop + 1) + "px";
-                            cells[j].style.paddingBottom = (paddingBottom > 0 ? paddingBottom - 1 : 0) + "px";
+                            cells[j].style.paddingTop    = (paddingTop + 1)
+                                                         + "px";
+                            cells[j].style.paddingBottom = (paddingBottom > 0
+                                ? paddingBottom - 1
+                                : 0) + "px";
                         }
 
                         // Drawing day numbers
-                        this.$setStyleClass(cells[j], "", ["weekend", "disabled", "active", "prev", "next"]);
+                        this.$setStyleClass(cells[j], "", ["weekend",
+                            "disabled", "active", "prev", "next"]);
                         
                         z++;
                         if ((z - 1) % 8 == 0) {
-                            cells[j].innerHTML = w_weeks - Math.ceil((months[_month].number + _dayNumber) / 7) + 1 + (z - 1) / 8;
+                            cells[j].innerHTML = w_weeks 
+                                - Math.ceil((months[_month].number + _dayNumber) / 7)
+                                + 1 + (z - 1) / 8;
                         }
                         else {
                             y++;
@@ -414,10 +432,12 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                                 cells[j].innerHTML = prevMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled prev");
                             }
-                            else if (y > _dayNumber && y <= _numberOfDays + _dayNumber) {
+                            else if (y > _dayNumber 
+                                && y <= _numberOfDays + _dayNumber) {
                                 cells[j].innerHTML = y - _dayNumber;
         
-                                var dayNrWeek = new Date(year, month, y - _dayNumber).getDay();
+                                var dayNrWeek = new Date(year, month,
+                                    y - _dayNumber).getDay();
         
                                 if (dayNrWeek == 0 || dayNrWeek == 6) {
                                     this.$setStyleClass(cells[j], "weekend");
@@ -438,11 +458,13 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
 
                 if (!inited) {
-                    pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] - (cWidthf + cDiff[0] + cDiff2[0])*8)/2);
+                    pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] 
+                        - (cWidthf + cDiff[0] + cDiff2[0])*8)/2);
                     rows[i].style.paddingLeft = pl + "px";
                     
                     var eDiff = this.$getPadding(this.oExt);
-                    this.oExt.style.paddingBottom = (Math.floor(eDiff[1]/2) + pl) + "px";
+                    this.oExt.style.paddingBottom = 
+                        (Math.floor(eDiff[1]/2) + pl) + "px";
                 }
                 
                 if (!this.height) {
@@ -472,7 +494,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
     
                     if (z > 0) {
-                        daysofweek[i].innerHTML = days[z - 1].substr(0, cWidthf < 12 ? 1 : (cWidthf < 16 ? 2 : 3));
+                        daysofweek[i].innerHTML = 
+                            days[z - 1].substr(0, cWidthf < 12
+                                ? 1 : (cWidthf < 16 ? 2
+                                : 3));
                     }
                     else {
                         daysofweek[i].innerHTML = "&nbsp;";
@@ -632,7 +657,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             _month = date.getMonth();
             _year  = date.getFullYear();
 
-            this.setProperty("value", new Date(_year, _month, _day, _hours, _minutes, _seconds).format(this.outputFormat));
+            this.setProperty("value", new Date(_year, _month, _day, _hours,
+                _minutes, _seconds).format(this.outputFormat));
         }
     };
 
