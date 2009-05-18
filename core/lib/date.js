@@ -259,7 +259,7 @@ jpf.date.getDateTime = function(datetime, format) {
                 alteration += i18n.dayNames[i18n.dayNumbers[part.substring(0,3)] + 7].length - 4;
                 break;
             case 'mm':
-                return m = parseInt(part); //01 - 11
+                return m = part; //01 - 11
             case 'mmm':
                 return m = i18n.monthNumbers[part] + 1;
             case 'mmmm':
@@ -285,7 +285,7 @@ jpf.date.getDateTime = function(datetime, format) {
                 break;
          }
     });
-
+jpf.console.info("date: "+y +" "+m+" "+d);
     return new Date(y, m-1, d, h, M, s);
 };
 
