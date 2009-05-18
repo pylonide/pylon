@@ -285,7 +285,7 @@ jpf.date.getDateTime = function(datetime, format) {
                 break;
          }
     });
-jpf.console.info("date: "+y +" "+m+" "+d);
+
     return new Date(y, m-1, d, h, M, s);
 };
 
