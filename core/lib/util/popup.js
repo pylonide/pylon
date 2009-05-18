@@ -83,7 +83,8 @@ jpf.popup = {
             callback     : null,
             draggable    : false,
             resizable    : false,
-            allowTogether: false
+            allowTogether: false,
+            autoCorrect  : true
         }, options);
         if (!this.popup)
            this.init();
@@ -110,15 +111,13 @@ jpf.popup = {
             if (options.width || o.width)
                 popup.style.width = ((options.width || o.width) - 3) + "px";
 
-            //console.log('what? ', )
-            //debugger;
-            var moveUp = (top + (options.height || o.height || o.content.offsetHeight)
-                + options.y) > (p == document.documentElement
-                  ? (jpf.isIE ? p.offsetHeight : window.innerHeight)
+            var moveUp = options.autoCorrect && (top
+                + (options.height || o.height || o.content.offsetHeight))
+                > (p == document.documentElement
+                  ? (jpf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))
                   : p.offsetHeight + p.scrollTop);
-            
             popup.style.top = (moveUp 
-                ? (pos[1] - (options.height || o.height || o.content.offsetHeight)) 
+                ? (top - (options.height || o.height || o.content.offsetHeight))
                 : top) + "px"
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }

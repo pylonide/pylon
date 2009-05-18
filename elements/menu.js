@@ -235,7 +235,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             y            : y,
             animate      : noanim ? false : "fade",
             ref          : this.oExt.offsetParent,
-            allowTogether: openMenuId
+            allowTogether: openMenuId,
+            autoCorrect  : false
         });
 
         var lastFocus      =
