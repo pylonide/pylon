@@ -495,18 +495,19 @@ jpf.DragDrop = function(){
                     old_e.preventDefault();
 
                 var d = window.document;
-                d = (!doc.compatMode || doc.compatMode == 'CSS1Compat') 
-                    ? doc.documentElement
-                    : doc.body
+                d = (!d.compatMode || d.compatMode == 'CSS1Compat') 
+                    ? d.html || d.documentElement
+                    : d.body
 
                 var scrollX = (jpf.isIE ? d.scrollLeft : window.pageXOffset),
                     scrollY = (jpf.isIE ? d.scrollTop  : window.pageYOffset);
                 var oParent = srcEl.offsetParent;
-                while (oParent && oParent.tagName != "BODY") {
+                while (oParent && oParent != d && oParent.tagName != "BODY") {
                     scrollX -= oParent.scrollLeft;
                     scrollY -= oParent.scrollTop;
                     oParent = oParent.offsetParent;
                 }
+
 
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
@@ -855,12 +856,10 @@ jpf.DragServer = {
         }
         
         var dragdata = jpf.DragServer.dragdata,
-            d        = jpf.DragServer.coordinates.doc;
-
-        var c = {
-            clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
-            clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
-        };
+            c = {
+                clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+                clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
+            };
 
         if (!dragdata.started
           && Math.abs(jpf.DragServer.coordinates.clientX - c.clientX) < 6
@@ -885,10 +884,10 @@ jpf.DragServer = {
 
         jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
             ? window.pageXOffset
-            : 0) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+            : 0) : c.clientX;
         jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
             ? window.pageYOffset
-            : 0) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
+            : 0) : c.clientY;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
@@ -930,8 +929,7 @@ jpf.DragServer = {
         }
 
         //get Element at x, y
-        var d         = jpf.DragServer.coordinates.doc,
-            indicator = jpf.DragServer.dragdata.indicator;
+        var indicator = jpf.DragServer.dragdata.indicator;
         var storeIndicatorTopPos = indicator.style.top;
         //jpf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
         if (indicator)
@@ -939,10 +937,11 @@ jpf.DragServer = {
 
         jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
             ? window.pageXOffset
-            : 0) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+            : 0) : c.clientX;
         jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
             ? window.pageYOffset
-            : 0) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
+            : 0) : c.clientY;
+
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
