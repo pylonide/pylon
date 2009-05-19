@@ -363,9 +363,10 @@ jpf.DragDrop = function(){
         var action = rule && rule.getAttribute("action") || defaction;
         
         //copy-condition convenience variables
-        var internal = jpf.DragServer.dragdata.host == this;
-        var ctrlKey  = event.ctrlKey;
-        var keyCode  = event.keyCode;
+        /*var internal = */
+        jpf.DragServer.dragdata.host == this;
+        //var ctrlKey  = event.ctrlKey;
+        //var keyCode  = event.keyCode;
 
         //jpf.parseExpression
         var ifcopy = rule && rule.getAttribute("copy-condition")
@@ -856,12 +857,14 @@ jpf.DragServer = {
         var dragdata = jpf.DragServer.dragdata,
             d        = jpf.DragServer.coordinates.doc;
 
-        e.clientX = e.pageX ? e.pageX - window.pageXOffset : e.clientX;
-        e.clientY = e.pageY ? e.pageY - window.pageYOffset : e.clientY;
+        var c = {
+            clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+            clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
+        };
 
         if (!dragdata.started
-          && Math.abs(jpf.DragServer.coordinates.clientX - e.clientX) < 6
-          && Math.abs(jpf.DragServer.coordinates.clientY - e.clientY) < 6)
+          && Math.abs(jpf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(jpf.DragServer.coordinates.clientY - c.clientY) < 6)
             return;
 
         if (!dragdata.started) {
@@ -880,15 +883,19 @@ jpf.DragServer = {
         if (dragdata.indicator)
             dragdata.indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX || e.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
-        jpf.DragServer.dragdata.y = e.pageY || e.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
+        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isSafari 
+            ? 0 
+            : window.pageXOffset) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isSafari 
+            ? 0 
+            : window.pageYOffset) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
         dragdata.indicator.style.top = storeIndicatorTopPos;
         //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left+" "+jpf.DragServer.dragdata.x+" "+jpf.DragServer.dragdata.y);
         //Set Indicator
-        dragdata.host.$moveDragIndicator(e);
+        dragdata.host.$moveDragIndicator(c);
 
         //get element and call events
         var receiver = jpf.findHost(el);
@@ -910,12 +917,14 @@ jpf.DragServer = {
             e = e.changedTouches[0];
         }
 
-        e.clientX = e.pageX ? e.pageX - window.pageXOffset : e.clientX;
-        e.clientY = e.pageY ? e.pageY - window.pageYOffset : e.clientY;
+        var c = {
+            clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+            clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
+        };
 
         if (!jpf.DragServer.dragdata.started
-          && Math.abs(jpf.DragServer.coordinates.clientX - e.clientX) < 6
-          && Math.abs(jpf.DragServer.coordinates.clientY - e.clientY) < 6) {
+          && Math.abs(jpf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(jpf.DragServer.coordinates.clientY - c.clientY) < 6) {
             jpf.DragServer.stop(true)
             return;
         }
@@ -928,8 +937,12 @@ jpf.DragServer = {
         if (indicator)
             indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX || e.clientX + d.scrollLeft; //e.clientX+document.documentElement.scrollLeft;
-        jpf.DragServer.dragdata.y = e.pageY || e.clientY + d.scrollTop;  //e.clientY+document.documentElement.scrollTop;
+        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isSafari 
+            ? 0
+            : window.pageXOffset) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isSafari 
+            ? 0
+            : window.pageYOffset) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
@@ -943,7 +956,7 @@ jpf.DragServer = {
         if (host != jpf.DragServer.host)
             jpf.DragServer.dragout(host);
         jpf.DragServer.dragdrop(host, el, jpf.DragServer.dragdata.host, e);
-        jpf.DragServer.stop(true)
+        jpf.DragServer.stop(true);
 
         //Clear Selection
         if (jpf.isNS) {
