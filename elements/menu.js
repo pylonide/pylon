@@ -76,8 +76,8 @@
 jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable  = jpf.KEYBOARD;
     this.$positioning = "basic"
-    var _self         = this;
-    var blurring      = false;
+    //var _self         = this;
+    //var blurring      = false;
 
     /**** Properties and Attributes ****/
 
@@ -194,7 +194,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         this.dispatchEvent("display");
 
         //Show / hide Child Nodes Based on XML
-        var c = 0, last, d = 0, i, node, nodes = this.childNodes;
+        var c = 0, last, i, node, nodes = this.childNodes;
         var l = nodes.length
         for (i = 0; i < l; i++) {
             node = nodes[i];
@@ -303,23 +303,23 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
-        var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
+        var node, key = e.keyCode;
+        //var ctrlKey  = e.ctrlKey;
+        //var shiftKey = e.shiftKey;
 
         switch (key) {
             case 13:
                 if (!this.$selected)
                     return;
 
-                var node = this.$selected;
+                node = this.$selected;
                 node.$down();
                 node.$up();
                 node.$click();
                 break;
             case 38:
                 //UP
-                var node = this.$selected && this.$selected.previousSibling
+                node = this.$selected && this.$selected.previousSibling
                   || this.lastChild;
 
                 if (node && node.tagName == "divider")
@@ -336,7 +336,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
             case 40:
                 //DOWN
-                var node = this.$selected && this.$selected.nextSibling
+                node = this.$selected && this.$selected.nextSibling
                   || this.firstChild;
 
                 if (node && node.tagName == "divider")
@@ -360,10 +360,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     return;
 
                 if (this.opener.tagName == "button") {
-                    var node = this.opener.previousSibling;
-                    while(node && !node.submenu) {
+                    node = this.opener.previousSibling;
+                    while(node && !node.submenu)
                         node = node.previousSibling;
-                    }
 
                     if (node) {
                         node.dispatchEvent("mouseover");
@@ -402,10 +401,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                         op = op.parentNode.opener;
 
                     if (op && op.tagName == "button") {
-                        var node = op.nextSibling;
-                        while(node && !node.submenu) {
+                        node = op.nextSibling;
+                        while(node && !node.submenu)
                             node = node.nextSibling;
-                        }
 
                         if (node) {
                             node.dispatchEvent("mouseover");
@@ -516,7 +514,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$destroy = function(){
         jpf.popup.removeContent(this.uniqueId);
-    }
+    };
 }).implement(jpf.Presentation);
 
 /**
@@ -543,7 +541,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
 
-        switch(prop){
+        switch (prop) {
             /**
              * @attribute {String} [submenu] the id of the menu that is shown
              * when the user hovers over this menu item.
@@ -707,7 +705,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                     jpf.setStyleClass(this.oExt, "", ["disabled"]);
                 break;
         }
-    }
+    };
 
     /**** Public Methods ****/
 
@@ -732,14 +730,14 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
      */
     this.show = function(){
         this.oExt.style.display = "block";
-    }
+    };
 
     /**
      * @private
      */
     this.hide = function(){
         this.oExt.style.display = "none";
-    }
+    };
 
     /**** Dom Hooks ****/
 
@@ -757,7 +755,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
     this.$down = function(){
 
-    }
+    };
 
     this.$up = function(){
         if (this.tagName == "radio")
@@ -779,13 +777,13 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         });
 
         //@todo Anim effect here?
-    }
+    };
 
     this.$click = function(){
         this.dispatchEvent("click", {
             xmlContext : this.parentNode.xmlReference
         });
-    }
+    };
 
     var timer;
     this.$out = function(e){
@@ -803,7 +801,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
             this.parentNode.$selected = null;
         }
-    }
+    };
 
     this.$over = function(e, force){
         if (this.parentNode.$selected)
@@ -837,7 +835,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 }, 200);
             }
         }
-    }
+    };
 
     this.$submenu = function(hide, force){
         if (!this.submenu)
@@ -875,7 +873,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             menu.hide();
             return true;
         }
-    }
+    };
 
     /**** Init ****/
 
@@ -901,7 +899,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         if (!isSkinSwitch && this.nextSibling && this.nextSibling.oExt)
             this.oExt.parentNode.insertBefore(this.oExt, this.nextSibling.oExt);
-    }
+    };
 
     /**
      * @private
@@ -946,6 +944,6 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 this.setProperty("caption", x.firstChild.nodeValue);
             }
         }
-    }
+    };
 });
 // #endif
