@@ -105,8 +105,8 @@ jpf.popup = {
         if (options.ref) {
             var pos    = jpf.getAbsolutePosition(options.ref, 
                             o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
-                top    = (options.y || 0) + pos[1]
-                    + (jpf.isSafari ? window.pageYOffset : 0),
+                top    = (options.y || 0) + pos[1],
+                    //+ (jpf.isSafari ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
                 p      = jpf.getOverflowParent(o.content);
         
             if (options.width || o.width)
