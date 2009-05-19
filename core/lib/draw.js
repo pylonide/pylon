@@ -41,6 +41,12 @@ jpf.namespace("draw", {
     
     //----------------------------------------------------------------------
      
+    basevars : function(){
+        return ["var  _math_,v,t=0,n=(new Date()).getTime()*0.001",
+                ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
+                ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_;"].join('');
+    },
+     
     vars : function(ml,mt,mr,mb){
         return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1",
                 ",vx2 = v.vx2, vy2 = v.vy2, vw = vx2-vx1, vh = vy1-vy2",
@@ -358,6 +364,7 @@ jpf.namespace("draw", {
 		}
 
         for(k in styledef){
+            //logw("got "+k);
             if( typeof(v=styledef[k]) == 'object' && v!==null && v['$']==1){
                 stylecopy(o[k] = {}, v, k);
             }
@@ -365,18 +372,22 @@ jpf.namespace("draw", {
 
 		// inventory classes and states we have styles for
 		p=[];
-		for(k in o)if( typeof(v=o[k])=='object' && 
-			!(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
-			if(n && typeof(t=o[n[0]])=='object'){
-				v.$base=n[0],v.$class=n[1];
-				if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
-				w[w.length] = (n[1].split(':'))[0];
-			}else if(m && typeof(t=o[m[0]])=='object' && m[0].indexOf('.')==-1){
-				v.$base=m[0],v.$state=m[1];
-				if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
-				w[w.length] = m[1];                    
-			}
-		}
+		for(k in o){
+            
+                if( typeof(v=o[k])=='object' && 
+                    !(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
+
+                if(n && typeof(t=o[n[0]])=='object'){
+                    v.$base=n[0],v.$class=n[1];
+                    if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
+                    w[w.length] = (n[1].split(':'))[0];
+                }else if(m && typeof(t=o[m[0]])=='object' && m[0].indexOf('.')==-1){
+                    v.$base=m[0],v.$state=m[1];
+                    if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
+                    w[w.length] = m[1];                    
+                }
+            }
+        }
 
         function objinherit(d, s){
             var k,v,n;
@@ -428,11 +439,11 @@ jpf.namespace("draw", {
 						objinherit(v, t);
 				}
 			}
-			if((t = o[d]) && n)objinherit(v,t);
+			if((t = o[d]) && n) objinherit(v,t);
 			// lets see if we are pointless
 			if(!t.nomerge){
 				if(!(n=t.$merge))n=t.$merge={};
-				if(!n[m=objtohash(v)])n[m] = v;
+				if(!n[m=objtohash(v)]) n[m] = v;
 				else v.$merged = n[m];
 			}
 			// 
@@ -507,13 +518,13 @@ jpf.namespace("draw", {
 					shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
 				}
 				// lets dump this shite
-				
+                //logw("WE HAVE BASE");
+                //logw(jpf.vardump(v.$classmap));
 			}
 			// remove if we aint active
 			if( !styleinit(v) ) delete o[k];
 			
 		}
-
 
         // for each base object, we need to create the subobject maps and state luts
         // _statelut[state]->arrays
@@ -584,7 +595,6 @@ jpf.namespace("draw", {
                      0x00400000|0x00100000|0x00080000|0x00040000,
         'hover'    : 0x08000000|0x04000000|0x00200000|0x00100000
     },
-    
     
     $stateInherit : {
         'hidden'           : 1,       
@@ -682,6 +692,20 @@ jpf.namespace("draw", {
         return a && typeof(a)=='string' && 
               !(a.indexOf('.')!=-1 && a.match(/^[\s:a-zA-Z0-9\/\\\._-]+$/)) && 
                a.match(/[\(+*\/-]/)!=null;
+    },
+    
+    baseMacro : function ( code ) {
+        // lets compile our macros
+        for(var j = code.length,i=0,v;i<j;i++){
+            if(typeof(v=code[i])=='object'){
+                code[i] = this.parseJSS(v[0]);
+            }
+        }
+        var r= this.optimize([   
+            this.basevars(),
+            code.join(''),
+        ])
+        return r;
     },
     
     optimize : function( code ){
