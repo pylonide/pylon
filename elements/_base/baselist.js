@@ -113,7 +113,7 @@ jpf.BaseList = function(){
             this.loadFillData(this.$jml.getAttribute("fill"));
         else
             this.clear();
-    }
+    };
 
     /**** Keyboard support ****/
 
@@ -124,16 +124,18 @@ jpf.BaseList = function(){
      * @todo  something goes wrong when selecting using space, doing mode="check"
      */
     this.$keyHandler = function(e){
-        var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
-        var selHtml  = this.$selected || this.$indicator;
+        var key      = e.keyCode,
+            ctrlKey  = e.ctrlKey,
+            shiftKey = e.shiftKey,
+            selHtml  = this.$selected || this.$indicator;
 
         if (!selHtml || this.renaming) //@todo how about allowdeselect?
             return;
 
-        var selXml = this.indicator || this.selected;
-        var oExt   = this.oExt;
+        var selXml = this.indicator || this.selected,
+            oExt   = this.oExt,
+            // variables used in the switch statement below:
+            node, margin, items, lines, hasScroll, hasScrollX, hasScrollY;
 
         switch (key) {
             case 13:
@@ -180,15 +182,15 @@ jpf.BaseList = function(){
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                var items     = Math.floor((oExt.offsetWidth
+                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
 
-                var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
 
                 node = this.getNextTraverseSelected(node, false);
                 if (node)
@@ -207,20 +209,21 @@ jpf.BaseList = function(){
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                var hasScroll = oExt.scrollHeight > oExt.offsetHeight;
-                var items     = Math.floor((oExt.offsetWidth
+                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
 
                 node = this.getNextTraverseSelected(node, false, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else
+                    return;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
@@ -234,69 +237,71 @@ jpf.BaseList = function(){
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
 
                 node = this.getNextTraverseSelected(node, true);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else
+                    return;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight)
+                  > oExt.scrollTop + oExt.offsetHeight) {
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0];
-
+                }
                 break;
             case 40:
                 //DOWN
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                var hasScroll = oExt.scrollHeight > oExt.offsetHeight;
-                var items     = Math.floor((oExt.offsetWidth
+                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
 
                 node = this.getNextTraverseSelected(node, true, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else
+                    return;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight) // - (hasScroll ? 10 : 0)
+                  > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ (hasScroll ? 10 : 0)
-
+                }
                 break;
             case 33:
                 //PGUP
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
-                var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
-                var items      = Math.floor((oExt.offsetWidth
+                margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                items      = Math.floor((oExt.offsetWidth
                     - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
-                var lines      = Math.floor((oExt.offsetHeight
+                lines      = Math.floor((oExt.offsetHeight
                     - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
                     + margin[0] + margin[2]));
 
@@ -305,7 +310,8 @@ jpf.BaseList = function(){
                     node = this.getFirstTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else
+                    return;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
@@ -319,16 +325,16 @@ jpf.BaseList = function(){
                 if (!selXml && !this.$tempsel)
                     return;
 
-                var node = this.$tempsel
+                node = this.$tempsel
                     ? jpf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
-                var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
-                var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
-                var items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
+                margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
                     / (selHtml.offsetWidth + margin[1] + margin[3]));
-                var lines      = Math.floor((oExt.offsetHeight - (hasScrollX ? 15 : 0))
+                lines      = Math.floor((oExt.offsetHeight - (hasScrollX ? 15 : 0))
                     / (selHtml.offsetHeight + margin[0] + margin[2]));
 
                 node = this.getNextTraverseSelected(selXml, true, items * lines);
@@ -336,29 +342,33 @@ jpf.BaseList = function(){
                     node = this.getLastTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else
+                    return;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight) // - (hasScrollY ? 10 : 0)
+                  > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
+                }
                 break;
 
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
-                } else if (this.caption || (this.bindingRules || {})["caption"]) {
+                }
+                else if (this.caption || (this.bindingRules || {})["caption"]) {
                     if (!this.xmlRoot || this.autorename) return;
 
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
-                      - this.lookup.date.getTime() > 300)
+                      - this.lookup.date.getTime() > 300) {
                         this.lookup = {
                             str  : "",
                             date : new Date()
                         };
+                    }
 
                     this.lookup.str += String.fromCharCode(key);
 
@@ -375,10 +385,11 @@ jpf.BaseList = function(){
                                     this.select(nodes[i]);
                             }
 
-                            if (selHtml)
+                            if (selHtml) {
                                 this.oInt.scrollTop = selHtml.offsetTop
                                     - (this.oInt.offsetHeight
                                     - selHtml.offsetHeight) / 2;
+                            }
                             return;
                         }
                     }
@@ -400,28 +411,35 @@ jpf.BaseList = function(){
 
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
-    }
+    };
 
     this.$updateNode   = function(xmlNode, htmlNode, noModifier){
         //Update Identity (Look)
         var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
 
         if (elIcon) {
-            if (elIcon.nodeType == 1)
+            if (elIcon.nodeType == 1) {
                 elIcon.style.backgroundImage = "url(" + 
-                  jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode)) + ")";
-            else
-                elIcon.nodeValue =jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode));
+                  jpf.getAbsolutePath(this.iconPath,
+                      this.applyRuleSetOnNode("icon", xmlNode)) + ")";
+            }
+            else {
+                elIcon.nodeValue =jpf.getAbsolutePath(this.iconPath, 
+                    this.applyRuleSetOnNode("icon", xmlNode));
+            }
         }
         else {
             var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
-                if (elImage.nodeType == 1)
+                if (elImage.nodeType == 1) {
                     elImage.style.backgroundImage = "url(" + 
-                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode)) + ")";
-                else
-                    elImage.nodeValue = 
-                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode));
+                        jpf.getAbsolutePath(this.mediaPath,
+                            this.applyRuleSetOnNode("image", xmlNode)) + ")";
+                }
+                else {
+                    elImage.nodeValue = jpf.getAbsolutePath(this.mediaPath, 
+                        this.applyRuleSetOnNode("image", xmlNode));
+                }
             }
         }
 
@@ -449,7 +467,7 @@ jpf.BaseList = function(){
 
         if (!noModifier && this.$updateModifier)
             this.$updateModifier(xmlNode, htmlNode);
-    }
+    };
 
     this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
@@ -461,9 +479,8 @@ jpf.BaseList = function(){
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
-
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
-    }
+    };
 
     var nodes = [];
 
@@ -474,7 +491,7 @@ jpf.BaseList = function(){
         var elSelect   = this.$getLayoutNode("item", "select");
         var elIcon     = this.$getLayoutNode("item", "icon");
         var elImage    = this.$getLayoutNode("item", "image");
-        var elCheckbox = this.$getLayoutNode("item", "checkbox");
+        //var elCheckbox = this.$getLayoutNode("item", "checkbox"); // NOT USED
         var elCaption  = this.$getLayoutNode("item", "caption");
 
         Item.setAttribute("id", Lid);
@@ -568,7 +585,7 @@ jpf.BaseList = function(){
             jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
         else
             nodes.push(Item);
-    }
+    };
 
     this.$fill = function(){
         if (this.more && !this.moreItem) {
@@ -605,9 +622,9 @@ jpf.BaseList = function(){
 
         if (this.more && !this.moreItem)
             this.moreItem = this.oInt.lastChild;
-    }
+    };
 
-    var lastAddedMore;
+    //var lastAddedMore; // NOT USED
 
     /**
      * Adds a new item to the list and lets the users type in the new name.
@@ -699,14 +716,15 @@ jpf.BaseList = function(){
         // #ifdef __WITH_RENAME
         this.startDelayedRename({}, 1);
         // #endif
-    }
+    };
 
     /**** Selection ****/
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
-        var r = [];
-        var nodes = this.getTraverseNodes();
-        for (var f = false, i = 0; i < nodes.length; i++) {
+        var r = [],
+            nodes = this.getTraverseNodes(),
+            f, i;
+        for (f = false, i = 0; i < nodes.length; i++) {
             if (nodes[i] == xmlStartNode)
                 f = true;
             if (f)
@@ -717,7 +735,7 @@ jpf.BaseList = function(){
 
         if (!r.length || f) {
             r = [];
-            for (var f = false, i = nodes.length - 1; i >= 0; i--) {
+            for (f = false, i = nodes.length - 1; i >= 0; i--) {
                 if (nodes[i] == xmlStartNode)
                     f = true;
                 if (f)
@@ -728,11 +746,11 @@ jpf.BaseList = function(){
         }
 
         return r;
-    }
+    };
 
     this.$selectDefault = function(XMLRoot){
         this.select(this.getTraverseNodes()[0]);
-    }
+    };
 
     this.inherit(jpf.MultiSelect,
                  jpf.Cache,
@@ -769,7 +787,7 @@ jpf.BaseList = function(){
                   .documentElement);
             jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
-    }
+    };
 }
 
 // #endif

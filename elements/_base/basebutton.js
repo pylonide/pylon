@@ -83,7 +83,7 @@ jpf.BaseButton = function(pHtmlNode){
             oNode.style.backgroundRepeat = "";
             this.$background = null;
         }
-    }
+    };
 
     /**** Keyboard Support ****/
 
@@ -153,7 +153,7 @@ jpf.BaseButton = function(pHtmlNode){
             this.$setState("Over", e, strEvent);
         else
             this.$setState("Out", e, strEvent);
-    }
+    };
 
     this.$setupEvents = function() {
         this.oExt.onmousedown = function(e) {
@@ -226,7 +226,7 @@ jpf.BaseButton = function(pHtmlNode){
 
         if (jpf.hasClickFastBug)
             this.oExt.ondblclick = this.oExt.onmouseup;
-    }
+    };
 
     this.$doBgSwitch = function(nr){
         if (this.bgswitch && (this.$background[2] >= nr || nr == 4)) {
@@ -240,7 +240,7 @@ jpf.BaseButton = function(pHtmlNode){
             this.$getLayoutNode("main", "background",
                 this.oExt).style.backgroundPosition = strBG;
         }
-    }
+    };
 
     /**** Focus Handling ****/
 
@@ -249,7 +249,7 @@ jpf.BaseButton = function(pHtmlNode){
             return;
 
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
-    }
+    };
 
     this.$blur = function(oBtn){
         if (!this.oExt)
@@ -271,7 +271,7 @@ jpf.BaseButton = function(pHtmlNode){
 
         if (oBtn)
             this.$updateState(oBtn);//, "onblur"
-    }
+    };
 
     /*** Clearing potential memory leaks ****/
 
@@ -280,7 +280,7 @@ jpf.BaseButton = function(pHtmlNode){
             this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover =
             this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
         }
-    }
-}
+    };
+};
 
 // #endif

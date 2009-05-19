@@ -121,7 +121,7 @@ jpf.BaseTab = function(){
         if (!inited) return;
 
         var page, info = {};
-        var page = this.$findPage(next, info);
+        page = this.$findPage(next, info);
 
         if (!page) {
             //#ifdef __DEBUG
@@ -621,9 +621,8 @@ jpf.BaseTab = function(){
         if (!this.$hasButtons)
             return;
 
-        var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
+        var key = e.keyCode,
+            pages, prevPage, nextPage;
 
         switch (key) {
             case 9:
@@ -632,25 +631,23 @@ jpf.BaseTab = function(){
                 break;
             case 32:
                 break;
-            case 37:
-            //LEFT
-                var pages = this.getPages();
+            case 37: //LEFT
+                pages = this.getPages();
                 prevPage = this.activepagenr - 1;
                 while (prevPage >= 0 && !pages[prevPage].visible)
                     prevPage--;
 
                 if (prevPage >= 0)
-                    this.setProperty("activepage", prevPage)
+                    this.setProperty("activepage", prevPage);
                 break;
-            case 39:
-            //RIGHT
-                var pages = this.getPages();
+            case 39: //RIGHT
+                pages = this.getPages();
                 nextPage = this.activepagenr + 1;
                 while (nextPage < pages.length && !pages[nextPage].visible)
                     nextPage++;
 
                 if (nextPage < pages.length)
-                    this.setProperty("activepage", nextPage)
+                    this.setProperty("activepage", nextPage);
                 break;
             default:
                 return;
