@@ -883,12 +883,12 @@ jpf.DragServer = {
         if (dragdata.indicator)
             dragdata.indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isSafari 
-            ? 0 
-            : window.pageXOffset) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
-        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isSafari 
-            ? 0 
-            : window.pageYOffset) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
+        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
+            ? window.pageXOffset
+            : 0) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
+            ? window.pageYOffset
+            : 0) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
@@ -937,12 +937,12 @@ jpf.DragServer = {
         if (indicator)
             indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isSafari 
-            ? 0
-            : window.pageXOffset) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
-        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isSafari 
-            ? 0
-            : window.pageYOffset) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
+        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
+            ? window.pageXOffset
+            : 0) : c.clientX + d.scrollLeft; //e.clientX + document.documentElement.scrollLeft;
+        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
+            ? window.pageYOffset
+            : 0) : c.clientY + d.scrollTop;  //e.clientY + document.documentElement.scrollTop;
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
 
