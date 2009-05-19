@@ -446,7 +446,6 @@ var jpf = {
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
         this.supportCSSAnim            = jpf.isSafari && (jpf.safariRev > 525);//jpf.isIphone;
-        alert(jpf.safariRev);
         this.locale                    = (jpf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
