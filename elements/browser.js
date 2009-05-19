@@ -115,9 +115,14 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["value"] = function(value, force){
         try {
             this.oInt.src = value || "about:blank";
-        } catch(e) {
+        }
+        catch(e) {
             this.oInt.src = "about:blank";
         }
+    };
+
+    this.getValue = function() {
+        return this.value || this.src;
     };
 
     this.$draw = function(parentNode){
