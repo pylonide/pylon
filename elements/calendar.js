@@ -407,13 +407,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     
                             height -= (paddingTop + paddingBottom - cDiff[1]);
                             
-                            cells[j].style.width         = width + "px";
-                            cells[j].style.height        = height + "px";
-                            cells[j].style.paddingTop    = (paddingTop + 1)
-                                                         + "px";
-                            cells[j].style.paddingBottom = (paddingBottom > 0
-                                ? paddingBottom - 1
-                                : 0) + "px";
+                            cells[j].style.width         = (width > 0 ? width : 0) + "px";
+                            cells[j].style.height        = (height > 0 ? height : 0) + "px";
+                            cells[j].style.paddingTop    = (paddingTop > 0 ? paddingTop + 1 : 0) + "px";
+                            cells[j].style.paddingBottom = (paddingBottom > 0 ? paddingBottom - 1 : 0) + "px";
                         }
 
                         // Drawing day numbers
@@ -487,7 +484,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     
             for (var z = 0, i = 0; i < daysofweek.length; i++) {
                 if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                    daysofweek[i].style.width  = cWidthf + "px";
+                    daysofweek[i].style.width  = (cWidthf > 0 ? cWidthf : 0) + "px";
     
                     if (cWidthf < 16) {
                         daysofweek[i].style.fontSize = "9px";
