@@ -26,7 +26,7 @@
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       2.1
- * @namespace jpf
+ * @namespace   o3
  * @private
  */
 (function(global) {
