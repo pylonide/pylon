@@ -69,7 +69,7 @@ function sniff() {
             && navigator.vendor.match(/Apple/) ? true : false)
             || sAgent.indexOf("safari") != -1 || is_konqueror);
     var is_ie        = (document.all && !is_opera && !is_safari);
-    bEmbed           = is_ie && !is_opera;
+    bEmbed           = !(is_ie && !is_opera);
 }
 
 
