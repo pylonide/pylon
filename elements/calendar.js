@@ -507,7 +507,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        inited = true;
+        if((this.width || this.oExt.offsetWidth) && _width > 0)
+            inited = true;
     };
 
     this.selectDay = function(nr, type) {
