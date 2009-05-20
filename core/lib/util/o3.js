@@ -33,14 +33,15 @@
 
 var sId        = "AjaxO3",
     bAvailable = null,
+    bEmbed     = false,
     iVersion   = null,
     oO3;
 
 function detect() {
     var version;
 
-    if (navigator.plugins && navigator.plugins["o3"]) {
-        version = navigator.plugins["o3"].versionInfo;
+    if (navigator.plugins && navigator.plugins["O3-XXXXXXX"]) {
+        version = "1.0";//navigator.plugins["O3-XXXXXXX"].versionInfo;
     }
     else {
         try {
@@ -58,6 +59,17 @@ function detect() {
         iVersion   = 0;
         bAvailable = false;
     }
+}
+
+function sniff() {
+    var sAgent = navigator.userAgent.toLowerCase();
+    var is_opera     = sAgent.indexOf("opera") !== -1;
+    var is_konqueror = sAgent.indexOf("konqueror") != -1;
+    var is_safari    = !is_opera && ((navigator.vendor
+            && navigator.vendor.match(/Apple/) ? true : false)
+            || sAgent.indexOf("safari") != -1 || is_konqueror);
+    var is_ie        = (document.all && !is_opera && !is_safari);
+    bEmbed           = is_ie && !is_opera;
 }
 
 
@@ -87,7 +99,6 @@ function createHtml(id, options) {
     if (typeof options.height == "undefined")
         options.height = 0;
 
-    var bEmbed = (jpf.isIE && !jpf.isOpera);
     out.push(bEmbed
         ? '<embed id="' + id + '" width="' + options.width + '" height="' 
             + options.height + '" '
@@ -129,6 +140,9 @@ global.o3 = {
     init: function(version, width, height) {
         if (!this.isAvailable(version))
             return false;
+
+        // mini-browser sniffing:
+        sniff();
 
         var options = {
             type: "application/o3-XXXXXXXX"
