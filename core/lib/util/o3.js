@@ -40,7 +40,7 @@ var sId        = "AjaxO3",
 
 function detect(o) {
     var version;
-    var name = "Ajax.o3." + o.guid ? o.guid : "";
+    var name = "Ajax.o3" + (o && o.guid ? "." + o.guid : "");
 
     if (navigator.plugins && navigator.plugins[name]) {
         version = "1.0";//navigator.plugins["O3-XXXXXXX"].versionInfo;
@@ -113,7 +113,7 @@ function sniff() {
 function installerUrl(o) {
     return "http://www.ajax.org/o3/installer" 
         + (sPlatform ? "/platform/" + sPlatform : "")
-        + (o.guid    ? "/guid/"     + o.guid    : "");
+        + (o.guid    ? "/guid/"     + encodeURIComponent(o.guid) : "");
 }
 
 function escapeHtml(s) {
@@ -132,7 +132,7 @@ function escapeHtml(s) {
     return ret;
 }
 
-function createHtml(id, options) {
+function createHtml(options) {
     var out = [];
     if (typeof options.width == "undefined")
         options.width = 0;
@@ -202,11 +202,11 @@ function destroy(o) {
 
 // global API:
 global.o3 = {
-    isAvailable: function(version) {
+    isAvailable: function(o) {
         if (bAvailable === null)
-            detect();
+            detect(o);
 
-        return bAvailable && version ? iVersion === version : true;
+        return bAvailable && ((o && o.version) ? iVersion === o.version : true);
     },
 
     getVersion: function() {
@@ -249,6 +249,8 @@ global.o3 = {
         var oO3 = document.getElementById(options.id);
         if (oO3) {
             register(oO3, options);
+            if (typeof options["onready"] == "function")
+                options.onready(oO3);
             return oO3;
         }
         
