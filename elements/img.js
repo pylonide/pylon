@@ -28,20 +28,22 @@
  * This example shows a list with pictures. When one is selected its displayed
  * in the img element.
  * <code>
- *  <j:model id="mdlPictures">
- *      <pictures>
+ *  <j:model id="mdlPictures"> 
+ *      <pictures> 
  *          <picture title="Landscape" src="http://example.com/landscape.jpg" />
  *          <picture title="Animal" src="http://example.com/animal.jpg" />
  *          <picture title="River" src="http://example.com/river.jpg" />
- *      </pictures>
+ *      </pictures> 
  *  </j:model>
- *
- *  <j:list id="lstPics" 
- *    traverse = "picture" 
- *    name     = "@title" 
- *    model    = "mdlPictures" />
- *
- *  <j:img ref="@src" model="#lstPics" />
+ *  
+ *  <j:list id="lstPics" skin="thumbnail" height="200" width="400" 
+ *      traverse = "picture" 
+ *      name = "@title" 
+ *      model = "mdlPictures" 
+ *      image = "@src" 
+ *  />
+ *   
+ *  <j:img ref="@src" model="#lstPics" width="400" />
  * </code>
  *
  * @constructor

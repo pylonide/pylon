@@ -916,7 +916,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
         this.$jml  = xmlNode;
-        
+
         var name, attr = xmlNode.attributes, l = attr.length;
         for (var i = 0; i < l; i++) {
             name = attr[i].nodeName;

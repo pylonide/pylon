@@ -573,7 +573,7 @@ jpf.http = function(){
 
         extra.data = http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600) {
+        if (http.status >= 400 && http.status < 600 || http.status == 3) {
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {

@@ -176,7 +176,7 @@ jpf.JmlParser = {
                     jpf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
-                if (!o || !o.nodeType)
+                if (!o || !o.nodeFunc)
                     o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
                 /* #else
                 if (o)
@@ -953,13 +953,11 @@ jpf.JmlParser = {
         }, //not referencable
 
         "bindings" : function(q, jmlParent){
-            var rules = jpf.getRules(q);
-
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
                 jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                    .addBindings(rules, q);
+                    .addBindings(jpf.getRules(q), q);
 
-            return rules;
+            return q;
         },
 
         "action" : function(q, jmlParent){
@@ -971,14 +969,12 @@ jpf.JmlParser = {
         }, //not referencable
 
         "actions" : function(q, jmlParent){
-            var rules = jpf.getRules(q);
-
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                    .addActions(rules, q);
+                    .addActions(jpf.getRules(q), q);
             }
 
-            return rules;
+            return q;
         },
 
         // #endif

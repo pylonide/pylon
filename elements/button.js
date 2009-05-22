@@ -76,6 +76,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      *   rename   Starts the rename function on the target element.
      *   login    Calls log in on the auth element with the values of the textboxes of type username and password.
      *   logout   Calls lot out on the auth element.
+     *   submit   Submits the data of a model specified as the target.
      *   ok       Executes a commitTransaction() on the target element, and closes or hides that element.
      *   cancel   Executes a rollbackTransaction() on the target element, and closes or hides that element.
      *   apply    Executes a commitTransaction() on the target element.

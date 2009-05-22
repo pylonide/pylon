@@ -902,7 +902,6 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Set Up Headings
         var heads = this.bindingRules.column;
-        
         if (this.namevalue && !heads) {
             this.bindingRules.column = heads = [];
 

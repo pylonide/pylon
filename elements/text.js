@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element displaying a rectangle containing arbritrary (X)HTML.
+ * Element displaying a rectangle containing arbitrary (X)HTML.
  * This element can be databound and use databounding rules to
  * convert data into (X)HTML using for instance XSLT or JSLT.
  *

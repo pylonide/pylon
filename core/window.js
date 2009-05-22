@@ -1519,11 +1519,13 @@ jpf.DocumentImplementation = function(){
  */
 jpf.sanitizeTextbox = function(oTxt){
     oTxt.onfocus = function(){
-        jpf.window.$focusfix2();
+        if (jpf.window)
+            jpf.window.$focusfix2();
     };
 
     oTxt.onblur = function(){
-        jpf.window.$blurfix();
+        if (jpf.window)
+            jpf.window.$blurfix();
     };
 }
 // #endif

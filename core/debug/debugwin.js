@@ -870,6 +870,9 @@ jpf.debugwin = {
         elError.onmousedown  = function(e) {
             if (!e) e = event;
 
+            if (!jpf.window)
+                return;
+
             //#ifdef __WITH_WINDOW_FOCUS
             if (jpf.hasFocusBug
               && !jpf.debugwin.focusFix[(e.srcElement || e.target).tagName]) {
