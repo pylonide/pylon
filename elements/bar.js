@@ -28,7 +28,8 @@
  * toolbar and statusbar element to specify sections within those elements
  * which in turn can contain other jml elements.
  * Remarks:
- * This component has been used in accordion component to create its sections.
+ * This component is used in the accordion element to create its sections. In
+ * the statusbar the panel element is an alias of bar.
  *
  * @constructor
  *

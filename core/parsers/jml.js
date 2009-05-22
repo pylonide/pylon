@@ -465,7 +465,7 @@ jpf.JmlParser = {
                         oLabel.oExt.parentNode.insertBefore(oLabel.oExt, jmlParent.oExt);
 
                         //Use for
-                        oLabel.setFor(jmlParent);
+                        oLabel.setProperty("for", jmlParent);
                         break;
                 }
             }

@@ -73,6 +73,7 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     var _self = this;
     
     this.$focussable = false;
+    var forElement;
     
     // #ifdef __WITH_EDITMODE
     this.editableParts = {
@@ -109,6 +110,9 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["value"] = function(value){
         this.oInt.innerHTML = value;
     };
+    this.$propHandlers["for"] = function(value){
+        forElement = typeof value == "string" ? self[value] : value;
+    };
 
     this.$draw = function(){
         //Build Main Skin
@@ -118,7 +122,6 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
-            var forElement = self[this["for"]];
             if (forElement && forElement.$focussable && forElement.focussable)
                 forElement.focus();
         }

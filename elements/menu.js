@@ -519,6 +519,32 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
 /**
  * Item of a menu displaying a clickable area.
+ * Example:
+ * <code>
+ *  <j:iconmap id="tbicons" src="toolbar.icons.gif" 
+ *    type="horizontal" size="20" offset="2,2" />
+ *
+ *  <j:menu>
+ *      <j:item icon="tbicons:1">example</j:item>
+ *      <j:item icon="tbicons:2">example</j:item>
+ *      <j:divider />
+ *      <j:radio>item 1</j:radio>
+ *      <j:radio>item 2</j:radio>
+ *      <j:radio>item 3</j:radio>
+ *      <j:radio>item 4</j:radio>
+ *      <j:divider />
+ *      <j:check>item check 1</j:check>
+ *      <j:check>item check 2</j:check>
+ *      <j:divider />
+ *      <j:item icon="tbicons:11" submenu="msub">example</j:item>
+ *      <j:item icon="tbicons:10">example</j:item>
+ *  </j:menu>
+ *
+ *  <j:menu id="msub" skin="default:menu2005">
+ *      <j:item icon="tbicons:12">test</j:item>
+ *      <j:item icon="tbicons:14">test2</j:item>
+ *  </j:menu>
+ * </code>
  * @define item, check, radio
  * @constructor
  *

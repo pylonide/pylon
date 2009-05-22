@@ -79,11 +79,11 @@ jpf.BaseTab = function(){
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
      * <code>
-     *  <j:dropdown id="ddMenu">
+     *  <j:dropdown id="ddMenu" value="0">
      *      <j:item value="0">Home</j:item>
      *      <j:item value="1">General</j:item>
      *      <j:item value="2">Advanced</j:item>
-     *  </j:drodown>
+     *  </j:dropdown>
      *
      *  <j:pages activepagenr="[ddMenu.value]">
      *      <j:page>

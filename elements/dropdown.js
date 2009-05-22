@@ -42,15 +42,15 @@
  *  <j:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
  * </code>
  * Example:
- * A databound list using the j:bindings element
+ * A databound dropdown using the j:bindings element
  * <code>
- *  <j:list model="url:friends.xml">
+ *  <j:dropdown model="url:friends.xml">
  *      <j:bindings>
  *          <j:caption  select="@name" />
  *          <j:css      select="self::node()[@type='best']" value="bestfriend" />
  *          <j:traverse select="friend" />
  *      </j:bindings>
- *  </j:list>
+ *  </j:dropdown>
  * </code>
  * Example:
  * A small form.
@@ -141,6 +141,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Toggles the visibility of the container with the list elements. It opens
      * or closes it using a slide effect.
+     * @private
      */
     this.slideToggle = function(e){
         if (!e) e = event;
@@ -153,6 +154,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**
      * Shows the container with the list elements using a slide effect.
+     * @private
      */
     this.slideDown = function(e){
         if (this.dispatchEvent("slidedown") === false)
@@ -191,6 +193,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**
      * Hides the container with the list elements using a slide effect.
+     * @private
      */
     this.slideUp = function(){
         if (this.isOpen == 2) return false;
