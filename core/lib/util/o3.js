@@ -243,7 +243,7 @@ global.o3 = {
 
         options.id = sId + (options.name ? options.name : "");
 
-        (options.parent || document.body).appendChild(
+        (options["parent"] || document.body).appendChild(
           document.createElement("div")).innerHTML = createHtml(options);
 
         var oO3 = document.getElementById(options.id);
