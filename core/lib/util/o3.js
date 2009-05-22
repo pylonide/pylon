@@ -33,19 +33,21 @@
 
 var sId        = "AjaxO3",
     bAvailable = null,
-    bEmbed     = false,
     iVersion   = null,
-    oO3;
+    bEmbed     = false,
+    sPlatform  = null,
+    oInstMap = {};
 
-function detect() {
+function detect(o) {
     var version;
+    var name = "Ajax.o3." + o.guid ? o.guid : "";
 
-    if (navigator.plugins && navigator.plugins["O3-XXXXXXX"]) {
+    if (navigator.plugins && navigator.plugins[name]) {
         version = "1.0";//navigator.plugins["O3-XXXXXXX"].versionInfo;
     }
     else {
         try {
-            var axo = new ActiveXObject("Ajax.o3");
+            var axo = new ActiveXObject(name);
             version = axo.GetVariable("$version");
         }
         catch (e) {}
@@ -70,8 +72,49 @@ function sniff() {
             || sAgent.indexOf("safari") != -1 || is_konqueror);
     var is_ie        = (document.all && !is_opera && !is_safari);
     bEmbed           = !(is_ie && !is_opera);
+
+    // OS sniffing:
+
+    // windows...
+    if (sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1) {
+        sPlatform = "win";
+        if (sAgent.indexOf("win16") != -1
+          || sAgent.indexOf("16bit") != -1
+          || sAgent.indexOf("windows 3.1") != -1
+          || sAgent.indexOf("windows 16-bit") != -1)
+            sPlatform += "16";
+        else if (sAgent.indexOf("win32") != -1
+          || sAgent.indexOf("32bit") != -1)
+            sPlatform += "32";
+        else if (sAgent.indexOf("win32") != -1
+          || sAgent.indexOf("32bit") != -1)
+            sPlatform += "64";
+    }
+    // mac...
+    if (sAgent.indexOf("mac") != -1) {
+        sPlatform = "mac";
+        if (sAgent.indexOf("ppc") != -1 || sAgent.indexOf("powerpc") != -1)
+            sPlatform += "ppc";
+        else if (sAgent.indexOf("os x") != -1)
+            sPlatform += "osx";
+    }
+    // linux...
+    if (sAgent.indexOf("inux") != -1) {
+        sPlatform = "linux";
+        if (sAgent.indexOf("i686") > -1 || sAgent.indexOf("i386") > -1)
+            sPlatform += "32";
+        else if (sAgent.indexOf("86_64"))
+            sPlatform += "64";
+        else if (sAgent.indexOf("arm"))
+            sPlatform += "arm";
+    }
 }
 
+function installerUrl(o) {
+    return "http://www.ajax.org/o3/installer" 
+        + (sPlatform ? "/platform/" + sPlatform : "")
+        + (o.guid    ? "/guid/"     + o.guid    : "");
+}
 
 function escapeHtml(s) {
     var c, ret = "";
@@ -117,8 +160,44 @@ function createHtml(id, options) {
     return out.join("");
 }
 
-function get(sObject) {
-    return oO3 && typeof sObject == "string" ? oO3[sObject.toLowerCase()] : null;
+function register(o, options) {
+    // do some funky registering stuff...
+    var key = (options.guid ? options.guid : "ajax.o3")
+        + (options.name ? "." + options.name : "");
+
+    if (!oInstMap[key])
+        oInstMap[key] = [];
+    oInstMap[key].push(o);
+}
+
+function get(guid) {
+    for (var i in oInstMap) {
+        if (i.indexOf(guid) > -1)
+            return oInstMap[i][0];
+    }
+
+    return null;
+}
+
+function destroy(o) {
+    if (typeof o == "string") //guid provided
+        o = get(o);
+    if (!o) return;
+    // destroy references and domNode of this/ each plugin instance...
+    var i, j, inst;
+    for (i in oInstMap) {
+        inst = oInstMap[i];
+        if (!inst.length) continue;
+        for (j = inst.length -1; j >= 0; j--) {
+            // if we're searching for 'o', check for a match first
+            if (o && inst[j] != o) continue;
+            inst[j].parentNode.removeChild(inst[j]);
+            inst.splice(j, 1);
+        }
+    }
+
+    if (!o)
+        oInstMap = {};
 }
 
 // global API:
@@ -137,31 +216,47 @@ global.o3 = {
         return iVersion;
     },
 
-    init: function(version, width, height) {
-        if (!this.isAvailable(version))
-            return false;
+    create: function(guid, options) {
+        if (!options && typeof guid == "object") {
+            options      = guid;
+            options.guid = false;
+        }
+        else {
+            options      = options || {};
+            options.guid = guid || false;
+        }
 
         // mini-browser sniffing:
         sniff();
-
-        var options = {
-            type: "application/o3-XXXXXXXX"
-        };
-        if (typeof width != "undefined")
-            options.width = width;
-        if (typeof height != "undefined")
-            options.height = height;
-
-        document.body.appendChild(document.createElement("div")).innerHTML
-            = createHtml(sId, options);
-
-        oO3 = document.getElementById(sId);
         
-        return oO3 ? true : false;
+        if (!this.isAvailable(options)) {
+            var sUrl = installerUrl(options);
+            return typeof options["oninstallprompt"] == "function"
+                ? options.oninstallprompt(sUrl)
+                : window.open(sUrl, "_blank");
+        }
+
+        if (typeof options.type == "undefined")
+            options.type = "application/o3-XXXXXXXX";
+
+        options.id = sId + (options.name ? options.name : "");
+
+        (options.parent || document.body).appendChild(
+          document.createElement("div")
+        ).innerHTML = createHtml(options.id, options);
+
+        var oO3 = document.getElementById(options.id);
+        if (oO3) {
+            register(oO3, options);
+            return oO3;
+        }
+        
+        return false;
     },
 
-    get: get,
-    on : get
+    destroy: destroy,
+
+    get: get
 };
 
 })(this);
