@@ -126,7 +126,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["step"] = function(value){
         this.step = parseInt(value) || 0;
 
-        //if (!this.$hasLayoutNode("marker"))
+        if (!this.$hasLayoutNode("marker"))
             return;
 
         //Remove Markers
@@ -308,18 +308,16 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.oLabel.nodeValue = Math.round(multiplier * 100) + "%";
             }
             //Number
+            else if (this.mask == "#") {
+                //status = this.value;
+                this.oLabel.nodeValue = this.step
+                    ? (Math.round(this.value / this.step) * this.step)
+                    : this.value;
+            }
+            //Lookup
             else {
-                if (this.mask == "#") {
-                    //status = this.value;
-                    this.oLabel.nodeValue = this.step
-                        ? (Math.round(this.value / this.step) * this.step)
-                        : this.value;
-                }
-                //Lookup
-                else {
-                    this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min)
-                        / (this.step || 1)]; //optional floor ??
-                }
+                this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min)
+                    / (this.step || 1)]; //optional floor ??
             }
         }
     };
