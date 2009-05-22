@@ -601,8 +601,8 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
             jmlNode[parts[part]](this[part], this["xml" + part]);
         }
 
-        if (this.$model) {
-            this.$model.register(jmlNode, this.$modelXpath[jmlNode.getHost
+        if (this.model) {
+            this.model.register(jmlNode, this.$modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
         }
@@ -937,7 +937,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
             var cNode = jpf.nameserver.get(name, attr[i].nodeValue);
             this[known[name]](jpf.getRules(cNode), cNode);
         }
-        
+
         var data_node, nodes = xmlNode.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) continue;
