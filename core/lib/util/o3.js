@@ -133,27 +133,27 @@ function escapeHtml(s) {
 }
 
 function createHtml(id, options) {
-    var out = [], i, n, v;
-    if (!options)
-        options = {};
-    options.id = id;
+    var out = [];
     if (typeof options.width == "undefined")
         options.width = 0;
     if (typeof options.height == "undefined")
         options.height = 0;
 
     out.push(bEmbed
-        ? '<embed id="' + id + '" width="' + options.width + '" height="' 
-            + options.height + '" '
-        : '<object id="' + id + '" width="' + options.width + '" height="'
-            + options.height + '">');
-    for (i in options) {
-        if (!options[i]) continue;
-        n = escapeHtml(i);
-        v = escapeHtml(options[i]);
-        out.push(bEmbed 
-            ? n + '="' + v + '" '
-            : '<param name="' + n + '" value="' + v + '" /> ');
+        ? '<embed id="' + options.id + '" width="' + options.width 
+            + '" height="' + options.height + '" '
+        : '<object id="' + options.id + '" width="' + options.width 
+            + '" height="' + options.height + '">');
+    if (options.params) {
+        var i, n, v;
+        for (i in options.params) {
+            if (!options.params[i]) continue;
+            n = escapeHtml(i);
+            v = escapeHtml(options.params[i]);
+            out.push(bEmbed
+                ? n + '="' + v + '" '
+                : '<param name="' + n + '" value="' + v + '" /> ');
+        }
     }
     out.push(bEmbed ? '> </embed>' : '</object>');
 
@@ -236,14 +236,15 @@ global.o3 = {
                 : window.open(sUrl, "_blank");
         }
 
-        if (typeof options.type == "undefined")
-            options.type = "application/o3-XXXXXXXX";
+        if (typeof options["params"] == "undefined")
+            options.params = {};
+        if (typeof options.params["type"] == "undefined")
+            options.params.type = "application/o3-XXXXXXXX";
 
         options.id = sId + (options.name ? options.name : "");
 
         (options.parent || document.body).appendChild(
-          document.createElement("div")
-        ).innerHTML = createHtml(options.id, options);
+          document.createElement("div")).innerHTML = createHtml(options);
 
         var oO3 = document.getElementById(options.id);
         if (oO3) {
