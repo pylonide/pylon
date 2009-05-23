@@ -243,6 +243,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.menu.lastFocus = opener && opener.$focussable === true
             ? opener
             : jpf.menu.lastFocus || jpf.window.focussed;
+        
+        jpf.popup.last = null;
         this.focus();
 
         //Make the component that provides context appear to have focus
