@@ -521,7 +521,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Dynamic SubLoading (Insertion) of SubTree
         if (!this.prerender)
             var traverseLength = this.getTraverseNodes(xmlNode).length;
-        if (loadChildren && !this.hasLoadStatus(xmlNode) || hasChildren && !this.prerender && traverseLength > 2)
+
+        if (loadChildren && (!this.hasLoadStatus(xmlNode) 
+          || this.hasLoadStatus(xmlNode, "potential")) 
+          || hasChildren && !this.prerender && traverseLength > 2)
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && this.applyRuleSetOnNode("empty", xmlNode))
             this.$setClearMessage(container);
@@ -636,8 +639,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 hasChildren = false;
             else if (xmlNode.selectNodes(this.traverse).length > 0)
                 hasChildren = true;
-            else if (this.bindingRules && this.bindingRules["insert"] 
-              && this.getNodeFromRule("insert", xmlNode))
+            //this.bindingRules && this.bindingRules["insert"] && this.getNodeFromRule("insert", xmlNode) 
+            else if (this.hasLoadStatus(xmlNode, "potential"))
                 hasChildren = true;
             else
                 hasChildren = false;
@@ -953,9 +956,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$setLoading = function(xmlNode, container){
-        this.$getNewContext("loading");
         this.setLoadStatus(xmlNode, "potential");
-        jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
+        
+        if (!this.getTraverseNodes(xmlNode).length) {
+            this.$getNewContext("loading");
+            jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
+        }
     };
     
     this.$removeLoading = function(htmlNode){
@@ -969,7 +975,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var xmlContext = rule 
             ? xmlNode.selectSingleNode(rule.getAttribute("select") || ".") 
             : null;
-        
+
         if (rule && xmlContext) {
             this.setLoadStatus(xmlNode, "loading");
             

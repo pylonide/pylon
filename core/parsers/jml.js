@@ -405,7 +405,7 @@ jpf.JmlParser = {
                     jpf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
-                if (!o || !o.nodeType)
+                if (!o || !o.nodeFunc)
                     o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
                 else if(noImpliedParent)
                     o.$setParent(jmlParent);
