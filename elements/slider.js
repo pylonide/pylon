@@ -233,7 +233,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * the position of the grabber using the following
      * formula: (value - min) / (max - min)
      */
-    this.$propHandlers["value"] = function(value, force, animate){
+    this.$propHandlers["value"] = function(value, force, prop, animate){
         if (!this.$dir)
             return; //@todo fix this
 
@@ -518,7 +518,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     y : p[1] + o.offsetHeight / 2
                 });
                 var value = getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap);
-                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true, true);
+                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true, null, true);
                 _self.setValue(value);
             }
         };
