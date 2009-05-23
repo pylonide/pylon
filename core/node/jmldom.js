@@ -473,9 +473,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this.$jml.setAttribute(name, (value || "").toString());
 
         if (name.indexOf("on") === 0) { //@todo this is bollocks. Should remove previous set onxxx, see JPF-27
-            this.addEventListener(name, typeof value == "string"
-                ? new Function(value)
-                : value);
+            if (this.$events[name])
+                this.removeEventListener(name.replace(/^on/, ""), this.$events[name]);
+            
+            this.addEventListener(name, (this.$events[name] = (typeof value == "string"
+                ? new Function('event', value)
+                : value)));
             return;
         }
 

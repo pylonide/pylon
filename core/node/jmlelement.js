@@ -304,6 +304,7 @@ jpf.JmlElement = function(){
     /**
      * @private
      */
+    this.$events = {};
     this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
@@ -439,7 +440,7 @@ jpf.JmlElement = function(){
                 //#endif
 
                 if (a.nodeName.indexOf("on") === 0) {
-                    this.addEventListener(name, new Function('event', value));
+                    this.addEventListener(name, (this.$events[name] = new Function('event', value)));
                     continue;
                 }
 
