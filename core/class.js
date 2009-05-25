@@ -696,7 +696,7 @@ jpf.Class = function(){
         if (this.oInt && !this.oExt.isNative && this.oInt.nodeType == 1)
             this.oInt.host = null;
 
-        if (this.$jml)
+        if (this.$jml && this.$jml.parentNode)
             this.$jml.parentNode.removeChild(this.$jml);
         this.$jml = null;
 
