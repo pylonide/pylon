@@ -26,59 +26,77 @@
  *
  * @param {mixed} obj the object to investigate
  */
-jpf.vardump = function(obj, depth, recur,endless){
+jpf.dump=
+jpf.vardump = function(obj, depth, norecur, stack){
     if (!obj) return obj + "";
+    if (!stack)stack = "";
     if (!depth) depth = 0;
-    if (!endless)endless = {};
 
-    var str = "{\n";
+    var str;
     switch (obj.dataType) {
         case "string":
             return "\"" + obj + "\"";
         case "number":
             return obj;
         case "boolean":
-            return obj ? "true" : "false";
+            return (obj ? "true" : "false");
         case "date":
-            return "Date[" + new Date() + "]";
-        case "array":
-            for (var i = 0; i < obj.length; i++) {
-                str += "\t".repeat(depth+1) + i + " => "
-                + (!recur && depth > 0
-                    ? typeof obj[i]
-                    : jpf.vardump(obj[i], depth + 1, recur,endless)) + "\n";
+            return "Date(\"" + obj + "\)";
+        case "array":{
+            if(obj[obj.length-2]=='$__vardump'){
+                return "this"+obj[obj.length-1]; 
             }
-            str += "\t".repeat(depth) + "}";
-
-            return str;
+            obj.push('$__vardump',stack);
+            str = ["[ "];
+            for (var i = 0; i < obj.length-2; i++) {
+                str.push( str.length>1?",":"",
+                    (norecur && depth > 0 ? "{/*"+typeof(obj[i])+"*/}" :
+                    jpf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
+            }
+            str.push( " ]");
+            obj.pop();obj.pop();
+            return str.join('');
+        }
         default:
-            if(endless[obj])return "{recur}";
-            endless[obj]=1;
-
+            
             if (typeof obj == "function")
-                return "function";
+                return "{/*function*/}";
             if (obj.nodeType !== undefined && obj.style && depth != 0)
-                return "HTML Element [" + obj.tagName + "]";
+                return "{/*HTML Element: " + obj.tagName + "*/}";
             if (obj.nodeType !== undefined)
-                return "XML Element [" + obj.tagName + "]";
+                return "{/*XML Element : " + obj.tagName + "*/}";
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            if (!recur && depth > 0)
-                return "object";
+            if (norecur && depth > 0)
+                return "{/*object/*}";
 
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            for (var prop in obj) {
+            if(obj['$___vardump'])return "this"+obj['$___vardump']+"";
+            obj['$___vardump'] = stack;
+            str = ["{\n"];            
+           
+            for (var prop in obj) if(prop!='$___vardump'){
                 try {
-                    str += "\t".repeat(depth+1) + prop + " => "
-                    + (!recur && depth > 0
-                        ? typeof obj[prop]
-                        : jpf.vardump(obj[prop], depth + 1, recur,endless)) + "\n";
+                    if(str.length>1)str.push(",\n");
+                    str.push( "\t".repeat(depth+1), prop, ": ",
+                      (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
+                        jpf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
                 } catch(e) {
-                    str += "\t".repeat(depth+1) + prop + " => [ERROR]\n";
+                    str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
                 }
             }
-            str += "\t".repeat(depth-1) + "}";
-
-            return str;
+            str.push( "\n", ("\t".repeat(depth)), "}");
+            
+            function cleanup(obj){
+                if(!obj['$__vardump'])return;
+                delete obj['$___vardump'];
+                for(var prop in obj){
+                    var v = obj[prop];
+                    if(typeof(v)=='object')cleanup(obj);
+                }
+            }           
+            if(depth==0)cleanup(obj);
+            
+            return str.join('');
     }
 }
 

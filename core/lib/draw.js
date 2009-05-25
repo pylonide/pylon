@@ -313,7 +313,7 @@ jpf.namespace("draw", {
             var v = [x,y,z], _v = [_x,_y,_z];
             x = v[_x=fl[0]], y = v[_y=fl[1]], z = v[_z=fl[2]];
             _x = _v[_x], _y = _v[_y], _z = _v[_z];
-        }        
+        }
         var r = [];
         if(!this.ortho)r.push("zt =persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
         r.push(this[f]( (sx===undefined?"":sx)+
@@ -327,53 +327,130 @@ jpf.namespace("draw", {
     // Style parsing
     //----------------------------------------------------------------------
      
-    parseStyle : function( styledef, styleovl, err ) {
-        var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
-        var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
+    parseStyle : function( def, ovl, err ) {
+        var style = {}, o, v, k, s, t, i;
         
-        var styleovls = [], novls; 
-       
+        //var o = {}, k1, v1, k2, v2, t, s, i, j, len, _self = this;
+        //var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
+        
         var _self = this;
 
         // initialise transition table
         if(!(t=_self.stateTransition)[0x40001]){
             s = {};
-            for(v1 in t)for(i = 0;i<64;i++)s[v1|i]=t[v1]|i;
+            for(v in t)for(i = 0;i<32;i++)s[v|i]=t[v]|i;
             _self.stateTransition = s;
             // alert( (n[p]|i).toString(16) );
         }
 
         // parse styles
-        if(styleovl==null){
-            styleovls.push({});
-        }else if(!styleovl.item){// its an array, make an overlays array
-            styleovls.push(this.parseJSS(styleovl,err));novls = 1;
-        } else for(i = 0, novls = styleovl.length; i < novls; i++){
-            styleovls.push(this.parseJSS(styleovl[i],err));
-        }
-        
+        ovl = ovl?this.parseJSS(ovl.item?ovl.join(''):ovl,err):{};
+            
         // we need to integrate style into o.
-        function stylecopy(dest, def, key){
+        function stylecopy(dst, src, key){
             // copy into the destination 
-            var t,k,v,i,ovl;
-            for(k in def)if(dest[k] === undefined)
-                    dest[k] = _self.isDynamic(v=def[k])?_self.parseJSS(v):v;
-            if(t=def.inherit) stylecopy( dest, styledef[t]||_self['$'+t], t );
-            for(i = 0;i<novls;i++)
-                if(ovl = styleovls[i][key])for(k in ovl)dest[k] = ovl[k];
+            var t,k,v,o;
+            for(k in src)if(dst[k] === undefined)
+                    dst[k] = _self.isDynamic(v=src[k])?_self.parseJSS(v):v;
+            if(t=src.inherit) stylecopy( dst, def[t]||_self['$'+t], t );
+            if(o = ovl[key])for(k in o)dst[k] = o[k];
 		}
 
-        for(k in styledef){
-            //logw("got "+k);
-            if( typeof(v=styledef[k]) == 'object' && v!==null && v['$']==1){
-                stylecopy(o[k] = {}, v, k);
+        for(k in def){
+            if( typeof(v=def[k]) == 'object' && v!==null && v['$']==1){
+                stylecopy(style[k] = {}, v, k);
             }
         }
+        function styleinherit(dst,b,c,s){
+            // we should walk up the state-list
+            var o,v,k;
+            do{
+                if(!c && !s) o = style[b];
+                else o = ovl[b+(c?"."+c:"")+(s?":"+s:"")];
+                if(typeof(o)=='object')
+                        for(k in o) if( k.indexOf('$')==-1 && 
+                            dst[k] === undefined ) dst[k] = o[k];
+                       
+                if(s)s = _self.$stateInherit[v];
+            }while(s);
+        }
+        
+        // now lets run through all objects with a class and / or state:
+        for(k in ovl) if(typeof(v=ovl[k]) == 'object'){
+            t = k.match(/([\w\_-]+)\.?([\w\_-]+)?\:?([\w\_-]+)?/);
+            var base = t[1], cls = t[2], state = t[3];
+            if(cls || state){
+                o = style[k] = {};
+                if(state){
+                    if(cls)styleinherit( o, base, cls, state );
+                    styleinherit( o, base, 0, state );
+                }
+                if(cls)styleinherit( o, base , cls, 0 );
+                styleinherit( o, base, 0, 0 );
 
+                // lets store this cls or state on our base.
+                o.$base = s = style[base];
+                if(!(t=s.$cls))t = s.$cls = {};
+                t[cls] = 1;
+            }
+        }
+        logw( jpf.dump( style ) );
+        
+                    // in a secondary cycle we should see if there
+                    // are any base:style classes 
+                    // ifso we should see if we need to create
+                    // automagic 
+        
+                    // we have an object with cls or state to go and inherit recursively.
+                    // lets follow the inheritance path
+                    
+                    // base:cls:state
+                    
+                    // base:state
+                    // base:cls
+                    // base
+                    
+                    
+                    // add a ref to us in the base hash table, and calculate a bit ID
+
+                    // when encountering a style, we render to overlays till we hit base, and thats it.
+                    // a style/class is an overlay when overlay:1 is set.
+                    
+/*                  statehash:
+                        hash from state ID to output buffer
+                        output buffer can have .base for outputting to a base layer (overlays)
+                    storelist
+                        the total list of output array for this type
+*/
+ 
+        function styleinit(d){
+            if(d.line === null || d.line=='null' || d.line==0) delete d.line;
+            if(d.fill === null || d.fill=='null' || d.fill==0) delete d.fill;
+            if(d.family === null || d.family=='null' || d.family==0) delete d.family;
+
+            if( (d.isshape && d.fill === undefined && 
+                d.line === undefined && d.tile === undefined) || 
+                (d.isfont && d.family === undefined) ) return false; 
+            if(d.isshape){
+                d.alpha = d.alpha!==undefined ? d.alpha : 1;
+                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
+                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
+                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
+                d.angle = d.angle!==undefined ? d.angle : 0;
+                d.weight = d.weight!==undefined ? d.weight : 1
+            }
+            return true;
+        }
+        // we should now initialize the luts and storage arrays
+        
+        
+/*         for(i = 0;i<novls;i++)
+                if(ovl = styleovls[i][key])for(k in ovl)dest[k] = ovl[k];
+  */      
 		// inventory classes and states we have styles for
+        /*
 		p=[];
 		for(k in o){
-            
                 if( typeof(v=o[k])=='object' && 
                     !(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
 
@@ -447,27 +524,9 @@ jpf.namespace("draw", {
 				else v.$merged = n[m];
 			}
 			// 
-		}
- 
-        function styleinit(d){
-            if(d.line === null || d.line=='null' || d.line==0) delete d.line;
-            if(d.fill === null || d.fill=='null' || d.fill==0) delete d.fill;
-            if(d.family === null || d.family=='null' || d.family==0) delete d.family;
+		}*/
 
-            if( (d.isshape && d.fill === undefined && 
-                d.line === undefined && d.tile === undefined) || 
-                (d.isfont && d.family === undefined) ) return false; 
-            if(d.isshape){
-                d.alpha = d.alpha!==undefined ? d.alpha : 1;
-                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
-                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
-                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
-                d.angle = d.angle!==undefined ? d.angle : 0;
-                d.weight = d.weight!==undefined ? d.weight : 1
-            }
-            return true;
-        }       
-        
+        /*
 		// hurrah now lets go and create the hashmaps CODECOMPLEXITY++
 		n = _self.stateBit, q = _self.$stateFallback;
 		for(k in o)if( typeof(v=o[k])=='object' && v && (v.isshape||v.isfont) ){
@@ -525,7 +584,7 @@ jpf.namespace("draw", {
 			if( !styleinit(v) ) delete o[k];
 			
 		}
-
+*/
         // for each base object, we need to create the subobject maps and state luts
         // _statelut[state]->arrays
         // _statelist[] all states except the base in order of layering
@@ -534,7 +593,7 @@ jpf.namespace("draw", {
         
         
         //jpf.alert_r(o);
-        return o;
+        return style;
     },
     /*
     stateBit : {
@@ -556,19 +615,16 @@ jpf.namespace("draw", {
     stateBit : {
         0                   : 0,
         'init'              : 0x01000000, // 0x00ff0000 == statetype
-        'hidden'            : 0x00010000, // 0x0f000000 == dynamic type 0 = no dyn, 1 = in, 2 = out, 3 = inout
-        'deinit'            : 0x02000000, // 0xf0000000 == automated-return-type
+        'hidden'            : 0x00010000, // 0x0f000000 == dynamic type 0 = no dyn, 1 = in, 2 = out
+        'deinit'            : 0x02000000, 
         'hover'             : 0x00020000,
         'hover-in'          : 0x01020000,
-        'hover-inout'       : 0x11020000,
         'hover-out'         : 0x02020000,
         'select'            : 0x00030000,
         'select-in'         : 0x01030000,
-        'select-inout'      : 0x11030000,
         'select-out'        : 0x02030000,
         'select-hover'      : 0x00040000,
         'select-hover-in'   : 0x01040000,
-        'select-hover-inout': 0x11040000,
         'select-hover-out'  : 0x02040000,
         'animating'         : 0x10050000
     },
@@ -577,13 +633,10 @@ jpf.namespace("draw", {
         0x01000000 : 0,
         0x02000000 : 0x00010000,
         0x01020000 : 0x00020000,
-        0x11020000 : 0x02020000,
         0x02020000 : 0,
         0x01030000 : 0x00030000,
-        0x11030000 : 0x02030000,
         0x02030000 : 0,
         0x01040000 : 0x00040000,
-        0x11040000 : 0x02040000,
         0x02040000 : 0x00030000,
         0x01050000 : 0x01050000
     },
@@ -597,34 +650,31 @@ jpf.namespace("draw", {
     },
     
     $stateInherit : {
-        'hidden'           : 1,       
-        'init'             : 1,
-        'deinit'           : 1,
-        'hover'            : 1,
+        'hidden'           : 0,       
+        'init'             : 0,
+        'deinit'           : 0,
+        'hover'            : 0,
         'hover-in'         : 'hover',
         'hover-out'        : 'hover',
-        'select'           : 1,
+        'select'           : 0,
         'select-in'        : 'select',
         'select-out'       : 'select',
         'select-hover'     : 'hover',
         'select-hover-in'  : 'select-hover',
         'select-hover-out' : 'select-hover',
-        'animating'        : 1
+        'animating'        : 0
     },
 
     $stateFallback : {
         'init'              : 1,
         'hover'             : 1,
         'hover-in'          : 'hover',
-        'hover-inout'       : 'hover-in',
         'hover-out'         : 1,
         'select'            : 1,
         'select-in'         : 'select',
-        'select-inout'      : 'select-in',
         'select-out'        : 1,
         'select-hover'      : 'hover',
         'select-hover-in'   : 'select-hover',
-        'select-hover-inout': 'select-hover-in',
         'select-hover-out'  : 'select',
         'hidden'            : 1
     },
@@ -766,10 +816,10 @@ jpf.namespace("draw", {
         return code;
     },
     
-    parseJSS : function(s,err){
+    parseJSS : function(s,err,inobj){
         if(!s)return{};
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
-            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
+            ac = [], sac = [], sn=[], obj = inobj||{}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
                 s=s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?;/g,'');
@@ -805,7 +855,7 @@ jpf.namespace("draw", {
                 if(openobj){
                     if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
                     lp = pos+m.length; sn.push(ln=5);
-                    sobj.push(obj); obj = obj[openobj] = {};
+                    sobj.push(obj); obj = (typeof(t=obj[openobj])=='object')?t:(obj[openobj]={});
                     return m;
                 }
                 if( open ){ 
@@ -813,7 +863,7 @@ jpf.namespace("draw", {
                     if(ln==1 && prop){
                         sn.pop();
                         lp = pos+m.length; sn.push(ln=5);
-                        sobj.push(obj); obj = obj[prop] = {};
+                        sobj.push(obj); obj = (typeof(t=obj[prop])=='object')?t:(obj[prop]={});
                     }else if(ln==3){
                         if(pos>lp)ac.push( s.slice(lp,pos) );
                         sac.push(ac); sarg.push(arg);
