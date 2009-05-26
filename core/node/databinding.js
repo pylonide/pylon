@@ -2033,7 +2033,8 @@ jpf.DataBinding = function(){
                 "Could not find bindings by name '" + value + "'", this.$jml));
         // #endif
 
-        sb.addBindings(jpf.nameserver.get("bindings", value));
+        var xmlNode = jpf.nameserver.get("bindings", value);
+        sb.addBindings(jpf.getRules(xmlNode), xmlNode);
     };
 
     /**
@@ -2069,7 +2070,8 @@ jpf.DataBinding = function(){
                 "Could not find actions by name '" + value + "'", this.$jml));
         // #endif
 
-        sb.addActions(jpf.nameserver.get("actions", value));
+        var xmlNode = jpf.nameserver.get("actions", value);
+        sb.addActions(jpf.getRules(xmlNode), xmlNode);
     };
 
     // #ifdef __WITH_INLINE_DATABINDING
