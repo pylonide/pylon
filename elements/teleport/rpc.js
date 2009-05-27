@@ -79,9 +79,11 @@ jpf.rpc = function(){
 
     var _self = this;
 
-    this.addMethod = function(name, callback, names, async, caching, ignoreOffline){
+    this.addMethod = function(name, callback, names, async, caching, ignoreOffline, methodName){
         this[name] = function(){
-            return this.call(name, arguments);
+            return this.call(name, arguments, {
+                name : methodName
+            });
         }
 
         this[name].async         = async;
@@ -163,7 +165,7 @@ jpf.rpc = function(){
             : this[name].callback) || function(){};
 
         // Get Data
-        var data = this.serialize(name, args); //function of module
+        var data = this.serialize(options && options.name || name, args); //function of module
 
         function pCallback(data, state, extra){
             extra.data = data;
@@ -276,6 +278,7 @@ jpf.rpc = function(){
      * @attribute {Boolean} [async]          whether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
      * @attribute {Boolean} [caching]        whether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
      * @attribute {Boolean} [ignore-offline] whether the method should not be stored for later execution when offline.
+     * @attribute {Boolean} [method-name]    the name sent to the server.
      * @define variable element specifying an argument of a method in an rpc element.
      * @attribute {String}  name             the argument name.
      * @attribute {String}  [value]          the value of the argument.
@@ -321,7 +324,8 @@ jpf.rpc = function(){
                 q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", jpf.ns.jml);
                 !jpf.isFalse(q[i].getAttribute("async")),
                 jpf.isTrue(q[i].getAttribute("caching")),
-                jpf.isTrue(q[i].getAttribute("ignore-offline")));
+                jpf.isTrue(q[i].getAttribute("ignore-offline")),
+                q[i].getAttribute("method-name"));
         }
     }
 
