@@ -114,7 +114,7 @@ jpf.rpc = function(){
 
     this.$convertArgs = function(name, args){
         if (!this.namedArguments)
-            return args.slice();
+            return args.dataType ? args.slice() : jpf.extend({}, args);
 
         var nodes = this[name].names;
         if (!nodes || !nodes.length)
@@ -246,8 +246,6 @@ jpf.rpc = function(){
      * @attribute {Boolean} [multicall]      whether the call is stacked until purge() is called.
      * @attribute {Number}  [timeout]        the number of milliseconds after which the call is considered timed out.
      * @attribute {Boolean} [autoroute]      whether the call should be routed through a proxy when a permission error occurs due to the same domein policy.
-     * @attribute {Boolean} [async]          whether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
-     * @attribute {Boolean} [caching]        whether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
      * @attribute {String}  [http-method]    the http method used to send the data. This attribute is only used by the cgi protocol.
      *   Possible values:
      *   post   Used to store large chunks of data (on a resource).
@@ -275,6 +273,8 @@ jpf.rpc = function(){
      * </code>
      * @attribute {String}  [url]            the location of the server that is recipient of the rpc message.
      * @attribute {String}  [callback]       the name of the method that handles the return of the call.
+     * @attribute {Boolean} [async]          whether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
+     * @attribute {Boolean} [caching]        whether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
      * @attribute {Boolean} [ignore-offline] whether the method should not be stored for later execution when offline.
      * @define variable element specifying an argument of a method in an rpc element.
      * @attribute {String}  name             the argument name.
