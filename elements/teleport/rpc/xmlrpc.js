@@ -71,7 +71,7 @@ jpf.xmlrpc = function(){
     this.method         = "POST";
     this.useXML           = true;
     
-    this.namedArguments   = false;
+    this.namedArguments   = true;
     
     // Register Communication Module
     jpf.teleport.register(this);

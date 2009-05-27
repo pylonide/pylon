@@ -114,7 +114,7 @@ jpf.rpc = function(){
 
     this.$convertArgs = function(name, args){
         if (!this.namedArguments)
-            return args.dataType ? args.slice() : jpf.extend({}, args);
+            return args.slice();
 
         var nodes = this[name].names;
         if (!nodes || !nodes.length)
