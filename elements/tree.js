@@ -1307,7 +1307,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
-            this.startcollapsed = this.$getOption("main", "startcollapsed") || true;
+            this.startcollapsed = !jpf.isFalse(this.$getOption("main", "startcollapsed"));
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
