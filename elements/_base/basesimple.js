@@ -36,9 +36,9 @@
  * @since       0.8
  */
 jpf.BaseSimple = function(){
-    this.inherit(jpf.Presentation);
+    this.implement(jpf.Presentation);
     // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); 
+    this.implement(jpf.DataBinding);
     // #endif
     
     this.getValue = function(){
@@ -94,7 +94,7 @@ jpf.BaseSimple = function(){
     
     this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
-    this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
+    this.implement(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
 }
 

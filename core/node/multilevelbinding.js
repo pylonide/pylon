@@ -77,7 +77,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     jmlNode.$regbase = jmlNode.$regbase | __MULTIBINDING__;
     
     jpf.makeClass(this);
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
 
     this.getActionTracker = function(ignoreMe){
         return jmlNode.getActionTracker(ignoreMe);

@@ -60,7 +60,7 @@ jpf = {
         
         jpf.xmldb = new jpf.XmlDatabase();
         
-        this.inherit(jpf.Class);
+        this.implement(jpf.Class);
     },
     
     startDependencies : function(){
@@ -115,17 +115,17 @@ jpf = {
     all : [],
     
     /**
-    * This method inherit all properties and methods to this object from another class
+    * This method implements all traits of another class to this object
     * @param {Function}    classRef    Required Class reference 
     * @method
     */
-    inherit : function(classRef){
+    implement : function(classRef){
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
                 throw new Error(jpf.formatErrorString(0, this, 
-                    "Inheriting class", 
-                    "Could not inherit from '" + classRef + "'", 
+                    "Implementing class",
+                    "Could not implement from '" + classRef + "'",
                     this.$jml));
             }
             //#endif
@@ -142,10 +142,10 @@ jpf = {
     * @method
     */
     makeClass : function(oBlank){
-        if (oBlank.inherit) return;
+        if (oBlank.implement) return;
         
-        oBlank.inherit = this.inherit;
-        oBlank.inherit(jpf.Class);
+        oBlank.implement = this.implement;
+        oBlank.implement(jpf.Class);
         
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },

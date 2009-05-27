@@ -188,7 +188,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (!masking) {
             masking = true;
-            this.inherit(jpf.textbox.masking);
+            this.implement(jpf.textbox.masking);
             this.focusselect = false;
             this.realtime    = false;
         }
@@ -602,7 +602,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
         //Autocomplete
         var ac = $xmlns(x, "autocomplete", jpf.ns.jml)[0];
         if (ac) {
-            this.inherit(jpf.textbox.autocomplete);
+            this.implement(jpf.textbox.autocomplete);
             this.initAutocomplete(ac);
         }
 

@@ -115,7 +115,7 @@ jpf.xmpp = function(){
     if (!this.uniqueId) {
         jpf.makeClass(this);
 
-        this.inherit(jpf.BaseComm, jpf.http);
+        this.implement(jpf.BaseComm, jpf.http);
     }
 
     /**

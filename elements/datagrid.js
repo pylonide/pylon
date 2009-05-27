@@ -273,7 +273,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$initTemplate = function(){
         //#ifdef __WITH_VALIDATION
         if (!this.hasFeature(__VALIDATION__)) {
-            this.inherit(jpf.Validation);
+            this.implement(jpf.Validation);
             
             var vRules = {};
             var rules = ["required", "datatype",

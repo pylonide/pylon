@@ -760,17 +760,17 @@ var jpf = {
     all : [],
 
     /**
-    * This method inherit all properties and methods to this object from another class
+    * This method implements all properties and methods to this object from another class
     * @param {Function}    classRef    Class reference
     * @private
     */
-    inherit : function(classRef){
+    implement : function(classRef){
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
                 throw new Error(jpf.formatErrorString(0, this,
-                    "Inheriting class",
-                    "Could not inherit from '" + classRef + "'",
+                    "Implementing class",
+                    "Could not implement from '" + classRef + "'",
                     this.$jml));
             }
             //#endif
@@ -786,10 +786,10 @@ var jpf = {
     * @param {Object} oBlank the object which will be transformed
     */
     makeClass : function(oBlank){
-        if (oBlank.inherit) return;
+        if (oBlank.implement) return;
 
-        oBlank.inherit = this.inherit;
-        oBlank.inherit(jpf.Class);
+        oBlank.implement = this.implement;
+        oBlank.implement(jpf.Class);
 
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
@@ -847,9 +847,9 @@ var jpf = {
             o.$supportedProperties = []; //@todo fix this in each component
         }
 
-        if (!o.inherit) {
-            o.inherit = this.inherit;
-            o.inherit(jpf.Class);
+        if (!o.implement) {
+            o.implement = this.implement;
+            o.implement(jpf.Class);
             o.uniqueId = this.all.push(o) - 1;
          }
 

@@ -45,7 +45,7 @@ jpf.insert = function(pHtmlNode, tagName){
     this.editableParts = {
         "main": [["caption", "text()"]]
     };
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
@@ -97,7 +97,7 @@ jpf.insert = function(pHtmlNode, tagName){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    this.implement(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = pHtmlNode;

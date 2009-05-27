@@ -230,7 +230,7 @@ jpf.popup = {
             (e || event).cancelBubble = true;
         }
 
-        jpf.inherit.call(o, jpf.Interactive);
+        jpf.implement.call(o, jpf.Interactive);
 
         o.$propHandlers["draggable"].call(o, true);
         o.$propHandlers["resizable"].call(o, true);

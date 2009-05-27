@@ -555,7 +555,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.tagName    = "smartbinding";
     this.nodeFunc   = jpf.NODE_HIDDEN;
     this.parentNode = parentNode;
-    jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+    jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
 
     var parts        = {

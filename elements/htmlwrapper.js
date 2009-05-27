@@ -27,17 +27,17 @@
 
 jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     this.uniqueId  = jpf.all.push(this) - 1;
-    this.inherit   = jpf.inherit;
+    this.implement = jpf.implement;
     this.oExt      = htmlNode;
     this.pHtmlDoc  = document;
     this.pHtmlNode = pHtmlNode;
     
     // #ifdef __WITH_ANCHORING
-    this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
+    this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
     // #endif
     
     // #ifdef __WITH_ALIGNMENT
-    this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
+    this.implement(jpf.Alignment); /** @inherits jpf.Alignment */
     // #endif
     
     var copy = htmlNode.cloneNode();

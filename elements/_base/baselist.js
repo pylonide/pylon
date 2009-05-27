@@ -84,10 +84,10 @@
  */
 jpf.BaseList = function(){
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation);
+    this.implement(jpf.Validation);
     //#endif
     //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms);
+    this.implement(jpf.XForms);
     //#endif
 
     // #ifdef __WITH_CSS_BINDS
@@ -752,10 +752,10 @@ jpf.BaseList = function(){
         this.select(this.getTraverseNodes()[0]);
     };
 
-    this.inherit(jpf.MultiSelect,
-                 jpf.Cache,
-                 jpf.Presentation,
-                 jpf.DataBinding);
+    this.implement(jpf.MultiSelect,
+                   jpf.Cache,
+                   jpf.Presentation,
+                   jpf.DataBinding);
 
     /**
      * Generates a list of items based on a string.

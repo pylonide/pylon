@@ -48,7 +48,7 @@ jpf.scrollbar = function(){
     this.realtime = true;
     this.$supportedProperties = [];
     this.$propHandlers = {};
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.implement(jpf.Presentation); /** @inherits jpf.Presentation */
     if (this.$loadSkin) 
         this.$loadSkin("default:scrollbar");
     

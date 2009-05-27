@@ -1257,7 +1257,7 @@ jpf.DocumentImplementation = function(){
     jpf.makeClass(this);
 
     //#ifdef __WITH_JMLDOM
-    this.inherit(jpf.JmlDom); 
+    this.implement(jpf.JmlDom);
     //#endif
 
     /**
@@ -1322,13 +1322,13 @@ jpf.DocumentImplementation = function(){
         this.documentElement.insertBefore.apply(this.documentElement, arguments);
     };
 
-    jpf.inherit.call(this.documentElement, jpf.Class);
+    jpf.implement.call(this.documentElement, jpf.Class);
     //#ifdef __WITH_FOCUS
     jpf.window.$addFocus(this.documentElement);
     //#endif
 
     //#ifdef __WITH_JMLDOM
-    jpf.inherit.call(this.documentElement, jpf.JmlDom);
+    jpf.implement.call(this.documentElement, jpf.JmlDom);
     //#endif
 
     /**

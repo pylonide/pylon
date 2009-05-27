@@ -153,7 +153,7 @@ jpf.remote = function(name, xmlNode, parentNode){
     
     //#ifdef __WITH_JMLDOM_FULL
     this.parentNode = parentNode;
-    jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+    jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
     //#ifdef __WITH_OFFLINE

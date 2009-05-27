@@ -99,20 +99,20 @@
  * Class:
  * The jpf.Class baseclass provides all basic features a jpf element needs, such
  * as event system, property binding and a constructor / destructor.
- * By calling {@link core.jpf.method.makeClass} an object is created that inherits
+ * By calling {@link core.jpf.method.makeClass} an object is created that implements
  * all <i title="an inherited characteristic (merriam-webster)">traits</i> from
  * jpf.Class. 
  * More importantly two functions are added that help with dealing with multiple
  * inheritance.
  *
  * API:
- * The first method is the one that tells an object to inherit from a baseclass.
+ * The first method is the one that tells an object to implement traits from a baseclass.
  * It works as follows:
  * <code>
- *  myObj.inherit(jpf.Presentation);
+ *  myObj.implement(jpf.Presentation);
  * </code>
  * That lines causes all traits of jpf.Presentation to be added to myObj. Now we
- * can check if myObj actually has inherited from this baseclass.
+ * can check if myObj actually has implemented this baseclass.
  * <code>
  *  myObj.hasFeature(__PRESENTATION__);
  * </code>
@@ -129,7 +129,7 @@
  */
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} have {@link term.propertybinding property binding},
+ * All elements that implemented this {@link term.baseclass baseclass} have {@link term.propertybinding property binding},
  * event handling and constructor & destructor hooks. The event system is 
  * implemented following the W3C specification, similar to the 
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
@@ -161,7 +161,7 @@ jpf.Class = function(){
 
     this.$regbase         = 0;
     /**
-     * Tests whether this object has inherited from a {@link term.baseclass baseclass}.
+     * Tests whether this object has implemented a {@link term.baseclass baseclass}.
      * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
      */
     this.hasFeature       = function(test){
@@ -796,7 +796,7 @@ jpf.Event = function(name, data){
     //this.returnValue = undefined;
 };
 
-jpf.inherit(jpf.Class);
+jpf.implement(jpf.Class);
 jpf.Init.run('class');
 
 // #endif

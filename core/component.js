@@ -58,7 +58,7 @@ jpf.component = function(nodeFunc, oBase) {
     
     // if oBase is provided, apply it as a prototype of the new comp.
     if (oBase) {
-        // a function will be deferred to instantiation of the comp. to be inherited 
+        // a function will be deferred to instantiation of the comp. to be implemented
         if (typeof oBase == "function")
             fC.prototype.base = oBase;
         else
@@ -75,8 +75,8 @@ jpf.component = function(nodeFunc, oBase) {
         DeskRun.register(fC.prototype);
     // #endif
 
-    // The inherit function is copied from 'jpf.inherit'
-    fC.prototype.inherit = jpf.inherit;
+    // The implement function is copied from 'jpf.implement'
+    fC.prototype.implement = jpf.implement;
 
     // If the '$init' function is not present yet, we shall define it - the
     // starting engine of a JPF component
@@ -161,9 +161,9 @@ jpf.component = function(nodeFunc, oBase) {
              * @inherits jpf.JmlElement
              */
             // the ORDER is crucial here.
-            this.inherit(jpf.Class);
-            this.inherit.apply(this, aImpl);
-            this.inherit(jpf.JmlElement, this.base || jpf.K);
+            this.implement(jpf.Class);
+            this.implement.apply(this, aImpl);
+            this.implement(jpf.JmlElement, this.base || jpf.K);
             
             if (typeof this['init'] == "function")
                 this.init();
@@ -185,7 +185,7 @@ jpf.subnode = function(nodeFunc, oBase) {
     
     // if oBase is provided, apply it as a prototype of the new comp.
     if (oBase) {
-        // a function will be deferred to instantiation of the comp. to be inherited 
+        // a function will be deferred to instantiation of the comp. to be implemented
         if (typeof oBase == "function")
             fC.prototype.base = oBase;
         else
@@ -194,12 +194,12 @@ jpf.subnode = function(nodeFunc, oBase) {
 
     fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
 
-    fC.prototype.inherit  = jpf.inherit;
+    fC.prototype.implement  = jpf.implement;
 
     if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
-         * The developer may supply interfaces that will inherited upon element
+         * The developer may supply interfaces that will implemented upon element
          * instantiation with implement() below. Calls to 'implement()' may be
          * chained.
          * 
@@ -246,9 +246,9 @@ jpf.subnode = function(nodeFunc, oBase) {
              * @inherits jpf.Class
              */
             // the ORDER is crucial here.
-            this.inherit(jpf.Class);
-            this.inherit.apply(this, aImpl);
-            this.inherit(jpf.JmlDom, this.base || jpf.K);
+            this.implement(jpf.Class);
+            this.implement.apply(this, aImpl);
+            this.implement(jpf.JmlDom, this.base || jpf.K);
             
             if (typeof this['init'] == "function")
                 this.init();

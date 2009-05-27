@@ -613,7 +613,7 @@ jpf.layout = {
             jmlNode.aData = aData;
 
             if (!jmlNode.hasFeature(__ALIGNMENT__)) {
-                jmlNode.inherit(jpf.Alignment);
+                jmlNode.implement(jpf.Alignment);
                 if (jmlNode.hasFeature(__ANCHORING__))
                     jmlNode.disableAnchoring();
             }

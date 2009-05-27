@@ -102,7 +102,7 @@ jpf.actiontracker = function(parentNode){
     this.tagName    = "actiontracker";
     if (parentNode)
         this.parentNode = parentNode;
-    this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
+    this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
 
     /**

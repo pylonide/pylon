@@ -46,7 +46,7 @@ jpf.StateServer = {
 
             var pState = new jpf.state(null, "state");
             pState.parentNode = pNode;
-            pState.inherit(jpf.JmlDom);
+            pState.implement(jpf.JmlDom);
             pState.name   = name;
             pState.toggle = function(){
                 for (var next = 0, i = 0; i < jpf.StateServer.groups[name].length; i++) {

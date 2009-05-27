@@ -298,7 +298,7 @@ jpf.JmlElement = function(){
 
     // #ifdef __WITH_JMLDOM
     if (!this.hasFeature(__WITH_JMLDOM__))
-        this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
+        this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
     // #endif
 
     /**
@@ -323,7 +323,7 @@ jpf.JmlElement = function(){
         //Drawing, Skinning, Positioning and Editing
         if (this.nodeFunc != jpf.NODE_HIDDEN) {
             /* #ifdef __WITH_EDITMODE
-            this.inherit(jpf.EditMode); // @inherits jpf.EditMode
+            this.implement(jpf.EditMode); // @inherits jpf.EditMode
             if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
                 this.enableEditing();
             #endif */
@@ -341,7 +341,7 @@ jpf.JmlElement = function(){
             //#ifdef __WITH_GRID
             if (pTagName == "grid") {
                 //#ifdef __WITH_ANCHORING
-                this.inherit(jpf.Anchoring);
+                this.implement(jpf.Anchoring);
                 //#endif
 
                 this.$propHandlers["width"]  =
@@ -355,7 +355,7 @@ jpf.JmlElement = function(){
             if (x.getAttribute("align")
               || x.parentNode && x.parentNode.nodeType == 1
               && "vbox|hbox".indexOf(pTagName) > -1) { //@todo temp
-                this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
+                this.implement(jpf.Alignment); /** @inherits jpf.Alignment */
                 this.oExt.style.display = "none";
                 this.enableAlignment();
             }
@@ -364,7 +364,7 @@ jpf.JmlElement = function(){
 
             //#ifdef __WITH_ANCHORING
             if (this.$positioning != "basic") {
-                this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
+                this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
                 this.enableAnchoring();
             }
             /* #else
@@ -390,7 +390,7 @@ jpf.JmlElement = function(){
 
         if (!ignoreBindclass) { //Is this still needed?
             if (!this.hasFeature(__DATABINDING__) && x.getAttribute("smartbinding")) {
-                this.inherit(jpf.DataBinding);
+                this.implement(jpf.DataBinding);
                 this.$xmlUpdate = this.$load = function(){};
             }
         }
@@ -1051,7 +1051,7 @@ jpf.JmlElement.propHandlers = {
         //#endif
 
         if (!this.hasFeature(__ALIGNMENT__)) {
-            this.inherit(jpf.Alignment);
+            this.implement(jpf.Alignment);
             this.oExt.style.display = "none";
             this.enableAlignment();
         }
@@ -1076,12 +1076,12 @@ jpf.JmlElement.propHandlers = {
 
     //#ifdef __WITH_INTERACTIVE
     "resizable": function(value){
-        this.inherit(jpf.Interactive);
+        this.implement(jpf.Interactive);
         this.$propHandlers["resizable"].apply(this, arguments);
     },
 
     "draggable": function(value){
-        this.inherit(jpf.Interactive);
+        this.implement(jpf.Interactive);
         this.$propHandlers["draggable"].apply(this, arguments);
     },
     //#endif
@@ -1134,7 +1134,7 @@ jpf.JmlElement.propHandlers = {
          * @inherits jpf.Transaction
          */
         if (!this.hasFeature(__DATABINDING__)) {
-            this.inherit(jpf.DataBinding);
+            this.implement(jpf.DataBinding);
 
             if (this.actions)
                 this.$propHandlers["actions"].call(this, this.actions);
@@ -1143,7 +1143,7 @@ jpf.JmlElement.propHandlers = {
         }
          
         if (!this.hasFeature(__TRANSACTION__))
-            this.inherit(jpf.Transaction);
+            this.implement(jpf.Transaction);
     },
     //#endif
 

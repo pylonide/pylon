@@ -90,7 +90,7 @@ jpf.soap = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
+        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
     }
 
     // Serialize Objects

@@ -163,7 +163,7 @@ jpf.teleport = {
         
         //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
-        jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+        jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
         
         var id, obj, nodes = this.$jml.childNodes;
@@ -230,24 +230,24 @@ jpf.BaseComm = function(x){
         this.name = x.getAttribute("id");
         this.type = x[jpf.TAGNAME];
         
-        // Inherit from the specified baseclass
+        // Implement the specified baseclass
         if (!jpf[this.type]) 
             throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.$jml));
         
-        this.inherit(jpf[this.type]);
+        this.implement(jpf[this.type]);
         if (this.useHTTP) {
-            // Inherit from HTTP Module
+            // Implement HTTP Module
             if (!jpf.http) 
                 throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.$jml));
-            this.inherit(jpf.http);
+            this.implement(jpf.http);
         }
         
         if (this.$jml.getAttribute("protocol")) {
-            // Inherit from Module
+            // Implement Module
             var proto = this.$jml.getAttribute("protocol").toLowerCase();
             if (!jpf[proto]) 
                 throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.$jml));
-            this.inherit(jpf[proto]);
+            this.implement(jpf[proto]);
         }
     }
     

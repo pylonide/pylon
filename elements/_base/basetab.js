@@ -659,7 +659,7 @@ jpf.BaseTab = function(){
 
     /**** Init ****/
 
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.implement(jpf.Presentation); /** @inherits jpf.Presentation */
 
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};

@@ -58,8 +58,8 @@
  *              //Create a Javeline class
  *              jpf.makeClass(this);
  *
- *              //Inherit from the portal.docklet baseclass
- *              this.inherit(jpf.portal.docklet);
+ *              //Implement the portal.docklet baseclass
+ *              this.implement(jpf.portal.docklet);
  *
  *              this.$init = function(xmlSettings, oDocklet){
  *                  //Process xml settings
@@ -231,10 +231,10 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build window
         var pHtmlNode = this.columns[this.applyRuleSetOnNode("column", dataNode) || 0];
         var docklet   = new jpf.modalwindow(pHtmlNode);
-        docklet.inherit(jpf.modalwindow.widget);
+        docklet.implement(jpf.modalwindow.widget);
 
         docklet.parentNode = this;
-        docklet.inherit(jpf.JmlDom);
+        docklet.implement(jpf.JmlDom);
         //this.applyRuleSetOnNode("border", xmlNode);
 
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"

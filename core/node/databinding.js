@@ -241,7 +241,7 @@ jpf.DataBinding = function(){
         if (node && (jpf.isTrue(node.getAttribute("transaction"))
           || node.selectSingleNode("add|update"))){
             if (!this.hasFeature(__TRANSACTION__))
-                this.inherit(jpf.Transaction); /** @inherits jpf.Transaction */
+                this.implement(jpf.Transaction); /** @inherits jpf.Transaction */
 
             //Load ActionTracker & xmldb
             if (!this.$at)
@@ -1650,7 +1650,7 @@ jpf.DataBinding = function(){
     };
 
     // #ifdef __WITH_MULTISELECT
-    this.inherit(this.hasFeature(__MULTISELECT__)
+    this.implement(this.hasFeature(__MULTISELECT__)
         ? jpf.MultiselectBinding
         : jpf.StandardBinding);
     // #endif
@@ -2378,7 +2378,7 @@ jpf.DataBinding = function(){
         if (value != "virtual")
             return;
 
-        this.inherit(jpf.VirtualViewport);
+        this.implement(jpf.VirtualViewport);
     };
     //#endif
 };

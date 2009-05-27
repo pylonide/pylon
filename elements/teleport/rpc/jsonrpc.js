@@ -87,7 +87,7 @@ jpf.jsonrpc = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
+        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
     }
     
     this.getSingleCall = function(name, args, obj){

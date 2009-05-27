@@ -183,7 +183,7 @@ jpf.appsettings = {
         //#ifdef __WITH_JMLDOM_FULL
 
         this.parentNode = parentNode;
-        jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+        jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
 
         //Set Globals
@@ -359,7 +359,7 @@ jpf.settings = function(){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/

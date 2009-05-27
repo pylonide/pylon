@@ -1555,7 +1555,7 @@ jpf.debugwin = {
             this.pHtmlDoc = document;
 
             this.$propHandlers = [];
-            jpf.inherit.call(this, jpf.Interactive);
+            jpf.implement.call(this, jpf.Interactive);
 
             this.minwidth  = 400;
             this.minheight = 442;

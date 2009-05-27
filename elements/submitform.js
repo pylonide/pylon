@@ -776,7 +776,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    this.implement(jpf.JmlElement); /** @inherits jpf.JmlElement */
 
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
