@@ -113,12 +113,6 @@ jpf.runIphone = function() {
             -webkit-touch-callout: none;\
         }\
         body > *:not(.toolbar) {\
-            position: absolute;\
-            margin: 0;\
-            padding: 0;\
-            left: 0;\
-            top: 45px;\
-            width: 100%;\
             min-height: 372px;\
         }\
         body[orient="landscape"] > *:not(.toolbar) {\
@@ -231,8 +225,7 @@ jpf.runIphone = function() {
             el.ontouchstart = function(evt) {
                 if (!evt.touches || evt.touches.length != 1) return;
 
-                var found = false,
-                    e     = evt.touches[0];
+                var e = evt.touches[0];
                 if (typeof this.onmousedown == "function") {
                     this.onmousedown(e);
                     if (this != document)
@@ -243,8 +236,7 @@ jpf.runIphone = function() {
             el.ontouchmove = function(evt) {
                 if (!evt.touches || evt.touches.length != 1) return;
 
-                var found = false,
-                    e     = evt.touches[0];
+                var e = evt.touches[0];
                 if (typeof this.onmousemove == "function") {
                     this.onmousemove(e);
                     if (this != document)
@@ -264,7 +256,6 @@ jpf.runIphone = function() {
                 
                 _touching = true;
                 setTimeout(function() { _touching = false; });
-                var found = false;
                 if (typeof this.onmouseup == "function") {
                     this.onmouseup(e);
                     if (this != document)
