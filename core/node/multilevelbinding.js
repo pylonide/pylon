@@ -63,7 +63,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.nodeFunc = jpf.NODE_HIDDEN;
     this.tagName  = "MultiBinding";
     this.name     = jmlNode.name + "_multibinding";
-    
+
     this.$propHandlers = {}; //@todo fix this in each component
     this.$domHandlers  = {
         "remove"      : [],

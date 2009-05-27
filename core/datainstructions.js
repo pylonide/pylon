@@ -375,7 +375,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
                 : jmlNode.$getMultiBind().smartBinding;
             if (sb2)
-                sb2.$model = new jpf.model().loadFrom(instruction);
+                sb2.model = new jpf.model().loadFrom(instruction);
         }
         else if (!self[instrType] || !jpf.JmlParser.inited) {
             jpf.JmlParser.addToModelStack(jmlNode, data)
@@ -408,7 +408,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
                 : jmlNode.$getMultiBind().smartBinding;
             if (sb2) {
-                sb2.$model = model;
+                sb2.model = model;
                 sb2.$modelXpath[jmlNode.uniqueId] = data.join(":");
             }
         }
