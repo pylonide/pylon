@@ -102,10 +102,10 @@ jpf.runIphone = function() {
 
     // #ifdef __WITH_CSS
     jpf.importCssString(document,
-       'body {\
+       'html, body {\
             margin: 0;\
             font-family: Helvetica;\
-            background: #FFFFFF;\
+            background: #fff;\
             color: #000000;\
             overflow-x: hidden;\
             -webkit-user-select: none;\
