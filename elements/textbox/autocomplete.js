@@ -132,7 +132,9 @@ jpf.textbox.autocomplete = function(){
         }
         
         //Create html items
-        this.oContainer.innerHTML = "";
+        this.oContainer.innerHTML  = "";
+        this.oContainer.style.left = this.oInt.offsetLeft + "px";
+        this.oContainer.style.top  = this.oInt.offsetTop + "px";
         
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.$getNewContext("item")
