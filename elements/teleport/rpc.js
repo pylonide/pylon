@@ -91,6 +91,15 @@ jpf.rpc = function(){
         this[name].names         = names;
         this[name].ignoreOffline = ignoreOffline;
 
+        //#ifdef __DEBUG
+        if (names.length && !this.namedArguments) {
+            throw new Error(jpf.formatErrorString(0, null,
+                "Parsing Teleport definition", 
+                "Found j:variable element, but this protocol does not support\
+                name based arguments."));
+        }
+        //#endif
+
         if (callback)
             this[name].callback = callback;
 
@@ -116,7 +125,7 @@ jpf.rpc = function(){
 
     this.$convertArgs = function(name, args){
         if (!this.namedArguments)
-            return args.slice();
+            return Array.prototype.slice.call(args);
 
         var nodes = this[name].names;
         if (!nodes || !nodes.length)
