@@ -81,15 +81,14 @@ jpf.rpc = function(){
 
     this.addMethod = function(name, callback, names, async, caching, ignoreOffline, methodName){
         this[name] = function(){
-            return this.call(name, arguments, {
-                name : methodName
-            });
+            return this.call(name, arguments);
         }
 
         this[name].async         = async;
         this[name].caching       = caching;
         this[name].names         = names;
         this[name].ignoreOffline = ignoreOffline;
+        this[name].methodName    = methodName;
 
         //#ifdef __DEBUG
         if (names.length && !this.namedArguments) {
@@ -174,7 +173,7 @@ jpf.rpc = function(){
             : this[name].callback) || function(){};
 
         // Get Data
-        var data = this.serialize(options && options.name || name, args); //function of module
+        var data = this.serialize(this[name].methodName || name, args); //function of module
 
         function pCallback(data, state, extra){
             extra.data = data;
