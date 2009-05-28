@@ -472,9 +472,12 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                         lastpos = pos + 1;
                     }
                     else {
-                        result.push("getXmlValue('", arg
-                            .substr(lastpos, pos - lastpos)
-                            .replace(/([\\'])/g, "\\$1"), "')");
+                        var str = arg.substr(lastpos, pos - lastpos);
+                        if (str.match(/[\w_]+\s*\:[^\:]/))
+                            result.push("{" + str + "}");
+                        else 
+                            result.push("getXmlValue('", str
+                                .replace(/([\\'])/g, "\\$1"), "')");
                         lastpos = pos + 1;
                     }
                 }
