@@ -112,6 +112,10 @@ jpf.jsonrpc = function(){
         http.setRequestHeader('X-JSON-RPC', this.fName);
     }
     
+    this.$load = function(x){
+        this.method = (x.getAttribute("http-method") || "GET").toUpperCase();
+    }
+    
     this.unserialize = function(str){
         var obj = eval('obj=' + str);
         return obj.result;
