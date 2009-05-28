@@ -268,7 +268,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             : parseInt(bh) || 0) + o.offsetTop;
 
         //Scrolling
-        if (o != refParent && o.tagName != "HTML") {
+        if (o != refParent && (o.tagName != "HTML" || o.ownerDocument != document)) {
             wt -= o.scrollLeft;
             ht -= o.scrollTop;
         }
