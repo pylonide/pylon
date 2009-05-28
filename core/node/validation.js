@@ -65,7 +65,7 @@ jpf.Validation = function(){
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
-        var value = typeof this.getValue == "function" ? this.getValue() : null;
+        var value = typeof this.getValue == "function" ? this.getValue(null, true) : null;
 
         if (checkRequired && this.required) {
             if (!value || value.toString().trim().length == 0) {

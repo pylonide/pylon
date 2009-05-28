@@ -502,15 +502,26 @@ jpf.MultiSelect = function(){
          * first selected {@link term.datanode data node}.
          * @see #setValue
          */
-        this.getValue = function(xmlNode){
+        this.getValue = function(xmlNode, noError){
             if (!this.bindingRules && !this.caption) 
                 return false;
 
             // #ifdef __DEBUG
-            if (!this.caption && !this.bindingRules[this.mainBind] && !this.bindingRules["caption"])
+            if (!this.caption && !this.bindingRules[this.mainBind] && !this.bindingRules["caption"]) {
+                /*jpf.console.warn("Trying to get value for " 
+                    + this.tagName + (this.name ? " [" + this.name + "]" : "") 
+                    + ". No value rule has been defined. There is no way \
+                       to determine the value of the selected item.");
+                return false;*/
+                
+                if (noError)
+                    return false;
+                
                 throw new Error(jpf.formatErrorString(1074, this,
-                    "getValue Method",
-                    "Could not find default value bind rule for this control."));
+                    "Retrieving the value of this component.",
+                    "No value rule has been defined. There is no way \
+                     to determine the value of the selected item."));
+            }
             // #endif
 
             // #ifdef __WITH_MULTIBINDING
