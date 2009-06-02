@@ -101,7 +101,7 @@ jpf.popup = {
             o.content.style.zIndex = 10000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
-        
+
         if (options.ref) {
             var pos    = jpf.getAbsolutePosition(options.ref, 
                             o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
@@ -134,7 +134,7 @@ jpf.popup = {
                 });
             }
             else {
-                var iVal, steps = 7, i = 0;
+                var iVal, steps = jpf.isIE8 ? 5 : 7, i = 0;
                 
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);

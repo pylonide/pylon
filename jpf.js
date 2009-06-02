@@ -346,6 +346,13 @@ var jpf = {
          * @type {Boolean}
          */
         this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
+        
+        //Mode detection
+        if (this.isIE8 && document.documentMode == 7) {
+            jpf.isIE7 = true;
+            jpf.isIE8 = false;
+        }
+        
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 7.
          * @type {Boolean}

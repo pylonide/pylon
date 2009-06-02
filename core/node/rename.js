@@ -168,7 +168,7 @@ jpf.Rename = function(){
 
         if (jpf.isTrue(this.$getOption("main", "scalerename"))) {
             var diff = jpf.getWidthDiff(this.oTxt);
-            this.oTxt.style.width = (wdt - diff) + "px";
+            this.oTxt.style.width = (wdt - diff - 2) + "px";
         }
 
         this.replacedNode = elCaption;
