@@ -29,7 +29,7 @@
 
 (function(global) {
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
+if (typeof jpf.crypto == "undefined") jpf.crypto = {};
 
 function stringtoints(instring){
     var binary = [];
