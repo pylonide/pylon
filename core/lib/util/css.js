@@ -253,7 +253,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var bw, bh;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
-        bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
+        bw = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderLeftWidth" : "border-left-width");
         
         wt += (jpf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
@@ -261,7 +261,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             : parseInt(bw) || 0) + o.offsetLeft;
 
         //Border - Top
-        bh = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs
+        bh = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderTopWidth" : "border-top-width");
         ht += (jpf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
             ? 2
