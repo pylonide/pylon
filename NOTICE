@@ -26,6 +26,10 @@ The JavaScript implementation of the RSA Data Security, Inc. MD5 Message Digest
 Algorithm, version 2.1, is copyrighted by Paul Johnston 1999 - 2002
 (http://pajhome.org.uk/crypt/md5/) and licensed under the BSD license.
 
+The Base64, MD5 and SHA1 libraries contain improvements made by the authors of
+the excellent open source php.js library, version 2.68, copyright 2009 Kevin
+van Zonneveld et al. (http://phpjs.org) and licensed under the MIT license.
+
 The JavaScript implementation of the Secure Hash Algorithm, SHA-1, version 2.1a,
 is copyrighted by Paul Johnston 2000 - 2002 (http://pajhome.org.uk/crypt/md5)
 and licensed under the BSD license.
