@@ -46,6 +46,7 @@ jpf.getCgiString = function(args, multicall, mcallname){
     var vars = [];
 
     function recur(o, stack) {
+        var prop;
         if (jpf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
@@ -585,12 +586,12 @@ Math.hexToDec = function(value){
  * @type  {String}
  */
 Math.uuid = function (len, radix) {
-    var chars = Math.uuid.CHARS, uuid = [], rnd = Math.random;
+    var i, chars = Math.uuid.CHARS, uuid = [], rnd = Math.random;
     radix = radix || chars.length;
 
     if (len) {
         // Compact form
-        for (var i = 0; i < len; i++)
+        for (i = 0; i < len; i++)
             uuid[i] = chars[0 | rnd() * radix];
     }
     else {
@@ -602,7 +603,7 @@ Math.uuid = function (len, radix) {
 
         // Fill in random data.  At i==19 set the high bits of clock sequence as
         // per rfc4122, sec. 4.1.5
-        for (var i = 0; i < 36; i++) {
+        for (i = 0; i < 36; i++) {
             if (!uuid[i]) {
                 r = 0 | rnd() * 16;
                 uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
