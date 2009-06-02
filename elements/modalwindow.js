@@ -29,12 +29,23 @@ jpf.WinServer = {
     count : 9000,
     wins  : [],
 
-    setTop : function(win){
+    setTop : function(win, norecur){
+        var topmost;
+        if (!norecur && this.wins.length) {
+            var topmost = this.wins[this.wins.length - 1];
+            if (!topmost.modal || !topmost.visible)
+                topmost = null;
+        }
+        
         this.count += 2;
 
         win.setProperty("zindex", this.count);
         this.wins.remove(win);
         this.wins.push(win);
+        
+        if (topmost)
+            this.setTop(topmost, true);
+        
         return win;
     },
 
@@ -700,6 +711,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.oExt.style.zIndex || 1, 
                     this.oCover && this.oCover.style.zIndex || 1
                 ];
+                
                 if (this.oCover)
                     this.oCover.style.zIndex = jpf.WinServer.count + 1;
                 this.oExt.style.zIndex = jpf.WinServer.count + 2;
