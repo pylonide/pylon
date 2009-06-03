@@ -507,13 +507,20 @@ jpf.DragDrop = function(){
                     scrollY -= oParent.scrollTop;
                     oParent = oParent.offsetParent;
                 }
-
+                
+                if (jpf.isIE8) {
+                    var loopEl = srcEl;
+                    while (!loopEl.getAttribute(jpf.xmldb.htmlIdTag)) {
+                        loopEl = loopEl.parentNode;
+                    }
+                    var pos = jpf.getAbsolutePosition(loopEl);
+                }
 
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
                     doc        : d,
-                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : e.offsetX) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
-                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : e.offsetY) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
+                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (jpf.isIE8 ? e.offsetX - pos[0] : e.offsetX)) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
+                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (jpf.isIE8 ? e.offsetY - pos[1] : e.offsetY)) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
                     clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,//e.clientX,
                     clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
                 };
