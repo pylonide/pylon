@@ -61,7 +61,9 @@ jpf.iepngfix = (function() {
             node = aNodes[j];
             if (!node) continue;
         
-            fixMe(node);
+            if (node != document)
+                fixMe(node);
+
             for (var i = node.all.length - 1, obj = null; (obj = node.all[i]); i--) {
                 fixMe(obj);
             }
