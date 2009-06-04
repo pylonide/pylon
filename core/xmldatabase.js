@@ -271,8 +271,8 @@ jpf.XmlDatabase = function(){
      * @return {XMLNode} the created xml document (NOT the root-node).
      */
     this.fromJson = function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && jpf.isJson(strJson))
-          ? eval("(" + strJson + ")")
+        var o   = (typeof strJson == "string" && jpf.isJSON(strJson))
+          ? JSON.parse(strJson)//eval("(" + strJson + ")")
           : strJson,
             xml = [], i;
         for (i in o)

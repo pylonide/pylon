@@ -313,7 +313,7 @@ jpf.runNonIe = function (){
 
             //#ifdef __WITH_XMLDATABASE
             if (xmlParser.documentElement.tagName == "parsererror" && jpf.xmldb
-              && jpf.isJson(message)) {
+              && jpf.isJSON(message)) {
                 try {
                     xmlParser = jpf.xmldb.fromJson(message, noError);
                 }

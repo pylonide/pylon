@@ -99,7 +99,7 @@ jpf.runIE = function(){
                 xmlParser.loadXML(message);
 
                 //#ifdef __WITH_XMLDATABASE
-                if (xmlParser.parseError != 0 && jpf.xmldb && jpf.isJson(message)) {
+                if (xmlParser.parseError != 0 && jpf.xmldb && jpf.isJSON(message)) {
                     try {
                         xmlParser = jpf.xmldb.fromJson(message, noError);
                     }

@@ -627,7 +627,7 @@ jpf.model = function(data, caching){
                         .replace(/xmlns=\"[^"]*\"/g, ""));
                 }
                 // we also support JSON data loading in a model CDATA section
-                else if (jpf.isJson(xmlNode.childNodes[0].nodeValue)) {
+                else if (jpf.isJSON(xmlNode.childNodes[0].nodeValue)) {
                     this.load(xmlNode.childNodes[0].nodeValue);
                 }
             }
