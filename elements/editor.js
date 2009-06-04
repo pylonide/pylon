@@ -521,6 +521,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        .replace(exportRE[9], '<br />')
                        .replace(exportRE[10], '')
         }
+        else if (html == "<br>") 
+            html = "";
 
         html = html.replace(exportRE[0], '</li>')
                    .replace(exportRE[1], '')

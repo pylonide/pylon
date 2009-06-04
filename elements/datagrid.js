@@ -2689,6 +2689,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
                     }*/
                     
+                    if (_self.renaming)
+                        _self.stopRename();
+                    
                     if (_self.$lastUpdated) {
                         _self.$updateNode(_self.$lastUpdated, 
                             jpf.xmldb.findHTMLNode(_self.$lastUpdated, _self));
