@@ -363,10 +363,9 @@ jpf.DragDrop = function(){
         var action = rule && rule.getAttribute("action") || defaction;
         
         //copy-condition convenience variables
-        /*var internal = */
-        jpf.DragServer.dragdata.host == this;
-        //var ctrlKey  = event.ctrlKey;
-        //var keyCode  = event.keyCode;
+        var internal = jpf.DragServer.dragdata.host == this;
+        var ctrlKey  = event.ctrlKey;
+        var keyCode  = event.keyCode;
 
         //jpf.parseExpression
         var ifcopy = rule && rule.getAttribute("copy-condition")
@@ -519,8 +518,8 @@ jpf.DragDrop = function(){
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
                     doc        : d,
-                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (jpf.isIE8 ? e.offsetX - pos[0] : e.offsetX)) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
-                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (jpf.isIE8 ? e.offsetY - pos[1] : e.offsetY)) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
+                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (jpf.isIE8 ? e.clientX - pos[0] : e.offsetX)) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
+                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (jpf.isIE8 ? e.clientY - pos[1] : e.offsetY)) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
                     clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,//e.clientX,
                     clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
                 };
@@ -751,7 +750,7 @@ jpf.DragServer = {
 
     dragover : function(o, el, e){
         e = e || window.event;
-        
+
         var fEl;
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
