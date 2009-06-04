@@ -309,8 +309,22 @@ jpf.runNonIe = function (){
         var xmlParser;
         if (message) {
             xmlParser = new DOMParser();
-            xmlParser     = xmlParser.parseFromString(message, "text/xml");
+            xmlParser = xmlParser.parseFromString(message, "text/xml");
 
+            //#ifdef __WITH_XMLDATABASE
+            if (xmlParser.documentElement.tagName == "parsererror" && jpf.xmldb
+              && jpf.isJson(message)) {
+                try {
+                    xmlParser = jpf.xmldb.fromJson(message, noError);
+                }
+                catch(e) {
+                    throw new Error(jpf.formatErrorString(1051, null,
+                        "JSON to XML conversion error occurred.",
+                        "\nSource Text : " + message.replace(/\t/gi, " ")));
+                }
+            }
+            else
+            //#endif
             if (!noError)
                 this.xmlParseError(xmlParser);
         }

@@ -509,6 +509,27 @@ jpf.isArray = function(value) {
 };
 
 /**
+ * Reliably determines whether a variable is a string of JSON.
+ * @see http://json.org/
+ *
+ * @param {mixed}   value The variable to check
+ * @type  {Boolean}
+ */
+jpf.isJson = (function() {
+    var escapes  = /\\["\\\/bfnrtu]/g,
+        values   = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+        brackets = /(?:^|:|,)(?:\s*\[)+/g,
+        invalid  = /^[\],:{}\s]*$/;
+
+    return function(value) {
+        if (!value) return false;
+        return invalid.test(
+            value.replace(escapes, '@').replace(values, ']').replace(brackets, '')
+        );
+    }
+})();
+
+/**
  * Determines whether a string is true in the html attribute sense.
  * @param {mixed} value the variable to check
  *   Possible values:

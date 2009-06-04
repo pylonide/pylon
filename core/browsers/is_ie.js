@@ -29,11 +29,12 @@ jpf.runIE = function(){
     /* ******** XML Compatibility ************************************************
      Extensions to the xmldb
      ****************************************************************************/
-    var hasIE7Security = hasIESecurity = false;
+    var hasIE7Security = false,
+        hasIESecurity  = false;
     // #ifdef __TP_IFRAME
-    if (self.XLMHttpRequest)
+    if (self.XMLHttpRequest)
         try {
-            new XLMHttpRequest()
+            new XMLHttpRequest()
         }
         catch (e) {
             hasIE7Security = true
@@ -92,10 +93,24 @@ jpf.runIE = function(){
 
             if (message) {
                 if (jpf.cantParseXmlDefinition)
-                    message = message.replace(/\] \]/g, "] ]").replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
+                    message = message.replace(/\] \]/g, "] ]")
+                                     .replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
 
                 xmlParser.loadXML(message);
 
+                //#ifdef __WITH_XMLDATABASE
+                if (xmlParser.parseError != 0 && jpf.xmldb && jpf.isJson(message)) {
+                    try {
+                        xmlParser = jpf.xmldb.fromJson(message, noError);
+                    }
+                    catch(e) {
+                        throw new Error(jpf.formatErrorString(1051, null,
+                            "JSON to XML conversion error occurred.",
+                            "\nSource Text : " + message.replace(/\t/gi, " ")));
+                    }
+                }
+                else
+                //#endif
                 if (!noError)
                     this.xmlParseError(xmlParser);
             }
