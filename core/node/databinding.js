@@ -975,7 +975,7 @@ jpf.DataBinding = function(){
 
                 //#ifdef (__ENABLE_BINDING_JSLT || __ENABLE_BINDING_XSLT) && (__PARSER_XSLT || __PARSER_JSLT)
                 //Process XSLT/JSLT Stylesheet if needed
-                else if(rule.childNodes.length) {
+                else if(rule.childNodes.length && (rule.childNodes.length != 1 || rule.childNodes[0].nodeValue.trim() != "")) {
                     var xsltNode;
 
                     //Check Cache
