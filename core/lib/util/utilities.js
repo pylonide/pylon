@@ -532,17 +532,21 @@ jpf.isJSON = (function() {
 if (!window["JSON"]) {
     window["JSON"] = {};
     JSON.parse = (function() {
-        var number  = "(?:-?\\b(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\\b)",
-            oneChar = '(?:[^\\0-\\x08\\x0a-\\x1f\"\\\\]|\\\\(?:[\"/\\\\bfnrt]|u[0-9A-Fa-f]{4}))';
-        var string  = '(?:\"' + oneChar + '*\")';
-
         // Will match a value in a well-formed JSON file.
         // If the input is not well-formed, may match strangely, but not in an
         // unsafe way.
         // Since this only matches value tokens, it does not match whitespace,
         // colons, or commas.
-        var jsonToken       = new RegExp("(?:false|true|null|[\\{\\}\\[\\]]|"
-            + number + "|" + string + ")", "g"),
+        // The second line of the regex string matches numbers, lines number 4,
+        // 5 and 6 match a string and line number 5 specifically matches one
+        // character.
+        var jsonToken       = new RegExp(
+'(?:false|true|null|[\\{\\}\\[\\]]|\
+(?:-?\\b(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\\b)\
+|\
+(?:\"\
+(?:[^\\0-\\x08\\x0a-\\x1f\"\\\\]|\\\\(?:[\"/\\\\bfnrt]|u[0-9A-Fa-f]{4}))\
+*\"))', "g"),
             // Matches escape sequences in a string literal
             escapeSequence  = new RegExp("\\\\(?:([^u])|u(.{4}))", "g"),
             // Decodes escape sequences in object literals
