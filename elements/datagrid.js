@@ -1016,7 +1016,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         this.selected.getAttribute("select") 
                       + (xpath ? "/" + xpath : "") + "["
                       + (value
-                        ? this.selected.getAttribute("descfield") + "='" + value + "'"
+                        ? this.selected.getAttribute("descfield") + "=concat('" 
+                          + value.split("'").join("',\"'\",'") + "')"
                         : "string-length(" + this.selected.getAttribute("descfield") + ") = 0")
                       + "]");
                      
