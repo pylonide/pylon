@@ -923,10 +923,7 @@ jpf.model = function(data, caching){
                 //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, 
-                  //#ifdef __DEBUG
-                  jmlNode || 
-                  //#endif
-                  _self, oError) === true)
+                  options.jmlNode || _self, oError) === true)
                     return true;
 
                 throw oError;
