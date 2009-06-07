@@ -583,12 +583,15 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (node)
                     this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
-                    
+
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
-                if (selHtml.offsetTop < oInt.scrollTop) {
-                    oInt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
-                        ? 0
-                        : selHtml.offsetTop - margin[0];
+                if (selHtml.offsetTop <= oInt.scrollTop) {
+                    oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                      ? 0
+                      : selHtml.offsetTop - margin[0])
+                        - parseInt(jpf.getStyle(oInt, jpf.isIE 
+                            ? "paddingTop" 
+                            : "padding-top"));
                 }
                 break;
             case 40:
@@ -647,9 +650,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oInt.scrollTop) {
-                    oInt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
-                        ? 0
-                        : selHtml.offsetTop - margin[0];
+                    oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                      ? 0
+                      : selHtml.offsetTop - margin[0]) 
+                        - parseInt(jpf.getStyle(oInt, jpf.isIE 
+                            ? "paddingTop" 
+                            : "padding-top"));
                 }
                 break;
             case 34:
@@ -912,7 +918,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             //@todo get xmlUpdate to be called only once per document update for propedit
             var xml = 
               jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
-                <j:column caption="Property" width="' + cols[0] + '" select="@caption" />\
+                <j:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></j:column>\
                 <j:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
                     var dg = jpf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\

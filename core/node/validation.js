@@ -369,7 +369,10 @@ jpf.Validation = function(){
         "pattern", "min", "max", "maxlength", "minlength", "valid-test",
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
-    this.$fValidate = function(){ this.validate(true); };
+    this.$fValidate = function(){
+        if (!this.$validgroup || this.$validgroup.getErrorBox(this).host != this)
+            this.validate(true); 
+    };
     this.addEventListener("blur", this.$fValidate);
     
     this.$propHandlers["validgroup"] = function(value){

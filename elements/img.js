@@ -125,12 +125,18 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.$resize.done = true;
         }
-        
-        if (this.oImg)
+
+        if (this.oImg) {
             this.oImg.style.display = value ? "block" : "none";
+            
+            if (value)
+                this.$resize();
+        }
     };
     
     this.$clear = function(){
+        this.value = "";
+        
         if (this.oImg)
             this.oImg.style.display = "none";
     }
