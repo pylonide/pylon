@@ -880,8 +880,15 @@ var jpf = {
      * @param {HTMLElement} oHtml the html context to start the search from.
      */
     findHost : function(o){
-        while (o && !o.host && o.parentNode)
+        while (o && o.parentNode) { //!o.host && 
+            try {
+                if (o.host)
+                    break;
+            }
+            catch(e){}
+            
             o = o.parentNode;
+        }
         return (o && o.host && typeof o.host != "string") ? o.host : false;
     },
 

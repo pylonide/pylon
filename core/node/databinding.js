@@ -3119,6 +3119,9 @@ jpf.MultiselectBinding = function(){
 
         //Check Insert
         if (action == "insert" && (this.isTreeArch || xmlNode == this.xmlRoot)) {
+            if (!xmlNode)
+                return;
+            
             if (this.hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
 

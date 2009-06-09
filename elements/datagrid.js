@@ -962,7 +962,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         var vs = $"@descfield";\
                         if (vs) {\
                             local(dg.xmlData.selectSingleNode(select)){\
-                                foreach("node()"){]\
+                                foreach("node()[local-name()]"){]\
                                     <div class="item"><i onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</i>[%value(vs)]</div>\
                                 [}\
                             }\

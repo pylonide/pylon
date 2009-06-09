@@ -128,7 +128,7 @@ jpf.JsltImplementation = function(){
             } catch(e) {
                 throw new Error(jpf.formatErrorString(0, this,
                     "Selecting node in JSLT",
-                    "unxpected character in xpath \n" + e.message + "'"));
+                    "unexpected character in xpath '" + p + "' \n" + e.message + "'"));
             }
             // #endif
         }
