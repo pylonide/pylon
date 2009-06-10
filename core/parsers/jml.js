@@ -292,7 +292,7 @@ jpf.JmlParser = {
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
                     //if(jmlParent.name == "barTest") debugger;
                     pHtmlNode.appendChild(pHtmlNode.ownerDocument
-                      .createTextNode(!jpf.hasTextNodeWhiteSpaceBug
+                      .createTextNode(!jpf.hasTextNodeWhiteSpaceBug || pHtmlNode.tagName == "PRE"
                       ? q.nodeValue
                       : q.nodeValue.replace(this.reWhitespaces, " ")));
 
