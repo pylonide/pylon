@@ -251,7 +251,7 @@ jpf.JmlParser = {
         jpf.isParsing = parsing;
     },
 
-    reWhitespaces : /[\t\n\r]+/g,
+    reWhitespaces : /[\t\n\r ]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
         if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length
@@ -290,12 +290,14 @@ jpf.JmlParser = {
                     continue;
 
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
-                    //if(jmlParent.name == "barTest") debugger;
-                    pHtmlNode.appendChild(pHtmlNode.ownerDocument
-                      .createTextNode(!jpf.hasTextNodeWhiteSpaceBug || pHtmlNode.tagName == "PRE"
-                      ? q.nodeValue
-                      : q.nodeValue.replace(this.reWhitespaces, " ")));
-
+                    if (jpf.hasTextNodeWhiteSpaceBug) {
+                        pHtmlNode.appendChild(pHtmlNode.ownerDocument
+                          .createTextNode(q.nodeValue.replace(this.reWhitespaces, " ")));
+                    }
+                    else {
+                        pHtmlNode.appendChild(pHtmlNode.ownerDocument
+                          .createTextNode(q.nodeValue));
+                    }
                 }
                 else if (q.nodeType == 4) {
                     pHtmlNode.appendChild(pHtmlNode.ownerDocument
@@ -526,7 +528,11 @@ jpf.JmlParser = {
         // #ifdef __WITH_HTML_PARSING
         //XHTML
         ,"http://www.w3.org/1999/xhtml" :  function(x, pHtmlNode, jmlParent, noImpliedParent){
-            var parseWhole = x.tagName.match(/table|object|embed/i) ? true : false;
+            var tagName = x.tagName;
+            var parseWhole = tagName.match(/table|object|embed/i) ? true : false;
+
+            if (!parseWhole && jpf.hasTextNodeWhiteSpaceBug && tagName == "pre")
+                parseWhole = true;
 
             //#ifdef __DEBUG
             if (!pHtmlNode) {
@@ -537,10 +543,10 @@ jpf.JmlParser = {
             //#endif
 
             // Move all this to the respective browser libs in a wrapper function
-            if (x.tagName == "script") {
+            if (tagName == "script") {
                 return;
             }
-            else if (x.tagName == "option") {
+            else if (tagName == "option") {
                 var o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.createElement("option"));
                 if (x.getAttribute("value"))
                     o.setAttribute("value", x.getAttribute("value"));
@@ -564,7 +570,6 @@ jpf.JmlParser = {
             }
 
             //Check attributes for j:left etc and j:repeat-nodeset
-            var tagName;
             var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jml) || "";
             if (prefix && !x.style) {
                 if (!jpf.supportNamespaces)
