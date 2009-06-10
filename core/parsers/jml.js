@@ -286,7 +286,7 @@ jpf.JmlParser = {
             if (q.nodeType != 1) {
                 if (!pHtmlNode) continue;
 
-                if (jpf.isIE && !q.nodeValue.trim())
+                if (jpf.hasTextNodeWhiteSpaceBug && !q.nodeValue.trim())
                     continue;
 
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
@@ -531,8 +531,10 @@ jpf.JmlParser = {
             var tagName = x.tagName;
             var parseWhole = tagName.match(/table|object|embed/i) ? true : false;
 
-            if (!parseWhole && jpf.hasTextNodeWhiteSpaceBug && tagName == "pre")
-                parseWhole = true;
+            if (!parseWhole && jpf.hasTextNodeWhiteSpaceBug && tagName == "pre") {
+                pHtmlNode.insertAdjacentHTML("beforeend", x.xml);
+                return pHtmlNode.lastChild;
+            }
 
             //#ifdef __DEBUG
             if (!pHtmlNode) {
