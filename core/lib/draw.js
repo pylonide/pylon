@@ -328,7 +328,7 @@ jpf.namespace("draw", {
     //----------------------------------------------------------------------
      
     parseStyle : function( def, ovl, err ) {
-        var style = {}, o, v, k, s, t, i;
+        var style = {}, o, v, k, s, t, i, j;
         
         //var o = {}, k1, v1, k2, v2, t, s, i, j, len, _self = this;
         //var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
@@ -370,7 +370,6 @@ jpf.namespace("draw", {
                 if(typeof(o)=='object')
                         for(k in o) if( k.indexOf('$')==-1 && 
                             dst[k] === undefined ) dst[k] = o[k];
-                       
                 if(s)s = _self.$stateInherit[v];
             }while(s);
         }
@@ -387,29 +386,59 @@ jpf.namespace("draw", {
                 }
                 if(cls)styleinherit( o, base , cls, 0 );
                 styleinherit( o, base, 0, 0 );
-
-                // lets store this cls or state on our base.
+                o.$cls   = cls?cls:'', o.$state = state?state:'';
                 o.$base = s = style[base];
-                if(!(t=s.$cls))t = s.$cls = {};
-                t[cls] = 1;
+
+                if(!s) {
+                    alert("ERROR, baseless style found: "+base);
+                    return;
+                }
+                (s.$stylelist?s.$stylelist:(s.$stylelist=[])).push(o);
+                if(!cls)
+                    (s.$baselist?s.$baselist:(s.$baselist={}))[state]=1;
+                else 
+                    (s.$clslist?s.$clslist:(s.$clsc = 1,s.$clslist={}))[cls]=s.$clsc++;
             }
+        }
+        // generate all required tables and luts
+        for(k in style) if(typeof(s=style[k]) == 'object'){
+            // add missing class states automatically
+            if(s.$baselist && s.$clslist){
+                delete s.$clsc;
+                for(i in s.$clslist){
+                    for(j in s.$baselist){
+                        if(!style[t = k+'.'+i+':'+j]){
+                            o = style[t] = {};
+                            for(v in (t=style[k+'.'+i]))o[v] = t[v];
+                            for(v in (t=ovl[k+':'+j]))o[v] = t[v];
+                            o.$cls   = i, o.$state = j, o.$base = s;
+                            s.$stylelist.push(o);
+                        }
+                    }
+                }
+            }
+            if(s.$stylelist){ // lets go create our luts
+                // 
+            }
+            
+            //logw("checking "+k+"\n");
         }
         logw( jpf.dump( style ) );
         
-                    // in a secondary cycle we should see if there
-                    // are any base:style classes 
-                    // ifso we should see if we need to create
-                    // automagic 
+        // in a secondary cycle we should see if there
+        // are any base:style classes 
+        // ifso we should see if we need to create
+        // automagic 
+
+        // we have an object with cls or state to go and inherit recursively.
+        // lets follow the inheritance path
+
+        // base:cls:state
+        // base:state
+        // base:cls
+        // base
         
-                    // we have an object with cls or state to go and inherit recursively.
-                    // lets follow the inheritance path
-                    
-                    // base:cls:state
-                    
-                    // base:state
-                    // base:cls
-                    // base
-                    
+        
                     
                     // add a ref to us in the base hash table, and calculate a bit ID
 
