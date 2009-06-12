@@ -328,7 +328,7 @@ jpf.namespace("draw", {
     //----------------------------------------------------------------------
      
     parseStyle : function( def, ovl, err ) {
-        var style = {}, o, v, k, s, t, i, j;
+        var style = {}, o, v, k, s, t, i, j, n;
         
         //var o = {}, k1, v1, k2, v2, t, s, i, j, len, _self = this;
         //var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
@@ -386,7 +386,7 @@ jpf.namespace("draw", {
                 }
                 if(cls)styleinherit( o, base , cls, 0 );
                 styleinherit( o, base, 0, 0 );
-                o.$cls   = cls?cls:'', o.$state = state?state:'';
+                o.$cls  = cls?cls:'', o.$state = state?state:'';
                 o.$base = s = style[base];
 
                 if(!s) {
@@ -400,9 +400,30 @@ jpf.namespace("draw", {
                     (s.$clslist?s.$clslist:(s.$clsc = 1,s.$clslist={}))[cls]=s.$clsc++;
             }
         }
+
+        function styleinit(d){
+
+            return true;
+        }
+        
         // generate all required tables and luts
         for(k in style) if(typeof(s=style[k]) == 'object'){
             // add missing class states automatically
+            if(s.line === null || s.line=='null' || s.line==0) delete s.line;
+            if(s.fill === null || s.fill=='null' || s.fill==0) delete s.fill;
+            if(s.family === null || s.family=='null' || s.family==0) delete s.family;
+
+            if( (s.isshape && s.fill === undefined && 
+                s.line === undefined && s.tile === undefined) || 
+                (s.isfont && s.family === undefined) ) return false; 
+            if(s.isshape){
+                s.alpha = s.alpha!==undefined ? s.alpha : 1;
+                s.fillalpha = s.fillalpha!==undefined ? s.fillalpha:s.alpha;
+                s.gradalpha = s.gradalpha!==undefined ? s.gradalpha:s.fillalpha;
+                s.linealpha = s.linealpha!==undefined ? s.linealpha:s.alpha;
+                s.angle = s.angle!==undefined ? s.angle : 0;
+                s.weight = s.weight!==undefined ? s.weight : 1
+            }
             if(s.$baselist && s.$clslist){
                 delete s.$clsc;
                 for(i in s.$clslist){
@@ -417,13 +438,24 @@ jpf.namespace("draw", {
                     }
                 }
             }
-            if(s.$stylelist){ // lets go create our luts
-                // 
+            if(s.$stylelist){ // lets go create our style lut
+                s.$storelut = {};
+                s.$speedlut = {};
+                s.$storelist = [];
+                var cls, state;
+                j = s.$stylelist;
+                for(i = 0;i<j.length;i++){
+                    o = j[i];
+                    s.$storelist.push(n = []);
+                    //calculate the ID for this class/style
+                    cls   = s.$clslist[o.$cls]||0;
+                    state = jpf.draw.stateBit[o.$state]||0;
+                    s.$storelut[ state|cls ] = n;
+                    s.$speedlut[ state|cls ] = 1;
+                }
             }
-            
-            //logw("checking "+k+"\n");
         }
-        logw( jpf.dump( style ) );
+        //logw( jpf.dump( style ) );
         
         // in a secondary cycle we should see if there
         // are any base:style classes 
@@ -452,24 +484,7 @@ jpf.namespace("draw", {
                         the total list of output array for this type
 */
  
-        function styleinit(d){
-            if(d.line === null || d.line=='null' || d.line==0) delete d.line;
-            if(d.fill === null || d.fill=='null' || d.fill==0) delete d.fill;
-            if(d.family === null || d.family=='null' || d.family==0) delete d.family;
 
-            if( (d.isshape && d.fill === undefined && 
-                d.line === undefined && d.tile === undefined) || 
-                (d.isfont && d.family === undefined) ) return false; 
-            if(d.isshape){
-                d.alpha = d.alpha!==undefined ? d.alpha : 1;
-                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
-                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
-                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
-                d.angle = d.angle!==undefined ? d.angle : 0;
-                d.weight = d.weight!==undefined ? d.weight : 1
-            }
-            return true;
-        }
         // we should now initialize the luts and storage arrays
         
         

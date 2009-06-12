@@ -423,7 +423,7 @@ jpf.namespace("draw.vml",{
                "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut;\n");
         
         for(i = 0, n = v.length;i<n;i++){
-            s[s.length]="_stores["+i+"].length=0;";
+            s[s.length]="_storelist["+i+"].length=0;";
         }
         return s.join('');
     },
@@ -477,7 +477,7 @@ jpf.namespace("draw.vml",{
                   "t = _su[0];",
                   this.beginShape(style),
                   "for(_sv=0;_sv<_st;_sv+=",n,"){",
-                    "t=_su[_sv];x=_sy[_sv+1];",
+                    "t=_su[_sv];x=_su[_sv+1];",
                     this.statefunc.apply(this.statethis,a),
                   "}",
                   this.$endDraw(),

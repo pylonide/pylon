@@ -76,8 +76,9 @@ jpf.vardump = function(obj, depth, norecur, stack){
            
             for (var prop in obj) if(prop!='$___vardump'){
                 try {
+                    var propname = (parseInt(prop)==prop)?"0x"+("00000000"+parseInt(prop).toString(16)).slice(-8):prop;
                     if(str.length>1)str.push(",\n");
-                    str.push( "\t".repeat(depth+1), prop, ": ",
+                    str.push( "\t".repeat(depth+1), propname, ": ",
                       (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
                         jpf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
                 } catch(e) {
