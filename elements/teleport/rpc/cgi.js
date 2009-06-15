@@ -95,15 +95,15 @@ jpf.cgi = function(){
 
     this.unserialize = function(str){
         return str;
-    }
+    };
 
     this.getSingleCall = function(name, args, obj){
         obj.push(args);
-    }
+    };
 
     // Create message to send
     this.serialize = function(functionName, args){
-        var vars    = [];
+        var prop, vars    = [];
 
         function recur(o, stack){
             if (o && o.dataType == "array") {
@@ -159,7 +159,7 @@ jpf.cgi = function(){
             : "");
 
         return "";
-    }
+    };
 
     this.$load = function(x){
         this.method      = (x.getAttribute("http-method") || "GET").toUpperCase();
@@ -181,7 +181,7 @@ jpf.cgi = function(){
                 v.setAttribute("value", nodes[i].getAttribute("name"));
             }
         }
-    }
+    };
 
     /**
      * Submit a form with ajax (GET)
@@ -223,8 +223,8 @@ jpf.cgi = function(){
         this['postform'].call(this);
 
         return false;
-    }
-}
+    };
+};
 
 // #ifdef __WITH_DATA_INSTRUCTIONS
 jpf.namespace("datainstr.url", function(xmlContext, options, callback){

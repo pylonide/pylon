@@ -304,17 +304,10 @@ jpf.skins = {
         //#ifdef __WITH_ICONMAP
         var parts = strQuery.split(":");
         var map = this.iconMaps[parts[0]];
-
         if (map) {
             var left, top, coords = parts[1].split(",");
-            if (map.type == "vertical") {
-                left = (coords[1] || 0) * map.width;
-                top  = (coords[0] || 0) * map.height;
-            }
-            else {
-                left = (coords[0] || 0) * map.width;
-                top  = (coords[1] || 0) * map.height;
-            }
+            left = (coords[(map.type == "vertical") ? 1 : 0] || 0) * map.width;
+            top  = (coords[(map.type == "vertical") ? 0 : 1] || 0) * map.height;
 
             oHtml.style.backgroundImage = "url(" + (iconPath || "")
                 + map.src + ")";

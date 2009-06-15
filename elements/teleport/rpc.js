@@ -103,7 +103,7 @@ jpf.rpc = function(){
             this[name].callback = callback;
 
         return true;
-    }
+    };
 
     /**
      * Sets the callback for a method on this object.
@@ -120,7 +120,7 @@ jpf.rpc = function(){
      */
     this.setCallback = function(name, func){
         this[name].callback = func;
-    }
+    };
 
     this.$convertArgs = function(name, args){
         if (!this.namedArguments)
@@ -152,7 +152,7 @@ jpf.rpc = function(){
         }
 
         return result;
-    }
+    };
 
     this.call = function(name, args, options){
         args = this.$convertArgs(name, args);
@@ -199,7 +199,7 @@ jpf.rpc = function(){
         }, options));
 
         return info;
-    }
+    };
 
     /**
      * Purge multicalled requests
@@ -234,17 +234,17 @@ jpf.rpc = function(){
             : [];
 
         //return info[1];
-    }
+    };
 
     this.revert = function(modConst){
         this.stack[modConst.url] = this.getMulticallObject
             ? this.getMulticallObject()
             : [];
-    }
+    };
 
     this.getStackLength = function(){
         return this.stack[this.url] ? this.stack[this.url].length : 0;
-    }
+    };
 
     /**
      * Loads jml definition
@@ -295,11 +295,12 @@ jpf.rpc = function(){
     this.load = function(x){
         this.$jml       = x;
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.url       = jpf.parseExpression(x.getAttribute("url"))
+        this.url       = jpf.parseExpression(x.getAttribute("url"));
         this.baseurl   = jpf.parseExpression(
                              jpf.xmldb.getInheritedAttribute(
                                 this.$jml, "baseurl")) || "";
         this.multicall = jpf.isTrue(x.getAttribute("multicall"));
+        this.useXML    = x.getAttribute("type") == "XML";
         this.autoroute = jpf.isTrue(x.getAttribute("autoroute"));
         this.routeServer = x.getAttribute("route-server") || this.routeServer;
 
@@ -335,7 +336,7 @@ jpf.rpc = function(){
                 jpf.isTrue(q[i].getAttribute("ignore-offline")),
                 q[i].getAttribute("method-name"));
         }
-    }
+    };
 
     /*
      * Post a form with ajax
@@ -356,7 +357,7 @@ jpf.rpc = function(){
          }
 
          this['postform'].apply(this, args);
-     }
+     };
      */
 }
 
@@ -420,7 +421,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //Call callback for sync calls
     if (!obj.multicall && !obj[method].async && callback)
         callback(retvalue);
-}
+};
 
 // #endif
 

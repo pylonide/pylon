@@ -833,6 +833,14 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.setCaption = function(caption){
         this.setProperty("caption", caption);
     };
+
+    /**
+     * Sets the icon of the button of this element.
+     * @param {String} icon the icon displayed on the button of this element.
+     */
+    this.setIcon = function(icon) {
+        this.setProperty("icon", icon);
+    }
     //#endif
 
     /**** Delayed Render Support ****/
@@ -872,6 +880,17 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             node.innerHTML = value;
         else
             node.nodeValue = value;
+    };
+
+    this.$propHandlers["icon"] = function(value) {
+        if (!this.parentNode)
+            return;
+
+        var node = this.parentNode
+            .$getLayoutNode("button", "icon", this.oButton);
+
+        if (node && node.nodeType == 1)
+            jpf.skins.setIcon(node, value, this.parentNode.iconPath);
     };
 
     this.$propHandlers["visible"] = function(value){

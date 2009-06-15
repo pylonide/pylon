@@ -264,8 +264,88 @@ jpf.runIphone = function() {
             };
 
             return this;
+        },
+        nav: {
+            panels       : null,
+            active       : null,
+            def          : "home",
+            divideChar   : "/",
+            levelTwoChar : "-",
+
+            go: function(where, noanim) {
+                var _self = jpf.iphone.nav;
+                _self.update();
+
+                if (!_self.panels[where.page]) return;
+
+                setTimeout("scrollTo(0,1)", 100);
+                jpf.dispatchEvent("pagechange", where);
+
+                var i;
+                if (noanim) {
+                    for (i in _self.panels)
+                        _self.panels[i].hide();
+                    _self.panels[where.page].show();
+                }
+                else {
+                    for (i in _self.panels) {
+                        if (!_self.panels[i].visible || i == where.page)
+                            continue;
+                        var panel = _self.panels[i];
+                        panel.setProperty("zindex", 0);
+                        jpf.tween.single(panel.oExt, {
+                            steps   : 20,
+                            interval: 5,
+                            from    : 1,
+                            to      : 0,
+                            type    : "fade",
+                            anim    : jpf.tween.EASEIN,
+                            onfinish: function() {
+                                panel.setProperty("visible", false);
+                            }
+                        });
+                    }
+
+                    var pad = 10, 
+                        p   = _self.panels[where.page],
+                        el  = p.oExt,
+                        iFrom = (where.index < 0)
+                            ? -(el.offsetWidth) - pad
+                            : window.innerWidth + el.offsetLeft + pad;
+                    p.setProperty("visible", true);
+                    p.setProperty("zindex",  jpf.all.length + 1);
+                    el.style.opacity = 1; // restore opacity
+                    jpf.tween.single(el, {
+                        steps   : 40,
+                        interval: 10,
+                        from    : iFrom,
+                        to      : 0,
+                        type    : "left",
+                        anim    : jpf.tween.EASEIN
+                    });
+                }
+            },
+
+            update: function(force) {
+                if (this.panels && !force) return;
+                this.panels = {};
+                for (var i in window) {
+                    if (window[i] && window[i]["tagName"]
+                      && window[i].tagName == "panel")
+                        this.panels[i] = window[i];
+                }
+            }
         }
     };
+    setTimeout(function() {
+        jpf.addEventListener("hashchange", jpf.iphone.nav.go);
+        if (location.href.match(/#(.*)$/))
+    		jpf.history.init(decodeURI(RegExp.$1));
+        else if (jpf._GET.page)
+            jpf.history.init(jpf._GET.page);
+        else
+            jpf.history.init();
+    });
 
     // make sure that document event link to mouse events already. Since the
     // document object on top of the event bubble chain, it will probably also
