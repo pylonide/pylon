@@ -64,10 +64,12 @@
 jpf.history = {
     inited: false,
     page  : null,
+    past  : [],
+    future: [],
 
     init  : function(name){
         this.inited = true;
-        this.hasChanged(name);
+        this.hasChanged(name || null);
 
         if (jpf.isIE) {
             var str =
@@ -81,16 +83,16 @@ jpf.history = {
                 <script>\
                     var lastURL = -1;\
                     if(document.all){\
-                    document.body.onscroll = checkUrl;\
-                }else{\
-                    setInterval('checkUrl()', 200);\
-                }\
-                function checkUrl(){\
-                    var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
-                    top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
-                    lastURL = document.body.scrollTop;\
-                }\
-                checkUrl();\
+                        document.body.onscroll = checkUrl;\
+                    }else{\
+                        setInterval('checkUrl()', 200);\
+                    }\
+                    function checkUrl(){\
+                        var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
+                        top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                        lastURL = document.body.scrollTop;\
+                    }\
+                    checkUrl();\
                 </script>";
 
             if (top == self) {
@@ -112,12 +114,12 @@ jpf.history = {
             }, jpf.history.delay || 200);
         }
         else {
-            jpf.history.lastUrl = location.href;
+            jpf.history.lastUrl = location.href.toString();
             this.timer2 = setInterval(function(){
-                if (jpf.history.lastUrl == location.href)
+                if (jpf.history.lastUrl == location.href.toString())
                     return;
 
-                jpf.history.lastUrl = location.href;
+                jpf.history.lastUrl = location.href.toString();
                 //var page            = location.href.replace(/^.*#(.*)$/, "$1")
                 var page = location.hash.replace("#", "");//.replace(/^.*#(.*)$/,"$1");
                 jpf.history.hasChanged(decodeURI(page));
@@ -141,7 +143,9 @@ jpf.history = {
 
         if (jpf.isIE && !timed) {
             this.to_name = name;
-            return setTimeout(function(){jpf.history.setHash(jpf.history.to_name, true);}, 200);
+            return setTimeout(function(){
+                jpf.history.setHash(jpf.history.to_name, true);
+            }, 200);
         }
 
         this.changePage(name);
@@ -161,8 +165,8 @@ jpf.history = {
 
         (jpf.isIE ? this.iframe : window).location.href = "#" + name;
 
-        if (!jpf.isIE)
-            jpf.history.lastUrl = location.href;
+        if (!jpf.isIE && !jpf.isIphone)
+            jpf.history.lastUrl = location.href.toString();
     },
 
     timer : null,
@@ -178,12 +182,47 @@ jpf.history = {
         }
     },
 
+    update: function(page) {
+        var i, l, idx = 0;
+
+        // check past:
+        for (i = 0, l = this.past.length; i < l && idx === 0; i++) {
+            if (this.past[i] == page)
+                idx = i + 1;
+        }
+        if (idx > 0) {
+            // part of past up till page (Array.slice), EXCLUDING page
+            this.future = this.past.slice(idx, this.past.length - 1)
+                                   .concat(this.future).makeUnique();
+            this.past.splice(idx, this.past.length - (idx));
+            idx = -idx;
+        }
+        else {
+            // check future:
+            for (i = 0, l = this.future.length; i < l && idx === 0; i++) {
+                if (this.future[i] == page) {
+                    idx = i + 1;
+                    // current past + part of the future up till page
+                    // (Array.splice), INCLUDING page
+                    this.past = this.past.concat(this.future
+                        .splice(0, this.future.length - idx)).makeUnique();
+                }
+            }
+            if (idx === 0) {
+                this.past.push(page);
+                idx = 1;
+            }
+        }
+
+        return idx;
+    },
+
     hasChanged: function(page){
         if (page == this.page) return;
         this.changePage(page);
 
         this.changing = true;
-        jpf.dispatchEvent("hashchange", {page: page});
+        jpf.dispatchEvent("hashchange", {page: page, index: this.update(page)});
         this.changing = false;
     }
 };
