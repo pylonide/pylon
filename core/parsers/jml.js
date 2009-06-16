@@ -208,6 +208,9 @@ jpf.JmlParser = {
             jpf.window.$at      = new jpf.actiontracker();
             jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
             //#endif
+            
+            if (!this.$jml)
+                this.$jml = x;
         }
 
         if (!jmlParent)
