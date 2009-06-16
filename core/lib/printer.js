@@ -48,8 +48,12 @@ jpf.printer = {
         }
         
         jpf.importCssString(document, "#print_content{display:none}");
-        jpf.importCssString(document,
-            "body #print_content, body #print_content *{display:block} body *{display:none}", "print");
+        jpf.importCssString(document, (jpf.hasCSSChildOfSelector
+          ? "body #print_content{display:block} body>*{display:none}"
+          : "body #print_content, body #print_content *{display:block} body *{display:none}")
+            , "print");
+
+        //body #print_content, body #print_content *{display:block} 
         
         if (jml) {
             //Events

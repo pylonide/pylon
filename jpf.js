@@ -448,6 +448,7 @@ var jpf = {
         this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
         this.hasHtmlIdsInJs            = jpf.isIE || jpf.isSafari;
         this.needsCssPx                = !jpf.isIE;
+        this.hasCSSChildOfSelector     = !jpf.isIE || jpf.isIE8;
         this.hasAutocompleteXulBug     = jpf.isGecko;
         this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
