@@ -314,7 +314,6 @@ jpf.runIphone = function() {
                             : window.innerWidth + el.offsetLeft + pad;
                     p.setProperty("visible", true);
                     p.setProperty("zindex",  jpf.all.length + 1);
-                    el.style.opacity = 1; // restore opacity
                     jpf.tween.single(el, {
                         steps   : 5,
                         interval: 10,
