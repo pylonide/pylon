@@ -116,6 +116,11 @@ jpf.DataBinding = function(){
      * Queries the bound data for a string value
      *
      * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
+     * @param {String} type   the node that is used as the context node for the query.
+     * Possible values:
+     * selected     the selected data anode of this element.
+     * xmlRoot      the root data node that this element is bound on.
+     * indicator    the data node that is highlighted for keyboard navigation.
      * @return {String} value of the selected XML Node
      * @todo
      *  lstRev.query('revision/text()', 'selected');
@@ -129,6 +134,11 @@ jpf.DataBinding = function(){
      * Queries the bound data for an array of string values
      *
      * @param {String} xpath the xpath statement which queries on the data this element is bound on.
+     * @param {String} type   the node that is used as the context node for the query.
+     * Possible values:
+     * selected     the selected data anode of this element.
+     * xmlRoot      the root data node that this element is bound on.
+     * indicator    the data node that is highlighted for keyboard navigation.
      * @return {String} value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
@@ -139,6 +149,11 @@ jpf.DataBinding = function(){
      * Executes an xpath statement on the data of this model
      *
      * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @param {String} type   the node that is used as the context node for the query.
+     * Possible values:
+     * selected     the selected data anode of this element.
+     * xmlRoot      the root data node that this element is bound on.
+     * indicator    the data node that is highlighted for keyboard navigation.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
     this.queryNode = function(xpath, type){
@@ -150,6 +165,11 @@ jpf.DataBinding = function(){
      * Executes an xpath statement on the data of this model
      *
      * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @param {String} type   the node that is used as the context node for the query.
+     * Possible values:
+     * selected     the selected data anode of this element.
+     * xmlRoot      the root data node that this element is bound on.
+     * indicator    the data node that is highlighted for keyboard navigation.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
     this.queryNodes = function(xpath, type){
