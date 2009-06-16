@@ -241,7 +241,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         jpf.tween.single(this.oExt, {
-            steps   : 30,
+            steps   : jpf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,
@@ -284,7 +284,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         jpf.tween.single(this.oExt, {
-            steps   : 30,
+            steps   : jpf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,

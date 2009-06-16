@@ -278,7 +278,7 @@ jpf.runIphone = function() {
 
                 if (!_self.panels[where.page]) return;
 
-                setTimeout("scrollTo(0,1)", 100);
+                scrollTo(0,1);
                 jpf.dispatchEvent("pagechange", where);
 
                 var i;
@@ -294,12 +294,12 @@ jpf.runIphone = function() {
                         var panel = _self.panels[i];
                         panel.setProperty("zindex", 0);
                         jpf.tween.single(panel.oExt, {
-                            steps   : 20,
-                            interval: 5,
-                            from    : 1,
-                            to      : 0,
-                            type    : "fade",
-                            anim    : jpf.tween.EASEIN,
+                            steps   : 5,
+                            interval: 10,
+                            from    : panel.oExt.offsetLeft,
+                            to      : (where.index < 0) ? 1000 : -1000,
+                            type    : "left",
+                            anim    : jpf.tween.EASEOUT,
                             onfinish: function() {
                                 panel.setProperty("visible", false);
                             }
@@ -316,7 +316,7 @@ jpf.runIphone = function() {
                     p.setProperty("zindex",  jpf.all.length + 1);
                     el.style.opacity = 1; // restore opacity
                     jpf.tween.single(el, {
-                        steps   : 40,
+                        steps   : 5,
                         interval: 10,
                         from    : iFrom,
                         to      : 0,
