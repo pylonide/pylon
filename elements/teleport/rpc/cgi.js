@@ -292,7 +292,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
     oHttp.contentType = "application/x-www-form-urlencoded";
     oHttp.method = (options.instrType.replace(/url.?/, "") || "GET").toUpperCase();
     oHttp.get(jpf.getAbsolutePath(jpf.appsettings.baseurl, url + (oHttp.method == "GET" ? "?" + query : "")), callback,
-        jpf.extend({data : httpBody}, options));
+        jpf.extend(oHttp.method == "GET" ? {} : {data : httpBody}, options));
 });
 
 // #endif
