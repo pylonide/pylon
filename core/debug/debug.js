@@ -58,7 +58,6 @@ jpf.vardump = function(obj, depth, norecur, stack){
             return str.join('');
         }
         default:
-            
             if (typeof obj == "function")
                 return "{/*function*/}";
             if (obj.nodeType !== undefined && obj.style && depth != 0)
@@ -70,11 +69,11 @@ jpf.vardump = function(obj, depth, norecur, stack){
                 return "{/*object/*}";
 
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            if(obj['$___vardump'])return "this"+obj['$___vardump']+"";
-            obj['$___vardump'] = stack;
-            str = ["{\n"];            
-           
-            for (var prop in obj) if(prop!='$___vardump'){
+            if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
+            obj['$__vardump'] = stack;
+            str = ["{\n"];
+            
+            for (var prop in obj) if(prop!='$__vardump'){
                 try {
                     var propname = (parseInt(prop)==prop)?"0x"+("00000000"+parseInt(prop).toString(16)).slice(-8):prop;
                     if(str.length>1)str.push(",\n");
@@ -89,13 +88,15 @@ jpf.vardump = function(obj, depth, norecur, stack){
             
             function cleanup(obj){
                 if(!obj['$__vardump'])return;
-                delete obj['$___vardump'];
+                delete obj['$__vardump'];
                 for(var prop in obj){
                     var v = obj[prop];
                     if(typeof(v)=='object')cleanup(obj);
                 }
-            }           
-            if(depth==0)cleanup(obj);
+            }
+            
+            //if(depth==0)
+            cleanup(obj);
             
             return str.join('');
     }
