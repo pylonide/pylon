@@ -31,24 +31,26 @@
  */
 (function(global) {
 
-var sId        = "AjaxO3",
-    bAvailable = null,
-    iVersion   = null,
-    bEmbed     = false,
-    sPlatform  = null,
-    oInstMap = {};
+var sId         = "Ajax.org",
+    sDefProduct = "OnEdit",
+    bAvailable  = null,
+    iVersion    = null,
+    iO3Count    = 0,
+    bEmbed      = false,
+    sPlatform   = null,
+    oInstMap    = {};
 
 function detect(o) {
     var version;
-    var name = "Ajax.o3" + (o && o.guid ? "." + o.guid : "");
+    var name = o && o.fullname ? o.fullname : "Ajax.org O3";
 
     if (navigator.plugins && navigator.plugins[name]) {
-        version = "1.0";//navigator.plugins["O3-XXXXXXX"].versionInfo;
+        version = navigator.plugins[name].description.match(/v([\d]+\.[\d]+)/)[1];
     }
     else {
         try {
             var axo = new ActiveXObject(name);
-            version = axo.GetVariable("$version");
+            version = axo.versionInfo.match(/v([\d]+\.[\d]+)/)[1];
         }
         catch (e) {}
     }
@@ -111,7 +113,7 @@ function sniff() {
 }
 
 function installerUrl(o) {
-    return "http://www.ajax.org/o3/installer" 
+    return "http://www.ajax.org/o3/installer"
         + (sPlatform ? "/platform/" + sPlatform : "")
         + (o.guid    ? "/guid/"     + encodeURIComponent(o.guid) : "");
 }
@@ -140,10 +142,12 @@ function createHtml(options) {
         options.height = 0;
 
     out.push(bEmbed
-        ? '<embed id="' + options.id + '" width="' + options.width 
+        ? '<embed id="' + options.id + '" width="' + options.width
             + '" height="' + options.height + '" '
-        : '<object id="' + options.id + '" width="' + options.width 
-            + '" height="' + options.height + '">');
+        : '<object id="' + options.id + '" width="' + options.width
+            + '" height="' + options.height + '"' + (options.guid
+                ? ' classid="CLSID:' + options.guid + '"'
+                : '') + '>');
     if (options.params) {
         var i, n, v;
         for (i in options.params) {
@@ -170,9 +174,10 @@ function register(o, options) {
     oInstMap[key].push(o);
 }
 
-function get(guid) {
+function get(guid, name) {
+    var key = (guid ? guid : "ajax.o3") + (name ? "." + name : "");
     for (var i in oInstMap) {
-        if (i.indexOf(guid) > -1)
+        if (i.indexOf(key) > -1)
             return oInstMap[i][0];
     }
 
@@ -181,7 +186,7 @@ function get(guid) {
 
 function destroy(o) {
     if (typeof o == "string") //guid provided
-        o = get(o);
+        o = get(o, arguments[1]);
     if (!o) return;
     // destroy references and domNode of this/ each plugin instance...
     var i, j, inst;
@@ -225,10 +230,14 @@ global.o3 = {
             options      = options || {};
             options.guid = guid || false;
         }
+        if (!options["fullname"]) {
+            options.fullname = (options.product || sDefProduct)
+                + (options.guid ? "-" + options.guid : "")
+        }
 
         // mini-browser sniffing:
         sniff();
-        
+
         if (!this.isAvailable(options)) {
             var sUrl = installerUrl(options);
             return typeof options["oninstallprompt"] == "function"
@@ -239,9 +248,9 @@ global.o3 = {
         if (typeof options["params"] == "undefined")
             options.params = {};
         if (typeof options.params["type"] == "undefined")
-            options.params.type = "application/o3-XXXXXXXX";
+            options.params.type = "application/" + (options.fullname || "o3-XXXXXXXX");
 
-        options.id = sId + (options.name ? options.name : "");
+        options.id = sId + (options.name ? options.name : "") + ++iO3Count;
 
         (options["parent"] || document.body).appendChild(
           document.createElement("div")).innerHTML = createHtml(options);
@@ -253,7 +262,7 @@ global.o3 = {
                 options.onready(oO3);
             return oO3;
         }
-        
+
         return false;
     },
 
