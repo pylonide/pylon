@@ -258,8 +258,10 @@ jpf.getData = function(instruction, xmlContext, options, callback){
             //Change this to warning?
             if (!data) {
                 throw new Error(jpf.formatErrorString(0, null,
-                    "Loading new data", "Could not load data by doing \
-                    selection on it using xPath: '" + operators[0] + "'."));
+                    "Loading new data", "Could not load data because \
+                    the xpath selection didn't have a match. \n\
+                    Xpath: '" + operators[0] + "'\n\
+                    Data instruction: '" + instruction + "'"));
             }
         }
 
