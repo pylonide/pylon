@@ -231,10 +231,10 @@ jpf.model = function(data, caching){
      * Returns a string representation of the data in this model.
      */
     this.toString = function(){
+        if (!this.data) return "Model has no data.";
+        
         var xml = jpf.xmldb.clearConnections(this.data.cloneNode(true));
-        return this.data
-            ? jpf.formatXml(xml.xml || xml.serialize())
-            : "Model has no data.";
+        return jpf.formatXml(xml.xml || xml.serialize());
     };
 
     /**

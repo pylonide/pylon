@@ -2992,7 +2992,7 @@ jpf.MultiselectBinding = function(){
     var actionFeature = {
         "insert"      : 127,//1111111
         "add"         : 123,//1111011
-        "remove"      : 47, //0101111
+        "remove"      : 46, //0101110
         "redo-remove" : 79, //1001111
         "synchronize" : 127,//1111111
         "move-away"   : 105,//1101001
@@ -3203,8 +3203,9 @@ jpf.MultiselectBinding = function(){
                     this.$fill(result);
             }
         }
-        else if ((action == "remove") && (!xmlNode || foundNode == xmlNode && xmlNode.parentNode)) { //Check Remove
-            if (!xmlNode)
+        else if (action == "remove") { //Check Remove
+            //&& (!xmlNode || foundNode == xmlNode && xmlNode.parentNode
+            if (!xmlNode || startNode != xmlNode) //@todo unsure if I can remove above commented out statement
                 return;
             
             //Remove HTML Node
