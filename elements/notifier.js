@@ -121,16 +121,21 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     function getStartPosition(x, wh, ww, nh, nw, margin) {
+         var sTop = document.documentElement.scrollTop 
+             || document.body.scrollTop;
+         var sLeft = document.documentElement.scrollLeft 
+             || document.body.scrollLeft;
+         
          var ver = (x[0] == "top"
              ? margin[0]
              : (x[0] == "bottom"
                  ? wh - nh - margin[2]
-                 : wh/2 - nh/2)) + document.documentElement.scrollTop;
+                 : wh/2 - nh/2)) + sTop;
          var hor = (x[1] == "left" 
              ? margin[3]
              : (x[1] == "right"
                  ? ww - nw - margin[1]
-                 : ww/2 - nw/2)) + document.documentElement.scrollLeft;
+                 : ww/2 - nw/2)) + sLeft;
          sign = 1;
 
          return lastPos = [ver, hor];
