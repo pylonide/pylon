@@ -28,6 +28,9 @@
  */
 jpf.dump=
 jpf.vardump = function(obj, depth, norecur, stack){
+    if (jpf.isChrome || jpf.isSafari) //@todo RIK please fix this issue.
+        return "";
+    
     if (!obj) return obj + "";
     if (!stack)stack = "";
     if (!depth) depth = 0;
