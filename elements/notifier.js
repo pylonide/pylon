@@ -112,13 +112,15 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         lastPos = null;
     }
     
+    this.$propHandlers["margin"] = function(value) {
+        this.margin = value;
+    }
+    
     this.$propHandlers["timeout"] = function(value) {
         this.timeout = parseInt(value) * 1000;
     }
 
-    function getStartPosition(x, wh, ww, nh, nw) {
-         var margin = jpf.getBox(document.body.style.margin || "10");
-
+    function getStartPosition(x, wh, ww, nh, nw, margin) {
          var ver = (x[0] == "top"
              ? margin[0]
              : (x[0] == "bottom"
@@ -195,7 +197,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         var _reset = false;
         /* start positions */
         if (!lastPos) {
-            lastPos = getStartPosition(x, wh, ww, nh, nw);
+            lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
             _reset = true;
         }
 
@@ -255,11 +257,11 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         if (lastPos) {
             if ((lastPos[0] > wh -nh || lastPos[0] < 0) && 
                 this.arrange == "horizontal") {
-                lastPos = getStartPosition(x, wh, ww, nh, nw);
+                lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
             }
             if ((lastPos[1] > ww -nw || lastPos[1] < 0) && 
                 this.arrange == "vertical") {
-                lastPos = getStartPosition(x, wh, ww, nh, nw);
+                lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
             }
         }  
 
