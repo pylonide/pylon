@@ -402,7 +402,6 @@ jpf.namespace("draw", {
         }
 
         function styleinit(d){
-
             return true;
         }
         
@@ -1306,7 +1305,7 @@ jpf.namespace("draw", {
     
     //----------------------------------------------------------------------
     
-    drawPart : function(x,y,w,h,rs,rw,m){
+    shapedPart : function(x,y,w,h,rs,rw,m){
         var t = this.style;
         var ds = '0', dw = '1';
         var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
@@ -1404,7 +1403,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     
     //----------------------------------------------------------------------
     
-    draw2D : function(x,y,w,h,m){
+    shapedRect : function(x,y,w,h,m){
         // css stylable drawing
         var t = this.style;
         var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
@@ -1431,7 +1430,13 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
             default:
                 if(!t.rotate){
                     rect();
-                    return this.rect(x,y,w,h);
+                    if(m){
+                        return [
+                            "if( (_x9 = mx - (",x,"))>=0 && _x9<(",w,")&&",
+                            "    (_y9 = my - (",y,"))>=0 && _y9<(",h,")) return x;",
+                        ].join('');
+                    }else
+                        return this.rect(x,y,w,h);
                 }else{
                     return  [
                      '_x9=(_x8=(_x6=',gx(t,'(','center',')','0.5'),'*(_x3=',w,'))*(',gx(t,
