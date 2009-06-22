@@ -383,7 +383,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$loadJml = function(x) {
         var ev, node, nodes = x.childNodes;
 
-        for (var l = nodes.length-1, i = 0; i < l; i++) {
+        for (var i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
             if (node.nodeType != 1)
                 continue;
