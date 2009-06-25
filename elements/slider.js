@@ -508,6 +508,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         this.oExt.onmousedown = function(e) {
+            if (_self.disabled) return false;
             e = e || window.event;
 
             var o = _self.oKnob;

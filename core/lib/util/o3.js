@@ -271,6 +271,6 @@ global.o3 = {
     get: get
 };
 
-})(this);
+})(jpf);
 
 // #endif

@@ -176,6 +176,8 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2 - this.widthdiff) + "px";
 
+        var _self = this;
+
         jpf.popup.show(this.uniqueId, {
             x       : 0,
             y       : this.oExt.offsetHeight,
@@ -184,9 +186,11 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             width   : this.oExt.offsetWidth - this.widthdiff,
             height  : this.containerHeight,
             callback: function(container){
-                container.style[jpf.supportOverflowComponent 
-                    ? "overflowY"
-                    : "overflow"] = "auto";
+                if (!_self.ignoreOverflow) {
+                    container.style[jpf.supportOverflowComponent
+                        ? "overflowY"
+                        : "overflow"] = "auto";
+                }
             }
         });
     };
@@ -491,8 +495,9 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
         
-        this.itemHeight = this.$getOption("main", "item-height") || 18.5;
-        this.widthdiff  = this.$getOption("main", "width-diff") || 0;
+        this.itemHeight     = this.$getOption("main", "item-height") || 18.5;
+        this.widthdiff      = this.$getOption("main", "width-diff") || 0;
+        this.ignoreOverflow = jpf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);

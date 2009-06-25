@@ -96,7 +96,7 @@ jpf.popup = {
         //if(this.last != cacheId) 
         //this.popup.document.body.innerHTML = o.content.outerHTML;
 
-        var popup = o.content;
+        var popup = o.content, moveUp = false;
         if (!o.content.style.zIndex)
             o.content.style.zIndex = 10000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
@@ -112,7 +112,7 @@ jpf.popup = {
             if (options.width || o.width)
                 popup.style.width = ((options.width || o.width) - 3) + "px";
 
-            var moveUp = options.autoCorrect && (top
+            moveUp = options.autoCorrect && (top
                 + (options.height || o.height || o.content.offsetHeight))
                 > (p == document.documentElement
                   ? (jpf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))
@@ -122,6 +122,12 @@ jpf.popup = {
                 : top) + "px"
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
+
+        // #ifdef __WITH_CSS
+        // set a className that specifies the direction, to help skins with
+        // specific styling options.
+        jpf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
+        // #endif
         
         if (options.animate) {
             if (options.animate == "fade") {
