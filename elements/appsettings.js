@@ -117,6 +117,7 @@ jpf.appsettings = {
     resizeOutline      : false,
     disableTabbing     : false,
     resourcePath       : null,
+    initDelay          : true,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
     // #endif
@@ -225,6 +226,7 @@ jpf.appsettings = {
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("undokeys"));
+        this.initDelay          = !jpf.isFalse(x.getAttribute("initdelay"));
 
         //#ifdef __WITH_QUERYAPPEND
         this.queryAppend        = x.getAttribute("query-append");

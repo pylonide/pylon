@@ -677,7 +677,7 @@ jpf.webdav = function(){
      * prevent the resource being modified by another user before the transaction
      * of this user has finished or even started.
      *
-     * @see teleport.webdav.methods.unlock
+     * @see teleport.webdav.method.unlock
      * @param {String}   sPath      Path to the resource on the server to be locked
      * @param {Number}   [iDepth]   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Number}   [iTimeout] Lifetime of the lock, in seconds. Defaults to Infinite.

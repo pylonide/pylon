@@ -106,7 +106,10 @@ jpf.JmlParser = {
         // #endif
 
         //Last pass parsing
-        setTimeout('jpf.JmlParser.parseLastPass();', 1);
+        if (jpf.appsettings.initDelay)
+            setTimeout('jpf.JmlParser.parseLastPass();', 1);
+        else 
+            jpf.JmlParser.parseLastPass();
 
         //Set init flag for subparsers
         this.inited = true;

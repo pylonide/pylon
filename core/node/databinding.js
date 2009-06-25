@@ -1373,7 +1373,7 @@ jpf.DataBinding = function(){
      *   Possible Values:
      *   {XMLElement}  an xml element loaded in to this element.
      *   {String}      an xml string which is loaded in this element.
-     *   {Null         null clears this element from it's data {@link baseclass.cache.method.clear}.
+     *   {Null}        null clears this element from it's data {@link baseclass.cache.method.clear}.
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
      * @param {Boolean} [forceNoCache]  whether cache is checked before loading the data.
      * @event beforeload  Fires before loading data in this element.

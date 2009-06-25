@@ -1,4 +1,6 @@
 jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
+    this.previous   = "Previous";
+    this.next       = "Next";
     this.range      = 5;
     this.curpage    = 1;
     this.totalpages = 0;
@@ -6,13 +8,20 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     var pages = [];
     var _self = this;
     
-    this.$supportedProperties.push("range", "onbeforepagechange", "onafterpagechange");
+    this.$supportedProperties.push("range", "curpage", "totalpages", 
+        "previous", "next");
 
-    this.selectPage = function(pageNr) {
-        this.curpage = pageNr;
+    this.gotoPage = function(pageNr, pageDelta) {
+        this.curpage = pageNr || this.curpage + pageDelta;
+        
+        //Sanity checks
+        if (this.curpage < 1) 
+            this.curpage = 1;
+        else if (this.curpage > this.totalpages) 
+            this.curpage = this.totalpages;
         
         this.dispatchEvent("onbeforepagechange", {page:pageNr});
-        this.$model.loadFrom(this.pageload, null, {
+        this.getModel(true).loadFrom(this.pageload, null, {
             page     : pageNr,
             callback : function(){
                 _self.dispatchEvent("onafterpagechange", {page:pageNr});
@@ -20,25 +29,9 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         });
     };
     
-    this.next = function() {
-        this.curpage = this.curpage + 1 > this.totalpages ? 1 : this.curpage + 1;
-        this.selectPage(this.curpage);
-    };
-    
-    this.previous = function() {
-        this.curpage = this.curpage - 1 == 0 ? this.totalpages : this.curpage - 1;
-        this.selectPage(this.curpage);
-    };
-
     this.$draw  = function() {
-        this.oExt = this.$getExternal("main", null, function(oExt) {
-            var oContent  = this.$getLayoutNode("main", "content", oExt);
-            var oPages = this.$getLayoutNode("main", "pages", oExt);
-        });
-
-        this.oContent = this.$getLayoutNode("main", "content",  this.oExt);
-        this.oPages = this.$getLayoutNode("main", "pages",  this.oExt);
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal("main");
+        this.oInt = this.$getLayoutNode("main", "container",  this.oExt);
     };
     
     this.$loadJml = function(x) {
@@ -46,79 +39,51 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.JmlParser.parseChildren(x, null, this);
     };
     
-    
-
     this.$load = function(xmlRoot) {
-        var curpage = this.curpage = parseInt(this.applyRuleSetOnNode("current", xmlRoot));
-        var totalpages = this.totalpages = parseInt(this.applyRuleSetOnNode("total", xmlRoot));
-        var r2 = Math.floor(this.range / 2);
-
-
-        var r = r >= totalpages 
-            ? totalpages 
-            : parseInt(this.range);
-            
-        var start = r >= totalpages
-            ? 1
-            : (curpage - r2 > 1 && curpage + r2 <= totalpages
-                ? curpage - r2 
-                : (curpage - r2 < 0
-                    ? 1
-                    : (curpage + r2 > totalpages 
-                        ? totalpages - r + 1 
-                        : 1)));
-
-        var margin = null, diff = null, width = null, height = null, pageAreaSize = [0, 0];
+        this.setProperty("curpage", parseInt(this.applyRuleSetOnNode("current", xmlRoot)));
+        this.setProperty("totalpages", parseInt(this.applyRuleSetOnNode("total", xmlRoot)));
         
-        var previous = this.oPages.appendChild(document.createElement("div"));
-            previous.className = "page previous";
-            previous.innerHTML = "prev";
-            previous.onclick = function(e) {
-                _self.previous();
-            }
-            
-            margin = jpf.getMargin(previous);
-            diff = jpf.getDiff(previous);
-            width = parseInt(jpf.getStyle(previous, "width")); 
-            pageAreaSize[0] += margin[0] + diff[0] + width;
-
-        for (var i = start, page; i < start + r; i++) {
-            page = this.oPages.appendChild(document.createElement("div"));
-            page.innerHTML = i;
-            page.className = "page" + (i == curpage ? " selected" : "");
-            
-            if (i == start) {
-                margin = jpf.getMargin(page);
-                diff = jpf.getDiff(page);
-                width = parseInt(jpf.getStyle(page, "width")); 
-                height = parseInt(jpf.getStyle(page, "height"));
-                
-                pageAreaSize[0] += margin[0] + diff[0] + width;
-                pageAreaSize[1] += margin[1] + diff[1] + height;
-            }
-            else {
-                pageAreaSize[0] += margin[0] + diff[0] + width;
-            }
-            
-            page.onclick = function(e) {
-                _self.selectPage(parseInt(e.target.innerHTML));
-            }
+        var curpage = this.curpage;
+        var totalpages = this.totalpages;
+        var btn, nodes = [];
+        
+        this.oInt.innerHTML = "";
+        
+        if (curpage != 1) {
+            this.$getNewContext("button");
+            btn = this.$getLayoutNode("button");
+            this.$getLayoutNode("button", "caption").nodeValue = this.previous;
+            this.$setStyleClass(btn, "previous");
+            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
+            nodes.push(btn);
         }
         
-        var next = this.oPages.appendChild(document.createElement("div"));
-            next.className = "page next";
-            next.innerHTML = "next";
-            next.onclick = function(e) {
-                _self.next();
-            }
-            
-            margin = jpf.getMargin(next);
-            diff = jpf.getDiff(next);
-            width = parseInt(jpf.getStyle(next, "width")); 
-            pageAreaSize[0] += margin[0] + diff[0] + width;
+        var rlow  = Math.floor(this.range / 2);
+        var rhigh = Math.ceil(this.range / 2);
+        var start = Math.max(1, curpage - rlow);
+        var end   = Math.min(totalpages + 1, start + this.range);
         
-        this.oPages.style.width = pageAreaSize[0] + "px";
-        this.oPages.style.height = pageAreaSize[1] + "px";
+        for (var i = start, page; i < end; i++) {
+            this.$getNewContext("button");
+            btn = this.$getLayoutNode("button");
+            this.$getLayoutNode("button", "caption").nodeValue = i;
+            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(" + i + ")");
+            nodes.push(btn);
+            
+            if (i == curpage)
+                this.$setStyleClass(btn, "current");
+        }
+        
+        if (curpage != totalpages) {
+            this.$getNewContext("button");
+            btn = this.$getLayoutNode("button");
+            this.$getLayoutNode("button", "caption").nodeValue = this.next;
+            this.$setStyleClass(btn, "next");
+            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
+            nodes.push(btn);
+        }
+        
+        jpf.xmldb.htmlImport(nodes, this.oInt);
     }
     
     var oEmpty;

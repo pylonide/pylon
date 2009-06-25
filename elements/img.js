@@ -101,10 +101,11 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         return this.value;
     };
     
-    this.$supportedProperties.push("value");
+    this.$supportedProperties.push("value", "src");
     /**
      * @attribute {String} value the url location of the image displayed.
      */
+    this.$propHandlers["src"] = 
     this.$propHandlers["value"] = function(value){
         if (this.oImage.nodeType == 1)
             this.oImage.style.backgroundImage = "url(" + value + ")";
@@ -114,13 +115,14 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         //@todo resize should become a generic thing
         if (this.oImage.nodeType == 2 && !this.$resize.done) {
             this.oImg = this.oInt.getElementsByTagName("img")[0];
-            
-            jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
-                "jpf.all[" + this.uniqueId + "].$resize()");
-            jpf.layout.activateRules(this.pHtmlNode);
-            
-            this.oImg.onload = function(){
-                jpf.layout.forceResize(_self.pHtmlNode);
+            if (this.oImg) {
+                jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
+                    "jpf.all[" + this.uniqueId + "].$resize()");
+                jpf.layout.activateRules(this.pHtmlNode);
+                
+                this.oImg.onload = function(){
+                    jpf.layout.forceResize(_self.pHtmlNode);
+                }
             }
             
             this.$resize.done = true;

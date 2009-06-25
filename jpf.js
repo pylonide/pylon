@@ -2048,9 +2048,17 @@ var jpf = {
                                           use in production environments.")
                         //#endif
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
+                        xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     }
-
-                    xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                    else if (!xmlNode)
+                        xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                    
+                    if (!xmlNode) {
+                        throw new Error(jpf.formatErrorString(0, null,
+                            "Loading skin",
+                            "Could not parse skin. Maybe the file does not exist?", node));
+                    }
+                    
                     jpf.skins.Init(xmlNode, node, path);
                     jpf.includeStack[extra.userdata[1]] = true;
 
