@@ -21,7 +21,6 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
     this.next = function() {
-        alert(this.curpage+" "+this.totalpages)
         this.curpage = this.curpage + 1 > this.totalpages ? 1 : this.curpage + 1;
         this.selectPage(this.curpage);
     };
