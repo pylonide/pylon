@@ -269,6 +269,13 @@ jpf.runIE = function(){
             + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))]
     };
+    
+    jpf.getMargin = function(oHtml) {
+        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "marginRight")) || 0)),
+            Math.max(0, (parseInt(jpf.getStyle(oHtml, "marginTop")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "marginBottom")) || 0))]
+    };
 
     // #ifdef __WITH_POPUP_IE
     /**

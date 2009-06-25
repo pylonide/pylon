@@ -656,6 +656,13 @@ jpf.runNonIe = function (){
             + parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0)];
     };
     
+    jpf.getMargin = function(oHtml) {
+        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "margin-left")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "margin-right")) || 0)),
+            Math.max(0, (parseInt(jpf.getStyle(oHtml, "margin-top")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "margin-bottom")) || 0))]
+    };
+    
     jpf.Init.run('xmldb');
 }
 //#endif
