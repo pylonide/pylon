@@ -236,8 +236,7 @@ jpf.BaseTab = function(){
      * @return {Page} the found page element.
      */
     this.getPage = function(nameOrId){
-        return !jpf.isNot(nameOrId)
-            && this.$findPage(nameOrId) || this.$activepage;
+        return jpf.isNot(nameOrId) && this.$activepage || this.$findPage(nameOrId);
     };
 
     /**
@@ -1033,10 +1032,15 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
         }
 
-        if ((!this.fake || this.relPage) && !fakeOther)
+        if ((!this.fake || this.relPage) && !fakeOther) {
             this.parentNode.$setStyleClass(this.fake
                 ? this.relPage.oExt
                 : this.oExt, "", ["curpage"]);
+            
+            //#ifdef __WITH_PROPERTY_WATCH
+            this.dispatchWatch("visible", false);
+            //#endif
+        }
     };
 
     this.$activate = function(){
@@ -1068,6 +1072,10 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             var cls = this.oExt.className;
             this.oExt.className = "rnd" + Math.random();
             this.oExt.className = cls;
+            
+            //#ifdef __WITH_PROPERTY_WATCH
+            this.dispatchWatch("visible", true);
+            //#endif
         }
     };
 

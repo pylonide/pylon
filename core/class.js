@@ -281,6 +281,14 @@ jpf.Class = function(){
         
         watchCallbacks[propName].remove(callback);
     }
+    
+    this.dispatchWatch = function(prop, value) {
+        var cb = watchCallbacks[prop];
+        if (cb) {
+            for (var i = 0; i < cb.length; i++)
+                cb[i].call(this, prop, null, value);
+        }
+    }
     //#endif
 
     /**

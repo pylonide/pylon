@@ -25,7 +25,13 @@
  * Element keeping track of all user actions that are triggered in GUI
  * elements. This element maintains a stack of actions and knows how to
  * undo & redo them. It is aware of how to synchronize the changes to the
- * backend data store. With offline support enabled the actiontracker can
+ * backend data store.
+ * Example:
+ * <code>
+ *   datagrid.getActionTracker().undo();
+ * </code>
+ * Remarks:
+ * With offline support enabled the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
  * be kept in between application sessions. This means that a user will be able
  * to close the application and start it at a later date whilst keeping his or

@@ -132,13 +132,14 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build Main Skin
         if (jpf.cannotSizeIframe) {
             this.oExt = parentNode.appendChild(document.createElement("DIV"))
-                .appendChild(document.createElement("iframe")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
+                .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
             this.oExt.style.width  = "100px";
             this.oExt.style.height = "100px";
             this.oInt = this.oExt.firstChild;
             //this.oInt = this.oExt;
             this.oInt.style.width  = "100%";
             this.oInt.style.height = "100%";
+            this.oInt.frameBorder = 0;
         }
         else {
             this.oExt = parentNode.appendChild(document.createElement("iframe"));

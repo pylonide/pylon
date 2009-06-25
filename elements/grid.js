@@ -295,7 +295,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (nodes.length == 0) 
             return;
-        
+
         var total, combCol, fillCol = null, fillRow = null;
         var rule = [
             "var ids = jpf.all[" + this.uniqueId + "].ids",
