@@ -8,25 +8,27 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$supportedProperties.push("range", "onbeforepagechange", "onafterpagechange");
 
-    this.$propHandlers["curpage"] = function(value) {
-        if (parseInt(value))
-            this.thumbheight = parseInt(value);
-    }
-
-    this.selectPage = function(e) {
-        var selectedPage = this.curpage = parseInt(e.innerHTML);
-
-        this.dispatchEvent("onbeforepagechange", {page:selectedPage});
+    this.selectPage = function(pageNr) {
+        this.curpage = pageNr;
+        
+        this.dispatchEvent("onbeforepagechange", {page:pageNr});
         this.$model.loadFrom(this.pageload, null, {
-            page     : selectedPage,
+            page     : pageNr,
             callback : function(){
-                _self.dispatchEvent("onafterpagechange", {page:selectedPage});
+                _self.dispatchEvent("onafterpagechange", {page:pageNr});
             }
         });
     };
     
     this.next = function() {
-        
+        alert(this.curpage+" "+this.totalpages)
+        this.curpage = this.curpage + 1 > this.totalpages ? 1 : this.curpage + 1;
+        this.selectPage(this.curpage);
+    };
+    
+    this.previous = function() {
+        this.curpage = this.curpage - 1 == 0 ? this.totalpages : this.curpage - 1;
+        this.selectPage(this.curpage);
     };
 
     this.$draw  = function() {
@@ -48,8 +50,8 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     
 
     this.$load = function(xmlRoot) {
-        var curpage = parseInt(this.applyRuleSetOnNode("current", xmlRoot));
-        var totalpages = parseInt(this.applyRuleSetOnNode("total", xmlRoot));
+        var curpage = this.curpage = parseInt(this.applyRuleSetOnNode("current", xmlRoot));
+        var totalpages = this.totalpages = parseInt(this.applyRuleSetOnNode("total", xmlRoot));
         var r2 = Math.floor(this.range / 2);
 
 
@@ -72,6 +74,10 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         var previous = this.oPages.appendChild(document.createElement("div"));
             previous.className = "page previous";
             previous.innerHTML = "prev";
+            previous.onclick = function(e) {
+                _self.previous();
+            }
+            
             margin = jpf.getMargin(previous);
             diff = jpf.getDiff(previous);
             width = parseInt(jpf.getStyle(previous, "width")); 
@@ -96,13 +102,17 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             
             page.onclick = function(e) {
-                _self.selectPage(this);
+                _self.selectPage(parseInt(e.target.innerHTML));
             }
         }
         
         var next = this.oPages.appendChild(document.createElement("div"));
             next.className = "page next";
             next.innerHTML = "next";
+            next.onclick = function(e) {
+                _self.next();
+            }
+            
             margin = jpf.getMargin(next);
             diff = jpf.getDiff(next);
             width = parseInt(jpf.getStyle(next, "width")); 
