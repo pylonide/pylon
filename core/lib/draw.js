@@ -61,9 +61,10 @@ jpf.namespace("draw", {
                 ",mx = m&&m.x, my = m&&m.y",
                 ",db = dy+dh, dr = dx+dw",
                 ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx",
-                ",v,t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
+                ",v,t=0,nt=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
                 ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
-                ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_;"].join('');
+                ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_, _anim = 0,",
+                "_storelut,_storelist,_translut,_speedlut;"].join('');
     },
     defCamVec : function(){
         // lets do a proper 3x3 inverse and mul it with our camera pos
@@ -340,6 +341,7 @@ jpf.namespace("draw", {
             s = {};
             for(v in t)for(i = 0;i<32;i++)s[v|i]=t[v]|i;
             _self.stateTransition = s;
+            // 
             // alert( (n[p]|i).toString(16) );
         }
 
@@ -401,20 +403,14 @@ jpf.namespace("draw", {
             }
         }
 
-        function styleinit(d){
-            return true;
-        }
-        
-        // generate all required tables and luts
-        for(k in style) if(typeof(s=style[k]) == 'object'){
-            // add missing class states automatically
+        function initShape(s){
             if(s.line === null || s.line=='null' || s.line==0) delete s.line;
             if(s.fill === null || s.fill=='null' || s.fill==0) delete s.fill;
             if(s.family === null || s.family=='null' || s.family==0) delete s.family;
 
             if( (s.isshape && s.fill === undefined && 
                 s.line === undefined && s.tile === undefined) || 
-                (s.isfont && s.family === undefined) ) return false; 
+                (s.isfont && s.family === undefined) ) return; 
             if(s.isshape){
                 s.alpha = s.alpha!==undefined ? s.alpha : 1;
                 s.fillalpha = s.fillalpha!==undefined ? s.fillalpha:s.alpha;
@@ -423,6 +419,11 @@ jpf.namespace("draw", {
                 s.angle = s.angle!==undefined ? s.angle : 0;
                 s.weight = s.weight!==undefined ? s.weight : 1
             }
+        }
+        // generate all required tables and luts
+        for(k in style) if(typeof(s=style[k]) == 'object'){
+            // add missing class states automatically
+            initShape(s);
             if(s.$baselist && s.$clslist){
                 delete s.$clsc;
                 for(i in s.$clslist){
@@ -433,6 +434,7 @@ jpf.namespace("draw", {
                             for(v in (t=ovl[k+':'+j]))o[v] = t[v];
                             o.$cls   = i, o.$state = j, o.$base = s;
                             s.$stylelist.push(o);
+                            initShape(o);
                         }
                     }
                 }
@@ -447,10 +449,24 @@ jpf.namespace("draw", {
                     o = j[i];
                     s.$storelist.push(n = []);
                     //calculate the ID for this class/style
-                    cls   = s.$clslist[o.$cls]||0;
+                    cls   = s.$clslist?(s.$clslist[o.$cls]||0):0;
                     state = jpf.draw.stateBit[o.$state]||0;
+                    o.$lutvalue = state|cls;
                     s.$storelut[ state|cls ] = n;
-                    s.$speedlut[ state|cls ] = 1;
+                    s.$speedlut[ state|cls ] = o.speed || 1;
+                    o.$store = n;
+                }
+                for(i = 0;i<j.length;i++)if(n=(o = j[i]).overlay){
+                    // we overlay something, lets find it.
+                    if(n=='base'){
+                        o.$store.overlay = {};
+                    }else{
+                        cls   = s.$clslist?(s.$clslist[n]||0):0;
+                        state = jpf.draw.stateBit[n]||0;
+                        t = s.$storelut[ state|cls ] || s.$storelut[ state ];
+                        if(t && t!= o.$store)
+                            o.$store.overlay = t;
+                    }
                 }
             }
         }
@@ -638,37 +654,20 @@ jpf.namespace("draw", {
         //jpf.alert_r(o);
         return style;
     },
-    /*
-    stateBit : {
-        0                  : 0,
-        'hidden'           : 0x40000000,
-        'init'             : 0x20000000,
-        'deinit'           : 0x10000000,
-        'hover'            : 0x08000000,
-        'hover-in'         : 0x04000000,
-        'hover-out'        : 0x02000000,
-        'select'           : 0x01000000,
-        'select-in'        : 0x00800000,
-        'select-out'       : 0x00400000,
-        'select-hover'     : 0x00200000,
-        'select-hover-in'  : 0x00100000,
-        'select-hover-out' : 0x00080000,
-        'animating'        : 0x00040000
-    },*/
     stateBit : {
         0                   : 0,
         'init'              : 0x01000000, // 0x00ff0000 == statetype
         'hidden'            : 0x00010000, // 0x0f000000 == dynamic type 0 = no dyn, 1 = in, 2 = out
         'deinit'            : 0x02000000, 
         'hover'             : 0x00020000,
-        'hover-in'          : 0x01020000,
-        'hover-out'         : 0x02020000,
+        'hoverin'           : 0x01020000,
+        'hoverout'          : 0x02020000,
         'select'            : 0x00030000,
-        'select-in'         : 0x01030000,
-        'select-out'        : 0x02030000,
-        'select-hover'      : 0x00040000,
-        'select-hover-in'   : 0x01040000,
-        'select-hover-out'  : 0x02040000,
+        'selectin'          : 0x01030000,
+        'selectout'         : 0x02030000,
+        'selecthover'       : 0x00040000,
+        'selecthoverin'     : 0x01040000,
+        'selecthoverout'    : 0x02040000,
         'animating'         : 0x10050000
     },
 
@@ -697,28 +696,28 @@ jpf.namespace("draw", {
         'init'             : 0,
         'deinit'           : 0,
         'hover'            : 0,
-        'hover-in'         : 'hover',
-        'hover-out'        : 'hover',
+        'hoverin'          : 'hover',
+        'hoverout'         : 'hover',
         'select'           : 0,
-        'select-in'        : 'select',
-        'select-out'       : 'select',
-        'select-hover'     : 'hover',
-        'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select-hover',
+        'selectin'         : 'select',
+        'selectout'        : 'select',
+        'selecthover'      : 'hover',
+        'selecthoverin'    : 'selecthover',
+        'selecthoverout'   : 'selecthover',
         'animating'        : 0
     },
 
     $stateFallback : {
         'init'              : 1,
         'hover'             : 1,
-        'hover-in'          : 'hover',
-        'hover-out'         : 1,
+        'hoverin'           : 'hover',
+        'hoverout'          : 1,
         'select'            : 1,
-        'select-in'         : 'select',
-        'select-out'        : 1,
-        'select-hover'      : 'hover',
-        'select-hover-in'   : 'select-hover',
-        'select-hover-out'  : 'select',
+        'selectin'          : 'select',
+        'selectout'         : 1,
+        'selecthover'       : 'hover',
+        'selecthoverin'     : 'selecthover',
+        'selecthoverout'    : 'select',
         'hidden'            : 1
     },
     
@@ -1002,10 +1001,10 @@ jpf.namespace("draw", {
 				s.push(t);
 		}
 		s.push(
-			"])[ __floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
-			")<0?-__f:__f)%",len-2,"].slice(1),16))&0xff)",
+			"])[ (__g=__floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+			")<0?0:__f))>",len-3,"?",len-3,":__g].slice(1),16))&0xff)",
 			"*(__d=1-(__c-__floor(__c)))",
-			"+((__b=parseInt(__t[ __ceil(__c)%",len-2,
+			"+((__b=parseInt(__t[ (__g=__ceil(__c))>",len-3,"?",len-3,":__g",
 			"].slice(1),16))&0xff)*(__e=1-__d) )",
 			"+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
 			"+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
@@ -1184,27 +1183,44 @@ jpf.namespace("draw", {
 	two : function(a){
 		return "(0.5+0.5*("+a+"))"; 
 	},
+    easein : function(t,pow){
+        if(!pow)pow = '3';
+        return ['__pow(',t,',',pow,')'].join('');
+    },
+    easeout : function(t,pow){
+        if(!pow)pow = '3';
+        return ['(1-__pow(1-(',t,'),',pow,'))'].join('');
+    },
+    ease : function(t,powin,powout){
+        if(!powin)powin = '3';
+        if(!powout)powout = powin;
+        return ["(0.5*((__a=2*(",t,"))<1?",
+                      "__pow(__a,",powin,"):",
+                      "(2-__pow(2-__a,",powout,"))))"].join('');
+    },
     fontz : function(a,b) {
         // we multiply b*l.ds and then 
         return (-a/b)+(this.ortho?"*perspd":"*(perspd/__z)");
     },
 
-    $equalStyle : function( a, b){
+    $canJoin : function( a, b){
         if(a.isfont && b.isfont)
-            return  a.family === b.family &&
+            return  a.join!=null && b.join!=null && 
+                    a.family === b.family &&
                     a.join === b.join &&
                     a.height == b.height &&
-                    a.width == b.width &&
-                    a.align === b.align &&
-                    a.color === b.color &&
+                    a.width == b.width && 
+                    a.align === b.align && 
+                    a.color === b.color && 
                     a.size === b.size &&
-                    a.style === b.style
+                    a.style === b.style;
         if(a.isshape && b.isshape)
-            return a.line === b.line &&
+            return  a.join!=null && b.join!=null && 
+                   a.line === b.line && 
                    a.join === b.join &&
                    a.weight == b.weight &&
                    a.fill === b.fill &&
-                   a.fillalpha === b.fillalpha &&
+                   a.fillalpha === b.fillalpha && 
                    a.linealpha === b.linealpha &&
                    a.angle === b.angle;
         return false;
@@ -1435,8 +1451,8 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                             "if( (_x9 = mx - (",x,"))>=0 && _x9<(",w,")&&",
                             "    (_y9 = my - (",y,"))>=0 && _y9<(",h,")) return x;",
                         ].join('');
-                    }else
-                        return this.rect(x,y,w,h);
+                    }
+                    return this.rect(x,y,w,h);
                 }else{
                     return  [
                      '_x9=(_x8=(_x6=',gx(t,'(','center',')','0.5'),'*(_x3=',w,'))*(',gx(t,
@@ -1454,6 +1470,12 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
             }
             case 'circle':{
                 rect();
+                 if(m){
+                        return [
+                            "if( (_x9 = mx - (",x,"))>=0 && _x9<(",w,")&&",
+                            "    (_y9 = my - (",y,"))>=0 && _y9<(",h,")) return x;",
+                        ].join('');
+                }
                 return t.pie?[
                     this.moveTo('_x6='+x+'+'+'(_x5=0.5*('+w+'))','_y6='+y+'+'+'(_y5=0.5*('+h+'))'),
                     this.ellipse('_x6','_y6','_x5','_y5',gx(t,'','range','' ),gy(t,'','range','' ) ),
@@ -1516,6 +1538,91 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                 return this.$endFont();
         }
         return '';
+    },
+       
+    //----------------------------------------------------------------------
+    
+    // State rendering
+    
+    //----------------------------------------------------------------------
+
+    // state based drawing
+    beginState : function( style, sthis, func, nargs ){
+        var s = [this.beginShape(style.$shadow || style)];
+        
+        this.statemode = 1;
+        this.statethis = sthis;
+        this.stateargs = nargs;
+        this.statefunc = func;
+    
+        var v = style.$stylelist, i, n;
+        if(!v || !v.length) return s.join('');
+    
+        s.push("_storelut = _s.$storelut, _storelist = _s.$storelist,",
+               "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut;\n");
+        
+        for(i = 0, n = v.length;i<n;i++){
+            s[s.length]="_storelist["+i+"].length=0;";
+        }
+        return s.join('');
+    },
+    
+    drawState:function(state,time) {
+        var a=[],t,i,j,v = this.style.$stylelist;
+        if(!v || !v.length){
+             for(i = 2, j = arguments.length;i<j;i++)
+                a.push(arguments[i]);
+            return this.statefunc.apply(this.statethis,a);
+        }
+        var s=["if((_t=",state,")&0x0f000000){",
+                    "if((t=(n-(",time,"))*(_speedlut[_t]||100000))>1){",
+                        "_t=",state,"=_translut[_t],",time,"=n,t=0;",
+                    "}",
+                    "if(_t&0x0f000000)_anim=1,nt=1-t;",
+                "}"];
+        for(i = 2, j = arguments.length;i<j;i++){
+            a.push(t="_s"+(i-1));
+            s.push( t,"=",arguments[i],(i!=j-1)?",":";");
+        }
+
+        t = a.join(',');
+        s.push( "if(_st=_storelut[_t]){",
+                "_st.push(t,x,",t,");",
+                "while(_su=_st.overlay){",
+                    "if(_su.sort){_su.push(t,x,",t,");_st=_su;}",
+                    "else {_st=0;break;}",
+                "};",
+                "};",
+                "if(!_st){",this.statefunc.apply(this.statethis,a),"}\n"
+            );
+        return s.join('');
+    },
+    
+    $endState : function(){
+        this.statemode = 0;
+        var style = this.style, s = [this.$endDraw()];
+
+        var v = style.$stylelist, i, j, l, m, n = this.stateargs+2, a = [];
+        if(!v || !v.length)return s.join('');
+        
+        for(i=2;i<n;i++){
+            a.push("_su[_sv+"+i+"]");
+        }
+        for(i = 0, j = v.length;i<j;i++){
+            style = v[i]; 
+            s[s.length]=[
+              "if((_st=(_su=_storelist["+i+"]).length)>0){",
+                  "t = _su[0];",
+                  this.beginShape(style),
+                  "for(_sv=0;_sv<_st;_sv+=",n,"){",
+                    "t=_su[_sv],nt = 1-t,x=_su[_sv+1];",
+                    this.statefunc.apply(this.statethis,a),
+                  "}",
+                  this.$endDraw(),
+              "}else _styles[",style._id,"]._path=[];\n"
+              ].join('');
+        }
+        return s.join('');
     },
     
     //----------------------------------------------------------------------

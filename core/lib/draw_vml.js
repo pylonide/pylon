@@ -108,7 +108,6 @@ jpf.namespace("draw.vml",{
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
                 "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
                     "_t,_u,_l,_dx,_dy,_tn,_tc,_lc,_s,_p,",
-                    "_storelut,_storelist,_translut,_speedlut,",
                    "_styles = this._styles;"
         ].join('');
     },
@@ -142,6 +141,7 @@ jpf.namespace("draw.vml",{
             }
         }
         this.l = null;
+        s.push("l._anim = _anim;");
         return s.join('');
     },
     
@@ -164,7 +164,7 @@ jpf.namespace("draw.vml",{
         // find a suitable same-styled other shape so we minimize the VML nodes
         for(i = l._styles.length-2;i>=0;i--){
             if(!l._styles[i]._prev && 
-                this.$equalStyle( t=l._styles[i], style )){
+                this.$canJoin( t=l._styles[i], style )){
                 style._prev = (t._prev !== undefined)?t._prev:i;
                 break;
             }
@@ -399,93 +399,8 @@ jpf.namespace("draw.vml",{
     $finalizeShape : function(style){
         return ["if((_s=_styles[",style._id,"])._pathstr!=(_t=",
             "(_p=_s._path).length?_p.join(' '):'m'))_s._vmlnode.path=_t;\n"].join('');
-    },
-    
-    //----------------------------------------------------------------------
-    
-    // State rendering
-    
-    //----------------------------------------------------------------------
-
-    // state based drawing
-    beginState : function( style, sthis, func, nargs ){
-        var s = [this.beginShape(style.$shadow || style)];
-        
-        this.statemode = 1;
-        this.statethis = sthis;
-        this.stateargs = nargs;
-        this.statefunc = func;
-    
-        var v = style.$stylelist, i, n;
-        if(!v || !v.length) return s.join('');
-    
-        s.push("_storelut = _s.$storelut, _storelist = _s.$storelist,",
-               "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut;\n");
-        
-        for(i = 0, n = v.length;i<n;i++){
-            s[s.length]="_storelist["+i+"].length=0;";
-        }
-        return s.join('');
-    },
-    
-    drawState:function(state,time) {
-        var a=[],t,i,j,v = this.style.$stylelist;
-        if(!v || !v.length){
-             for(i = 2, j = arguments.length;i<j;i++)
-                a.push(arguments[i]);
-            return this.statefunc.apply(this.statethis,a);
-        }
-        var s=["if((_t=",state,")&0x0f000000){",
-                    "if((t=(n-(",time,"))*(_speedlut[_t]||100000))>1){",
-                        "_t=",state,"=_translut[_t],",time,"=n,t=0;",
-                    "}",
-                "}"];
-        for(i = 2, j = arguments.length;i<j;i++){
-            a.push(t="_s"+(i-1));
-            s.push( t,"=",arguments[i],(i!=j-1)?",":";");
-        }
-
-        t = a.join(',');
-        s.push("if(_st=_storelut[_t]){",
-                "_st.push(t,x,",t,");",
-                /*
-                    "if(_su=_o.base){",
-                        "if(_su.sort)_u.push(t,x,",t,");",
-                        "else _st=0;",
-                    "}",
-                */
-                "}",
-                "if(!_st){",this.statefunc.apply(this.statethis,a),"}\n"
-            );
-        return s.join('');
-    },
-    
-    $endState : function(){
-        this.statemode = 0;
-        var style = this.style, s = [this.$endDraw()];
-
-        var v = style.$stylelist, i, j, l, m, n = this.stateargs+2, a = [];
-        if(!v || !v.length)return s.join('');
-        
-        for(i=2;i<n;i++){
-            a.push("_su[_sv+"+i+"]");
-        }
-        for(i = 0, j = v.length;i<j;i++){
-            style = v[i]; 
-            s[s.length]=[
-              "if((_st=(_su=_storelist["+i+"]).length)>0){",
-                  "t = _su[0];",
-                  this.beginShape(style),
-                  "for(_sv=0;_sv<_st;_sv+=",n,"){",
-                    "t=_su[_sv];x=_su[_sv+1];",
-                    this.statefunc.apply(this.statethis,a),
-                  "}",
-                  this.$endDraw(),
-              "}else _styles[",style._id,"]._path=[];\n"].join('');
-        }
-        return s.join('');
-    } 
-       
+    }
+           
 });
 //#endif
 //#endif
