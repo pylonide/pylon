@@ -567,6 +567,11 @@ jpf.JmlElement = function(){
             if (oItem.oExt != this.oInt)
                 jpf.removeNode(oItem.oExt);
         }
+        
+        var nodes = this.$jml.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--)
+            this.$jml.removeChild(nodes[i]);
+        
         this.childNodes.length = 0;
         this.oExt.innerHTML = "";
 
@@ -616,7 +621,7 @@ jpf.JmlElement = function(){
             else {
                 if (typeof data == "string")
                     data = jpf.xmldb.getXml("<j:jml xmlns:j='"
-                        + jpf.ns.jml +"'>" + data + "</j:jml>");
+                        + jpf.ns.jml +"'>" + data + "</j:jml>", null, true);
                 
                 if (jml.ownerDocument.importNode) {
                     doc = jml.ownerDocument;
@@ -635,14 +640,14 @@ jpf.JmlElement = function(){
 
         if (typeof jmlDefNode == "string") {
             //Process Instruction
-            if (jpf.datainstr[jmlDefNode]){
+            if (jpf.datainstr[jmlDefNode.split(":")[0]]){
                 return jpf.getData(jmlDefNode, null, {
                     ignoreOffline : true
                 }, callback);
             }
             //Jml string
             else
-                jmlDefNode = jpf.xmldb.getXml(jmlDefNode);
+                jmlDefNode = jpf.xmldb.getXml(jmlDefNode, null, true);
         }
 
         //Xml Node is assumed
