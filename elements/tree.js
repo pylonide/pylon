@@ -173,6 +173,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["nocollapse"]     = true;
     this.$booleanProperties["singleopen"]     = true;
     this.$booleanProperties["prerender"]      = true;
+    this.$booleanProperties["removecontainer"] = true;
     
     this.openadd        = true;
     this.startcollapsed = 1;
@@ -502,7 +503,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var hasTraverseNodes = xmlNode.selectSingleNode(this.traverse) ? true : false;
         var hasChildren = loadChildren || hasTraverseNodes;
         
-        var startcollapsed = this.applyRuleSetOnNode("collapse", xmlNode) !== false || this.startcollapsed;
+        var startcollapsed = this.bindingRules && this.bindingRules.collapse
+            ? this.applyRuleSetOnNode("collapse", xmlNode) !== false 
+            : this.startcollapsed;
         var state       = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren 
             || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
 
@@ -590,7 +593,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        if (this.prerender || traverseLength < 3)
+        if (this.prerender || traverseLength < 3 || !startcollapsed)
             this.$addNodes(xmlNode, container, false); //checkChildren ???
         /*else {
             this.setLoadStatus(xmlNode, "potential");

@@ -60,10 +60,22 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} caption the text of the caption. 
      */
-    this.$supportedProperties.push("caption");
+    this.$supportedProperties.push("caption", "url");
     this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
+    };
+    
+    this.$propHandlers["url"] = function(value){
+        var node = this.oCaption.nodeType == 1 
+            ? this.oCaption 
+            : this.oCaption.parentNode;
+        
+        if (node.tagName == "A") node = node.parentNode;
+        node.innerHTML = "<a href='" + value + "' " 
+            + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
+            + this.caption + "</a>";
+        this.oCaption = this.oCaption.firstChild;
     };
     
     /** 
