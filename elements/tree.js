@@ -502,7 +502,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var hasTraverseNodes = xmlNode.selectSingleNode(this.traverse) ? true : false;
         var hasChildren = loadChildren || hasTraverseNodes;
         
-        var startcollapsed = this.startcollapsed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
+        var startcollapsed = this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false || this.startcollapsed;
         var state       = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren 
             || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
 
