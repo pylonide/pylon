@@ -1,3 +1,46 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+/**
+ * This elements displays buttons which can be used to navigate between some
+ * parts of data, for example between parts of article
+ * 
+ * @define pager
+ * @attribute {String} range      determines how much page buttons is displayed 
+ * @attribute {String} previous   determines the caption of "go to previous page" button
+ * @attribute {String} next       determines the caption of "go to next page" button
+ * 
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * 
+ * @author      
+ * @version     %I%, %G% 
+ * 
+ * @define bindings
+ * @allowchild current, total
+ *
+ * @binding current      Determines which page is currently selected
+ * @binding total        Determines the number of pages.
+ * 
+ */
 jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     this.previous   = "Previous";
     this.next       = "Next";
@@ -11,6 +54,13 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("range", "curpage", "totalpages", 
         "previous", "next");
 
+    /**
+     * Selects page depends on its number or jump length
+     * 
+     * @param {Number} pageNr      number of choosen page
+     * @param {Number} pageDelta   length of jump which should be done between
+     *                             current page and new selected page
+     */
     this.gotoPage = function(pageNr, pageDelta) {
         this.curpage = pageNr || this.curpage + pageDelta;
         
