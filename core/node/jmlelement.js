@@ -546,11 +546,19 @@ jpf.JmlElement = function(){
      * @param {HTMLElement} oInt        the html parent of the created jml elements.
      * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
      */
-    this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){
+    this.replaceJml = function(jmlDefNode, options) {
         //#ifdef __DEBUG
         jpf.console.info("Remove all jml from element");
         //#endif
 
+        if (!options) options = {};
+
+        if (!options.oIntJML)
+            options.oIntJML = this.$jml;
+        if (!options.oInt)
+            options.oInt = this.oInt;
+        options.clear = true;
+        
         //Remove All the childNodes
         for (var i = 0; i < this.childNodes.length; i++) {
             var oItem = this.childNodes[i];
@@ -568,15 +576,15 @@ jpf.JmlElement = function(){
                 jpf.removeNode(oItem.oExt);
         }
         
-        var nodes = this.$jml.childNodes;
+        var nodes = options.oIntJML.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--)
-            this.$jml.removeChild(nodes[i]);
+            options.oIntJML.removeChild(nodes[i]);
         
         this.childNodes.length = 0;
-        this.oExt.innerHTML = "";
+        this.oInt.innerHTML = "<div class='loading'>loading...</div>";
 
         //Do an insertJml
-        this.insertJml(jmlDefNode, oInt, oIntJML, isHidden);
+        this.insertJml(jmlDefNode, options);
     };
 
     /**
@@ -585,7 +593,7 @@ jpf.JmlElement = function(){
      * @param {HTMLElement} oInt        the html parent of the created jml elements.
      * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
      */
-    this.insertJml = function(jmlDefNode, oInt, oIntJml, isHidden){
+    this.insertJml = function(jmlDefNode, options){
         //#ifdef __DEBUG
         jpf.console.info("Loading sub jml from external source");
         //#endif
@@ -614,14 +622,19 @@ jpf.JmlElement = function(){
             jpf.console.info("Runtime inserting jml");
             //#endif
 
-            var jml = oIntJml || _self.$jml;
+            if (options.clear)
+                options.oInt.innerHTML = "";
+
+            var jml = options.oIntJml || _self.$jml;
             if (jml.insertAdjacentHTML)
                 jml.insertAdjacentHTML(jml.getAttribute("insert") || "beforeend",
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = jpf.xmldb.getXml("<j:jml xmlns:j='"
-                        + jpf.ns.jml +"'>" + data + "</j:jml>", null, true);
+                    data = jpf.xmldb.getXml(data.indexOf("<j:application") > -1
+                      ? data 
+                      : "<j:jml xmlns:j='" + jpf.ns.jml +"'>" + data + "</j:jml>", 
+                        null, true);
                 
                 if (jml.ownerDocument.importNode) {
                     doc = jml.ownerDocument;
@@ -633,9 +646,15 @@ jpf.JmlElement = function(){
                         jml.insertBefore(data.childNodes[i], jml.firstChild);
             }
 
-            jpf.JmlParser.parseMoreJml(jml, oInt || _self.oInt, _self,
-                (isHidden && (oInt || _self.oInt).style.offsetHeight)
+            jpf.JmlParser.parseMoreJml(jml, options.oInt || _self.oInt, _self,
+                (options.isHidden && (options.oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
+            
+            if (options.callback)
+                options.callback({
+                    data    : data,
+                    jmlNode : this
+                })
         }
 
         if (typeof jmlDefNode == "string") {
