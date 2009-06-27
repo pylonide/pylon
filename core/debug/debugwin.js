@@ -287,6 +287,11 @@ jpf.debugwin = {
     hide : function(){
         this.oExt.style.display = "none";
         document.body.style.marginRight = "0";
+        
+        if (jpf.isIE8) {
+            document.body.style.overflow = "";
+            document.body.style.position = "";
+        }
     },
     
     show : function(e, filename, linenr){
@@ -345,6 +350,11 @@ jpf.debugwin = {
                 }
             }
             catch(e){}
+        }
+
+        if (jpf.isIE8) {
+            document.body.style.overflow = "auto";
+            document.body.style.position = "static";
         }
         
         if (!jpf.debugwin.win)
@@ -1599,11 +1609,6 @@ jpf.debugwin = {
                             - (jpf.isGecko ? 4 : 8)) + 'px';\
                 ");
                 
-                if (jpf.isIE8) {
-                    document.body.style.overflow = "auto";
-                    document.body.style.position = "static";
-                }
-                
                 jpf.layout.activateRules(elError);
             }
         }
@@ -1841,6 +1846,11 @@ jpf.debugwin = {
         //jpf.debugwin.toggleDebugger(false);
 
         if (document.getElementById("jpf_debugwin")) {
+            if (jpf.isIE8) {
+                document.body.style.overflow = "auto";
+                document.body.style.position = "static";
+            }
+            
             document.getElementById("jpf_debugwin").style.display = "block";
             
             if (jpf.layout)
