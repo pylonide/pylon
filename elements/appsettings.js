@@ -218,7 +218,7 @@ jpf.appsettings = {
         this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
         this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));
 
-        this.autoDisableActions = jpf.isTrue(x.getAttribute("auto-disable-actions"));
+        this.autoDisableActions = !jpf.isFalse(x.getAttribute("auto-disable-actions"));
         this.autoDisable        = jpf.isTrue(x.getAttribute("auto-disable")); //@todo temporarily changed default
         this.disableF5          = jpf.isTrue(x.getAttribute("disable-f5"));
         this.autoHideLoading    = !jpf.isFalse(x.getAttribute("auto-hide-loading"));
