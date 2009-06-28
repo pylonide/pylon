@@ -56,6 +56,7 @@ jpf.namespace("draw", {
                 ",dw = l.dw",ml?"-"+(ml+mr):"",
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
                 ",dw12 = dw*0.5, dh12 = dh*0.5",
+                ",dzw = dw/l.zoomx, dzh = dh/l.zoomy",
                 ",dx = ",ml?ml:0,
                 ",dy = ",mt?mt:0,
                 ",mx = m&&m.x, my = m&&m.y",
@@ -64,7 +65,7 @@ jpf.namespace("draw", {
                 ",v,t=0,nt=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
                 ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
                 ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_, _anim = 0,",
-                "_storelut,_storelist,_translut,_speedlut;"].join('');
+                "_storelut,_storelist,_translut,_speedlut,_overlaylut;"].join('');
     },
     defCamVec : function(){
         // lets do a proper 3x3 inverse and mul it with our camera pos
@@ -329,7 +330,7 @@ jpf.namespace("draw", {
     //----------------------------------------------------------------------
      
     parseStyle : function( def, ovl, err ) {
-        var style = {}, o, v, k, s, t, i, j, n;
+        var style = {}, o, v, k, s, t, i, j, n, m;
         
         //var o = {}, k1, v1, k2, v2, t, s, i, j, len, _self = this;
         //var k, v, n ,m, w, p, h, q, u, o, x, y, z, r, g;
@@ -410,7 +411,7 @@ jpf.namespace("draw", {
 
             if( (s.isshape && s.fill === undefined && 
                 s.line === undefined && s.tile === undefined) || 
-                (s.isfont && s.family === undefined) ) return; 
+                (s.isfont && s.family === undefined) ) return false; 
             if(s.isshape){
                 s.alpha = s.alpha!==undefined ? s.alpha : 1;
                 s.fillalpha = s.fillalpha!==undefined ? s.fillalpha:s.alpha;
@@ -419,31 +420,38 @@ jpf.namespace("draw", {
                 s.angle = s.angle!==undefined ? s.angle : 0;
                 s.weight = s.weight!==undefined ? s.weight : 1
             }
+            return true;
         }
         // generate all required tables and luts
         for(k in style) if(typeof(s=style[k]) == 'object'){
             // add missing class states automatically
-            initShape(s);
+           
             if(s.$baselist && s.$clslist){
                 delete s.$clsc;
                 for(i in s.$clslist){
                     for(j in s.$baselist){
                         if(!style[t = k+'.'+i+':'+j]){
-                            o = style[t] = {};
-                            for(v in (t=style[k+'.'+i]))o[v] = t[v];
-                            for(v in (t=ovl[k+':'+j]))o[v] = t[v];
-                            o.$cls   = i, o.$state = j, o.$base = s;
-                            s.$stylelist.push(o);
-                            initShape(o);
+                            // if this is an overlay, dont autogen
+                            if((m = style[k+':'+j]) && m.overlay){
+                                (m.$clsovl?m.$clsovl:m.$clsovl=[]).push(i);
+                            }else{
+                                style[t] = o = {};
+                                for(v in (t=style[k+'.'+i]))o[v] = t[v];
+                                for(v in (t=ovl[k+':'+j]))o[v] = t[v];
+                                o.$cls   = i, o.$state = j, o.$base = s;
+                                initShape(o);
+                                s.$stylelist.push(o);
+                            }
                         }
                     }
                 }
             }
-            if(s.$stylelist){ // lets go create our style lut
+            if(s.$stylelist){ // lets go create our style luts
                 s.$storelut = {};
                 s.$speedlut = {};
                 s.$storelist = [];
-                var cls, state;
+                s.$overlaylut = {};
+                var cls, state, ovl;
                 j = s.$stylelist;
                 for(i = 0;i<j.length;i++){
                     o = j[i];
@@ -452,206 +460,29 @@ jpf.namespace("draw", {
                     cls   = s.$clslist?(s.$clslist[o.$cls]||0):0;
                     state = jpf.draw.stateBit[o.$state]||0;
                     o.$lutvalue = state|cls;
+                    o.$store = n;
+                    if(t=o.overlay){ // compute overlay target
+                        if(t == 'base') ovl = cls?cls:0x10000000;
+                        else  ovl = (s.$clslist?(s.$clslist[t]||0):0)|(jpf.draw.stateBit[t]||0);
+                    }else ovl = 0;
+                    // check if we have any $clsovls to add aswell
                     s.$storelut[ state|cls ] = n;
                     s.$speedlut[ state|cls ] = o.speed || 1;
-                    o.$store = n;
-                }
-                for(i = 0;i<j.length;i++)if(n=(o = j[i]).overlay){
-                    // we overlay something, lets find it.
-                    if(n=='base'){
-                        o.$store.overlay = {};
-                    }else{
-                        cls   = s.$clslist?(s.$clslist[n]||0):0;
-                        state = jpf.draw.stateBit[n]||0;
-                        t = s.$storelut[ state|cls ] || s.$storelut[ state ];
-                        if(t && t!= o.$store)
-                            o.$store.overlay = t;
+                    if(ovl) s.$overlaylut[ state|cls ] = ovl;
+                    // store lut elements for overlay class too.
+                    if(o.$clsovl)for(m = o.$clsovl.length-1;m>=0;m--){
+                        cls = s.$clslist?(s.$clslist[o.$clsovl[m]]||0):0;
+                        s.$storelut[ state|cls ] = n;
+                        s.$speedlut[ state|cls ] = o.speed || 1;
+                        if(ovl)s.$overlaylut[ state|cls ] = (ovl==0x10000000)?cls:ovl;
                     }
+                    // check if we have an overlay, ifso decode our overlay state|cls 
                 }
             }
+            if(!initShape(s)){
+                delete style[k];
+            }   
         }
-        //logw( jpf.dump( style ) );
-        
-        // in a secondary cycle we should see if there
-        // are any base:style classes 
-        // ifso we should see if we need to create
-        // automagic 
-
-        // we have an object with cls or state to go and inherit recursively.
-        // lets follow the inheritance path
-
-        // base:cls:state
-        // base:state
-        // base:cls
-        // base
-        
-        
-                    
-                    // add a ref to us in the base hash table, and calculate a bit ID
-
-                    // when encountering a style, we render to overlays till we hit base, and thats it.
-                    // a style/class is an overlay when overlay:1 is set.
-                    
-/*                  statehash:
-                        hash from state ID to output buffer
-                        output buffer can have .base for outputting to a base layer (overlays)
-                    storelist
-                        the total list of output array for this type
-*/
- 
-
-        // we should now initialize the luts and storage arrays
-        
-        
-/*         for(i = 0;i<novls;i++)
-                if(ovl = styleovls[i][key])for(k in ovl)dest[k] = ovl[k];
-  */      
-		// inventory classes and states we have styles for
-        /*
-		p=[];
-		for(k in o){
-                if( typeof(v=o[k])=='object' && 
-                    !(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
-
-                if(n && typeof(t=o[n[0]])=='object'){
-                    v.$base=n[0],v.$class=n[1];
-                    if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
-                    w[w.length] = (n[1].split(':'))[0];
-                }else if(m && typeof(t=o[m[0]])=='object' && m[0].indexOf('.')==-1){
-                    v.$base=m[0],v.$state=m[1];
-                    if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
-                    w[w.length] = m[1];                    
-                }
-            }
-        }
-
-        function objinherit(d, s){
-            var k,v,n;
-            for(k in s)if(k.indexOf('$')==-1){
-                if( typeof(v=s[k]) == 'object' && v!==null ){
-                    if(typeof(n=d[k]) !='object') n = d[k] = {};
-                    objinherit(n, v);
-                }else if(d[k] === undefined)d[k] = v;
-            }
-        }
-
-		// copy base states to class states
-		for(k=p.length-1;k>=0;--k){
-			if( (v = p[k]).$classmap  && !v.nocopy) {
-				// lets copy our states to the other classes
-				m = v.$statemap, n = v.$classmap, w=v.$base;
-				for(t=m.length-1;t>=0;--t){
-					for(u=n.length-1;u>=0;--u){
-						if(!o[d = w+'.'+n[u]+':'+m[t]]){
-							objinherit( d=o[d]={}, o[w+':'+m[t]] ); 
-							d.$base = w, d.$class = n[u], d.$state = m[t];
-						}
-					}
-				}
-			}
-		}
-        
-        function objtohash(a){
-            // this spits out an object as a comparable hash
-           var k,v,n=[],s=[],i;
-           for(k in a)if(k.indexOf('$')==-1)n[n.length]=k;
-           n.sort();
-           for(i = n.length-1;i>=0;i--){
-              s[s.length] = k = n[i];
-              if( (k=typeof(v = a[k])) == 'object') s[s.length] = objtohash(v);
-              else if(k=='array') s[s.length] = v.join('');
-              else s[s.length] = v;//String(v);
-           }
-           return s.join('');
-        }        
-        
-		// do all inheritance of classes and states
-		for(k in o)if( typeof(v=o[k])=='object' && v && (d=v.$base) ){
-			m = v.$state,n = v.$class;
-			if(!v.nobase){
-				while(m=_self.$stateInherit[m]){
-					if( (n && (t=o[d+'.'+n+(m==1?'':':'+m)])) || 
-						(t=o[d+(m==1?'':':'+m)]))
-						objinherit(v, t);
-				}
-			}
-			if((t = o[d]) && n) objinherit(v,t);
-			// lets see if we are pointless
-			if(!t.nomerge){
-				if(!(n=t.$merge))n=t.$merge={};
-				if(!n[m=objtohash(v)]) n[m] = v;
-				else v.$merged = n[m];
-			}
-			// 
-		}*/
-
-        /*
-		// hurrah now lets go and create the hashmaps CODECOMPLEXITY++
-		n = _self.stateBit, q = _self.$stateFallback;
-		for(k in o)if( typeof(v=o[k])=='object' && v && (v.isshape||v.isfont) ){
-			
-			var shadow = o[k+'.shadow'];
-			if(v.$isbase){
-				w = v.$statehash = {}, y = v.$statelist = [],
-				r = v.$storelist = [], h = v.$speedhash={};
-				delete v.$merge;delete v.$merged;
-				
-				m = v.$classmap || [], u = v.$base;
-				m.unshift(null); // add 'normal' state
-				for(i=m.length-1;i>=0;--i){
-					t=u+((t=m[i])?'.'+t:'');
-					for(p in n){
-						d = p;
-						while(!(x = o[ g=(d!=0?t+':'+d:t) ]))
-							if(!(d=q[d]))break;
-							
-						if(x && (x.$class!='shadow' || x.$state)){ // it has a special rendertarget
-							while(x.$merged) x = x.$merged;
-							if(!x.$isbase){
-								if(!x.$inlist){
-									g = x.$store = [];
-									x.$inlist = 1;
-									x.join = d!=0?t+':'+d:t;
-									if(x.$class) y.unshift(x),r.unshift(g) ;
-									else y[y.length]=x, r[r.length]=g;
-								}
-								if(!(d = w[z=(n[p]|i)] = x.$store).base &&
-									x.overlay)d.base = (m[i]?o[t]:0) || {};
-								if(z&0x36EC0000)d.trans=x.trans=1;
-								h[z] = x.speed || 1;
-							}else if(shadow)w[n[p]|i] = {};
-						}
-					}
-				}
-				if(shadow){// if we have a shadow class so we need to shuffle some stuff around
-					g = v.$store = [];
-					// add our shadow to all the classes to be a baseclass
-					for(x = 0, p = r.length; x<p; x++)
-						r[x].base = ((m=y[x].$state)?((m=o[k+'.shadow:'+m])?m.$store:0):0)||{} 
-					for(x in w)if(!w[x].sort)w[x] = g;
-
-					r.unshift(g),y.unshift(v),g.base = {},w[0] = g;
-					v.$shadow = shadow;
-					shadow.$statelist = v.$statelist,shadow.$statehash = v.$statehash;
-					shadow.$storelist = v.$storelist,shadow.$speedhash = v.$speedhash;
-				}
-				// lets dump this shite
-                //logw("WE HAVE BASE");
-                //logw(jpf.vardump(v.$classmap));
-			}
-			// remove if we aint active
-			if( !styleinit(v) ) delete o[k];
-			
-		}
-*/
-        // for each base object, we need to create the subobject maps and state luts
-        // _statelut[state]->arrays
-        // _statelist[] all states except the base in order of layering
-        // _basemap[..name..] -> baseID a map from name to ID
-        // _transition[..state..] -> transitory map including baseID's
-        
-        
-        //jpf.alert_r(o);
         return style;
     },
     stateBit : {
@@ -668,7 +499,7 @@ jpf.namespace("draw", {
         'selecthover'       : 0x00040000,
         'selecthoverin'     : 0x01040000,
         'selecthoverout'    : 0x02040000,
-        'animating'         : 0x10050000
+        'animating'         : 0x03050000
     },
 
     stateTransition : {
@@ -1425,19 +1256,19 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         var gx = this.getX, gy = this.getY, cx = this.checkX, cy = this.checkY;
         function rect(){
             if(gx(t,'','scale','','1')!='1'){
-                x=[gx(t,'(','offset',')+'),'(',x,')','+',gx(t,'(','center',')','0.5'),'*(_x3=',w,')',
+                x=[gx(t,'dzw*(','offset',')+'),'(',x,')','+',gx(t,'(','center',')','0.5'),'*(_x3=',w,')',
                    gx(t,'*(1-(_x4=','scale','))'),gx(t,'+_x3*(','move',')')].join('');
                 w='_x3*_x4';
             }else{
-                x = [gx(t,'(','offset',')+'),'(',x,')',gx(t,'+(_x3='+w+')*(','move',')')].join('');
+                x = [gx(t,'dzw*(','offset',')+'),'(',x,')',gx(t,'+(_x3='+w+')*(','move',')')].join('');
                 w = cx(t,'move','_x3',w);
             }   
             if(gy(t,'','scale','','1')!='1'){
-                y=[gy(t,'(','offset',')+'),'(',y,')','+',gy(t,'(','center',')','0.5'),'*(_y3=',h,')',
+                y=[gy(t,'dzh*(','offset',')+'),'(',y,')','+',gy(t,'(','center',')','0.5'),'*(_y3=',h,')',
                    gy(t,'*(1-(_y4=','scale','))'),gy(t,'+_y3*(','move',')')].join('');
                 h='_y3*_y4';
             }else{
-                y = [gy(t,'(','offset',')+'),'(',y,')',gy(t,'+(_y3='+h+')*(','move',')')].join('');
+                y = [gy(t,'dzh*(','offset',')+'),'(',y,')',gy(t,'+(_y3='+h+')*(','move',')')].join('');
                 h = cy(t,'move','_y3',h);
             }   
         }
@@ -1558,8 +1389,8 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         var v = style.$stylelist, i, n;
         if(!v || !v.length) return s.join('');
     
-        s.push("_storelut = _s.$storelut, _storelist = _s.$storelist,",
-               "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut;\n");
+        s.push("_storelut = _s.$storelut, _storelist = _s.$storelist,_overlaylut = _s.$overlaylut,",
+               "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut ;\n");
         
         for(i = 0, n = v.length;i<n;i++){
             s[s.length]="_storelist["+i+"].length=0;";
@@ -1588,9 +1419,8 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         t = a.join(',');
         s.push( "if(_st=_storelut[_t]){",
                 "_st.push(t,x,",t,");",
-                "while(_su=_st.overlay){",
-                    "if(_su.sort){_su.push(t,x,",t,");_st=_su;}",
-                    "else {_st=0;break;}",
+                "while(_t=_overlaylut[_t]){",
+                    "if(_st = _storelut[_t]){_st.push(t,x,",t,");}",
                 "};",
                 "};",
                 "if(!_st){",this.statefunc.apply(this.statethis,a),"}\n"
