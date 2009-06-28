@@ -342,7 +342,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (!this.parentNode.childNodes.contains(this)) {
             throw new Error(jpf.formatErrorString(0, this,
                 "Removing node from parent",
-                "The parameter Node is not a child of this Node.", this.$jml));
+                "Passed node is not a child of this node.", this.$jml));
         }
         //#endif
 

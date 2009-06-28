@@ -379,8 +379,11 @@ jpf.debugwin = {
         
         if (list.length) {
             this.stackTrace.innerHTML = "";
-            for (i = 0; i < list.length; i++)
-                this.stackTrace.appendChild(list[i]);
+            for (i = 0; i < list.length; i++) {
+                try{
+                    this.stackTrace.appendChild(list[i]);
+                }catch(e){}
+            }
             
             this.stackTrace.parentNode.style.display = "block";
         }
