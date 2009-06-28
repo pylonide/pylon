@@ -301,6 +301,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             steps    : 10,
             interval : 10,
             onfinish : function(container) {
+                oNoti.style.filter = "";
                 setTimeout(hideWindow, _self.timeout)
             }
         });
