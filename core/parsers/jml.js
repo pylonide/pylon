@@ -739,8 +739,8 @@ jpf.JmlParser = {
                     }, 1000);
                 }
                 else {
-                    jpf.window.loadCodeFile(jpf.hostPath
-                        + q.getAttribute("src"));
+                    jpf.window.loadCodeFile(jpf.getAbsolutePath(jpf.hostPath,
+                        q.getAttribute("src")));
                 }
             }
             else if (q.firstChild) {

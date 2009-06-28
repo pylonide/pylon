@@ -737,6 +737,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\
                 jpf.cancelBubble(event, o);");
+            
+            elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
         //Icon interaction
