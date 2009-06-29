@@ -460,7 +460,7 @@ jpf.JmlElement = function(){
 
                 this[name] = value;
                 (this.$propHandlers && this.$propHandlers[name]
-                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value)
+                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, name)
             }
         }
 
@@ -468,7 +468,7 @@ jpf.JmlElement = function(){
         for (name in offlineLookup) {
             value = offlineLookup[name];
             (this.$propHandlers && this.$propHandlers[name]
-                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value);
+                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, name);
         }
         //#endif
         
