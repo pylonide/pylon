@@ -170,9 +170,11 @@ jpf.history = {
         };
 
         (jpf.isIE && !jpf.isIE8 ? this.iframe : window).location.href = "#" + name;
-
+        
         if (!jpf.isIE && !jpf.isIphone)
             jpf.history.lastUrl = location.href.toString();
+        else if (jpf.isIE8)
+            this.page = name;
     },
 
     timer : null,
