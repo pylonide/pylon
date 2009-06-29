@@ -81,12 +81,12 @@ jpf.namespace("draw", {
         var s = ["var m00=",m[0],",m01=",m[1],",m02=",m[2], ",m03=",m[3],
                     ",m10=",m[4],",m11=",m[5],",m12=",m[6], ",m13=",m[7],
                     ",m20=",m[8],",m21=",m[9],",m22=",m[10],",m23=",m[11],";"];
-        if(l.perspective<0){ // we have ortho perspective
+        if(l.p3d<0){ // we have ortho perspective
             this.ortho = 1;
-            s.push("var persp = dw / v.perspective/-v.tz, perspd = persp / ",l.ds,";");
+            s.push("var persp = dw / v.p3d/-v.tz, perspd = persp / ",l.ds,";");
         } else {
             this.ortho = 0;
-            s.push("var persp = dw / v.perspective, perspd = persp / ",l.ds,";");
+            s.push("var persp = dw / v.p3d, perspd = persp / ",l.ds,";");
         }
         return s.join('');
     },
