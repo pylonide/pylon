@@ -62,9 +62,9 @@ jpf.namespace("draw", {
                 ",mx = m&&m.x, my = m&&m.y",
                 ",db = dy+dh, dr = dx+dw",
                 ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx",
-                ",v,t=0,nt=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
+                ",v,t=0,nt=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n)",
                 ",e=Math.E, p=Math.PI, p2=2*p, p12=0.5*p",
-                ",x, y, z, _x,_y,_z, zt, i, j, k, _opt_, _anim = 0,",
+                ",x, y = 0, z = 0, _x,_y,_z, zt, i, j, k, _opt_, _anim = 0,",
                 "_storelut,_storelist,_translut,_speedlut,_overlaylut;"].join('');
     },
     defCamVec : function(){
