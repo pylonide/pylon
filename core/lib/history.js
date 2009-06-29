@@ -71,7 +71,13 @@ jpf.history = {
         this.inited = true;
         this.hasChanged(name || null);
 
-        if (jpf.isIE) {
+        if (jpf.isIE8) {
+            document.body.onhashchange = function(){
+                var page = location.hash.replace("#", "");
+                jpf.history.hasChanged(decodeURI(page));
+            };
+        }
+        else if (jpf.isIE) {
             var str =
                 "<style>\
                     BODY, HTML{margin : 0;}\
@@ -141,29 +147,29 @@ jpf.history = {
             return;
         }
 
-        if (jpf.isIE && !timed) {
+        if (jpf.isIE && !jpf.isIE8 && !timed) {
             this.to_name = name;
             return setTimeout(function(){
                 jpf.history.setHash(jpf.history.to_name, true);
             }, 200);
         }
 
-        this.changePage(name);
+        /*this.changePage(name);
         if (!this.inited)
-            return this.init(name);
+            return this.init(name);*/
 
         this.changePage(name);
         if (!this.inited)
             return this.init(name);
 
-        if (jpf.isIE) {
+        if (jpf.isIE && !jpf.isIE8) {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
             h.innerHTML = this.length;
         };
 
-        (jpf.isIE ? this.iframe : window).location.href = "#" + name;
+        (jpf.isIE && !jpf.isIE8 ? this.iframe : window).location.href = "#" + name;
 
         if (!jpf.isIE && !jpf.isIphone)
             jpf.history.lastUrl = location.href.toString();
@@ -171,7 +177,7 @@ jpf.history = {
 
     timer : null,
     changePage: function(page){
-        if (jpf.isIE) {
+        if (jpf.isIE && !jpf.isIE8) {
             this.page = page;
             this.changingHash = true;
             clearTimeout(this.timer);
