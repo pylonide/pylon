@@ -431,8 +431,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.layout && this.oInt)
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
 
+            if (this.modal) 
+                this.oExt.style.position = "fixed";
+            
             if (this.center) {
-                var size = this.oExt.offsetParent.tagName == "BODY" 
+                var size = !this.oExt.offsetParent || this.oExt.offsetParent.tagName == "BODY"
                     ? [jpf.getWindowWidth(), jpf.getWindowHeight()]
                     : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight];
                 
