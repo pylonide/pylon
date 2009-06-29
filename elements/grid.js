@@ -101,13 +101,13 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
      * <code>
      *  <j:grid columns="150, *, 20%" />
      * </code>
-     * @attribute {String} padding      the space between each element.
-     * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left.
+     * @attribute {String} padding      the space between each element. Defaults to 2.
+     * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
      * Example:
      * <code>
      *  <j:grid margin="10 10 40 10" />
      * </code>
-     * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row.
+     * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row. Defaults to 19.
      */
     this.$supportedProperties.push("columns", "padding", "margin", 
         "cellheight", "span");

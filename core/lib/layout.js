@@ -1291,19 +1291,37 @@ jpf.layout = {
      * @param {String}      id          the identifier for the rules within the resize function of this element.
      */
     removeRule : function(oHtml, id){
-        if (!this.rules[this.getHtmlId(oHtml)])
+        var htmlId = this.getHtmlId(oHtml);
+        if (!this.rules[htmlId])
             return;
 
-        var ret = this.rules[this.getHtmlId(oHtml)][id] ||  false;
-        delete this.rules[this.getHtmlId(oHtml)][id];
+        var ret = this.rules[htmlId][id] ||  false;
+        delete this.rules[htmlId][id];
 
         var prop;
-        for (prop in this.rules[this.getHtmlId(oHtml)]) {
+        for (prop in this.rules[htmlId]) {
 
         }
         if (!prop)
-            delete this.rules[this.getHtmlId(oHtml)]
+            delete this.rules[htmlId]
 
+        if (jpf.hasSingleRszEvent) {
+            if (this.onresize[htmlId])
+                this.onresize[htmlId] = null;
+            else {
+                var p = oHtml.parentNode;
+                while (p && p.nodeType == 1 && !this.onresize[p.getAttribute("id")]) {
+                    p = p.parentNode;
+                }
+    
+                if (p && p.nodeType == 1) {
+                    var x = this.onresize[p.getAttribute("id")];
+                    if (x.children)
+                        delete x.children[htmlId]
+                }
+            }
+        }
+        
         return ret;
     },
 
@@ -1372,6 +1390,7 @@ jpf.layout = {
             var f = new Function(strRules.join("\n"));//.replace(/try\{/g, "").replace(/}catch\(e\)\{\s*\}/g, "\n")
             if (this.onresize[htmlId])
                 f.children = this.onresize[htmlId].children;
+                
             if (p && p.nodeType == 1) {
                 var x = this.onresize[p.getAttribute("id")];
                 (x.children || (x.children = {}))[htmlId] = f;
