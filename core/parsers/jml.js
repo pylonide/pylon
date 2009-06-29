@@ -1224,9 +1224,10 @@ jpf.JmlParser = {
         //#endif
 
         //Call the onload event
-        if (!jpf.loaded)
+        if (!jpf.loaded) {
+            jpf.loaded = true;
             jpf.dispatchEvent("load");
-        jpf.loaded = true;
+        }
 
         //#ifdef __WITH_XFORMS
         var models = jpf.nameserver.getAll("model");
