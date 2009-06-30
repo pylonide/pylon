@@ -370,8 +370,13 @@ jpf.Validation = function(){
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
     this.$fValidate = function(){
-        if (!this.$validgroup || this.$validgroup.getErrorBox(this).host != this)
-            this.validate(true); 
+        if (!this.$validgroup)
+            this.validate(true);
+        else {
+             var errBox = this.$validgroup.getErrorBox(this);
+             if (!errBox.visible || errBox.host != this)
+                this.validate(true);
+        }
     };
     this.addEventListener("blur", this.$fValidate);
     

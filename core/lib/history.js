@@ -101,7 +101,7 @@ jpf.history = {
                             clearTimeout(top.jpf.history.ie7timer);\
                             top.jpf.history.ie7timer = setTimeout(function(){\
                                 top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
-                            }, 10);\
+                            }, 100);\
                         }\
                         else {\
                             top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
