@@ -94,8 +94,18 @@ jpf.history = {
                         setInterval('checkUrl()', 200);\
                     }\
                     function checkUrl(){\
+                        if (top.jpf.isIE7Simulation && top.jpf.history.lastHtml)\
+                            document.body.innerHTML = top.jpf.history.lastHtml;\
                         var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
-                        top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                        if (top.jpf.isIE7Simulation) {\
+                            clearTimeout(top.jpf.history.ie7timer);\
+                            top.jpf.history.ie7timer = setTimeout(function(){\
+                                top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                            }, 10);\
+                        }\
+                        else {\
+                            top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                        }\
                         lastURL = document.body.scrollTop;\
                     }\
                     checkUrl();\
@@ -115,7 +125,11 @@ jpf.history = {
             this.timer2 = setInterval(function(){
                 //status = jpf.history.changingHash;
                 if (!jpf.history.changingHash && location.hash != "#" + jpf.history.page) {
-                    jpf.history.hasChanged(location.hash.replace(/^#/, ""));
+                    var name = location.hash.replace(/^#/, "");
+                    var page = jpf.history.page;
+                    jpf.history.setHash(name, true, true);
+                    jpf.history.page = page;
+                    jpf.history.hasChanged(name);
                 }
             }, jpf.history.delay || 200);
         }
@@ -141,8 +155,8 @@ jpf.history = {
      * @param {String}  name    the new hash value.
      * @param {Boolean} timed   whether to add a delay to setting the value.
      */
-    setHash : function(name, timed){
-        if (this.changing || this.page == name || location.hash == "#" + name) {
+    setHash : function(name, timed, force){
+        if (this.changing || this.page == name || !force && location.hash == "#" + name) {
             this.to_name = name;
             return;
         }
@@ -167,6 +181,7 @@ jpf.history = {
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
             h.innerHTML = this.length;
+            this.lastHtml = this.iframe.document.body.innerHTML;
         };
 
         (jpf.isIE && !jpf.isIE8 ? this.iframe : window).location.href = "#" + name;
