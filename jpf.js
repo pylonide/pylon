@@ -347,17 +347,18 @@ var jpf = {
          */
         this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
         
+        /**
+         * Specifies whether the application is running in the Internet Explorer browser version 7.
+         * @type {Boolean}
+         */
+        this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
+        
         //Mode detection
         if (this.isIE8 && document.documentMode == 7) {
             jpf.isIE7 = true;
             jpf.isIE8 = false;
         }
         
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 7.
-         * @type {Boolean}
-         */
-        this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 6.
          * @type {Boolean}

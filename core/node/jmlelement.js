@@ -383,7 +383,7 @@ jpf.JmlElement = function(){
 
         // #ifdef __DEBUG
         if (this.nodeFunc == jpf.NODE_VISIBLE) {
-            if (jpf.debug && this.oExt.nodeType)
+            if (jpf.debug && this.oExt && this.oExt.nodeType)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }
         // #endif
