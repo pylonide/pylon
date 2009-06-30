@@ -57,7 +57,7 @@ jpf.Elements = [
     "button",
     "calendar",
     "caldropdown",
-    //"chart",
+    "chart",
     //"presenter",
     "checkbox",
     "collection",
@@ -192,6 +192,7 @@ jpf.KernelModules = [
     "lib/draw.js",
     "lib/draw_canvas.js",
     "lib/draw_vml.js",
+    "lib/chart_draw.js",
 
     //"lib/sql.js",
     //"lib/vector.js",

@@ -570,7 +570,8 @@ jpf.JmlElement = function(){
             if (oItem.$jml && oItem.$jml.parentNode)
                 oItem.$jml.parentNode.removeChild(oItem.$jml);*/
 
-            oItem.destroy(true);
+            if (oItem.destroy)
+                oItem.destroy(true);
 
             if (oItem.oExt != this.oInt)
                 jpf.removeNode(oItem.oExt);
