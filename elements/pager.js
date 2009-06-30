@@ -112,7 +112,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         var rhigh = Math.ceil(this.range / 2);
         var start = Math.max(1, curpage - rlow);
         var end   = Math.min(totalpages + 1, start + this.range);
-        if (start - end < this.range && start != 1)
+        if (end - start < this.range && start != 1)
             start = Math.max(end - this.range, 1);
         
         for (var i = start, page; i < end; i++) {
