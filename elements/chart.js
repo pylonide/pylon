@@ -23,16 +23,16 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element displaying a skinnable rectangle which can contain other JML elements.
+ * Element displays a chart.
  *
  * @classDescription This class creates a new chart
  * @return {Chart} Returns a new chart
  * @type {Chart}
  * @constructor
  * @allowchild {elements}, {anyjml}
- * @addnode elements:bar
+ * @addnode elements:chart
  *
- * @author      Ruben Daniels
+ * @author      Rik Arends
  * @version     %I%, %G%
  * @since       0.4
  */
@@ -42,6 +42,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
      //var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};    
     var _self    = this;
     var timer    = null;
+    var animTimer = null;
 	var doinit   = true;
 	var doresize = false;
     this.drawtime = 10;
@@ -64,6 +65,12 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 
     this.$drawChart = function(){
+        if (!this.childNodes) //We're being destroyed
+            return;
+            
+        if (!this.oExt.offsetHeight) //We're not visible, so let's not bother
+            return;
+        
 		// check if we need to initialize or resize
 		if(doinit){
 			doinit = false;
@@ -222,12 +229,21 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             o.$resize()", true);
         //#endif
         
-        if(this.anim>0){
-            window.setInterval(function(){
+        if (this.anim > 0){
+            animTimer = window.setInterval(function(){
                 _self.$redraw();
-            },this.anim);
+            }, this.anim);
         }
     }
+    
+    this.$destroy = function() {
+        //#ifdef __WITH_LAYOUT
+        jpf.layout.removeRule(this.oExt, "resize");
+        //#endif
+        
+        window.clearTimeout(timer);
+        window.clearInterval(animTimer);
+    };
 }).implement(jpf.Presentation);
 
      

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
+ 
 // #ifdef __JCHART || __INC_ALL
 
 jpf.chart_draw = {
@@ -793,6 +793,9 @@ jpf.chart_draw = {
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
     },
+     //#endif
+    
+    // #ifdef __ENABLE_CHART_HEIGHT3D    
     _height3D: {
 		graph : {
             inherit : 'shape',
@@ -885,6 +888,8 @@ jpf.chart_draw = {
             alert("Failed to compile:\n"+c);return 0;
         }
     },
+    // #endif
+    
     /* bar3D : function(l,e){
 
         e.allocShape(l, l.style.bar );
@@ -914,9 +919,9 @@ jpf.chart_draw = {
             alert("Failed to compile:\n"+c);return 0;
         }
     },*/
-    //#endif
     
-    // #ifdef __ENABLE_CHART_BAR3D    
+    
+    
     /*bar3DXY : function(l,e){
         // we should allocate as many shapes as we have datasets,
         // with different colors
@@ -950,7 +955,7 @@ jpf.chart_draw = {
             alert("Failed to compile:\n"+c);return 0;
         }
     },*/
-    //#endif
+    
     
     // #ifdef __ENABLE_CHART_BAR2D
     _bar2D: {
@@ -1000,6 +1005,7 @@ jpf.chart_draw = {
         }
     },
     
+    // #ifdef __ENABLE_CHART_SHAPE2D
    _shape2D: {
         graph: {
             inherit : 'shape',
