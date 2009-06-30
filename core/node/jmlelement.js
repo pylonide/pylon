@@ -560,17 +560,17 @@ jpf.JmlElement = function(){
         options.clear = true;
         
         //Remove All the childNodes
-        for (var i = 0; i < this.childNodes.length; i++) {
+        for (var i = this.childNodes.length - 1; i >= 0; i--) {
             var oItem = this.childNodes[i];
-            var nodes = oItem.childNodes;
+            /*var nodes = oItem.childNodes;
             for (var k = 0; k < nodes.length; k++)
                 if (nodes[k].destroy)
-                    nodes[k].destroy();
+                    nodes[k].destroy(true);
 
             if (oItem.$jml && oItem.$jml.parentNode)
-                oItem.$jml.parentNode.removeChild(oItem.$jml);
+                oItem.$jml.parentNode.removeChild(oItem.$jml);*/
 
-            oItem.destroy();
+            oItem.destroy(true);
 
             if (oItem.oExt != this.oInt)
                 jpf.removeNode(oItem.oExt);
