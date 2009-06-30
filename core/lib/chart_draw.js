@@ -1004,6 +1004,7 @@ jpf.chart_draw = {
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
     },
+    // #endif
     
     // #ifdef __ENABLE_CHART_SHAPE2D
    _shape2D: {
