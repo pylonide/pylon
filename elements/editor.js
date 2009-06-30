@@ -1319,6 +1319,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.notify = function(item, state) {
+        if (!this.plugins) //We're in the process of being destroyed
+            return;
+        
         var oButton = oButtons[item];
         if (!oButton)
             return;
