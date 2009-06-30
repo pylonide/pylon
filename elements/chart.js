@@ -47,8 +47,11 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 	var doresize = false;
     this.drawtime = 10;
     this.anim = 0;
-
-    this.$supportedProperties = ["anim"];    
+    this.a = 0;
+    this.b = 0;
+    this.c = 0;
+    this.d = 0;
+    this.$supportedProperties = ["anim","a","b","c","d"];    
     
     this.$redraw = function(now,resize){
         if(resize)doresize = true;
@@ -492,6 +495,10 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
         this.orbitx += this.orbitxanim;
         this.orbity += this.orbityanim;
         this.orbitz += this.orbitzanim;
+        this.a = this.$parentChart.a;
+        this.b = this.$parentChart.b;
+        this.c = this.$parentChart.c;
+        this.d = this.$parentChart.d;
         this.rx = this.orbity, this.ry =  this.orbitx, this.rz = this.orbitz+3.141516;
         this.tx  = 0, this.ty = 0, this.tz = -this.distance;
         this.vx2 = (this.vx1 = x1 + this.movex * -w) + this.zoomx * w,
@@ -537,6 +544,7 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
             n.$tilex=this.$tilex, n.$tiley=this.$tiley,
             n.zoomx = this.zoomx,n.zoomy = this.zoomy,n.zoomz = this.zoomz;
 			n.p3d = this.p3d;
+            n.a = this.a;n.b=this.b;n.c=this.c;n.d=this.d;
             n.$drawGraph( this, doresize );
         }
     }
@@ -570,7 +578,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$tilex = 0;
     this.$tiley = 0;
     this.m={x:0,y:0};
-    
+    this.nc = 0;
     this.$propHandlers["left"] = 
     this.$propHandlers["top"] =
     this.$propHandlers["width"] =
