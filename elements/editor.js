@@ -169,7 +169,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         // the state has changed, update the button look/ feel
         setTimeout(function() {
             _self.notifyAll(value);
-            if (_self.plugins.isActive('code'))
+            if (_self.plugins && _self.plugins.isActive('code'))
                 _self.notify('code', jpf.editor.SELECTED);
         });
     };
