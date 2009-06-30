@@ -56,7 +56,7 @@ jpf.namespace("draw", {
                 ",dw = l.dw",ml?"-"+(ml+mr):"",
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
                 ",dw12 = dw*0.5, dh12 = dh*0.5",
-                ",dzw = dw/l.zoomx, dzh = dh/l.zoomy",
+                ",dzw = dw/l.zoomx, dzh = -dh/l.zoomy",
                 ",dx = ",ml?ml:0,
                 ",dy = ",mt?mt:0,
                 ",mx = m&&m.x, my = m&&m.y",
@@ -689,18 +689,18 @@ jpf.namespace("draw", {
         return code;
     },
     
-    parseJSS : function(s,err,inobj){
+    parseJSS : function(s,err,inobj,debug){
         if(!s)return{};
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
             ac = [], sac = [], sn=[], obj = inobj||{}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
                 s=s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?;/g,'');
-                s.replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                s.replace(/(["'])|([\w\.\_]+\:?[\w\_-]*)\s*\{\s*|([\w\_]+)\s*[:]+\s*|([\w\_]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
                     function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
-                    /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
-                    (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
-                    (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
+                    /*if(debug)logw( ln+' - '+(str?' str:'+str:'')+(openobj?' openobj:'+openobj:'')+(openval?' openval:'+openval:'')+
+                    (openmac?' openmac:'+openmac:'')+(open?' open:'+open:'')+(close?' close:'+close:'')+(skip?' skip:##'+skip+'#':'')+(sep?' sep:##'+sep+'#':'')+
+                    (split?' split:'+split:'')+'  pos:'+pos+'\n');*/
                 if(skip)return m;
                 if(sm || str) {
                     if(str && !sm)sm = str;
@@ -831,8 +831,8 @@ jpf.namespace("draw", {
 			else
 				s.push(t);
 		}
-		s.push(
-			"])[ (__g=__floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+        if(imode&2) s.push(
+			"])[ (__g=__floor( __c=(__f=(",n,")",(imode&1)?"*"+(len-3):"",
 			")<0?0:__f))>",len-3,"?",len-3,":__g].slice(1),16))&0xff)",
 			"*(__d=1-(__c-__floor(__c)))",
 			"+((__b=parseInt(__t[ (__g=__ceil(__c))>",len-3,"?",len-3,":__g",
@@ -840,9 +840,17 @@ jpf.namespace("draw", {
 			"+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
 			"+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
 			").toString(16)).slice(-6)");
+        else s.push(
+			"])[ __floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+			")<0?-__f:__f)%",len-2,"].slice(1),16))&0xff)",
+			"*(__d=1-(__c-__floor(__c)))",
+			"+((__b=parseInt(__t[ __ceil(__c)%",len-2,
+			"].slice(1),16))&0xff)*(__e=1-__d) )",
+			"+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
+			"+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
+			").toString(16)).slice(-6)");      
 		return s.join('');
 	},
-
 	$lut : function(imode,n){
 		var s=["(["],a, i = 2, len = arguments.length;
 		for(;i<len;i++){
@@ -914,6 +922,14 @@ jpf.namespace("draw", {
 		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
 		return this.$pal.apply(this,arg);
 	},
+	palc : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(3);
+		return this.$pal.apply(this,arg);
+	},
+	palci : function(){
+		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(2);
+		return this.$pal.apply(this,arg);
+	},    
 	lin : function(){
 		var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
 		return this.$lin.apply(this,arg);
