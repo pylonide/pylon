@@ -1257,3 +1257,5 @@ jpf.chart_draw = {
 $:0};
 jpf.chart_draw.height2D = jpf.chart_draw.line2D;
 jpf.chart_draw._height2D = jpf.chart_draw._line2D;
+
+//#endif
