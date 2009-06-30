@@ -608,9 +608,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oPlay       = this.$getLayoutNode("main", "play", this.oExt);
         this.oNext       = this.$getLayoutNode("main", "next", this.oExt);
 
-        var rules = "jpf.lookup(" + this.uniqueId + ").$resize()";
+        //#ifdef __WITH_LAYOUT
+        //@todo add this to $destroy
+        var rules = "var o = jpf.all[" + this.uniqueId + "];\
+                     if (o) o.$resize()";
         jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling",
                             rules, true);
+        //#endif
 
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {

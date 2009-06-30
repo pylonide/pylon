@@ -229,7 +229,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //#ifdef __WITH_LAYOUT
         jpf.layout.setRules(this.oExt, "resize", "var o = jpf.all[" + this.uniqueId + "];\
-            o.$resize()", true);
+            if (o) o.$resize()", true);
         //#endif
         
         if (this.anim > 0){

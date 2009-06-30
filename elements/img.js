@@ -116,13 +116,17 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oImage.nodeType == 2 && !this.$resize.done) {
             this.oImg = this.oInt.getElementsByTagName("img")[0];
             if (this.oImg) {
+                //#ifdef __WITH_LAYOUT
+                //@todo add this to $destroy
                 jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
-                    "jpf.all[" + this.uniqueId + "].$resize()");
+                    "var o = jpf.all[" + this.uniqueId + "];\
+                     if (o) o.$resize()");
                 jpf.layout.activateRules(this.pHtmlNode);
                 
                 this.oImg.onload = function(){
                     jpf.layout.forceResize(_self.pHtmlNode);
                 }
+                //#endif
             }
             
             this.$resize.done = true;

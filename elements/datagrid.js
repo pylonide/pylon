@@ -2363,9 +2363,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         ? "16px" : "0";
                 }
                 
+                //#ifdef __WITH_LAYOUT
                 jpf.layout.setRules(this.oExt, this.uniqueId + "_datagrid",
-                    "jpf.all[" + this.uniqueId + "].$resize()");
+                    "var o = jpf.all[" + this.uniqueId + "];\
+                     if (o) o.$resize()");
                 jpf.layout.activateRules(this.oExt);
+                //#endif
                 
                 this.addEventListener("afterload", this.$resize);
                 this.addEventListener("xmlupdate", this.$resize);
@@ -2831,8 +2834,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.removeNode(this.oDrag);
         this.oDrag = this.oExt.onclick = this.oInt.onresize = null;
         
+        //#ifdef __WITH_LAYOUT
         jpf.layout.removeRule(this.oInt, "dg" + this.uniqueId);
         jpf.layout.activateRules(this.oInt);
+        //#endif
     };
     
     this.counter = 0;

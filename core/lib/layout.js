@@ -1410,14 +1410,20 @@ jpf.layout = {
                 }*/
                 
                 var rsz = function(f){
-                    var c = [];
-                    for (var name in f)
-                        c.unshift(f[name]);
-                    for (var i = 0; i < c.length; i++){
-                        c[i]();
-                        if (c[i].children) {
-                            rsz(c[i].children);
+                    //@todo fix this
+                    try{
+                        var c = [];
+                        for (var name in f)
+                            c.unshift(f[name]);
+                        for (var i = 0; i < c.length; i++){
+                            c[i]();
+                            if (c[i].children) {
+                                rsz(c[i].children);
+                            }
                         }
+                    }
+                    catch(e){
+                        
                     }
                 }
                 

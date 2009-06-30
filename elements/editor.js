@@ -1633,10 +1633,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.sanitizeTextbox(this.oDoc.body);
         //#endif
 
+        //#ifdef __WITH_LAYOUT
         // setup layout rules:
+        //@todo add this to $destroy
         jpf.layout.setRules(this.oExt, this.uniqueId + "_editor",
-            "jpf.all[" + this.uniqueId + "].$resize()");
+            "var o = jpf.all[" + this.uniqueId + "];\
+            if (o) o.$resize()");
         jpf.layout.activateRules(this.oExt);
+        //#endif
 
         // do the magic, make the editor editable.
         this.makeEditable();
