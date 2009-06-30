@@ -69,12 +69,12 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             this.curpage = 1;
         else if (this.curpage > this.totalpages) 
             this.curpage = this.totalpages;
-        
-        this.dispatchEvent("onbeforepagechange", {page:pageNr});
+
+        this.dispatchEvent("onbeforepagechange", {page:this.curpage});
         this.getModel(true).loadFrom(this.pageload, null, {
-            page     : pageNr,
+            page     : this.curpage,
             callback : function(){
-                _self.dispatchEvent("onafterpagechange", {page:pageNr});
+                _self.dispatchEvent("onafterpagechange", {page:this.curpage});
             }
         });
     };
