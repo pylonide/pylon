@@ -202,9 +202,10 @@ jpf.teleport = {
         jpf.console.info("Cleaning teleport");
         //#endif
         
-        for (var i = 0; i < this.availHTTP.length; i++) {
+        for (var i = 0; i < this.availHTTP.length; i++)
             this.availHTTP[i] = null;
-        }
+        
+        this.availHTTP.length = 0;
     }
 };
 

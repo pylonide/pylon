@@ -262,6 +262,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     /**** Init ****/
 
+    var timer;
     this.$draw = function(){
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
@@ -276,8 +277,9 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
             _self.$scrolldown = this.scrollTop >= this.scrollHeight
                 - this.offsetHeight + jpf.getVerBorders(this);
         }
-        setInterval(function(){
-            if (_self.$scrolldown && _self.scrolldown) {
+        clearInterval(timer);
+        timer = setInterval(function(){
+            if (_self.oScroll && _self.$scrolldown && _self.scrolldown) {
                 _self.oScroll.scrollTop = _self.oScroll.scrollHeight;
             }
         }, 60);
@@ -353,6 +355,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
+        clearInterval(timer);
         jpf.removeNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;
