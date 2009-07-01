@@ -263,7 +263,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         if (jpf.isIE && jpf.getStyle(o, "styleFloat") == "none") {
             var q = o.previousSibling;
             while (q) {
-                if (jpf.getStyle(q, "styleFloat") == "left") {
+                if (q.nodeType == 1 && jpf.getStyle(q, "styleFloat") == "left") {
                     wt -= parseInt(jpf.getStyle(o, "marginLeft"));
                     break;
                 }
