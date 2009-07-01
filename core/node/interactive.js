@@ -307,8 +307,8 @@ jpf.Interactive = function(){
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
         
-        var sLeft = document.documentElement.scrollLeft;
-        var sTop = document.documentElement.scrollTop;
+        var sLeft = 0;//document.documentElement.scrollLeft;
+        var sTop = 0;//document.documentElement.scrollTop;
         var x = (oX = e.clientX) - startPos[0] + sLeft;
         var y = (oY = e.clientY) - startPos[1] + sTop;
 
@@ -466,8 +466,8 @@ jpf.Interactive = function(){
             ? oOutline
             : _self.oExt;
 
-        var sLeft = document.documentElement.scrollLeft;
-        var sTop = document.documentElement.scrollTop;
+        var sLeft = 0;//document.documentElement.scrollLeft;
+        var sTop = 0;//document.documentElement.scrollTop;
         
         if (we) {
             oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX + sLeft))) + "px";
@@ -534,8 +534,8 @@ jpf.Interactive = function(){
 
         //@todo This is probably not gen purpose
         var pos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent
-        var sLeft = document.documentElement.scrollLeft;
-        var sTop = document.documentElement.scrollTop;
+        var sLeft = 0;//document.documentElement.scrollLeft;
+        var sTop = 0;//document.documentElement.scrollTop;
         var x = e.clientX - pos[0] + sLeft;
         var y = e.clientY - pos[1] + sTop;
         
