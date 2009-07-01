@@ -606,8 +606,8 @@ jpf.DataBinding = function(){
 
         //Get Rules from Array
         var rules = this.actionRules && this.actionRules[action];
-        
-        if (!rules && !jpf.appsettings.autoDisableActions || action.match(/change|select/))
+        if (!this.actionRules || !jpf.appsettings.autoDisableActions 
+          || !rules && action.match(/change|select/))
             rules = [];
 
         if (!rules)
