@@ -260,6 +260,17 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
 
+        if (jpf.isIE && jpf.getStyle(o, "styleFloat") == "none") {
+            var q = o.previousSibling;
+            while (q) {
+                if (jpf.getStyle(q, "styleFloat") == "left") {
+                    wt -= parseInt(jpf.getStyle(o, "marginLeft"));
+                    break;
+                }
+                q = q.previousSibling;
+            }
+        }
+
         //Border - Top
         bh = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
             ? "borderTopWidth" : "border-top-width");
