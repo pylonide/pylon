@@ -311,7 +311,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         while (!id && htmlNode.parentNode)
             id = (htmlNode = htmlNode.parentNode)
                 .getAttribute(jpf.xmldb.htmlIdTag);
+
         var container = this.$getLayoutNode("item", "container", htmlNode);
+        if (!container) return;
+        
         if (jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
@@ -332,6 +335,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
+        //We don't slide open elements without children.
+        if (!this.getTraverseNodes(xmlNode).length)
+            return; 
+        
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -349,6 +356,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (immediate) {
             container.style.height = "auto";
+            return;
+        }
+        
+        if (!this.prerender && _self.hasLoadStatus(xmlNode, "potential") 
+          && !container.innerHTML) {
+            _self.$extend(xmlNode, container);
             return;
         }
 
@@ -662,45 +675,6 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (!hasChildren && container)
                 container.style.display = "none";
-
-            if (state & HAS_CHILD) {
-                //@todo please rewrite this to a normal way of doing this
-                var elOpenClose = this.$getLayoutNode("item", "openclose", htmlNode);
-                if (elOpenClose) {
-                    elOpenClose.onmousedown = new Function('e', "if(!e) e = event;\
-                        if (e.button == 2) return;\
-                        var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.slideToggle(this);\
-                        if (o.onmousedown) o.onmousedown(e, this);\
-                        jpf.cancelBubble(e, o);");
-                }
-                
-                var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
-                if (elIcon) {
-                    elIcon[this.opencloseaction || "ondblclick"]
-                        = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
-                        //#ifdef __WITH_RENAME
-                        "o.stopRename();" + 
-                        //#endif
-                        " o.slideToggle(this);\
-                        o.choose();");
-                }
-                
-                this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"]
-                    = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
-                    //#ifdef __WITH_RENAME
-                    "o.stopRename();" + 
-                    //#endif
-                    " this.dorename=false;\
-                    o.slideToggle(this);\
-                    o.choose();");
-            }
-            /*else{
-                //Experimental
-                this.$getLayoutNode("item", "openclose", htmlNode).onmousedown = null;
-                this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = null;
-                this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
-            }*/
         }
     };
 
@@ -732,7 +706,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.$setStyleClass(oItem, xmlNode.tagName)
         var elOpenClose = this.$getLayoutNode("item", "openclose");
         if (hasChildren && elOpenClose) {
-            elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
+            elOpenClose.setAttribute("onmousedown",
                 "var o = jpf.lookup(" + this.uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\
@@ -741,68 +715,63 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
+        var ocAction = this.opencloseaction || "ondblclick";
+        
         //Icon interaction
         var elIcon = this.$getLayoutNode("item", "icon");
         if (elIcon) {
-            if (hasChildren) {
-                var strFunc = "var o = jpf.lookup(" + this.uniqueId + ");\
-                    o.choose()" + 
-                    //#ifdef __WITH_RENAME
-                    "o.stopRename();" + 
-                    //#endif
-                    "o.slideToggle(this);\
-                    jpf.cancelBubble(event,o);";
-                
-                if (this.opencloseaction != "onmousedown")
-                    elIcon.setAttribute(this.opencloseaction || "ondblclick", strFunc);
+            if (ocAction != "ondblclick") {
+                elIcon.setAttribute(ocAction, 
+                  "var o = jpf.lookup(" + this.uniqueId + ");" +
+                   (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey);" : "") +
+                   (true ? "o.slideToggle(this);" : ""));
             }
-
-            elIcon.setAttribute("onmousedown", 
-                "jpf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);" 
-                + (strFunc && this.opencloseaction == "onmousedown" ? strFunc : ""));
-                
-            if (!elIcon.getAttribute("ondblclick"))
-                elIcon.setAttribute("ondblclick", "var o = jpf.lookup(" + this.uniqueId + ");\
-                    o.choose();" +
-                    //#ifdef __WITH_RENAME
-                    "o.stopRename();" +
-                    //#endif
-                    ""
-                );
+            if (ocAction != "onmousedown") {
+                elIcon.setAttribute("onmousedown", 
+                  "jpf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);");
+            }
+            
+            elIcon.setAttribute("ondblclick", 
+              "var o = jpf.lookup(" + this.uniqueId + ");\
+              o.choose();" + 
+              //#ifdef __WITH_RENAME
+              "o.stopRename();" + 
+              //#endif
+              (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
+              "jpf.cancelBubble(event,o);");
         }
-        
+
         //Select interaction
         var elSelect = this.$getLayoutNode("item", "select");
-        if (hasChildren) {
-            var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");\
-                o.choose();" +
-                //#ifdef __WITH_RENAME
-                "o.stopRename();" + 
-                //#endif
-                "o.slideToggle(this);\
-                jpf.cancelBubble(event,o);";
-            if (this.opencloseaction != "onmousedown")
-                elSelect.setAttribute(this.opencloseaction || "ondblclick", strFunc2);
-        }
-        //if(event.button != 1) return; 
-        elSelect.setAttribute("onmousedown",
-            "var o = jpf.lookup(" + this.uniqueId + ");\
-             if (!o.renaming && o.hasFocus() \
+        
+        var strMouseDown = 
+            "if (!o.renaming && o.hasFocus() \
                && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
                  this.dorename = true;\
              o.select(this, event.ctrlKey, event.shiftKey);\
              if (o.onmousedown)\
-                o.onmousedown(event, this);" 
-             + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
-
-        if (!elSelect.getAttribute("ondblclick"))
-            elSelect.setAttribute("ondblclick", 
-                "var o = jpf.lookup(" + this.uniqueId + ");" +
-                //#ifdef __WITH_RENAME
-                "o.stopRename();" + 
-                //#endif
-                "o.choose();");
-
+                o.onmousedown(event, this);";
+        
+        if (ocAction != "ondblclick") {
+            elSelect.setAttribute(ocAction, 
+              "var o = jpf.lookup(" + this.uniqueId + ");" +
+               (ocAction == "onmousedown" ? strMouseDown : "") +
+               (true ? "o.slideToggle(this);" : ""));
+        }
+        if (ocAction != "onmousedown") {
+            elSelect.setAttribute("onmousedown", 
+              "var o = jpf.lookup(" + this.uniqueId + ");" + strMouseDown);
+        }
+        
+        elSelect.setAttribute("ondblclick", 
+          "var o = jpf.lookup(" + this.uniqueId + ");\
+          o.choose();" + 
+          //#ifdef __WITH_RENAME
+          "o.stopRename();this.dorename=false;" + 
+          //#endif
+          (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
+          "jpf.cancelBubble(event,o);");
+        
         //#ifdef __WITH_RENAME
         elSelect.setAttribute("onmouseup", 
             "var o = jpf.lookup(" + this.uniqueId + ");\
