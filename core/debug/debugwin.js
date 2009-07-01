@@ -297,7 +297,8 @@ jpf.debugwin = {
     show : function(e, filename, linenr){
         var list = [], seen = {}, i;
 
-        jpf.loadScreen.hide();
+        if (jpf.loadScreen)
+            jpf.loadScreen.hide();
 
         if (!jpf.isIE && !Error.custom) {
             var stack = new Error().stack.split("\n");

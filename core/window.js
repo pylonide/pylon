@@ -863,8 +863,8 @@ jpf.WindowImplementation = function(){
                 pos = [0, 0];
 
             var ev = {
-                x         : pos[0] + 10 - document.documentElement.scrollLeft,
-                y         : pos[1] + 10 - document.documentElement.scrollTop,
+                x         : pos[0] + 10 + document.documentElement.scrollLeft,
+                y         : pos[1] + 10 + document.documentElement.scrollTop,
                 htmlEvent : e
             }
         }
@@ -873,8 +873,8 @@ jpf.WindowImplementation = function(){
                 ev = e;
             else
                 ev = { //@todo probably have to deduct the border of the window
-                    x         : e.clientX - document.documentElement.scrollLeft,
-                    y         : e.clientY - document.documentElement.scrollTop,
+                    x         : e.clientX + document.documentElement.scrollLeft,
+                    y         : e.clientY + document.documentElement.scrollTop,
                     htmlEvent : e
                 }
         }
