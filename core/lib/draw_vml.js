@@ -28,31 +28,65 @@ jpf.namespace("draw.vml",{
     //----------------------------------------------------------------------
      
     initRoot : function(r){
-        
-        jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
-        
-        r.oInt.innerHTML = "\
-            <div style='z-index:10000;position:absolute;left:0px;width:0px;\
-                        background:url(images/spacer.gif);width:"+
-                        r.width+"px;height:"+r.height+"px;'>\
-            </div>\
-            <div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
-                        position:absolute;display:inline-block;left:0;top:0;width:"+
-                        r.width+'px;height:'+r.height+
-                        "px;overflow:hidden;'>\
-            </div>";
-        r.vmlroot = r.oInt.lastChild;
+        // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
+        if(!jpf.isIE8 || jpf.isIE7Simulation){
+            jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
+            r.oInt.innerHTML = "\
+                <div style='z-index:10000;position:absolute;left:0px;width:0px;\
+                            background:url(images/spacer.gif);width:"+
+                            r.width+"px;height:"+r.height+"px;'>\
+                </div>\
+                <div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
+                            position:absolute;display:inline-block;left:0;top:0;width:"+
+                            r.width+'px;height:'+r.height+
+                            "px;overflow:hidden;'>\
+                </div>";
+            r.vmlroot = r.oInt.lastChild;
+       } else {
+            r.oInt.innerHTML = "\
+                <div style='z-index:10000;position:absolute;left:0px;width:0px;\
+                            background:url(images/spacer.gif);width:"+
+                            r.width+"px;height:"+r.height+"px;'>\
+                </div>\
+                <iframe style='margin:0 0 0 0;padding:0 0 0 0;background:transparent; \
+                            position:absolute;border:0px;display:inline-block;left:0;top:0;width:"+
+                            r.width+'px;height:'+r.height+
+                            "px;overflow:hidden;'>\
+                </iframe>";
+            r.vmliframe = r.oInt.lastChild;
+            r.vmliframe.allowTransparency=true;
+            var doc = r.vmliframe.contentWindow.document;
+            doc.open();
+            doc.writeln("<head><meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7' /></head>\
+                        <style>v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);}\
+                        v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}</style>\
+                        <html><body style='margin: 0 0 0 0;padding: 0 0 0 0;border: 0px;background:transparent;'>\
+                        <div style='position:absolute;display:inline-block;'></div></body></html>");
+            doc.close();
+            r.vmlroot = doc.body.firstChild;
+      }
+      //  var div = r.vmlroot.document.createElement("div");
+      //  div.innerHTML = "EHLLO";
+      //  r.vmlroot.document.body.appendChild(div);
+//        var doc = r.vmlroot.contentWindow.document.innerHTML="<body style='background:red'>WHEEE</body>";
+//        alert();
         return this;
     },
     resizeRoot : function(r){
-       var t = r.vmlroot;
-       t.style.width = r.width;
-       t.style.height = r.height;
-       t = t.previousSibling;
-       t.style.width=r.width,t.style.height=r.height;
+        var t = r.vmliframe || r.vmlroot;
+        t.style.width = r.width;
+        t.style.height = r.height;
+        t = t.previousSibling;
+        t.style.width = r.width,
+        t.style.height = r.height;
+        if(r.vmliframe){
+            t = r.vmlroot;
+            t.style.width = r.width;
+            t.style.height = r.height;
+        }
 	},
     initLayer : function(l , r){
-
+        
         var vmlroot = r.vmlroot;
         var tag = "<div style='position:absolute;display:inline-block;left:"+l.left+
                   "px;top:"+l.top+"px;width:"+l.width+"px;height:"+l.height+
