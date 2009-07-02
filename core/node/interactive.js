@@ -221,7 +221,7 @@ jpf.Interactive = function(){
             if (posAbs && !_self.aData)
                 jpf.plane.hide();
             //#endif
-            
+
             if (overThreshold) {
                 if (_self.setProperty) {
                     if(l) _self.setProperty("left", l);

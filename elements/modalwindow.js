@@ -124,6 +124,7 @@ jpf.WinServer = {
  */
 jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
+    this.collapsedHeight   = 30;
     this.canHaveChildren   = 2;
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
@@ -431,18 +432,23 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (jpf.layout && this.oInt)
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
 
-            if (this.modal) 
-                this.oExt.style.position = "fixed";
+            //if (this.modal) 
+                //this.oExt.style.position = "fixed";
             
             if (this.center) {
                 var size = !this.oExt.offsetParent || this.oExt.offsetParent.tagName == "BODY"
                     ? [jpf.getWindowWidth(), jpf.getWindowHeight()]
-                    : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight];
+                    : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight, 0, 0];
                 
-                this.oExt.style.left = Math.max(0, ((
-                    size[0] - this.oExt.offsetWidth)/2)) + "px";
-                this.oExt.style.top  = Math.max(0, ((
-                    size[1] - this.oExt.offsetHeight)/3)) + "px";
+                if (size.length == 2) {
+                    size.push(document.documentElement.scrollWidth - size[0], 
+                      document.documentElement.scrollHeight - size[1]);
+                }
+                
+                this.oExt.style.left = (Math.max(0, ((
+                    size[0] - this.oExt.offsetWidth)/2)) + size[2]) + "px";
+                this.oExt.style.top  = (Math.max(0, ((
+                    size[1] - this.oExt.offsetHeight)/3)) + size[3]) + "px";
             }
 
             if (!this.isRendered) {

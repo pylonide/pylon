@@ -275,8 +275,10 @@ jpf.Anchoring = function(){
             return;
         }
 
-        if (this.left || this.top || this.right || this.bottom || this.$anchors.length)
-            this.oExt.style.position = "absolute";
+        if (this.left || this.top || this.right || this.bottom || this.$anchors.length) {
+            //if ("absolute|fixed".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+                this.oExt.style.position = "absolute";
+        }
 
         var rules;
 
