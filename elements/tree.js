@@ -335,13 +335,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
-        //We don't slide open elements without children.
-        if (!this.getTraverseNodes(xmlNode).length)
-            return; 
-        
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
+        
+        //We don't slide open elements without children.
+        if (!container.innerHTML && !this.getTraverseNodes(xmlNode).length)
+            return; 
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
