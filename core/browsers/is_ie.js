@@ -208,8 +208,21 @@ jpf.runIE = function(){
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
             }
-            else
-                pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
+            else {
+                try {
+                    pNode.insertAdjacentHTML(beforeNode ? "beforeBegin" : "beforeEnd", strHTML);
+                }
+                catch(e) {
+                    //#ifdef __DEBUG
+                    jpf.console.warn("Warning found block element inside a " 
+                      + pNode.tagName 
+                      + " element. Rendering will give unexpected results");
+                    //#endif
+                    
+                    pNode.insertAdjacentHTML("afterEnd", strHTML);
+                    return pNode.nextSibling;
+                }
+            }
 
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         };

@@ -163,17 +163,17 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.oncontextmenu = function(){
             return false;   
         }
-        
+
         this.oExt.onselectstart = function(){
             return false;
         }
-        
+
         var hasMoved;
         this.addEventListener("contextmenu", function(e){
             if (hasMoved)
                 e.cancelBubble = true;
         });
-        
+
         this.oExt.onmouseup  = function(e){
 			if(doinit)return;
             if (!e) e = event;
@@ -185,7 +185,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
                 (t=stack[i]).$mouseUp(x - t.left, y - t.top);
             stack.length = 0;
         }
-              
+
         this.oExt.onmousemove = function(e){
 			if(doinit)return;
             //if (!interact) return;
