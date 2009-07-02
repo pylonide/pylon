@@ -260,7 +260,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
 
-        if (jpf.isIE && jpf.getStyle(o, "styleFloat") == "none") {
+        if (jpf.isIE && !jpf.isIE8 && jpf.getStyle(o, "styleFloat") == "none") {
             var q = o.previousSibling;
             while (q) {
                 if (q.nodeType == 1 && jpf.getStyle(q, "styleFloat") == "left") {
@@ -304,7 +304,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         o = o.offsetParent;
     }
 
-    return [wt, ht];
+    return [wt - (jpf.isIE && !jpf.isIE8 ? 1 : 0), ht];
 };
 
 // #endif

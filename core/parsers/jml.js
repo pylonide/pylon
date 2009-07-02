@@ -509,6 +509,7 @@ jpf.JmlParser = {
 
                 //Create Object en Reference
                 var o = new jpf[objName](pHtmlNode, tagName, x);
+
                 if (x.getAttribute("id"))
                     jpf.setReference(x.getAttribute("id"), o);
 
