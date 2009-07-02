@@ -368,7 +368,13 @@ jpf.http = function(){
                     + jpf.appsettings.queryAppend;
             }
             //#endif
-
+            
+            //Currently we don't support html5 cross domain access
+            if (jpf.hasHtml5XDomain 
+              && httpUrl.match(/^http:\/\//) 
+              && !new jpf.url(httpUrl).isSameLocation())
+                throw new Error("Access Denied");
+            
             http.open(this.method || options.method || "GET", httpUrl,
                 async, options.username || null, options.password || null);
 

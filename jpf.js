@@ -334,6 +334,7 @@ var jpf = {
          * @type {Boolean}
          */
         this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
+        this.isGecko35   = this.isGecko && sAgent.indexOf("firefox/3.5") != -1;
         
         var found;
         /**
@@ -414,6 +415,7 @@ var jpf = {
         //Set Compatibility
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
         this.supportVML                = jpf.isIE;
+        this.hasHtml5XDomain           = jpf.isGecko35;
         this.supportCanvas             = !jpf.isIE;
         this.supportSVG                = !jpf.isIE;
         this.styleSheetRules           = jpf.isIE ? "rules" : "cssRules";
