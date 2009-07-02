@@ -441,8 +441,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight, 0, 0];
                 
                 if (size.length == 2) {
-                    size.push(document.documentElement.scrollWidth - size[0], 
-                      document.documentElement.scrollHeight - size[1]);
+                    size.push(document.documentElement.scrollLeft, 
+                      document.documentElement.scrollTop);
                 }
                 
                 this.oExt.style.left = (Math.max(0, ((
