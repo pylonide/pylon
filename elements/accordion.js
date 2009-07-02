@@ -362,6 +362,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
         
                         panels[id2].opened = false;
+                        
+                        //#ifdef __WITH_PROPERTY_WATCH
+                        //this.dispatchWatch("visible", true);
+                        //#endif
                     }
                 });
             }
@@ -383,6 +387,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
 
                         panels[id].opened = true;
+                        
+                        //#ifdef __WITH_PROPERTY_WATCH
+                        //this.dispatchWatch("visible", true);
+                        //#endif
                     }
                 });
             }
@@ -439,6 +447,10 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
     
                     panels[id].opened = false;
+                    
+                    //#ifdef __WITH_PROPERTY_WATCH
+                    //this.dispatchWatch("visible", false);
+                    //#endif
                 }
             });
         }

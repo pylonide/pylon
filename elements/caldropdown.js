@@ -916,8 +916,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype    = parseInt(this.$getLayoutNode("main", "type")) || 1;
 
-        if (this.$jml.childNodes.length)
-            this.$loadInlineData(this.$jml);
+        /*if (this.$jml.childNodes.length)
+            this.$loadInlineData(this.$jml); caldropdown don't inherit that function */
 
         if (!jpf.caldropdown.cache) {
             jpf.caldropdown.cache = {
@@ -963,11 +963,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
 
-        if (jpf.caldropdown.cache.refcount == 0) {
-            jpf.caldropdown.cache = null;
-        }
-        else {
-            jpf.caldropdown.cache.refcount--;
+        if (jpf.caldropdown.cache && jpf.caldropdown.cache.refcount) {
+            if (jpf.caldropdown.cache.refcount == 0) {
+                jpf.caldropdown.cache = null;
+            }
+            else {
+                jpf.caldropdown.cache.refcount--;
+            }
         }
     };
 }).implement(
