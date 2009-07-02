@@ -157,6 +157,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
                 //logw("init "+ox+" "+oy+" "+t.left+" "+t.width+" "+t.top+" "+t.height);
                 
             }
+            hasMoved = false;
         }
                 
         this.oExt.oncontextmenu = function(){
@@ -167,8 +168,13 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             return false;
         }
         
-        this.oExt.onmouseup  = 
-        function(e){
+        var hasMoved;
+        this.addEventListener("contextmenu", function(e){
+            if (hasMoved)
+                e.cancelBubble = true;
+        });
+        
+        this.oExt.onmouseup  = function(e){
 			if(doinit)return;
             if (!e) e = event;
             bt = 0;
@@ -188,10 +194,15 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             var dx = (-lx + (lx=e.clientX-pos[0])),
                 dy = (-ly + (ly=e.clientY-pos[1]));
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
-            if(bt){
+
+            if (bt) {
+                if (bt == 2) 
+                    hasMoved = true;
+
                 for(var t, i = stack.length-1;i>=0;i--)
                     (t = stack[i]).$mouseMove(dx,dy,bt,ox-t.left,oy-t.top,lx-t.left,ly-t.top,keys);
-            }else{
+            }
+            else {
                 for(var t, i = _self.childNodes.length-1;i>=0;i--)
                     (t = _self.childNodes[i]).$mouseMove(dx,dy,bt,ox-t.left,
                         oy-t.top,lx-t.left,ly-t.top,keys);
