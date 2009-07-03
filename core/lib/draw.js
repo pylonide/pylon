@@ -271,7 +271,7 @@ jpf.namespace("draw", {
             if(d>=0){
                 pt = pts[d];
                 q=[this.ortho?"":
-                    "zt = persp / (m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23);",
+                    "zt = persp / ((zt=(m20*"+pt[f0]+"+m21*"+pt[f1]+"+m22*"+pt[f2]+"+m23)<-0.01)?zt:-0.01);",
                     "dw12+(m00*"+pt[f0]+"+m01*"+pt[f1]+"+m02*"+pt[f2]+"+m03)*"+
                         (this.ortho?"persp":"zt"),
                     "dh12+(m10*"+pt[f0]+"+m11*"+pt[f1]+"+m12*"+pt[f2]+"+m13)*"+
@@ -317,7 +317,7 @@ jpf.namespace("draw", {
             _x = _v[_x], _y = _v[_y], _z = _v[_z];
         }
         var r = [];
-        if(!this.ortho)r.push("zt =persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
+        if(!this.ortho)r.push("zt =persp/((zt=m20*"+x+"+m21*"+y+"+m22*"+z+"+m23)<-0.01?zt:-0.01);");
         r.push(this[f]( (sx===undefined?"":sx)+
               "dw12+(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
               (sy===undefined?"":sy)+

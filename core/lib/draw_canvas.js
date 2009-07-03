@@ -401,14 +401,14 @@ jpf.namespace("draw.canvas",{
     },
     circle : function( x,y,r,s,e,c ){
         this.dodraw = 1;
-        if(!s)s='0'; if(!e)e='3.141593';c=c?1:0;
+        if(!s)s='0'; if(!e)e='p';c=c?1:0;
         return["_c.arc(",x,",",y,",",r,",",s,",",e,",",c,");"].join('');
     },
-    ellipse : function( x,y,w,h,s,e,c){
+    ellipse : function(x,y,w,h,s,e,c){
         this.dodraw = 1;
-        if(!s) s = '0'; if(!e) e = 'Math.PI*2';c=c?1:0;
-        return["_c.translate(_x1=(",x,"),_y1=(",y,"));_c.scale(_x2=(",w,"),_y2=-(",h,"));",
-               "_c.arc(0,0,1,(",s,")-1.5707965,(",e,")-1.5707965,",!c,");_c.scale(1/_x2,1/_y2);_c.translate(-_x1,-_y1);"].join('');
+        if(!s) s = '0'; if(!e) e = 'p2';c=c?1:0;
+        return["if((_x2=(",w,"))!=0 && (_y2=-(",h,"))!=0){_c.translate(_x1=(",x,"),_y1=(",y,"));_c.scale(_x2,_y2);",
+               "_c.arc(0,0,1,(",s,")-1.5707965,(",e,")-1.5707965,",!c,");_c.scale(1/_x2,1/_y2);_c.translate(-_x1,-_y1);}"].join('');
     },
     rect : function( x,y,w,h){
        /*

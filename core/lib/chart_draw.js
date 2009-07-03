@@ -1104,8 +1104,8 @@ jpf.chart_draw = {
         // lets return a mouse tracking function too.
         try{
             //;
-            //logw(jpf.highlightCode2(c=jpf.formatJS(c)));
-            return new Function('l','v','m',jpf.formatJS(c));
+//            logw(jpf.highlightCode2(jpf.formatJS(c)));
+            return new Function('l','v','m',c);
         }catch(x){
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
