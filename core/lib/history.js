@@ -96,7 +96,7 @@ jpf.history = {
                     function checkUrl(){\
                         if (top.jpf.isIE7Simulation && top.jpf.history.lastHtml)\
                             document.body.innerHTML = top.jpf.history.lastHtml;\
-                        var nr=Math.round((document.all && !top.jpf.isIE7Simulation ? document.body : document.documentElement).scrollTop/100);\
+                        var nr=Math.round((document.all && (!top.jpf.isIE7Simulation || !top.jpf.host) ? document.body : document.documentElement).scrollTop/100);\
                         if (top.jpf.isIE7Simulation) {\
                             clearTimeout(top.jpf.history.ie7timer);\
                             top.jpf.history.ie7timer = setTimeout(function(){\
