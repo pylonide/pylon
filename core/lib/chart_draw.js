@@ -485,7 +485,7 @@ jpf.chart_draw = {
     axis3D : function(l,s){
         var e = jpf.draw;
         var dt = (new Date()).getTime();
-        var zclip = -1;
+        var zclip = -0.01;
         function drawPlane(pr,fl,z1,z2,side,
                             vx1,vx2,vbx,vex,vbx2,vex2,vcx,vcx2,
                             vy1,vy2,vby,vey,vby2,vey2,vcy,vcy2 ){
