@@ -422,8 +422,7 @@ jpf.DataBinding = function(){
             return false;
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true);
-        if (jpf.appsettings.autoDisableActions && !this.actionRules 
-          || this.actionRules && !actionRule) {
+        if (!actionRule && jpf.appsettings.autoDisableActions && this.actionRules) {
             //#ifdef __DEBUG
             if (!xmlContext) {
                 jpf.console.warn("Tried starting new action but no xml \

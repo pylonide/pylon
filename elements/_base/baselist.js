@@ -433,11 +433,11 @@ jpf.BaseList = function(){
             if (elImage) {
                 if (elImage.nodeType == 1) {
                     elImage.style.backgroundImage = "url(" + 
-                        jpf.getAbsolutePath(this.mediaPath,
+                        jpf.getAbsolutePath(jpf.host,
                             this.applyRuleSetOnNode("image", xmlNode)) + ")";
                 }
                 else {
-                    elImage.nodeValue = jpf.getAbsolutePath(this.mediaPath, 
+                    elImage.nodeValue = jpf.getAbsolutePath(jpf.host, 
                         this.applyRuleSetOnNode("image", xmlNode));
                 }
             }
@@ -542,18 +542,18 @@ jpf.BaseList = function(){
         else if (elImage) {
             if (elImage.nodeType == 1)
                 elImage.setAttribute("style", "background-image:url("
-                    + jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode))
+                    + jpf.getAbsolutePath(jpf.host, this.applyRuleSetOnNode("image", xmlNode))
                     + ")");
             else {
                 if (jpf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
                     var p = elImage.ownerElement.parentNode;
                     var img = p.appendChild(p.ownerDocument.createElement("img"));
                     img.setAttribute("src", 
-                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode)));
+                        jpf.getAbsolutePath(jpf.host, this.applyRuleSetOnNode("image", xmlNode)));
                 }
                 else {
                     elImage.nodeValue = 
-                        jpf.getAbsolutePath(this.mediaPath, this.applyRuleSetOnNode("image", xmlNode));
+                        jpf.getAbsolutePath(jpf.host, this.applyRuleSetOnNode("image", xmlNode));
                 }
             }
         }

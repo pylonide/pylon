@@ -56,6 +56,8 @@ jpf.hbox =
 jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
+    
+    var _self = this;
 
     /**** DOM Hooks ****/
     
@@ -131,13 +133,38 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
-            
             jpf.JmlParser.parseChildren(x, this.oInt, this);
             
             if (this.pData.children.length && !jpf.isParsing) 
                 jpf.layout.compileAlignment(this.pData);
             //if(jpf.JmlParser.loaded) 
             //jpf.layout.activateRules(this.oInt);
+            
+            //#ifdef __WITH_PROPERTY_WATCH
+            if (!jpf.hasSingleResizeEvent && !this.oInt.offsetHeight) {
+                function propChange(name, old, value){
+                    if (jpf.isTrue(value) && _self.oExt.offsetHeight) {
+                        jpf.layout.forceResize(_self.oInt);
+                        
+                        var p = _self;
+                        while (p) {
+                            p.unwatch("visible", propChange);
+                            p = p.parentNode;
+                        }
+                    }
+                };
+                
+                this.watch("visible", propChange);
+                
+                var p = this.parentNode;
+                while(p) {
+                    p.watch("visible", propChange);
+                    p = p.parentNode;
+                }
+                
+                return;
+            }
+            //#endif
         }
         else {
             var pData = this.parentNode.aData || this.parentNode.pData;
