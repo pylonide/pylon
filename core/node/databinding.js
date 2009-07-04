@@ -2173,19 +2173,24 @@ jpf.DataBinding = function(){
                 valueSelect = strBindRef;
             }
             else if (valuePath) {
-                var modelIdParts = modelId.split(":", 3);
-
-                modelId = modelIdParts.shift();
-                if (modelId.indexOf("#") == 0) {
-                    modelId += (modelIdParts[0]
-                        ? ":" + modelIdParts.shift()
-                        : ":select")
+                if (modelId.match(/^\w+:/)) {
+                    modelId += "!{" + valuePath.replace(/\/$/, "") + "}";
                 }
+                else {
+                    var modelIdParts = modelId.split(":", 3);
+                    modelId = modelIdParts.shift();
+                    
+                    if (modelId.indexOf("#") == 0) {
+                        modelId += (modelIdParts[0]
+                            ? ":" + modelIdParts.shift()
+                            : ":select")
+                    }
 
-                modelId += ":" + ((modelIdParts[0] ? modelIdParts[0] + "/" : "")
-                    + (valuePath || "."))
-                    .replace(/\/$/, "")
-                    .replace(/\/\/+/, "/");
+                    modelId += ":" + ((modelIdParts[0] ? modelIdParts[0] + "/" : "")
+                      + (valuePath || "."))
+                        .replace(/\/$/, "")
+                        .replace(/\/\/+/, "/");
+                }           
             }
 
             if (jpf.isParsing && initModelId)
