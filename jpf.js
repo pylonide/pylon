@@ -1238,7 +1238,7 @@ var jpf = {
         else {
             var head     = document.getElementsByTagName("head")[0];//$("head")[0]
             var elScript = document.createElement("script");
-            elScript.defer = true;
+            //elScript.defer = true;
             if (type)
                 elScript.setAttribute("_jpf_type", type);
             elScript.src   = sSrc;

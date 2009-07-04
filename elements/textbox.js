@@ -206,7 +206,10 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             || jpf.xmldb.getInheritedAttribute(this.$jml, "initial-message");
 
         if (this.initialMsg) {
-            this.oInt.onblur();
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                this.oInt.onblur();
+            //#endif
             this.$propHandlers["value"].call(this, this.initialMsg, true);
         }
     };

@@ -954,25 +954,40 @@ jpf.WindowImplementation = function(){
         });
 
         //Non IE/ iPhone selection handling
-        if (!jpf.isIphone && !jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
+        var canSelect = !(!jpf.isIphone && !jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
           && (!jpf.isParsingPartial || jmlNode)
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
           // #endif
-          ) && !ta[e.target.tagName])
+          ) && !ta[e.target.tagName]);
+
+        if (canSelect) {
+            if (!jpf.xmldb.isChildOf(jmlNode.oInt, e.target))
+                canSelect = false;
+        }
+        
+        if (!canSelect)
             return false;
     };
 
+    //IE selection handling
     document.onselectstart = function(e){
         if (!e) e = event;
-
-        //IE selection handling
-        if (jpf.JmlParser && !jpf.appsettings.allowSelect
+        
+        var canSelect = !(jpf.JmlParser && !jpf.appsettings.allowSelect
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
           || jpf.dragmode.isDragging
           // #endif
-          )
+        );
+
+        if (canSelect) {
+            var jmlNode = jpf.findHost(e.srcElement);
+            if (!jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
+                canSelect = false;
+        }
+        
+        if (!canSelect)
             return false;
     };
 
@@ -1190,7 +1205,7 @@ jpf.WindowImplementation = function(){
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
           && !ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
           && (!e.srcElement || e.srcElement.contentEditable != "true")) {
-                e.returnValue = false;
+            e.returnValue = false;
         }
 
         //jpf.dispatchEvent("keydown", null, eInfo);
