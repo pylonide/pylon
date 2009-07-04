@@ -633,7 +633,9 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
-        this.oButton.onmousedown =
+        if (this.oButton)
+            this.oButton.onmousedown = null;
+        
         this.oInt.onkeypress     =
         this.oInt.onmouseup      =
         this.oInt.onmouseout     =

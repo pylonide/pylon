@@ -67,7 +67,15 @@ jpf.history = {
     past  : [],
     future: [],
 
-    init  : function(name){
+    init  : function(defName, getVar, delay){
+        if (this.inited)
+            return;
+        
+        if (delay)
+            this.delay = delay;
+        var name = location.href.match(/#(.*)$/) && decodeURI(RegExp.$1) 
+          || jpf._GET[getVar || -1] || defName;
+          
         this.inited = true;
         this.hasChanged(name || null);
 
@@ -131,7 +139,7 @@ jpf.history = {
                     jpf.history.page = page;
                     jpf.history.hasChanged(name);
                 }
-            }, jpf.history.delay || 200);
+            }, jpf.history.delay || 20);
         }
         else {
             jpf.history.lastUrl = location.href.toString();
@@ -167,10 +175,6 @@ jpf.history = {
                 jpf.history.setHash(jpf.history.to_name, true);
             }, 200);
         }
-
-        /*this.changePage(name);
-        if (!this.inited)
-            return this.init(name);*/
 
         this.changePage(name);
         if (!this.inited)

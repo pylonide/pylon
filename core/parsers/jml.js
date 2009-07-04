@@ -1253,6 +1253,7 @@ jpf.JmlParser = {
             //#endif
 
             this.loaded = true;
+            jpf.dispatchEvent("done");
         }
 
         //END OF ENTIRE APPLICATION STARTUP

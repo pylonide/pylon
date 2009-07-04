@@ -44,6 +44,7 @@
  * </code>
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
+ * @attribute {String}  default-page            the name of the default page if none is specified using the #. Defaults to "home". See {object.history}.
  * @see element.history
  * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
  * @see element.actiontracker
@@ -110,6 +111,7 @@ jpf.appsettings = {
     disableF5          : true,
     autoHideLoading    : true,
     disableSpace       : true,
+    defaultPage        : "home",
     disableBackspace   : true,
     useUndoKeys        : false,
     outline            : false,
@@ -227,6 +229,7 @@ jpf.appsettings = {
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("undokeys"));
         this.initDelay          = !jpf.isFalse(x.getAttribute("initdelay"));
+        this.defaultPage        = x.getAttribute("default-page");
 
         //#ifdef __WITH_QUERYAPPEND
         this.queryAppend        = x.getAttribute("query-append");
@@ -302,6 +305,12 @@ jpf.appsettings = {
         //#ifdef __WITH_AUTH
         if (x.getAttribute("login"))
             jpf.auth.init(x);
+        //#endif
+        
+        //#ifdef __WITH_BACKBUTTON
+        jpf.addEventListener("done", function(){
+            jpf.history.init(jpf.appsettings.defaultPage, "page");
+        });
         //#endif
 
         var oFor, attr, d, j, i, l, node, nodes = x.childNodes;

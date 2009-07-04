@@ -106,30 +106,38 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
 
     /**** Init ****/
     
-    this.$loadJml = function(x){
-        var isParentOfChain = !this.parentNode.tagName 
+    var isParentOfChain;
+    this.$draw = function(){
+        isParentOfChain = !this.parentNode.tagName 
           || "vbox|hbox".indexOf(this.parentNode.tagName) == -1;
-        
+
         if (isParentOfChain) {
+            var x = this.$jml;
+            
             this.oInt = 
             this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(x)
                 ? this.pHtmlNode 
                 : this.pHtmlNode.appendChild(document.createElement("div"));
+           
+            if ("absolute|relative".indexOf(jpf.getStyle(this.oInt, "position")) == -1)
+                this.oInt.style.position = "relative";
         }
-        
-        var l = jpf.layout.get(this.pHtmlNode, jpf.getBox(this.margin || ""));
+    }
+    
+    this.$loadJml = function(x){
+        var l = jpf.layout.get(this.oInt, jpf.getBox(this.margin || ""));
         var aData = jpf.layout.parseXml(x, l, null, true);
         
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
             
-            jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
+            jpf.JmlParser.parseChildren(x, this.oInt, this);
             
             if (this.pData.children.length && !jpf.isParsing) 
                 jpf.layout.compileAlignment(this.pData);
             //if(jpf.JmlParser.loaded) 
-            //jpf.layout.activateRules(pHtmlNode);
+            //jpf.layout.activateRules(this.oInt);
         }
         else {
             var pData = this.parentNode.aData || this.parentNode.pData;
