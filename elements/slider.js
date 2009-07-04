@@ -458,7 +458,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.dragmode.mode = true;
 
             dragging = true;
-
+            
+            var timer, lastTime;
             document.onmousemove = function(e){
                 e = e || window.event;
                 var o = this.dragNode;
@@ -474,7 +475,20 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     _self.setValue(getKnobValue(o, e, _self.slideDiscreet));
                 }
 
-                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true);
+                var knobValue = getKnobValue(o, e, _self.slideDiscreet);
+                _self.$propHandlers["value"].call(_self, knobValue, true);
+                
+                /*clearTimeout(timer);
+                if (new Date().getTime() - lastTime > 20) {
+                    _self.$propHandlers["value"].call(_self, knobValue, true);
+                    lastTime = new Date().getTime();
+                }
+                else {
+                    timer = setTimeout(function(){
+                        _self.$propHandlers["value"].call(_self, knobValue, true);
+                        lastTime = new Date().getTime();
+                    }, 20);
+                }*/
             }
 
             document.onmouseup = function(e){

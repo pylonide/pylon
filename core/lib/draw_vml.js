@@ -29,7 +29,7 @@ jpf.namespace("draw.vml",{
      
     initRoot : function(r){
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
-        if(!jpf.isIE8 || jpf.isIE7Simulation){
+        if(!jpf.isIE8 || jpf.isIE7Emulate){
             jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
             r.oInt.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\

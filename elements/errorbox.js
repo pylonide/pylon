@@ -156,9 +156,9 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oClose) {
             this.oClose.onclick = function(){
                 _self.hide();
-                
-                if (_self.host)
-                    _self.host.focus(null, {mouse:true});
+
+                if (jpf.window.focussed)
+                    jpf.window.focussed.focus(true, {mouse:true});
             };
         }
         

@@ -70,13 +70,15 @@ jpf.history = {
     init  : function(defName, getVar, delay){
         if (this.inited)
             return;
-        
+
         if (delay)
             this.delay = delay;
         var name = location.href.match(/#(.*)$/) && decodeURI(RegExp.$1) 
           || jpf._GET[getVar || -1] || defName;
-          
+
         this.inited = true;
+        
+        location.hash = name;
         this.hasChanged(name || null);
 
         if (jpf.isIE8) {
@@ -102,10 +104,10 @@ jpf.history = {
                         setInterval('checkUrl()', 200);\
                     }\
                     function checkUrl(){\
-                        if (top.jpf.isIE7Simulation && top.jpf.history.lastHtml)\
+                        if (top.jpf.isIE7Emulate && top.jpf.history.lastHtml)\
                             document.body.innerHTML = top.jpf.history.lastHtml;\
-                        var nr=Math.round((document.all && (!top.jpf.isIE7Simulation || !top.jpf.host) ? document.body : document.documentElement).scrollTop/100);\
-                        if (top.jpf.isIE7Simulation) {\
+                        var nr=Math.round((document.all && (!top.jpf.isIE7Emulate || !top.jpf.host) ? document.body : document.documentElement).scrollTop/100);\
+                        if (top.jpf.isIE7Emulate) {\
                             clearTimeout(top.jpf.history.ie7timer);\
                             top.jpf.history.ie7timer = setTimeout(function(){\
                                 top.jpf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\

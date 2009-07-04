@@ -229,7 +229,7 @@ jpf.appsettings = {
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("undokeys"));
         this.initDelay          = !jpf.isFalse(x.getAttribute("initdelay"));
-        this.defaultPage        = x.getAttribute("default-page");
+        this.defaultPage        = x.getAttribute("default-page") || this.defaultPage;
 
         //#ifdef __WITH_QUERYAPPEND
         this.queryAppend        = x.getAttribute("query-append");

@@ -358,7 +358,7 @@ var jpf = {
         if (this.isIE8 && document.documentMode == 7) {
             jpf.isIE7 = true;
             jpf.isIE8 = false;
-            jpf.isIE7Simulation = true;
+            jpf.isIE7Emulate = true;
         }
         
         /**
