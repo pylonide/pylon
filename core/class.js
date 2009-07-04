@@ -791,15 +791,6 @@ jpf.Event = function(name, data){
         // #endif
     };
     
-    /**
-     * Determines whether the keyboard input was a character that can influence
-     * the value of an element (like a textbox).
-     */
-    this.isCharacter = function(){
-        return (this.keyCode < 112 || this.keyCode > 122)
-          && (this.keyCode == 32 || this.keyCode > 42 || this.keyCode == 8);
-    }
-
     jpf.extend(this, data);
     //this.returnValue = undefined;
 };

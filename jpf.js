@@ -2434,4 +2434,5 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
         return xmlNode.getElementsByTagNameNS(xmlns, tag);
 }
 
+document.documentElement.className += " has_apf"; 
 jpf.Init.run('jpf');

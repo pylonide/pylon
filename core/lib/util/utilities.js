@@ -241,6 +241,16 @@ jpf.html_entity_decode = function(str){
 //#endif
 
 /**
+ * Determines whether the keyboard input was a character that can influence
+ * the value of an element (like a textbox).
+ * @param {Number} charCode The ascii character code.
+ */
+jpf.isCharacter = function(charCode){
+    return (charCode < 112 || charCode > 122)
+      && (charCode == 32 || charCode > 42 || charCode == 8);
+}
+
+/**
  * This random number generator has been added to provide a more robust and
  * reliable random number spitter than the native Ecmascript Math.random()
  * function.

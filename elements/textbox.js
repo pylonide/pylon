@@ -339,6 +339,11 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
+        if (this.oButton && key == 27) {
+            this.clear();
+            this.blur();
+        }
+        
         if (this.dispatchEvent("keydown", {
             keyCode   : key,
             ctrlKey   : ctrlKey,
@@ -477,6 +482,13 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.className = node.className;
             if (this.oExt == node)
                 this.oExt = this.oInt;
+        }
+        
+        if (this.oButton) {
+            this.oButton.onmousedown = function(){
+                _self.clear();
+                _self.focus({mouse:true});
+            }
         }
 
         //@todo for skin switching this should be removed
@@ -621,13 +633,14 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
-        this.oInt.onkeypress    =
-        this.oInt.onmouseup     =
-        this.oInt.onmouseout    =
-        this.oInt.onmousedown   =
-        this.oInt.onkeydown     =
-        this.oInt.onkeyup       =
-        this.oInt.onselectstart = null;
+        this.oButton.onmousedown =
+        this.oInt.onkeypress     =
+        this.oInt.onmouseup      =
+        this.oInt.onmouseout     =
+        this.oInt.onmousedown    =
+        this.oInt.onkeydown      =
+        this.oInt.onkeyup        =
+        this.oInt.onselectstart  = null;
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
