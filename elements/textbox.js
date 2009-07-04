@@ -570,19 +570,10 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             //#endif
         };
 
-        this.oInt.onfocus = function(){
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix2();
-            //#endif
-        };
-
-        this.oInt.onblur = function(){
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.window.$blurfix();
-            //#endif
-        };
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (jpf.hasFocusBug)
+            jpf.sanitizeTextbox(this.oInt);
+        //#endif
 
         if (jpf.hasAutocompleteXulBug)
             this.oInt.setAttribute("autocomplete", "off");

@@ -204,8 +204,12 @@ jpf.Rename = function(){
           || !this.replacedNode)
             return false;
 
-        if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1)
+        if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1) {
+            if (jpf.isIE8)
+                this.oTxt.blur();
+            
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
+        }
 
         this.renaming = false;
 
@@ -285,6 +289,11 @@ jpf.Rename = function(){
             this.oTxt.id           = "txt_rename";
             this.oTxt.autocomplete = false;
         }
+        
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (jpf.hasFocusBug)
+            jpf.sanitizeTextbox(this.oTxt);
+        //#endif
 
         this.oTxt.refCount         = 0;
         this.oTxt.id               = "txt_rename";
@@ -325,10 +334,12 @@ jpf.Rename = function(){
         };
 
         //#ifdef __WITH_WINDOW_FOCUS
-        this.oTxt.onfocus = function(){
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix2();
-        };
+        if (jpf.hasFocusBug) {
+            this.oTxt.onfocus = function(){
+                if (jpf.window)
+                    jpf.window.$focusfix2();
+            };
+        }
         //#endif
 
         this.oTxt.onblur = function(){
