@@ -1394,14 +1394,16 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     //----------------------------------------------------------------------
 
     // state based drawing
-    beginState : function( style, sthis, func, nargs ){
+    beginState : function( style, sthis, func, nargs, dyns ){
         var s = [this.beginShape(style.$shadow || style)];
         
         this.statemode = 1;
         this.statethis = sthis;
         this.stateargs = nargs;
         this.statefunc = func;
-    
+        this.statedyns = dyns || [];
+        this.statedyns.push("t","x");
+        
         var v = style.$stylelist, i, n;
         if(!v || !v.length) return s.join('');
     
@@ -1415,7 +1417,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     },
     
     drawState:function(state,time) {
-        var a=[],t,i,j,v = this.style.$stylelist;
+        var a=[],t,i,j,v = this.style.$stylelist,d;
         if(!v || !v.length){
              for(i = 2, j = arguments.length;i<j;i++)
                 a.push(arguments[i]);
@@ -1431,12 +1433,12 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
             a.push(t="_s"+(i-1));
             s.push( t,"=",arguments[i],(i!=j-1)?",":";");
         }
-
+        d = this.statedyns.join(',');
         t = a.join(',');
         s.push( "if(_st=_storelut[_t]){",
-                "_st.push(t,x,",t,");",
+                "_st.push(",d,",",t,");",
                 "while(_t=_overlaylut[_t]){",
-                    "if(_st = _storelut[_t]){_st.push(t,x,",t,");}",
+                    "if(_st = _storelut[_t]){_st.push(",d,",",t,");}",
                 "};",
                 "};",
                 "if(!_st){",this.statefunc.apply(this.statethis,a),"}\n"
@@ -1448,12 +1450,17 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         this.statemode = 0;
         var style = this.style, s = [this.$endDraw()];
 
-        var v = style.$stylelist, i, j, l, m, n = this.stateargs+2, a = [];
+        var v = style.$stylelist, i, j, l, m, n = this.stateargs+this.statedyns.length, a = [], d=[];
         if(!v || !v.length)return s.join('');
         
-        for(i=2;i<n;i++){
+        for(i=this.statedyns.length;i<n;i++){
             a.push("_su[_sv+"+i+"]");
         }
+        for(i=0;i<this.statedyns.length;i++){
+            d.push(this.statedyns[i]+"=_su[_sv+"+i+"]");
+        }
+        d=d.join(',');
+
         for(i = 0, j = v.length;i<j;i++){
             style = v[i]; 
             s[s.length]=[
@@ -1461,7 +1468,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                   "t = _su[0];",
                   this.beginShape(style),
                   "for(_sv=0;_sv<_st;_sv+=",n,"){",
-                    "t=_su[_sv],nt = 1-t,x=_su[_sv+1];",
+                    d,",nt = 1-t;",
                     this.statefunc.apply(this.statethis,a),
                   "}",
                   this.$endDraw(),
