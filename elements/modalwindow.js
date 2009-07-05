@@ -429,7 +429,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
             //!jpf.isIE &&
             if (jpf.layout && this.oInt)
-                jpf.layout.forceResize(this.oInt); //this should be recursive down
+                jpf.layout.forceResize(this.oInt); //@todo this should be recursive down
 
             //if (this.modal) 
                 //this.oExt.style.position = "fixed";
