@@ -62,7 +62,7 @@ jpf.flow = {
     fsSize : 15,
 
     init : function() {
-        jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
+        //jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
 
         document.onmousedown = function(e) {
             e = (e || event);
@@ -849,7 +849,7 @@ jpf.flow.input = function(objBlock, number) {
  * connection will be created.
  * @constructor
  */
-jpf.flow.connectionsManager = function() {
+jpf.flow.connectionsManager = new (function() {
     this.addBlock = function(objBlock, inputNumber) {
         if (objBlock && (inputNumber || inputNumber == 0)) {
             var s = jpf.flow.connectionsTemp;
@@ -874,7 +874,7 @@ jpf.flow.connectionsManager = function() {
     this.clear = function() {
         jpf.flow.connectionsTemp = null;
     };
-};
+})();
 
 /**
  * Simulate block element to create temporary connection between source
