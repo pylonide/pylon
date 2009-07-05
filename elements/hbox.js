@@ -117,7 +117,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             var x = this.$jml;
             
             this.oInt = 
-            this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(x)
+            this.oExt = false && jpf.isParsing && jpf.xmldb.isOnlyChild(x)
                 ? this.pHtmlNode 
                 : this.pHtmlNode.appendChild(document.createElement("div"));
            

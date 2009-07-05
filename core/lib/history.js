@@ -141,7 +141,7 @@ jpf.history = {
                     jpf.history.page = page;
                     jpf.history.hasChanged(name);
                 }
-            }, jpf.history.delay || 20);
+            }, jpf.history.delay || 200);
         }
         else {
             jpf.history.lastUrl = location.href.toString();
