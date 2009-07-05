@@ -138,7 +138,7 @@ jpf.textbox.masking = function(){
         if (setCharacter(chr))
             setPosition(lastPos + 1);
 
-        if (e.isCharacter() || stop)
+        if (jpf.isCharacter(e.keyCode) || stop)
             return false;
     }, true);
     //#endif

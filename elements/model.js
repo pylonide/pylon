@@ -544,7 +544,8 @@ jpf.model = function(data, caching){
         var attr  = x.attributes;
         for (var i = 0, l = attr.length; i < l; i++) {
             if (attr[i].nodeName.indexOf("on") == 0)
-                this.addEventListener(attr[i].nodeName, new Function(attr[i].nodeValue));
+                this.addEventListener(attr[i].nodeName, 
+                  new Function('event', attr[i].nodeValue));
         }
 
         //#ifdef __WITH_XFORMS

@@ -92,7 +92,7 @@ jpf.Rename = function(){
     }
     
     function $keydown(e){
-        if (!this.renaming && e.isCharacter())
+        if (!this.renaming && jpf.isCharacter(e.keyCode))
             this.startRename();
     }
     

@@ -129,7 +129,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
-    this.buttons           = jpf.isIphone ? "" : "min|max|close";
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
@@ -930,7 +929,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-            if (!oButtons || jpf.isIphone)
+            if (!oButtons || jpf.isIphone || !this.$jml.getAttribute("buttons"))
                 return;
 
             var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
@@ -1015,22 +1014,26 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         //#ifdef __SUPPORT_IPHONE
         if (!jpf.isIphone) {
         //#endif
-        (this.oTitle.nodeType != 1
-          ? this.oTitle.parentNode
-          : this.oTitle).ondblclick = function(e){
-            if (_self.state.indexOf("normal") == -1)
-                _self.restore();
-            else if (_self.buttons.indexOf("max") > -1)
-                _self.maximize();
-            else if (_self.buttons.indexOf("min") > -1)
-                _self.minimize();
-        }
+            (this.oTitle.nodeType != 1
+              ? this.oTitle.parentNode
+              : this.oTitle).ondblclick = function(e){
+                if (_self.state.indexOf("normal") == -1)
+                    _self.restore();
+                else if (_self.buttons.indexOf("max") > -1)
+                    _self.maximize();
+                else if (_self.buttons.indexOf("min") > -1)
+                    _self.minimize();
+            }
+    
+            if (this.draggable === undefined) {
+                (this.$propHandlers.draggable
+                    || jpf.JmlElement.propHandlers.draggable).call(this, true);
+                this.draggable = true;
+            }
 
-        if (this.draggable === undefined) {
-            (this.$propHandlers.draggable
-                || jpf.JmlElement.propHandlers.draggable).call(this, true);
-            this.draggable = true;
-        }
+            if (typeof this.buttons == "undefined")
+                this.buttons = "";
+                //this.setProperty("buttons", "min|max|close");
         //#ifdef __SUPPORT_IPHONE
         }
         //#endif
