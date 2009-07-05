@@ -596,6 +596,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
         }
+        this.$setStyleClass(oBody, "last");
+        
         this.oEnding = this.$getExternal("ending");
         var oEnding = this.$getLayoutNode("ending", "container", this.oEnding);
 
