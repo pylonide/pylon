@@ -632,11 +632,11 @@ jpf.JmlElement = function(){
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = jpf.xmldb.getXml(data.indexOf("<j:application") > -1
+                    data = jpf.getJmlDocFromString(data.indexOf("<j:application") > -1
                       ? data 
-                      : "<j:jml xmlns:j='" + jpf.ns.jml +"'>" + data + "</j:jml>", 
-                        null, true);
-                
+                      : "<j:application xmlns:j='" + jpf.ns.jml +"'>" 
+                          + data + "</j:application>", true).documentElement;
+
                 if (jml.ownerDocument.importNode) {
                     doc = jml.ownerDocument;
                     for (var i = data.childNodes.length - 1; i >= 0; i--)
@@ -667,7 +667,7 @@ jpf.JmlElement = function(){
             }
             //Jml string
             else
-                jmlDefNode = jpf.xmldb.getXml(jmlDefNode, null, true);
+                jmlDefNode = jpf.getJmlDocFromString(jmlDefNode);
         }
 
         //Xml Node is assumed

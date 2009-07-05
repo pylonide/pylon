@@ -340,7 +340,9 @@ jpf.DragDrop = function(){
                   : null);
             }
             else
-                tgt = target.selectSingleNode("self::" + strTgt);
+                tgt = target.selectSingleNode("self::" +
+                    jpf.parseExpression(strTgt)
+                    .split("|").join("|self::"));
 
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
@@ -361,21 +363,23 @@ jpf.DragDrop = function(){
             insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
         */
         var action = rule && rule.getAttribute("action") || defaction;
-        
+
         //copy-condition convenience variables
         var internal = jpf.DragServer.dragdata.host == this;
         var ctrlKey  = event.ctrlKey;
         var keyCode  = event.keyCode;
 
         //jpf.parseExpression
-        var ifcopy = rule && rule.getAttribute("copy-condition")
-            ? eval(rule.getAttribute("copy-condition"))
-            : this.dragmoveenabled;
+        var ifcopy = rule
+            ? (rule.getAttribute("copy-condition")
+                ? eval(rule.getAttribute("copy-condition"))
+                : false)
+            : (this.dragmoveenabled ? ctrlKey : true);
         if (!ifcopy)
             ifcopy = typeof srcRule == "object"
               && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
-                : false;
+                : ctrlKey;
 
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 

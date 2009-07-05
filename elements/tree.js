@@ -487,11 +487,25 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
             "dragInsert", "dragAppend", "selected", "indicate"]);
         
-        this.$setStyleClass(this.lastel = this.$findValueNode(el), extra 
-            ? (extra[1] && extra[1].getAttribute("action") == "insert-before" 
-                ? "dragInsert" 
-                : "dragAppend") 
-            : "dragDenied");
+        var action = extra[1] && extra[1].getAttribute("action");
+        this.lastel = this.$findValueNode(el);
+        
+        if (action == "list-append") {
+            var htmlNode = jpf.xmldb.findHTMLNode(this.getTraverseParent(jpf.xmldb.getNode(this.lastel)), this);
+            
+            this.lastel = htmlNode
+                ? this.$getLayoutNode("item", "container", htmlNode)
+                : this.oInt;
+            
+            this.$setStyleClass(this.lastel, "dragInsert");
+        }
+        else {
+            this.$setStyleClass(this.lastel, extra 
+                ? (action == "insert-before" 
+                    ? "dragInsert" 
+                    : "dragAppend") 
+                : "dragDenied");
+        }
     };
 
     this.$dragdrop = function(el, dragdata, extra){

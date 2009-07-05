@@ -1319,17 +1319,17 @@ var jpf = {
      * @todo Build this function into the compressor for faster execution
      * @private
      */
-    getJmlDocFromString : function(xmlString){
+    getJmlDocFromString : function(xmlString, preserveWhiteSpace){
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
-            .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
+          .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
             function(m){ return m.toLowerCase(); });
 
         if (!this.supportNamespaces)
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
 
         //#ifdef __WITH_EXPLICIT_LOWERCASE
-        var xmlNode = jpf.getXmlDom(str, null, jpf.debug);
+        var xmlNode = jpf.getXmlDom(str, null, preserveWhiteSpace || jpf.debug);
 
         // Case insensitive support
         var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
