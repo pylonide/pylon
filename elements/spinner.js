@@ -88,21 +88,20 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.min           = -64000;
     this.focused       = false;
     this.value         = 0;
-    
-    var lastvalue = 0;
+
     var _self     = this;
 
     this.$supportedProperties.push("width", "value", "max", "min", "caption");
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
-        
-        if (/^(0|[\-]?[1-9][0-9]*)$/.test(value) &&
-          (value || value == 0) && value <= _self.max && value >= _self.min) {
-            this.value = this.oInput.value = lastvalue =  value;
-        }
-        else {
-            this.value = this.oInput.value = lastvalue;
+
+        if (value) {
+            this.value = this.oInput.value = (value > _self.max
+                ? _self.max
+                : (value < _self.min
+                    ? _self.min
+                    : value));
         }
     };
 
