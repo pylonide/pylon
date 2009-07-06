@@ -669,6 +669,8 @@ jpf.layout = {
             aData.hidden = (x.getAttribute("hidden") == 3)
                 ? x.getAttribute("hidden")
                 : jpf.isTrue(x.getAttribute("hidden"));
+        else if (x.getAttribute("visible") == "false")
+            aData.hidden = true;
         if (x.getAttribute("state"))
             aData.state = x.getAttribute("state");
         if (x.getAttribute("stack"))
@@ -997,6 +999,9 @@ jpf.layout = {
                     n[i - 1].edgeMargin || 0, n[i - 1].splitter || 0);
                 n[i].edgeMargin = null;
             }
+            
+            if (n[i].hidden)
+                n[i].prehide(true);
         }
 
         //#ifdef __WITH_SPLITTERS

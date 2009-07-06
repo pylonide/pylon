@@ -2784,9 +2784,9 @@ jpf.MultiselectBinding = function(){
             important to go up to the traverse parent of the xmlNode, else the node
             should always be based on the xmlroot of this component
         */
-        var nodes = this.getTraverseNodes(this.isTreeArch
-            ? this.getTraverseParent(xmlNode) || this.xmlRoot
-            : this.xmlRoot);
+        //this.isTreeArch
+        var nodes = this.getTraverseNodes(
+          this.getTraverseParent(xmlNode) || this.xmlRoot);
         for (var i = 0; i < nodes.length; i++)
             if (nodes[i] == xmlNode)
                 return true;

@@ -120,6 +120,10 @@ jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
                 insertChild.call(this, bar);
                 bar.loadJml(node, this);
                 
+                bar.setCaption = function(value){
+                    bar.oInt.innerHTML = value;
+                }
+                
                 /*if (!bar.caption && node.childNodes.length == 1 
                   && "3|4".indexOf(node.childNodes.nodeType) > -1)
                     jmlNode.setCaption(node.firstChild.nodeValue);*/

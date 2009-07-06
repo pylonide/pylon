@@ -895,7 +895,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$findContainer = function(htmlNode) {
         var node = htmlNode.nextSibling;
-        if (!node) return;
+        if (!node) return htmlNode;
         return node.nodeType == 1 ? node : node.nextSibling;
     };
     

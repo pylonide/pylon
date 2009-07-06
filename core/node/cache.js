@@ -70,7 +70,7 @@ jpf.Cache = function(){
             a sub tree of an already rendered part
         */
         //#ifdef __WITH_MULTISELECT
-        if (xmlNode && this.hasFeature(__MULTISELECT__)) {
+        if (xmlNode && this.hasFeature(__MULTISELECT__) && this.isTreeArch) {
             var cacheItem = this.getCacheItemByHtmlId(
                 xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
             if (cacheItem && !cache[id]) {
@@ -79,6 +79,7 @@ jpf.Cache = function(){
                     We can't clone it, because the updates will
                     get ambiguous, so we have to put it back later
                 */
+                
                 this.clear(true);
 
                 var oHtml = this.getNodeFromCache(
@@ -192,14 +193,14 @@ jpf.Cache = function(){
      * @return {DocumentFragment} the cached element. When no object is found, null is returned.
      * @private
      */
-    this.getCacheItemByHtmlId = function(id){
+    this.getCacheItemByHtmlId = function(id, getId){
         var node = this.$findNode(null, id);
-        if (node) return this.oInt;
+        if (node) return getId ? false : this.oInt;
 
         for (var prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
                 node = this.$findNode(cache[prop], id);
-                if (node) return cache[prop];
+                if (node) return getId ? prop : cache[prop];
             }
         }
 

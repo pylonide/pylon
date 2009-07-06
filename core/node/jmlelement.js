@@ -693,7 +693,7 @@ jpf.JmlElement = function(){
 
             // #ifdef __WITH_DATABINDING
             //Not databound
-            if ((!this.createModel || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
+            if ((!this.createModel || !this.$jml || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
                 if (value === this.value 
                   || this.dispatchEvent("beforechange", {value : value}) === false)

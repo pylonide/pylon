@@ -693,8 +693,8 @@ jpf.Class = function(){
 
         if (!this.nodeFunc) { //If this is not a JmlNode, we're done.
             //Remove id from global js space
-            if (this.id)
-                self[this.id] = null;
+            if (this.id || this.name)
+                self[this.id || this.name] = null;
             return;
         }
 
@@ -747,8 +747,8 @@ jpf.Class = function(){
         //#endif
 
         //Remove id from global js space
-        if (this.id)
-            self[this.id] = null;
+        if (this.id || this.name)
+            self[this.id || this.name] = null;
     };
 };
 

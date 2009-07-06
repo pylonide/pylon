@@ -1061,16 +1061,18 @@ jpf.WindowImplementation = function(){
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 var o = jpf.window.focussed;
-                if (!o || !o.getActionTracker)
-                     o = jpf.window;
-                o.getActionTracker().undo();
+                while (o && !o.getActionTracker && !o.$at)
+                    o = o.parentNode;
+                if (!o) o = jpf.window;
+                (o.$at || o.getActionTracker()).undo();
             }
             //Ctrl-Y - Redo
             else if (e.keyCode == 89) {
                 var o = jpf.window.focussed;
-                if (!o || !o.getActionTracker)
-                     o = jpf.window;
-                o.getActionTracker().redo();
+                while (o && !o.getActionTracker && !o.$at)
+                    o = o.parentNode;
+                if (!o) o = jpf.window;
+                (o.$at || o.getActionTracker()).redo();
             }
         }
         //#endif

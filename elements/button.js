@@ -643,7 +643,9 @@ jpf.button.actions = {
     "undo" : function(action){
         var tracker;
         if (this.target && self[this.target]) {
-            tracker = self[this.target].getActionTracker()
+            tracker = self[this.target].tagName == "actiontracker"
+                ? self[this.target]
+                : self[this.target].getActionTracker();
         }
         else {
             var at, node = this;

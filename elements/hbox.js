@@ -65,7 +65,8 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
         if (doOnlyAdmin)
             return;
         
-        jmlNode.disableAlignment();
+        if (jmlNode.disableAlignment)
+            jmlNode.disableAlignment();
         
         //#ifdef __WITH_ANCHORING
         if (jmlNode.enableAnchoring)
@@ -134,6 +135,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
+            
             jpf.JmlParser.parseChildren(x, this.oInt, this);
             
             if (this.pData.children.length && !jpf.isParsing) 
