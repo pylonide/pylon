@@ -382,8 +382,9 @@ jpf.http = function(){
             if (!jpf.isSafari)
                 http.setRequestHeader("User-Agent", "Javeline TelePort 2.0"); //@deprecated
             http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            http.setRequestHeader("Content-type", this.contentType
-                || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
+            if (!options.headers || !options.headers["Content-type"])
+                http.setRequestHeader("Content-type", this.contentType
+                    || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
 
             if (autoroute) {
                 http.setRequestHeader("X-Route-Request", url);
