@@ -707,14 +707,14 @@ jpf.BaseTab = function(){
                 oBtn.onmouseover = function() {
                     if (!this.disabled)
                         _self.$setStyleClass(this, "over");
-                }
+                };
                 oBtn.onmouseout = function() {
                     if (!this.disabled)
                         _self.$setStyleClass(this, "", ["over"]);
-                }
+                };
                 oBtn.onmouseup = function() {
                     _self.$setStyleClass(this, "", ["click"]);
-                }
+                };
             });
         }
         
