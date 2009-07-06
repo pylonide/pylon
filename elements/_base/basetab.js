@@ -1068,10 +1068,12 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         this.$render();
         // #endif
         
-        if (!this.fake && jpf.isIE) {
-            var cls = this.oExt.className;
-            this.oExt.className = "rnd" + Math.random();
-            this.oExt.className = cls;
+        if (!this.fake) {
+            if (jpf.isIE) {
+                var cls = this.oExt.className;
+                this.oExt.className = "rnd" + Math.random();
+                this.oExt.className = cls;
+            }
             
             //#ifdef __WITH_PROPERTY_WATCH
             this.dispatchWatch("visible", true);

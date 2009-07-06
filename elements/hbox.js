@@ -123,6 +123,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
            
             if ("absolute|relative".indexOf(jpf.getStyle(this.oInt, "position")) == -1)
                 this.oInt.style.position = "relative";
+            this.oInt.style.overflow = "hidden";
         }
     }
     
@@ -141,7 +142,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             //jpf.layout.activateRules(this.oInt);
             
             //#ifdef __WITH_PROPERTY_WATCH
-            if (!jpf.hasSingleResizeEvent && !this.oInt.offsetHeight) {
+            if (!this.oInt.offsetHeight) {
                 function propChange(name, old, value){
                     if (jpf.isTrue(value) && _self.oExt.offsetHeight) {
                         jpf.layout.forceResize(_self.oInt);
