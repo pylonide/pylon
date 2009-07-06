@@ -685,7 +685,6 @@ jpf.BaseTab = function(){
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);
             
-            var _self = this;
             this.oLeftScroll.onmousedown  =
             this.oLeftScroll.ondblclick   = function(e){
                 if (this.className.indexOf("disabled") == -1) {
