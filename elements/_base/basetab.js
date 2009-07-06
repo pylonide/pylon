@@ -681,7 +681,11 @@ jpf.BaseTab = function(){
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
             this.oLeftScroll  = this.oScroller.firstChild;
+            while (this.oLeftScroll.nodeType != 1)
+                this.oLeftScroll = this.oLeftScroll.nextSibling;
             this.oRightScroll = this.oScroller.lastChild;
+            while (this.oRightScroll.nodeType != 1)
+                this.oRightScroll = this.oRightScroll.previousSibling;
             var sLeft = 'var o=jpf.lookup(' + this.uniqueId + ');\
                 if (this.className.indexOf("disabled") == -1) {\
                     o.$setStyleClass(this, "click");\
