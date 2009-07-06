@@ -70,21 +70,11 @@ jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(bSkinChange){
         //Build Main Skin
         this.oExt = this.$getExternal();
-
-        // #ifdef __ENABLE_TABSCROLL
-        if (!bSkinChange)
-            jpf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
-                "jpf.all[" + this.uniqueId + "].correctScrollState()");
-        // #endif
     };
 
     this.$loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
-    };
-
-    this.$destroy = function() {
-        jpf.layout.removeRule(this.oExt, this.uniqueId + "_tabscroller");
     };
 }).implement(jpf.BaseTab);
 

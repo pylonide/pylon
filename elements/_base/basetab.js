@@ -479,9 +479,9 @@ jpf.BaseTab = function(){
         if (this.oButtons.offsetWidth < this.oExt.offsetWidth)
             return this.setScrollerState(false);
 
-        var iTabLeft     = oPage.oButton.offsetLeft;
-        var iTabWidth    = oPage.oButton.offsetWidth;
-        var iCurrentLeft = this.oButtons.offsetLeft;
+        var iTabLeft     = oPage.oButton.offsetLeft,
+            iTabWidth    = oPage.oButton.offsetWidth,
+            iCurrentLeft = this.oButtons.offsetLeft;
 
         if (SCROLLANIM_INIT.size <= 0) {
             SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
@@ -542,8 +542,10 @@ jpf.BaseTab = function(){
                 this.activepagenr = null;
             }
         }
+        // #ifdef __ENABLE_TABSCROLL
         else
             this.setScrollerState();
+        // #endif
     });
 
     this.$domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
@@ -675,44 +677,50 @@ jpf.BaseTab = function(){
         }
 
         this.oPages = this.$getLayoutNode("main", "pages", this.oExt);
-
+        
         // #ifdef __ENABLE_TABSCROLL
         // add scroller node(s)
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
-            this.oLeftScroll  = this.oScroller.firstChild;
-            while (this.oLeftScroll.nodeType != 1)
-                this.oLeftScroll = this.oLeftScroll.nextSibling;
-            this.oRightScroll = this.oScroller.lastChild;
-            while (this.oRightScroll.nodeType != 1)
-                this.oRightScroll = this.oRightScroll.previousSibling;
-            var sLeft = 'var o=jpf.lookup(' + this.uniqueId + ');\
-                if (this.className.indexOf("disabled") == -1) {\
-                    o.$setStyleClass(this, "click");\
-                    o.scroll(event, jpf.BaseTab.SCROLL_LEFT);\
-                }\
-                if(!jpf.isSafariOld) this.onmouseout()';
-            var sRight = 'var o=jpf.lookup(' + this.uniqueId + ');\
-                if (this.className.indexOf("disabled") == -1) {\
-                    o.$setStyleClass(this, "click");\
-                    o.scroll(event, jpf.BaseTab.SCROLL_RIGHT);\
-                }\
-                if(!jpf.isSafariOld) this.onmouseout()'
-            this.oLeftScroll.setAttribute("onmousedown", sLeft);
-            this.oLeftScroll.setAttribute("ondblclick",  sLeft);
-            this.oRightScroll.setAttribute("onmousedown", sRight);
-            this.oRightScroll.setAttribute("ondblclick",  sRight);
-            [this.oLeftScroll, this.oRightScroll].forEach(function(elBtn) {
-                elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
-                    + _self.uniqueId + ');\
-                    if(!this.disabled) o.$setStyleClass(this, "over");');
-                elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
-                    + _self.uniqueId + ');\
-                    if (!this.disabled) o.$setStyleClass(this, "", ["over"]);');
-                elBtn.setAttribute("onmouseup", 'var o=jpf.lookup(' + _self.uniqueId + ');\
-                    o.$setStyleClass(this, "", ["click"]);');
+            this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
+            this.oRightScroll = jpf.getNode(this.oScroller, [1]);
+            
+            var _self = this;
+            this.oLeftScroll.onmousedown  =
+            this.oLeftScroll.ondblclick   = function(){
+                if (this.className.indexOf("disabled") == -1) {
+                    _self.$setStyleClass(this, "click");
+                    _self.scroll(event, jpf.BaseTab.SCROLL_LEFT);
+                }
+                if (!jpf.isSafariOld)
+                    this.onmouseout();
+            };
+            this.oRightScroll.onmousedown = 
+            this.oRightScroll.ondblclick  = function() {
+                if (this.className.indexOf("disabled") == -1) {
+                    _self.$setStyleClass(this, "click");
+                    _self.scroll(event, jpf.BaseTab.SCROLL_RIGHT);
+                }
+                if (!jpf.isSafariOld)
+                    this.onmouseout();
+            };
+            [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
+                oBtn.onmouseover = function() {
+                    if (!this.disabled)
+                        _self.$setStyleClass(this, "over");
+                }
+                oBtn.onmouseout = function() {
+                    if (!this.disabled)
+                        _self.$setStyleClass(this, "", ["over"]);
+                }
+                oBtn.onmouseup = function() {
+                    _self.$setStyleClass(this, "", ["click"]);
+                }
             });
         }
+        
+        jpf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
+            "jpf.all[" + this.uniqueId + "].correctScrollState()");
         // #endif
 
         //Skin changing support
@@ -795,6 +803,19 @@ jpf.BaseTab = function(){
         window.setTimeout(function() {
             _self.setScrollerState();
         }, 0);
+        // #endif
+    };
+    
+    this.$destroy = function(bSkinChange) {
+        if (bSkinChange || !this.oScroller)
+            return;
+        // #ifdef __ENABLE_TABSCROLL
+        jpf.layout.removeRule(this.oExt, this.uniqueId + "_tabscroller");
+        
+        [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
+            oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
+            oBtn.onmouseout  = oBtn.onmouseup  = null;
+        });
         // #endif
     };
 };
