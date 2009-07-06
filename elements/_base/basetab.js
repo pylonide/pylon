@@ -687,19 +687,19 @@ jpf.BaseTab = function(){
             
             var _self = this;
             this.oLeftScroll.onmousedown  =
-            this.oLeftScroll.ondblclick   = function(){
+            this.oLeftScroll.ondblclick   = function(e){
                 if (this.className.indexOf("disabled") == -1) {
                     _self.$setStyleClass(this, "click");
-                    _self.scroll(event, jpf.BaseTab.SCROLL_LEFT);
+                    _self.scroll(e || event, jpf.BaseTab.SCROLL_LEFT);
                 }
                 if (!jpf.isSafariOld)
                     this.onmouseout();
             };
             this.oRightScroll.onmousedown = 
-            this.oRightScroll.ondblclick  = function() {
+            this.oRightScroll.ondblclick  = function(e) {
                 if (this.className.indexOf("disabled") == -1) {
                     _self.$setStyleClass(this, "click");
-                    _self.scroll(event, jpf.BaseTab.SCROLL_RIGHT);
+                    _self.scroll(e || event, jpf.BaseTab.SCROLL_RIGHT);
                 }
                 if (!jpf.isSafariOld)
                     this.onmouseout();
