@@ -276,7 +276,7 @@ jpf.BaseTab = function(){
 
     // #ifdef __ENABLE_TABSCROLL
     
-    var SCROLLANIM_INIT = {
+    var SCROLLANIM = {
         scrollOn: false,
         steps   : 15,
         interval: 10,
@@ -284,6 +284,20 @@ jpf.BaseTab = function(){
         left    : 0
     };
     var bAnimating = false;
+
+    function getButtonsWidth() {
+        var cId = "cache_" + this.oButtons.childNodes.length;
+        if (SCROLLANIM[cId])
+            return SCROLLANIM[cId];
+
+        var iWidth = 0;
+        for (var i = 0, l = this.oButtons.childNodes.length; i < l; i++) {
+            if (typeof this.oButtons.childNodes[i].offsetWidth != "undefined")
+                iWidth += this.oButtons.childNodes[i].offsetWidth;
+        }
+
+        return SCROLLANIM[cId] = iWidth;
+    }
 
     /**
      * Set the state scroller buttons: enabled, disabled or completely hidden,
@@ -296,18 +310,25 @@ jpf.BaseTab = function(){
     this.setScrollerState = function(bOn, iBtns) {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
 
-        if (typeof bOn == "undefined"){
-            bOn   = (this.oButtons.offsetWidth > this.oExt.offsetWidth);
+        if (typeof bOn == "undefined") {
+            var scrollerWidth = this.oScroller.offsetWidth
+                || parseInt(jpf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
+            bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.oExt.offsetWidth);
             iBtns = jpf.BaseTab.SCROLL_BOTH;
         }
 
-        if (iBtns & jpf.BaseTab.SCROLL_BOTH && bOn !== SCROLLANIM_INIT.scrollOn) {
+        if (iBtns & jpf.BaseTab.SCROLL_BOTH && bOn !== SCROLLANIM.scrollOn) {
             // in case of HIDING the scroller: check if the anim stuff has reverted
-            SCROLLANIM_INIT.scrollOn = bOn;
-            if (!bOn)
-                this.oButtons.style.left = SCROLLANIM_INIT.left + "px";
+            SCROLLANIM.scrollOn = bOn;
+            if (!bOn) {
+                this.oButtons.style.left = SCROLLANIM.left + "px";
+                this.oScroller.style.display = "none";
+            }
             //else
             //    TODO: scroll active tab into view if it becomes hidden beneath scroller node(s)
+        }
+        else {
+            this.oScroller.style.display = "";
         }
 
         this.oScroller.style.display = (iBtns & jpf.BaseTab.SCROLL_BOTH && !bOn)
@@ -346,12 +367,12 @@ jpf.BaseTab = function(){
      * @type  {Number}
      */
     function getAnimationBoundary(dir, useCache) {
-        if (SCROLLANIM_INIT.size <= 0) {
-            SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
-            SCROLLANIM_INIT.size = Math.round(this.firstChild.oButton.offsetWidth);
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.oButtons.offsetLeft;
+            SCROLLANIM.size = Math.round(this.firstChild.oButton.offsetWidth);
         }
         if (dir & jpf.BaseTab.SCROLL_LEFT) {
-            return SCROLLANIM_INIT.left;
+            return SCROLLANIM.left;
         }
         else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
             // TODO: support Drag n Drop of tabs...
@@ -394,10 +415,10 @@ jpf.BaseTab = function(){
                 bAnimating = false;
                 return this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
             }
-            //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
+            //one scroll animation scrolls by a SCROLLANIM.size px.
             var iTargetLeft = iCurrentLeft + (e.type == "dblclick"
-                ? SCROLLANIM_INIT.size * 3
-                : SCROLLANIM_INIT.size);
+                ? SCROLLANIM.size * 3
+                : SCROLLANIM.size);
             if (iTargetLeft > iBoundary)
                 iTargetLeft = iBoundary;
 
@@ -407,8 +428,8 @@ jpf.BaseTab = function(){
 
             //start animated scroll to the left
             jpf.tween.single(this.oButtons, {
-                steps   : SCROLLANIM_INIT.steps,
-                interval: SCROLLANIM_INIT.interval,
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
@@ -421,16 +442,16 @@ jpf.BaseTab = function(){
             var _self = this;
             if (iCurrentLeft === iBoundary) {
                 return jpf.tween.single(this.oButtons, {
-                    steps   : SCROLLANIM_INIT.steps,
-                    interval: SCROLLANIM_INIT.interval,
+                    steps   : SCROLLANIM.steps,
+                    interval: SCROLLANIM.interval,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft - 24,
                     type: "left",
                     anim: jpf.tween.EASEOUT,
                     onfinish: function(oNode, options) {
                         jpf.tween.single(oNode, {
-                            steps   : SCROLLANIM_INIT.steps,
-                            interval: SCROLLANIM_INIT.interval,
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
                             from    : iCurrentLeft - 24,
                             to      : iCurrentLeft,
                             type    : "left",
@@ -443,18 +464,18 @@ jpf.BaseTab = function(){
                     }
                 });
             }
-            //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
+            //one scroll animation scrolls by a SCROLLANIM.size px.
             var iTargetLeft = iCurrentLeft - (e.type == "dblclick"
-                ? SCROLLANIM_INIT.size * 3
-                : SCROLLANIM_INIT.size);
+                ? SCROLLANIM.size * 3
+                : SCROLLANIM.size);
             //make sure we don't scroll more to the right than the
             //maximum left:
             if (iTargetLeft < iBoundary)
                 iTargetLeft = iBoundary;
             //start animated scroll to the right
             jpf.tween.single(this.oButtons, {
-                steps   : SCROLLANIM_INIT.steps,
-                interval: SCROLLANIM_INIT.interval,
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
@@ -483,9 +504,9 @@ jpf.BaseTab = function(){
             iTabWidth    = oPage.oButton.offsetWidth,
             iCurrentLeft = this.oButtons.offsetLeft;
 
-        if (SCROLLANIM_INIT.size <= 0) {
-            SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
-            SCROLLANIM_INIT.size = Math.round(this.firstChild.oButton.offsetWidth);
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.oButtons.offsetLeft;
+            SCROLLANIM.size = Math.round(this.firstChild.oButton.offsetWidth);
         }
         this.oButtons.style.left = iCurrentLeft;
 
@@ -494,18 +515,18 @@ jpf.BaseTab = function(){
             iTargetLeft = null;
 
         if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) //scroll to the right
-            iTargetLeft = (-(iTabLeft - SCROLLANIM_INIT.left)
+            iTargetLeft = (-(iTabLeft - SCROLLANIM.left)
                 + (iRealWidth - iTabWidth - iScrollCorr));
-        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM_INIT.left) //sroll to the left
-            iTargetLeft = SCROLLANIM_INIT.left - iTabLeft;
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) //sroll to the left
+            iTargetLeft = SCROLLANIM.left - iTabLeft;
 
         if (iTargetLeft !== null) {
             this.setScrollerState(true);
             jpf.tween.clearQueue(this.oButtons, true);
 
             jpf.tween.single(this.oButtons, {
-                steps   : SCROLLANIM_INIT.steps,
-                interval: SCROLLANIM_INIT.interval,
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
