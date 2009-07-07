@@ -119,23 +119,27 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["timeout"] = function(value) {
         this.timeout = parseInt(value) * 1000;
     }
+    
+    function getPageScroll() {
+        return [
+            document.documentElement.scrollTop || document.body.scrollTop,
+            document.documentElement.scrollLeft || document.body.scrollLeft
+        ];
+    }
 
     function getStartPosition(x, wh, ww, nh, nw, margin) {
-         var sTop = document.documentElement.scrollTop 
-             || document.body.scrollTop;
-         var sLeft = document.documentElement.scrollLeft 
-             || document.body.scrollLeft;
-         
+         var scrolled = getPageScroll();
+
          var ver = (x[0] == "top"
              ? margin[0]
              : (x[0] == "bottom"
                  ? wh - nh - margin[2]
-                 : wh/2 - nh/2)) + sTop;
+                 : wh/2 - nh/2)) + scrolled[0];
          var hor = (x[1] == "left" 
              ? margin[3]
              : (x[1] == "right"
                  ? ww - nw - margin[1]
-                 : ww/2 - nw/2)) + sLeft;
+                 : ww/2 - nw/2)) + scrolled[1];
          sign = 1;
 
          return lastPos = [ver, hor];
@@ -161,6 +165,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         var wh = jpf.isIE 
             ? document.documentElement.offsetHeight
             : window.innerHeight;
+        
         var removed = false;
 
         var oIcon = this.$getLayoutNode("notification", "icon", oNoti);
@@ -189,9 +194,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         var x = this.position.split("-");
         if(x[1] == "top" || x[1] == "bottom" ||
            x[0] == "left" || x[0] == "right") {
-            var tmp = x[1];
-            x[1] = x[0];
-            x[0] = tmp;
+            x = [x[1], x[0]];
         }
         /* center-X and X-center are disabled */
         if((x[0] == "center" && x[1] !== "center") ||
@@ -229,7 +232,9 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         /* reset to next line, first for vertical, second horizontal */
-        if (lastPos[0] > wh - nh || lastPos[0] < 0) {
+        var scrolled = getPageScroll();
+        
+        if (lastPos[0] > wh + scrolled[0] - nh || lastPos[0] < scrolled[0]) {
             lastPos[1] += (x[1] == "left"
                 ? nw + margin[3]
                 : (x[1] == "right"
@@ -242,7 +247,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                     ? - margin[2] - nh
                     : 0));
         }
-        else if (lastPos[1] > ww - nw || lastPos[1] < 0) {
+        else if (lastPos[1] > ww + scrolled[1] - nw || lastPos[1] < scrolled[1]) {
             lastPos[0] += (x[0] == "top"
                 ? nh + margin[0]
                 : (x[0] == "bottom"
@@ -260,11 +265,11 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 
         /* Start from begining if entire screen is filled */
         if (lastPos) {
-            if ((lastPos[0] > wh -nh || lastPos[0] < 0) && 
+            if ((lastPos[0] > wh + scrolled[0] - nh || lastPos[0] < scrolled[1]) && 
                 this.arrange == "horizontal") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
             }
-            if ((lastPos[1] > ww -nw || lastPos[1] < 0) && 
+            if ((lastPos[1] > ww + scrolled[1] - nw || lastPos[1] < scrolled[1]) && 
                 this.arrange == "vertical") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
             }
