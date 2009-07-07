@@ -482,7 +482,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
         //this.oExt.style.height = "80%"
-        this.oExt.style.top       = 0;
+        //this.oExt.style.top       = 0;
         this.oExt.style.position  = "relative";
         this.oExt.style.minHeight = "10px";
         

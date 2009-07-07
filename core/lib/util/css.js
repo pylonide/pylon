@@ -250,7 +250,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;
 
-    var bw, bh;
+    var bw, bh, fl;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
         bw = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
@@ -260,12 +260,18 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
 
-        if (jpf.isIE && !jpf.isIE8 && jpf.getStyle(o, "styleFloat") == "none") {
+        if (jpf.isIE && !jpf.isIE8 && jpf.getStyle(o, "styleFloat") == "none" 
+          && jpf.getStyle(o, "position") == "relative") {
             var q = o.previousSibling;
             while (q) {
-                if (q.nodeType == 1 && jpf.getStyle(q, "styleFloat") == "left") {
-                    wt -= parseInt(jpf.getStyle(o, "marginLeft"));
-                    break;
+                if (q.nodeType == 1) {
+                    var fl = jpf.getStyle(q, "styleFloat");
+                    if (fl == "left") {
+                        wt -= parseInt(jpf.getStyle(o, "marginLeft"));
+                        break;
+                    }
+                    else if (fl == "right")
+                        break;
                 }
                 q = q.previousSibling;
             }
@@ -304,7 +310,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         o = o.offsetParent;
     }
 
-    return [wt - (jpf.isIE && !jpf.isIE8 ? 1 : 0), ht];
+    return [wt - (jpf.isIE && !jpf.isIE8 ? 0 : 0), ht];
 };
 
 // #endif
