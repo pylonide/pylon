@@ -416,13 +416,14 @@ jpf.BaseTab = function(){
         var iBoundary = getAnimationBoundary.call(this, dir);
         if (dir & jpf.BaseTab.SCROLL_LEFT) {
             if (iCurrentLeft === iBoundary) {
+                _self.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_LEFT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft + 12,
-                    type: "left",
-                    anim: jpf.tween.EASEIN,
+                    type    : "left",
+                    anim    : jpf.tween.EASEIN,
                     onfinish: function(oNode, options) {
                         jpf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
@@ -430,11 +431,7 @@ jpf.BaseTab = function(){
                             from    : iCurrentLeft + 24,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN,
-                            onfinish: function() {
-                                _self.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
-                                bAnimating = false;
-                            }
+                            anim    : jpf.tween.EASEIN
                         });
                     }
                 });
@@ -468,6 +465,7 @@ jpf.BaseTab = function(){
         else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
             this.setScrollerState(true);
             if (iCurrentLeft === iBoundary) {
+                _self.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_RIGHT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
@@ -482,11 +480,7 @@ jpf.BaseTab = function(){
                             from    : iCurrentLeft - 24,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN,
-                            onfinish: function() {
-                                _self.setScrollerState(false, jpf.BaseTab.SCROLL_RIGHT);
-                                bAnimating = false;
-                            }
+                            anim    : jpf.tween.EASEIN
                         });
                     }
                 });
