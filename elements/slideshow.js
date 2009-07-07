@@ -173,6 +173,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.select = function(badge) {
         current = badge;
+        this.$show();
     }
 
     /**
@@ -182,7 +183,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$paint = function() {
         current = _self.getFirstTraverseNode();
 
-        this.oInt.style.display    = "block";
+        this.oInt.style.display    = "none";
         this.oBody.style.display   = "";
         this.oImage.style.display  = "";
         this.oImage.src            = "about:blank";
@@ -191,8 +192,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oLoading.innerHTML    = this.loadmsg;
 
         /* Removes window scrollbars */
-        this.lastOverflow = document.documentElement.style.overflow;
-        document.documentElement.style.overflow = "hidden";
+        //this.lastOverflow = document.documentElement.style.overflow;
+        //document.documentElement.style.overflow = "hidden";
 
         if (current) {
             this.addSelection();
