@@ -106,8 +106,9 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String} for the id of the element that receives the focus 
      * when the label is clicked on.
      */
-    this.$supportedProperties.push("value", "for");
-    this.$propHandlers["value"] = function(value){
+    this.$supportedProperties.push("caption", "value", "for");
+    this.$propHandlers["caption"] = 
+    this.$propHandlers["value"]   = function(value){
         this.oInt.innerHTML = value;
     };
     this.$propHandlers["for"] = function(value){

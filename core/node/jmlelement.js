@@ -356,7 +356,8 @@ jpf.JmlElement = function(){
               || x.parentNode && x.parentNode.nodeType == 1
               && "vbox|hbox".indexOf(pTagName) > -1) { //@todo temp
                 this.implement(jpf.Alignment); /** @inherits jpf.Alignment */
-                this.oExt.style.display = "none";
+                //@todo temporarily disabled, hopefully it doesnt cause drawing problems
+                //this.oExt.style.display = "none";
                 this.enableAlignment();
             }
             else
@@ -1008,7 +1009,8 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "left": function(value){
-        this.oExt.style.position = "absolute";
+        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+            this.oExt.style.position = "absolute";
         this.oExt.style.left = value + "px";
     },
 
@@ -1018,7 +1020,8 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "top": function(value){
-        this.oExt.style.position = "absolute";
+        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+            this.oExt.style.position = "absolute";
         this.oExt.style.top = value + "px";
     },
 
@@ -1028,7 +1031,8 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "right": function(value){
-        this.oExt.style.position = "absolute";
+        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+            this.oExt.style.position = "absolute";
         this.oExt.style.right = value + "px";
     },
 
@@ -1038,7 +1042,8 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "bottom": function(value){
-        this.oExt.style.position = "absolute";
+        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+            this.oExt.style.position = "absolute";
         this.oExt.style.bottom = value + "px";
     },
 

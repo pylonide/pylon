@@ -245,7 +245,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             jmlNode.removeNode(isMoveWithinParent);
         jmlNode.parentNode = this;
 
-        var index;
+        var index = -1;
         if (beforeNode) {
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
@@ -265,7 +265,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 jmlNode.previousSibling.nextSibling = jmlNode;
         }
 
-        if (index)
+        if (index >= 0)
             this.childNodes = this.childNodes.slice(0, index).concat(jmlNode,
                 this.childNodes.slice(index));
         else {

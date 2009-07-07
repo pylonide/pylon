@@ -157,7 +157,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         
         //#ifdef __WITH_ALIGNMENT
-        if (mlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
+        if (jmlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
             jmlNode.disableAlignment();
         //#endif
         
@@ -168,7 +168,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         
         jmlNode.$propHandlers["width"]  = 
         jmlNode.$propHandlers["height"] = 
-        jmlNode.$propHandlers["span"]   = updateTrigger;
+        jmlNode.$propHandlers["span"]   = this.$updateTrigger;
         
         jmlNode.$_hide = jmlNode.$hide;
         jmlNode.$_show = jmlNode.$show;

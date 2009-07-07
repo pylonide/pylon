@@ -64,9 +64,9 @@
  *      height          = "200"
  *      left            = "200"
  *      top             = "20"
- *      multiexpand   = "true"
+ *      multiexpand     = "true"
  *      expand          = "click"
- *      startexpanded  = "false"
+ *      startexpanded   = "false"
  *      skin            = "accordion_horizontal"
  *      >
  *     <j:panel title="Iron Maiden" expanded="true" icon="icon.png">
@@ -114,9 +114,9 @@
  *     top             = "500"
  *     animtype        = "normal normal"
  *     animdelay       = "10"
- *     multiexpand   = "false"
+ *     multiexpand     = "false"
  *     expand          = "click"
- *     startexpanded  = "false"
+ *     startexpanded   = "false"
  *     skin            = "accordion_vertical"
  *     >
  *     <j:panel title="Components" expanded="true" icon="icon.png">
