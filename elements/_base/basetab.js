@@ -417,7 +417,7 @@ jpf.BaseTab = function(){
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
-                    to      : iCurrentLeft + 24,
+                    to      : iCurrentLeft + 12,
                     type: "left",
                     anim: jpf.tween.EASEIN,
                     onfinish: function(oNode, options) {
