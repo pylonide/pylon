@@ -760,7 +760,7 @@ jpf.BaseTab = function(){
                 _self[sBtn].ondblclick  = function(e) {
                     if (this.className.indexOf("disabled") == -1) {
                         e = e || event;
-                        _self.$setStyleClass(this, "click");
+                        _self.$setStyleClass(this, "down");
                         _self.scroll(e, dir);
                         startTimer(e, dir);
                     }
@@ -770,15 +770,15 @@ jpf.BaseTab = function(){
                 _self[sBtn].onmouseover = function() {
                     if (!this.disabled) {
                         globalDir = dir;
-                        _self.$setStyleClass(this, "over");
+                        _self.$setStyleClass(this, "hover");
                     }
                 };
                 _self[sBtn].onmouseout = function() {
                     if (!this.disabled)
-                        _self.$setStyleClass(this, "", ["over"]);
+                        _self.$setStyleClass(this, "", ["hover"]);
                 };
                 _self[sBtn].onmouseup = function() {
-                    _self.$setStyleClass(this, "", ["click"]);
+                    _self.$setStyleClass(this, "", ["down"]);
                     stopTimer();
                 };
             });
