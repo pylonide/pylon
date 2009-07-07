@@ -66,8 +66,9 @@ jpf.BaseTab = function(){
         return this.setProperty("activepage", page);
     }
 
-    var inited = false;
-    var ready  = false;
+    var inited = false,
+        ready  = false,
+        _self  = this;;
 
     /**** Properties and Attributes ****/
 
@@ -277,13 +278,15 @@ jpf.BaseTab = function(){
     // #ifdef __ENABLE_TABSCROLL
     
     var SCROLLANIM = {
-        scrollOn: false,
-        steps   : 15,
-        interval: 10,
-        size    : 0,
-        left    : 0
-    };
-    var bAnimating = false;
+            scrollOn: false,
+            steps   : 15,
+            interval: 10,
+            size    : 0,
+            left    : 0
+        },
+        bAnimating = false,
+        scrollTimer = null,
+        keepScrolling = false;
 
     function getButtonsWidth() {
         var cId = "cache_" + this.oButtons.childNodes.length;
@@ -412,8 +415,28 @@ jpf.BaseTab = function(){
         var iBoundary = getAnimationBoundary.call(this, dir);
         if (dir & jpf.BaseTab.SCROLL_LEFT) {
             if (iCurrentLeft === iBoundary) {
-                bAnimating = false;
-                return this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
+                return jpf.tween.single(this.oButtons, {
+                    steps   : SCROLLANIM.steps,
+                    interval: 20,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft + 24,
+                    type: "left",
+                    anim: jpf.tween.EASEIN,
+                    onfinish: function(oNode, options) {
+                        jpf.tween.single(oNode, {
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
+                            from    : iCurrentLeft + 24,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : jpf.tween.EASEIN,
+                            onfinish: function() {
+                                _self.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
+                                bAnimating = false;
+                            }
+                        });
+                    }
+                });
             }
             //one scroll animation scrolls by a SCROLLANIM.size px.
             var iTargetLeft = iCurrentLeft + (e.type == "dblclick"
@@ -434,16 +457,19 @@ jpf.BaseTab = function(){
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
-                onfinish: function() { bAnimating = false; }
+                onfinish: function() {
+                    bAnimating = false;
+                    if (keepScrolling)
+                        _self.scroll(e, dir);
+                }
             });
         }
         else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
             this.setScrollerState(true);
-            var _self = this;
             if (iCurrentLeft === iBoundary) {
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
-                    interval: SCROLLANIM.interval,
+                    interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft - 24,
                     type: "left",
@@ -480,7 +506,11 @@ jpf.BaseTab = function(){
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
-                onfinish: function() { bAnimating = false; }
+                onfinish: function() {
+                    bAnimating = false;
+                    if (keepScrolling)
+                        _self.scroll(e, dir);
+                }
             });
         }
     };
@@ -688,7 +718,7 @@ jpf.BaseTab = function(){
     // #endif
 
     this.$loadChildren = function(callback){
-        var page = false, f = false, i, _self = this;
+        var page = false, f = false, i;
 
         inited = true;
 
@@ -703,38 +733,48 @@ jpf.BaseTab = function(){
         // add scroller node(s)
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
+            function startTimer(e, dir) {
+                stopTimer();
+                scrollTimer = setTimeout(function() {
+                    keepScrolling = true;
+                    _self.scroll(e, dir);
+                }, 500);
+            }
+            function stopTimer() {
+                clearTimeout(scrollTimer);
+                keepScrolling = false;
+            }
+
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);
             
-            this.oLeftScroll.onmousedown  =
-            this.oLeftScroll.ondblclick   = function(e){
-                if (this.className.indexOf("disabled") == -1) {
-                    _self.$setStyleClass(this, "click");
-                    _self.scroll(e || event, jpf.BaseTab.SCROLL_LEFT);
-                }
-                if (!jpf.isSafariOld)
-                    this.onmouseout();
-            };
-            this.oRightScroll.onmousedown = 
-            this.oRightScroll.ondblclick  = function(e) {
-                if (this.className.indexOf("disabled") == -1) {
-                    _self.$setStyleClass(this, "click");
-                    _self.scroll(e || event, jpf.BaseTab.SCROLL_RIGHT);
-                }
-                if (!jpf.isSafariOld)
-                    this.onmouseout();
-            };
-            [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
-                oBtn.onmouseover = function() {
+            ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
+                var dir = jpf.BaseTab[sBtn == "oLeftScroll" 
+                    ? "SCROLL_LEFT"
+                    : "SCROLL_RIGHT"];
+                _self[sBtn].onmousedown =
+                _self[sBtn].ondblclick  = function(e) {
+                    if (this.className.indexOf("disabled") == -1) {
+                        _self.$setStyleClass(this, "click");
+                        _self.scroll(e || event, dir);
+                        startTimer(e, dir);
+                    }
+                    if (!jpf.isSafariOld)
+                        this.onmouseout(true);
+                };
+                _self[sBtn].onmouseover = function() {
                     if (!this.disabled)
                         _self.$setStyleClass(this, "over");
                 };
-                oBtn.onmouseout = function() {
+                _self[sBtn].onmouseout = function(bForce) {
                     if (!this.disabled)
                         _self.$setStyleClass(this, "", ["over"]);
+                    if (bForce !== true)
+                        stopTimer();
                 };
-                oBtn.onmouseup = function() {
+                _self[sBtn].onmouseup = function() {
                     _self.$setStyleClass(this, "", ["click"]);
+                    stopTimer();
                 };
             });
         }
