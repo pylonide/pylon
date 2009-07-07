@@ -115,8 +115,9 @@ jpf.popup = {
             moveUp = options.autoCorrect && (top
                 + (options.height || o.height || o.content.offsetHeight))
                 > (p == document.documentElement
-                  ? (jpf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))
+                  ? (jpf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
                   : p.offsetHeight + p.scrollTop);
+
             popup.style.top = (moveUp 
                 ? (top - (options.height || o.height || o.content.offsetHeight))
                 : top) + "px"
