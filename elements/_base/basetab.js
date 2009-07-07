@@ -284,9 +284,10 @@ jpf.BaseTab = function(){
             size    : 0,
             left    : 0
         },
-        bAnimating = false,
-        scrollTimer = null,
-        keepScrolling = false;
+        bAnimating    = false,
+        scrollTimer   = null,
+        keepScrolling = false,
+        globalDir     = jpf.BaseTab.SCROLL_LEFT;
 
     function getButtonsWidth() {
         var cId = "cache_" + this.oButtons.childNodes.length;
@@ -355,9 +356,6 @@ jpf.BaseTab = function(){
      */
     this.correctScrollState = function() {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
-//        if (this.oButtons.offsetLeft < 0)
-//            this.oButtons.style.left = (this.oExt.offsetWidth
-//                - this.oButtons.offsetWidth - this.oScroller.offsetWidth) + "px";
         this.setScrollerState();
     };
 
@@ -460,7 +458,7 @@ jpf.BaseTab = function(){
                 onfinish: function() {
                     bAnimating = false;
                     if (keepScrolling)
-                        _self.scroll(e, dir);
+                        _self.scroll(e, globalDir);
                 }
             });
         }
@@ -509,7 +507,7 @@ jpf.BaseTab = function(){
                 onfinish: function() {
                     bAnimating = false;
                     if (keepScrolling)
-                        _self.scroll(e, dir);
+                        _self.scroll(e, globalDir);
                 }
             });
         }
@@ -735,6 +733,7 @@ jpf.BaseTab = function(){
         if (this.oScroller) {
             function startTimer(e, dir) {
                 stopTimer();
+                globalDir   = dir;
                 scrollTimer = setTimeout(function() {
                     keepScrolling = true;
                     _self.scroll(e, dir);
@@ -744,6 +743,14 @@ jpf.BaseTab = function(){
                 clearTimeout(scrollTimer);
                 keepScrolling = false;
             }
+
+            this.oScroller.onmouseout = function(e) {
+                e = e || window.event;
+                var el = e.target || e.srcElement;
+                if (el == _self.oLeftScroll || el == _self.oRightScroll)
+                    return;
+                stopTimer();
+            };
 
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);
@@ -760,17 +767,17 @@ jpf.BaseTab = function(){
                         startTimer(e, dir);
                     }
                     if (!jpf.isSafariOld)
-                        this.onmouseout(true);
+                        this.onmouseout();
                 };
                 _self[sBtn].onmouseover = function() {
-                    if (!this.disabled)
+                    if (!this.disabled) {
+                        globalDir = dir;
                         _self.$setStyleClass(this, "over");
+                    }
                 };
-                _self[sBtn].onmouseout = function(bForce) {
+                _self[sBtn].onmouseout = function() {
                     if (!this.disabled)
                         _self.$setStyleClass(this, "", ["over"]);
-                    if (bForce !== true)
-                        stopTimer();
                 };
                 _self[sBtn].onmouseup = function() {
                     _self.$setStyleClass(this, "", ["click"]);
