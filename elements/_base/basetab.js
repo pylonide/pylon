@@ -416,19 +416,19 @@ jpf.BaseTab = function(){
         var iBoundary = getAnimationBoundary.call(this, dir);
         if (dir & jpf.BaseTab.SCROLL_LEFT) {
             if (iCurrentLeft === iBoundary) {
-                _self.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_LEFT);
+                this.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_LEFT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft + 12,
                     type    : "left",
-                    anim    : jpf.tween.EASEIN,
-                    onfinish: function(oNode, options) {
+                    anim    : jpf.tween.EASEOUT,
+                    onfinish: function(oNode) {
                         jpf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
                             interval: SCROLLANIM.interval,
-                            from    : iCurrentLeft + 24,
+                            from    : iCurrentLeft + 12,
                             to      : iCurrentLeft,
                             type    : "left",
                             anim    : jpf.tween.EASEIN
