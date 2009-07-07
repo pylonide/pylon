@@ -399,7 +399,10 @@ jpf.BaseTab = function(){
      */
     this.scroll = function(e, dir) {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
-        if (!e) e = window.event;
+        if (!e)
+            e = window.event;
+        if (typeof e["type"] == "unknown") //scope expired (prolly GC'ed)
+            e = {type: "click"};
         if (bAnimating && e.type != "dblclick") return;
         bAnimating = true;
 
@@ -762,8 +765,9 @@ jpf.BaseTab = function(){
                 _self[sBtn].onmousedown =
                 _self[sBtn].ondblclick  = function(e) {
                     if (this.className.indexOf("disabled") == -1) {
+                        e = e || event;
                         _self.$setStyleClass(this, "click");
-                        _self.scroll(e || event, dir);
+                        _self.scroll(e, dir);
                         startTimer(e, dir);
                     }
                     if (!jpf.isSafariOld)
