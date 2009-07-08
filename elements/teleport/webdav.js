@@ -114,8 +114,9 @@ jpf.webdav = function(){
 
     this.TelePortModule = true;
 
-    this.model    = null;
-    this.useModel = false;
+    this.model      = null;
+    this.useModel   = false;
+    this.showHidden = false;
 
     var oLocks       = {},
         iLockId      = 0,
@@ -979,7 +980,12 @@ jpf.webdav = function(){
      * @private
      */
     function parseItem(oNode) {
-        var sPath = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, '');
+        var sPath   = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, ''),
+            sName   = decodeURIComponent(sPath.split("/").pop()),
+            bHidden = (sName.charAt(0) == ".");
+
+        if (!_self.showHidden && bHidden)
+            return "";
         
         var iId, oItem = getItemByPath(sPath);
         if (oItem && typeof oItem.id == "number")
@@ -987,9 +993,9 @@ jpf.webdav = function(){
         else
             iId = aFsCache.length;
 
-        var sType  = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "folder" : "file";
-        var aCType = $xmlns(oNode, "getcontenttype", _self.NS.D);
-        var aExec  = $xmlns(oNode, "executable", _self.NS.lp2);
+        var sType  = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "folder" : "file",
+            aCType = $xmlns(oNode, "getcontenttype", _self.NS.D),
+            aExec  = $xmlns(oNode, "executable", _self.NS.lp2);
         oItem = aFsCache[iId] = {
             id          : iId,
             path        : sPath,
@@ -997,7 +1003,7 @@ jpf.webdav = function(){
             size        : parseInt(sType == "file"
                 ? $xmlns(oNode, "getcontentlength", _self.NS.lp1)[0].firstChild.nodeValue
                 : 0),
-            name        : decodeURIComponent(sPath.split("/").pop()),
+            name        : sName,
             contentType : (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
                 : ""),
@@ -1016,8 +1022,8 @@ jpf.webdav = function(){
             contenttype='" + oItem.contentType + "' \
             creationdate='" + oItem.creationDate + "' \
             lockable='" + oItem.lockable.toString() + "' \
-            executable='" + oItem.executable.toString() +
-            "'/>";
+            hidden='" + bHidden.toString() + "'\
+            executable='" + oItem.executable.toString() + "'/>";
     }
 
     /*
@@ -1080,10 +1086,12 @@ jpf.webdav = function(){
                 "WebDAV initialization error",
                 "Invalid WebDAV server url provided."));
 
-        this.domain   = url.host;
-        this.rootPath = url.path;
-        this.server   = this.server.replace(new RegExp(this.rootPath + "$"), "");
-        this.tagName  = "webdav";
+        this.domain     = url.host;
+        this.rootPath   = url.path;
+        this.server     = this.server.replace(new RegExp(this.rootPath + "$"), "");
+        this.tagName    = "webdav";
+        this.showHidden = jpf.isTrue(x.getAttribute("show-hidden")
+            || x.getAttribute("showhidden"))
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
 

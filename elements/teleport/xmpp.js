@@ -1225,6 +1225,36 @@ jpf.xmpp = function(){
         );
     };
 
+    var statusMap = {
+        "online"      : jpf.xmpp.STATUS_ONLINE,
+        "offline"     : jpf.xmpp.STATUS_OFFLINE,
+        "away"        : jpf.xmpp.STATUS_AWAY,
+        "xa"          : jpf.xmpp.STATUS_XA,
+        "extendedaway": jpf.xmpp.STATUS_XA,
+        "onvacation"  : jpf.xmpp.STATUS_XA,
+        "dnd"         : jpf.xmpp.STATUS_DND,
+        "donotdisturb": jpf.xmpp.STATUS_DND,
+        "invisible"   : jpf.xmpp.STATUS_INVISIBLE,
+        "ffc"         : jpf.xmpp.STATUS_FFC,
+        "chatty"      : jpf.xmpp.STATUS_FFC,
+        "freeforchat" : jpf.xmpp.STATUS_FFC
+    };
+
+    /**
+     * Set the currently connected users' status to the status string provided
+     * by sStatus, defaults to 'online'
+     * 
+     * @param {String} [sStatus] Optional. Possible values: online, offline,
+     *                           away, extendedaway, onvacation, dnd,
+     *                           donotdisturb, invisible, chatty, freeforchat.
+     * @type  {void}
+     */
+    this.setStatus = function(sStatus) {
+        sStatus = statusMap[sStatus] || "online";
+        
+        return this.setPresence(sStatus, sStatus);
+    };
+
     /**
      * Provides the ability to send a (chat-)message to any node inside the user's
      * Roster. If the 'type' property is set, it must be one of the constants in
@@ -1662,13 +1692,17 @@ jpf.xmpp.CONN_BOSH = 0x0002;
 jpf.xmpp.ERROR_AUTH = 0x0004;
 jpf.xmpp.ERROR_CONN = 0x0008;
 
-jpf.xmpp.TYPE_AVAILABLE   = "available"; //no need to send available
+jpf.xmpp.TYPE_AVAILABLE   = ""; //no need to send available
 jpf.xmpp.TYPE_UNAVAILABLE = "unavailable";
 
-jpf.xmpp.STATUS_SHOW = "show";
-jpf.xmpp.STATUS_AWAY = "away";
-jpf.xmpp.STATUS_XA   = "xa";
-jpf.xmpp.STATUS_DND  = "dnd";
+jpf.xmpp.STATUS_ONLINE    = "online";
+jpf.xmpp.STATUS_OFFLINE   = "offline";
+jpf.xmpp.STATUS_SHOW      = "show";
+jpf.xmpp.STATUS_AWAY      = "away";
+jpf.xmpp.STATUS_XA        = "xa";
+jpf.xmpp.STATUS_DND       = "dnd";
+jpf.xmpp.STATUS_INVISIBLE = "invisible";
+jpf.xmpp.STATUS_FFC       = "chat";
 
 jpf.xmpp.MSG_CHAT      = "chat";
 jpf.xmpp.MSG_GROUPCHAT = "groupchat";
