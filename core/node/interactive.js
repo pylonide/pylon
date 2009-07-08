@@ -534,10 +534,10 @@ jpf.Interactive = function(){
 
         //@todo This is probably not gen purpose
         var pos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent
-        var sLeft = 0;//document.documentElement.scrollLeft;
-        var sTop = 0;//document.documentElement.scrollTop;
-        var x = e.clientX - pos[0] + sLeft;
-        var y = e.clientY - pos[1] + sTop;
+        var sLeft = 0;//;
+        var sTop = 0;//;
+        var x = e.clientX - pos[0] + sLeft + document.documentElement.scrollLeft;
+        var y = e.clientY - pos[1] + sTop + document.documentElement.scrollTop;
         
         if (!originalCursor)
             originalCursor = jpf.getStyle(this, "cursor");
