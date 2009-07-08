@@ -723,6 +723,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* end of mouse wheel */
 
         this.oClose.onclick = function() {
+            _self.visible = true;
             _self.hide();
         };
 
@@ -905,6 +906,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
             pictureBox = this.otBody.appendChild(document.createElement("div"));
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+            
             pictureBox.style.backgroundImage = 'url(' + (thumb ? thumb : this.defaultthumb) +  ')';
 
             this.$setStyleClass(pictureBox, "sspictureBox");
@@ -912,11 +914,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             
             bh = this.thumbheight - 10 - diff[1];
             
-            img = new Image();
-            document.body.appendChild(img);
-            img.src = thumb ? thumb : this.defaultthumb;
-            
             if (this.scalewidth) {
+                img = new Image();
+                document.body.appendChild(img);
+                img.src = thumb ? thumb : this.defaultthumb;
+                
                 h = bh;
                 if (img.height < bh) {
                     w = img.width;
@@ -925,12 +927,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     img.setAttribute("height", bh);
                     w = img.width;
                 }
+                
+                document.body.removeChild(img);
             }
             else {
                 h = w = bh;
             }
-
-            document.body.removeChild(img);
 
             pictureBox.style.height = h + "px";
             pictureBox.style.width = w + "px";
@@ -965,14 +967,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         _self.oExt.style.display = "block";
 
         jpf.tween.single(_self.oCurtain, {
-            steps    : 15, 
+            steps    : 10, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
                 _self.oBeam.style.display = "block";
                 jpf.tween.single(_self.oBeam, {
-                    steps    : 15, 
+                    steps    : 10, 
                     type     : "fade",
                     from     : 0,
                     to       : 1,
@@ -984,6 +986,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             from     : 0,
                             to       : 1,
                             onfinish : function() {
+                                if (jpf.isIE) {
+                                    _self.oBody.style.filter = "";
+                                    _self.oBeam.style.filter = "";
+                                }
                                 _self.$refresh();
                             }
                         });
@@ -996,7 +1002,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$hide = function () {
         /* Restores window scrollbars */
-        document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
 
         jpf.tween.single(_self.oBody, {
@@ -1025,12 +1030,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     onfinish : function() {
                         _self.oInt.style.display  = "none";
                         _self.oExt.style.display  = "none";
+                        
+                        document.documentElement.style.overflow = _self.lastOverflow;
                     }
                 });
             }
         });
-
-        
     }
 
     this.$destroy = function() {
