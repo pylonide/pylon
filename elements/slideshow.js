@@ -959,38 +959,78 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             
         document.documentElement.style.overflow = "hidden";
         
-        _self.oExt.style.display = "block";
+        _self.oBeam.style.display = "none";
+        _self.oBody.style.display = "none";
         _self.oInt.style.display = "block";
-        _self.oBody.style.display = "block";
-        
+        _self.oExt.style.display = "block";
+
         jpf.tween.single(_self.oCurtain, {
-            steps    : 10, 
+            steps    : 15, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
+                _self.oBeam.style.display = "block";
+                jpf.tween.single(_self.oBeam, {
+                    steps    : 15, 
+                    type     : "fade",
+                    from     : 0,
+                    to       : 1,
+                    onfinish : function() {
+                        _self.oBody.style.display = "block";
+                        jpf.tween.single(_self.oBody, {
+                            steps    : 5, 
+                            type     : "fade",
+                            from     : 0,
+                            to       : 1,
+                            onfinish : function() {
+                                _self.$refresh();
+                            }
+                        });
+                    }
+                });
             }
         });
-        this.$refresh();
+        
     }
 
     this.$hide = function () {
         /* Restores window scrollbars */
         document.documentElement.style.overflow = this.lastOverflow;
         _self.oExt.style.display = "block";
-        _self.oBody.style.display = "none";
 
-        jpf.tween.single(_self.oCurtain, {
+        jpf.tween.single(_self.oBody, {
             steps    : 10, 
             type     : "fade",
-            from     : 0.7,
+            from     : 1,
             to       : 0,
             onfinish : function() {
-                _self.oInt.style.display  = "none";
-                _self.oExt.style.display  = "none";
                 _self.oBody.style.display = "none";
             }
         });
+        
+        jpf.tween.single(_self.oBeam, {
+            steps    : 10, 
+            type     : "fade",
+            from     : 1,
+            to       : 0,
+            onfinish : function() {
+                _self.oBeam.style.display = "none";
+                
+                jpf.tween.single(_self.oCurtain, {
+                    steps    : 10, 
+                    type     : "fade",
+                    from     : 0.7,
+                    to       : 0,
+                    onfinish : function() {
+                        _self.oInt.style.display  = "none";
+                        _self.oExt.style.display  = "none";
+                    }
+                });
+            }
+        });
+
+        
     }
 
     this.$destroy = function() {
