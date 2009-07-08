@@ -129,16 +129,16 @@ jpf.xmpp = function(){
      */
     function makeUnique(s) {
         if (typeof s != "string")
-            throw new Error('Dependencies not met, please provide a string');
+            throw new Error("Dependencies not met, please provide a string");
 
         return (s + "_").appendRandomNumber(5);
     }
 
-    var _self      = this;
-    var serverVars = {};
-    var bListening = false;
-    var tListener  = null;
-    var sJAV_ID    = makeUnique('javRSB');
+    var _self      = this,
+        serverVars = {},
+        bListening = false,
+        tListener  = null,
+        sAJAX_ID   = makeUnique("ajaxRSB");
 
     /**
      * Constructs a <body> tag that will be used according to XEP-0206, and
@@ -150,16 +150,16 @@ jpf.xmpp = function(){
      * @private
      */
     function createBodyTag(options, content) {
-        var aOut = ["<body "];
+        var i, aOut = ["<body "];
 
-        for (var i in options) {
+        for (i in options) {
             if (options[i] == null) continue;
             aOut.push(i, "='", options[i], "' ");
         }
 
         aOut.push(">", content || "", "</body>");
 
-        return aOut.join('');
+        return aOut.join("");
     }
 
     /**
@@ -175,7 +175,7 @@ jpf.xmpp = function(){
     function createStreamTag(prepend, options, content) {
         if (!options)
             options = {};
-        var aOut = [getVar('SID') || "0", ","];
+        var aOut = [getVar("SID") || "0", ","];
 
         if (options.doOpen) {
             aOut.push("<stream:stream");
@@ -192,7 +192,7 @@ jpf.xmpp = function(){
         if (options.doClose)
             aOut.push("</stream:stream>");
 
-        return aOut.join('');
+        return aOut.join("");
     }
 
     /**
@@ -205,11 +205,10 @@ jpf.xmpp = function(){
      * @private
      */
     function generateCnonce(size) {
-        var sTab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //length: 62
-        var sCnonce = '';
-        for (var i = 0; i < size; i++) {
+        var sTab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", //length: 62
+            i, sCnonce = "";
+        for (i = 0; i < size; i++)
             sCnonce += sTab.charAt(jpf.randomGenerator.generate(0, 61));
-        }
         return sCnonce;
     }
 
@@ -222,13 +221,13 @@ jpf.xmpp = function(){
      * @private
      */
     function createAuthBlock(parts) {
-        var aOut = [];
+        var i, aOut = [];
 
-        for (var i in parts) {
+        for (i in parts) {
             if (parts[i] == null) continue;
             aOut.push(i, '="', parts[i], '",');
         }
-        var sOut = aOut.join('').replace(/,$/, '');
+        var sOut = aOut.join("").replace(/,$/, "");
 
         return "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
             + jpf.crypto.Base64.encode(sOut) + "</response>";
@@ -245,16 +244,16 @@ jpf.xmpp = function(){
      * @private
      */
     function createIqBlock(parts, content) {
-        var aOut = ['<iq '];
+        var i, aOut = ["<iq "];
 
-        for (var i in parts) {
+        for (i in parts) {
             if (parts[i] == null) continue;
             aOut.push(i, "='", parts[i], "' ");
         }
 
         aOut.push(">", content || "", "</iq>");
 
-        return aOut.join('');
+        return aOut.join("");
     }
 
     /**
@@ -270,20 +269,20 @@ jpf.xmpp = function(){
         var aOut = ["<presence xmlns='", jpf.xmpp.NS.jabber, "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
-        aOut.push('>');
+        aOut.push(">");
 
         // show An XMPP complient status indicator. See the class constants
         // jpf.xmpp.STATUS_* for options
         if (options.status)
-            aOut.push('<show>', options.status, '</show>');
+            aOut.push("<show>", options.status, "</show>");
 
         // Usually this is set to some human readable string indicating what the
         // user is doing/ feels like currently.
         if (options.custom)
-            aOut.push('<status>', options.custom, '</status>');
+            aOut.push("<status>", options.custom, "</status>");
 
-        aOut.push('</presence>');
-        return aOut.join('');
+        aOut.push("</presence>");
+        return aOut.join("");
     }
 
     /**
@@ -297,24 +296,24 @@ jpf.xmpp = function(){
      * @private
      */
     function createMessageBlock(options, body) {
-        var aOut = ["<message xmlns='", jpf.xmpp.NS.jabber, "' from='", getVar('JID'),
-        "' to='", options.to, "' id='message_", register('mess_count',
-            parseInt(getVar('mess_count')) + 1), "' xml:lang='", options['xml:lang'], "'"];
+        var aOut = ["<message xmlns='", jpf.xmpp.NS.jabber, "' from='", getVar("JID"),
+            "' to='", options.to, "' id='message_", register("mess_count",
+            parseInt(getVar("mess_count")) + 1), "' xml:lang='", options["xml:lang"], "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
-        aOut.push('>');
+        aOut.push(">");
 
         // A subject to be sent along
         if (options.subject)
-            aOut.push('<subject>', options.subject, '</subject>');
+            aOut.push("<subject>", options.subject, "</subject>");
 
         // This is used to identify threads in chat conversations
         // A thread is usually a somewhat random hash.
         if (options.thread)
-            aOut.push('<thread>', options.thread, '</thread>');
+            aOut.push("<thread>", options.thread, "</thread>");
 
-        aOut.push('<body>', body, '</body></message>');
-        return aOut.join('');
+        aOut.push("<body>", body, "</body></message>");
+        return aOut.join("");
     }
 
     /**
@@ -368,7 +367,7 @@ jpf.xmpp = function(){
      * @private
      */
     function getRID() {
-        return register('RID', getVar('RID') + 1);
+        return register("RID", getVar("RID") + 1);
     }
 
     /**
@@ -395,8 +394,8 @@ jpf.xmpp = function(){
                         //                + "Received an empty XML document (0 bytes)";
                     }
                     else {
-                        if (data.indexOf('<stream:stream') > -1
-                          && data.indexOf('</stream:stream>') == -1)
+                        if (data.indexOf("<stream:stream") > -1
+                          && data.indexOf("</stream:stream>") == -1)
                             data = data + "</stream:stream>";
                         data = jpf.getXmlDom(data);
                         if (!jpf.supportNamespaces)
@@ -448,31 +447,30 @@ jpf.xmpp = function(){
      */
     function onError(nType, sMsg, nState) {
         // #ifdef __DEBUG
-        jpf.console.log('[XMPP-' + (nType & jpf.xmpp.ERROR_AUTH
-            ? 'AUTH'
-            : 'CONN') + '] onError called.', 'xmpp');
+        jpf.console.log("[XMPP-" + (nType & jpf.xmpp.ERROR_AUTH
+            ? "AUTH"
+            : "CONN") + "] onError called.", "xmpp");
         // #endif
         clearTimeout(tListener);
         tListener = null;
-        unregister('password');
+        unregister("password");
 
         var extra = {
-            username : getVar('username'),
+            username : getVar("username"),
             server   : _self.server,
             message  : sMsg || (nType & jpf.xmpp.ERROR_AUTH
                 ? "Access denied. Please check your username or password."
                 : "Could not connect to server, please contact your System Administrator.")
-        }
-
-        var cb = getVar('login_callback');
+        },
+        cb = getVar("login_callback");
         if (cb) {
-            unregister('login_callback');
+            unregister("login_callback");
             return cb(null, nState || jpf.ERROR, extra);
         }
 
         // #ifdef __DEBUG
-        jpf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'xmpp');
+        jpf.console.error(extra.message + " (username: " + extra.username
+                          + ", server: " + extra.server + ")", "xmpp");
         // #endif
 
         return _self.dispatchEvent(nType & jpf.xmpp.ERROR_AUTH 
@@ -491,32 +489,32 @@ jpf.xmpp = function(){
     this.connect = function(username, password, callback) {
         this.reset();
 
-        register('username',       username);
-        register('password',       password);
-        register('login_callback', callback);
-        getVar('roster').registerAccount(username, this.domain);
+        register("username",       username);
+        register("password",       password);
+        register("login_callback", callback);
+        getVar("roster").registerAccount(username, this.domain);
 
         this.doXmlRequest(processConnect, this.isPoll
             ? createStreamTag(null, {
                 doOpen         : true,
                 to             : _self.domain,
                 xmlns          : jpf.xmpp.NS.jabber,
-                'xmlns:stream' : jpf.xmpp.NS.stream,
-                version        : '1.0'
+                "xmlns:stream" : jpf.xmpp.NS.stream,
+                version        : "1.0"
               })
             : createBodyTag({
-                content        : 'text/xml; charset=utf-8',
-                hold           : '1',
-                rid            : getVar('RID'),
+                content        : "text/xml; charset=utf-8",
+                hold           : "1",
+                rid            : getVar("RID"),
                 to             : _self.domain,
-                route          : 'xmpp:jabber.org:9999',
-                secure         : 'true',
-                wait           : '120',
-                ver            : '1.6',
-                'xml:lang'     : 'en',
-                'xmpp:version' : '1.0',
+                route          : "xmpp:jabber.org:9999",
+                secure         : "true",
+                wait           : "120",
+                ver            : "1.6",
+                "xml:lang"     : "en",
+                "xmpp:version" : "1.0",
                 xmlns          : jpf.xmpp.NS.httpbind,
-                'xmlns:xmpp'   : jpf.xmpp.NS.bosh
+                "xmlns:xmpp"   : jpf.xmpp.NS.bosh
               })
         );
     };
@@ -529,7 +527,7 @@ jpf.xmpp = function(){
      * @type {void}
      */
     this.disconnect = function() {
-        if (getVar('connected')) {
+        if (getVar("connected")) {
             this.doXmlRequest(processDisconnect, this.isPoll
                 ? createStreamTag(null, {
                     doClose: true
@@ -537,7 +535,7 @@ jpf.xmpp = function(){
                 : createBodyTag({
                       pause : 120,
                       rid   : getRID(),
-                      sid   : getVar('SID'),
+                      sid   : getVar("SID"),
                       xmlns : jpf.xmpp.NS.httpbind
                   })
             );
@@ -560,13 +558,13 @@ jpf.xmpp = function(){
            //this.oModel.load('<xmpp/>')
 
         // apply some initial values to the serverVars global scoped Array
-        register('RID',        parseInt("".appendRandomNumber(10)));
-        register('cnonce',     generateCnonce(14));
-        register('nc',         '00000001');
-        register('bind_count', 1);
-        register('connected',  false);
-        register('roster',     new jpf.xmpp.Roster(this.oModel, this.modelContent, this.resource));
-        register('mess_count', 0);
+        register("RID",        parseInt("".appendRandomNumber(10)));
+        register("cnonce",     generateCnonce(14));
+        register("nc",         "00000001");
+        register("bind_count", 1);
+        register("connected",  false);
+        register("roster",     new jpf.xmpp.Roster(this.oModel, this.modelContent, this.resource));
+        register("mess_count", 0);
     };
 
     /**
@@ -598,21 +596,21 @@ jpf.xmpp = function(){
 
         //jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.isPoll) {
-            register('SID', oXml.getAttribute('sid'));
-            register('AUTH_ID', oXml.getAttribute('authid'));
+            register("SID", oXml.getAttribute("sid"));
+            register("AUTH_ID", oXml.getAttribute("authid"));
         }
         else {
-            var aCookie = extra.http.getResponseHeader('Set-Cookie').splitSafe(';');
-            register('SID', aCookie[0].splitSafe('=')[1])
-            register('AUTH_ID', oXml.firstChild.getAttribute('id'));
+            var aCookie = extra.http.getResponseHeader("Set-Cookie").splitSafe(";");
+            register("SID", aCookie[0].splitSafe("=")[1])
+            register("AUTH_ID", oXml.firstChild.getAttribute("id"));
         }
 
-        var aMechanisms = oXml.getElementsByTagName('mechanism');
-        var found = false;
-        for (var i = 0; i < aMechanisms.length && !found; i++) {
+        var aMechanisms = oXml.getElementsByTagName("mechanism"),
+            i, found = false;
+        for (i = 0; i < aMechanisms.length && !found; i++) {
             // PLAIN type challenge not supported by us: insecure!!
             if (aMechanisms[i].firstChild.nodeValue == "DIGEST-MD5") {
-                register('AUTH_TYPE', 'DIGEST-MD5');
+                register("AUTH_TYPE", "DIGEST-MD5");
                 found = true;
             }
         }
@@ -621,12 +619,12 @@ jpf.xmpp = function(){
             return onError(jpf.xmpp.ERROR_AUTH, "No supported authentication protocol found. We cannot continue!");
 
         // start the authentication process by sending a request
-        var sAuth = "<auth xmlns='" + jpf.xmpp.NS.sasl + "' mechanism='" + getVar('AUTH_TYPE') + "'/>";
+        var sAuth = "<auth xmlns='" + jpf.xmpp.NS.sasl + "' mechanism='" + getVar("AUTH_TYPE") + "'/>";
         this.doXmlRequest(processAuthRequest, this.isPoll
             ? createStreamTag(null, null, sAuth)
             : createBodyTag({
                   rid   : getRID(),
-                  sid   : getVar('SID'),
+                  sid   : getVar("SID"),
                   xmlns : jpf.xmpp.NS.httpbind
               }, sAuth)
         );
@@ -662,21 +660,22 @@ jpf.xmpp = function(){
      * @private
      */
     function processChallenge(oXml) {
-        if (oXml.getElementsByTagName('failure').length)
+        if (oXml.getElementsByTagName("failure").length)
             return false; // authentication failed!
 
         var oChallenge = oXml.getElementsByTagName("challenge")[0];
         if (oChallenge) {
-            var b64_challenge = oChallenge.firstChild.nodeValue;
-            var aParts        = jpf.crypto.Base64.decode(b64_challenge).split(',');
+            var i, aChunk,
+                b64_challenge = oChallenge.firstChild.nodeValue,
+                aParts        = jpf.crypto.Base64.decode(b64_challenge).split(",");
 
-            for (var i = 0; i < aParts.length; i++) {
-                var aChunk = aParts[i].split('=');
-                register(aChunk[0], aChunk[1].trim().replace(/[\"\']/g, ''));
+            for (i = 0; i < aParts.length; i++) {
+                aChunk = aParts[i].split("=");
+                register(aChunk[0], aChunk[1].trim().replace(/[\"\']/g, ""));
             }
 
             //#ifdef __DEBUG
-            jpf.console.info('processChallenge: ' + aParts.join('    '), 'xmpp');
+            jpf.console.info("processChallenge: " + aParts.join("    "), "xmpp");
             //#endif
         }
 
@@ -703,44 +702,44 @@ jpf.xmpp = function(){
         if (!processChallenge(oXml))
             return onError(jpf.xmpp.ERROR_AUTH);
 
-        if (!getVar('realm'))
-            register('realm', ''); //DEV: option to provide realm with a default
+        if (!getVar("realm"))
+            register("realm", ""); //DEV: option to provide realm with a default
 
-        if (getVar('realm'))
-            register('digest_uri', 'xmpp/' + getVar('realm'));
+        if (getVar("realm"))
+            register("digest_uri", "xmpp/" + getVar("realm"));
 
         // for the calculations of A1, A2 and sResp below, take a look at
         // RFC 2617, Section 3.2.2.1
-        var A1 = jpf.crypto.MD5.str_md5(getVar('username') + ':' + getVar('realm')
-            + ':' + getVar('password')) // till here we hash-up with MD5
-        + ':' + getVar('nonce') + ':' + getVar('cnonce');
+        var A1 = jpf.crypto.MD5.str_md5(getVar("username") + ":" + getVar("realm")
+            + ":" + getVar("password")) // till here we hash-up with MD5
+            + ":" + getVar("nonce") + ":" + getVar("cnonce");
 
-        var A2 = 'AUTHENTICATE:' + getVar('digest_uri');
+        var A2 = "AUTHENTICATE:" + getVar("digest_uri");
 
-        var sResp = jpf.crypto.MD5.hex_md5(jpf.crypto.MD5.hex_md5(A1) + ':'
-            + getVar('nonce') + ':' + getVar('nc') + ':' + getVar('cnonce')
-            + ':' + getVar('qop') + ':' + jpf.crypto.MD5.hex_md5(A2));
+        var sResp = jpf.crypto.MD5.hex_md5(jpf.crypto.MD5.hex_md5(A1) + ":"
+            + getVar("nonce") + ":" + getVar("nc") + ":" + getVar("cnonce")
+            + ":" + getVar("qop") + ":" + jpf.crypto.MD5.hex_md5(A2));
 
         //#ifdef __DEBUG
-        jpf.console.info("response: " + sResp, 'xmpp');
+        jpf.console.info("response: " + sResp, "xmpp");
         //#endif
 
         var sAuth = createAuthBlock({
-            username   : getVar('username'),
-            realm      : getVar('realm'),
-            nonce      : getVar('nonce'),
-            cnonce     : getVar('cnonce'),
-            nc         : getVar('nc'),
-            qop        : getVar('qop'),
-            digest_uri : getVar('digest_uri'),
+            username   : getVar("username"),
+            realm      : getVar("realm"),
+            nonce      : getVar("nonce"),
+            cnonce     : getVar("cnonce"),
+            nc         : getVar("nc"),
+            qop        : getVar("qop"),
+            digest_uri : getVar("digest_uri"),
             response   : sResp,
-            charset    : getVar('charset')
+            charset    : getVar("charset")
         });
         this.doXmlRequest(processFinalChallenge, _self.isPoll
             ? createStreamTag(null, null, sAuth)
             : createBodyTag({
                   rid   : getRID(),
-                  sid   : getVar('SID'),
+                  sid   : getVar("SID"),
                   xmlns : jpf.xmpp.NS.httpbind
               }, sAuth)
         );
@@ -769,14 +768,14 @@ jpf.xmpp = function(){
             return onError(jpf.xmpp.ERROR_AUTH);
 
         // the spec requires us to clear the password from our system(s)
-        unregister('password');
+        unregister("password");
         
         var sAuth = createAuthBlock({});
         this.doXmlRequest(reOpenStream, _self.isPoll
             ? createStreamTag(null, null, sAuth)
             : createBodyTag({
                   rid   : getRID(),
-                  sid   : getVar('SID'),
+                  sid   : getVar("SID"),
                   xmlns : jpf.xmpp.NS.httpbind
               }, sAuth)
         );
@@ -801,7 +800,7 @@ jpf.xmpp = function(){
 
         //restart the stream request
         this.doXmlRequest(function(oXml) {
-                if (_self.isPoll || oXml.getElementsByTagName('bind').length) {
+                if (_self.isPoll || oXml.getElementsByTagName("bind").length) {
                     // Stream restarted OK, so now we can actually start listening to messages!
                     _self.bind();
                 }
@@ -810,17 +809,17 @@ jpf.xmpp = function(){
                 doOpen         : true,
                 to             : _self.domain,
                 xmlns          : jpf.xmpp.NS.jabber,
-                'xmlns:stream' : jpf.xmpp.NS.stream,
-                version        : '1.0'
+                "xmlns:stream" : jpf.xmpp.NS.stream,
+                version        : "1.0"
               })
             : createBodyTag({
                   rid            : getRID(),
-                  sid            : getVar('SID'),
+                  sid            : getVar("SID"),
                   to             : _self.domain,
-                  'xml:lang'     : 'en',
-                  'xmpp:restart' : 'true',
+                  "xml:lang"     : "en",
+                  "xmpp:restart" : "true",
                   xmlns          : jpf.xmpp.NS.httpbind,
-                  'xmlns:xmpp'   : jpf.xmpp.NS.bosh
+                  "xmlns:xmpp"   : jpf.xmpp.NS.bosh
               })
         );
     }
@@ -833,8 +832,8 @@ jpf.xmpp = function(){
      */
     this.bind = function() {
         var sIq = createIqBlock({
-            id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
-            type  : 'set',
+            id    : "bind_" + register("bind_count", parseInt(getVar("bind_count")) + 1),
+            type  : "set",
             xmlns : this.isPoll ? null : jpf.xmpp.NS.jabber
           },
           "<bind xmlns='" + jpf.xmpp.NS.bind + "'>" +
@@ -845,7 +844,7 @@ jpf.xmpp = function(){
             ? createStreamTag(null, null, sIq)
             : createBodyTag({
                   rid   : getRID(),
-                  sid   : getVar('SID'),
+                  sid   : getVar("SID"),
                   xmlns : jpf.xmpp.NS.httpbind
               }, sIq)
         );
@@ -872,14 +871,14 @@ jpf.xmpp = function(){
      * @private
      */
     function processBindingResult(oXml) {
-        var oJID = oXml.getElementsByTagName('jid')[0];
+        var oJID = oXml.getElementsByTagName("jid")[0];
         if (oJID) {
-            register('JID', oJID.firstChild.nodeValue);
+            register("JID", oJID.firstChild.nodeValue);
             var sIq = createIqBlock({
-                    from  : getVar('JID'),
-                    id    : sJAV_ID,
+                    from  : getVar("JID"),
+                    id    : sAJAX_ID,
                     to    : _self.domain,
-                    type  : 'set',
+                    type  : "set",
                     xmlns : jpf.xmpp.NS.jabber
                 },
                 "<session xmlns='" + jpf.xmpp.NS.session + "'/>"
@@ -891,7 +890,7 @@ jpf.xmpp = function(){
                 ? createStreamTag(null, null, sIq)
                 : createBodyTag({
                     rid   : getRID(),
-                    sid   : getVar('SID'),
+                    sid   : getVar("SID"),
                     xmlns : jpf.xmpp.NS.httpbind
                 }, sIq)
             );
@@ -917,15 +916,15 @@ jpf.xmpp = function(){
             type: jpf.xmpp.TYPE_AVAILABLE
         });
         _self.doXmlRequest(function(oXml) {
-                register('connected', true);
-                _self.dispatchEvent('connected', {username: getVar('username')});
+                register("connected", true);
+                _self.dispatchEvent("connected", {username: getVar("username")});
                 parseData(oXml);
                 getRoster();
             }, _self.isPoll
             ? createStreamTag(null, null, sPresence)
             : createBodyTag({
                 rid   : getRID(),
-                sid   : getVar('SID'),
+                sid   : getVar("SID"),
                 xmlns : jpf.xmpp.NS.httpbind
             }, sPresence)
         );
@@ -944,27 +943,27 @@ jpf.xmpp = function(){
      */
     function getRoster() {
         var sIq = createIqBlock({
-                from  : getVar('JID'),
-                type  : 'get',
-                id    : makeUnique('roster')
+                from  : getVar("JID"),
+                type  : "get",
+                id    : makeUnique("roster")
             },
             "<query xmlns='" + jpf.xmpp.NS.roster + "'/>"
         );
         _self.doXmlRequest(function(oXml) {
                 parseData(oXml);
                 _self.listen();
-                var cb = getVar('login_callback');
+                var cb = getVar("login_callback");
                 if (cb) {
                     cb(null, jpf.SUCCESS, {
-                        username : getVar('username')
+                        username : getVar("username")
                     });
-                    unregister('login_callback');
+                    unregister("login_callback");
                 }
             }, _self.isPoll
             ? createStreamTag(null, null, sIq)
             : createBodyTag({
                 rid   : getRID(),
-                sid   : getVar('SID'),
+                sid   : getVar("SID"),
                 xmlns : jpf.xmpp.NS.httpbind
             }, sIq)
         );
@@ -983,14 +982,14 @@ jpf.xmpp = function(){
         bListening = true;
 
         //#ifdef __DEBUG
-        jpf.console.info('XMPP: Listening for messages...', 'xmpp');
+        jpf.console.info("XMPP: Listening for messages...", "xmpp");
         //#endif
 
         this.doXmlRequest(processStream, _self.isPoll
             ? createStreamTag()
             : createBodyTag({
                   rid   : getRID(),
-                  sid   : getVar('SID'),
+                  sid   : getVar("SID"),
                   xmlns : jpf.xmpp.NS.httpbind
               }, "")
         );
@@ -1015,7 +1014,7 @@ jpf.xmpp = function(){
                 parseData(arguments[0]);
         }
 
-        if (getVar('connected') && !bListening)
+        if (getVar("connected") && !bListening)
             tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
@@ -1038,7 +1037,7 @@ jpf.xmpp = function(){
         bListening = false;
 
         // start listening again...
-        if (getVar('connected') && !bNoListener)
+        if (getVar("connected") && !bNoListener)
             tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
@@ -1056,20 +1055,20 @@ jpf.xmpp = function(){
     function parseData(oXml) {
         if (oXml && oXml.nodeType) {
             // do other stuff... like processing the messages? :P
-            var aMessages = oXml.getElementsByTagName('message');
+            var aMessages = oXml.getElementsByTagName("message");
             if (aMessages.length)
                 parseMessagePackets(aMessages);
 
-            var aPresence = oXml.getElementsByTagName('presence');
+            var aPresence = oXml.getElementsByTagName("presence");
             
             //#ifdef __DEBUG
-            jpf.console.info('Number of <PRESENCE> elements: ' + aPresence.length, 'xmpp');
+            jpf.console.info("Number of <PRESENCE> elements: " + aPresence.length, "xmpp");
             //#endif
             
             if (aPresence.length)
                 parsePresencePackets(aPresence);
 
-            var aIQs = oXml.getElementsByTagName('iq');
+            var aIQs = oXml.getElementsByTagName("iq");
             if (aIQs.length)
                 parseIqPackets(aIQs);
         }
@@ -1077,7 +1076,7 @@ jpf.xmpp = function(){
             //#ifdef __DEBUG
             if (!_self.isPoll)
                 onError(jpf.xmpp.ERROR_CONN, null, jpf.OFFLINE);
-                //jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
+                //jpf.console.warn("!!!!! Exceptional state !!!!!", "xmpp");
             //#endif
         }
     }
@@ -1095,37 +1094,37 @@ jpf.xmpp = function(){
         var i, sJID, oUser, oBody;
 
         for (i = 0; i < aMessages.length; i++) {
-            sJID = aMessages[i].getAttribute('from');
+            sJID = aMessages[i].getAttribute("from");
             if (sJID)
-                oUser = getVar('roster').getUserFromJID(sJID); //unsed var...yet?
+                oUser = getVar("roster").getUserFromJID(sJID); //unsed var...yet?
 
-            if (aMessages[i].getAttribute('type') == "chat") {
-                oBody = aMessages[i].getElementsByTagName('body')[0];
+            if (aMessages[i].getAttribute("type") == "chat") {
+                oBody = aMessages[i].getElementsByTagName("body")[0];
                 if (oBody && oBody.firstChild) {
                     // #ifdef __DEBUG
-                    jpf.console.log('XMPP incoming chat message: ' + oBody.firstChild.nodeValue, 'xmpp');
+                    jpf.console.log("XMPP incoming chat message: " + oBody.firstChild.nodeValue, "xmpp");
                     // #endif
-                    var sFrom = aMessages[i].getAttribute('from');
+                    var sFrom = aMessages[i].getAttribute("from");
                     var sMsg  = oBody.firstChild.nodeValue
-                    if (getVar('roster').updateMessageHistory(sFrom, sMsg)) {
-                        _self.dispatchEvent('receivechat', {
+                    if (getVar("roster").updateMessageHistory(sFrom, sMsg)) {
+                        _self.dispatchEvent("receivechat", {
                             from   : sFrom,
                             message: sMsg
                         });
                     }
                 }
             }
-            else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
-                oBody = aMessages[i].getElementsByTagName('body')[0];
+            else if (aMessages[i].getAttribute("type") == "normal") { //normal = Remote SmartBindings
+                oBody = aMessages[i].getElementsByTagName("body")[0];
                 if (oBody && oBody.firstChild) {
                     //Remote SmartBindings support
                     
                     //#ifdef __DEBUG
-                    jpf.console.info('received the following from the server: '
-                        + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'), 'xmpp');
+                    jpf.console.info("received the following from the server: "
+                        + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'), "xmpp");
                     //#endif
                     
-                    _self.dispatchEvent('datachange', {
+                    _self.dispatchEvent("datachange", {
                         data: oBody.firstChild.nodeValue.replace(/\&quot;/g, '"')
                     });
                 }
@@ -1145,17 +1144,17 @@ jpf.xmpp = function(){
      */
     function parsePresencePackets(aPresence) {
         //#ifdef __DEBUG
-        jpf.console.info('parsePresencePacket: ' + aPresence.length, 'xmpp');
+        jpf.console.info("parsePresencePacket: " + aPresence.length, "xmpp");
         //#endif
 
         for (var i = 0; i < aPresence.length; i++) {
-            var sJID = aPresence[i].getAttribute('from');
+            var sJID = aPresence[i].getAttribute("from");
             if (sJID) {
-                var oUser = getVar('roster').getUserFromJID(sJID);
+                var oUser = getVar("roster").getUserFromJID(sJID);
                 // record any status change...
                 if (oUser)
-                    getVar('roster').update(oUser,
-                        aPresence[i].getAttribute('type') || jpf.xmpp.TYPE_AVAILABLE);
+                    getVar("roster").update(oUser,
+                        aPresence[i].getAttribute("type") || jpf.xmpp.TYPE_AVAILABLE);
             }
         }
     }
@@ -1173,24 +1172,24 @@ jpf.xmpp = function(){
      */
     function parseIqPackets(aIQs) {
         //#ifdef __DEBUG
-        jpf.console.info('parseIqPacket: ' + aIQs.length, 'xmpp');
+        jpf.console.info("parseIqPacket: " + aIQs.length, "xmpp");
         //#endif
 
         for (var i = 0; i < aIQs.length; i++) {
-            if (aIQs[i].getAttribute('type') != "result") continue;
-            var aQueries = aIQs[i].getElementsByTagName('query');
+            if (aIQs[i].getAttribute("type") != "result") continue;
+            var aQueries = aIQs[i].getElementsByTagName("query");
             for (var j = 0; j < aQueries.length; j++) {
                 //@todo: support more query types...whenever we need them
-                switch (aQueries[j].getAttribute('xmlns')) {
+                switch (aQueries[j].getAttribute("xmlns")) {
                     case jpf.xmpp.NS.roster:
-                        var aItems  = aQueries[j].getElementsByTagName('item');
-                        var oRoster = getVar('roster');
+                        var aItems  = aQueries[j].getElementsByTagName("item");
+                        var oRoster = getVar("roster");
                         for (var k = 0; k < aItems.length; k++) {
                             //@todo: should we do something with the 'subscription' attribute?
                             var sGroup = (aItems[k].childNodes.length > 0)
                                 ? aItems[k].firstChild.firstChild.nodeValue
                                 : "";
-                            oRoster.getUserFromJID(aItems[k].getAttribute('jid'), sGroup)
+                            oRoster.getUserFromJID(aItems[k].getAttribute("jid"), sGroup)
                         }
                         break;
                     default:
@@ -1211,11 +1210,11 @@ jpf.xmpp = function(){
      * @type  {void}
      */
     this.setPresence = function(type, status, custom) {
-        if (!getVar('connected')) return false;
+        if (!getVar("connected")) return false;
 
         this.doXmlRequest(restartListener, createBodyTag({
                 rid   : getRID(),
-                sid   : getVar('SID'),
+                sid   : getVar("SID"),
                 xmlns : jpf.xmpp.NS.httpbind
             },
             createPresenceBlock({
@@ -1278,22 +1277,22 @@ jpf.xmpp = function(){
 
             //#ifdef __DEBUG
             jpf.console.warn("Trying to sent XMPP message even though \
-                              application is offline.", 'xmpp');
+                              application is offline.", "xmpp");
             //#endif
         }
         //#endif
 
-        if (!getVar('connected')) return false;
+        if (!getVar("connected")) return false;
 
         var oUser;
         if (!to) { //What is the purpose of this functionality? (Ruben)
-            oUser = getVar('roster').getLastAvailableUser();
+            oUser = getVar("roster").getLastAvailableUser();
             to    = oUser.jid;
         }
         if (!to) return false; //finally: failure :'(
 
         if (!oUser)
-            oUser = getVar('roster').getUserFromJID(to);
+            oUser = getVar("roster").getUserFromJID(to);
 
         this.doXmlRequest(function(data, state, extra){
                 if (callback)
@@ -1303,14 +1302,14 @@ jpf.xmpp = function(){
             },
             createBodyTag({
                 rid   : getRID(),
-                sid   : getVar('SID'),
+                sid   : getVar("SID"),
                 xmlns : jpf.xmpp.NS.httpbind
             },
             createMessageBlock({
                 type       : type || jpf.xmpp.MSG_CHAT,
-                to         : oUser.node + '@' + oUser.domain + '/' + this.resource,
+                to         : oUser.node + "@" + oUser.domain + "/" + this.resource,
                 thread     : thread,
-                'xml:lang' : 'en'
+                "xml:lang" : "en"
             },
             "<![CDATA[" + message + "]]>"))
         );
@@ -1325,15 +1324,10 @@ jpf.xmpp = function(){
      * @type {void}
      */
     this.$HeaderHook = function(http) {
-        http.setRequestHeader('Host', this.domain);
-        if (this.isPoll) {
-//            if (http.overrideMimeType)
-//                http.overrideMimeType('text/plain; charset=utf-8');
-            http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        }
-        else {
-            http.setRequestHeader('Content-type', 'text/xml; charset=utf-8');
-        }
+        http.setRequestHeader("Host", this.domain);
+        http.setRequestHeader("Content-Type", this.isPoll
+            ? "application/x-www-form-urlencoded"
+            : "text/xml; charset=utf-8");
     };
 
     /**
@@ -1342,7 +1336,7 @@ jpf.xmpp = function(){
      * feature.
      *
      * @attribute {String}   url              The URL to the XMPP/ Jabber server, including protocol, hostname and port number
-     * @attribute {String}   [connection]     The type of method used to connect to the server. Defaults to 'bosh'
+     * @attribute {String}   [type]           The type of method used to connect to the server. Defaults to 'binding'
      *   Possible values:
      *   poll
      *   bosh
@@ -1361,7 +1355,7 @@ jpf.xmpp = function(){
      * @exception {Error}  A general Error object
      */
     this.load = function(x){
-        this.server  = x.getAttribute('url');
+        this.server  = x.getAttribute("url");
         var i, url   = new jpf.url(this.server);
 
         // do some extra startup/ syntax error checking
@@ -1373,7 +1367,7 @@ jpf.xmpp = function(){
         this.domain  = url.host;
         this.tagName = "xmpp";
 
-        this.xmppMethod = (x.getAttribute('connection') == "poll")
+        this.xmppMethod = (x.getAttribute("type") == "polling")
             ? jpf.xmpp.CONN_POLL
             : jpf.xmpp.CONN_BOSH;
 
@@ -1382,13 +1376,13 @@ jpf.xmpp = function(){
             this.pollTimeout = parseInt(x.getAttribute("poll-timeout")) || 2000;
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.resource = x.getAttribute('resource') || jpf.appsettings.name;
+        this.resource = x.getAttribute("resource") || jpf.appsettings.name;
 
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
-        var sModel        = x.getAttribute('model');
-        var aContents     = (x.getAttribute('model-contents') || "all").splitSafe('\\|', 0, true);
+        var sModel        = x.getAttribute("model"),
+            aContents     = (x.getAttribute("model-contents") || "all").splitSafe("\\|", 0, true);
         this.modelContent = {
             roster: aContents[0] == "all",
             chat  : aContents[0] == "all",
@@ -1405,7 +1399,7 @@ jpf.xmpp = function(){
             // set the root node for this model
             this.oModel.id   = 
             this.oModel.name = sModel;
-            this.oModel.load('<xmpp/>');
+            this.oModel.load("<xmpp/>");
         }
 
         // parse any custom events formatted like 'onfoo="doBar();"'
@@ -1461,17 +1455,17 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
 
         // the code below is just a failsafe for user items that arrive through
         // an <IQ> query for a roster.
-        if (node.indexOf('@') != -1) {
-            var aTemp = node.split('@');
+        if (node.indexOf("@") != -1) {
+            var aTemp = node.split("@");
             node      = aTemp[0];
             domain    = aTemp[1];
         }
 
-        var bDomain   = (typeof domain   != "undefined");
-        var bResource = (typeof resource != "undefined");
+        var bDomain   = (typeof domain   != "undefined"),
+            bResource = (typeof resource != "undefined"),
 
-        var sJID = node + (bDomain ? '@' + domain : '')
-        + (bResource ? '/' + resource : '');
+            sJID = node + (bDomain ? "@" + domain : "")
+                    + (bResource ? "/" + resource : "");
 
         for (var i = 0; i < aUsers.length; i++) {
             if (aUsers[i].jid.indexOf(sJID) === 0)
@@ -1491,20 +1485,20 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * @type  {Object}
      */
     this.getUserFromJID = function(jid) {
-        var resource = "", node;
-        var sGroup = (arguments.length > 1) ? arguments[1] : "";
+        var resource = "", node,
+            sGroup = (arguments.length > 1) ? arguments[1] : "";
 
-        if (jid.indexOf('/') != -1) {
-            resource = jid.substring(jid.indexOf('/') + 1) || "";
-            jid      = jid.substring(0, jid.indexOf('/'));
+        if (jid.indexOf("/") != -1) {
+            resource = jid.substring(jid.indexOf("/") + 1) || "";
+            jid      = jid.substring(0, jid.indexOf("/"));
         }
-        if (jid.indexOf('@') != -1) {
-            node = jid.substring(0, jid.indexOf('@'));
-            jid  = jid.substring(jid.indexOf('@') + 1);
+        if (jid.indexOf("@") != -1) {
+            node = jid.substring(0, jid.indexOf("@"));
+            jid  = jid.substring(jid.indexOf("@") + 1);
         }
-        var domain = jid;
 
-        var oUser  = this.getUser(node, domain);//, resource);
+        var domain = jid,
+            oUser  = this.getUser(node, domain);//, resource);
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
@@ -1515,7 +1509,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
                 node     : node,
                 domain   : domain,
                 resources: [resource],
-                jid      : node + '@' + domain + '/' + resource,
+                jid      : node + "@" + domain + "/" + resource,
                 group    : sGroup,
                 status   : jpf.xmpp.TYPE_UNAVAILABLE
             });
@@ -1526,7 +1520,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         //fix a missing 'resource' property...
         if (resource && oUser && !oUser.resources.contains(resource)) {
             oUser.resources.push(resource);
-            oUser.jid = node + '@' + domain + '/' + resource
+            oUser.jid = node + "@" + domain + "/" + resource
         }
 
         return oUser;
@@ -1548,7 +1542,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
             aUsers.push(oUser);
             //Remote SmartBindings: update the model with the new User
             if (model && modelContent.roster) {
-                oUser.xml = model.data.ownerDocument.createElement(bIsAccount ?  'account' : 'user');
+                oUser.xml = model.data.ownerDocument.createElement(bIsAccount ?  "account" : "user");
                 this.updateUserXml(oUser);
                 jpf.xmldb.appendChild(model.data, oUser.xml);
             }
@@ -1562,7 +1556,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         return this.updateUserXml(oUser);
     };
 
-    var userProps = ['node', 'domain', 'resource', 'jid', 'status'];
+    var userProps = ["node", "domain", "resource", "jid", "status"];
     /**
      * Propagate any change in the JID to the model to which the XMPP connection
      * is attached.
@@ -1575,7 +1569,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         userProps.forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
-        jpf.xmldb.applyChanges('synchronize', oUser.xml);
+        jpf.xmldb.applyChanges("synchronize", oUser.xml);
 
         return oUser;
     };
@@ -1594,13 +1588,13 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         var oUser = this.getUserFromJID(sJID);
         if (!oUser || !oUser.xml) return;
 
-        var oDoc = model.data.ownerDocument;
-        var oMsg = oDoc.createElement('message');
+        var oDoc = model.data.ownerDocument,
+            oMsg = oDoc.createElement("message");
         oMsg.setAttribute("from", sJID);
         oMsg.appendChild(oDoc.createTextNode(sMsg));
         
         jpf.xmldb.appendChild(oUser.xml, oMsg);
-        jpf.xmldb.applyChanges('synchronize', oUser.xml);
+        jpf.xmldb.applyChanges("synchronize", oUser.xml);
 
         // only send events to messages from contacts, not the acount itself
         return !(oUser.node == this.username && oUser.domain == this.domain);
@@ -1613,13 +1607,13 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * @type  {String}
      */
     this.userToXml = function(oUser) {
-        var aOut = ['<user '];
+        var aOut = ["<user "];
 
         userProps.forEach(function(item) {
             aOut.push(item, '="', oUser[item], '" ');
         });
 
-        return aOut.join('') + '/>';
+        return aOut.join("") + "/>";
     };
 
     /**
@@ -1652,14 +1646,14 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
 
 // Collection of shorthands for all namespaces known and used by this class
 jpf.xmpp.NS   = {
-    sasl    : 'urn:ietf:params:xml:ns:xmpp-sasl',
-    httpbind: 'http://jabber.org/protocol/httpbind',
-    bosh    : 'urn:xmpp:xbosh',
-    jabber  : 'jabber:client',
-    bind    : 'urn:ietf:params:xml:ns:xmpp-bind',
-    session : 'urn:ietf:params:xml:ns:xmpp-session',
-    roster  : 'jabber:iq:roster',
-    stream  : 'http://etherx.jabber.org/streams'
+    sasl    : "urn:ietf:params:xml:ns:xmpp-sasl",
+    httpbind: "http://jabber.org/protocol/httpbind",
+    bosh    : "urn:xmpp:xbosh",
+    jabber  : "jabber:client",
+    bind    : "urn:ietf:params:xml:ns:xmpp-bind",
+    session : "urn:ietf:params:xml:ns:xmpp-session",
+    roster  : "jabber:iq:roster",
+    stream  : "http://etherx.jabber.org/streams"
 };
 
 jpf.xmpp.CONN_POLL = 0x0001;
@@ -1668,7 +1662,7 @@ jpf.xmpp.CONN_BOSH = 0x0002;
 jpf.xmpp.ERROR_AUTH = 0x0004;
 jpf.xmpp.ERROR_CONN = 0x0008;
 
-jpf.xmpp.TYPE_AVAILABLE   = ""; //no need to send available
+jpf.xmpp.TYPE_AVAILABLE   = "available"; //no need to send available
 jpf.xmpp.TYPE_UNAVAILABLE = "unavailable";
 
 jpf.xmpp.STATUS_SHOW = "show";
