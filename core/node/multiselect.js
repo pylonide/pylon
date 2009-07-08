@@ -123,6 +123,7 @@ jpf.MultiSelect = function(){
      * the last selected item of this element.
      * @type {XMLElement} 
      */
+    this.sellength    = 0;
     this.selected     = null;
     this.$selected    = null;
     
@@ -885,6 +886,10 @@ jpf.MultiSelect = function(){
             //#ifdef __WITH_PROPERTY_BINDING
             if (this.value)
                 this.setProperty("value", "");
+            
+            //@todo inconsistent because setting this is in event callback
+            if (this.sellength != valueList.length)
+                this.setProperty("sellength", valueList.length);
             //#endif
         }
     };
@@ -1060,12 +1065,14 @@ jpf.MultiSelect = function(){
      */
     this.selectAll = function(){
         if (!this.multiselect || !this.selectable
-          || this.disabled || !this.$selected)
+          || this.disabled || !this.xmlRoot)
             return;
 
-        var nodes = this.getTraverseNodes();
-        //this.select(nodes[0]);
-        //this.select(nodes[nodes.length-1], null, true);
+        var nodes = this.isTreeArch
+            ? this.xmlRoot.selectNodes(".//" 
+              + this.traverse.split("|").join("|.//"))
+            : this.getTraverseNodes();
+        
         this.selectList(nodes);
     };
 

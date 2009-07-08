@@ -125,6 +125,9 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             if ("absolute|relative".indexOf(jpf.getStyle(this.oInt, "position")) == -1)
                 this.oInt.style.position = "relative";
             this.oInt.style.overflow = "hidden";
+            
+            this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
+            this.enableAnchoring();
         }
     }
     

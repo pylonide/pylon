@@ -349,6 +349,10 @@ jpf.tween = {
                 return;
             }
 
+            if (info.onbeforeeach
+              && info.onbeforeeach(oHtml, info.userdata) === false)
+                return;
+
             try {
                info.method(oHtml, steps[step], info);
             }

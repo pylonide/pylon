@@ -279,14 +279,26 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      * @todo who's volunteering?
      * @private
      */
-    this.openAll    = function(){};
+    this.expandAll    = function(){
+        var pNodes = this.xmlRoot.selectNodes(this.traverse
+          .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
+        
+        for (var i = pNodes.length - 1; i >=0; i--)
+            this.slideOpen(null, pNodes[i], true);
+    };
     
     /**
      * @notimplemented
      * @todo who's volunteering?
      * @private
      */
-    this.closeAll   = function(){};
+    this.collapseAll   = function(){
+        var pNodes = this.xmlRoot.selectNodes(this.traverse
+          .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
+        
+        for (var i = pNodes.length - 1; i >=0; i--)
+            this.slideClose(null, pNodes[i]);
+    };
     
     /**
      * @notimplemented
@@ -390,7 +402,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @private
      */
-    this.slideClose = function(container, xmlNode){
+    this.slideClose = function(container, xmlNode, immediate){
         if (this.nocollapse) 
             return;
         
@@ -403,8 +415,19 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             lastOpened[p] = null;
         }
         
+        if (!container) {
+            var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+            container = this.$findContainer(htmlNode);
+        }
+        
         container.style.height   = container.offsetHeight;
         container.style.overflow = "hidden";
+        
+        if (immediate) {
+            container.style.height = 0;
+            container.style.display = "none";
+            return;
+        }
 
         jpf.tween.single(container, {
             type    : 'scrollheight', 
