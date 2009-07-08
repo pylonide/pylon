@@ -132,7 +132,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
     }
     
     this.$loadJml = function(x){
-        var l = jpf.layout.get(this.oInt, jpf.getBox(this.margin || ""));
+        var l = jpf.layout.get(this.oInt || this.pHtmlNode, jpf.getBox(this.margin || ""));
         var aData = jpf.layout.parseXml(x, l, null, true);
         
         if (isParentOfChain) {

@@ -282,7 +282,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.expandAll    = function(){
         var pNodes = this.xmlRoot.selectNodes(this.traverse
           .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
-        
+          
         for (var i = pNodes.length - 1; i >=0; i--)
             this.slideOpen(null, pNodes[i], true);
     };
