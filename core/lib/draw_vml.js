@@ -29,7 +29,7 @@ jpf.namespace("draw.vml",{
      
     initRoot : function(r){
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
-        if(!jpf.isIE8 || jpf.isIE7Emulate){
+        if(!jpf.isIE8 || jpf.isIE7Simulation){
             jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
             r.oInt.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
@@ -86,24 +86,16 @@ jpf.namespace("draw.vml",{
         }
 	},
     initLayer : function(l , r){
-        
-        var vmlroot = r.vmlroot;
-        var tag = "<div style='position:absolute;display:inline-block;left:"+l.left+
-                  "px;top:"+l.top+"px;width:"+l.width+"px;height:"+l.height+
-                  "px;overflow:hidden;'/>";
+  //      var vmlroot = r.vmlroot;
         l.ds = 4;
         l.dx = 0,l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
-        l.vmltag = "style='position:absolute;display:inline-block;left:0;top:0;width:"+
-                  (l.width)+"px;height:"+(l.height)+
-        "px;overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
-        vmlroot.insertAdjacentHTML("beforeend", tag);
-        var vmlgroup = vmlroot.lastChild;
 
         l._styles       = [];
         l._htmljoin     = [];
-        l._vmlgroup    = vmlgroup;
+        l._vmlroot     = r.vmlroot;
+//        l._vmlgroup    = vmlgroup;
     },
 
     resizeLayer : function(l, r){
@@ -131,13 +123,14 @@ jpf.namespace("draw.vml",{
     beginLayer : function(l){
 		// if we already had a layer, we need to clean that shit up
 		if(l._styles.length){
-            l._vmlgroup.innerHTML="";
+            if(l._vmlgroup)l._vmlgroup.innerHTML="";
             l._styles = [];
             l._htmljoin = [];
 		}
 		
         this.l = l,this.mx="",this.my="",this.last=null;
         return [ this.jssVars,
+                "if(!l._vmlgroup)_initVmlNodes();",
                 "var _s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,_st,_su,_sv,",
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
                 "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
@@ -150,33 +143,43 @@ jpf.namespace("draw.vml",{
         return '';
     },
     
+    // create layer init code in output 
     endLayer : function(){
         var l = this.l;
         var s = [this.$endDraw()];
-
-        l._vmlgroup.innerHTML = l._htmljoin.join('');
-        var j = 0,i = 0, t, k, v, len = this.l._styles.length;
+        var p = [];
+        var i = 0, j = 0,style,len = l._styles.length;
         for(;i<len;i++){
-            var style = this.l._styles[i];
-
+            style = l._styles[i];
             if(style._prev===undefined){ // original style
-                var n = l._vmlgroup.childNodes[j++];
+                p.push("_styles[",i,"]={",
+                       "_domnode:_n=l._vmlgroup.childNodes[",j,"]");
                 if(style.isshape){
-                    style._vmlnode = n;
-                    style._vmlfill = n.firstChild.nextSibling;
-                    style._vmlstroke = n.lastChild;
-                    //alert(style._vmlstroke.color='red');
                     s.push(this.$finalizeShape(style));
-                }
-                else{
-                    style._txtnode = n;
+                    p.push(",_vmlfill:_n.firstChild,_vmlstroke:_n.lastChild");
+                }else{
+                    p.push(",_txtused:0,_txtcount:0,_txtnodes:[],_txtdiv:\"",style._txtdiv,"\"");
                     s.push(this.$finalizeFont(style));
-                }
+                 }
+               p.push("};");  j++;
             }
         }
-        this.l = null;
-        s.push("l._anim = _anim;");
+        s.push( [
+            "function _initVmlNodes(){",
+                "l._vmlroot.insertAdjacentHTML('beforeend',[",
+                "\"<div style='position:absolute;display:inline-block;left:\",l.left,\"",
+                              "px;top:\",l.top,\"px;width:\",l.width,\"px;height:\",l.height,\"",
+                              "px;overflow:hidden;'>\",",
+                "\"",l._htmljoin.join(''),"\",",
+                "\"</div>\"].join(''));",
+                "l._vmlgroup = l._vmlroot.lastChild;",
+                "var _n, _styles = l._styles = [];",
+                p.join(''),
+            "}",
+            "l._anim = _anim;"
+        ].join(''));
         return s.join('');
+//       alert(l._htmljoin.join(''));
     },
     
     //----------------------------------------------------------------------
@@ -208,17 +211,17 @@ jpf.namespace("draw.vml",{
             s.push("_p=(_s=_styles[",style._id,"])._path=[];");
             // lets check the style object. what different values do we have?
             if(typeof style.tile != 'undefined'){
-                var fillalpha = style.fillalpha;
-                if( this.isDynamic(fillalpha) ){
-                    fillalpha = '1';
-                    s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                var fillopacity = style.fillopacity;
+                if( this.isDynamic(fillopacity) ){
+                    fillopacity = '1';
+                    s.push("_s._vmlfill.opacity=",style.fillopacity,";");
                 };
                 if(this.isDynamic(style.tile)){
                     s.push("if(_s._vmlimg!=(_t=",style.tile,"))_s._vmlfill.src=_t;");
-                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
+                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillopacity,
                                 "' src='' type='tile'/>"); 
                 }else{
-                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
+                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillopacity,
                          "'  src='",style.tile,"' type='tile'/>"); 
                     if(style.tilex || style.tiley){
                         style._img = new Image(); style._img.src = style.tile;
@@ -235,8 +238,8 @@ jpf.namespace("draw.vml",{
             }else
             if(style.fill !== undefined){
                 // check if our fill is dynamic. 
-                var fill = style.fill, fillalpha = style.fillalpha,
-                    angle = style.angle, gradalpha = style.gradalpha;
+                var fill = style.fill, fillopacity = style.fillopacity,
+                    angle = style.angle, gradopacity = style.gradopacity;
                 if(!fill.sort)fill=[fill];
                 var len = fill.length;
                 var color='black', colors, color2, getColorors;
@@ -257,25 +260,25 @@ jpf.namespace("draw.vml",{
                 }
                 if(len>1){
                     // we have a gradient
-                    if( this.isDynamic(gradalpha) || this.isDynamic(fillalpha)){
-                        // hack to allow animated alphas for gradients. There is no o:opacity2 property unfortunately
-                        if(gradalpha == fillalpha)fillalpha='_t='+fillalpha,gradalpha='_t';
-                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
+                    if( this.isDynamic(gradopacity) || this.isDynamic(fillopacity)){
+                        // hack to allow animated opacitys for gradients. There is no o:opacity2 property unfortunately
+                        if(gradopacity == fillopacity)fillopacity='_t='+fillopacity,gradopacity='_t';
+                        if(len>2)t=gradopacity,gradopacity=fillopacity,fillopacity=t;
                         s.push(
                           "if(_s._vmldata!=(_t=", 
-                           "[\"<v:fill opacity='\",(",fillalpha,"),\"' method='none' ",
-                           "o:opacity2='\",",gradalpha,",\"' color='\",",
+                           "[\"<v:fill opacity='\",(",fillopacity,"),\"' method='none' ",
+                           "o:opacity2='\",",gradopacity,",\"' color='\",",
                            this.getColor(fill[0]),",\"' color2='\",",
                            this.getColor(fill[len-1]),",\"' type='gradient' angle='\",parseInt(((",
                            angle,")*360+180)%360),\"' ", colors?(getColorors?"colors='\","+
                            colors+",\"'":"colors='"+colors+"'"):"",
                            "/>\"].join(''))){",
-                           "_s._vmlnode.removeChild(_s._vmlfill);",
-                           "_s._vmlnode.insertAdjacentHTML( 'beforeend',_s._vmldata=_t);",
-                           "_s._vmlfill = _s._vmlnode.lastChild;};");
+                           "_s._domnode.removeChild(_s._vmlfill);",
+                           "_s._domnode.insertAdjacentHTML( 'beforeend',_s._vmldata=_t);",
+                           "_s._vmlfill = _s._domnode.lastChild;};");
                         child.push("<v:fill opacity='0' color='black' type='fill'/>");
                     }else{
-                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
+                        if(len>2)t=gradopacity,gradopacity=fillopacity,fillopacity=t;
                         if( this.isDynamic(fill[0]) )
                             s.push("_s._vmlfill.color=",this.getColor(fill[0]),";");
                         else color = fill[0];
@@ -292,58 +295,63 @@ jpf.namespace("draw.vml",{
                             angle = '0';
                             s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
                         };
-                        if( this.isDynamic(fillalpha) ){
-                            fillalpha = '1';
-                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                        if( this.isDynamic(fillopacity) ){
+                            fillopacity = '1';
+                            s.push("_s._vmlfill.opacity=",style.fillopacity,";");
                         };
                         child.push("<v:fill opacity='",
-                            fillalpha,"' method='none' o:opacity2='",
-                            gradalpha,colors?"' colors='"+colors+"'":"",
+                            fillopacity,"' method='none' o:opacity2='",
+                            gradopacity,colors?"' colors='"+colors+"'":"",
                             "' color='",color,"' color2='",color2,
                             "' type='gradient' angle='",(angle*360+180)%360,"'/>");
                     }
                 }else{
-                    if( this.isDynamic(fillalpha) ){
-                            fillalpha = '1';
-                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                    if( this.isDynamic(fillopacity) ){
+                            fillopacity = '1';
+                            s.push("_s._vmlfill.opacity=",style.fillopacity,";");
                     };
                     if( this.isDynamic(fill[0]) )
                         s.push("_s._vmlfill.color=",this.getColor(fill[0]),";");
                     else color = fill[0];
                 
-                    child.push("<v:fill opacity='",fillalpha,
+                    child.push("<v:fill opacity='",fillopacity,
                         "' color=",this.getColor(color)," type='fill'/>");
                 }
                 shape.push("fill='t'"),path.push("fillok='t'");
             } else {
                 shape.push("fill='f'"),path.push("fillok='f'");
             }
-            if(style.line !== undefined){
+            if(style.stroke !== undefined){
                 var weight = style.weight,
-                    alpha = style.linealpha,
-                    line = style.line;
-                if( this.isDynamic(alpha) ){
-                        alpha = '1';
-                        s.push("_s._vmlstroke.opacity=",style.alpha,";");
+                    opacity = style.strokeopacity,
+                    stroke = style.stroke;
+                if( this.isDynamic(opacity) ){
+                        opacity = '1';
+                        s.push("_s._vmlstroke.opacity=",style.opacity,";");
                 }
                 if( this.isDynamic(weight) ){
                         weight = '1';
                         s.push("_t=",style.weight,
-                            ";_s._vmlstroke.weight=_t;if(_t<",alpha,
+                            ";_s._vmlstroke.weight=_t;if(_t<",opacity,
                             ")_s._vmlstroke.opacity=_t;");
                 }
-                if( this.isDynamic(line) ){
-                        line = 'black';
-                        s.push("_s._vmlstroke.color=",this.getColor(style.line),";");
+                if( this.isDynamic(stroke) ){
+                        stroke = 'black';
+                        s.push("_s._vmlstroke.color=",this.getColor(style.stroke),";");
                 }
                     
                 child.push("<v:stroke opacity='",
-                    weight<1?(alpha<weight?alpha:weight):alpha,
-                    "' weight='",weight,"' color=",this.getColor(line),"/>");
+                    weight<1?(opacity<weight?opacity:weight):opacity,
+                    "' weight='",weight,"' color=",this.getColor(stroke),"/>");
             } else {
                 shape.push("stroke='f'"), path.push("strokeok='f'");
             }
-            html.push(["<v:shape alignshape='f' ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
+                    
+            html.push(["<v:shape alignshape='f' ",
+                      "style='position:absolute;display:inline-block;left:0;top:0;width:",
+                      "\",l.width,\"px;height:\",l.height,\"px;overflow:hidden;' ",
+                      "coordorigin='0,0' coordsize='\",(l.dw+1),\",\",(l.dh+1),\"'",
+                      "path='' ",shape.join(' '),"><v:path ",
                     path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
         }else{
             if(style._prev !== undefined){
@@ -351,6 +359,7 @@ jpf.namespace("draw.vml",{
                     s.push("_p=(_s=_styles[",style._prev,"])._path;");
             }    
         }
+        //alert(html.join(''));
         return s.join('');
     },
        
@@ -432,7 +441,7 @@ jpf.namespace("draw.vml",{
       
     $finalizeShape : function(style){
         return ["if((_s=_styles[",style._id,"])._pathstr!=(_t=",
-            "(_p=_s._path).length?_p.join(' '):'m'))_s._vmlnode.path=_t;\n"].join('');
+            "(_p=_s._path).length?_p.join(' '):'m'))_s._domnode.path=_t;\n"].join('');
     }
            
 });

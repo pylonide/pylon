@@ -798,6 +798,50 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             //alert(this.$datatype);
 			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
 			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
+            // we'll also have to compile the balloon and knob code.
+        }
+	
+        if (this.$drawCode){
+            this.$drawCode( this, v);
+            if(this._anim){
+                this.$redraw();
+            }
+        }
+    }
+    
+    this.$drawBalloons = function(v, doresize){
+        if(doinit){
+            doinit = false;
+			jpf.draw.initLayer(this, this.$parentChart);
+		}else if(doresize){
+			// resize layer
+            this.$parentAxis.$copySubPos(this);
+ 			jpf.draw.resizeLayer(this, this.$parentChart);
+		}
+	    
+		if(docompile){
+			// if we dont have a sourcetype, the data is not ready yet
+			if(!this.$datamode) return this.$redraw();
+		
+            docompile = false;
+            var err = {};
+			var mode = this.mode+this.$parentAxis.mode;
+            // go and reparse style
+           if(!_style)_style = 
+                    jpf.draw.parseStyle( jpf.chart_draw['_'+mode], this.style, err );
+            if(_style.graph.$clslist && this.v_class){
+                for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
+                    if(t=c[i]){
+                        s[i] = _style.graph.$clslist[t];
+                    }
+                }
+            }
+            //alert(this.$datatype);
+			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
+            // lets get some ballooons.
+            //this.$balloonCode = jpf.chart_draw[
+            // we'll also have to compile the balloon and knob code.
         }
 	
         if (this.$drawCode){

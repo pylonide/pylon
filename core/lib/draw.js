@@ -52,11 +52,11 @@ jpf.namespace("draw", {
                 ",vx2 = v.vx2, vy2 = v.vy2, vw = vx2-vx1, vh = vy1-vy2",
                 ",vz2 = v.vz2, vz1 = v.vz1, vd = vz2-vz1",
                 ",zoom = 1/v.zoom",
-                ",a=l.a,b=l.b,c=l.c,d=l.d",
+                ",a=v.a,b=v.b,c=v.c,d=v.d",
                 ",dw = l.dw",ml?"-"+(ml+mr):"",
                 ",dh = l.dh",mt?"-"+(mt+mb):"",
                 ",dw12 = dw*0.5, dh12 = dh*0.5",
-                ",dzw = dw/l.zoomx, dzh = -dh/l.zoomy",
+                ",dzw = dw/v.zoomx, dzh = -dh/v.zoomy",
                 ",dx = ",ml?ml:0,
                 ",dy = ",mt?mt:0,
                 ",mx = m&&m.x, my = m&&m.y",
@@ -405,18 +405,18 @@ jpf.namespace("draw", {
         }
 
         function initShape(s){
-            if(s.line === null || s.line=='null' || s.line==0) delete s.line;
+            if(s.stroke === null || s.stroke=='null' || s.stroke==0) delete s.stroke;
             if(s.fill === null || s.fill=='null' || s.fill==0) delete s.fill;
             if(s.family === null || s.family=='null' || s.family==0) delete s.family;
 
             if( (s.isshape && s.fill === undefined && 
-                s.line === undefined && s.tile === undefined) || 
+                s.stroke === undefined && s.tile === undefined) || 
                 (s.isfont && s.family === undefined) ) return false; 
             if(s.isshape){
-                s.alpha = s.alpha!==undefined ? s.alpha : 1;
-                s.fillalpha = s.fillalpha!==undefined ? s.fillalpha:s.alpha;
-                s.gradalpha = s.gradalpha!==undefined ? s.gradalpha:s.fillalpha;
-                s.linealpha = s.linealpha!==undefined ? s.linealpha:s.alpha;
+                s.opacity = s.opacity!==undefined ? s.opacity : 1;
+                s.fillopacity = s.fillopacity!==undefined ? s.fillopacity:s.opacity;
+                s.gradopacity = s.gradopacity!==undefined ? s.gradopacity:s.fillopacity;
+                s.strokeopacity = s.strokeopacity!==undefined ? s.strokeopacity:s.opacity;
                 s.angle = s.angle!==undefined ? s.angle : 0;
                 s.weight = s.weight!==undefined ? s.weight : 1
             }
@@ -691,17 +691,18 @@ jpf.namespace("draw", {
     
     parseJSS : function(s,err,inobj,debug){
         if(!s)return{};
+        var mulinsert = true;
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
             ac = [], sac = [], sn=[], obj = inobj||{}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
                 s=s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?;/g,'');
-                s.replace(/(["'])|([\w\.\_]+\:?[\w\_-]*)\s*\{\s*|([\w\_]+)\s*[:]+\s*|([\w\_]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
-                    function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
-                    /*if(debug)logw( ln+' - '+(str?' str:'+str:'')+(openobj?' openobj:'+openobj:'')+(openval?' openval:'+openval:'')+
-                    (openmac?' openmac:'+openmac:'')+(open?' open:'+open:'')+(close?' close:'+close:'')+(skip?' skip:##'+skip+'#':'')+(sep?' sep:##'+sep+'#':'')+
+                s.replace(/(["'])|(\^)|([\w\.\_]+\:?[\w\_\s-]*)\s*\{\s*|([\w\_]+)\s*[:]+\s*|([\w\.\_]+)\s*\(\s*|(\#[0-9a-zA-Z]+|0x[0-9a-zA-Z]+)|(\d+\.?\d*[\_a-zA-Z]+)|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                    function(m,str,exp,openobj,openval,openmac,hexobj,numobj,open,close,skip,sep,split,pos){
+                    /*logw( ln+' - '+(str?' str:'+str:'')+(openobj?' openobj:'+openobj:'')+(openval?' openval:'+openval:'')+
+                    (openmac?' openmac:'+openmac:'')+(numobj?' numobj:'+numobj:'')+(hexobj?' hexobj:'+hexobj:'')+(open?' open:'+open:'')+(close?' close:'+close:'')+(skip?' skip:##'+skip+'#':'')+(sep?' sep:##'+sep+'#':'')+
                     (split?' split:'+split:'')+'  pos:'+pos+'\n');*/
-                if(skip)return m;
+                if(skip||hexobj)return m;
                 if(sm || str) {
                     if(str && !sm)sm = str;
                     else if(sm==str)sm = 0;
@@ -717,17 +718,33 @@ jpf.namespace("draw", {
                     }
                     return m;
                 }
+                if(numobj){
+                    ac.push(s.slice(lp,pos));
+                    t = m.match(/(\d\.?\d*)(.+)/);
+                    ac.push(t[1],'*',t[2]);
+                    lp = pos+m.length;
+                }
                 if( openmac){
                     sn.push(ln=4);
                     if(pos>lp)ac.push( s.slice(lp,pos) );
+                    if(ac.length && ac[ac.length-1].match(/\)\s*$/))ac.push('*');
+                    if(t = openmac.match(/(\d\.?\d*)(.+)/)){
+                        ac.push(t[1]+'*');
+                        openmac = t[2];
+                    }
+                    // check if our macro starts with numbers push up a number*
+                    // if its only a number inject * and fall through to normal ()
+                    // 
                     sac.push(ac); sarg.push(arg);
                     sfn.push(fn); fn = openmac;
+                    
                     arg = [], ac = [], lp = pos+m.length;
                     return m;
                 }
                 if(openobj){
                     if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
                     lp = pos+m.length; sn.push(ln=5);
+                    (openobj = openobj.split(/\s/)).length>1?(openobj=openobj[1]+'@'+openobj[0]):openobj=openobj[0];
                     sobj.push(obj); obj = (typeof(t=obj[openobj])=='object')?t:(obj[openobj]={});
                     return m;
                 }
@@ -766,7 +783,7 @@ jpf.namespace("draw", {
                         case 4: // closed a macro
                             ac.push(s.slice(lp,pos));arg.push(ac.join(''));
                             (ac=sac.pop()).push( (t=_self[fn])?t.apply( _self, 
-                            arg ) : arg.join(',') );
+                            arg ) : fn+'*'+'('+arg.join(',')+')' );
                             arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
                             break;
                          case 5: // closed an object
@@ -1063,19 +1080,19 @@ jpf.namespace("draw", {
                     a.style === b.style;
         if(a.isshape && b.isshape)
             return  a.join!=null && b.join!=null && 
-                   a.line === b.line && 
+                   a.stroke === b.stroke && 
                    a.join === b.join &&
                    a.weight == b.weight &&
                    a.fill === b.fill &&
-                   a.fillalpha === b.fillalpha && 
-                   a.linealpha === b.linealpha &&
+                   a.fillopacity === b.fillopacity && 
+                   a.strokeopacity === b.strokeopacity &&
                    a.angle === b.angle;
         return false;
     },
 
     $shape : {
         isshape : true,
-        line : null,
+        stroke : null,
         fill : null,
         tilex:'(this.$tilex)',
         tiley:'(this.$tiley)'
@@ -1520,7 +1537,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     "position:absolute;cursor:default;overflow:hidden;left:0;top:0;display:none;font-family:",
                 style.family, ";color:",style.color,";font-weight:",
                 style.weight,";",";font-size:",this.dynsize?10:style.size,"px;",
-                (style.line!==undefined)?"border:1px solid "+style.line+";" : "",
+                (style.stroke!==undefined)?"border:1px solid "+style.stroke+";" : "",
                 (style.fill!==undefined)?"background:"+style.fill+";" : "",
 
                 (style.width!==undefined)?"width:"+style.width+"px;" : "",
@@ -1555,7 +1572,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     },
     
     $allocText : function(style, needed){
-        var t, tn = style._txtnode, ts = style._txtnodes;
+        var t, tn = style._domnode, ts = style._txtnodes;
         if(!ts.length)tn.innerHTML = Array(needed+1).join(style._txtdiv); 
         else tn.insertAdjacentHTML('beforeend',Array(needed+1).
                                     join(style._txtdiv));
@@ -1581,9 +1598,9 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
             "for(;_lc<_tc;)_tn[_lc++].n.style.display='block';",
             "_s._txtused=_tc;",
         "}\n"];
-        var v = style._txtnodes = [];
-        style._txtused = 0;
-        style._txtcount = 0;
+        //var v = style._txtnodes = [];
+        //style._txtused = 0;
+        //style._txtcount = 0;
         return s.join('');
     },
     

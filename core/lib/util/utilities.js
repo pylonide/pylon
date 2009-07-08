@@ -97,18 +97,20 @@ jpf.highlightCode = function(strCode){
  * @return {String} the highlighted string.
  */
 jpf.highlightCode2 = function(strCode){
-  var comment=[];
+  var comment=[],str=[];
   return strCode
-        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})        
-        .replace(/(\<)|(\>)/g,function(n,a,b){ return "<span stylecolorwhite>"+(a?'@lt@':'@gt@')+"</span>"})
-         .replace(/(\'.*?\'|\".*?\")/g, "<span stylecolorgray>$1</span>")
+        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})   
+         .replace(/\"([\s\S]*?)\"/g, function(a,b){ str.push(b); return '###s'+(str.length-1)+'###';})         
+         .replace(/\'([\s\S]*?)\'/g, function(a,b){ str.push(b); return '###q'+(str.length-1)+'###';}) 
+         .replace(/(\<)|(\>)/g,function(n,a,b){ return "<span stylecolorwhite>"+(a?'@lt@':'@gt@')+"</span>"})
          .replace(/(\W)-?([\d\.]+)(\W)/g, "$1<span stylecolor#127ac6>$2</span>$3")
          .replace(/([\|\&\=\;\,\:\?\+\*\-]+)/g, "<span stylecolorwhite>$1</span>")
          .replace(/(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)/g,
     "$1<span stylecolorgreen>$2</span>$3")
-         
          .replace(/([\(\)\{\}\[\]])/g, "<span stylecoloryellow>$1</span>")
-         .replace(/###n(\d+)###/g,function(a,b){ return "<span stylecolorpurple>"+comment[b]+"</span>"; } )
+         .replace(/###n(\d+)###/g,function(a,b){ return "<span stylecolorpurple>"+comment[b].escapeHTML()+"</span>"; } )
+         .replace(/###s(\d+)###/g,function(a,b){ return "<span stylecolorgray>\""+str[b].escapeHTML()+"\"</span>"; } )
+         .replace(/###q(\d+)###/g,function(a,b){ return "<span stylecolorgray>'"+str[b].escapeHTML()+"'</span>"; } )
          .replace(/stylecolor(.*?)\>/g,"style='color:$1'>")
          .replace(/@(.*?)@/g,"&$1;");
 }
@@ -120,9 +122,11 @@ jpf.highlightCode2 = function(strCode){
  */
 jpf.formatJS = function(strJs){
     var d = 0, r = 0;
-    var comment=[];
+    var comment=[],str=[];
     return strJs
-        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})    
+        .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';}) 
+        .replace(/\"([\s\S]*?)\"/g, function(a,b){ str.push(b); return '###s'+(str.length-1)+'###';})         
+        .replace(/\'([\s\S]*?)\'/g, function(a,b){ str.push(b); return '###q'+(str.length-1)+'###';}) 
         .replace(/;+/g, ';').replace(/{;/g, '{').replace(/({)|(})|(\()|(\))|(;)/g,
         function(m, co, cc, ro, rc, e){
             if (co) d++;
@@ -136,7 +140,10 @@ jpf.formatJS = function(strJs){
             if (co) return '{\n' + o;
             if (cc) return '\n' + o + '}';
             if (e) return (r>0)?e:(';\n' + o);
-        }).replace(/;\s*\n\s*\n/g, ';\n').replace(/}var/g, '}\nvar').replace(/([\n\s]*)###n(\d+)###[\n\s]*/g,function(a,b,c){ return b+comment[c]+b; } );
+        }).replace(/;\s*\n\s*\n/g, ';\n').replace(/}var/g, '}\nvar')
+        .replace(/([\n\s]*)###n(\d+)###[\n\s]*/g,function(a,b,c){ return b+comment[c]+b; } )
+        .replace(/###s(\d+)###/g,function(a,b,c){ return "\""+str[b]+"\""; } )
+        .replace(/###q(\d+)###/g,function(a,b,c){ return "'"+str[b]+"'"; } );
 };
 
 /**

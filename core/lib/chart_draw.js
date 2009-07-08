@@ -78,7 +78,7 @@ jpf.chart_draw = {
             extend : 0,
             /*line : '#cfcfcf',
             weight : 1,
-            alpha: 0.3,
+            opacity: 0.3,
             extend : 0,*/
         $:0},
         hgrid : {inherit : 'grid',$:1},
@@ -315,9 +315,10 @@ jpf.chart_draw = {
         e.endLayer()
         ]);
         try{
+            logw(jpf.highlightCode2(jpf.formatJS(c)));
 			return new Function('l','v','m',c);
         }catch(x){
-            c = jpf.formatJS(c);
+            //c = jpf.formatJS(c);
             window.open().document.write("<script>" + c + "</script>");
             alert("Failed to compile:\n"+x.message+'\n'+c);return 0;
         }		
@@ -356,7 +357,7 @@ jpf.chart_draw = {
             join : 'grid',
             line : '#cfcfcf',
             weight : 1,
-            alpha: 0.3,
+            opacity: 0.3,
             extend : 0,
         $:0},
         xgrid : {inherit : 'grid'},
@@ -371,14 +372,14 @@ jpf.chart_draw = {
             side: 1,
             inherit : 'bar',
 			line : '#cfcfcf',
-            //alpha: 1,
+            //opacity: 1,
         $:0},
         vbar : {
             side: 1,
             inherit : 'bar',
             line : '#cfcfcf',
             fill: 'blue',
-			alpha: 0.25,
+			opacity: 0.25,
             //line : '#cfcfcf',
         $:0},
         hbarxy :{
@@ -390,25 +391,25 @@ jpf.chart_draw = {
         hbarxz :{
             inherit: 'hbar',
             line: 'black',
-            alpha:0.25,
+            opacity:0.25,
         $:1}, 
         vbarxz :{
             inherit: 'vbar',
             fill: '#e6f1f8',
             line: 'black',
-        //     alpha:0.5,
+        //     opacity:0.5,
         $:1}, 
         hbaryz :{
             inherit: 'hbar',
              fill: '#blue',
-            alpha:0.25,
+            opacity:0.25,
         //    fill: null,
-         //   alpha:0.5,
+         //   opacity:0.5,
         $:1}, 
         vbaryz :{
             inherit: 'vbar',
             line: 'black',
-            alpha:0.25,            
+            opacity:0.25,            
             fill: null,
         $:1}, 
         
@@ -416,7 +417,7 @@ jpf.chart_draw = {
             inherit : 'shape',
             join : 'grid',
             line : 'black',
-            alpha: 0.5,
+            opacity: 0.5,
             weight: 3,
         $:0},
         axisx :{inherit : 'axis',$:1},
@@ -705,7 +706,7 @@ jpf.chart_draw = {
             depth : 0.5,
             line: 'black',
             fill: 'red',
-            alpha: 0.3,
+            opacity: 0.3,
         $:1}
     },
     
@@ -804,7 +805,7 @@ jpf.chart_draw = {
             depth : 0.5,
             line: 'black',
             fill: 'red',
-            alpha: 0.3,
+            opacity: 0.3,
         $:1}
     },
     
