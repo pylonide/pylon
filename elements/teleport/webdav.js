@@ -895,7 +895,9 @@ jpf.webdav = function(){
         this.method = "PROPPATCH";
         
         this.doRequest(function(data, state, extra) {
+            // #ifdef __DEBUG
             jpf.console.dir(data);
+            // #endif
         }, sPath, buildPropertiesBlock(oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
@@ -1056,21 +1058,14 @@ jpf.webdav = function(){
         return aFsCache[iId] || null;
     };
 
-    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj) {
-        if (!this.useModel) return;
-        jpf.console.log('$xmlUpdate called: ', action);
-        jpf.console.dir(xmlNode);
-        jpf.console.dir(listenNode);
-        jpf.console.dir(UndoObj);
-    };
-
     /**
      * This is the connector function between the JML representation of this
      * Teleport module. If specified, it will also setup the Remote SmartBinding
      * feature.
      *
-     * @attribute {String}  url    The URL to the WebDAV server, including protocol and hostname
-     * @attribute {
+     * @attribute {String}  url           The URL to the WebDAV server, including protocol and hostname
+     * @attribute {Number}  [timeout]
+     * @attribute {String}  [show-hidden] Flag that specifies if hidden files should be passed
      *
      * @param     {XMLDom} x An XML document element that contains WebDAV metadata
      * @type      {void}
@@ -1094,16 +1089,6 @@ jpf.webdav = function(){
             || x.getAttribute("showhidden"))
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
-
-        /*var sModel    = x.getAttribute('model') || null;
-        if (sModel)
-            this.model = self[sModel] || null;
-        this.useModel = this.model ? true : false;
-        if (this.useModel)
-            jpf.xmldb.addNodeListener(this.model, this);*/
-
-        //TODO: implement model updating mechanism (model="mdlFoo")
-        //      with corresponding 'this.$xmlUpdate' handler function for model updates
 
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
