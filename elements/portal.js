@@ -355,7 +355,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 }).implement(
     jpf.Cache,
     jpf.Presentation,
-    jpf.MultiSelect,
+    jpf.MultiselectBinding,
+    /*jpf.MultiSelect,*/
     jpf.DataBinding
 );
 
