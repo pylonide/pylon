@@ -68,7 +68,7 @@ jpf.xmlrpc = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "system.multicall";
-    this.method         = "POST";
+    this.method           = "POST";
     this.useXML           = true;
     
     this.namedArguments   = false;

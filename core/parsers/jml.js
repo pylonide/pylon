@@ -311,9 +311,11 @@ jpf.JmlParser = {
                 }
 
                 //#ifdef __WITH_LANG_SUPPORT
-                jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
-                    "$1"), {htmlNode : pHtmlNode});
+                var nodeValue = q.nodeValue.replace(/^\$(.*)\$$/, "$1");
+                if (RegExp.$1)
+                    jpf.language.addElement(nodeValue, {htmlNode : pHtmlNode});
                 //#endif
+                
                 continue;
             }
 

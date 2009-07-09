@@ -300,7 +300,8 @@ jpf.rpc = function(){
                              jpf.xmldb.getInheritedAttribute(
                                 this.$jml, "baseurl")) || "";
         this.multicall = jpf.isTrue(x.getAttribute("multicall"));
-        this.useXML    = x.getAttribute("type") == "XML";
+        if (x.getAttribute("type"))
+            this.useXML    = x.getAttribute("type") == "XML";
         this.autoroute = jpf.isTrue(x.getAttribute("autoroute"));
         this.routeServer = x.getAttribute("route-server") || this.routeServer;
 

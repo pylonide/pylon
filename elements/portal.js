@@ -119,6 +119,27 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode)
             return;
     };
+    
+    this.columns = "33.33%,33.33%,33.33%";
+    var columns = this.columns.splitSafe(",");
+    
+     /**
+     * @attribute {String} columns a comma seperated list of column sizes.
+     * A column size can be specified in a number (size in pixels) or using
+     * a number and a % sign to indicate a percentage.
+     * Defaults to "33%, 33%, 33%".
+     * Example:
+     * <code>
+     *  <j:portal columns="25%, 50%, 25%">
+     *      ...
+     *  </j:portal>
+     * </code>
+     *
+     * @todo make this dynamic
+     */
+    this.$propHandlers["columns"] = function(value){
+        columns = value.splitSafe(",");
+    }
 
     /**** Keyboard support ****/
 
@@ -146,8 +167,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         //if(!this.value) return false;
 
         var fragment = document.createDocumentFragment();
-        while (this.columns[0].childNodes.length) {
-            fragment.appendChild(this.columns[0].childNodes[0]);
+        while (this.$columns[0].childNodes.length) {
+            fragment.appendChild(this.$columns[0].childNodes[0]);
         }
 
         return fragment;
@@ -229,8 +250,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     var docklet_cache = {}
     this.$add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
-        var pHtmlNode = this.columns[this.applyRuleSetOnNode("column", dataNode) || 0];
-        var docklet   = new jpf.modalwindow(pHtmlNode);
+        var pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
+        var docklet   = new jpf.modalwindow(pHtmlNode, "window");
         docklet.implement(jpf.modalwindow.widget);
 
         docklet.parentNode = this;
@@ -298,11 +319,11 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     var totalWidth = 0;
-    this.columns   = [];
+    this.$columns   = [];
     this.addColumn = function(size){
         this.$getNewContext("column");
         var col = jpf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
-        var id = this.columns.push(col) - 1;
+        var id = this.$columns.push(col) - 1;
 
         //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
         totalWidth += parseFloat(size);
@@ -318,33 +339,18 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-
-        /**
-         * @attribute {String} columns a comma seperated list of column sizes.
-         * A column size can be specified in a number (size in pixels) or using
-         * a number and a % sign to indicate a percentage.
-         * Defaults to "33%, 33%, 33%".
-         * Example:
-         * <code>
-         *  <j:portal columns="25%, 50%, 25%">
-         *      ...
-         *  </j:portal>
-         * </code>
-         */
-        var cols = (this.$jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
-        for (var i = 0; i < cols.length; i++) {
-            this.addColumn(cols[i]);
-        }
-
-        //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
-
-        if (document.elementFromPointAdd)
-            document.elementFromPointAdd(this.oExt);
     };
 
     this.$loadJml = function(x){
+        for (var i = 0; i < columns.length; i++) {
+            this.addColumn(columns[i]);
+        }
 
+        //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
+        jpf.JmlParser.parseChildren(x, null, this);
+
+        if (document.elementFromPointAdd)
+            document.elementFromPointAdd(this.oExt);
     };
 }).implement(
     jpf.Cache,

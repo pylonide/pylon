@@ -412,12 +412,12 @@ jpf.JmlElement = function(){
             value = a.nodeValue;
             name  = a.nodeName;
 
-            //#ifdef __WITH_MULTI_LANG
+            //#ifdef __WITH_LANG_SUPPORT
             if (/^\$(.*)\$$/.test(value)) {
-                jpf.language.addElement(RegExp.$1, {
+                this.$isMultiLang[name] = [RegExp.$1, jpf.language.addElement(RegExp.$1, {
                     jmlNode: this,
                     prop : name
-                });
+                })];
             }else
             //#endif
             //#ifdef __WITH_PROPERTY_BINDING

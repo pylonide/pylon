@@ -119,7 +119,7 @@ jpf.language = {
         if (typeof xmlNode == "string")
             xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
-        this.$processedMarked();
+        this.$processMarked();
         this.loaded = true;
     },
 
@@ -176,7 +176,7 @@ jpf.language = {
     },
     
     $marked : {},
-    $processedMarked : function(){
+    $processMarked : function(){
         var ar, id, jmlNode, nodes;
         for (id in this.$marked) {
             ar      = id.split(":");
@@ -336,6 +336,11 @@ jpf.language = {
             || (this.bindings[jmlNode.uniqueId] = {});
         
         return data[cacheId] || (data[cacheId] = {});
+    },
+    
+    clear : function(uId){
+        if (this.bindings[uId])
+            delete this.bindings[uId];
     }
 };
 

@@ -103,7 +103,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$domHandlers["remove"].push(function(doOnlyAdmin){
         if (!doOnlyAdmin)
         
-        if (this.pHtmlNode != this.oExt)
+        if (this.pHtmlNode != this.oExt && this.oExt.parentNode)
             this.oExt.parentNode.removeChild(this.oExt);
     });
 

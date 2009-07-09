@@ -442,8 +442,8 @@ jpf.Class = function(){
 
     // #endif
 
-    //#ifdef __WITH_MULTI_LANG
-    var isMultiLang = {};
+    //#ifdef __WITH_LANG_SUPPORT
+    this.$isMultiLang = {};
     //#endif
 
     /**
@@ -459,17 +459,17 @@ jpf.Class = function(){
         if (reqValue && !value || !jpf || this.$ignoreSignals)
             return;
 
-        //#ifdef __WITH_MULTI_LANG
+        //#ifdef __WITH_LANG_SUPPORT
         if (!forceOnMe) {
-            if (isMultiLang[prop]) {
-                jpf.language.removeElement(isMultiLang[prop][0], 
-                  isMultiLang[prop][1]);
+            if (this.$isMultiLang[prop]) {
+                jpf.language.removeElement(this.$isMultiLang[prop][0], 
+                  this.$isMultiLang[prop][1]);
                 
-                delete isMultiLang[prop];
+                delete this.$isMultiLang[prop];
             }
             
             if (/^\$(.*)\$$/.test(value)) {
-                isMultiLang[prop] = [value, jpf.language.addElement(RegExp.$1, {
+                this.$isMultiLang[prop] = [RegExp.$1, jpf.language.addElement(RegExp.$1, {
                     jmlNode: this,
                     prop : prop
                 })];
@@ -751,11 +751,13 @@ jpf.Class = function(){
         }
         //#endif
 
-        //#ifdef __WITH_MULTI_LANG
-        for (prop in isMultiLang) {
-            jpf.language.removeElement(isMultiLang[prop][0], 
-                isMultiLang[prop][1]);
+        //#ifdef __WITH_LANG_SUPPORT
+        for (prop in this.$isMultiLang) {
+            jpf.language.removeElement(this.$isMultiLang[prop][0], 
+                this.$isMultiLang[prop][1]);
         }
+        
+        jpf.language.clear(this.uniqueId);
         //#endif
 
         //Remove id from global js space

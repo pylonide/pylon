@@ -963,7 +963,7 @@ jpf.DataBinding = function(){
             returnValue = def && cnode.selectSingleNode(def) || false;
             #endif */
             
-            //#ifdef __WITH_MULTI_LANG_BINDING
+            //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
             if (typeof returnValue == "string") {
                 var keys = jpf.language.getBinding(this, this.cacheID);
@@ -1150,7 +1150,7 @@ jpf.DataBinding = function(){
         }
         
         if (returnValue) {
-            //#ifdef __WITH_MULTI_LANG_BINDING
+            //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
             var keys = jpf.language.getBinding(this, this.cacheID);
             returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){

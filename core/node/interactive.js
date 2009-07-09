@@ -307,10 +307,10 @@ jpf.Interactive = function(){
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
         
-        var sLeft = 0;//document.documentElement.scrollLeft;
-        var sTop = 0;//document.documentElement.scrollTop;
-        var x = (oX = e.clientX) - startPos[0] + sLeft;
-        var y = (oY = e.clientY) - startPos[1] + sTop;
+        var sLeft = 0;//;
+        var sTop = 0;//;
+        var x = (oX = e.clientX) - startPos[0] + sLeft + document.documentElement.scrollLeft;
+        var y = (oY = e.clientY) - startPos[1] + sTop + document.documentElement.scrollTop;
 
         var resizeType = getResizeType.call(_self.oExt, x, y);
         rX = x;
@@ -466,8 +466,8 @@ jpf.Interactive = function(){
             ? oOutline
             : _self.oExt;
 
-        var sLeft = 0;//document.documentElement.scrollLeft;
-        var sTop = 0;//document.documentElement.scrollTop;
+        var sLeft = document.documentElement.scrollLeft;
+        var sTop = document.documentElement.scrollTop;
         
         if (we) {
             oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX + sLeft))) + "px";
