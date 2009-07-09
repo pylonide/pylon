@@ -73,8 +73,8 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build Main Skin
         //alert("REDRAW");
         this.oInt = this.oExt = (this.$jml.parentNode.lastChild == this.$jml.parentNode.firstChild)
-            ? pHtmlNode
-            : pHtmlNode.appendChild(document.createElement("div"));
+            ? this.pHtmlNode
+            : this.pHtmlNode.appendChild(document.createElement("div"));
         if (this.$jml.getAttribute("cssclass")) 
             this.oExt.className = this.$jml.getAttribute("cssclass");
     };
