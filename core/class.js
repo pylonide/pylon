@@ -379,18 +379,14 @@ jpf.Class = function(){
                 o = p.split(".");
                 if (o.length > 2) { //jpf.offline.syncing
                     bProp = o.pop();
-                    //#ifdef __DEBUG
                     try{
                         node  = eval(o.join("."));
                     }
                     catch(e){
-                        throw new Error(jpf.formatErrorString(0, this,
-                            "Creating a dynamic property bind",
-                            "invalid bind statement '" + pValue + "'"));
+                        jpf.console.warn("Could not execute binding test: "
+                            + pValue);
+                        continue;
                     }
-                    /* #else
-                    node  = eval(o.join("."));
-                    #endif*/
 
                     if (typeof node != "object" || !node.$regbase) {
                         bProp = o[1];
@@ -415,16 +411,32 @@ jpf.Class = function(){
             ///!WARNING, bound properties got a set-call twice, no idea why it was commented out before
             if (!found){
                 //this.$handlePropSet(prop, eval(pValue));
-                var value = eval(pValue);
+                try{
+                    var value = eval(pValue);
+                }
+                catch(e){
+                    jpf.console.warn("Could not execute binding test: "
+                        + pValue);
+                    return;
+                }
+
                 this[prop] = !value;
                 this.setProperty(prop, value);
             }
         }
         else {
             //this.$handlePropSet(prop, pValue);
-            var value = eval(pValue);
+            try{
+                var value = eval(pValue);
+            }
+            catch(e){
+                jpf.console.warn("Could not execute binding test: "
+                    + pValue);
+                return;
+            }
+
             this[prop] = !value;
-            this.setProperty(prop, eval(pValue));
+            this.setProperty(prop, value);
         }
     }
 
@@ -521,9 +533,9 @@ jpf.Class = function(){
                     value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
                 }
                 catch(e) {
-                    throw new Error(jpf.formatErrorString(0, this,
-                        "Property-binding",
-                        "Could not execute binding test: " + nodes[id][i][1]));
+                    jpf.console.warn("Could not execute binding test: "
+                        + nodes[id][i][1]);
+                    continue;
                 }
 
                 if (typeof o != "undefined" && o[nodes[id][i][0]] != value)
