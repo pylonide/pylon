@@ -1023,9 +1023,10 @@ jpf.XmlDatabase = function(){
         }
         else if (runTimer) {
             clearTimeout(notifyTimer);
-            notifyTimer = setTimeout(function(){
+            //@todo find a better solution for this (at the end of a event stack unroll)
+            //notifyTimer = setTimeout(function(){
                 jpf.xmldb.notifyQueued();
-            });
+            //});
         }
     };
 

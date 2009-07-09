@@ -421,7 +421,7 @@ jpf.DataBinding = function(){
         if (this.disabled)
             return false;
 
-        var actionRule = this.getNodeFromRule(name, xmlContext, true);
+        var actionRule = this.getNodeFromRule(name, xmlContext, true, true)
         if (!actionRule && jpf.appsettings.autoDisableActions && this.actionRules) {
             //#ifdef __DEBUG
             if (!xmlContext) {
@@ -474,7 +474,10 @@ jpf.DataBinding = function(){
             };
 
             //Execute pessimistic locking request
-            jpf.saveData(lockInstruction, xmlContext, null, function(data, state, extra){
+            jpf.saveData(lockInstruction, xmlContext, {
+                    unlock : false
+                }, function(data, state, extra){
+
                 if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
                     return extra.tpModule.retry(extra.id);
 
@@ -502,7 +505,7 @@ jpf.DataBinding = function(){
                     }, extra));
 
                     //Cancel the action, because we didnt get a lock
-                    fRollback.call(this, xmlContext);
+                    fRollback.call(_self, xmlContext);
                 }
             });
         }

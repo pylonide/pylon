@@ -433,13 +433,20 @@ jpf.actiontracker = function(parentNode){
                 */
                 execStack = [];
                 
-                throw new Error(jpf.formatErrorString(0, this, 
+                var oError = new Error(jpf.formatErrorString(0, this, 
                     "Executing action",
                     "Error sending action to the server:\n"
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
                     + extra.message));
                 
-                return;
+                if ((extra.jmlNode || jpf).dispatchEvent("error", jpf.extend({
+                    error   : oError,
+                    state   : state,
+                    bubbles : true
+                }, extra)) === false)
+                    return;
+                    
+                throw oError;
             }
         }
         else {
@@ -834,10 +841,11 @@ jpf.UndoData = function(settings, at){
         }
 
         var dataInstruction;
-        if (this.xmlActionNode)
-            dataInstruction = this.xmlActionNode.getAttribute(undo 
-                ? "undo" 
-                : "set");
+        if (this.xmlActionNode) {
+            dataInstruction = this.xmlActionNode.getAttribute(undo ? "undo" : "set");
+            if (undo && !dataInstruction)
+                dataInstruction = this.xmlActionNode.getAttribute("set");
+        }
 
         if (!dataInstruction)
             return at.$queueNext(this);
@@ -846,23 +854,25 @@ jpf.UndoData = function(settings, at){
 
         //#ifdef __DEBUG
         if (!options || options.preparse != -1) {//@todo test if this ever happens
-            throw new Error("Hmm, so sometimes preparse isn't called");
+            throw new Error("Error in data instruction:" + dataInstruction);
         }
         //#endif
         options.preparse = false;
 
         jpf.saveData(dataInstruction, null, options,
             function(data, state, extra){
+                extra.jmlNode = _self.jmlNode;
                 return at.$receive(data, state, extra, _self, callback);
             }, {ignoreOffline: true});
     };
 
     this.preparse = function(undo, at, multicall){
         var dataInstruction;
-        if (this.xmlActionNode)
-            dataInstruction = this.xmlActionNode.getAttribute(undo 
-                ? "undo" 
-                : "set");
+        if (this.xmlActionNode) {
+            dataInstruction = this.xmlActionNode.getAttribute(undo ? "undo" : "set");
+            if (undo && !dataInstruction)
+                dataInstruction = this.xmlActionNode.getAttribute("set");
+        }
 
         if (!dataInstruction)
             return this;
