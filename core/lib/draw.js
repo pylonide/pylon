@@ -451,11 +451,12 @@ jpf.namespace("draw", {
                 s.$speedlut = {};
                 s.$storelist = [];
                 s.$overlaylut = {};
-                var cls, state, ovl;
+                var cls, state, ovl, idx;
                 j = s.$stylelist;
                 for(i = 0;i<j.length;i++){
                     o = j[i];
                     s.$storelist.push(n = []);
+                    idx = s.$storelist.length - 1;
                     //calculate the ID for this class/style
                     cls   = s.$clslist?(s.$clslist[o.$cls]||0):0;
                     state = jpf.draw.stateBit[o.$state]||0;
@@ -466,13 +467,13 @@ jpf.namespace("draw", {
                         else  ovl = (s.$clslist?(s.$clslist[t]||0):0)|(jpf.draw.stateBit[t]||0);
                     }else ovl = 0;
                     // check if we have any $clsovls to add aswell
-                    s.$storelut[ state|cls ] = n;
+                    s.$storelut[ state|cls ] = idx;//s.$storelist.length-1;
                     s.$speedlut[ state|cls ] = o.speed || 1;
                     if(ovl) s.$overlaylut[ state|cls ] = ovl;
                     // store lut elements for overlay class too.
                     if(o.$clsovl)for(m = o.$clsovl.length-1;m>=0;m--){
                         cls = s.$clslist?(s.$clslist[o.$clsovl[m]]||0):0;
-                        s.$storelut[ state|cls ] = n;
+                        s.$storelut[ state|cls ] = idx;//n;
                         s.$speedlut[ state|cls ] = o.speed || 1;
                         if(ovl)s.$overlaylut[ state|cls ] = (ovl==0x10000000)?cls:ovl;
                     }
@@ -1409,7 +1410,30 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     // State rendering
     
     //----------------------------------------------------------------------
-
+    
+    serializeStyleState : function(style){
+        var s = [] ,h,v,k;
+        if(!style.$stylelist)return "";
+        s.push("$storelist:_n=[", Array(style.$storelist.length).join("[],"),"[]]");
+        s.push(",$storelut:{");
+        h = style.$storelut;f = 1;
+        for(k in h){
+            s.push(--f?",":"","0x",parseInt(k).toString(16),":_n[",h[k],"]");
+        }
+        s.push("},$speedlut:{");
+        h = style.$speedlut;f = 1;
+        for(k in h){
+            s.push(--f?",":"","0x",parseInt(k).toString(16),":",h[k]);
+        }
+        s.push("},$overlaylut:{");
+        h = style.$overlaylut;f = 1;
+        for(k in h){
+           s.push(--f?",":"","0x",parseInt(k).toString(16),":0x",parseInt(h[k]).toString(16));
+        }
+        s.push("}");
+        return s.join('');
+    },
+    
     // state based drawing
     beginState : function( style, sthis, func, nargs, dyns ){
         var s = [this.beginShape(style.$shadow || style)];
@@ -1428,8 +1452,8 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut ;\n");
         
         for(i = 0, n = v.length;i<n;i++){
-            s[s.length]="_storelist["+i+"].length=0;";
-        }
+            s[s.length]="_storelist["+i+"].length=";
+        }s[s.length]="0;";
         return s.join('');
     },
     

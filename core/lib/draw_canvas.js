@@ -88,9 +88,9 @@ jpf.namespace("draw.canvas",{
             }
             l._styles = [];
             l._htmljoin = [];
-            
         }
-        var s =  [ "var _c=l.canvas,_styles=l._styles,",
+        var s =  [ "if(!l._styles)_initStyles();",
+                 "var _c=l.canvas,_styles=l._styles,",
                 "_s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
                 "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
@@ -113,7 +113,39 @@ jpf.namespace("draw.canvas",{
     },
 
     endLayer : function(){
-        var l = this.l; 
+        var l = this.l;
+        var s = [this.$endDraw()];
+        var p = [];
+        var i = 0, j = 0,style,len = l._styles.length;
+        for(;i<len;i++){
+            style = l._styles[i];
+            if(style._prev===undefined && style.isfont){ // original style
+                p.push("_styles[",i,"]={",
+                    "_domnode:_n=l.textroot.childNodes[b+",j,"]",
+                    ",_txtused:0,_txtcount:0,_txtnodes:[],_txtdiv:\"",style._txtdiv,"\"");
+                s.push(this.$finalizeFont(style));
+                p.push("};");  j++;
+            }else {
+                p.push("_styles[",i,"]={");
+                if(style.$stylelist){
+                    p.push(jpf.draw.serializeStyleState(style));
+                }
+                p.push("};");
+            }    
+        }
+        s.push( [
+            "l._anim = _anim;",
+            "function _initStyles(){",
+                "var _n, _styles = l._styles = [], b=l.textroot.childNodes.length;",
+                "l.textroot.insertAdjacentHTML('beforeend', \"",l._htmljoin.join(''),"\");",
+                p.join(''),
+            "}"
+        ].join(''));
+        if( l.dx != 0)s.push("_c.restore();");
+        l._styles = null;
+        this.l = null;
+        return s.join('');
+        /*
         var s = [this.$endDraw()], 
             html = l.textroot, j = html.childNodes.length,
             i = 0, len = l._styles.length;
@@ -131,6 +163,7 @@ jpf.namespace("draw.canvas",{
         if( l.dx != 0)s.push("_c.restore();");
         this.l = null;
         return s.join('');
+        */
     },
     
     //----------------------------------------------------------------------
@@ -452,7 +485,6 @@ jpf.namespace("draw.canvas",{
         
         if(this.tiletrans)s.push("_c.restore();");
         this.tiletrans=0;
-        
         if(this._clip)s.push("_c.restore();");
         this._clip = 0;
         return s.join('');

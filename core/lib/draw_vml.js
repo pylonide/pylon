@@ -130,12 +130,12 @@ jpf.namespace("draw.vml",{
 		
         this.l = l,this.mx="",this.my="",this.last=null;
         return [ this.jssVars,
-                "if(!l._vmlgroup)_initVmlNodes();",
+                "if(!l._styles)_initStyles();",
                 "var _s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,_st,_su,_sv,",
                 "_x1,_x2,_x3,_x4,_x5,_x6,_x7,_x8,_x9,_x10,",
                 "_y1,_y2,_y3,_y4,_y5,_y6,_y7,_y8,_y9,_y10,",
                     "_t,_u,_l,_dx,_dy,_tn,_tc,_lc,_s,_p,",
-                   "_styles = this._styles;"
+                   "_styles = l._styles;"
         ].join('');
     },
 
@@ -146,7 +146,7 @@ jpf.namespace("draw.vml",{
     // create layer init code in output 
     endLayer : function(){
         var l = this.l;
-        var s = [this.$endDraw()];
+        var s = [this.$endDraw()], k, h, v, f;
         var p = [];
         var i = 0, j = 0,style,len = l._styles.length;
         for(;i<len;i++){
@@ -154,6 +154,9 @@ jpf.namespace("draw.vml",{
             if(style._prev===undefined){ // original style
                 p.push("_styles[",i,"]={",
                        "_domnode:_n=l._vmlgroup.childNodes[",j,"]");
+                if(style.$stylelist){
+                    p.push(",",jpf.draw.serializeStyleState(style))
+                }
                 if(style.isshape){
                     s.push(this.$finalizeShape(style));
                     p.push(",_vmlfill:_n.firstChild,_vmlstroke:_n.lastChild");
@@ -164,8 +167,10 @@ jpf.namespace("draw.vml",{
                p.push("};");  j++;
             }
         }
+       
         s.push( [
-            "function _initVmlNodes(){",
+            "l._anim = _anim;",
+            "function _initStyles(){",
                 "l._vmlroot.insertAdjacentHTML('beforeend',[",
                 "\"<div style='position:absolute;display:inline-block;left:\",l.left,\"",
                               "px;top:\",l.top,\"px;width:\",l.width,\"px;height:\",l.height,\"",
@@ -175,9 +180,10 @@ jpf.namespace("draw.vml",{
                 "l._vmlgroup = l._vmlroot.lastChild;",
                 "var _n, _styles = l._styles = [];",
                 p.join(''),
-            "}",
-            "l._anim = _anim;"
+            "}"
         ].join(''));
+        l._styles = null;
+        this.l = null;
         return s.join('');
 //       alert(l._htmljoin.join(''));
     },

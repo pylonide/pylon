@@ -315,7 +315,7 @@ jpf.chart_draw = {
         e.endLayer()
         ]);
         try{
-            logw(jpf.highlightCode2(jpf.formatJS(c)));
+            //logw(jpf.highlightCode2(jpf.formatJS(c)));
 			return new Function('l','v','m',c);
         }catch(x){
             //c = jpf.formatJS(c);
@@ -545,9 +545,10 @@ jpf.chart_draw = {
                             vy1,vy2,vby,vey,vby2,vey2,vcy,vcy2 ){
             // pick a side, then draw a poly3DClip from vx1,vy1 to vx2, vy1
             var zclip = -1, sider, sd;
-            if((sd = s['axis'+pr].side1) !== undefined )side1 = sd;
-            if((sd = s['axis'+pr].side2) !== undefined )side2 = sd;
-            
+            if(s['axis'+pr]){
+                if((sd = s['axis'+pr].side1) !== undefined )side1 = sd;
+                if((sd = s['axis'+pr].side2) !== undefined )side2 = sd;
+            }
             var sideloop = [
                 "for(i=0;i<4;i++)if((i&2?(",side2,"?((f1=0,c=1,y=",vy1,"),1):0):(",side2,"?0:((f1=1,c=-1,y=",vy2,"),1)))&&",
                                    "(i&1?(",side1,"?((f2=0,d=1,z=",z1,"),1):0):(",side1,"?0:((f2=1,d=-1,z=",z2,"),1))))"
