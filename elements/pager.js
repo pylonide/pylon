@@ -102,7 +102,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.oInt.innerHTML = "";
         
-        if (curpage != 1 || this.autohide) {
+        if (curpage != 1 || !this.autohide) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = this.previous;
@@ -136,7 +136,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.$setStyleClass(btn, "current");
         }
         
-        if (curpage != totalpages  || this.autohide) {
+        if (curpage != totalpages  || !this.autohide) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = this.next;
