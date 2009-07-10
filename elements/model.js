@@ -861,9 +861,9 @@ jpf.model = function(data, caching){
 
         doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
 
-        //FU IE
-        //if(jpf.isIE) xmlNode.ownerDocument.setProperty("SelectionNamespaces", "xmlns:j='http://www.javeline.com/2001/PlatForm'");
-
+        if (jpf.isIE && this.$jml && this.$jml.getAttribute("ns"))
+            xmlNode.ownerDocument.setProperty("SelectionNamespaces", this.$jml.getAttribute("ns"));
+        
         if (xmlNode) {
             jpf.xmldb.nodeConnect(
                 jpf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);

@@ -158,7 +158,7 @@ jpf.DataBinding = function(){
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
-		return n?n.selectSingleNode(xpath):null;
+		return n ? n.selectSingleNode(xpath) : null;
     };
 
     /**
@@ -174,7 +174,7 @@ jpf.DataBinding = function(){
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
-		return n?n.selectNodes(xpath):null;
+		return n ? n.selectNodes(xpath) : [];
     };
 	
     /**
