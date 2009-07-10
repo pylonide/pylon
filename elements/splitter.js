@@ -61,6 +61,8 @@ jpf.splitter = function(pHtmlNode){
                 pos        : "top"
               };
         
+        this.oExt.offsetTop; //@weird somehow this will fix a problem in IE8
+        
         var jmlNode  = this.refNode;
         var htmlNode = this.refHtml;
 

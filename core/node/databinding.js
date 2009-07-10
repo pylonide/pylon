@@ -804,8 +804,8 @@ jpf.DataBinding = function(){
 
         //Load Default
         if (type != "choice" && !noselect) {
-            if (this.selected || !this.traverse && this.xmlRoot) {
-                var xmlNode = this.selected || this.xmlRoot;
+            var xmlNode;
+            if (xmlNode = (this.hasFeature(__MULTISELECT__) && this.selected || this.xmlRoot)) {
                 if (xpath) {
                     xmlNode = xmlNode.selectSingleNode(xpath);
                     if (!xmlNode) {

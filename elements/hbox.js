@@ -154,7 +154,8 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
                         
                         var p = _self;
                         while (p) {
-                            p.unwatch("visible", propChange);
+                            if (p.unwatch)
+                                p.unwatch("visible", propChange);
                             p = p.parentNode;
                         }
                     }
@@ -164,7 +165,8 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
                 
                 var p = this.parentNode;
                 while(p) {
-                    p.watch("visible", propChange);
+                    if (p.watch)
+                        p.watch("visible", propChange);
                     p = p.parentNode;
                 }
                 

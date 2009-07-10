@@ -656,9 +656,9 @@ jpf.layout = {
             aData.fwidth = String(jpf.parseExpression(x.getAttribute("width")));
         if (x.getAttribute("height"))
             aData.fheight = String(jpf.parseExpression(x.getAttribute("height")));
-        if (x.getAttribute("minwidth"))
-            aData.minwidth = x.getAttribute("minwidth");
         //@todo calculate inner minheight en minwidth
+        /*if (x.getAttribute("minwidth"))
+            aData.minwidth = x.getAttribute("minwidth");*/
         /*if (x.getAttribute("minheight"))
             aData.minheight = x.getAttribute("minheight");
         if (x.getAttribute("lastheight"))

@@ -96,7 +96,12 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         //Create JML Nodes
         var jmlNode = this.template.cloneNode(true);
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
-        jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
+        
+        if (jpf.isParsing)
+            jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
+        else {
+            jpf.JmlParser.parseMoreJml(jmlNode, htmlNode, oItem);
+        }
         
         if (jpf.isGecko) //firefox bug fix?
             items.push(jmlNode);
@@ -196,7 +201,10 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
                 action = "remove";
         }
         
-        if (action == "remove") {
+        if (action == "add") {
+            this.addItem(xmlNode, null, jpf.xmldb.getChildNumber(xmlNode));
+        }
+        else if (action == "remove") {
             this.removeItem(Lid);
         }
         /*else if (action.match(/add|insert/) && this.isTraverseNode(xmlNode)) {
