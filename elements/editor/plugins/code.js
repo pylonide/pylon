@@ -90,7 +90,7 @@ jpf.editor.plugin('code', function() {
     };
 
     function propagateChange() {
-        if (lastLoaded == oPreview.value) return false;
+        //if (lastLoaded == oPreview.value) return false;
         var html = _self.editor.exportHtml(oPreview.value
             .replace(/<\/p>/gi, "</p><p></p>")
             .replace(/\n/g, ''));
@@ -106,7 +106,9 @@ jpf.editor.plugin('code', function() {
             }
         }
 
-        if (_self.editor.$value.replace(/[\r\n]/g, "") == html.replace(/[\r\n]/g, "")) {
+        if (lastLoaded == oPreview.value 
+          || _self.editor.$value.replace(/[\r\n]/g, "") == html.replace(/[\r\n]/g, "")) {
+            _self.editor.$value = "";
             _self.editor.$propHandlers["value"].call(_self.editor, html);
         }
         else 
