@@ -131,9 +131,10 @@ jpf.namespace("offline.transactions", {
     rebuildActionQueues : function(){
         var storage    = jpf.offline.storage;
         var namespaces = storage.getNamespaces();
+        if (!namespaces) return;
         var lookup, re = new RegExp(this.namespace + "\\.([^\\.]*)\\.([^\\.]*)");
 
-        for (var ats = [], i = 0;i < namespaces.length; i++) {
+        for (var ats = [], i = 0; i < namespaces.length; i++) {
             if (namespaces[i].match(re))
                 ats.push([RegExp.$1, RegExp.$2]);
         }

@@ -228,8 +228,8 @@ jpf.namespace("offline", {
         if (this.storage && this.storage.destroy)
             this.storage.destroy();
 
-        for (i = this.resources.length - 1; i >= 0; i--) {
-            if (this[this.resources[i]].destroy)
+        for (var i = this.resources.length - 1; i >= 0; i--) {
+            if (this[this.resources[i]] && this[this.resources[i]].destroy)
                 this[this.resources[i]].destroy();
         }
     },

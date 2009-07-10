@@ -157,7 +157,7 @@ jpf.storage = {
         getAllPairs : function(namespace, store){
             var keys   = this.getKeys(namespace);
             
-            if (!keys.length)
+            if (!keys || !keys.length)
                 return;
                 
             var values = this.getMultiple(keys, namespace);
