@@ -146,6 +146,11 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
         if (jpf.isTrue(value)) {
             if (this.group) {
                 var nodes = jpf.StateServer.groups[this.group];
+                if (!nodes) {
+                    jpf.StateServer.addGroup(this.group, this);
+                    nodes = jpf.StateServer.groups[this.group];
+                }
+                
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i] != this && nodes[i].active !== false)
                         nodes[i].deactivate();

@@ -61,7 +61,7 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
             var jmlNode = _self.$represent = self[value];
             
             jmlNode.addEventListener("afterswitch", function(e){
-                _self.$setActivePage(e.pageId);
+                _self.$setActivePage(e.nextId);
             });
             
             if (jmlNode.$drawn) {
@@ -100,8 +100,9 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
                 pages[i].oExt.style.width    = "1px";
                 pages[i].oExt.style.width    = "";
     
-                if (!test)
+                if (!test) {
                     return this.$represent.set(i);
+                }
             }
         }
         
