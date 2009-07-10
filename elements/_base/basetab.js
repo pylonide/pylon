@@ -54,6 +54,7 @@ jpf.BaseTab = function(){
     this.isPaged         = true;
     this.$focussable     = jpf.KEYBOARD;
     this.canHaveChildren = true;
+    this.length          = 0;
 
     /**
      * Sets the current page of this element.
@@ -72,7 +73,7 @@ jpf.BaseTab = function(){
 
     /**** Properties and Attributes ****/
 
-    this.$supportedProperties.push("activepage", "activepagenr");
+    this.$supportedProperties.push("activepage", "activepagenr", "length");
 
     /**
      * @attribute {Number} activepagenr the child number of the active page.
@@ -252,6 +253,7 @@ jpf.BaseTab = function(){
             page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
+        
         // #ifdef __ENABLE_TABSCROLL
         this.scrollIntoView(page);
         // #endif
@@ -269,6 +271,7 @@ jpf.BaseTab = function(){
             return false;
 
         page.removeNode();
+        
         // #ifdef __ENABLE_TABSCROLL
         this.setScrollerState();
         // #endif
@@ -592,6 +595,10 @@ jpf.BaseTab = function(){
         else
             this.setScrollerState();
         // #endif
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.childNodes.length);
+        //#endif
     });
 
     this.$domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
@@ -625,6 +632,10 @@ jpf.BaseTab = function(){
         }
         else if (!this.$activepage)
             this.set(jmlNode);
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.childNodes.length);
+        //#endif
     });
 
     /**** Private state handling functions ****/
@@ -862,6 +873,10 @@ jpf.BaseTab = function(){
             jpf.JmlParser.parseChildren(this.$jml, this.oExt, this);
             this.isPages = false;
         }
+
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.childNodes.length);
+        //#endif
 
         ready = true;
         // #ifdef __ENABLE_TABSCROLL
