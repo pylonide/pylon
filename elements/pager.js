@@ -47,12 +47,15 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     this.range      = 5;
     this.curpage    = 1;
     this.totalpages = 0;
+    this.autohide   = false;
     
     var pages = [];
     var _self = this;
     
     this.$supportedProperties.push("range", "curpage", "totalpages", 
-        "previous", "next");
+        "previous", "next", "autohide");
+        
+    this.$booleanProperties["autohide"] = true;
 
     /**
      * Selects page depends on its number or jump length
@@ -99,12 +102,19 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.oInt.innerHTML = "";
         
-        if (curpage != 1) {
+        if (curpage != 1 || this.autohide) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = this.previous;
             this.$setStyleClass(btn, "previous");
-            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
+            
+            if (curpage != 1) {
+                btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
+            }
+            else {
+                this.$setStyleClass(btn, "disabled");
+            }
+
             nodes.push(btn);
         }
         
@@ -126,12 +136,19 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.$setStyleClass(btn, "current");
         }
         
-        if (curpage != totalpages) {
+        if (curpage != totalpages  || this.autohide) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = this.next;
             this.$setStyleClass(btn, "next");
-            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
+            
+            if (curpage != totalpages) {
+                btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
+            }
+            else {
+                this.$setStyleClass(btn, "disabled");
+            }
+
             nodes.push(btn);
         }
         
