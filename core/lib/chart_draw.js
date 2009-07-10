@@ -125,6 +125,7 @@ jpf.chart_draw = {
     },
     axis2D : function(l,s){
         var e = jpf.draw;
+        if(!s.margin || !s.layout) return new Function('');
         var ml = s.margin.left*l.ds, mt = s.margin.top*l.ds,
             mr = s.margin.right*l.ds, mb = s.margin.bottom*l.ds;
         var c = e.optimize([
@@ -318,8 +319,9 @@ jpf.chart_draw = {
             //logw(jpf.highlightCode2(jpf.formatJS(c)));
 			return new Function('l','v','m',c);
         }catch(x){
+            //return new Function('l','v','m',c);
             //c = jpf.formatJS(c);
-            window.open().document.write("<script>" + c + "</script>");
+            //window.open().document.write("<script>" + c + "</script>");
             alert("Failed to compile:\n"+x.message+'\n'+c);return 0;
         }		
     },
@@ -484,6 +486,7 @@ jpf.chart_draw = {
     },
     
     axis3D : function(l,s){
+        if(!s.layout) return new Function('');
         var e = jpf.draw;
         var dt = (new Date()).getTime();
         var zclip = -0.01;
@@ -644,7 +647,7 @@ jpf.chart_draw = {
           //document.title = (new Date()).getTime() - dt;
           return f;
         }catch(x){
-            window.open().document.write("<script>" + c + "</script>");
+            //window.open().document.write("<script>" + c + "</script>");
             alert("Failed to compile:\n"+x.message+'\n'+c);return 0;
         }		
     },
@@ -658,9 +661,8 @@ jpf.chart_draw = {
         $:1}
     },
     line2D : function( l, d, s ){
-		
-        var wrap = s.graph.weight*8, e = jpf.draw;
         if(!s.graph) return new Function('');
+        var wrap = s.graph.weight*8, e = jpf.draw;
         var clipy = s.graph.fillout?"db":"ty";
         var c = e.optimize([
             e.vars(),
@@ -692,7 +694,6 @@ jpf.chart_draw = {
            // c = jpf.formatJS(c);
 			return new Function('l','v','m',c);
         }catch(x){
-            window.open().document.write("<script>" + c + "</script>");
             alert("Failed to compile:\n"+c);return 0;
         }
     },
@@ -712,7 +713,7 @@ jpf.chart_draw = {
     },
     
     line3D : function( l, d, s ){
-
+        if(!s.graph) return new Function('');
         var e = jpf.draw, wrap = s.graph.weight*4; 
 
         var c = e.optimize([
@@ -751,7 +752,7 @@ jpf.chart_draw = {
             //logw(jpf.highlightCode2(c));
             return new Function('l','v','m',c);
         }catch(x){
-            window.open().document.write("<script>function(){" + jpf.formatJS(c) + "}</script>");
+//            window.open().document.write("<script>function(){" + jpf.formatJS(c) + "}</script>");
             alert("Failed to compile:\n"+c);return 0;
         }
     },
@@ -768,6 +769,7 @@ jpf.chart_draw = {
     },    
     
     bar3D : function(l,d,s){
+        if(!s.graph) return new Function('');
         var e = jpf.draw, g = jpf.visualize;
          
         var c = e.optimize([
@@ -811,7 +813,7 @@ jpf.chart_draw = {
     },
     
     height3D : function( l, d, s ){
-
+        if(!s.graph) return new Function('');
         var e = jpf.draw;
         var c = e.optimize([
             e.vars(),
@@ -971,7 +973,8 @@ jpf.chart_draw = {
     },
     bar2D : function(l,d,s){
         var e = jpf.draw, g = jpf.visualize;
-         
+        if(!s.graph) return new Function('');
+            
         var c = e.optimize([
             e.vars(),
             d.vars,
@@ -999,7 +1002,7 @@ jpf.chart_draw = {
             e.endLayer()]);
         // lets return a mouse tracking function too.
         try{
-            //logw(jpf.highlightCode2(c=jpf.formatJS(c)));
+            logw(jpf.highlightCode2(c=jpf.formatJS(c)));
             return new Function('l','v','m',c);
         }catch(x){
             //window.open().document.write("<script>" +jpf.formatJS(c)+ "</script>");
@@ -1022,6 +1025,7 @@ jpf.chart_draw = {
         $:1}
     },
     shape2D : function(l,d,s){
+        if(!s.graph) return new Function('');
         var e = jpf.draw, g = jpf.visualize;
          
         var c = e.optimize([
@@ -1068,6 +1072,8 @@ jpf.chart_draw = {
         $:1}
     },
     pie2D : function(l,d,s){
+        if(!s.graph) return new Function('');
+       
         var e = jpf.draw, g = jpf.visualize;
         var c = e.optimize([
             "/*------ pie2D Init ------*/\n",

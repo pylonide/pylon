@@ -449,14 +449,14 @@ jpf.namespace("draw", {
             if(s.$stylelist){ // lets go create our style luts
                 s.$storelut = {};
                 s.$speedlut = {};
-                s.$storelist = [];
+                //s.$storelist = [];
                 s.$overlaylut = {};
                 var cls, state, ovl, idx;
                 j = s.$stylelist;
                 for(i = 0;i<j.length;i++){
                     o = j[i];
-                    s.$storelist.push(n = []);
-                    idx = s.$storelist.length - 1;
+                    //s.$storelist.push(n = []);
+                    //idx = i;//s.$storelist.length - 1;
                     //calculate the ID for this class/style
                     cls   = s.$clslist?(s.$clslist[o.$cls]||0):0;
                     state = jpf.draw.stateBit[o.$state]||0;
@@ -467,13 +467,13 @@ jpf.namespace("draw", {
                         else  ovl = (s.$clslist?(s.$clslist[t]||0):0)|(jpf.draw.stateBit[t]||0);
                     }else ovl = 0;
                     // check if we have any $clsovls to add aswell
-                    s.$storelut[ state|cls ] = idx;//s.$storelist.length-1;
+                    s.$storelut[ state|cls ] = i;//s.$storelist.length-1;
                     s.$speedlut[ state|cls ] = o.speed || 1;
                     if(ovl) s.$overlaylut[ state|cls ] = ovl;
                     // store lut elements for overlay class too.
                     if(o.$clsovl)for(m = o.$clsovl.length-1;m>=0;m--){
                         cls = s.$clslist?(s.$clslist[o.$clsovl[m]]||0):0;
-                        s.$storelut[ state|cls ] = idx;//n;
+                        s.$storelut[ state|cls ] = i;//n;
                         s.$speedlut[ state|cls ] = o.speed || 1;
                         if(ovl)s.$overlaylut[ state|cls ] = (ovl==0x10000000)?cls:ovl;
                     }
@@ -1414,7 +1414,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     serializeStyleState : function(style){
         var s = [] ,h,v,k;
         if(!style.$stylelist)return "";
-        s.push("$storelist:_n=[", Array(style.$storelist.length).join("[],"),"[]]");
+        s.push("$storelist:_n=[", Array(style.$stylelist.length).join("[],"),"[]]");
         s.push(",$storelut:{");
         h = style.$storelut;f = 1;
         for(k in h){

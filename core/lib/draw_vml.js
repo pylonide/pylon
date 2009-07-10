@@ -180,7 +180,7 @@ jpf.namespace("draw.vml",{
                 "l._vmlgroup = l._vmlroot.lastChild;",
                 "var _n, _styles = l._styles = [];",
                 p.join(''),
-            "}"
+            "};"
         ].join(''));
         l._styles = null;
         this.l = null;

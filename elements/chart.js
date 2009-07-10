@@ -788,7 +788,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             // go and reparse style
            if(!_style)_style = 
                     jpf.draw.parseStyle( jpf.chart_draw['_'+mode], this.style, err );
-            if(_style.graph.$clslist && this.v_class){
+            if(_style.graph && _style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
                     if(t=c[i]){
                         s[i] = _style.graph.$clslist[t];
@@ -797,6 +797,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //alert(this.$datatype);
 			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+            alert(mode);
 			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
             // we'll also have to compile the balloon and knob code.
         }
