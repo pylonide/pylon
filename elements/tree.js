@@ -575,9 +575,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.prerender)
             var traverseLength = this.getTraverseNodes(xmlNode).length;
 
-        if (loadChildren && (!this.hasLoadStatus(xmlNode) 
-          || this.hasLoadStatus(xmlNode, "potential")) 
-          || hasChildren && !this.prerender && traverseLength > 2)
+        if (hasChildren && !this.prerender && traverseLength > 2 
+          && startcollapsed
+          || loadChildren && (!this.hasLoadStatus(xmlNode) 
+          || this.hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && this.applyRuleSetOnNode("empty", xmlNode))
             this.$setClearMessage(container);

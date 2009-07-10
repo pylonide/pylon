@@ -1017,7 +1017,7 @@ jpf.DataBinding = function(){
                                 if (!jpf.supportNamespaces)
                                     rule.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
                                         + prefix + "='" + jpf.ns.xslt + "'");
-                                xsltNode = rule.selectSingleNode(prefix + ":*");
+                                xsltNode = rule.selectSingleNode(".//" + prefix + ":*");
                             }
                         }
 
@@ -1033,7 +1033,7 @@ jpf.DataBinding = function(){
                                 }
 
                                 var xsltNode = baseXslt.cloneNode(true);
-                                for (var j = rule.childNodes.length; j >= 0; j++)
+                                for (var j = rule.childNodes.length - 1; j >= 0; j--)
                                     xsltNode.firstChild.appendChild(rule.childNodes[j]);
 
                                 //Set cache Item

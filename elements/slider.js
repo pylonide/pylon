@@ -237,7 +237,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.$dir)
             return; //@todo fix this
 
-        if (dragging && !force)
+        if (dragging && !force && !_self.realtime)
             return;
 
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
@@ -470,13 +470,14 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     return; //?
                 }
 
+                var knobValue = getKnobValue(o, e, _self.slideDiscreet);
                 if (_self.realtime) {
                     _self.value = -1; //reset value
-                    _self.setValue(getKnobValue(o, e, _self.slideDiscreet));
+                    _self.change(knobValue);
                 }
-
-                var knobValue = getKnobValue(o, e, _self.slideDiscreet);
-                _self.$propHandlers["value"].call(_self, knobValue, true);
+                else {
+                    _self.$propHandlers["value"].call(_self, knobValue, true);
+                }
                 
                 /*clearTimeout(timer);
                 if (new Date().getTime() - lastTime > 20) {
@@ -499,10 +500,13 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 dragging = false;
 
-                _self.$ignoreSignals = _self.realtime;
-                _self.setValue(getKnobValue(o, e || window.event,
-                    _self.slideDiscreet || _self.slideSnap));
-                _self.$ignoreSignals = false;
+                var knobValue = getKnobValue(o, e || window.event,
+                    _self.slideDiscreet || _self.slideSnap);
+
+                _self.value = -1;
+                //_self.$ignoreSignals = _self.realtime;
+                _self.change(knobValue);
+                //_self.$ignoreSignals = false;
 
                 jpf.dragmode.mode = document.onmousemove = document.onmouseup
                     = null;

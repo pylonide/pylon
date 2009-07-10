@@ -93,13 +93,27 @@ jpf.MultiLevelBinding = function(jmlNode){
             traverseNodes = jmlNode.getTraverseNodes();
         
         //#ifdef __DEBUG
-        if (!jmlNode.bindingRules[jmlNode.mainBind]) {
+        if (!jmlNode.traverse && !jmlNode.bindingRules[jmlNode.mainBind]) {
             throw new Error(jpf.formatErrorString(0, jmlNode, 
               "Executing selection change",
               "The default bind rule isn't set. Expected '" 
               + jmlNode.mainBind + "' rule to exist"));
         }
         //#endif
+        
+        //@todo the following section is too simple.
+        if (!this.xmlRoot) {
+            var model   = this.getModel();
+            if (!model)
+                throw new Error();
+                
+            if (!model.data)
+                model.load("<data />");
+            
+            //@todo hack. The xpath stored for this component in the model is wrong!
+            this.$listenRoot = null; 
+            this.xmlRoot = model.data;
+        }
 
         //Find nodes that are removed from the selection
         for (removeList = [], i = 0; i < selNodes.length; i++) {
@@ -128,7 +142,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             if (!found) 
                 addList.push(mlNode.createSelectionNode(list[i]));
         }
-        
+
         //Use Action Tracker
         this.executeAction("addRemoveNodes", [this.xmlRoot, addList, removeList],
             "changeselection", jmlNode.selected);
@@ -307,7 +321,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         return false;
     };
     
-    this.mode  = "copy";//"default";//"copy"
+    this.mode  = "default";//"copy";//"default";//"copy"
     this.xpath = "text()";
     
     this.createSelectionNode = function(xmlNode){

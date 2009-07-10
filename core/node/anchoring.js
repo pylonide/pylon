@@ -128,7 +128,7 @@ jpf.Anchoring = function(){
         /**** Properties and Attributes ****/
 
         this.$supportedProperties.push("right", "bottom", "width",
-            "left", "top", "height");
+            "left", "top", "height", "anchors");
 
         this.$propHandlers["anchors"]  = function(value){
             this.$anchors = value.splitSafe("(?:, *| )");

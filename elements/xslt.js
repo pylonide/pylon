@@ -37,8 +37,6 @@
  */
 jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$hasStateMessages = true;
-    // DATABINDING
-    this.mainBind = "contents";
     
     // INIT
     this.parse = function(code){
@@ -82,6 +80,14 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
         
+        //Events
+        var a, i, attr = x.attributes;
+        for (i = 0; i < attr.length; i++) {
+            a = attr[i];
+            if (a.nodeName.indexOf("on") == 0)
+                this.addEventListener(a.nodeName, new Function(a.nodeValue));
+        }
+
         var nodes = x.childNodes;
         if (nodes.length) {
             var bind = x.getAttribute("ref") || ".";
@@ -89,14 +95,13 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
             //<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='" 
                 //+ bind + "'></xsl:template></xsl:stylesheet>
             var strBind = "<smartbinding xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>\
-                <bindings><contents select='" + bind + "'>\
-                </contents></bindings></smartbinding>";
+                <bindings><value select='" + bind + "'>\
+                </value></bindings></smartbinding>";
+            
             var xmlNode = jpf.xmldb.getXml(strBind);
-            var tNode = xmlNode.firstChild.firstChild;//.firstChild.firstChild
-            for (var i = 0; i < nodes.length; i++) {
-                //if(tNode.ownerDocument.importNode
-                tNode.appendChild(nodes[i]);
-            }
+            var pNode = xmlNode.firstChild.firstChild;//.firstChild.firstChild
+            for (var i = nodes.length - 1; i >= 0; i--)
+                pNode.appendChild(nodes[i]);
             
             jpf.JmlParser.addToSbStack(this.uniqueId, new jpf.smartbinding(null, xmlNode));
         }
