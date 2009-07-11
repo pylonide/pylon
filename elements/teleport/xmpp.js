@@ -1385,7 +1385,7 @@ jpf.xmpp = function(){
      * @exception {Error}  A general Error object
      */
     this.load = function(x){
-        this.server  = x.getAttribute("url");
+        this.server  = jpf.parseExpression(x.getAttribute("url"));
         var i, url   = new jpf.url(this.server);
 
         // do some extra startup/ syntax error checking

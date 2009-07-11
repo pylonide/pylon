@@ -1025,7 +1025,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     _self.minimize();
             }
     
-            if (this.draggable === undefined) {
+            if (typeof this.draggable == "undefined") {
                 (this.$propHandlers.draggable
                     || jpf.JmlElement.propHandlers.draggable).call(this, true);
                 this.draggable = true;

@@ -1002,7 +1002,7 @@ jpf.chart_draw = {
             e.endLayer()]);
         // lets return a mouse tracking function too.
         try{
-            logw(jpf.highlightCode2(c=jpf.formatJS(c)));
+            //logw(jpf.highlightCode2(c=jpf.formatJS(c)));
             return new Function('l','v','m',c);
         }catch(x){
             //window.open().document.write("<script>" +jpf.formatJS(c)+ "</script>");

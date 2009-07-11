@@ -467,7 +467,7 @@ var jpf = {
 
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
-        this.dynPropMatch.compile("^[{\\[].*[}\\]]$");
+        this.dynPropMatch.compile("^[{\\[][\\s\\S]*[}\\]]$");
         //#endif
 
         //#ifdef __WITH_ANCHORING
@@ -479,6 +479,8 @@ var jpf = {
         jpf.isGears      = !!jpf.initGears() || 0;
         //#endif
 
+        //#ifdef __DEBUG
+        //@todo why is this here?
         if (jpf.isOpera) {
             window.console = {};
             ["log", "debug", "info", "warn", "error"].forEach(function(type) {
@@ -509,6 +511,7 @@ var jpf = {
                 };
             });
         }
+        //#endif
     },
 
     //#ifdef __DEBUG

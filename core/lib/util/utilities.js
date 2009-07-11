@@ -349,7 +349,7 @@ jpf.parseExpression = function(str){
     }
     //#endif
 };
-jpf.parseExpression.regexp = /^\{(.*)\}$/;
+jpf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
 
 /**
  * @private

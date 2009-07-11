@@ -49,6 +49,7 @@ jpf.namespace("offline.transactions", {
         //#ifdef __WITH_OFFLINE_STATE
         jpf.addEventListener("load", function(){
             jpf.offline.transactions.rebuildActionQueues();
+            jpf.removeEventListener("load", arguments.callee);
         });
         //#endif
     },

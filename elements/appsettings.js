@@ -183,8 +183,8 @@ jpf.appsettings = {
     //@todo adhere to defaults (loop attributes)
     loadJml: function(x, parentNode){
         this.$jml = x;
+        
         //#ifdef __WITH_JMLDOM_FULL
-
         this.parentNode = parentNode;
         jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
@@ -205,6 +205,7 @@ jpf.appsettings = {
         if (jpf.debug) {
             jpf.addEventListener("load", function(){
                 setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                jpf.removeEventListener("load", arguments.callee);
             });
         }
         //#endif

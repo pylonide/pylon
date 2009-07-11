@@ -124,6 +124,7 @@ jpf.namespace("offline.application", {
             jpf.addEventListener("load", function(){
                 if (jpf.offline.application.enabled)
                     jpf.offline.application.save();
+                jpf.removeEventListener("load", arguments.callee);
             });
         }
         else {

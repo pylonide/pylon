@@ -111,7 +111,7 @@
  *
  * @attribute {String}  login           the {@link term.datainstruction data instruction} on how to log in to a service.
  * @attribute {String}  logout          the {@link term.datainstruction data instruction} on how to log out of a service.
- * @attribute {Boolean} autostart      whether to fire authrequired at startup.
+ * @attribute {Boolean} autostart       whether to fire authrequired at startup. Defaults to true.
  * @attribute {String}  window          the id of the window element that offers a log in form to the user.
  * @attribute {String}  fail-state      the id of the state element which is activated when logging in failed because the credentials where incorrect.
  * @attribute {String}  error-state     the id of the state element which is activated when logging in failed because of an error (i.e. network disconnected).
@@ -262,6 +262,7 @@ jpf.auth = {
         if (this.autoStart) {
             jpf.addEventListener("load", function(){
                 jpf.auth.authRequired();
+                jpf.removeEventListener("load", arguments.callee);
             });
         }
     },
