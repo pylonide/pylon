@@ -410,8 +410,12 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
                 : jmlNode.$getMultiBind().smartBinding;
             if (sb2) {
-                sb2.model = model;
-                sb2.$modelXpath[jmlNode.uniqueId] = data.join(":");
+                if (jpf.isParsing) {
+                    sb2.model = model;
+                    sb2.$modelXpath[jmlNode.uniqueId] = data.join(":");
+                }
+                else 
+                    sb2.setModel(model, data.join(":"));
             }
         }
         else

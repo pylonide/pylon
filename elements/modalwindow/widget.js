@@ -28,6 +28,8 @@
 jpf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;
     var _self   = this;
+    
+    this.isWindowContainer = false;
 
     this.dragStart = function(e){
         if (!e) e = event;
@@ -41,21 +43,20 @@ jpf.modalwindow.widget = function(){
 
         htmlNode.parentNode.insertBefore(p, htmlNode);
         //p.style.width = (htmlNode.offsetWidth - 2) + "px";
-        p.style.height  = (htmlNode.offsetHeight - (jpf.isIE6 ? 0 : 13)) + "px";
+        p.style.height  = (htmlNode.offsetHeight - (jpf.isIE6 ? 0 : jpf.getHeightDiff(p))) + "px";
 
         var diff     = jpf.getDiff(htmlNode);
         var lastSize = [htmlNode.style.width, htmlNode.style.height];
         htmlNode.style.width = (htmlNode.offsetWidth - diff[0]) + "px";
         //htmlNode.style.height = (htmlNode.offsetHeight - diff[1]) + "px";
 
-        htmlNode.style.left = (e.clientX - nX) + "px";
-        htmlNode.style.top  = (e.clientY - nY) + "px";
+        htmlNode.style.left = (e.clientX + nX) + "px";
+        htmlNode.style.top  = (e.clientY + nY) + "px";
         htmlNode.style.position = "absolute";
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
         htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
-        // @todo: should we rewrite this to use jpf.tween?
-        jpf.Animate.fade(htmlNode, 0.8);
+        jpf.tween.fade(htmlNode, 0.8);
 
         jpf.dragmode.mode = true; //simulate using dragmode
 
@@ -74,7 +75,7 @@ jpf.modalwindow.widget = function(){
 
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
-            jpf.Animate.fade(htmlNode, 1);
+            jpf.tween.fade(htmlNode, 1);
 
             //@todo please move this to datagrid internals
             var grids = _self.getElementsByTagName("datagrid");
@@ -107,6 +108,7 @@ jpf.modalwindow.widget = function(){
                     th - (node.offsetHeight / 2) > cy
                         ? node
                         : node.nextSibling);
+                break;
             }
         }
 
@@ -135,8 +137,8 @@ jpf.modalwindow.widget = function(){
                 insertInColumn(el, ey);
         }
 
-        _self.oExt.style.left = (e.clientX - nX) + "px";
-        _self.oExt.style.top  = (e.clientY - nY) + "px";
+        _self.oExt.style.left = (e.clientX + nX) + "px";
+        _self.oExt.style.top  = (e.clientY + nY) + "px";
 
         e.cancelBubble = true;
     };
@@ -180,6 +182,8 @@ jpf.modalwindow.widget = function(){
             this.$setStyleClass(this.oInt, oBody.getAttribute("class"))
 
         this.oDrag.onmousedown = this.dragStart;
+
+        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
         if (this.resizable)
             this.resizable = false;

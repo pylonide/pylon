@@ -1726,7 +1726,8 @@ jpf.DataBinding = function(){
               || !initModelId[0] && sb) {
                 initModelId = findModel(x);
 
-                if (initModelId) {
+                if (initModelId 
+                  && jpf.nameserver.get("model", initModelId) != this.$model) {
                     if (!sb)
                         this.smartBinding = true; //@todo experimental for traverse="" attributes
 
@@ -1805,7 +1806,7 @@ jpf.DataBinding = function(){
             || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
             || "No items";
 
-        if (!jpf.isParsing) 
+        if (!jpf.isParsing && this.$updateClearMessage) 
             this.$updateClearMessage(this.emptyMsg, "empty");
     };
 
@@ -1843,7 +1844,7 @@ jpf.DataBinding = function(){
             || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
             || "Loading...";
 
-        if (!jpf.isParsing)
+        if (!jpf.isParsing && this.$updateClearMessage)
             this.$updateClearMessage(this.loadingMsg, "loading");
     };
 
@@ -1859,7 +1860,7 @@ jpf.DataBinding = function(){
             || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
             || "You are currently offline...";
 
-        if (!jpf.isParsing)
+        if (!jpf.isParsing && this.$updateClearMessage)
             this.$updateClearMessage(this.offlineMsg, "offline");
     };
 
@@ -2104,7 +2105,7 @@ jpf.DataBinding = function(){
 
         var sb = hasRefBinding && o.smartBinding || (jpf.isParsing
             ? jpf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()))
+            : o.$propHandlers["smartbinding"].call(o, new jpf.smartbinding()))
 
         //We don't want to change a shared smartbinding
         if (!hasRefBinding) {
@@ -2339,6 +2340,12 @@ jpf.DataBinding = function(){
             this.$model = null;
             this.lastModelId = "";
             return;
+        }
+        
+        if (typeof value == "object") {
+            var modelId = "model" + value.uniqueId;
+            jpf.nameserver.register("model", modelId, value);
+            value = modelId;
         }
 
         this.lastModelId = value;

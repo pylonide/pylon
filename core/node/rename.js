@@ -205,7 +205,7 @@ jpf.Rename = function(){
             return false;
 
         if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1) {
-            if (jpf.isIE8)
+            if (jpf.isIE8 || jpf.isIE7Emulate)
                 this.oTxt.blur();
             
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);

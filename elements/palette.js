@@ -62,7 +62,7 @@ jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
     
     this.$focussable = true; // This object can get the focus
-    this.value       = null;
+    this.value       = "ff0000";
     this.direction   = "down";
     
     this.$supportedProperties.push("value");

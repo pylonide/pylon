@@ -482,7 +482,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             return;
         }
 
-        if (this.nodeFunc == jpf.NODE_VISIBLE && !this.oExt)
+        if (this.nodeFunc == jpf.NODE_VISIBLE && !this.$drawn)
             return;
 
         //#ifdef __WITH_PROPERTY_BINDING

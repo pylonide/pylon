@@ -790,8 +790,10 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         this.model          = jpf.nameserver.register("model", this.name, model);
         this.modelBaseXpath = xpath;
         
+        var jmlNode;
         for (var uniqueId in this.jmlNodes) {
-            this.model.unregister(this.jmlNodes[uniqueId]);
+            jmlNode = this.jmlNodes[uniqueId];
+            this.model.unregister(jmlNode);
             this.model.register(jmlNode, this.$modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed

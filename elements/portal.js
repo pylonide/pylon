@@ -119,6 +119,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode)
             return;
     };
+    this.select = function(){}
     
     this.columns = "33.33%,33.33%,33.33%";
     var columns = this.columns.splitSafe(",");
@@ -217,23 +218,24 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         //Load docklet
         docklet.$jml      = xmlNode;
         docklet.$loadSkin("default:docklet");
-        docklet.btnedit  = true;
-        docklet.btnmin   = true;
-        docklet.btnclose = true;
+        docklet.draggable = false;
 
         docklet.$draw();//name
+        
+        docklet.setProperty("buttons", "edit|min|close");
+        docklet.setProperty("title", portalNode.applyRuleSetOnNode("caption", dataNode));
+        docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
+        
         docklet.$loadJml(xmlNode, name);
-        docklet.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
-        docklet.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
 
         if (xmlNode.getAttribute("width"))
-            docklet.setWidth(xmlNode.getAttribute("width"));
+            docklet.setProperty("width", xmlNode.getAttribute("width"));
         else
             docklet.oExt.style.width = "auto";
         //if(xmlNode.getAttribute("height")) docklet.setHeight(xmlNode.getAttribute("height"));
         //else docklet.oExt.style.height = "auto";
 
-        docklet.display(0, 0);
+        docklet.show();
 
         //Create dockletClass
         if (!self[name]) {
@@ -355,8 +357,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 }).implement(
     jpf.Cache,
     jpf.Presentation,
-    jpf.MultiselectBinding,
-    /*jpf.MultiSelect,*/
+    jpf.MultiSelect,
     jpf.DataBinding
 );
 
