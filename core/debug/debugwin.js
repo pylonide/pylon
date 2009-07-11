@@ -95,7 +95,9 @@ Function.prototype.toHTMLNode = function(highlight){
                 args.push("<a href='javascript:void(0)' onclick='alert(jpf.DebugInfoStack["
                     + id + "].join(\"\\n\"));event.cancelBubble=true;'>" + argName + "</a>");
                 info.push("Type: " + getType(this.arguments[i]));
-                info.push("Value: " + jpf.vardump(this.arguments[i], null, false));
+                
+                //@todo fix this
+                //info.push("Value: " + jpf.vardump(this.arguments[i], null, false));
             }
         }
         else if (jpf.isGecko) {

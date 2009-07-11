@@ -651,7 +651,7 @@ jpf.layout = {
             aData.weight = parseFloat(x.getAttribute("weight"));
         if (x.getAttribute("splitter") || x.getAttribute("edge") == "splitter")
             aData.splitter = x.getAttribute("splitter")
-                || (x.getAttribute("edge") == "splitter" ? 5 : false);
+                || (x.getAttribute("edge") == "splitter" ? 4 : false);
         if (x.getAttribute("width"))
             aData.fwidth = String(jpf.parseExpression(x.getAttribute("width")));
         if (x.getAttribute("height"))
@@ -1175,6 +1175,7 @@ jpf.layout = {
         if (!l) return false;
 
         var root = l.root.copy();//is there a point to copying?
+        
         l.layout.compile(root);
         l.layout.reset();
     },
@@ -1535,13 +1536,13 @@ jpf.layout = {
  * @private
  */
 jpf.getWindowWidth = function(){
-    return jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
+    return jpf.isIE ? document.documentElement.offsetWidth - (jpf.isIE8 ? 4 : 0) : window.innerWidth;
 }
 /**
  * @private
  */
 jpf.getWindowHeight = function(){
-    return jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
+    return jpf.isIE ? document.documentElement.offsetHeight - (jpf.isIE8 ? 4 : 0) : window.innerHeight;
 }
 
 /**
@@ -1583,7 +1584,7 @@ jpf.layoutParser = function(parentNode, pMargin){
 
         this.preparse(root);
         this.parserules(root);
-
+        
         if (this.createSplitters) {
             jpf.layout.clearSplitters(this);
             this.parsesplitters(root);
@@ -1615,8 +1616,9 @@ jpf.layoutParser = function(parentNode, pMargin){
         this.RULES.push(rule);
     };
 
-    this.setglobals = function(node){
-        if (this.globalEdge && !node.edgeMargin) {
+    this.setglobals = function(node, isLast){
+        if (!isLast && this.globalEdge && !node.edgeMargin 
+          && (!node.xml || !node.xml.getAttribute("edge"))) {
             if (!node.splitter)
                 node.splitter = this.globalSplitter;
             node.edgeMargin = Math.max(this.globalSplitter, this.globalEdge);
@@ -1625,7 +1627,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         if (node.node) return;
 
         for (var i = 0; i < node.children.length; i++) {
-            this.setglobals(node.children[i]);
+            this.setglobals(node.children[i], i == node.children.length - 1);
         }
     };
 

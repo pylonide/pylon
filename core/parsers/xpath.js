@@ -146,7 +146,7 @@ jpf.XPath = {
                         if (n.nodeType != 1)
                             continue;
                         nodes.push(n);
-                        //@todo please dont seg fault, you mf
+                        //@todo please dont seg fault
                         if (n.tagName != "skin" && n.tagName != "jslt" && n.tagName != "ref" && n.parentNode.tagName != "bindings")
                             recur(n);
                     }

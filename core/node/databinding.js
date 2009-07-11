@@ -1483,19 +1483,19 @@ jpf.DataBinding = function(){
 
                 if (!nodes.length)
                     this.$setClearMessage(this.emptyMsg, "empty");
+                    
+                //#ifdef __WITH_PROPERTY_BINDING
+                //@todo move this to getCache??
+                if (nodes.length != this.length)
+                    this.setProperty("length", nodes.length);
+                //#endif
             }
-
-            //#ifdef __WITH_PROPERTY_BINDING
-            //@todo move this to getCache??
-            if (this.hasFeature(__MULTISELECT__) && nodes.length != this.length)
-                this.setProperty("length", nodes.length);
-            //#endif
 
             this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
             return;
         }
         else
-            this.clear(true);
+            this.clear(true, true);
 
         //Set usefull vars
         this.documentId = jpf.xmldb.getXmlDocId(xmlRootNode);

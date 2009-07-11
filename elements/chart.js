@@ -797,7 +797,6 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //alert(this.$datatype);
 			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
-            alert(mode);
 			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
             // we'll also have to compile the balloon and knob code.
         }
