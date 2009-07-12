@@ -451,7 +451,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     size[1] - this.oExt.offsetHeight)/3)) + size[3]) + "px";
             }
 
-            if (!this.isRendered) {
+            if (!this.$rendered) {
                 this.addEventListener("afterrender", function(){
                     this.dispatchEvent("display");
                     this.removeEventListener("display", arguments.callee);
@@ -478,7 +478,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             
             // #ifdef __WITH_FOCUS
             if (!jpf.isParsing && (this.model 
-              || !this.dockable && !this.$isWidget))
+              || (!this.dockable || !this.aData) && !this.$isWidget))
                 this.focus(false, {mouse:true});
             // #endif
             
@@ -931,7 +931,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.addEventListener("keydown", function(e){
         if (e.keyCode == 27 && this.buttons.indexOf("close") > -1 
-          && !this.dockable && this.$kbclose)
+          && (!this.dockable || !this.aData) && this.$kbclose)
             this.close();
     });
     //#ifdef __SUPPORT_IPHONE

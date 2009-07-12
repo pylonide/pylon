@@ -159,10 +159,6 @@ jpf.JmlParser = {
         for (i = 0, l = nodes.length; i < l; i++) {
             x = nodes[i];
 
-            //Check if node should be rendered
-            if (jpf.xmldb.getInheritedAttribute(x, "render") == "runtime")
-                continue;
-
             var tagName = x[jpf.TAGNAME];
 
             //Process Node
@@ -258,6 +254,7 @@ jpf.JmlParser = {
     },
 
     reWhitespaces : /[\t\n\r ]+/g,
+    //the checkRender paramtere is deprecated
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
         if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length
@@ -269,8 +266,8 @@ jpf.JmlParser = {
         // #endif
 
         // Check for delayed rendering flag
-        if (checkRender && jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__)
-          && jmlParent.$checkDelay(x)) {
+        if (jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
+          && jmlParent.$shouldDelay(x)) {
             // #ifdef __DEBUG
             jpf.console.info("Delaying rendering of children");
             // #endif
@@ -278,7 +275,7 @@ jpf.JmlParser = {
             return pHtmlNode;
         }
         if (jmlParent)
-            jmlParent.isRendered = true;
+            jmlParent.$rendered = true;
 
         if (x.namespaceURI == jpf.ns.jml || x.tagUrn == jpf.ns.jml)
             this.lastNsPrefix = x.prefix || x.scopeName;

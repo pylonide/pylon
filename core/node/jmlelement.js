@@ -882,8 +882,7 @@ jpf.JmlElement.propHandlers = {
             if (this.$hide && !this.$noAlignUpdate)
                 this.$hide();
 
-            if (jpf.window.focussed == this
-              || this.canHaveChildren
+            if (jpf.window.focussed == this || this.canHaveChildren
               && jpf.xmldb.isChildOf(this, jpf.window.focussed, false)) {
                 if (jpf.appsettings.allowBlur)
                     this.blur();
@@ -892,6 +891,11 @@ jpf.JmlElement.propHandlers = {
             }
         }
         else if (jpf.isTrue(value)) {
+            // #ifdef __WITH_DELAYEDRENDER
+            if (this.hasFeature(__DELAYEDRENDER__))
+                this.$render();
+            // #endif
+            
             this.oExt.style.display = "block"; //Some form of inheritance detection
 
             if (this.$show && !this.$noAlignUpdate)
@@ -1146,6 +1150,16 @@ jpf.JmlElement.propHandlers = {
                     jpf.nameserver.register("actiontracker",
                         value, new jpf.actiontracker()));
         }
+    },
+    //#endif
+    
+    // #ifdef __WITH_DELAYEDRENDER
+    "render": function(value) {
+        if (!this.hasFeature(__DELAYEDRENDER__))
+            this.implement(jpf.DelayedRender);
+        
+        this.visible = false;
+        this.oExt.style.display = "none";
     },
     //#endif
     

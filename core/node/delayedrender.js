@@ -66,22 +66,18 @@ var __DELAYEDRENDER__ = 1 << 11
  */
 jpf.DelayedRender = function(){
     this.$regbase   = this.$regbase | __DELAYEDRENDER__;
-    this.isRendered = false;
+    this.$rendered  = false;
 
-    var withheld    = false;
+    var delayed     = false;
 
-    this.$checkDelay = function(x){
-        if (x.getAttribute("render") == "runtime") {
-            x.setAttribute("render-status", "withheld");
-            if (!jpf.JmlParser.renderWithheld)
-                jpf.JmlParser.renderWithheld = [];
-            jpf.JmlParser.renderWithheld.push(this);
+    this.$shouldDelay = function(x){
+        if (!delayed && x.getAttribute("render") == "runtime") {
+            x.setAttribute("render-status", "delayed");
 
-            withheld = true;
+            delayed = true;
             return true;
         }
 
-        this.isRendered = true;
         return false;
     };
 
@@ -91,11 +87,11 @@ jpf.DelayedRender = function(){
      * @param {Boolean} [usedelay] whether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */
     this.$render = function(usedelay){
-        if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld")
+        if (this.$rendered || this.$jml.getAttribute("render-status") != "delayed")
             return;
         this.dispatchEvent("beforerender");
 
-        if (jpf.isNull(this.usedelay))
+        if (typeof this.usedelay == "undefined")
             this.usedelay = jpf.xmldb.getInheritedAttribute(this.$jml,
                 "use-render-delay") == "true";
 
@@ -106,15 +102,15 @@ jpf.DelayedRender = function(){
     };
 
     this.$renderparse = function(){
-        if (this.isRendered)
+        if (this.$rendered)
             return;
 
         jpf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
 
         this.$jml.setAttribute("render-status", "done");
         this.$jml.removeAttribute("render"); //Experimental
-        this.isRendered = true;
-        withheld = false;
+        this.$rendered = true;
+        delayed = false;
 
         this.dispatchEvent("afterrender");
     };

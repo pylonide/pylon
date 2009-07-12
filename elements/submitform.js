@@ -95,7 +95,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     this.showLoader = function(checked, nr){
         if (checked) {
             var page = nr ? this.getPage(nr) : this.getNextPage();
-            if (!page || page.isRendered) return;
+            if (!page || page.$rendered) return;
         }
 
         if (this.loadState) {
@@ -141,7 +141,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         //if(!no_error && !nextpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
 
         //nextpage.show();
-        //if(nextpage.isRendered) this.hideLoader();
+        //if(nextpage.$rendered) this.hideLoader();
         //else nextpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
 
         for (var prop in buttons) {
@@ -172,7 +172,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //prevpage.show();
 
-        //if(prevpage.isRendered) this.hideLoader();
+        //if(prevpage.$rendered) this.hideLoader();
         //else prevpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
 
         for (var prop in buttons) {

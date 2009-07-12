@@ -194,7 +194,7 @@ jpf.BaseTab = function(){
 
         //Loader support
         if (this.hideLoader) {
-            if (page.isRendered)
+            if (page.$rendered)
                 this.hideLoader();
             else {
                 //Delayed rendering support
@@ -205,7 +205,7 @@ jpf.BaseTab = function(){
         }
 
         if (!noEvent) {
-            if (page.isRendered)
+            if (page.$rendered)
                 this.dispatchEvent("afterswitch", oEvent);
             else {
                 //Delayed rendering support
