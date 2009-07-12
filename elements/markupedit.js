@@ -802,7 +802,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                //if (ctrlKey)
+                if (ctrlKey)
                     this.select(this.indicator, true);
                 break;
             case 46:

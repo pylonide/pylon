@@ -1095,7 +1095,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                //if (ctrlKey)
+                if (ctrlKey || this.mode != "normal" || !this.isSelected(this.indicator))
                     this.select(this.indicator, true);
                 break;
             case 46:

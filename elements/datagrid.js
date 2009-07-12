@@ -488,7 +488,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                //if (ctrlKey || this.mode)
+                if (ctrlKey || !this.isSelected(this.indicator))
                     this.select(this.indicator, true);
                 break;
             case 109:
