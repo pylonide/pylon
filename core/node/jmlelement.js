@@ -1155,11 +1155,12 @@ jpf.JmlElement.propHandlers = {
     
     // #ifdef __WITH_DELAYEDRENDER
     "render": function(value) {
-        if (!this.hasFeature(__DELAYEDRENDER__))
+        if (!this.hasFeature(__DELAYEDRENDER__)) {
             this.implement(jpf.DelayedRender);
         
-        this.visible = false;
-        this.oExt.style.display = "none";
+            this.visible = false;
+            this.oExt.style.display = "none";
+        }
     },
     //#endif
     

@@ -75,9 +75,11 @@ jpf.DelayedRender = function(){
             x.setAttribute("render-status", "delayed");
 
             delayed = true;
+            this.$rendered = false;
             return true;
         }
-
+        
+        this.$rendered = true;
         return false;
     };
 
@@ -92,8 +94,8 @@ jpf.DelayedRender = function(){
         this.dispatchEvent("beforerender");
 
         if (typeof this.usedelay == "undefined")
-            this.usedelay = jpf.xmldb.getInheritedAttribute(this.$jml,
-                "use-render-delay") == "true";
+            this.usedelay = jpf.isTrue(jpf.xmldb.getInheritedAttribute(this.$jml,
+                "use-render-delay"));
 
         if (this.usedelay || usedelay)
             setTimeout("jpf.lookup(" + this.uniqueId + ").$renderparse()", 10);

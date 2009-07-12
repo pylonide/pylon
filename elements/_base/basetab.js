@@ -864,10 +864,11 @@ jpf.BaseTab = function(){
 
         //Set active page
         if (page) {
-            this.activepage = (this.activepage !== undefined
+            this.activepage = (typeof this.activepage != "undefined"
                 ? this.activepage
                 : this.activepagenr) || 0;
-            this.$propHandlers.activepage.call(this, this.activepage);
+            if (this.getPage(this.activepage).$rendered)
+                this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
             jpf.JmlParser.parseChildren(this.$jml, this.oExt, this);
