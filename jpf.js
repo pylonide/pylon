@@ -2222,7 +2222,7 @@ var jpf = {
                 //#endif
             }
 
-            jpf.appsettings.init();
+            jpf.appsettings.setDefaults();
             jpf.hasSingleRszEvent = true;
 
             var pHtmlNode = document.body;

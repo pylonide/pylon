@@ -634,7 +634,7 @@ jpf.XmlDatabase = function(){
         }
 
         return !result && attr && jpf.appsettings
-            ? jpf.appsettings.tags[attr]
+            ? jpf.appsettings[attr]
             : result;
     };
 

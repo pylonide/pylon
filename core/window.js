@@ -1080,7 +1080,7 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
         var ctrlKey = jpf.isMac ? e.metaKey : e.ctrlKey;
-        if (jpf.appsettings.useUndoKeys && ctrlKey) {
+        if (jpf.appsettings.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 var o = jpf.window.focussed;

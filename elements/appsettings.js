@@ -113,14 +113,14 @@ jpf.appsettings = {
     disableSpace       : true,
     defaultPage        : "home",
     disableBackspace   : true,
-    useUndoKeys        : false,
+    undokeys        : false,
     outline            : false,
     autoDisableNavKeys : true,
     dragOutline        : false,
     resizeOutline      : false,
     disableTabbing     : false,
     resourcePath       : null,
-    initDelay          : true,
+    initdelay          : true,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
     // #endif
@@ -138,7 +138,7 @@ jpf.appsettings = {
     defaults           : {},
     baseurl            : "",
 
-    init : function(){
+    setDefaults : function(){
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
             this.disableRightClick  = false;
@@ -149,7 +149,7 @@ jpf.appsettings = {
             this.autoHideLoading    = true;
             this.disableSpace       = false;
             this.disableBackspace   = false;
-            this.useUndoKeys        = false;
+            this.undokeys        = false;
             this.disableTabbing     = true;
             this.allowBlur          = true;
         }
@@ -168,152 +168,144 @@ jpf.appsettings = {
     },
 
     setProperty : function(name, value){
-        if (name == "outline") {
-            this.dragOutline   =
-            this.resizeOutline =
-            this.outline       = value;
-        }
+        if (this.$booleanProperties[name])
+            value = jpf.isTrue(value);
+        
+        //this[name] = value;
+        //@todo I dont want to go through all the code again, maybe later
+        this[name.replace(/-(\w)/g, function(m, m1){
+            return m1.toUpperCase()
+        })] = this[name] = value;
+        
+        (this.$propHandlers && this.$propHandlers[name]
+          || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value);
+    },
+    
+    $supportedProperties : ["debug", "name", "baseurl", "resource-path", 
+        "disable-right-click", "allow-select", "allow-blur", 
+        "auto-disable-actions", "auto-disable", "disable-f5", 
+        "auto-hide-loading", "disable-space", "disable-backspace", "undokeys", 
+        "initdelay", "default-page", "query-append", "outline", "drag-outline", 
+        "resize-outline", "resize-outline", "iepngfix", "iepngfix-elements", 
+        "iphone-fullscreen", "iphone-statusbar", "iphone-icon", 
+        "iphone-icon-is-glossy", "iphone-fixed-viewport", "layout", "skinset", 
+        "language", "storage", "offline", "login"],
+    $booleanProperties : {
+        "debug":1,
+        "disable-right-click":1,
+        "allow-select":1,
+        "allow-blur":1,
+        "auto-disable-actions":1,
+        "auto-disable":1,
+        "disable-f5":1,
+        "auto-hide-loading":1,
+        "disable-space":1,
+        "disable-backspace":1,
+        "undokeys":1,
+        "initdelay":1,
+        "outline":1,
+        "iepngfix":1,
+        "iphone-fullscreen":1,
+        "iphone-icon-is-glossy":1, 
+        "iphone-fixed-viewport":1
+    },
+    $propHandlers : {
+        "baseurl" : function(value){
+            this.baseurl = jpf.parseExpression(value);
+        },
+        "resource-path" : function(value){
+            this.resourcePath = jpf.parseExpression(value || "")
+              .replace(/resources\/?|\/$/g, '');
+        },
+        // #ifdef __WITH_IEPNGFIX
+        "iepngfix" : function(value, x){
+            this.iePngFix           = (!jpf.supportPng24 
+                && (jpf.isTrue(value)
+                || x.getAttribute("iepngfix-elements")));
+            
+            if (this.iePngFix) {
+                // run after the init() has finished, otherwise the body of the 
+                // document will still be empty, thus no elements found.
+                setTimeout(function() {
+                    jpf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
+                });
+            }
+        },
+        // #endif
         //#ifdef __WITH_PRESENTATION
-        else if (name == "skinset") {
-            this.skinset = value;
-            jpf.skins.changeSkinset(value);
-        }
+        "skinset" : function(value) {
+            if (!jpf.isParsing)
+                jpf.skins.changeSkinset(value);
+        },
         //#endif
+        //#ifdef __WITH_INTERACTIVE
+        "outline" : function(value) {
+            this.dragOutline    =
+            this.resizeOutline  =
+            this.outline        = jpf.isTrue(jpf.parseExpression(value));
+        },
+        "drag-outline" : function(value){
+            this.dragOutline    = value
+              ? jpf.isTrue(jpf.parseExpression(value))
+              : false;
+        },
+        "resize-outline" : function(value){
+            this.resizeOutline  = value
+              ? !jpf.isFalse(jpf.parseExpression(value))
+              : false;
+        },
+        //#endif
+        //#ifdef __WITH_AUTH
+        "login" : function(value, x) {
+            jpf.auth.init(x);
+        },
+        //#endif
+        "debug" : function(value){
+            //#ifdef __DEBUG
+            if (value) {
+                jpf.addEventListener("load", function(){
+                    setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    jpf.removeEventListener("load", arguments.callee);
+                });
+            }
+            //#endif
+            jpf.debug = value;
+        }
     },
 
     //@todo adhere to defaults (loop attributes)
     loadJml: function(x, parentNode){
-        this.$jml = x;
+        if (!this.$jml) {
+            this.$jml = x;
+            
+            //#ifdef __WITH_JMLDOM_FULL
+            this.parentNode = parentNode;
+            jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+            //#endif
+        }
         
-        //#ifdef __WITH_JMLDOM_FULL
-        this.parentNode = parentNode;
-        jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
-        //#endif
-
-        //Set Globals
-        jpf.debug = jpf.isTrue(x.getAttribute("debug"));
-        if (x.getAttribute("debug-type"))
-            jpf.debugType = x.getAttribute("debug-type");
-
-        var nodes = x.attributes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
+        var name, value, i, attr = x.attributes;
+        for (i = 0, l = attr.length; i < l; i++) {
+            a     = attr[i];
+            value = a.nodeValue;
+            name  = a.nodeName;
+            //this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
+            
+            if (this.$booleanProperties[name])
+                value = jpf.isTrue(value);
+            
+            //this[name] = value;
+            //@todo I dont want to go through all the code again, maybe later
+            this[name.replace(/-(\w)/g, function(m, m1){
+                return m1.toUpperCase()
+            })] = this[name] = value;
+            
+            (this.$propHandlers && this.$propHandlers[name]
+              || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, x);
         }
-
-        //#ifdef __DEBUG
-        jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
-
-        if (jpf.debug) {
-            jpf.addEventListener("load", function(){
-                setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                jpf.removeEventListener("load", arguments.callee);
-            });
-        }
-        //#endif
-
-        this.name               = x.getAttribute("name")
-            || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
-
-        this.baseurl            = jpf.parseExpression(x.getAttribute("baseurl") || "");
-        this.resourcePath       = jpf.parseExpression(x.getAttribute("resource-path") || "").replace(/resources\/?/, '');
-        if (this.resourcePath && this.resourcePath.charAt(this.resourcePath.length - 1) != "/")
-            this.resourcePath   = this.resourcePath + "/";
-        this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
-        this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
-        this.allowBlur          = !jpf.isFalse(x.getAttribute("allow-blur"));
-
-        this.autoDisableActions = !jpf.isFalse(x.getAttribute("auto-disable-actions"));
-        this.autoDisable        = jpf.isTrue(x.getAttribute("auto-disable")); //@todo temporarily changed default
-        this.disableF5          = jpf.isTrue(x.getAttribute("disable-f5"));
-        this.autoHideLoading    = !jpf.isFalse(x.getAttribute("auto-hide-loading"));
-
-        this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
-        this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
-        this.useUndoKeys        = jpf.isTrue(x.getAttribute("undokeys"));
-        this.initDelay          = !jpf.isFalse(x.getAttribute("initdelay"));
-        this.defaultPage        = x.getAttribute("default-page") || this.defaultPage;
-
-        //#ifdef __WITH_QUERYAPPEND
-        this.queryAppend        = x.getAttribute("query-append");
-        //#endif
-
-        if (x.getAttribute("outline")) {
-            this.dragOutline    =
-            this.resizeOutline  =
-            this.outline        = jpf.isTrue(jpf.parseExpression(x.getAttribute("outline")));
-        }
-        else {
-            this.dragOutline    = x.getAttribute("drag-outline")
-                ? jpf.isTrue(jpf.parseExpression(x.getAttribute("drag-outline")))
-                : false;
-            this.resizeOutline  = x.getAttribute("resize-outline")
-                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline")))
-                : false;
-        }
-
-        // #ifdef __WITH_IEPNGFIX
-        this.iePngFix           = (!jpf.supportPng24 
-            && (jpf.isTrue(x.getAttribute("iepngfix"))
-            || x.getAttribute("iepngfix-elements")));
-        if (this.iePngFix) {
-            // run after the init() has finished, otherwise the body of the 
-            // document will still be empty, thus no elements found.
-            setTimeout(function() {
-                jpf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
-            });
-        }
-        // #endif
-
-        // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
-            this.iphoneFullscreen    = !jpf.isFalse(x.getAttribute("iphone-fullscreen"));
-            this.iphoneStatusbar     = x.getAttribute("iphone-statusbar") || "default";
-            this.iphoneIcon          = x.getAttribute("iphone-icon") || null;
-            this.iphoneIconIsGlossy  = jpf.isTrue(x.getAttribute("iphone-icon-is-glossy"));
-            this.iphoneFixedViewport = !jpf.isFalse(x.getAttribute("iphone-fixed-viewport"));
-
-            jpf.runIphone();
-        }
-        // #endif
-
-        //#ifdef __DESKRUN
-        if (jpf.isDeskrun && this.disableF5)
-            shell.norefresh = true;
-        //#endif
-
-        //Application features
-        this.layout  = x.getAttribute("layout") || null;
-        this.skinset = x.getAttribute("skinset") || "default";
-
-        //#ifdef __WITH_LANG_SUPPORT
-        this.language = x.getAttribute("language");
-        if (jpf.appsettings.language) {
-            setTimeout("jpf.language.loadFrom(jpf.appsettings.language);");
-        }
-        //#endif
-
-        //#ifdef __WITH_STORAGE
-        this.storage = x.getAttribute("storage") || null;
-        if (this.storage)
-            jpf.storage.init(this.storage);
-        //#endif
-
-        //#ifdef __WITH_OFFLINE
-        this.offline = x.getAttribute("offline");
-        if (this.offline && typeof jpf.offline != "undefined")
-            jpf.offline.init(this.offline);
-        //#endif
-
-        //#ifdef __WITH_AUTH
-        if (x.getAttribute("login"))
-            jpf.auth.init(x);
-        //#endif
         
-        //#ifdef __WITH_BACKBUTTON
-        jpf.addEventListener("done", function(){
-            jpf.history.init(jpf.appsettings.defaultPage, "page");
-        });
-        //#endif
+        if (!jpf.loaded)
+            this.init();
 
         var oFor, attr, d, j, i, l, node, nodes = x.childNodes;
         for (i = 0, l = nodes.length; i < l; i++) {
@@ -356,6 +348,42 @@ jpf.appsettings = {
         }
 
         return this;
+    },
+    
+    init : function(){
+        if (!this.name)
+            this.name = window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
+        
+        // #ifdef __SUPPORT_IPHONE
+        if (jpf.isIphone)
+            jpf.runIphone();
+        // #endif
+        
+        //#ifdef __DESKRUN
+        if (jpf.isDeskrun && this.disableF5)
+            shell.norefresh = true;
+        //#endif
+        
+        //#ifdef __WITH_LANG_SUPPORT
+        if (this.language)
+            setTimeout("jpf.language.loadFrom(jpf.appsettings.language);");
+        //#endif
+
+        //#ifdef __WITH_STORAGE
+        if (this.storage)
+            jpf.storage.init(this.storage);
+        //#endif
+
+        //#ifdef __WITH_OFFLINE
+        if (this.offline && typeof jpf.offline != "undefined")
+            jpf.offline.init(this.offline);
+        //#endif
+
+        //#ifdef __WITH_BACKBUTTON
+        jpf.addEventListener("done", function(){
+            jpf.history.init(jpf.appsettings.defaultPage, "page");
+        });
+        //#endif
     }
 };
 //#endif
