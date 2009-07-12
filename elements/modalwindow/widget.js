@@ -30,6 +30,8 @@ jpf.modalwindow.widget = function(){
     var _self   = this;
     
     this.isWindowContainer = false;
+    this.$kbclose          = false;
+    this.$isWidget         = true;
 
     this.dragStart = function(e){
         if (!e) e = event;

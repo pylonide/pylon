@@ -129,6 +129,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
+    this.$kbclose          = true;
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
@@ -472,13 +473,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             if (wasVisible != true && this.$show)
                 this.$show();
 
-            if (this.modal) {
+            if (this.modal)
                 this.bringToFront();
-                // #ifdef __WITH_FOCUS
-                if (!jpf.isParsing)
-                    this.focus(false, {mouse:true});
-                // #endif
-            }
+            
+            // #ifdef __WITH_FOCUS
+            if (!jpf.isParsing && (this.model 
+              || !this.dockable && !this.$isWidget))
+                this.focus(false, {mouse:true});
+            // #endif
             
             if (jpf.isIE) {
                 var cls = this.oExt.className;
@@ -874,10 +876,6 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var retValue = false;
         switch (key) {
-            case 27:
-                if (this.buttons.indexOf("close") > -1 && !this.aData)
-                    this.close();
-                return;
             /*case 9:
                 break;
             case 13:
@@ -930,6 +928,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         
         return retValue;
     }, true);
+    
+    this.addEventListener("keydown", function(e){
+        if (e.keyCode == 27 && this.buttons.indexOf("close") > -1 
+          && !this.dockable && this.$kbclose)
+            this.close();
+    });
     //#ifdef __SUPPORT_IPHONE
     }
     //#endif
