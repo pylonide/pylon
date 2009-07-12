@@ -922,7 +922,7 @@ jpf.BaseTab.SCROLL_BOTH  = 0x0004;
  */
 jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.visible         = true;
-    this.canHaveChildren = 2;
+    this.canHaveChildren = true;
     this.$focussable     = false;
 
     // #ifdef __WITH_EDITMODE
@@ -1211,13 +1211,17 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$getNewContext("button");
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
-                'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup('
-                + this.uniqueId + '));if(!jpf.isSafariOld) this.onmouseout()');
+                'var page = jpf.lookup(' + this.uniqueId + ');\
+                 jpf.lookup(' + this.parentNode.uniqueId + ').set(page);\
+                 page.canHaveChildren = 2;');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
                 + ') != o.$activepage) o.$setStyleClass(this, "over");');
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
-                + this.parentNode.uniqueId + '); o.$setStyleClass(this, "", ["over"]);');
+                + this.parentNode.uniqueId + ');\
+                  o.$setStyleClass(this, "", ["over"]);\
+                  var page = jpf.lookup(' + this.uniqueId + ');\
+                  page.canHaveChildren = true;');
             this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)

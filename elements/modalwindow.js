@@ -872,6 +872,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.disableAnchoring();
         }
 
+        var retValue = false;
         switch (key) {
             case 27:
                 if (this.buttons.indexOf("close") > -1 && !this.aData)
@@ -920,11 +921,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                         this.oExt.offsetTop + (ctrlKey ? 50 : 10));
                 break;
             default:
+                retValue = null;
                 return;
         }
 
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(this.oInt);
+        
+        return retValue;
     }, true);
     //#ifdef __SUPPORT_IPHONE
     }

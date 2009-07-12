@@ -183,8 +183,8 @@ jpf.Interactive = function(){
 
         var pos = posAbs 
             ? jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
-            : [parseInt(_self.oExt.style.left) || _self.oExt.offsetLeft || 0, 
-               parseInt(_self.oExt.style.top) || _self.oExt.offsetTop || 0];
+            : [parseInt(jpf.getStyle(_self.oExt, "left")) || 0, 
+               parseInt(jpf.getStyle(_self.oExt, "top")) || 0];
             
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);

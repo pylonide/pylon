@@ -115,6 +115,7 @@ jpf.appsettings = {
     disableBackspace   : true,
     useUndoKeys        : false,
     outline            : false,
+    autoDisableNavKeys : true,
     dragOutline        : false,
     resizeOutline      : false,
     disableTabbing     : false,

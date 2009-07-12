@@ -489,31 +489,45 @@ jpf.WindowImplementation = function(){
 
     this.$focusLast = function(jmlNode, e, ignoreVisible){
         var lf = jmlNode.$lastFocussed;
+
         if (lf && lf.parentNode && lf.$focussable === true
           && (ignoreVisible || lf.oExt.offsetHeight)) {
             this.$focus(lf, e, true);
         }
         else { //Let's find the object to focus first
-            var str, x, node = jmlNode;
+            var next, str, x, node = jmlNode, skip;
             while (node) {
-                if (node.focussable !== false && node.$focussable === true
+                if (!skip && node.focussable !== false && node.$focussable === true
                   && (ignoreVisible || node.oExt.offsetHeight)) {
                     this.$focus(node, e, true);
                     break;
                 }
-
+                
                 //Walk sub tree
-                if (node.firstChild || node.nextSibling) {
-                    node = node.firstChild || node.nextSibling;
+                if ((next = !skip && node.firstChild || !(skip = false) && node.nextSibling)) {
+                    node = next;
+                    if (node.isWindowContainer)
+                        skip = true;
+                }
+                else if (node == jmlNode) {
+                    if (node.isWindowContainer)
+                        this.$focus(node, e, true);
+                    return;
                 }
                 else {
                     do {
                         node = node.parentNode;
-                    } while (node && !node.nextSibling && node != jmlNode)
-
+                    } while (node && !node.nextSibling && node != jmlNode 
+                      && !node.isWindowContainer)
+                    
                     if (node == jmlNode)
                         return; //do nothing
-
+                    
+                    if (node.isWindowContainer) {
+                        this.$focus(node, e, true);
+                        break;
+                    }
+                    
                     if (node)
                         node = node.nextSibling;
                 }
@@ -907,7 +921,7 @@ jpf.WindowImplementation = function(){
         var p;
         //Make sure modal windows cannot be left
         if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false)
-          && jpf.appsettings.allowBlur) {
+          && jpf.appsettings.allowBlur && !jmlNode.canHaveChildren == 2) {
             lastFocusParent = null;
             if (jpf.window.focussed)
                 jpf.window.focussed.blur();
@@ -1045,6 +1059,9 @@ jpf.WindowImplementation = function(){
     document.onmousewheel = wheel; //@todo 2 keer events??
     //#endif
 
+    //var browserNavKeys = {32:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1}
+    
+    //@todo optimize this function
     document.onkeydown = function(e){
         if (!e)
             e = event;
@@ -1198,10 +1215,14 @@ jpf.WindowImplementation = function(){
             }
             //return false;
         }
+        
+        
+        /*if (browserNavKeys[e.keyCode] && jpf.window.focussed 
+          && jpf.appsettings.autoDisableNavKeys)
+            e.returnValue = false;*/
 
-        if (e.keyCode == 27) { //or up down right left pageup pagedown home end unless body is selected
+        if (e.keyCode == 27)
             e.returnValue = false;
-        }
 
         if (!jpf.appsettings.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
