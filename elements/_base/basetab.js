@@ -1213,7 +1213,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
                 'var page = jpf.lookup(' + this.uniqueId + ');\
-                 jpf.lookup(' + this.parentNode.uniqueId + ').set(page);\
+                 page.parentNode.set(page);\
                  page.canHaveChildren = 2;');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
