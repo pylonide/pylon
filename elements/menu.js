@@ -84,6 +84,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     this.anim   = true;
     this.zindex = 10000000;
 
+    this.$booleanProperties["anim"] = true;
     this.$propHandlers["visible"] = function(value, nofocus, hideOpener){
         if (value) {
             this.oExt.style.display = "block";
@@ -234,7 +235,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.popup.show(this.uniqueId, {
             x            : x,
             y            : y,
-            animate      : noanim || this.anim ? false : "fade",
+            animate      : noanim || !this.anim ? false : "fade",
             ref          : this.oExt.offsetParent,
             allowTogether: openMenuId,
             autoCorrect  : false

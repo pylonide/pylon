@@ -1003,10 +1003,10 @@ jpf.WindowImplementation = function(){
 
         if (canSelect) {
             var jmlNode = jpf.findHost(e.srcElement);
-            if (!jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
+            if (jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
                 canSelect = false;
         }
-        
+
         if (!canSelect) {
             e.returnValue = false;
             return false;

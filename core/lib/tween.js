@@ -434,6 +434,11 @@ jpf.tween = {
 
         for (var steps = [], stepsTo = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
+            
+            if (data.oHtml && data.oHtml.nodeFunc > 100) {
+                data.oInt = data.oHtml.oInt;
+                data.oHtml = data.oHtml.oExt;
+            }
 
             useCSSAnim = (jpf.supportCSSAnim && jpf.tween.CSSPROPS[data.type]);
 
@@ -493,6 +498,7 @@ jpf.tween = {
             _self.current = info;
             if (info.control && info.control.stop) {
                 info.control.stop = false;
+                jpf.tween.clearQueue(oHtml);
                 return;
             }
 

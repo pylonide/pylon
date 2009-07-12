@@ -180,7 +180,7 @@ jpf.KernelModules = [
     "lib/util/popup.js",
     "lib/util/silverlight.js",
 
-    "lib/animation.js",
+    "lib/tween.js",
     "lib/date.js",
     "lib/flow.js",
     "lib/history.js",
