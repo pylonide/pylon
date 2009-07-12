@@ -392,6 +392,7 @@ jpf.WindowImplementation = function(){
             jmlNode.removeEventListener("focus", trackChildFocus);
     };
 
+    var focusLoopDetect;
     this.$focus = function(jmlNode, e, force){
         if (this.focussed == jmlNode && !force)
             return; //or maybe when force do $focus
@@ -402,12 +403,17 @@ jpf.WindowImplementation = function(){
 
         this.$settingFocus = jmlNode;
 
-        if (this.focussed && this.focussed != jmlNode) {
+        if (this.focussed && this.focussed != jmlNode 
+          && focusLoopDetect != this.focussed) {
+            focusLoopDetect = this.focussed;
             this.focussed.blur(true, e);
 
             //#ifdef __WITH_XFORMS
             jmlNode.dispatchEvent("DOMFocusOut");
             //#endif
+            
+            if (focusLoopDetect != this.focussed)
+                return false;
         }
 
         (this.focussed = jmlNode).focus(true, e);
