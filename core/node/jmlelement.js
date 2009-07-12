@@ -933,7 +933,8 @@ jpf.JmlElement.propHandlers = {
             loopChildren(this.childNodes);
 
             //this.disabled = undefined;
-            return;
+            if (this.isWindowContainer)
+                return;
         }
 
         if (value == -1) {

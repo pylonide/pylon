@@ -981,10 +981,9 @@ jpf.WindowImplementation = function(){
           // #endif
           ) && !ta[e.target.tagName]);
 
-        if (canSelect) {
-            if (!jpf.xmldb.isChildOf(jmlNode.oInt, e.target))
-                canSelect = false;
-        }
+        if (canSelect && !jmlNode.canHaveChildren 
+          || !jpf.xmldb.isChildOf(jmlNode.oInt, e.target))
+            canSelect = false;
         
         if (!canSelect)
             return false;
@@ -1003,7 +1002,8 @@ jpf.WindowImplementation = function(){
 
         if (canSelect) {
             var jmlNode = jpf.findHost(e.srcElement);
-            if (jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
+            if (!jmlNode.canHaveChildren 
+              || !jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
                 canSelect = false;
         }
 
