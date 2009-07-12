@@ -288,8 +288,8 @@ jpf.MultiLevelBinding = function(jmlNode){
                 if (jmlNode.$showSelection) 
                     jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
                 if (jmlNode.selected != xmlNode) {
-                    jmlNode.select(xmlNode, null, null, null, null, true);
-                    jmlNode.dispatchEvent("updateselect");
+                    jmlNode.select(xmlNode);//, null, null, null, null, true);
+                    //jmlNode.dispatchEvent("updateselect");
                     jmlNode.setConnections(xmlNode);
                 }
             }

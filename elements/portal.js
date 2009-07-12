@@ -205,7 +205,26 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     var portalNode = this;
-    function createDocklet(xmlNode, docklet, dataNode){
+    function createDocklet(strXml, docklet, dataNode){
+        var uId = document.all.length;
+        var col = [];
+        strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
+          function(m, id1, id2){
+            var id = id1 || id2;
+            col.push(id);
+            if (id1) return 'id="' + id + "_" + uId + '"';
+            if (id2) return "id='" + id + "_" + uId + "'";
+          });
+        //@todo make the id's regexp safe
+        if (col.length) {
+            strXml = strXml.replace(new RegExp("\\b(" + col.join("|") + ")\\b", "g"), 
+              function(m, id){
+                return id + "_" + uId;
+              });
+        }
+        
+        var xmlNode = jpf.getJmlDocFromString(strXml).documentElement;
+        
         /* Model replacement - needs to be build
          var models = xmlNode.selectNodes("//model/@id");
          for (var i = 0; i < models.lenth; i++) {
@@ -227,6 +246,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
         
         docklet.$loadJml(xmlNode, name);
+        jpf.JmlParser.parseLastPass();
 
         if (xmlNode.getAttribute("width"))
             docklet.setProperty("width", xmlNode.getAttribute("width"));
@@ -264,10 +284,10 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
             + this.applyRuleSetOnNode("url", dataNode);
 
         if (docklet_cache[srcUrl]) {
-            var xmlNode = docklet_cache[srcUrl];
-            if (jpf.isSafariOld)
-                xmlNode = jpf.getJmlDocFromString(xmlNode).documentElement;
-            createDocklet(xmlNode, docklet, dataNode);
+            var strXml = docklet_cache[srcUrl];
+            //if (jpf.isSafariOld)
+                //xmlNode = jpf.getJmlDocFromString(xmlNode).documentElement;
+            createDocklet(strXml, docklet, dataNode);
         }
         else {
             jpf.setModel(srcUrl, {
@@ -278,17 +298,19 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
                     //hmmm this is not as optimized as I'd like (going throught the xml parser twice)
                     var strXml = xmlNode.xml || xmlNode.serialize();
 
+                    //#ifdef __SUPPORT_SAFARI_OLD
                     if (jpf.isSafariOld) {
                         strXml = strXml.replace(/name/, "name='"
                             + xmlNode.getAttribute("name") + "'");
                         docklet_cache[srcUrl] = strXml;
                     }
-                    else {
-                        xmlNode = jpf.getJmlDocFromString(strXml).documentElement;
-                        docklet_cache[srcUrl] = xmlNode.cloneNode(true);
+                    else 
+                    //#endif
+                    {
+                        docklet_cache[srcUrl] = strXml;//xmlNode.cloneNode(true);
                     }
 
-                    createDocklet(xmlNode, docklet, dataNode);
+                    createDocklet(strXml, docklet, dataNode);
                     this.isLoaded = true;
                 },
 
@@ -300,6 +322,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$fill = function(){
+        
     };
 
     this.addEventListener("xmlupdate", function(e){

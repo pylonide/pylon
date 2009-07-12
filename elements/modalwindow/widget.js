@@ -65,7 +65,7 @@ jpf.modalwindow.widget = function(){
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
 
-            htmlNode.style.position = "";//relative";
+            htmlNode.style.position = "static";//relative";
             htmlNode.style.left     = 0;
             htmlNode.style.top      = 0;
             htmlNode.style.width    = lastSize[0];

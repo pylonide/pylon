@@ -2967,6 +2967,7 @@ jpf.MultiselectBinding = function(){
             //#endif
             if (this.autoselect) {
                 if (this.value) {
+                    //@todo is this needed?
                     var value = this.value;
                     this.value = !this.value;
                     this.setProperty("value", value);

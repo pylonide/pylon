@@ -572,6 +572,7 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
 
 jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
     //this.$supportedProperties = ["type","series","formula"];
+    this.$focussable = false;
 
     this.$drawCode = 0;
     var _style = null;

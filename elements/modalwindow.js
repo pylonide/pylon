@@ -553,10 +553,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
           || !o.normal && (o.minimized != lastState.minimized
             || o.maximized != lastState.maximized)) {
 
-            if (lastheight) { // this.aData && this.aData.hidden == 3 ??
-                this.oExt.style.height = (lastheight
-                    - jpf.getHeightDiff(this.oExt)) + "px";
-            }
+            if (lastheight) // this.aData && this.aData.hidden == 3 ??
+                this.oExt.style.height = lastheight;//(lastheight - jpf.getHeightDiff(this.oExt)) + "px";
 
             if (lastpos) {
                 if (this.animate && !noanim) {
@@ -564,15 +562,26 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     //if (jpf.hasSingleRszEvent)
                         //delete jpf.layout.onresize[jpf.layout.getHtmlId(this.pHtmlNode)];
 
+                    var htmlNode = this.oExt;
+                    var position = jpf.getStyle(htmlNode, "position");
+                    if (position != "absolute") {
+                        var l = parseInt(jpf.getStyle(htmlNode, "left")) || 0;
+                        var t = parseInt(jpf.getStyle(htmlNode, "top")) || 0;
+                    }
+                    else {
+                        var l = htmlNode.offsetLeft;
+                        var t = htmlNode.offsetTop;
+                    }
+
                     _self.animstate = 1;
-                    jpf.tween.multi(this.oExt, {
+                    jpf.tween.multi(htmlNode, {
                         steps    : 5,
                         interval : 10,
                         tweens   : [
-                            {type: "left",   from: this.oExt.offsetLeft,   to: lastpos[0]},
-                            {type: "top",    from: this.oExt.offsetTop,    to: lastpos[1]},
-                            {type: "width",  from: this.oExt.offsetWidth,  to: lastpos[2]},
-                            {type: "height", from: this.oExt.offsetHeight, to: lastpos[3]}
+                            {type: "left",   from: l,   to: lastpos[0]},
+                            {type: "top",    from: t,    to: lastpos[1]},
+                            {type: "width",  from: this.oExt.offsetWidth - hordiff,  to: lastpos[2]},
+                            {type: "height", from: this.oExt.offsetHeight - verdiff, to: lastpos[3]}
                         ],
                         oneach   : function(){
                             if (jpf.hasSingleRszEvent)
@@ -632,7 +641,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 //#endif
 
                 if (!this.aData || !this.aData.minimize) {
-                    lastheight = this.oExt.offsetHeight;
+                    lastheight = jpf.getStyle(this.oExt, "height");//this.oExt.offsetHeight;
 
                     this.oExt.style.height = Math.max(0, this.collapsedHeight
                         - jpf.getHeightDiff(this.oExt)) + "px";
@@ -663,14 +672,24 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     ? this.oExt.offsetParent || document.documentElement
                     : this.oExt.parentNode);
 
-                lastpos = [this.oExt.offsetLeft, this.oExt.offsetTop,
-                           this.oExt.offsetWidth - hordiff, this.oExt.offsetHeight - verdiff,
-                           pNode.style.overflow];
-
-                pNode.style.overflow = "hidden";
-
                 _self.animstate = 0;
                 var hasAnimated = false, htmlNode = this.oExt;
+                
+                var position = jpf.getStyle(htmlNode, "position");
+                if (position == "absolute") {
+                    pNode.style.overflow = "hidden";
+                    var l = htmlNode.offsetLeft;
+                    var t = htmlNode.offsetTop;
+                }
+                else {
+                    var l = parseInt(jpf.getStyle(htmlNode, "left")) || 0;
+                    var t = parseInt(jpf.getStyle(htmlNode, "top")) || 0;
+                }
+                
+                lastpos = [l, t, this.oExt.offsetWidth - hordiff, 
+                           this.oExt.offsetHeight - verdiff,
+                           pNode.style.overflow];
+                
                 function setMax(){
                     var w = !jpf.isIE && pNode == document.documentElement
                         ? window.innerWidth
@@ -679,7 +698,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     var h = !jpf.isIE && pNode == document.documentElement
                         ? window.innerHeight
                         : pNode.offsetHeight;
-
+                    
+                    if (position != "absolute") {
+                        var diff = jpf.getDiff(pNode);
+                        w -= diff[0];
+                        h -= diff[0];
+                    }
+                    
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated = true;
@@ -687,10 +712,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                             steps    : 5,
                             interval : 10,
                             tweens   : [
-                                {type: "left",   from: htmlNode.offsetLeft,   to: -1 * marginBox[3]},
-                                {type: "top",    from: htmlNode.offsetTop,    to: -1 * marginBox[0]},
-                                {type: "width",  from: htmlNode.offsetWidth,  to: (w - hordiff + marginBox[1] + marginBox[3])},
-                                {type: "height", from: htmlNode.offsetHeight, to: (h - verdiff + marginBox[0] + marginBox[2])}
+                                {type: "left",   from: l,   to: -1 * marginBox[3]},
+                                {type: "top",    from: t,    to: -1 * marginBox[0]},
+                                {type: "width",  from: htmlNode.offsetWidth - hordiff, 
+                                 to: (w - hordiff + marginBox[1] + marginBox[3])},
+                                {type: "height", from: htmlNode.offsetHeight - verdiff, 
+                                 to: (h - verdiff + marginBox[0] + marginBox[2])}
                             ],
                             oneach   : function(){
                                 if (jpf.hasSingleRszEvent)

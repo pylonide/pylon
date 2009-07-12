@@ -47,7 +47,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     this.range      = 5;
     this.curpage    = 1;
     this.totalpages = 0;
-    this.autohide   = false;
+    this.autohide   = true;
     
     var pages = [];
     var _self = this;
@@ -66,20 +66,41 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.gotoPage = function(pageNr, pageDelta) {
         this.curpage = pageNr || this.curpage + pageDelta;
-        
+
         //Sanity checks
         if (this.curpage < 1) 
             this.curpage = 1;
-        else if (this.curpage > this.totalpages) 
+        else if (this.totalpages && this.curpage > this.totalpages) 
             this.curpage = this.totalpages;
-
-        this.dispatchEvent("onbeforepagechange", {page:this.curpage});
-        this.getModel(true).loadFrom(this.pageload, null, {
-            page     : this.curpage,
-            callback : function(){
-                _self.dispatchEvent("onafterpagechange", {page:this.curpage});
-            }
-        });
+        
+        if (this.dispatchEvent("beforepagechange", {page:this.curpage}) === false)
+            return false;
+        
+        var model = this.getModel(true);
+        if (model) {
+            model.loadFrom(this.pageload, this.xmlRoot, {
+                page     : this.curpage,
+                callback : function(){
+                    _self.dispatchEvent("afterpagechange", {page:_self.curpage});
+                }
+            });
+        }
+        else {
+            //@todo is this the best way to detect a model?
+            setTimeout(function(){
+                var model = _self.getModel(true);
+                if (model) {
+                    model.loadFrom(_self.pageload, _self.xmlRoot, {
+                        page     : _self.curpage,
+                        callback : function(){
+                            _self.dispatchEvent("afterpagechange", {page:_self.curpage});
+                        }
+                    });
+                }
+                
+                _self.removeEventListener("afterload", arguments.callee);
+            });
+        }
     };
     
     this.$draw  = function() {
@@ -101,6 +122,9 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
         var btn, nodes = [];
         
         this.oInt.innerHTML = "";
+        
+        if (!totalpages)
+            return;
         
         if (curpage != 1 || !this.autohide) {
             this.$getNewContext("button");

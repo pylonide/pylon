@@ -105,6 +105,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
+    this.delayedselect = false;
     this.maxitems      = 5;
     
     this.$booleanProperties["disableremove"] = true;
@@ -499,7 +500,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.widthdiff      = this.$getOption("main", "width-diff") || 0;
         this.ignoreOverflow = jpf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
         
-        if (this.$jml.childNodes.length) 
+        if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml);
     };
     

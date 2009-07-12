@@ -132,8 +132,8 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
             : this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.host = this;
 
-        if (this.$jml.getAttribute("class")) 
-            this.oExt.className = this.$jml.getAttribute("class");
+        this.baseCSSname = this.oExt.className = 
+            (this.$jml.getAttribute("class") || "jslt");
     };
     
     this.$loadJml = function(x){
