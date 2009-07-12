@@ -232,13 +232,16 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                         }
                     }
                     
-                    var to = this.isSelected(e.xmlNode);
-                    nodes  = this.getTraverseNodes(e.xmlNode);
+                    var list = [];
+                    var to   = this.isSelected(e.xmlNode);
+                    nodes    = this.getTraverseNodes(e.xmlNode);
                     if (nodes.length) {
                         for (var i = 0; i < nodes.length; i++) {
                             if (to != this.isSelected(nodes[i]))
-                                this.select(nodes[i]);
+                                list.push(nodes[i]);
                         }
+                        
+                        this.selectList(list);
 
                         jpf.setStyleClass(jpf.xmldb.findHTMLNode(e.xmlNode, this), 
                             to ? "selected" : "", ["partial", "selected"]);

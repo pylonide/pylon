@@ -508,11 +508,13 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         this.oInt.host = this;
 
-        //temp fix
         this.oInt.onkeydown = function(e){
-            if (this.disabled) return false;
-
             e = e || window.event;
+            
+            if (this.disabled) {
+                e.returnValue = false;
+                return false;
+            }
 
             //Change
             if (!_self.realtime) {
@@ -524,12 +526,12 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
                 setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
                     o.change(o.getValue())");
 
-            if (_self.multiline == "optional" && e.keyCode == 13 && !e.ctrlKey)
+            if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
+              || e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
+              || e.keyCode == 85)) {
+                e.returnValue = false;
                 return false;
-
-            if (e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
-              || e.keyCode == 85))
-                return false;
+            }
 
             //Autocomplete
             if (_self.oContainer) {

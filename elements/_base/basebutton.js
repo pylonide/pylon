@@ -101,9 +101,9 @@ jpf.BaseButton = function(pHtmlNode){
             case 32:
                 if (!e.htmlEvent.repeat) { // Only when first pressed, not on autorepeat.
                     refKeyDown++;
-                    return this.$updateState(e.htmlEvent);
-                } else
-                    return false;
+                    this.$updateState(e.htmlEvent);
+                }
+                return false;
         }
     }, true);
 
@@ -116,14 +116,15 @@ jpf.BaseButton = function(pHtmlNode){
 
                 if (refKeyDown < 0) {
                     refKeyDown = 0;
-                    return;
+                    return false;
                 }
 
                 if (refKeyDown + refMouseDown == 0 && !this.disabled) {
                     this.oExt.onmouseup(e, true);
                 }
 
-                return this.$updateState(e);
+                this.$updateState(e);
+                return false;
         }
     }, true);
     //#endif

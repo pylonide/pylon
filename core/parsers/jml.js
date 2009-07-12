@@ -551,7 +551,7 @@ jpf.JmlParser = {
             //#endif
 
             // Move all this to the respective browser libs in a wrapper function
-            if (tagName == "script") {
+            if (tagName == "script" || tagName == "noscript") {
                 return;
             }
             else if (tagName == "option") {

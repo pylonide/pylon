@@ -927,7 +927,7 @@ jpf.WindowImplementation = function(){
         var p;
         //Make sure modal windows cannot be left
         if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false)
-          && jpf.appsettings.allowBlur && !jmlNode.canHaveChildren == 2) {
+          && jpf.appsettings.allowBlur && jmlNode.canHaveChildren != 2) {
             lastFocusParent = null;
             if (jpf.window.focussed)
                 jpf.window.focussed.blur();
@@ -1007,8 +1007,10 @@ jpf.WindowImplementation = function(){
                 canSelect = false;
         }
         
-        if (!canSelect)
+        if (!canSelect) {
+            e.returnValue = false;
             return false;
+        }
     };
 
     // Keyboard forwarding to focussed object
@@ -1025,6 +1027,7 @@ jpf.WindowImplementation = function(){
                 altKey   : e.altkey,
                 htmlEvent: e
             }) === false) {
+            e.returnValue = false;
             return false;
         }
         //#endif
@@ -1120,6 +1123,7 @@ jpf.WindowImplementation = function(){
                 }
                 catch(e) {}
             }
+            e.returnValue = false;
             return false;
         }
         //#endif
@@ -1157,6 +1161,7 @@ jpf.WindowImplementation = function(){
                 }
                 catch(e) {}
             }
+            e.returnValue = false;
             return false;
         }
 
