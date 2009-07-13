@@ -821,7 +821,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         });
         this.oLabel     = this.$getLayoutNode("main", "label", this.oExt);
-
+        
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
 
@@ -840,71 +840,72 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             //Set up the popup
             this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
-
-            return;
+        }
+        else {
+            this.oSlider = this.$getExternal("container", null, function(oExt1) {
+                var i, oSlider = this.$getLayoutNode("container", "contents", oExt1);
+    
+                for (i = 0; i < 6; i++) {
+                    this.$getNewContext("row");
+                    var oRow = oSlider.appendChild(this.$getLayoutNode("row"));
+    
+                    for (var j = 0; j < 8; j++) {
+                        this.$getNewContext("cell");
+                        var oCell = this.$getLayoutNode("cell");
+                        if (j > 0) {
+                            oCell.setAttribute("onmouseout",
+                                "jpf.setStyleClass(this, '', ['hover']);");
+                            oCell.setAttribute("onmouseover",
+                                "if (this.className.indexOf('disabled') > -1 \
+                                   || this.className.indexOf('active') > -1) \
+                                     return;\
+                                 jpf.setStyleClass(this, 'hover');");
+                            oCell.setAttribute("onmousedown",
+                                "var o = jpf.findHost(this);\
+                                 if (this.className.indexOf('prev') > -1) \
+                                     o.selectDay(this.innerHTML, 'prev');\
+                                 else if (this.className.indexOf('next') > -1) \
+                                     o.selectDay(this.innerHTML, 'next');\
+                                 else \
+                                     o.selectDay(this.innerHTML);\
+                                 o.slideUp();");
+                        }
+                        oRow.appendChild(oCell);
+                    }
+                }
+    
+                var oNavigation = this.$getLayoutNode("container", "navigation",
+                                                      oExt1);
+    
+                if (oNavigation) {
+                    var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
+                                   "today", "status"];
+                    for (i = 0; i < buttons.length; i++) {
+                        this.$getNewContext("button");
+                        var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
+                        this.$setStyleClass(btn, buttons[i]);
+                        if (buttons[i] !== "status") {
+                            btn.setAttribute("onmousedown", 'jpf.findHost(this).' + buttons[i] + '()');
+                            btn.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
+                            btn.setAttribute("onmouseout",  'jpf.setStyleClass(this, "", ["hover"]);');
+                        }
+                    }
+                }
+    
+                var oDaysOfWeek = this.$getLayoutNode("container",
+                                                      "daysofweek", oExt1);
+    
+                for (i = 0; i < days.length + 1; i++) {
+                    this.$getNewContext("day");
+                    oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
+                }
+            });
+    
+            this.oNavigation = this.$getLayoutNode("container", "navigation", this.oSlider);
+            this.oDow        = this.$getLayoutNode("container", "daysofweek", this.oSlider);
         }
 
-        this.oSlider = this.$getExternal("container", null, function(oExt1) {
-            var i, oSlider = this.$getLayoutNode("container", "contents", oExt1);
-
-            for (i = 0; i < 6; i++) {
-                this.$getNewContext("row");
-                var oRow = oSlider.appendChild(this.$getLayoutNode("row"));
-
-                for (var j = 0; j < 8; j++) {
-                    this.$getNewContext("cell");
-                    var oCell = this.$getLayoutNode("cell");
-                    if (j > 0) {
-                        oCell.setAttribute("onmouseout",
-                            "jpf.setStyleClass(this, '', ['hover']);");
-                        oCell.setAttribute("onmouseover",
-                            "if (this.className.indexOf('disabled') > -1 \
-                               || this.className.indexOf('active') > -1) \
-                                 return;\
-                             jpf.setStyleClass(this, 'hover');");
-                        oCell.setAttribute("onmousedown",
-                            "var o = jpf.findHost(this);\
-                             if (this.className.indexOf('prev') > -1) \
-                                 o.selectDay(this.innerHTML, 'prev');\
-                             else if (this.className.indexOf('next') > -1) \
-                                 o.selectDay(this.innerHTML, 'next');\
-                             else \
-                                 o.selectDay(this.innerHTML);\
-                             o.slideUp();");
-                    }
-                    oRow.appendChild(oCell);
-                }
-            }
-
-            var oNavigation = this.$getLayoutNode("container", "navigation",
-                                                  oExt1);
-
-            if (oNavigation) {
-                var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth",
-                               "today", "status"];
-                for (i = 0; i < buttons.length; i++) {
-                    this.$getNewContext("button");
-                    var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
-                    this.$setStyleClass(btn, buttons[i]);
-                    if (buttons[i] !== "status") {
-                        btn.setAttribute("onmousedown", 'jpf.findHost(this).' + buttons[i] + '()');
-                        btn.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
-                        btn.setAttribute("onmouseout",  'jpf.setStyleClass(this, "", ["hover"]);');
-                    }
-                }
-            }
-
-            var oDaysOfWeek = this.$getLayoutNode("container",
-                                                  "daysofweek", oExt1);
-
-            for (i = 0; i < days.length + 1; i++) {
-                this.$getNewContext("day");
-                oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
-            }
-        });
-
-        this.oNavigation = this.$getLayoutNode("container", "navigation", this.oSlider);
-        this.oDow        = this.$getLayoutNode("container", "daysofweek", this.oSlider);
+        
 
         //Set up the popup
         this.pHtmlDoc    = jpf.popup.setContent(this.uniqueId, this.oSlider,
