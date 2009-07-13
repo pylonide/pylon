@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __TP_HTTP
 // #define __WITH_TELEPORT 1
 
 /**
@@ -856,5 +857,8 @@ jpf.http = function(){
     }
 };
 
+// #endif
+
 //Init.addConditional(function(){jpf.Comm.register("http", "variables", HTTP);}, null, ['Kernel']);
 jpf.Init.run('http');
+
