@@ -20,7 +20,7 @@
  */
 
 //#ifdef __WITH_XMLDATABASE
-
+ 
 /**
  * The xml database object provides local storage for xml data. This object
  * routes all changes to the xml data to the data bound objects. It further
