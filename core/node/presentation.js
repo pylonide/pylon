@@ -457,8 +457,8 @@ jpf.Presentation = function(){
     function changeSkin(skin, skinset){
         clearTimeout(skinTimer);
 
-        var skinName = (skinset || this.skinset || jpf.appsettings.skinset)
-            + ":" + (skin || this.skin || this.tagName);
+        //var skinName = (skinset || this.skinset || jpf.appsettings.skinset)
+        //    + ":" + (skin || this.skin || this.tagName);
 
         //#ifdef __WITH_MULTISELECT
         //Store selection
@@ -480,7 +480,9 @@ jpf.Presentation = function(){
             this.$destroy(true);
 
         //Load the new skin
-        this.$loadSkin(skinName);
+        this.skin = skin;
+        this.skinName = null;
+        this.$loadSkin(skinset ? skinset + ":" + skin : null);
 
         //Draw
         this.$draw();
@@ -611,7 +613,7 @@ jpf.Presentation = function(){
         }
 
         this.skinName = this.baseSkin; //Why??
-        this.skinset  = this.skinName.split(":")[0];
+        //this.skinset  = this.skinName.split(":")[0];
 
         pNodes = {}; //reset the pNodes collection
         originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
@@ -622,8 +624,9 @@ jpf.Presentation = function(){
                 this.baseName = this.skinName = "default:" + skin;
                 originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
                 
-                if (!originalNodes && this.skinset != "default") {
-                    this.baseName = this.skinName = this.skinset + ":" + this.tagName;
+                var skinset = this.skinName.split(":")[0];
+                if (!originalNodes && skinset != "default") {
+                    this.baseName = this.skinName = skinset + ":" + this.tagName;
                     originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
                 }
             }
@@ -639,7 +642,7 @@ jpf.Presentation = function(){
                     "Could not load skin: " + this.skinName, this.$jml));
             }
             
-            this.skinset = this.skinName.split(":")[0];
+            //this.skinset = this.skinName.split(":")[0];
         }
 
         if (originalNodes)
