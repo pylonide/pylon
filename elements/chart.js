@@ -144,7 +144,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
             //interact = true;
             var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
-            lx = e.clientX-pos[0], ly = e.clientY-pos[1];
+                lx = e.clientX-pos[0] + document.documentElement.scrollLeft, 
+                ly = e.clientY-pos[1] + document.documentElement.scrollTop;
             ox = lx , oy = ly;
             // we need to check if our mousedown was in the axis, ifso send it a mousedown and keep it on our eventstack
             for(var t, i = _self.childNodes.length-1;i>=0;i--){
@@ -179,8 +180,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!e) e = event;
             bt = 0;
             var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
-            var x = e.clientX - pos[0],
-                y = e.clientY - pos[1];
+            var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
+                y = e.clientY - pos[1] + document.documentElement.scrollTop;
             for(var i = stack.length-1;i>=0;i--)
                 (t=stack[i]).$mouseUp(x - t.left, y - t.top);
             stack.length = 0;
@@ -191,8 +192,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             //if (!interact) return;
             if (!e) e = event;
             var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
-            var dx = (-lx + (lx=e.clientX-pos[0])),
-                dy = (-ly + (ly=e.clientY-pos[1]));
+            var dx = (-lx + (lx=e.clientX-pos[0] + document.documentElement.scrollLeft)),
+                dy = (-ly + (ly=e.clientY-pos[1] + document.documentElement.scrollTop));
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
 
             if (bt) {
@@ -220,8 +221,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if(d){
                 var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
                 // lets find if we are over a graph
-                var x = e.clientX - pos[0],
-                    y = e.clientY - pos[1];
+                var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
+                    y = e.clientY - pos[1] + document.documentElement.scrollTop;
                 for(var t, i = 0;i<_self.childNodes.length;i++){
                     t = _self.childNodes[i];
                     if( x >= t.left && x <= t.left+t.width &&
