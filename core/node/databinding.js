@@ -1726,8 +1726,8 @@ jpf.DataBinding = function(){
               || !initModelId[0] && sb) {
                 initModelId = findModel(x);
 
-                if (initModelId 
-                  && jpf.nameserver.get("model", initModelId) != this.$model) {
+                if (initModelId) {
+                  //&& jpf.nameserver.get("model", initModelId) != this.$model) {
                     if (!sb)
                         this.smartBinding = true; //@todo experimental for traverse="" attributes
 
