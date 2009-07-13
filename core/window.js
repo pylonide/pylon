@@ -529,13 +529,14 @@ jpf.WindowImplementation = function(){
                     if (node == jmlNode)
                         return; //do nothing
                     
-                    if (node.isWindowContainer) {
-                        this.$focus(node, e, true);
-                        break;
-                    }
-                    
-                    if (node)
+                    if (node) {
+                        if (node.isWindowContainer) {
+                            this.$focus(node, e, true);
+                            break;
+                        }
+                        
                         node = node.nextSibling;
+                    }
                 }
             }
 

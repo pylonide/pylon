@@ -249,6 +249,7 @@ jpf.Rename = function(){
         if (this.renaming) {
             if (key == 27 || key == 13) {
                 this.stopRename(null, key == 13 && !this.$autocomplete);
+                e.cancelBubble = true;
                 return false;
             }
 

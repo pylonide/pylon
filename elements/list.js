@@ -372,18 +372,24 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         this.appearance = this.$jml.getAttribute("appearance") || "compact";
         var mode = this.$jml.getAttribute("mode");
-        
+
         if (this.tagName == "select" && (this.appearance == "full" 
           || this.appearance == "minimal") || mode == "check") {
             this.$jml.setAttribute("mode", "check");
-            if (!this.$jml.getAttribute("skin"))
-                this.$loadSkin("default:checklist"); //@todo use getOption here
+            if (!this.$jml.getAttribute("skin")) {
+                this.skinName = null;
+                this.skin = "checklist"
+                this.$loadSkin();
+            }
         }
         else if (this.tagName == "select1" && this.appearance == "full"
           || mode == "radio") {
             this.$jml.setAttribute("mode", "radio");
-            if (!this.$jml.getAttribute("skin")) 
-                this.$loadSkin("default:radiolist"); //@todo use getOption here
+            if (!this.$jml.getAttribute("skin")) {
+                this.skinName = null;
+                this.skin = "radiolist";
+                this.$loadSkin();
+            }
         }
         else if (this.tagName == "select1" && this.appearance == "compact") 
             this.multiselect = false;

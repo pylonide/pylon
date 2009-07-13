@@ -92,6 +92,12 @@ jpf.skins = {
         }
 
         this.purgeCss(mediaPath || base + "images/", iconPath || base + "icons/");
+        
+        if (this.queue[name]) {
+            for (prop in this.queue[name]) {
+                this.queue[name][prop]();
+            }
+        }
     },
 
     /**
@@ -271,6 +277,14 @@ jpf.skins = {
                     node = node.nextSibling;
             }
         }
+    },
+    
+    queue : {},
+    waitForSkin : function(skinset, id, callback){
+        if (this.skins[skinset])
+            return;
+        
+        (queue[skinset] || (queue[skinset] = {}))[id] = callback;
     },
 
     //#ifdef __WITH_ICONMAP
@@ -586,7 +600,8 @@ jpf.Presentation = function(){
      */
     this.$loadSkin = function(skinName){
         this.baseSkin = skinName || this.skinName || (this.skinset || this.$jml
-            && this.$jml.getAttribute("skinset") || jpf.appsettings.skinset)
+            && jpf.xmldb.getInheritedAttribute(this.$jml, "skinset") 
+            || jpf.appsettings.skinset)
             + ":" + (this.skin || this.$jml
             && this.$jml.getAttribute("skin") || this.tagName);
 
@@ -596,19 +611,35 @@ jpf.Presentation = function(){
         }
 
         this.skinName = this.baseSkin; //Why??
+        this.skinset  = this.skinName.split(":")[0];
 
         pNodes = {}; //reset the pNodes collection
         originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
 
         if (!originalNodes) {
-            this.baseName = this.skinName = "default:" + this.tagName;
-            originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+            var skin = this.skin || this.$jml && this.$jml.getAttribute("skin");
+            if (skin) {
+                this.baseName = this.skinName = "default:" + skin;
+                originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+                
+                if (!originalNodes && this.skinset != "default") {
+                    this.baseName = this.skinName = this.skinset + ":" + this.tagName;
+                    originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+                }
+            }
+            
+            if (!originalNodes) {
+                this.baseName = this.skinName = "default:" + this.tagName;
+                originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+            }
 
             if (!originalNodes) {
                 throw new Error(jpf.formatErrorString(1077, this,
                     "Presentation",
                     "Could not load skin: " + this.skinName, this.$jml));
             }
+            
+            this.skinset = this.skinName.split(":")[0];
         }
 
         if (originalNodes)

@@ -129,7 +129,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
-    this.$kbclose          = true;
+    this.kbclose           = false;
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
@@ -355,8 +355,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["hideselects"]  = true;
     this.$booleanProperties["animate"]      = true;
     this.$booleanProperties["showdragging"] = true;
+    this.$booleanProperties["kbclose"]      = true;
     this.$supportedProperties.push("title", "icon", "modal", "minwidth",
-        "minheight", "hideselects", "center", "buttons", "state",
+        "minheight", "hideselects", "center", "buttons", "state", "kbclose",
         "maxwidth", "maxheight", "animate", "showdragging", "transaction");
 
     /**
@@ -931,7 +932,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.addEventListener("keydown", function(e){
         if (e.keyCode == 27 && this.buttons.indexOf("close") > -1 
-          && (!this.dockable || !this.aData) && this.$kbclose)
+          && (!this.dockable || !this.aData) && this.kbclose)
             this.close();
     });
     //#ifdef __SUPPORT_IPHONE

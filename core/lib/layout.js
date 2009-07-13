@@ -141,7 +141,9 @@ jpf.layout = {
             var splitter = this.freesplitters.pop();
         }
         else {
-            var splitter = new jpf.splitter(this.parentNode);
+            var splitter = new jpf.splitter();//this.parentNode
+            var o = jpf.findHost(layout.parentNode) || jpf.JmlParser;
+            splitter.skinset = jpf.xmldb.getInheritedAttribute(o.$jml, "skinset"); //@todo use skinset here. Has to be set in presentation
             splitter.$loadSkin();
             splitter.$draw();
         }

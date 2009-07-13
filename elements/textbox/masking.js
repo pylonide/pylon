@@ -77,11 +77,25 @@ jpf.textbox.masking = function(){
         this.$insertData(data || value);
     };
     
-    /* ***********************
-            Keyboard Support
-    ************************/
+    //Char conversion
+    var numpadKeys = {
+        "96": "0",
+        "97": "1",
+        "98": "2",
+        "99": "3",
+        "100": "4",
+        "101": "5",
+        "102": "6",
+        "103": "7",
+        "104": "8",
+        "105": "9",
+        "106": "*",
+        "107": "+",
+        "109": "-",
+        "110": ".",
+        "110": "/"
+    }
     
-    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key  = e.keyCode,
             stop = false;
@@ -134,14 +148,14 @@ jpf.textbox.masking = function(){
             break;
         }
 
-        var chr = String.fromCharCode(key);
+        //@todo why isnt the conversion not always good? Check backtick.
+        var chr = numpadKeys[key] || String.fromCharCode(key);
         if (setCharacter(chr))
             setPosition(lastPos + 1);
 
         if (jpf.isCharacter(e.keyCode) || stop)
             return false;
     }, true);
-    //#endif
     
     /* ***********************
             Init

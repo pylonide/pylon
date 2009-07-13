@@ -106,7 +106,7 @@ jpf.appsettings = {
     disableRightClick  : false,
     allowSelect        : false,
     allowBlur          : false,
-    autoDisableActions : false,
+    autoDisableActions : true,
     autoDisable        : false, /** @todo fix this to only autodisable when createmodel is not true */
     disableF5          : true,
     autoHideLoading    : true,

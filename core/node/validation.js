@@ -641,6 +641,7 @@ jpf.ValidationGroup = function(name){
         if (this.allowMultipleErrors || !errbox && !no_create) {
             errbox           = new jpf.errorbox(null, "errorbox");
             errbox.pHtmlNode = o.oExt.parentNode;
+            errbox.skinset   = jpf.xmldb.getInheritedAttribute(o.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             var cNode        = o.$jml.ownerDocument.createElement("errorbox");
             errbox.loadJml(cNode);
         }

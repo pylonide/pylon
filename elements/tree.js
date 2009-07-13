@@ -1296,10 +1296,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         if (!this.$jml.getAttribute("skin")) {
             var mode = this.$jml.getAttribute("mode");
-            if (mode == "check")
-                this.$loadSkin("default:checktree"); //@todo use getOption here
-            else if (mode == "radio")
-                this.$loadSkin("default:radiotree"); //@todo use getOption here
+            if (!this.$jml.getAttribute("skin")) {
+                this.skinName = null;
+                this.skin = mode + "tree";
+                this.$loadSkin();
+            }
         }
         
         //Build Main Skin

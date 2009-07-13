@@ -1953,7 +1953,10 @@ var jpf = {
             for (i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src"))
-                    throw new Error(jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
+                    throw new Error(jpf.formatErrorString(0, null, 
+                        "Loading includes", 
+                        "Could not load Include file " + nodes[i].xml 
+                        + ":\nCould not find the src attribute."))
                 // #endif
 
                 path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
@@ -2091,7 +2094,8 @@ var jpf = {
 
             }, {
                 async         : !doSync,
-                userdata      : [node, jpf.includeStack.push(false) - 1],
+                userdata      : [node, !jpf.isTrue(node.getAttribute("defer")) 
+                                 && jpf.includeStack.push(false) - 1],
                 ignoreOffline : true
             });
 
