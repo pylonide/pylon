@@ -298,7 +298,7 @@ jpf.xmpp = function(){
     function createMessageBlock(options, body) {
         var aOut = ["<message xmlns='", jpf.xmpp.NS.jabber, "' from='", getVar("JID"),
             "' to='", options.to, "' id='message_", register("mess_count",
-            parseInt(getVar("mess_count")) + 1), "' xml:lang='", options["xml:lang"], "'"];
+            parseInt(getVar("mess_count") || 0) + 1), "' xml:lang='", options["xml:lang"], "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
         aOut.push(">");
@@ -1261,10 +1261,10 @@ jpf.xmpp = function(){
      * the following format:
      * 'jpf.xmpp.MSG_*'
      *
-     * @param {String} to      Must be of the format 'node@domainname.ext'
+     * @param {String} to        Must be of the format 'node@domainname.ext'
      * @param {String} message
-     * @param {String} thread  Optional.
-     * @param {String} type    Optional.
+     * @param {String} [thread]  Optional.
+     * @param {String} [type]    Optional.
      * @type  {void}
      */
     this.sendMessage = function(to, message, thread, type, callback) {
@@ -1296,7 +1296,7 @@ jpf.xmpp = function(){
 
                 jpf.offline.queue.add(info);
 
-                return;
+                return true;
             }
 
             /*
