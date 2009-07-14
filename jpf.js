@@ -701,7 +701,7 @@ var jpf = {
             return false;
         }
     },
-    //# endif
+    //#endif
 
     //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
     /**
