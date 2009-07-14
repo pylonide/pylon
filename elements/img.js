@@ -118,13 +118,14 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.oImg) {
                 //#ifdef __WITH_LAYOUT
                 //@todo add this to $destroy
-                jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_image",
+                var pNode = jpf.hasSingleRszEvent ? this.pHtmlNode : this.oExt;
+                jpf.layout.setRules(pNode, this.uniqueId + "_image",
                     "var o = jpf.all[" + this.uniqueId + "];\
                      if (o) o.$resize()");
-                jpf.layout.activateRules(this.pHtmlNode);
+                jpf.layout.activateRules(pNode);
                 
                 this.oImg.onload = function(){
-                    jpf.layout.forceResize(_self.pHtmlNode);
+                    jpf.layout.forceResize(pNode);
                 }
                 //#endif
             }

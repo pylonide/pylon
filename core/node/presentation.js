@@ -290,6 +290,7 @@ jpf.skins = {
             return;
         
         (this.queue[skinset] || (this.queue[skinset] = {}))[id] = callback;
+        return true;
     },
 
     //#ifdef __WITH_ICONMAP

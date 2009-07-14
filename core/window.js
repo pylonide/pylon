@@ -1162,7 +1162,6 @@ jpf.WindowImplementation = function(){
                 }
                 catch(e) {}
             }
-            e.returnValue = false;
             return false;
         }
 

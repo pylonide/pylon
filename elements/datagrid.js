@@ -739,7 +739,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         };
         
         this.lookup = null;
-        return false;
+        //return false;
     }
     
     this.addEventListener("keydown", keyHandler, true);
