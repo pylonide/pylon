@@ -676,6 +676,8 @@ var jpf = {
             }", 100);
     },
 
+    //#endif
+
     nsqueue   : {},
 
     /**
@@ -693,16 +695,15 @@ var jpf = {
                     this.namespace(ns, this.nsqueue[ns]);
                 }
             }
-            
+
             return true;
         }catch(e){
             this.nsqueue[name] = oNamespace;
-            
+
             return false;
         }
     },
-    //#endif
-
+    
     //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
     /**
      * @private
