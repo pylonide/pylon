@@ -1051,7 +1051,7 @@ jpf.WindowImplementation = function(){
             delta = -e.detail / 3;
 
         if (delta !== null) {
-            var ev = {delta: delta};
+            var ev = {delta: delta, target: e.target || e.srcElement};
             var res = jpf.dispatchEvent("mousescroll", ev);
             if (res === false || ev.returnValue === false) {
                 if (e.preventDefault)

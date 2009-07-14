@@ -441,7 +441,8 @@ jpf.BaseTab = function(){
             dir = SCROLL_LEFT;
 
         jpf.tween.clearQueue(this.oButtons, true);
-        var iCurrentLeft = this.oButtons.offsetLeft;
+        var iCurrentLeft = this.oButtons.offsetLeft,
+            size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size;
 
         //get maximum left offset for either direction
         var iBoundary = getAnimationBoundary.call(this, dir);
@@ -449,7 +450,7 @@ jpf.BaseTab = function(){
             setButtonState(SCROLL_LEFT,  SCROLL_DOWN);
             setButtonState(SCROLL_RIGHT, SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
-                this.setScrollerState(bAnimating = false, SCROLL_LEFT);
+                this.setScrollerState(false, SCROLL_LEFT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
@@ -464,15 +465,18 @@ jpf.BaseTab = function(){
                             from    : iCurrentLeft + 12,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN
+                            anim    : jpf.tween.EASEIN,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_LEFT, SCROLL_OFF);
+                            }
                         });
                     }
                 });
             }
             //one scroll animation scrolls by a SCROLLANIM.size px.
-            var iTargetLeft = iCurrentLeft + (e.type == "dblclick"
-                ? SCROLLANIM.size * 3
-                : SCROLLANIM.size);
+            var iTargetLeft = iCurrentLeft + (e.type == "dblclick" ? size * 3 : size);
             if (iTargetLeft > iBoundary)
                 iTargetLeft = iBoundary;
 
@@ -490,6 +494,8 @@ jpf.BaseTab = function(){
                 anim    : jpf.tween.NORMAL,
                 onfinish: function() {
                     bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_LEFT, SCROLL_OFF);
                     if (keepScrolling)
                         _self.scroll(e, globalDir);
                 }
@@ -500,7 +506,7 @@ jpf.BaseTab = function(){
             setButtonState(SCROLL_RIGHT, SCROLL_DOWN);
             setButtonState(SCROLL_LEFT,  SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
-                _self.setScrollerState(bAnimating = false, SCROLL_RIGHT);
+                _self.setScrollerState(false, SCROLL_RIGHT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
@@ -515,15 +521,18 @@ jpf.BaseTab = function(){
                             from    : iCurrentLeft - 24,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN
+                            anim    : jpf.tween.EASEIN,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                            }
                         });
                     }
                 });
             }
             //one scroll animation scrolls by a SCROLLANIM.size px.
-            var iTargetLeft = iCurrentLeft - (e.type == "dblclick"
-                ? SCROLLANIM.size * 3
-                : SCROLLANIM.size);
+            var iTargetLeft = iCurrentLeft - (e.type == "dblclick" ? size * 3 : size);
             //make sure we don't scroll more to the right than the
             //maximum left:
             if (iTargetLeft < iBoundary)
@@ -538,6 +547,8 @@ jpf.BaseTab = function(){
                 anim    : jpf.tween.NORMAL,
                 onfinish: function() {
                     bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_RIGHT, SCROLL_OFF);
                     if (keepScrolling)
                         _self.scroll(e, globalDir);
                 }
@@ -572,16 +583,23 @@ jpf.BaseTab = function(){
 
         var iRealWidth  = this.oExt.offsetWidth,
             iScrollCorr = this.oScroller.offsetWidth + 4,
-            iTargetLeft = null;
+            iTargetLeft = null,
+            dir;
 
-        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) //scroll to the right
+        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) { //scroll to the right
             iTargetLeft = (-(iTabLeft - SCROLLANIM.left)
                 + (iRealWidth - iTabWidth - iScrollCorr));
-        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) //sroll to the left
+            dir         = SCROLL_RIGHT;
+        }
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) { //sroll to the left
             iTargetLeft = SCROLLANIM.left - iTabLeft;
+            dir         = SCROLL_LEFT;
+        }
 
         if (iTargetLeft !== null) {
             this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
+            setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
             jpf.tween.clearQueue(this.oButtons, true);
 
             jpf.tween.single(this.oButtons, {
@@ -591,7 +609,11 @@ jpf.BaseTab = function(){
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
-                onfinish: function() { bAnimating = false; }
+                onfinish: function() {
+                    bAnimating = false;
+                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+                }
             });
         }
         else
@@ -791,6 +813,19 @@ jpf.BaseTab = function(){
                     return;
                 stopTimer();
             };
+
+            // #ifdef __WITH_MOUSESCROLL
+            jpf.addEventListener("mousescroll", function(e) {
+                var found = (e.target == _self.oButtons);
+                while (!found && e.target != document.body) {
+                    e.target = e.target.offsetParent;
+                    found = (e.target == _self.oButtons);
+                }
+                if (!found) return;
+                var dir = e.delta > 0 ? SCROLL_LEFT : SCROLL_RIGHT;
+                e.delta = Math.abs(e.delta);
+                _self.scroll(e, dir);
+            });
 
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);
