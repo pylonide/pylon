@@ -122,7 +122,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.select = function(){}
     
     this.columns = "33.33%,33.33%,33.33%";
-    var columns = this.columns.splitSafe(",");
+    var columns  = this.columns.splitSafe(",");
+    var _self    = this;
     
      /**
      * @attribute {String} columns a comma seperated list of column sizes.
@@ -236,6 +237,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Load docklet
         docklet.$jml      = xmlNode;
+        docklet.skinset   = jpf.xmldb.getInheritedAttribute(_self.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+        xmlNode.setAttribute("skinset", docklet.skinset);
         docklet.skin = "docklet";
         docklet.skinName = null;
         docklet.$loadSkin();
