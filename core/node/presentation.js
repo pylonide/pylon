@@ -621,10 +621,10 @@ jpf.Presentation = function(){
         if (!originalNodes) {
             var skin = this.skin || this.$jml && this.$jml.getAttribute("skin");
             if (skin) {
+                var skinset = this.skinName.split(":")[0];
                 this.baseName = this.skinName = "default:" + skin;
                 originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
                 
-                var skinset = this.skinName.split(":")[0];
                 if (!originalNodes && skinset != "default") {
                     this.baseName = this.skinName = skinset + ":" + this.tagName;
                     originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
