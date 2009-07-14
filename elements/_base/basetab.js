@@ -287,10 +287,19 @@ jpf.BaseTab = function(){
             size    : 0,
             left    : 0
         },
-        bAnimating    = false,
-        scrollTimer   = null,
-        keepScrolling = false,
-        globalDir     = jpf.BaseTab.SCROLL_LEFT;
+        SCROLL_OFF     = 0x0001,
+        SCROLL_HOVER   = 0x0002,
+        SCROLL_DOWN    = 0x0004,
+        SCROLL_DIS     = 0x0008,
+        SCROLL_L_STATE = SCROLL_OFF,
+        SCROLL_R_STATE = SCROLL_OFF,
+        SCROLL_LEFT    = 0x0001,
+        SCROLL_RIGHT   = 0x0002,
+        SCROLL_BOTH    = 0x0004,
+        bAnimating     = false,
+        scrollTimer    = null,
+        keepScrolling  = false,
+        globalDir      = SCROLL_LEFT;
 
     function getButtonsWidth() {
         var cId = "cache_" + this.oButtons.childNodes.length;
@@ -304,6 +313,25 @@ jpf.BaseTab = function(){
         }
 
         return SCROLLANIM[cId] = iWidth;
+    }
+
+    function setButtonState(dir, state) {
+        var oBtn = _self[dir & SCROLL_LEFT ? "oLeftScroll" : "oRightScroll"];
+        if (!(state & SCROLL_DIS)) {
+            if (dir & SCROLL_LEFT)
+                SCROLL_L_STATE = state;
+            else
+                SCROLL_R_STATE = state;
+        }
+        
+        if (state & SCROLL_OFF)
+            _self.$setStyleClass(oBtn,  "", ["disabled", "hover", "down"]);
+        else if (state & SCROLL_HOVER)
+            _self.$setStyleClass(oBtn,  "hover", ["disabled", "down"]);
+        else if (state & SCROLL_DOWN)
+            _self.$setStyleClass(oBtn,  "down", ["disabled", "hover"]);
+        else if (state & SCROLL_DIS)
+            _self.$setStyleClass(oBtn,  "disabled", ["hover", "down"]);
     }
 
     /**
@@ -321,10 +349,10 @@ jpf.BaseTab = function(){
             var scrollerWidth = this.oScroller.offsetWidth
                 || parseInt(jpf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
             bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.oExt.offsetWidth);
-            iBtns = jpf.BaseTab.SCROLL_BOTH;
+            iBtns = SCROLL_BOTH;
         }
 
-        if (iBtns & jpf.BaseTab.SCROLL_BOTH && bOn !== SCROLLANIM.scrollOn) {
+        if (iBtns & SCROLL_BOTH && bOn !== SCROLLANIM.scrollOn) {
             // in case of HIDING the scroller: check if the anim stuff has reverted
             SCROLLANIM.scrollOn = bOn;
             if (!bOn) {
@@ -338,17 +366,17 @@ jpf.BaseTab = function(){
             this.oScroller.style.display = "";
         }
 
-        this.oScroller.style.display = (iBtns & jpf.BaseTab.SCROLL_BOTH && !bOn)
+        this.oScroller.style.display = (iBtns & SCROLL_BOTH && !bOn)
             ? "none"
             : "";
         if (typeof iBtns == "undefined")
-            iBtns = jpf.BaseTab.SCROLL_BOTH;
-        if ((iBtns & jpf.BaseTab.SCROLL_LEFT) || (iBtns & jpf.BaseTab.SCROLL_BOTH))
-            this.$setStyleClass(this.oLeftScroll, bOn ? "" : "disabled",
-                bOn ? ["disabled"] : null);
-        if ((iBtns & jpf.BaseTab.SCROLL_RIGHT) || (iBtns & jpf.BaseTab.SCROLL_BOTH))
-            this.$setStyleClass(this.oRightScroll, bOn ? "" : "disabled",
-                bOn ? ["disabled"] : null);
+            iBtns = SCROLL_BOTH;
+        if (!bOn) {
+            if ((iBtns & SCROLL_LEFT) || (iBtns & SCROLL_BOTH))
+                setButtonState(SCROLL_LEFT, SCROLL_DIS);
+            if ((iBtns & SCROLL_RIGHT) || (iBtns & SCROLL_BOTH))
+                setButtonState(SCROLL_RIGHT, SCROLL_DIS);
+        }
     };
 
     /**
@@ -375,10 +403,10 @@ jpf.BaseTab = function(){
             SCROLLANIM.left = this.oButtons.offsetLeft;
             SCROLLANIM.size = Math.round(this.firstChild.oButton.offsetWidth);
         }
-        if (dir & jpf.BaseTab.SCROLL_LEFT) {
+        if (dir & SCROLL_LEFT) {
             return SCROLLANIM.left;
         }
-        else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
+        else if (dir & SCROLL_RIGHT) {
             // TODO: support Drag n Drop of tabs...
             //if (typeof useCache == "undefined") useCache = false;
             //if (!tabcontrol.drag) tabcontrol.drag = {};
@@ -410,16 +438,18 @@ jpf.BaseTab = function(){
         bAnimating = true;
 
         if (typeof dir == "undefined")
-            dir = jpf.BaseTab.SCROLL_LEFT;
+            dir = SCROLL_LEFT;
 
         jpf.tween.clearQueue(this.oButtons, true);
         var iCurrentLeft = this.oButtons.offsetLeft;
 
         //get maximum left offset for either direction
         var iBoundary = getAnimationBoundary.call(this, dir);
-        if (dir & jpf.BaseTab.SCROLL_LEFT) {
+        if (dir & SCROLL_LEFT) {
+            setButtonState(SCROLL_LEFT,  SCROLL_DOWN);
+            setButtonState(SCROLL_RIGHT, SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
-                this.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_LEFT);
+                this.setScrollerState(bAnimating = false, SCROLL_LEFT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
@@ -447,8 +477,8 @@ jpf.BaseTab = function(){
                 iTargetLeft = iBoundary;
 
             if (iTargetLeft === iBoundary)
-                this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
-            this.setScrollerState(true, jpf.BaseTab.SCROLL_RIGHT);
+                this.setScrollerState(false, SCROLL_LEFT);
+            this.setScrollerState(true, SCROLL_RIGHT);
 
             //start animated scroll to the left
             jpf.tween.single(this.oButtons, {
@@ -465,10 +495,12 @@ jpf.BaseTab = function(){
                 }
             });
         }
-        else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
+        else if (dir & SCROLL_RIGHT) {
             this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, SCROLL_DOWN);
+            setButtonState(SCROLL_LEFT,  SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
-                _self.setScrollerState(bAnimating = false, jpf.BaseTab.SCROLL_RIGHT);
+                _self.setScrollerState(bAnimating = false, SCROLL_RIGHT);
                 return jpf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
@@ -764,33 +796,40 @@ jpf.BaseTab = function(){
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);
             
             ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
-                var dir = jpf.BaseTab[sBtn == "oLeftScroll" 
-                    ? "SCROLL_LEFT"
-                    : "SCROLL_RIGHT"];
-                _self[sBtn].onmousedown =
-                _self[sBtn].ondblclick  = function(e) {
-                    if (this.className.indexOf("disabled") == -1) {
-                        e = e || event;
-                        _self.$setStyleClass(this, "down");
-                        _self.scroll(e, dir);
-                        startTimer(e, dir);
-                    }
+                var dir    = sBtn == "oLeftScroll" ? SCROLL_LEFT  : SCROLL_RIGHT,
+                    revDir = sBtn == "oLeftScroll" ? SCROLL_RIGHT : SCROLL_LEFT;
+
+                _self[sBtn].ondbclick   =
+                _self[sBtn].onmousedown = function(e) {
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    e = e || event;
+                    _self.scroll(e, dir);
+                    startTimer(e, dir);
                     if (!jpf.isSafariOld)
                         this.onmouseout();
                 };
                 _self[sBtn].onmouseover = function() {
-                    if (!this.disabled) {
-                        globalDir = dir;
-                        _self.$setStyleClass(this, "hover");
-                    }
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_HOVER);
+                    setButtonState(revDir, SCROLL_OFF);
+                    globalDir = dir;
                 };
                 _self[sBtn].onmouseout = function() {
-                    if (!this.disabled)
-                        _self.$setStyleClass(this, "", ["hover"]);
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_OFF);
                 };
                 _self[sBtn].onmouseup = function() {
-                    _self.$setStyleClass(this, "", ["down"]);
+                    if (this.className.indexOf("disabled") == -1) {
+                        setButtonState(dir, SCROLL_OFF);
+                    }
                     stopTimer();
+                    jpf.tween.clearQueue(_self.oButtons);
                 };
             });
         }
@@ -900,12 +939,6 @@ jpf.BaseTab = function(){
         // #endif
     };
 };
-
-// #ifdef __ENABLE_TABSCROLL
-jpf.BaseTab.SCROLL_LEFT  = 0x0001;
-jpf.BaseTab.SCROLL_RIGHT = 0x0002;
-jpf.BaseTab.SCROLL_BOTH  = 0x0004;
-// #endif
 
 /**
  * A page in a pageable element. (i.e. a page in {@link element.tab})
