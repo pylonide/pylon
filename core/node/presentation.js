@@ -207,18 +207,23 @@ jpf.skins = {
         jmlNode.mediaPath = this.skins[name].mediaPath;
     },
 
-    getTemplate: function(skinName, cJml){
+    getTemplate: function(skinName, cJml, noError){
         skinName = skinName.split(":");
         var name = skinName[0];
         var type = skinName[1];
 
-        // #ifdef __DEBUG
         if (!this.skins[name]) {
+            if (noError)
+                return false;
+            
+            // #ifdef __DEBUG
             throw new Error(jpf.formatErrorString(1077, null,
                 "Retrieving Template",
                 "Could not find skin '" + name + "'", cJml));
+            // #endif
+            
+            return false;
         }
-        // #endif
 
         if (!this.skins[name].templates[type])
             return false;
@@ -284,7 +289,7 @@ jpf.skins = {
         if (this.skins[skinset])
             return;
         
-        (queue[skinset] || (queue[skinset] = {}))[id] = callback;
+        (this.queue[skinset] || (this.queue[skinset] = {}))[id] = callback;
     },
 
     //#ifdef __WITH_ICONMAP
@@ -616,7 +621,7 @@ jpf.Presentation = function(){
         //this.skinset  = this.skinName.split(":")[0];
 
         pNodes = {}; //reset the pNodes collection
-        originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+        originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml, true);
 
         if (!originalNodes) {
             var skin = this.skin || this.$jml && this.$jml.getAttribute("skin");
@@ -627,7 +632,7 @@ jpf.Presentation = function(){
                 
                 if (!originalNodes && skinset != "default") {
                     this.baseName = this.skinName = skinset + ":" + this.tagName;
-                    originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+                    originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml, true);
                 }
             }
             
