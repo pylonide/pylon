@@ -352,7 +352,12 @@ jpf.Transaction = function(){
         
         //Determine data parent
         var node, dataParent = this.dataParent 
-          && this.dataParent.parent || this;
+          && this.dataParent.parent;
+        
+        if (!dataParent || !dataParent.actionRules 
+          || !dataParent.actionRules[lastAction]) {
+            dataParent = this;
+        }
         
         //Add
         if (lastAction == "add") {
