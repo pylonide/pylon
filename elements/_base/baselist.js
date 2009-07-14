@@ -120,9 +120,6 @@ jpf.BaseList = function(){
     // #ifdef __WITH_KEYBOARD
 
     //Handler for a plane list
-    /**
-     * @todo  something goes wrong when selecting using space, doing mode="check"
-     */
     this.$keyHandler = function(e){
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,

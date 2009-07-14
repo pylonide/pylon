@@ -206,7 +206,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var portalNode = this;
     function createDocklet(strXml, docklet, dataNode){
-        var uId = document.all.length;
+        var uId = jpf.all.length;
         var col = [];
         strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
           function(m, id1, id2){

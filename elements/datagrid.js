@@ -490,7 +490,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             case 32:
                 if (ctrlKey || !this.isSelected(this.indicator))
                     this.select(this.indicator, true);
-                break;
+                return false;
             case 109:
             case 46:
                 //DELETE
@@ -511,12 +511,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 //HOME
                 this.select(this.getFirstTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = 0;
-                break;
+                return false;
             case 35:
                 //END
                 this.select(this.getLastTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = this.oInt.scrollHeight;
-                break;
+                return false;
             case 107:
                 //+
                 if (this.more)
@@ -541,7 +541,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 else if (this.$withContainer)
                     this.slideToggle(this.$indicator || this.$selected, 2)
-                break;
+                return false;
             case 107:
             case 39:
                 //RIGHT
@@ -563,11 +563,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 else if (this.$withContainer)
                     this.slideToggle(this.$indicator || this.$selected, 1)
                     
-                break;
+                return false;
             case 38:
                 //UP
                 if (!selXml && !this.$tempsel) 
-                    return;
+                    return false;
                     
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
@@ -582,7 +582,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 node = this.getNextTraverseSelected(node, false, items);
                 if (node)
                     this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else return false;
 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop <= oInt.scrollTop) {
@@ -593,11 +593,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             ? "paddingTop" 
                             : "padding-top"));
                 }
-                break;
+                return false;
             case 40:
                 //DOWN
                 if (!selXml && !this.$tempsel) 
-                    return;
+                    return false;
                     
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
@@ -612,7 +612,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 node = this.getNextTraverseSelected(node, true, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else return false;
                 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
@@ -621,11 +621,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         - oInt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ (hasScroll ? 10 : 0)
                 
-                break;
+                return false;
             case 33:
                 //PGUP
                 if (!selXml && !this.$tempsel) 
-                    return;
+                    return false;
                     
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
@@ -646,7 +646,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     node = this.getFirstTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else return false;
                 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop < oInt.scrollTop) {
@@ -657,11 +657,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                             ? "paddingTop" 
                             : "padding-top"));
                 }
-                break;
+                return false;
             case 34:
                 //PGDN
                 if (!selXml && !this.$tempsel) 
-                    return;
+                    return false;
 
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
@@ -680,7 +680,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     node = this.getLastTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                else return;
+                else return false;
                 
                 selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
@@ -688,8 +688,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     oInt.scrollTop = selHtml.offsetTop
                         - oInt.offsetHeight + selHtml.offsetHeight
                         + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
-                break;
-            
+                return false;
             default:
                 if (this.celledit) {
                     if (!ctrlKey && !e.altKey && (key > 46 && key < 112 || key > 123))
