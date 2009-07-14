@@ -236,7 +236,9 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Load docklet
         docklet.$jml      = xmlNode;
-        docklet.$loadSkin("default:docklet");
+        docklet.skin = "docklet";
+        docklet.skinName = null;
+        docklet.$loadSkin();
         docklet.draggable = false;
 
         docklet.$draw();//name
