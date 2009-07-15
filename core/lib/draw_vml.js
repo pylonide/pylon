@@ -105,19 +105,23 @@ jpf.namespace("draw.vml",{
         l.dw = parseFloat(lw=l.width)*l.ds;
         l.dh = parseFloat(lh=l.height)*l.ds;
         var coord = (l.dw+1)+","+(l.dh+1);
-        (t=l._vmlgroup).style.left=lx=l.left,t.style.top=ly=l.top,t.style.width=lw,t.style.height=lh;
-        for(var n = l._vmlgroup.childNodes, l = n.length, i = 0;i<l;i++){
-            (t=n[i]).style.width = lw, t.style.height = lh;
-            if(t.coordsize){
-                t.coordsize = coord;
+        if(l._vmlgroup){
+            (t=l._vmlgroup).style.left=lx=l.left,t.style.top=ly=l.top,t.style.width=lw,t.style.height=lh;
+            for(var n = l._vmlgroup.childNodes, l = n.length, i = 0;i<l;i++){
+                (t=n[i]).style.width = lw, t.style.height = lh;
+                if(t.coordsize){
+                    t.coordsize = coord;
+                }
             }
         }
     },
 
     deinitLayer : function(l){
         // we should remove the layer from the output group.
-        l._vmlgroup.removeNode();
-        l._vmlgroup = 0;
+        if(l._vmlgroup){
+            l._vmlgroup.removeNode();
+            l._vmlgroup = 0;
+        }
     },
 
     beginLayer : function(l){
