@@ -1462,10 +1462,10 @@ jpf.XmlDatabase = function(){
                 if (attr[i].nodeValue) {
                     if (basename) 
                         str.push(basename + "[" + attr[i].nodeName + "]="
-                            + encodeURIComponent(attr[i].nodeValue));
+                            + escape(attr[i].nodeValue));
                     else
                         str.push(attr[i].nodeName + "="
-                            + encodeURIComponent(attr[i].nodeValue));
+                            + escape(attr[i].nodeValue));
                 }
             }
 
@@ -1474,7 +1474,7 @@ jpf.XmlDatabase = function(){
 
             value = jpf.getXmlValue(xml, "text()");
             if (basename && value)
-                return basename + "=" + encodeURIComponent(value);
+                return basename + "=" + escape(value);
         },
 
         "cgiobjects": function(xml, basename, isSub){
@@ -1508,7 +1508,7 @@ jpf.XmlDatabase = function(){
                             
                         if (jpf.xmldb.isOnlyChild(lnodes[j].firstChild, [3,4]))
                             str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
-                                + encodeURIComponent(lnodes[j].firstChild.nodeValue));
+                                + escape(lnodes[j].firstChild.nodeValue));
                         
                         var a, attr = lnodes[j].attributes;
                         for (k = 0; k < attr.length; k++) {
@@ -1516,7 +1516,7 @@ jpf.XmlDatabase = function(){
                                 continue;
                             
                             str.push(nm + "[" + a.nodeName + "]=" 
-                                + encodeURIComponent(a.nodeValue));
+                                + escape(a.nodeValue));
                         }
                     }
                 }
@@ -1524,7 +1524,7 @@ jpf.XmlDatabase = function(){
                 else {
                     if (isOnlyChild)
                         str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "=" 
-                            + encodeURIComponent(node.firstChild.nodeValue));
+                            + escape(node.firstChild.nodeValue));
                     
                     var a, attr = node.attributes;
                     for (j = 0; j < attr.length; j++) {
@@ -1532,13 +1532,13 @@ jpf.XmlDatabase = function(){
                             continue;
                         
                         str.push(basename + (isSub ? "[" : "") + name + "_" + a.nodeName + (isSub ? "]" : "") + "=" 
-                            + encodeURIComponent(a.nodeValue));
+                            + escape(a.nodeValue));
                     }
                 }
             }
             
             if (!isSub && xml.getAttribute("id"))
-                str.push("id=" + encodeURIComponent(xml.getAttribute("id")));
+                str.push("id=" + escape(xml.getAttribute("id")));
 
             if (str.length)
                 return str.join("&");
