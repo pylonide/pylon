@@ -1774,7 +1774,9 @@ var jpf = {
 
         //Load current HTML document as 'second DOM'
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
-            return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
+            return jpf.oHttp.get((jpf.alternativeJml 
+              || document.body.getAttribute("xmlurl") 
+              || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
                     if (state != jpf.SUCCESS) {
                         var oError = new Error(jpf.formatErrorString(0, null,
