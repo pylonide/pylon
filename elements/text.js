@@ -235,26 +235,35 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     };
 
-    var lastMsg;
-    this.$setClearMessage = this.$updateClearMessage = function(msg){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+    var lastMsg, lastClass, changedHeight;
+    this.$setClearMessage = this.$updateClearMessage = function(msg, className){
+        if (lastClass)
+            this.$removeClearMessage();
+        jpf.setStyleClass(this.oExt, 
+            (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
         
         if (msg) {
+            if (this.oInt.offsetHeight 
+              && jpf.getStyle(this.oInt, "height") == "auto" 
+              && (changedHeight = true))
+                this.oInt.style.height = (this.oInt.offsetHeight 
+                  - jpf.getHeightDiff(this.oInt) + 7) + "px";
             this.oInt.innerHTML = msg;
             lastMsg = this.oInt.innerHTML;
         }
     };
 
     this.$removeClearMessage = function(){
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        if (lastClass) {
+            jpf.setStyleClass(this.oExt, "", [lastClass]);
+            lastClass = null;
+        }
         
-        if (this.oInt.innerHTML == lastMsg)
+        if (this.oInt.innerHTML == lastMsg) {
+            if (changedHeight && !(changedHeight = false))
+                this.oInt.style.height = "";
             this.oInt.innerHTML = ""; //clear if no empty message is supported
-    };
-
-    this.$clear = function(){
-        //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
-        this.setProperty("value", "");
+        }
     };
 
     this.caching = false; //Fix for now

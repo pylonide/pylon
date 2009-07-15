@@ -835,7 +835,7 @@ jpf.MultiSelect = function(){
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
      */
     this.clearSelection = function(singleNode, noEvent){
-        if (!this.selectable || this.disabled) 
+        if (!this.selectable || this.disabled || !valueList.length) 
             return;
 
         var clSel = singleNode ? this.selected : valueList;

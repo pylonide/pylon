@@ -835,7 +835,7 @@ jpf.DataBinding = function(){
             }
             else {
                 if (o.clear && !o.hasFeature(__MULTIBINDING__))
-                    o.clear(); //adding o.hasFeature(__MULTIBINDING__) is a quick fix. should be only with the bind="" level
+                    o.clear(this.$lastClearType); //adding o.hasFeature(__MULTIBINDING__) is a quick fix. should be only with the bind="" level
                 if (o.disable && o.createModel)
                     o.setProperty("disabled", true);
             }
@@ -901,7 +901,7 @@ jpf.DataBinding = function(){
             o.load((xpath && xmlNode)
                 ? xmlNode.selectSingleNode(xpath)
                 : xmlNode);
-            if (xmlNode && o.disabled && o.createModel)
+            if (xmlNode && o.disabled && o.createModel) //@todo this seems like a hack
                 o.setProperty("disabled", false);
         }
 
@@ -919,21 +919,21 @@ jpf.DataBinding = function(){
     /**
      * @private
      */
-    this.importConnections = function(x){
+    this.$importConnections = function(x){
         cXmlSelect = x;
     };
 
     /**
      * @private
      */
-    this.getConnections = function(){
+    this.$getConnections = function(){
         return cXmlSelect;
     };
 
     /**
      * @private
      */
-    this.removeConnections = function(){
+    this.$removeConnections = function(){
         cXmlSelect = [];
     };
 
@@ -1473,10 +1473,6 @@ jpf.DataBinding = function(){
                 jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlRootNode), xmlRootNode);
         }
 
-        // Remove message notifying user the control is without data
-        if (this.$removeClearMessage)
-            this.$removeClearMessage();
-
         // Retrieve cached version of document if available
         var fromCache;
         if (this.caching && !forceNoCache && (fromCache = this.getCache(cacheID, xmlRootNode))) {
@@ -1494,8 +1490,11 @@ jpf.DataBinding = function(){
                 else
                     this.setConnections();
 
-                if (!nodes.length)
+                if (!nodes.length) {
+                    // Remove message notifying user the control is without data
+                    this.$removeClearMessage();
                     this.$setClearMessage(this["empty-message"], "empty");
+                }
                     
                 //#ifdef __WITH_PROPERTY_BINDING
                 //@todo move this to getCache??
@@ -2537,11 +2536,39 @@ jpf.StandardBinding = function(){
     };
 
     if (!this.clear) {
+        /**
+         * Clears the data loaded into this element resetting it's value.
+         */
         this.clear = function(nomsg, do_event){
             this.documentId = this.xmlRoot = this.cacheID = null;
 
             if (this.$clear)
                 this.$clear(nomsg, do_event);
+            
+            if (typeof nomsg == "string") {
+                var msgType = nomsg;
+                nomsg = false;
+                
+                if (!this[msgType + "-message"])
+                    this.$propHandlers[msgType + "-message"].call(this);
+            }
+            
+            if (this.$setClearMessage) {
+                if (!nomsg)
+                    this.$setClearMessage(msgType 
+                      ? this[msgType + "-message"] 
+                      : this["empty-message"], msgType || "empty");
+                else if (this.$removeClearMessage)
+                    this.$removeClearMessage();
+            }
+            else {
+                if (this.$propHandlers && this.$propHandlers["value"]) {
+                    this.value = -99999; //force resetting
+                    this.$propHandlers["value"].call(this, "");
+                }
+                else if (this.setValue)
+                    this.setValue("");
+            }
         };
     }
 };
@@ -3413,9 +3440,9 @@ jpf.MultiselectBinding = function(){
 
         //#ifdef __WITH_MULTISELECT_BINDINGS
         if (this.indicator == this.selected || e.list && e.list.length > 1
-          && this.getConnections().length) {
+          && this.$getConnections().length) {
             //Multiselect databinding handling... [experimental]
-            if (e.list && e.list.length > 1 && this.getConnections().length) {
+            if (e.list && e.list.length > 1 && this.$getConnections().length) {
                 var oEl  = this.xmlRoot.ownerDocument.createElement(this.selected.tagName);
                 var attr = {};
 

@@ -72,28 +72,30 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         return this.value;
     }
     
-    /**
-     * @todo please test this.
-     */
-    this.$clear = function(a, b){
-        this.setProperty("value", "");
-    };
-    
-    var lastMsg;
-    this.$setClearMessage = this.$updateClearMessage = function(msg){
-        jpf.setStyleClass(this.oExt, this.baseCSSname + "Empty");
+    var lastMsg, lastClass, changedHeight;
+    this.$setClearMessage = this.$updateClearMessage = function(msg, className){
+        jpf.setStyleClass(this.oExt, 
+            (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
         
         if (msg) {
+            if (this.oInt.offsetHeight 
+              && jpf.getStyle(this.oInt, "height") == "auto" 
+              && (changedHeight = true))
+                this.oInt.style.height = (this.oInt.offsetHeight 
+                  - jpf.getHeightDiff(this.oInt) + 7) + "px";
             this.oInt.innerHTML = msg;
             lastMsg = this.oInt.innerHTML;
         }
     };
 
     this.$removeClearMessage = function(){
-        jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+        jpf.setStyleClass(this.oExt, "", [lastClass]);
         
-        if (this.oInt.innerHTML == lastMsg)
+        if (this.oInt.innerHTML == lastMsg) {
+            if (changedHeight && !(changedHeight = false))
+                this.oInt.style.height = "";
             this.oInt.innerHTML = ""; //clear if no empty message is supported
+        }
     };
 
     this.$booleanProperties["selectable"] = true;

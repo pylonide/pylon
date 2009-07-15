@@ -713,37 +713,6 @@ jpf.JmlElement = function(){
         };
     }
 
-    if (this.setValue && !this.clear) {
-        /**
-         * Clears the data loaded into this element resetting it's value.
-         */
-        this.clear = function(nomsg){
-            if (typeof nomsg == "string") {
-                var msgType = nomsg;
-                nomsg = false;
-                
-                if (!this[msgType + "-message"])
-                    this.$propHandlers[msgType + "-message"].call(this);
-            }
-            
-            if (this.$setClearMessage) {
-                if (!nomsg)
-                    this.$setClearMessage(msgType 
-                      ? this[msgType + "-message"] 
-                      : this["empty-message"], msgType || "empty");
-                else if (this.$removeClearMessage)
-                    this.$removeClearMessage();
-            }
-
-            //this.setValue("")
-            this.value = -99999; //force resetting
-
-            this.$propHandlers && this.$propHandlers["value"]
-                ? this.$propHandlers["value"].call(this, "")
-                : this.setValue("");
-        };
-    }
-
     //#ifdef __WITH_CONTEXTMENU
     if (this.hasFeature(__DATABINDING__)) {
         this.addEventListener("contextmenu", function(e){

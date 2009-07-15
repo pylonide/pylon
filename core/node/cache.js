@@ -270,11 +270,17 @@ jpf.Cache = function(){
             if (!this[msgType + "-message"])
                 this.$propHandlers[msgType + "-message"].call(this);
         }
+        this.$lastClearType = msgType || null;
 
-        if (!nomsg)
+        if (!nomsg) {
             this.$setClearMessage(msgType 
               ? this[msgType + "-message"] 
               : this["empty-message"], msgType || "empty");
+
+            var c = this.$getConnections();
+            for (var i = c.length - 1; i >= 0; i--)
+                c[i].o.clear(msgType, doEvent);
+        }
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
 
