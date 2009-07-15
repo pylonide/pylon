@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __WITH_DRAW
+//#ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_CANVAS
 jpf.namespace("draw.canvas",{
    
