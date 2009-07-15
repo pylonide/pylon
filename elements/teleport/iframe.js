@@ -21,7 +21,6 @@
 
 // #ifdef __TP_IFRAME
 // #define __WITH_TELEPORT 1
-// #begindef __CONTENT_IFRAME
 
 /*
  * This object create a compatibility layer for environments where the
@@ -159,6 +158,5 @@ function runTpIframe(){
     }
 }
 
-// #enddef
 // #endif
 jpf.Init.run('XmlDatabase');
