@@ -244,7 +244,11 @@ jpf.popup = {
     },
     
     forceHide : function(){
-        if (this.last && !jpf.plane.current && this.isShowing(this.last)) {
+        if (this.last 
+            //#ifdef __WITH_PLANE
+            && !jpf.plane.current
+            //#endif
+            && this.isShowing(this.last)) {
             var o = jpf.lookup(this.last);
             if (!o)
                 this.last = null;
