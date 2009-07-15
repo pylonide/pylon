@@ -171,7 +171,10 @@ jpf.editor.plugin('code', function() {
 
         this.setSize(editor);
         oCont.style.display  = "none";
+        
+        //#ifdef __WITH_WINDOW_FOCUS
         jpf.sanitizeTextbox(oPreview);
+        // #endif
     }
 
     this.setSize = function(editor) {
