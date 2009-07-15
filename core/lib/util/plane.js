@@ -81,28 +81,25 @@ jpf.plane = {
         return plane;
     },
 
+    //#ifndef __WITH_XMLDATABASE
+    isChildOf : function(pNode, childnode){
+        var loopnode = childnode.parentNode;
+        while(loopnode){
+            if(loopnode == pNode)
+                return true;
+            loopnode = loopnode.parentNode;
+        }
+
+        return false;
+    },
+    //#endif
+
     hide : function(){
         var isChild =
             //#ifdef __WITH_XMLDATABASE
             jpf.xmldb.isChildOf(this.plane, document.activeElement);
             /* #else
-            isChildOf(this.plane, document.activeElement);
-            function isChildOf(pNode, childnode){
-                if (!this.plane || !document.activeElement)
-                    return false;
-
-                if (document.activeElement.nodeType == 2)
-                    document.activeElement = document.activeElement.selectSingleNode("..");
-
-                var loopnode = document.activeElement.parentNode;
-                while(loopnode){
-                    if(loopnode == this.plane)
-                        return true;
-                    loopnode = loopnode.parentNode;
-                }
-
-                return false;
-            }
+            this.isChildOf(this.plane, document.activeElement);
             #endif */
         
         if (this.lastZ) {
