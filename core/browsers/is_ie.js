@@ -48,10 +48,10 @@ jpf.runIE = function(){
     // #endif
 
     /* #ifdef __TP_IFRAME
-     if(hasIESecurity) jpf.importClass(function(){
-         __CONTENT_IFRAME
-     }, true, self);
-     #else*/
+     if (hasIESecurity)
+        jpf.importClass(runTpIframe, true, self);
+     #endif */
+    //#ifndef __PACKAGED
     if (hasIESecurity)
         jpf.include(jpf.basePath + "teleport/iframe.js");
     //#endif
@@ -243,7 +243,7 @@ jpf.runIE = function(){
     }
 
     //jpf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
-    if (!hasIESecurity)
+    //if (!hasIESecurity)
         jpf.Init.run('xmldb');
 
     jpf.getHorBorders = function(oHtml){

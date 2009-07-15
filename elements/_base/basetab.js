@@ -826,6 +826,7 @@ jpf.BaseTab = function(){
                 e.delta = Math.abs(e.delta);
                 _self.scroll(e, dir);
             });
+            //#endif
 
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
             this.oRightScroll = jpf.getNode(this.oScroller, [1]);

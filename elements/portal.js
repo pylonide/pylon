@@ -303,7 +303,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
                     //hmmm this is not as optimized as I'd like (going throught the xml parser twice)
                     var strXml = xmlNode.xml || xmlNode.serialize();
 
-                    //#ifdef __SUPPORT_SAFARI_OLD
+                    //#ifdef __SUPPORT_SAFARI2
                     if (jpf.isSafariOld) {
                         strXml = strXml.replace(/name/, "name='"
                             + xmlNode.getAttribute("name") + "'");
