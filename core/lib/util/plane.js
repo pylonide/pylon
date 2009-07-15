@@ -82,7 +82,28 @@ jpf.plane = {
     },
 
     hide : function(){
-        var isChild = jpf.xmldb.isChildOf(this.plane, document.activeElement);
+        var isChild =
+            //#ifdef __WITH_XMLDATABASE
+            jpf.xmldb.isChildOf(this.plane, document.activeElement);
+            /* #else
+            isChildOf(this.plane, document.activeElement);
+            function isChildOf(pNode, childnode){
+                if (!this.plane || !document.activeElement)
+                    return false;
+
+                if (document.activeElement.nodeType == 2)
+                    document.activeElement = document.activeElement.selectSingleNode("..");
+
+                var loopnode = document.activeElement.parentNode;
+                while(loopnode){
+                    if(loopnode == this.plane)
+                        return true;
+                    loopnode = loopnode.parentNode;
+                }
+
+                return false;
+            }
+            #endif */
         
         if (this.lastZ) {
             if (this.current.style.zIndex == 100000)
