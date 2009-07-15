@@ -33,7 +33,7 @@ jpf.iepngfix = (function() {
 	
 	var fnLoadPngs = function() {
 	    if (!shim)
-	        shim = jpf.skins["default"].mediaPath + '/blank.gif';
+	        shim = jpf.skins.skins["default"].mediaPath + '/blank.gif';
 	    
         if (aNodes === null) {
             if (sNodes)
