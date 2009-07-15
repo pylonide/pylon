@@ -850,7 +850,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             steps   : this.animSteps,
             interval: this.animSpeed,
             onfinish: function(container){
-                if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
+                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                     setTimeout(function(){
                         _self.$extend(xmlNode, container);
                     });

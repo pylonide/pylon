@@ -28,128 +28,135 @@
  * native XMLHttpRequest object isn't available. It fall backs on an iframe for
  * it's communication
  */
-
-var USE_IFRAME = false;
-
-function XMLHttpRequest(){
-    this.uniqueId = jpf.all.push(this);
-    
-    if (USE_IFRAME) {
-        this.iframe = document.body.appendChild(document.createElement("iframe"));
-        this.iframe.host = this;
-        this.iframe.style.display = "none";
+jpf.USEIFRAME = false;
+function runTpIframe(){
+    function XMLHttpRequest(){
+        this.uniqueId = jpf.all.push(this);
+        var _self     = this;
         
-        this.destroy = function(){
-            this.iframe.host = null
-        }
-    }
-    else {
-        var xml = document.body.appendChild(document.createElement("xml"));
-        this.xmlDocument = xml.XMLDocument;
-        this.xmlDocument.setProperty("SelectionLanguage", "XPath");
-        document.body.removeChild(xml);
-    }
-    
-    this.readyState   = 0;
-    this.status       = null;
-    this.responseText = null;
-    this.responseXML  = null;
-    
-    this.setRequestHeader = function(){
-        //Not supported
-    }
-    
-    this.send = function(){
-        this.done = false;
-        if (USE_IFRAME) 
-            this.iframe.src = this.url;
-        else 
-            this.xmlDocument.load(this.url);
-    }
-    
-    this.open = function(protocol, url, async){
-        this.method = protocol;
-        this.url      = url;
-        this.async    = async;
-        
-        if (USE_IFRAME) {
-            if (!async) 
-                throw new Error(jpf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
-            this.iframe.onreadystatechange = this.stateChangeHandlerIframe;
+        if (jpf.USEIFRAME) {
+            this.iframe = document.body.appendChild(document.createElement("iframe"));
+            //this.iframe.style.display = "none";
+            this.iframe.style.width  = "400px";
+            this.iframe.style.height = "300px";
+            this.iframe.style.position = "absolute";
+            this.iframe.style.left = "0";
+            this.iframe.style.top = "0";
+            this.iframe.style.zIndex = 1000000000;
+            document.body.style.display = "block";
         }
         else {
-            this.xmlDocument.async = async;
-            this.xmlDocument.onreadystatechange = this.stateChangeHandler;
+            var xml = document.body.appendChild(document.createElement("xml"));
+            this.xmlDocument = xml.XMLDocument;
+            this.xmlDocument.setProperty("SelectionLanguage", "XPath");
+            document.body.removeChild(xml);
         }
-    }
-    
-    this.abort = function(){
-        if (USE_IFRAME) {
-            this.iframe.onreadystatechange = null;
-            this.iframe.src = "about:blank";
-        }
-        else 
-            this.xmlDocument.abort();
-    }
-    
-    var me = this;
-    this.stateChangeHandler = function(){
-        me.receive();
-    }
-    
-    this.receive = function(){
-        this.readyState = this.xmlDocument.readyState;
         
-        if (this.readyState == 4) {
+        this.readyState   = 0;
+        this.status       = null;
+        this.responseText = null;
+        this.responseXML  = null;
+    
+        this.setRequestHeader = function(){
+            //Not supported
+        }
+        
+        this.send = function(){
+            this.done = false;
+            if (jpf.USEIFRAME) 
+                this.iframe.src = this.url;
+            else 
+                this.xmlDocument.load(this.url);
+        }
+        
+        this.open = function(protocol, url, async){
+            this.method = protocol;
+            this.url      = url;
+            this.async    = async;
+            
+            if (jpf.USEIFRAME) {
+                if (!async) 
+                    throw new Error(jpf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
+                this.iframe.onload = stateChangeHandlerIframe;
+                //onreadystatechange
+                //onerror
+            }
+            else {
+                this.xmlDocument.async = async;
+                this.xmlDocument.onreadystatechange = stateChangeHandler;
+            }
+        }
+        
+        this.abort = function(){
+            if (jpf.USEIFRAME) {
+                this.iframe.onreadystatechange = null;
+                this.iframe.src = "about:blank";
+                _self.done = false;
+                _self.readyState = "";
+            }
+            else 
+                this.xmlDocument.abort();
+        }
+        
+        var me = this;
+        function stateChangeHandler(){
+            me.receive();
+        }
+        
+        this.receive = function(){
+            this.readyState = this.xmlDocument.readyState;
+            
+            if (this.readyState == 4) {
+                this.status       = 200;
+                this.responseText = this.xmlDocument.responseText || this.xmlDocument.xml;
+                this.responseXML  = this.xmlDocument;
+           }
+            
+            if (this.onreadystatechange) 
+                this.onreadystatechange();
+        }
+        
+        function stateChangeHandlerIframe(){
+            if (_self.done) // || _self.readyState != "complete") 
+                return;
+            _self.done = true;
+            _self.receiveIframe();
+        }
+        
+        this.receiveIframe = function(){
+            var strXml = this.iframe.contentWindow.document.body.innerText;
+            strXml     = strXml.replace(/^- /gm, "");
+            
+            try {
+                this.responseXML = jpf.getXmlDom(strXml);
+                this.responseXML.setProperty("SelectionLanguage", "XPath");
+                this.responseXML.loadXML(strXml);
+            }
+            catch (e) {
+                this.responseXML = null;
+            }
+            this.responseText = this.responseXML ? this.responseXML.xml : strXml;
             this.status       = 200;
-            this.responseText = this.xmlDocument.responseText || this.xmlDocument.xml;
-            this.responseXML  = this.xmlDocument;
+            this.readyState   = 4;
+            
+            if (this.onreadystatechange) 
+                this.onreadystatechange();
         }
-        
-        if (this.onreadystatechange) 
-            this.onreadystatechange();
     }
     
-    this.stateChangeHandlerIframe = function(){
-        if (this.host.done || this.readyState != "complete") 
-            return;
-        this.host.done = true;
-        this.host.receiveIframe();
-    }
-    
-    this.receiveIframe = function(){
-        var strXml = this.iframe.contentWindow.document.body.innerText;
-        strXml     = strXml.replace(/^- /gm, "");
+    function getDOMParser(message, no_error){
+        var xml = document.body.appendChild(document.createElement("xml"));
+        var xmlParser = xml.XMLDocument;
+        document.body.removeChild(xml);
         
-        try {
-            this.responseXML = jpf.getXmlDom(strXml);
-            this.responseXML.setProperty("SelectionLanguage", "XPath");
-            this.responseXML.loadXML(strXml);
-        }
-        catch (e) {
-            this.responseXML = null;
-        }
-        this.responseText = this.responseXML ? this.responseXML.xml : strXml;
-        this.status       = 200;
-        this.readyState   = 4;
+        xmlParser.setProperty("SelectionLanguage", "XPath");
+        if (message) 
+            xmlParser.loadXML(message);
+        if (!no_error) 
+            jpf.xmlParseError(xmlParser);
         
-        if (this.onreadystatechange) 
-            this.onreadystatechange();
+        return xmlParser;
     }
-}
-
-function getDOMParser(message, no_error){
-    var xml = document.body.appendChild(document.createElement("xml"));
-    var xmlParser = xml.XMLDocument;
-    document.body.removeChild(xml);
-    
-    xmlParser.setProperty("SelectionLanguage", "XPath");
-    if (message) 
-        xmlParser.loadXML(message);
-    if (!no_error) 
-        jpf.xmlParseError(xmlParser);
-    
-    return xmlParser;
 }
 
 // #enddef

@@ -187,7 +187,8 @@ jpf.model = function(data, caching){
         }
         else {
             //jmlNode.$model = this;
-
+            if (this.state == 1)
+                jmlNode.clear("loading");
             if (this.data)
                 this.loadInJmlNode(jmlNode, xpath);
         }
@@ -737,6 +738,7 @@ jpf.model = function(data, caching){
     };
 
     /* *********** LOADING ****************/
+    this.state = 0;//1 = loading
 
     /**
      * Loads data into this model using a data instruction.
@@ -782,7 +784,17 @@ jpf.model = function(data, caching){
 
         //Loading data in non-literal model
         this.dispatchEvent("beforeretrieve");
+        
+        //Set all components on loading...        
+        var uniqueId;
+        for (uniqueId in jmlNodes) {
+            if (!jmlNodes[uniqueId] || !jmlNodes[uniqueId][0])
+                continue;
 
+            jmlNodes[uniqueId][0].clear("loading");
+        }
+
+        this.state = 1;
         jpf.getData(instruction, xmlContext, options, function(data, state, extra){
             _self.dispatchEvent("afterretrieve");
 
@@ -792,6 +804,8 @@ jpf.model = function(data, caching){
                 return false;
             }
             //#endif
+
+            _self.state = 0;
 
             if (state != jpf.SUCCESS) {
                 var oError;

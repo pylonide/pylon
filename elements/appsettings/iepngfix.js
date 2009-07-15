@@ -29,9 +29,12 @@ jpf.iepngfix = (function() {
         aNodes           = null,
         applyPositioning = true,
         // Path to a transparent GIF image
-        shim             = 'images/blank.gif';
+        shim;
 	
 	var fnLoadPngs = function() {
+	    if (!shim)
+	        shim = jpf.skins["default"].mediaPath + '/blank.gif';
+	    
         if (aNodes === null) {
             if (sNodes)
                 aNodes = sNodes.splitSafe(',');

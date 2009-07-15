@@ -242,22 +242,24 @@ jpf.MultiSelect = function(){
         }
         //#endif
 
-        var rValue;
-        if (nodeList.length > 1 && (!this.actionRules
-          || this.actionRules["removegroup"] || !this.actionRules["remove"])) {
-            rValue = this.executeAction("removeNodeList", nodeList,
-                "removegroup", nodeList[0]);
+        var multiple, changes = [];
+        for (var i = 0; i < nodeList.length; i++) {
+            changes.push({
+                func : "removeNode",
+                args   : [nodeList[i]]
+            });
         }
-        else {
-            for (var i = 0; i < nodeList.length; i++) {
-                rValue = this.executeAction("removeNode",
-                    [nodeList[i]], "remove", nodeList[i], null, null, true);
-                if (rValue === false)
-                    return false;
-            }
-        }
+        
+        var action = this.actionRules && this.actionRules["removegroup"] 
+            ? "removegroup" 
+            : "remove"
 
-        return rValue;
+        if (action == "removegroup")
+            return this.executeAction("multicall", changes, action, nodeList[0]);
+        else {
+            return this.executeAction("multicall", changes, action, 
+              nodeList[0], null, null, nodeList.length > 1 ? nodeList : null);
+        }
     };
 
     /**

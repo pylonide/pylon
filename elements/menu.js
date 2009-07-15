@@ -544,7 +544,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
  *      <j:item icon="tbicons:10">example</j:item>
  *  </j:menu>
  *
- *  <j:menu id="msub" skin="default:menu2005">
+ *  <j:menu id="msub" skin="menu2005">
  *      <j:item icon="tbicons:12">test</j:item>
  *      <j:item icon="tbicons:14">test2</j:item>
  *  </j:menu>

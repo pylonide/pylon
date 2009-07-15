@@ -239,8 +239,8 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         docklet.$jml      = xmlNode;
         docklet.skinset   = jpf.xmldb.getInheritedAttribute(_self.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
         xmlNode.setAttribute("skinset", docklet.skinset);
-        docklet.skin = "docklet";
-        docklet.skinName = null;
+        docklet.skin      = "docklet";
+        docklet.skinName  = null;
         docklet.$loadSkin();
         docklet.draggable = false;
 

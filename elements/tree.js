@@ -374,7 +374,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         }
         
-        if (!this.prerender && _self.hasLoadStatus(xmlNode, "potential") 
+        if (!this.prerender && _self.$hasLoadStatus(xmlNode, "potential") 
           && !container.innerHTML) {
             _self.$extend(xmlNode, container);
             return;
@@ -388,7 +388,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             steps   : this.animOpenStep,
             interval: this.animSpeed,
             onfinish: function(container){
-                if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
+                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                     setTimeout(function(){
                         _self.$extend(xmlNode, container);
                     });
@@ -580,8 +580,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (hasChildren && !this.prerender && traverseLength > 2 
           && startcollapsed
-          || loadChildren && (!this.hasLoadStatus(xmlNode) 
-          || this.hasLoadStatus(xmlNode, "potential")))
+          || loadChildren && (!this.$hasLoadStatus(xmlNode) 
+          || this.$hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && this.applyRuleSetOnNode("empty", xmlNode))
             this.$setClearMessage(container);
@@ -650,7 +650,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.prerender || traverseLength < 3 || !startcollapsed)
             this.$addNodes(xmlNode, container, false); //checkChildren ???
         /*else {
-            this.setLoadStatus(xmlNode, "potential");
+            this.$setLoadStatus(xmlNode, "potential");
         }*/
 
         return container;
@@ -697,7 +697,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (xmlNode.selectNodes(this.traverse).length > 0)
                 hasChildren = true;
             //this.bindingRules && this.bindingRules["insert"] && this.getNodeFromRule("insert", xmlNode) 
-            else if (this.hasLoadStatus(xmlNode, "potential"))
+            else if (this.$hasLoadStatus(xmlNode, "potential"))
                 hasChildren = true;
             else
                 hasChildren = false;
@@ -883,7 +883,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!self.jpf.debug && !htmlNode) 
             return;
             
-        if (this.hasLoadStatus(xmlNode.parentNode, "potential")) {
+        if (this.$hasLoadStatus(xmlNode.parentNode, "potential")) {
             var container  = this.$getLayoutNode("item", "container", htmlNode);
             htmlNode.parentNode.removeChild(htmlNode);
             container.parentNode.removeChild(container);
@@ -971,7 +971,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$setLoading = function(xmlNode, container){
-        this.setLoadStatus(xmlNode, "potential");
+        this.$setLoadStatus(xmlNode, "potential");
         
         if (!this.getTraverseNodes(xmlNode).length) {
             this.$getNewContext("loading");
@@ -992,7 +992,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             : null;
 
         if (rule && xmlContext) {
-            this.setLoadStatus(xmlNode, "loading");
+            this.$setLoadStatus(xmlNode, "loading");
             
             if (rule.getAttribute("get")) {
                 // #ifdef __WITH_OFFLINE_TRANSACTIONS
@@ -1015,7 +1015,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         else if (!this.prerender) {
-            this.setLoadStatus(xmlNode, "loading");
+            this.$setLoadStatus(xmlNode, "loading");
             this.$removeLoading(jpf.xmldb.findHTMLNode(xmlNode, this));
             var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
             xmlUpdateHandler.call(this, {
@@ -1044,7 +1044,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
         if (!htmlNode) return;
         
-        if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
+        if (this.$hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode, e.anim ? false : true);
         }
@@ -1052,8 +1052,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$fixItem(e.xmlNode, htmlNode);
         
         //Can this be removed?? (because it was added in the insert function)
-        if (this.hasLoadStatus(e.xmlNode, "loading"))
-            this.setLoadStatus(e.xmlNode, "loaded");
+        if (this.$hasLoadStatus(e.xmlNode, "loading"))
+            this.$setLoadStatus(e.xmlNode, "loaded");
     }
     
     this.addEventListener("xmlupdate", xmlUpdateHandler);

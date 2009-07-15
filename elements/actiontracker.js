@@ -217,7 +217,10 @@ jpf.actiontracker = function(parentNode){
         //#endif
 
         //Respond
-        this.$addToQueue(UndoObj, false);
+        if (UndoObj.multiple) 
+            this.$addToQueue(UndoObj.multiple, false, true);
+        else
+            this.$addToQueue(UndoObj, false);
 
         //Reset Redo Stack
         stackUndone.length = 0;
@@ -323,8 +326,12 @@ jpf.actiontracker = function(parentNode){
             if (UndoObj.action)
                 jpf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
 
-            if (!rollback)
-                this.$addToQueue(UndoObj, undo);
+            if (!rollback) {
+                if (UndoObj.multiple) 
+                    this.$addToQueue(UndoObj.multiple, undo, true);
+                else
+                    this.$addToQueue(UndoObj, undo);
+            }
 
             //Set Changed Value
             this.setProperty("undolength", stackDone.length);
@@ -471,7 +478,8 @@ jpf.actiontracker = function(parentNode){
             Remove item from the execution stack if it's not yet executed
             to keep the stack clean
         */
-        if (execStack.length && !UndoObj.state
+        //@todo Implement this for isGroup if deemed useful
+        if (!isGroup && execStack.length && !UndoObj.state
           && execStack[execStack.length - 1].undoObj == UndoObj) {
             execStack.length--;
 
@@ -487,10 +495,13 @@ jpf.actiontracker = function(parentNode){
 
         // Add the item to the queue
         if (isGroup) { //@todo currently no offline support for grouped actions
-            var qItem = execStack.shift();
+            var undoObj, qItem = execStack.shift();
             for (var i = 0; i < UndoObj.length; i++) {
+                undoObj = UndoObj[i];
                 execStack.unshift({
-                    undoObj : UndoObj[i],
+                    undoObj : (undoObj.tagName 
+                        ? undoObj 
+                        : new jpf.UndoData(undoObj, this)).preparse(undo, this),
                     undo   : undo
                 });
             }

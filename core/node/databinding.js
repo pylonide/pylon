@@ -623,13 +623,26 @@ jpf.DataBinding = function(){
             if (!rules[i] || !rules[i].getAttribute("select")
                 || xmlNode.selectSingleNode(rules[i].getAttribute("select"))) {
 
+                var newMultiple;
+                if (multiple) {
+                    newMultiple = [];
+                    for (var k = multiple.length - 1; k >= 0; k--) {
+                        newMultiple.unshift({
+                            xmlActionNode : rules[i],
+                            jmlNode       : this,
+                            selNode       : multiple[k],
+                            xmlNode       : multiple[k]
+                        })
+                    }
+                }
+
                 var ev = new jpf.Event("before" + action.toLowerCase(), {
                     action        : atAction,
                     args          : args,
                     xmlActionNode : rules[i],
                     jmlNode       : this,
                     selNode       : contextNode,
-                    multiple      : multiple || false
+                    multiple      : newMultiple || false
                     //#ifdef __WITH_LOCKING
                     ,timestamp    : curLock
                                       ? curLock.start
@@ -1543,19 +1556,7 @@ jpf.DataBinding = function(){
      * @attribute {string} get the {@link term.datainstruction data instruction} that is used to load data into the xmlRoot of this component.
      */
     this.$loadSubData = function(xmlRootNode){
-        if (this.hasLoadStatus(xmlRootNode)) return;
-
-        // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (typeof jpf.offline != "undefined" && !jpf.offline.onLine) {
-            jpf.offline.transactions.actionNotAllowed();
-            this.loadedWhenOffline = true;
-
-            if (this.hasFeature(__MULTISELECT__) && !this.getTraverseNodes().length)
-                this.$setClearMessage(this.offlineMsg, "offline");
-
-            return;
-        }
-        //#endif
+        if (this.$hasLoadStatus(xmlRootNode)) return;
 
         //var loadNode = this.applyRuleSetOnNode("load", xmlRootNode);
         var loadNode, rule = this.getNodeFromRule("load", xmlRootNode, false, true);
@@ -1564,7 +1565,20 @@ jpf.DataBinding = function(){
             : ".";
 
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
-            this.setLoadStatus(xmlRootNode, "loading");
+            // #ifdef __WITH_OFFLINE_TRANSACTIONS
+            if (typeof jpf.offline != "undefined" && !jpf.offline.onLine) {
+                jpf.offline.transactions.actionNotAllowed();
+                this.loadedWhenOffline = true;
+    
+                //this.hasFeature(__MULTISELECT__)
+                if (this.$setClearMessage && !this.getTraverseNodes().length)
+                    this.$setClearMessage(this.offlineMsg, "offline");
+    
+                return;
+            }
+            //#endif
+            
+            this.$setLoadStatus(xmlRootNode, "loading");
 
             if (this.$setClearMessage)
                 this.$setClearMessage(this.loadingMsg, "loading");
@@ -1591,11 +1605,16 @@ jpf.DataBinding = function(){
             }
         }
     };
+    
+    this.clearMessage = function(msg){
+        this.customMsg = msg;
+        this.clear("custom");
+    }
 
     /**
      * @private
      */
-    this.setLoadStatus = function(xmlNode, state, remove){
+    this.$setLoadStatus = function(xmlNode, state, remove){
         //remove old status if any
         var ostatus = xmlNode.getAttribute("j_loaded");
         ostatus = ostatus
@@ -1611,14 +1630,14 @@ jpf.DataBinding = function(){
     /**
      * @private
      */
-    this.removeLoadStatus = function(xmlNode){
-        this.setLoadStatus(xmlNode, null, true);
+    this.$removeLoadStatus = function(xmlNode){
+        this.$setLoadStatus(xmlNode, null, true);
     };
 
     /**
      * @private
      */
-    this.hasLoadStatus = function(xmlNode, state){
+    this.$hasLoadStatus = function(xmlNode, state){
         var ostatus = xmlNode.getAttribute("j_loaded");
         if (!ostatus) return false;
 
@@ -1660,8 +1679,8 @@ jpf.DataBinding = function(){
         else if (this.xmlRoot == newNode)
             this.setConnections(this.xmlRoot, "select");
 
-        if (this.hasLoadStatus(parentXMLElement, "loading"))
-            this.setLoadStatus(parentXMLElement, "loaded");
+        if (this.$hasLoadStatus(parentXMLElement, "loading"))
+            this.$setLoadStatus(parentXMLElement, "loaded");
 
         this.dispatchEvent("afterinsert");
 
@@ -3156,7 +3175,7 @@ jpf.MultiselectBinding = function(){
             if (!xmlNode)
                 return;
             
-            if (this.hasLoadStatus(xmlNode) && this.$removeLoading)
+            if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
 
             if (this.oInt.firstChild && !jpf.xmldb.getNode(this.oInt.firstChild)) {

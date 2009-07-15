@@ -189,7 +189,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             steps   : this.animOpenStep,
             interval: this.animSpeed,
             onfinish: function(container){
-                if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
+                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                     setTimeout(function(){
                         _self.$extend(xmlNode, container);
                     });
@@ -244,7 +244,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             : null;
         
         if (rule && xmlContext) {
-            this.setLoadStatus(xmlNode, "loading");
+            this.$setLoadStatus(xmlNode, "loading");
             
             if (rule.getAttribute("get")) {
                 this.getModel().insertFrom(rule.getAttribute("get"), xmlContext, {
@@ -260,7 +260,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else
             if (!this.prerender) {
-                this.setLoadStatus(xmlNode, "loading");
+                this.$setLoadStatus(xmlNode, "loading");
                 var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
                 xmlUpdateHandler.call(this, "insert", xmlNode, result);
             }
@@ -736,7 +736,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$setLoading = function(xmlNode, container){
         this.$getNewContext("Loading");
-        this.setLoadStatus(xmlNode, "potential");
+        this.$setLoadStatus(xmlNode, "potential");
         jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
     };
     
@@ -760,7 +760,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
         if (!htmlNode) return;
-        if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
+        if (this.$hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode);
         }
@@ -768,8 +768,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             this.fixItem(e.xmlNode, htmlNode);
         
         //Can this be removed?? (because it was added in the insert function)
-        if (this.hasLoadStatus(e.xmlNode, "loading"))
-            this.setLoadStatus(e.xmlNode, "loaded");
+        if (this.$hasLoadStatus(e.xmlNode, "loading"))
+            this.$setLoadStatus(e.xmlNode, "loaded");
     }
     
     this.addEventListener("xmlupdate", xmlUpdateHandler);
@@ -966,7 +966,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
             container.setAttribute("style", "display:none;");
         
         //Dynamic SubLoading (Insertion) of SubTree
-        if (loadChildren && !this.hasLoadStatus(xmlNode))
+        if (loadChildren && !this.$hasLoadStatus(xmlNode))
             this.$setLoading(xmlNode, container);
         else if(!this.getTraverseNodes(xmlNode).length 
           && this.applyRuleSetOnNode("empty", xmlNode))
@@ -1043,7 +1043,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.prerender) 
             this.$addNodes(xmlNode, container, true); //checkChildren (optimization) ???
         else
-            this.setLoadStatus(xmlNode, "potential");
+            this.$setLoadStatus(xmlNode, "potential");
 
         return container;
     };

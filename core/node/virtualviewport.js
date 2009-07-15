@@ -372,7 +372,7 @@ jpf.VirtualViewport = function(){
      */
     this.$loadPartialData = function(marker, start, length){
         //We should have a queing system here, disabled the check for now
-        //if (this.hasLoadStatus(xmlRootNode)) return;
+        //if (this.$hasLoadStatus(xmlRootNode)) return;
         
         var loadNode, rule = this.getNodeFromRule("load", xmlRootNode, false, true);
         var sel = (rule && rule.getAttribute("select"))
@@ -380,7 +380,7 @@ jpf.VirtualViewport = function(){
             : ".";
 
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
-            this.setLoadStatus(xmlRootNode, "loading");
+            this.$setLoadStatus(xmlRootNode, "loading");
             
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
