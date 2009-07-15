@@ -103,7 +103,11 @@ jpf.editor.plugin('pastetext', function() {
             <div class="editor_panelrow" style="position:absolute;bottom:0;width:100%" id="' + idBtns + '"></div>';
 
         this.oArea = document.getElementById(idArea);
+        
+        //#ifdef __WITH_WINDOW_FOCUS
         jpf.sanitizeTextbox(this.oArea);
+        // #endif
+
         if (jpf.isIE) {
             this.oArea.onselectstart = this.oArea.onpaste = function(e) {
                 e = e || window.event;

@@ -1560,7 +1560,7 @@ jpf.DocumentImplementation = function(){
     //#endif
 };
 
-// #endif
+//#endif
 
 //#ifdef __WITH_WINDOW_FOCUS
 /**
