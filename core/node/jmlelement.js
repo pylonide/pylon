@@ -718,9 +718,19 @@ jpf.JmlElement = function(){
          * Clears the data loaded into this element resetting it's value.
          */
         this.clear = function(nomsg){
+            if (typeof nomsg == "string") {
+                var msgType = nomsg;
+                nomsg = false;
+                
+                if (!this[msgType + "-message"])
+                    this.$propHandlers[msgType + "-message"].call(this);
+            }
+            
             if (this.$setClearMessage) {
                 if (!nomsg)
-                    this.$setClearMessage(this.emptyMsg, "empty");
+                    this.$setClearMessage(msgType 
+                      ? this[msgType + "-message"] 
+                      : this["empty-message"], msgType || "empty");
                 else if (this.$removeClearMessage)
                     this.$removeClearMessage();
             }

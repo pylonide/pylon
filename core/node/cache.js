@@ -251,7 +251,7 @@ jpf.Cache = function(){
                 else {
                     // Here we cache the current part
                     var fragment = this.$getCurrentFragment();
-                    if (!fragment) return;//this.$setClearMessage(this.emptyMsg);
+                    if (!fragment) return;//this.$setClearMessage(this["empty-message"]);
 
                     fragment.documentId = this.documentId;
                     fragment.xmlRoot    = this.xmlRoot;
@@ -266,10 +266,15 @@ jpf.Cache = function(){
         if (typeof nomsg == "string") {
             var msgType = nomsg;
             nomsg = false;
+            
+            if (!this[msgType + "-message"])
+                this.$propHandlers[msgType + "-message"].call(this);
         }
 
         if (!nomsg)
-            this.$setClearMessage(msgType ? this[msgType + "Msg"] : this.emptyMsg, msgType || "empty");
+            this.$setClearMessage(msgType 
+              ? this[msgType + "-message"] 
+              : this["empty-message"], msgType || "empty");
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
 
@@ -293,7 +298,7 @@ jpf.Cache = function(){
             this.clearSelection(null, true);
 
         this.oInt.innerHTML = "";
-        this.$setClearMessage(msg || this.emptyMsg, className || "empty");
+        this.$setClearMessage(msg || this["empty-message"], className || "empty");
         this.setConnections();
         
         //#ifdef __WITH_PROPERTY_BINDING

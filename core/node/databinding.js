@@ -1495,7 +1495,7 @@ jpf.DataBinding = function(){
                     this.setConnections();
 
                 if (!nodes.length)
-                    this.$setClearMessage(this.emptyMsg, "empty");
+                    this.$setClearMessage(this["empty-message"], "empty");
                     
                 //#ifdef __WITH_PROPERTY_BINDING
                 //@todo move this to getCache??
@@ -1572,7 +1572,7 @@ jpf.DataBinding = function(){
     
                 //this.hasFeature(__MULTISELECT__)
                 if (this.$setClearMessage && !this.getTraverseNodes().length)
-                    this.$setClearMessage(this.offlineMsg, "offline");
+                    this.$setClearMessage(this["offline-message"], "offline");
     
                 return;
             }
@@ -1581,7 +1581,7 @@ jpf.DataBinding = function(){
             this.$setLoadStatus(xmlRootNode, "loading");
 
             if (this.$setClearMessage)
-                this.$setClearMessage(this.loadingMsg, "loading");
+                this.$setClearMessage(this["loading-message"], "loading");
 
             //||jpf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
@@ -1762,7 +1762,7 @@ jpf.DataBinding = function(){
             var defProps = ["empty-message", "loading-message", "offline-message"];
 
             for (var i = 0, l = defProps.length; i < l; i++) {
-                if (!x.getAttribute(defProps[i]))
+                if (!this[defProps[i]])
                     this.$propHandlers[defProps[i]].call(this);
             }
         }
@@ -1774,7 +1774,7 @@ jpf.DataBinding = function(){
         if ((!hasInitSb || !hasModel) && this.$setClearMessage
           && (!loadqueue && !this.xmlRoot && (this.hasFeature(__MULTISELECT__)
           || this.ref || hasInitSb)))
-            this.$setClearMessage(this.emptyMsg, "empty");
+            this.$setClearMessage(this["empty-message"], "empty");
     });
 
     this.$jmlDestroyers.push(function(){
@@ -1821,12 +1821,12 @@ jpf.DataBinding = function(){
      * it defaults to the string "No items".
      */
     this.$propHandlers["empty-message"] = function(value){
-        this.emptyMsg = value
+        this["empty-message"] = value
             || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
             || "No items";
 
         if (!jpf.isParsing && this.$updateClearMessage) 
-            this.$updateClearMessage(this.emptyMsg, "empty");
+            this.$updateClearMessage(this["empty-message"], "empty");
     };
 
     /**
@@ -1859,12 +1859,12 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["loading-message"] = function(value){
-        this.loadingMsg = value
+        this["loading-message"] = value
             || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
             || "Loading...";
 
         if (!jpf.isParsing && this.$updateClearMessage)
-            this.$updateClearMessage(this.loadingMsg, "loading");
+            this.$updateClearMessage(this["loading-message"], "loading");
     };
 
     /**
@@ -1875,12 +1875,12 @@ jpf.DataBinding = function(){
      * string "You are currently offline...".
      */
     this.$propHandlers["offline-message"] = function(value){
-        this.offlineMsg = value
+        this["offline-message"] = value
             || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
             || "You are currently offline...";
 
         if (!jpf.isParsing && this.$updateClearMessage)
-            this.$updateClearMessage(this.offlineMsg, "offline");
+            this.$updateClearMessage(this["offline-message"], "offline");
     };
 
     /**
@@ -3167,7 +3167,7 @@ jpf.MultiselectBinding = function(){
             if (this.getFirstTraverseNode())
                 this.$removeClearMessage();
             else
-                this.$setClearMessage(this.emptyMsg, "empty")
+                this.$setClearMessage(this["empty-message"], "empty")
         }
 
         //Check Insert

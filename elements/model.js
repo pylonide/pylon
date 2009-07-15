@@ -187,9 +187,9 @@ jpf.model = function(data, caching){
         }
         else {
             //jmlNode.$model = this;
-            if (this.state == 1)
+            if (this.state == 1 && jmlNode.clear)
                 jmlNode.clear("loading");
-            if (this.data)
+            else if (this.data)
                 this.loadInJmlNode(jmlNode, xpath);
         }
 

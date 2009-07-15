@@ -815,7 +815,7 @@ jpf.BaseTab = function(){
             };
 
             // #ifdef __WITH_MOUSESCROLL
-            jpf.addEventListener("mousescroll", function(e) {
+            /*jpf.addEventListener("mousescroll", function(e) {
                 var found = (e.target == _self.oButtons);
                 while (!found && e.target != document.body) {
                     e.target = e.target.offsetParent;
@@ -825,7 +825,7 @@ jpf.BaseTab = function(){
                 var dir = e.delta > 0 ? SCROLL_LEFT : SCROLL_RIGHT;
                 e.delta = Math.abs(e.delta);
                 _self.scroll(e, dir);
-            });
+            });*/
             //#endif
 
             this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
