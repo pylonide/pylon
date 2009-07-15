@@ -101,8 +101,9 @@ jpf.editor.plugin('anchor', function() {
              </j:bar></j:toolbar>',
           document.getElementById(idButton));
         this.oName = document.getElementById(idName);
+        //#ifdef __WITH_WINDOW_FOCUS
         jpf.sanitizeTextbox(this.oName);
-
+        // #endif
         return panelBody;
     };
 
