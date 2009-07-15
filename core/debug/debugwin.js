@@ -401,15 +401,16 @@ jpf.debugwin = {
         this.logView.scrollTop = this.logView.scrollHeight;
 
         //!self.ERROR_HAS_OCCURRED && 
-        if (jpf.addEventListener) {
-            jpf.addEventListener("debug", function(e){
-                if (!jpf.debugwin.logView) return;
+        if (jpf.addEventListener)
+            jpf.addEventListener("debug", this.debugHandler);
+    },
+    
+    debugHandler : function(e){
+        if (!jpf.debugwin.logView) return;
 
-                jpf.debugwin.logView.insertAdjacentHTML("beforeend", e.message);
-                jpf.debugwin.logView.style.display = "block";
-                jpf.debugwin.logView.scrollTop     = jpf.debugwin.logView.scrollHeight;
-            });
-        }
+        jpf.debugwin.logView.insertAdjacentHTML("beforeend", e.message);
+        jpf.debugwin.logView.style.display = "block";
+        jpf.debugwin.logView.scrollTop     = jpf.debugwin.logView.scrollHeight;
     },
 
     formatError: function(e) {
