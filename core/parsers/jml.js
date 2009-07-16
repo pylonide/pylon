@@ -417,7 +417,7 @@ jpf.JmlParser = {
                 else if(noImpliedParent)
                     o.$setParent(jmlParent);
                 /* #else
-                if (o)
+                if (o && o.nodeFunc)
                 #endif */
                 {
                     o.$jmlLoaded = true;
