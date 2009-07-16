@@ -174,6 +174,14 @@ jpf.flow.canvas = function(htmlElement) {
     this.getMode = function() {
         return this.mode;
     };
+    
+    this.getScrollLeft = function() {
+        return document.documentElement.scrollLeft || document.body.scrollLeft;
+    }
+    
+    this.getScrollTop = function() {
+        return document.documentElement.scrollTop || document.body.scrollTop;
+    }
 };
 
 /**
@@ -908,8 +916,8 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     var sPos = jpf.getAbsolutePosition(this.htmlElement.parentNode);
 
     this.onMove = function(e) {
-        this.htmlElement.style.left = (e.clientX - sPos[0] + 2 + this.canvas.htmlElement.scrollLeft) + "px";
-        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 + this.canvas.htmlElement.scrollTop) + "px";
+        this.htmlElement.style.left = (e.clientX - sPos[0] + 2 + this.canvas.getScrollLeft()) + "px";
+        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 + this.canvas.getScrollTop()) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
