@@ -178,7 +178,7 @@ jpf.JmlParser = {
                 if (!o || !o.nodeFunc)
                     o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
                 /* #else
-                if (o)
+                if (o && o.nodeFunc)
                 #endif */
                 {
                     o.$jmlLoaded = true;
