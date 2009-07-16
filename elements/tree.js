@@ -240,8 +240,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                             if (to != this.isSelected(nodes[i]))
                                 list.push(nodes[i]);
                         }
-                        
-                        this.selectList(list);
+                        if(list.length)
+                            this.selectList(list);
 
                         jpf.setStyleClass(jpf.xmldb.findHTMLNode(e.xmlNode, this), 
                             to ? "selected" : "", ["partial", "selected"]);
