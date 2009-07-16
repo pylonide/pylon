@@ -40,7 +40,7 @@ jpf.chart_draw = {
         $:1},
         plane :{
             inherit : 'shape',
-            line : '#cfcfcf',
+            stroke : '#cfcfcf',
             fill : '#e6f1f8',
         $:1},
         plane2 :{
@@ -76,7 +76,7 @@ jpf.chart_draw = {
             inherit : 'shape',
             join : 'grid',
             extend : 0,
-            /*line : '#cfcfcf',
+            /*stroke' : '#cfcfcf',
             weight : 1,
             opacity: 0.3,
             extend : 0,*/
@@ -97,13 +97,13 @@ jpf.chart_draw = {
         $:1},
         vbar : {
             inherit : 'bar',
-            //line : '#cfcfcf',
+            //stroke' : '#cfcfcf',
             //fill : 'green',
         $:1},
         axis :{
             inherit : 'shape',
             join : 'grid',
-            line : 'black',
+            stroke' : 'black',
             weight: 1,
             extend: 2,
         $:0},
@@ -116,7 +116,7 @@ jpf.chart_draw = {
             left: 0,
             top : 0,
             size : 4,
-            line : '#000000',
+            stroke' : '#000000',
         $:0},
         tickx : {inherit : 'tick',$:1},
         ticky : {inherit : 'tick',$:1},
@@ -357,7 +357,7 @@ jpf.chart_draw = {
         grid : {
             inherit : 'shape',
             join : 'grid',
-            line : '#cfcfcf',
+            stroke' : '#cfcfcf',
             weight : 1,
             opacity: 0.3,
             extend : 0,
@@ -373,16 +373,16 @@ jpf.chart_draw = {
         hbar : {
             side: 1,
             inherit : 'bar',
-			line : '#cfcfcf',
+			stroke' : '#cfcfcf',
             //opacity: 1,
         $:0},
         vbar : {
             side: 1,
             inherit : 'bar',
-            line : '#cfcfcf',
+            stroke' : '#cfcfcf',
             fill: 'blue',
 			opacity: 0.25,
-            //line : '#cfcfcf',
+            //stroke' : '#cfcfcf',
         $:0},
         hbarxy :{
             inherit: 'hbar',
@@ -392,13 +392,13 @@ jpf.chart_draw = {
         $:1}, 
         hbarxz :{
             inherit: 'hbar',
-            line: 'black',
+            stroke': 'black',
             opacity:0.25,
         $:1}, 
         vbarxz :{
             inherit: 'vbar',
             fill: '#e6f1f8',
-            line: 'black',
+            stroke': 'black',
         //     opacity:0.5,
         $:1}, 
         hbaryz :{
@@ -410,7 +410,7 @@ jpf.chart_draw = {
         $:1}, 
         vbaryz :{
             inherit: 'vbar',
-            line: 'black',
+            stroke': 'black',
             opacity:0.25,            
             fill: null,
         $:1}, 
@@ -418,7 +418,7 @@ jpf.chart_draw = {
         axis :{
             inherit : 'shape',
             join : 'grid',
-            line : 'black',
+            stroke' : 'black',
             opacity: 0.5,
             weight: 3,
         $:0},
@@ -433,7 +433,7 @@ jpf.chart_draw = {
             size : 4, 
             scale : 0.1,
             angle : 'ang(180)',
-            line : '#000000',
+            stroke' : '#000000',
         $:0},
         tickx : {inherit : 'tick',angle:'ang(90+f1*90)',$:1},
         ticky : {inherit : 'tick',angle:'ang(90+f2*90)',$:1},
@@ -448,7 +448,7 @@ jpf.chart_draw = {
             top: "fontz(-5,200)",
             size: "fontz(10,200)",
             scale: 0.2,
-            line: null,
+            stroke': null,
             angle : 'ang(180)',
             format : "fixed(v,1)",
         $:0},
@@ -656,7 +656,7 @@ jpf.chart_draw = {
     _line2D: {
         graph : {
             inherit : 'shape',
-            line : '#000000',
+            stroke' : '#000000',
             weight: 1,
         $:1}
     },
@@ -706,7 +706,7 @@ jpf.chart_draw = {
 			steps : 50,
 			zpos : 0,
             depth : 0.5,
-            line: 'black',
+            stroke': 'black',
             fill: 'red',
             opacity: 0.3,
         $:1}
@@ -762,7 +762,7 @@ jpf.chart_draw = {
     _bar3D: {
         graph : {
             inherit : 'shape',
-            line: '#000000',
+            stroke': '#000000',
             weight : 1,
             fill : 'red',
         $:1}
@@ -806,7 +806,7 @@ jpf.chart_draw = {
 			steps : 50,
 			zpos : 0,
             depth : 0.5,
-            line: 'black',
+            stroke': 'black',
             fill: 'red',
             opacity: 0.3,
         $:1}
@@ -966,7 +966,7 @@ jpf.chart_draw = {
         graph : {
             inherit : 'shape',
             shape: 'rect',
-            line: '#000000',
+            stroke': '#000000',
             weight : 1,
             fill : 'red',
         $:1}
@@ -1015,7 +1015,7 @@ jpf.chart_draw = {
    _shape2D: {
         graph: {
             inherit : 'shape',
-            line: '#000000',
+            stroke': '#000000',
             weight : 1,
             left: -1.5,
             top : -1.5,
@@ -1066,7 +1066,7 @@ jpf.chart_draw = {
         $:1},
         graph : {
             inherit : 'shape',
-            line: '#000000',
+            stroke': '#000000',
             weight : 1,
             fill : 'red',
         $:1}
