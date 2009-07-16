@@ -420,6 +420,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                       = height + "px";
             this.image.style.height = height + "px";
             this.image.style.width = width + "px";
+            this.image.style.filter = "";
         }
     }
 
