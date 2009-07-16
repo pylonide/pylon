@@ -3021,7 +3021,7 @@ jpf.MultiselectBinding = function(){
                 
                 if (!this.selected) {
                     if (this.renderRoot)
-                        this.select(XMLRoot);
+                        this.select(XMLRoot, null, null, null, true);
                     else if (nodes.length)
                         this.$selectDefault(XMLRoot);
                     else
@@ -3481,8 +3481,9 @@ jpf.MultiselectBinding = function(){
         }
         //#endif
 
+        //@todo why is this in beforeselect?
         this.$chained = true;
-        if (!this.dataParent || !this.dataParent.parent.$chained) {
+        if (!e.force && (!this.dataParent || !this.dataParent.parent.$chained)) {
             var _self = this;
             setTimeout(function(){
                 _self.setConnections(combinedvalue || _self.selected);
@@ -3490,7 +3491,7 @@ jpf.MultiselectBinding = function(){
             }, 10);
         }
         else {
-            this.setConnections(combinedvalue || this.selected);
+            this.setConnections(combinedvalue || e.xmlNode);
             delete this.$chained;
         }
     });

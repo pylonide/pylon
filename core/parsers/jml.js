@@ -1239,7 +1239,8 @@ jpf.JmlParser = {
         //#endif
 
         // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        jpf.layout.activateRules();// processQueue();
+        jpf.layout.processQueue();
+        jpf.layout.activateRules();
         //#endif
 
         if (!this.loaded) {

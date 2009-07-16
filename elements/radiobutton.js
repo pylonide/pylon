@@ -96,8 +96,11 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     /**
      * @private
      */
-    this.removeRadio = function(oRB){
+    this.removeRadio = function(oRB, destroyOnEmpty){
         this.radiobuttons.remove(oRB);
+        
+        if (destroyOnEmpty && !this.radiobuttons.length)
+            this.destroy();
     }
 
     /**
@@ -562,6 +565,11 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.checked && !this.radiogroup.value)
             this.$propHandlers["checked"].call(this, this.checked);
     };
+    
+    this.$destroy = function(){
+        if (this.radiogroup)
+            this.radiogroup.removeRadio(this, true);
+    }
 }).implement(
     jpf.Presentation
 );

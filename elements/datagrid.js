@@ -1379,7 +1379,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$selectDefault = function(XMLRoot){
-        this.select(XMLRoot.selectSingleNode(this.traverse));
+        this.select(XMLRoot.selectSingleNode(this.traverse), null, null, null, true);
     };
     
     var lastcell, lastcol = 0, lastrow;

@@ -1093,7 +1093,8 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     this.multiselect = false; // Initially Disable MultiSelect
     
     this.$selectDefault = function(xmlNode){
-        if(this.select(this.getFirstTraverseNode(xmlNode))) return true;
+        if (this.select(this.getFirstTraverseNode(xmlNode), null, null, null, true)) 
+            return true;
         else{
             var nodes = this.getTraverseNodes(xmlNode);
             for(var i=0;i<nodes.length;i++){

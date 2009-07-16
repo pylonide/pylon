@@ -342,6 +342,8 @@ var jpf = {
          * @type {Boolean}
          */
         this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
+        if (this.isIE) this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
+        
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 8.
          * @type {Boolean}

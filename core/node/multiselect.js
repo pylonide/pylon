@@ -685,6 +685,7 @@ jpf.MultiSelect = function(){
             htmlNode    : htmlNode,
             ctrlKey     : ctrlKey,
             shiftKey    : shiftKey,
+            force       : force,
             captureOnly : noEvent
         }) === false)
               return false;

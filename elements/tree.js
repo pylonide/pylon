@@ -1273,7 +1273,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$selectDefault = function(xmlNode){
-        if (this.select(this.getFirstTraverseNode(xmlNode)))
+        if (this.select(this.getFirstTraverseNode(xmlNode), null, null, null, true))
             return true;
         else {
             var nodes = this.getTraverseNodes(xmlNode);

@@ -746,7 +746,7 @@ jpf.BaseList = function(){
     };
 
     this.$selectDefault = function(XMLRoot){
-        this.select(this.getTraverseNodes()[0]);
+        this.select(this.getTraverseNodes()[0], null, null, null, true);
     };
 
     this.implement(jpf.MultiSelect,
