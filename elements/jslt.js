@@ -74,6 +74,8 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     
     var lastMsg, lastClass, changedHeight;
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
+        if (lastClass)
+            this.$removeClearMessage();
         jpf.setStyleClass(this.oExt, 
             (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
         
@@ -82,14 +84,17 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
               && jpf.getStyle(this.oInt, "height") == "auto" 
               && (changedHeight = true))
                 this.oInt.style.height = (this.oInt.offsetHeight 
-                  - jpf.getHeightDiff(this.oInt) + 7) + "px";
+                  - jpf.getHeightDiff(this.oInt)) + "px";
             this.oInt.innerHTML = msg;
             lastMsg = this.oInt.innerHTML;
         }
     };
 
     this.$removeClearMessage = function(){
-        jpf.setStyleClass(this.oExt, "", [lastClass]);
+        if (lastClass) {
+            jpf.setStyleClass(this.oExt, "", [lastClass]);
+            lastClass = null;
+        }
         
         if (this.oInt.innerHTML == lastMsg) {
             if (changedHeight && !(changedHeight = false))
