@@ -141,6 +141,10 @@ jpf.flow.canvas = function(htmlElement) {
 
     this.htmlBlocks     = {};
     this.htmlConnectors = {};
+    
+    this.scrollPointer  = null;
+    this.lastTop  = 0;
+    this.lastLeft = 0;
 
     this.mode           = "normal";
     this.disableremove  = false;
@@ -175,12 +179,52 @@ jpf.flow.canvas = function(htmlElement) {
         return this.mode;
     };
     
-    this.getScrollLeft = function() {
+    this.getWindowScrollLeft = function() {
         return document.documentElement.scrollLeft || document.body.scrollLeft;
-    }
+    };
+    
+    this.getWindowScrollTop = function() {
+        return document.documentElement.scrollTop || document.body.scrollTop;
+    };
+    
+    this.scrollLeft = function() {
+        this.htmlElement.scrollLeft = 9999;
+    };
+    
+    this.scrollTop = function() {
+        this.htmlElement.scrollTop = 9999;
+    };
+    
+    this.getScrollLeft = function() {
+        return this.htmlElement.scrollLeft;
+    };
     
     this.getScrollTop = function() {
-        return document.documentElement.scrollTop || document.body.scrollTop;
+        return this.htmlElement.scrollTop;
+    };
+    
+    this.addScrollPointer = function() {
+        this.scrollPointer = this.htmlElement.appendChild(document.createElement("div"));
+        this.scrollPointer.className = "scrollPointer";
+    };
+    
+    this.moveLeftScrollPointer = function(left) {
+        var value = parseInt(left) + 150;
+        this.scrollPointer.style.left = value + "px";
+        this.lastLeft = parseInt(left);
+    };
+    
+    this.moveTopScrollPointer = function(top) {
+        var value = parseInt(top) + 150;
+        this.scrollPointer.style.top  = value + "px";
+        this.lastTop = parseInt(top);
+    };
+    
+    this.getWidth = function() {
+        return this.htmlElement.offsetWidth;
+    }
+    this.getHeight = function() {
+        return this.htmlElement.offsetHeight;
     }
 };
 
@@ -400,6 +444,19 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         if (t !== top || l !== left) {
             this.htmlElement.style.top  = top + "px";
             this.htmlElement.style.left = left + "px";
+            
+            var st = this.canvas.getScrollTop();
+            var sl = this.canvas.getScrollLeft();
+            
+            if (this.canvas.lastTop < top || top > this.canvas.getHeight() - 100) {
+                this.canvas.moveTopScrollPointer(top);
+                this.canvas.scrollTop();
+            }
+
+            if (this.canvas.lastLeft < left && left > this.canvas.getWidth() - 100) {
+                this.canvas.moveLeftScrollPointer(left);
+                this.canvas.scrollLeft();
+            }
         }
     }
 
@@ -917,8 +974,12 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     var sPos = jpf.getAbsolutePosition(this.htmlElement.parentNode);
 
     this.onMove = function(e) {
-        this.htmlElement.style.left = (e.clientX - sPos[0] + 2 + this.canvas.getScrollLeft()) + "px";
-        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 + this.canvas.getScrollTop()) + "px";
+        this.htmlElement.style.left = (e.clientX - sPos[0] + 2) 
+            + this.canvas.getScrollLeft() 
+            + this.canvas.getWindowScrollLeft()+ "px";
+        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 
+            + this.canvas.getScrollTop()) 
+            + this.canvas.getWindowScrollTop() + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();

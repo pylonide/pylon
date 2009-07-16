@@ -1151,6 +1151,9 @@ jpf.console.info("FILL");
 
         this.nodes = [];
 
+        if (!_self.objCanvas.scrollPointer) {
+            _self.objCanvas.addScrollPointer();
+        }
     }
 
     this.$destroy = function() {
