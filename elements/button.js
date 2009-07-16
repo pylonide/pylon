@@ -194,6 +194,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             ml = f.multiline;
         }
 
+        if (!_self.oExt.onmouseup)
+            return;
+
         if (ml && ml != "optional" && e.keyCode == 13
           && e.ctrlKey || (!ml || ml == "optional")
           && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey)

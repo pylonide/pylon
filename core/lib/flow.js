@@ -64,7 +64,7 @@ jpf.flow = {
     init : function() {
         //jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
 
-        document.onmousedown = function(e) {
+        document.body.onmousedown = function(e) {
             e = (e || event);
 
             /* Looking for Block element */
@@ -96,7 +96,7 @@ jpf.flow = {
                 e.preventDefault();
             }
 
-            document.onmousemove = function(e) {
+            document.body.onmousemove = function(e) {
                 e = (e || event);
 
                 isDraged = true;
@@ -113,8 +113,8 @@ jpf.flow = {
                 return false;
             }
 
-            document.onmouseup = function(e) {
-                document.onmousemove = null;
+            document.body.onmouseup = function(e) {
+                document.body.onmousemove = null;
 
                 if(jpf.flow.onaftermove && isDraged) {
                     jpf.flow.onaftermove(dy, dx);
@@ -862,17 +862,17 @@ jpf.flow.input = function(objBlock, number) {
         connection.newConnector.virtualSegment = true;
         vMB.onMove(e);
 
-        document.onmousemove = function(e) {
+        document.body.onmousemove = function(e) {
             e = (e || event);
 
             if(vMB)
                 vMB.onMove(e);
         };
 
-        document.onmouseup = function(e) {
+        document.body.onmouseup = function(e) {
             e = (e || event);
             var t = e.target || e.srcElement;
-            document.onmousemove = null;
+            document.body.onmousemove = null;
             jpf.flow.isMoved = false;
 
             if (t && canvas.mode == "connection-change") {

@@ -3635,6 +3635,9 @@ jpf.MultiselectBinding = function(){
      */
     this.$propHandlers["select"]   = this.$handleBindingRule;
     //#endif
+    
+    if (!this.clear) 
+        this.clear = function(){}
 };
 // #endif
 
