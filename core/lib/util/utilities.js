@@ -493,18 +493,6 @@ jpf.K = function(){};
 // #ifdef __WITH_ECMAEXT
 
 /**
- * Determines whether a variable is null or empty string.
- *
- * @param {mixed} value the variable to check
- * @return {Boolean}
- */
-jpf.isNull = function(value){
-    if (value)
-        return false;
-    return (value == null || !String(value).length);
-};
-
-/**
  * Reliably determines whether a variable is a Number.
  *
  * @param {mixed}   value The variable to check

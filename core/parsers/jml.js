@@ -414,7 +414,7 @@ jpf.JmlParser = {
                 //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeFunc)
                     o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
-                else if(noImpliedParent)
+                else //if(noImpliedParent)
                     o.$setParent(jmlParent);
                 /* #else
                 if (o && o.nodeFunc)
@@ -997,9 +997,11 @@ jpf.JmlParser = {
         "actiontracker" : function(q, jmlParent){
             var at = new jpf.actiontracker(jmlParent);
             at.loadJml(q);
-            
-            if (jmlParent)
+
+            if (jmlParent) {
+                at.$setParent(jmlParent);
                 jmlParent.$at = at;
+            }
 
             return at;
         },

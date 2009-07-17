@@ -1784,6 +1784,8 @@ jpf.DataBinding = function(){
             this.unloadBindings();
             this.unloadActions();
         }
+        if (this.$model)
+            this.$model.unregister(this);
     });
 
     /**

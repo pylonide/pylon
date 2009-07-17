@@ -721,7 +721,7 @@ jpf.Class = function(){
         this.$jml = null;
 
         //Remove from DOM tree if we are still connected
-        if (this.parentNode)
+        if (this.parentNode && this.removeNode)
             this.removeNode();
 
         //Remove from focus list - Should be in JmlNode

@@ -143,6 +143,8 @@ jpf.layout = {
         else {
             var splitter = new jpf.splitter();//this.parentNode
             var o = jpf.findHost(layout.parentNode) || jpf.JmlParser;
+            //splitter.parentNode = o;
+            //o.childNodes.push(splitter); //@todo hack
             splitter.skinset = jpf.xmldb.getInheritedAttribute(o.$jml, "skinset"); //@todo use skinset here. Has to be set in presentation
             splitter.$loadSkin();
             splitter.$draw();

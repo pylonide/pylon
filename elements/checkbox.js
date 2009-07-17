@@ -87,7 +87,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         this.checked = (value !== undefined
             && value.toString() == this.$values[0].toString());
 
-        if (!jpf.isNull(value) && value.toString() == this.$values[0].toString())
+        if (value !== null && value.toString() == this.$values[0].toString())
             this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);

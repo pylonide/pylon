@@ -161,6 +161,7 @@ jpf.model = function(data, caching){
     };
 
     var jmlNodes = {};
+    this.jmlNodes = jmlNodes
     /**
      * Registers a jml element to this model in order for the jml element to
      * receive data loaded in this model.
