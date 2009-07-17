@@ -415,13 +415,14 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
                         // Drawing day numbers
                         this.$setStyleClass(cells[j], "", ["weekend",
-                            "disabled", "active", "prev", "next"]);
+                            "disabled", "active", "prev", "next", "weeknumber"]);
                         
                         z++;
                         if ((z - 1) % 8 == 0) {
                             cells[j].innerHTML = w_weeks 
                                 - Math.ceil((months[_month].number + _dayNumber) / 7)
                                 + 1 + (z - 1) / 8;
+                            this.$setStyleClass(cells[j], "weeknumber");
                         }
                         else {
                             y++;
