@@ -323,7 +323,8 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     /**
-     * Removes this element from the document hierarchy.
+     * Removes this element from the document hierarchy. Call-chaining is
+     * supported.
      *
      */
     this.removeNode = function(doOnlyAdmin){
@@ -336,7 +337,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         //#endif
 
         if (!this.parentNode || !this.parentNode.childNodes)
-            return;
+            return this;
 
         //#ifdef __DEBUG
         if (!this.parentNode.childNodes.contains(this)) {
@@ -391,7 +392,8 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     /**
-     * Removes a child from the node list of this element.
+     * Removes a child from the node list of this element. Call-chaining is
+     * supported.
      */
     this.removeChild = function(childNode) {
         //#ifdef __DEBUG
@@ -403,6 +405,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         //#endif
 
         childNode.removeNode();
+        return this;
     };
 
     /**
@@ -464,7 +467,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     /**
-     * Sets an attribute on this element.
+     * Sets an attribute on this element. Call-chaining is supported.
      * @param {String} name the name of the attribute to which the value is set
      * @param {String} value the new value of the attribute.
      */
@@ -479,11 +482,11 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this.addEventListener(name, (this.$events[name] = (typeof value == "string"
                 ? new Function('event', value)
                 : value)));
-            return;
+            return this;
         }
 
         if (this.nodeFunc == jpf.NODE_VISIBLE && !this.$drawn)
-            return;
+            return this;
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (jpf.dynPropMatch.test(value))
@@ -494,16 +497,18 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this.setProperty(name, value);
         else
             this[name] = value;
+        return this;
     };
 
     /**
-     * Removes an attribute from this element
+     * Removes an attribute from this element. Call-chaining is supported.
      * @param {String} name the name of the attribute to remove.
      */
     this.removeAttribute = function(name){
         //Should deconstruct dynamic properties
 
         this.setProperty(name, null);
+        return this;
     };
 
     /**

@@ -281,11 +281,17 @@ jpf.BaseTab = function(){
     // #ifdef __ENABLE_TABSCROLL
     
     var SCROLLANIM = {
-            scrollOn: false,
-            steps   : 15,
-            interval: 10,
-            size    : 0,
-            left    : 0
+            scrollOn  : false,
+            steps     : 15,
+            interval  : 10,
+            size      : 0,
+            left      : 0,
+            control   : {
+                stop  : false
+            },
+            stopHandle: function() {
+                bAnimating = false;
+            }
         },
         SCROLL_OFF     = 0x0001,
         SCROLL_HOVER   = 0x0002,
@@ -316,6 +322,9 @@ jpf.BaseTab = function(){
     }
 
     function setButtonState(dir, state) {
+        var bBoth = dir & SCROLL_BOTH;
+        if (bBoth)
+            dir = SCROLL_LEFT;
         var oBtn = _self[dir & SCROLL_LEFT ? "oLeftScroll" : "oRightScroll"];
         if (!(state & SCROLL_DIS)) {
             if (dir & SCROLL_LEFT)
@@ -332,6 +341,9 @@ jpf.BaseTab = function(){
             _self.$setStyleClass(oBtn,  "down", ["disabled", "hover"]);
         else if (state & SCROLL_DIS)
             _self.$setStyleClass(oBtn,  "disabled", ["hover", "down"]);
+
+        if (bBoth)
+            setButtonState(SCROLL_RIGHT, state);
     }
 
     /**
@@ -440,7 +452,7 @@ jpf.BaseTab = function(){
         if (typeof dir == "undefined")
             dir = SCROLL_LEFT;
 
-        jpf.tween.clearQueue(this.oButtons, true);
+        //jpf.tween.clearQueue(this.oButtons, true);
         var iCurrentLeft = this.oButtons.offsetLeft,
             size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size;
 
@@ -458,6 +470,7 @@ jpf.BaseTab = function(){
                     to      : iCurrentLeft + 12,
                     type    : "left",
                     anim    : jpf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode) {
                         jpf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
@@ -466,6 +479,7 @@ jpf.BaseTab = function(){
                             to      : iCurrentLeft,
                             type    : "left",
                             anim    : jpf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
                                 if (e.name == "mousescroll")
@@ -488,10 +502,12 @@ jpf.BaseTab = function(){
             jpf.tween.single(this.oButtons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
                     if (e.name == "mousescroll")
@@ -512,8 +528,9 @@ jpf.BaseTab = function(){
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft - 24,
-                    type: "left",
-                    anim: jpf.tween.EASEOUT,
+                    type    : "left",
+                    anim    : jpf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode, options) {
                         jpf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
@@ -522,6 +539,7 @@ jpf.BaseTab = function(){
                             to      : iCurrentLeft,
                             type    : "left",
                             anim    : jpf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
                                 if (e.name == "mousescroll")
@@ -541,10 +559,12 @@ jpf.BaseTab = function(){
             jpf.tween.single(this.oButtons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
                     if (e.name == "mousescroll")
@@ -609,6 +629,7 @@ jpf.BaseTab = function(){
                 to      : iTargetLeft,
                 type    : "left",
                 anim    : jpf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
                     setButtonState(SCROLL_RIGHT, SCROLL_OFF);
@@ -794,7 +815,7 @@ jpf.BaseTab = function(){
         this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
             function startTimer(e, dir) {
-                stopTimer();
+                clearTimeout(scrollTimer);
                 globalDir   = dir;
                 scrollTimer = setTimeout(function() {
                     keepScrolling = true;
@@ -807,11 +828,8 @@ jpf.BaseTab = function(){
             }
 
             this.oScroller.onmouseout = function(e) {
-                e = e || window.event;
-                var el = e.target || e.srcElement;
-                if (el == _self.oLeftScroll || el == _self.oRightScroll)
-                    return;
-                stopTimer();
+                SCROLLANIM.control.stop = true;
+                setButtonState(SCROLL_BOTH, SCROLL_OFF);
             };
 
             // #ifdef __WITH_MOUSESCROLL
@@ -837,6 +855,7 @@ jpf.BaseTab = function(){
 
                 _self[sBtn].ondbclick   =
                 _self[sBtn].onmousedown = function(e) {
+                    SCROLLANIM.control.stop = false;
                     var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
                     if (this.className.indexOf("disabled") != -1
                       || state & SCROLL_DOWN) return;
@@ -847,6 +866,7 @@ jpf.BaseTab = function(){
                         this.onmouseout();
                 };
                 _self[sBtn].onmouseover = function() {
+                    SCROLLANIM.control.stop = false;
                     var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
                     if (this.className.indexOf("disabled") != -1
                       || state & SCROLL_DOWN) return;
@@ -865,7 +885,7 @@ jpf.BaseTab = function(){
                         setButtonState(dir, SCROLL_OFF);
                     }
                     stopTimer();
-                    jpf.tween.clearQueue(_self.oButtons);
+                    SCROLLANIM.control.stop = true;
                 };
             });
         }

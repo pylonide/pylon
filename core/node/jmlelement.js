@@ -83,58 +83,68 @@ jpf.JmlElement = function(){
          * Sets the different between the left edge and the right edge of this
          * element. Depending on the choosen layout method the unit can be
          * pixels, a percentage or an expression.
+         * Call-chaining is supported.
          * @param {Number} value the new width of this element.
          */
         this.setWidth = function(value){
             this.setProperty("width", value);
+            return this;
         };
 
         /**
          * Sets the different between the top edge and the bottom edge of this
          * element. Depending on the choosen layout method the unit can be
          * pixels, a percentage or an expression.
+         * Call-chaining is supported.
          * @param {Number} value the new height of this element.
          */
         this.setHeight = function(value){
             this.setProperty("height", value);
+            return this;
         };
 
         /**
          * Sets the left position of this element. Depending on the choosen
          * layout method the unit can be pixels, a percentage or an expression.
+         * Call-chaining is supported.
          * @param {Number} value the new left position of this element.
          */
         this.setLeft   = function(value){
             this.setProperty("left", value);
+            return this;
         };
 
         /**
          * Sets the top position of this element. Depending on the choosen
          * layout method the unit can be pixels, a percentage or an expression.
+         * Call-chaining is supported.
          * @param {Number} value the new top position of this element.
          */
         this.setTop    = function(value){
             this.setProperty("top", value);
+            return this;
         };
 
         this.$noAlignUpdate = false;
         if (!this.show)
             /**
-             * Makes the elements visible
+             * Makes the elements visible. Call-chaining is supported.
              */
             this.show = function(s){
                 this.$noAlignUpdate = s;
                 this.setProperty("visible", true);
                 this.$noAlignUpdate = false;
+                return this;
             };
         if (!this.hide)
             /**
-             * Makes the elements invisible
+             * Makes the elements invisible. Call-chaining is supported.
              */
             this.hide = function(s){
                 this.$noAlignUpdate = s;
                 this.setProperty("visible", false);
                 this.$noAlignUpdate = false;
+                return this;
             };
 
         /**
@@ -170,47 +180,58 @@ jpf.JmlElement = function(){
         /**** Disabling ****/
 
         /**
-         * Activates the functions of this element.
+         * Activates the functions of this element. Call-chaining is supported.
          */
         this.enable  = function(){
             this.setProperty("disabled", false);
+            return this;
         };
 
         /**
          * Deactivates the functions of this element.
+         * Call-chaining is supported.
          */
         this.disable = function(){
             this.setProperty("disabled", true);
+            return this;
         };
 
         /**** z-Index ****/
 
         /**
          * Moves this element to the lowest z ordered level.
+         * Call-chaining is supported.
          */
         this.sendToBack = function(){
             this.setProperty("zindex", 0);
+            return this;
         };
 
         /**
          * Moves this element to the highest z ordered level.
+         * Call-chaining is supported.
          */
         this.bringToFront  = function(){
             this.setProperty("zindex", jpf.all.length + 1);
+            return this;
         };
 
         /**
          * Moves this element one z order level deeper.
+         * Call-chaining is supported.
          */
         this.sendBackwards = function(){
             this.setProperty("zindex", this.zindex - 1);
+            return this;
         };
 
         /**
          * Moves this element one z order level higher.
+         * Call-chaining is supported.
          */
         this.bringForward  = function(){
             this.setProperty("zindex", this.zindex + 1);
+            return this;
         };
 
         //#endif
@@ -222,11 +243,13 @@ jpf.JmlElement = function(){
             /**
              * Sets the position in the list that determines the sequence
              * of elements when using the tab key to move between them.
+             * Call-chaining is supported.
              * @param {Number} tabindex the position in the list
              */
             this.setTabIndex = function(tabindex){
                 jpf.window.$removeFocus(this);
                 jpf.window.$addFocus(this, tabindex);
+                return this;
             };
 
             /**
@@ -247,7 +270,7 @@ jpf.JmlElement = function(){
                         //#endif
                     }
 
-                    return;
+                    return this;
                 }
 
                 if (this.$focus)
@@ -257,10 +280,12 @@ jpf.JmlElement = function(){
                     srcElement : this,
                     bubbles    : true
                 });
+                return this;
             };
 
             /**
              * Removes the focus from this element.
+             * Call-chaining is supported.
              */
             this.blur = function(noset, e){
                 //#ifdef __WITH_POPUP
@@ -278,6 +303,7 @@ jpf.JmlElement = function(){
                     srcElement : this,
                     bubbles    : !e || !e.cancelBubble
                 });
+                return this;
             };
 
             /**

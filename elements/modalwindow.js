@@ -142,61 +142,71 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Public Methods ****/
 
     /**
-     * Sets the title of the window.
+     * Sets the title of the window. Call-chaining is supported.
      * @param {String} caption the text of the title.
      */
     this.setTitle = function(caption){
         this.setProperty("title", caption);
+        return this;
     };
 
     /**
-     * Sets the icon of the window.
+     * Sets the icon of the window. Call-chaining is supported.
      * @param {String} icon the location of the image.
      */
     this.setIcon = function(icon){
         this.setProperty("icon", icon);
+        return this;
     };
 
     /**
      * Close the window. It can be reopened by using {@link baseclass.jmlelement.method.show}
+     * Call-chaining is supported.
      * @todo show should unset closed
      */
     this.close = function(){
         this.setProperty("state", this.state.split("|")
             .pushUnique("closed").join("|"));
+        return this;
     };
 
     /**
      * Minimize the window. The window will become the height of the title of
      * the window.
+     * Call-chaining is supported.
      */
     this.minimize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("maximized")
             .remove("normal")
             .pushUnique("minimized").join("|"));
+        return this;
     };
 
     /**
      * Maximize the window. The window will become the width and height of the
      * browser window.
+     * Call-chaining is supported.
      */
     this.maximize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
             .remove("normal")
             .pushUnique("maximized").join("|"));
+        return this;
     };
 
     /**
      * Restore the size of the window. The window will become the width and
      * height it had before it was minimized or maximized.
+     * Call-chaining is supported.
      */
     this.restore = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
             .remove("maximized")
             .pushUnique("normal").join("|"));
+        return this;
     };
 
     this.slideIn = function(sFrom, bSticky) {
@@ -249,6 +259,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             type    : sType,
             anim    : jpf.tween.EASEIN
         });
+        return this;
     };
 
     this.slideOut = function(sTo) {
@@ -293,26 +304,32 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             anim    : jpf.tween.EASEOUT,
             onfinish: function() { _self.setProperty("visible", false); }
         });
+        return this;
     };
 
     /**
      * Set the window into edit state. The configuration panel is shown.
+     * Call-chaining is supported.
      */
     this.edit = function(value){
         this.setProperty("state", this.state.split("|")
             .pushUnique("edit").join("|"));
+        return this;
     };
 
     /**
      * Removes the edit state of this window. The configuration panel is hidden.
+     * Call-chaining is supported.
      */
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
             .remove("edit").join("|"));
+        return this;
     };
 
     this.bringToFront = function(){
         jpf.WinServer.setTop(this);
+        return this;
     };
 
     var actions  = {
