@@ -221,6 +221,8 @@ jpf.runIphone = function() {
 
     
     jpf.iphone = {
+        titleNode : null,
+
         linkEvents: function(el) {
             el.ontouchstart = function(evt) {
                 if (!evt.touches || evt.touches.length != 1) return;
@@ -273,19 +275,22 @@ jpf.runIphone = function() {
             levelTwoChar : "-",
 
             go: function(where, noanim) {
-                var _self = jpf.iphone.nav;
+                var i, p, _self = jpf.iphone.nav;
                 _self.update();
 
-                if (!_self.panels[where.page]) return;
+                if (!(p = _self.panels[where.page])) return;
 
-                scrollTo(0,1);
+                scrollTo(0, 1);
                 jpf.dispatchEvent("pagechange", where);
 
-                var i;
+                var sTitle = p.$jml.getAttribute("title");
+                if (jpf.iphone.titleNode && sTitle)
+                    jpf.iphone.titleNode.innerHTML = sTitle;
+
                 if (noanim) {
                     for (i in _self.panels)
                         _self.panels[i].hide();
-                    _self.panels[where.page].show();
+                    p.show();
                 }
                 else {
                     for (i in _self.panels) {
@@ -306,9 +311,8 @@ jpf.runIphone = function() {
                         });
                     }
 
-                    var pad = 10, 
-                        p   = _self.panels[where.page],
-                        el  = p.oExt,
+                    var pad   = 10,
+                        el    = p.oExt,
                         iFrom = (where.index < 0)
                             ? -(el.offsetWidth) - pad
                             : window.innerWidth + el.offsetLeft + pad;
