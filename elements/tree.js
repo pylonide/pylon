@@ -185,83 +185,21 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
      *   check  the user can select a single item from this element. The selected item is indicated.
      *   radio  the user can select multiple items from this element. Each selected item is indicated.
      */
-    this.mode = "normal";
+    this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
-        this.mode = value || "normal";
-        
-        if ("check|radio".indexOf(this.mode) > -1) {
-            this.allowdeselect = false;
+        if ("check|radio".indexOf(value) > -1) {
+            this.implement(jpf.MultiCheck);
             
-            this.addEventListener("afterrename", $afterRenameMode);
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
-            if (this.mode == "check") {
-                this.autoselect    = false;
-                this.ctrlselect    = true;
-                this.bufferselect  = false;
-                this.multiselect   = true;
-                this.delayedselect = false;
-                
-                this.addEventListener("afterselect", function(e){
-                    var pNode = this.getTraverseParent(e.xmlNode);
-                    
-                    if (pNode != this.xmlRoot) {
-                        var nodes = this.getTraverseNodes(pNode);
-                        var sel   = e.list;
-                        
-                        var count = 0;
-                        for (var i = 0; i < nodes.length; i++) {
-                            if (sel.contains(nodes[i]))
-                                count++;
-                        }
-                        
-                        if (count) {
-                            var htmlNode = jpf.xmldb.findHTMLNode(this.getTraverseParent(e.xmlNode), this);
-                            jpf.setStyleClass(htmlNode, count == nodes.length 
-                                ? "selected"
-                                : "partial", ["partial", "selected"]);
-                            
-                            if (!this.isSelected(pNode))
-                                this.select(pNode, null, null, null, null, true);
-                        }
-                        else {
-                            var htmlNode = jpf.xmldb.findHTMLNode(pNode, this);
-                            jpf.setStyleClass(htmlNode, "", ["partial", "selected"]);
-                            
-                            if (this.isSelected(pNode))
-                                this.select(pNode);
-                        }
-                    }
-                    
-                    var list = [];
-                    var to   = this.isSelected(e.xmlNode);
-                    nodes    = this.getTraverseNodes(e.xmlNode);
-                    if (nodes.length) {
-                        for (var i = 0; i < nodes.length; i++) {
-                            if (to != this.isSelected(nodes[i]))
-                                list.push(nodes[i]);
-                        }
-                        if(list.length)
-                            this.selectList(list);
-
-                        jpf.setStyleClass(jpf.xmldb.findHTMLNode(e.xmlNode, this), 
-                            to ? "selected" : "", ["partial", "selected"]);
-                    }
-                    
-                    this.setIndicator(e.xmlNode);
-                });
-            }
-            else if (this.mode == "radio")
-                this.multiselect = false;
-            
-            //if (!this.actionRules) //default disabled
-                //this.actionRules = {}
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
         }
         else {
             //@todo undo actionRules setting
-            this.ctrlselect = false;
-            this.bufferselect = true;//hmm fishy
-            this.multiselect = false;//hmm fishy
             this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
         }
     };
     
@@ -278,22 +216,28 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Public Methods ****/
     
     /**
-     * @notimplemented
-     * @todo who's volunteering?
-     * @private
+     * Expands all items in the tree
      */
     this.expandAll    = function(){
-        var pNodes = this.xmlRoot.selectNodes(this.traverse
+        /*var pNodes = this.xmlRoot.selectNodes(this.traverse
           .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
           
         for (var i = pNodes.length - 1; i >=0; i--)
-            this.slideOpen(null, pNodes[i], true);
+            this.slideOpen(null, pNodes[i], true);*/
+        
+        var xpath = this.traverse.split('|')
+            .join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//');
+        (function(node){
+            var nodes = node.selectNodes(xpath);
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                _self.slideToggle(jpf.xmldb.getHtmlNode(nodes[i], _self), 1, true);
+                arguments.callee(nodes[i]);
+            }
+        })(this.xmlRoot);
     };
     
     /**
-     * @notimplemented
-     * @todo who's volunteering?
-     * @private
+     * Collapses all items in the tree
      */
     this.collapseAll   = function(){
         var pNodes = this.xmlRoot.selectNodes(this.traverse
@@ -315,7 +259,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @private
      */
-    this.slideToggle = function(htmlNode, force){
+    this.slideToggle = function(htmlNode, force, immediate){
         if (this.nocollapse)
             return;
         
@@ -333,12 +277,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
-            this.slideClose(container, jpf.xmldb.getNode(htmlNode));
+            this.slideClose(container, jpf.xmldb.getNode(htmlNode), immediate);
         }
         else {
             if (force == 2) return;
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
-            this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
+            this.slideOpen(container, jpf.xmldb.getNode(htmlNode), immediate);
         }
     };
     
@@ -350,7 +294,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
-        var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+        var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
         
@@ -369,14 +313,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         container.style.display = "block";
         
-        if (immediate) {
-            container.style.height = "auto";
+        if (!this.prerender && _self.$hasLoadStatus(xmlNode, "potential") 
+          && !container.innerHTML) {
+            _self.$extend(xmlNode, container, immediate);
             return;
         }
         
-        if (!this.prerender && _self.$hasLoadStatus(xmlNode, "potential") 
-          && !container.innerHTML) {
-            _self.$extend(xmlNode, container);
+        if (immediate) {
+            container.style.height = "auto";
             return;
         }
 
@@ -419,7 +363,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         if (!container) {
-            var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+            var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
             container = this.$findContainer(htmlNode);
         }
         
@@ -517,7 +461,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.lastel = this.$findValueNode(el);
         
         if (action == "list-append") {
-            var htmlNode = jpf.xmldb.findHTMLNode(this.getTraverseParent(jpf.xmldb.getNode(this.lastel)), this);
+            var htmlNode = jpf.xmldb.findHtmlNode(this.getTraverseParent(jpf.xmldb.getNode(this.lastel)), this);
             
             this.lastel = htmlNode
                 ? this.$getLayoutNode("item", "container", htmlNode)
@@ -597,7 +541,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (!htmlParentNode) {
-                htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
+                htmlParentNode = jpf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
@@ -609,7 +553,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             
             if (!beforeNode && this.getNextTraverse(xmlNode))
-                beforeNode = jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this);
+                beforeNode = jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this);
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -638,10 +582,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
                 //this.$fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.$fixItem(xmlParentNode, jpf.xmldb.findHTMLNode(xmlParentNode, this));
+                this.$fixItem(xmlParentNode, jpf.xmldb.findHtmlNode(xmlParentNode, this));
                 if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
                     this.$fixItem(this.getNextTraverse(xmlNode, true), 
-                        jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
+                        jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
                         this));
                 }
             }
@@ -756,6 +700,16 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
+        if (this.$mode) {
+            var elCheck = this.$getLayoutNode("item", "check");
+            elCheck.setAttribute("onmousedown",
+                "var o = jpf.lookup(" + this.uniqueId + ");\
+                o.checkToggle(this);\o.$skipSelect = true;");
+            
+            if (this.isChecked(xmlNode))
+                this.$setStyleClass(oItem, "checked");
+        }
+        
         var ocAction = this.opencloseaction || "ondblclick";
         
         //Icon interaction
@@ -816,7 +770,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //#ifdef __WITH_RENAME
         elSelect.setAttribute("onmouseup", 
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (this.dorename && o.mode == 'normal') \
+            if (this.dorename && !o.$mode) \
                 o.startDelayedRename(event);\
             this.dorename = false;");
         //#endif
@@ -873,10 +827,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode, true);
-        //this.$fixItem(xmlNode.parentNode, jpf.xmldb.findHTMLNode(xmlNode.parentNode, this));
+        //this.$fixItem(xmlNode.parentNode, jpf.xmldb.findHtmlNode(xmlNode.parentNode, this));
         /*throw new Error();
         if(xmlNode.previousSibling) //should use traverse here
-            this.$fixItem(xmlNode.previousSibling, jpf.xmldb.findHTMLNode(xmlNode.previousSibling, this));*/
+            this.$fixItem(xmlNode.previousSibling, jpf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
     this.$moveNode = function(xmlNode, htmlNode){
@@ -892,12 +846,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         var oPHtmlNode = htmlNode.parentNode;
-        var pHtmlNode  = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
+        var pHtmlNode  = jpf.xmldb.findHtmlNode(xmlNode.parentNode, this);
         //if(!pHtmlNode) return;
         
         var nSibling = this.getNextTraverse(xmlNode);
         var beforeNode = nSibling 
-            ? jpf.xmldb.findHTMLNode(nSibling, this) 
+            ? jpf.xmldb.findHtmlNode(nSibling, this) 
             : null;
         var pContainer = pHtmlNode 
             ? this.$getLayoutNode("item", "container", pHtmlNode) 
@@ -925,10 +879,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$fixItem(xmlNode, htmlNode);
         
         var tParent = this.getTraverseParent(xmlNode);
-        this.$fixItem(tParent, jpf.xmldb.findHTMLNode(tParent, this));
+        this.$fixItem(tParent, jpf.xmldb.findHtmlNode(tParent, this));
         if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
             this.$fixItem(this.getNextTraverse(xmlNode, true),
-                jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
+                jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
                 this));
         }
     };
@@ -985,7 +939,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     //check databinding for how this is normally implemented
-    this.$extend = function(xmlNode, container){
+    this.$extend = function(xmlNode, container, immediate){
         var rule       = this.getNodeFromRule("insert", xmlNode, null, true);
         var xmlContext = rule 
             ? xmlNode.selectSingleNode(rule.getAttribute("select") || ".") 
@@ -1016,13 +970,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loading");
-            this.$removeLoading(jpf.xmldb.findHTMLNode(xmlNode, this));
+            this.$removeLoading(jpf.xmldb.findHtmlNode(xmlNode, this));
             var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
                 result  : result,
-                anim    : true
+                anim    : !immediate
             });
         }
     };
@@ -1036,7 +990,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         */
         
         if (e.action == "move-away")
-            this.$fixItem(e.xmlNode, jpf.xmldb.findHTMLNode(e.xmlNode, this), true);
+            this.$fixItem(e.xmlNode, jpf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
         
@@ -1095,16 +1049,26 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                if (ctrlKey || this.mode != "normal" || !this.isSelected(this.indicator))
+                if (this.$tempsel)
+                    this.selectTemp();
+
+                if (this.$mode && !ctrlKey) {
+                    var sel = this.getSelection();
+                    if (!sel.length || !this.multiselect)
+                        this.checkToggle(this.indicator);
+                    else
+                        this.checkList(sel, this.isChecked(this.selected), true);
+                }
+                else if (ctrlKey || !this.isSelected(this.indicator))
                     this.select(this.indicator, true);
-                break;
+                return false;
             case 46:
                 if (this.$tempsel)
                     this.selectTemp();
             
                 //DELETE
                 //this.remove();
-                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
+                this.remove(this.indicator); //this.mode != "check"
                 break;
             case 109:
             case 37:
@@ -1114,7 +1078,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                 if (this.indicator.selectSingleNode(this.traverse))
                     this.slideToggle(this.$indicator || this.$selected, 2)
-                break;
+                return false;
             case 107:
             case 39:
                 //RIGHT
@@ -1173,8 +1137,6 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     oExt.scrollTop = this.$tempsel.offsetTop;
                 
                 return false;
-             
-                break;
             case 40:
                 //DOWN
                 if (!selXml && !this.$tempsel) 
@@ -1213,7 +1175,6 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                         - oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
                 
                 return false;
-                break;
             case 33: //@todo
                 //PGUP
                 break;
@@ -1225,6 +1186,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
             case 35: //@todo
                 //END
+                break;
+            default:
+                if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                }
                 break;
         }
     }, true);

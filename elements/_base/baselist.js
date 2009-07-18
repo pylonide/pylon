@@ -194,7 +194,7 @@ jpf.BaseList = function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -222,7 +222,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -246,7 +246,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) {
                     oExt.scrollTop = selHtml.offsetTop
@@ -275,7 +275,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -310,7 +310,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -342,7 +342,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -472,7 +472,7 @@ jpf.BaseList = function(){
         var oPHtmlNode = htmlNode.parentNode;
         var nNode      = this.getNextTraverse(xmlNode);
         var beforeNode = nNode
-            ? jpf.xmldb.findHTMLNode(nNode, this)
+            ? jpf.xmldb.findHtmlNode(nNode, this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);

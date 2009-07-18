@@ -750,7 +750,7 @@ jpf.Class = function(){
                               maintain a reference, memory might leak");
         }
         //#endif
-
+        
         //#ifdef __WITH_LANG_SUPPORT
         for (prop in this.$isMultiLang) {
             jpf.language.removeElement(this.$isMultiLang[prop][0], 
@@ -763,6 +763,10 @@ jpf.Class = function(){
         //Remove id from global js space
         if (this.id || this.name)
             self[this.id || this.name] = null;
+        
+        //#ifdef __WITH_NAMESERVER
+        jpf.nameserver.remove(this.tagName, this);
+        //#endif
     };
 };
 

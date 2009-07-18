@@ -397,7 +397,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
+            var htmlNode = jpf.xmldb.findHtmlNode(this.selected, this);
             if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
 

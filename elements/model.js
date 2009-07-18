@@ -161,7 +161,6 @@ jpf.model = function(data, caching){
     };
 
     var jmlNodes = {};
-    this.jmlNodes = jmlNodes
     /**
      * Registers a jml element to this model in order for the jml element to
      * receive data loaded in this model.
@@ -212,10 +211,10 @@ jpf.model = function(data, caching){
     this.unregister = function(jmlNode){
         //if (this.connect)
             //this.connect.node.disconnect(jmlNode);
-        if(jmlNode.dataParent)
+        if (jmlNode.dataParent)
             jmlNode.dataParent.parent.disconnect(jmlNode);
 
-        delete jmlNodes[jmlNode.uniqueId]
+        delete jmlNodes[jmlNode.uniqueId];
     };
 
     /**

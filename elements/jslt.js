@@ -23,7 +23,7 @@
 /**
  * Element displaying the contents of a jslt transformation on
  * the bound data. For more information on jslt see 
- * {@link object.jsltimplementation}.
+ * {@link core.jsltimplementation}.
  * Example:
  * <code>
  *  <j:jslt model="mdlChat"><![CDATA[

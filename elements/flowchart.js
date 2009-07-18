@@ -1005,7 +1005,7 @@ jpf.console.info("ADD");
 jpf.console.info("FILL");
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
-                htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this),
+                htmlElement = jpf.xmldb.findHtmlNode(xmlBlock, this),
                 type = xmlBlocks[id].getAttribute("type") || null,
                 inputList = {};
 

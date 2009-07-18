@@ -345,6 +345,7 @@ jpf.tween = {
             _self.current = info;
             if (info.control && info.control.stop) {
                 info.control.stop = false;
+
                 jpf.tween.clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);

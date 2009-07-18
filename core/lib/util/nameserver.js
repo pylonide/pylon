@@ -51,6 +51,17 @@ jpf.namespace("nameserver", {
         return (this.lookup[type][id] = item);
     },
     
+    remove : function(type, item){
+        var list = this.lookup[type];
+        if (list) {
+            for (prop in list) {
+                if (list[prop] == item) {
+                    delete list[prop];
+                }
+            }
+        }
+    },
+    
     get : function(type, id){
         return this.lookup[type] ? this.lookup[type][id] : null;
     },

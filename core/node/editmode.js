@@ -194,7 +194,7 @@ jpf.language = {
                     
                     for (var i = 0; i < nodes.length; i++) {
                         jmlNode.$updateNode(nodes[i], 
-                          jpf.xmldb.findHTMLNode(nodes[i], jmlNode));
+                          jpf.xmldb.findHtmlNode(nodes[i], jmlNode));
                     }
                 }
                 else {

@@ -96,11 +96,8 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     /**
      * @private
      */
-    this.removeRadio = function(oRB, destroyOnEmpty){
+    this.removeRadio = function(oRB){
         this.radiobuttons.remove(oRB);
-        
-        if (destroyOnEmpty && !this.radiobuttons.length)
-            this.destroy();
     }
 
     /**
@@ -134,7 +131,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
         oRB.check(true);
         this.current = oRB;
     };
-
+    
     /**
      * Returns the current value of this element.
      * @return {String}
@@ -240,7 +237,8 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         this.radiogroup = jpf.nameserver.get("radiogroup", value);
         if (!this.radiogroup) {
             var rg = new jpf.radiogroup(this.pHtmlNode, "radiogroup");
-
+            
+            rg.id = rg.name = value;
             rg.errBox     = this.errBox;
             rg.parentNode = this.parentNode; //is this one needed?
 

@@ -288,7 +288,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
         var httpBody = options.parsed[2];
     }
 
-    var oHttp = new jpf.http();
+    var oHttp = jpf.oHttp;
     oHttp.contentType = "application/x-www-form-urlencoded";
     oHttp.method = (options.instrType.replace(/url.?/, "") || "GET").toUpperCase();
     oHttp.get(jpf.getAbsolutePath(jpf.appsettings.baseurl, url + (oHttp.method == "GET" ? "?" + query : "")), callback,

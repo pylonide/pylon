@@ -161,6 +161,14 @@ jpf.XmlDatabase = function(){
         return true;
     };
 
+    this.getHtmlNode = function(xmlNode, oComp){
+        if (xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
+            return oComp.getNodeFromCache(xmlNode.getAttribute(this.xmlIdTag)
+                + "|" + oComp.uniqueId);
+        }
+        return null;
+    }
+
     /**
      * Finds the html representation of an xml node for a certain element.
      *
@@ -168,7 +176,7 @@ jpf.XmlDatabase = function(){
      * @param {JMLNode} oComp    the element that has created the representation.
      * @return {HTMLNode} the html node representing the xml node.
      */
-    this.findHTMLNode = function(xmlNode, oComp){
+    this.findHtmlNode = function(xmlNode, oComp){
         do {
             if (xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
                 return oComp.getNodeFromCache(xmlNode.getAttribute(this.xmlIdTag)
@@ -190,7 +198,7 @@ jpf.XmlDatabase = function(){
      * @param {HTMLNode} htmlNode  the html node representing the an xml node.
      * @return {XMLNode} the {@link term.datanode data node} for which the html node is it's representation.
      */
-    this.findXMLNode = function(htmlNode){
+    this.findXmlNode = function(htmlNode){
         if (!htmlNode)
             return false;
 

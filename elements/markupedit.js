@@ -161,7 +161,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
-        var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+        var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
 
@@ -607,10 +607,10 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         if (xmlNode == this.selected)
             this.clearSelection();
         
-        //this.fixItem(xmlNode.parentNode, jpf.xmldb.findHTMLNode(xmlNode.parentNode, this));
+        //this.fixItem(xmlNode.parentNode, jpf.xmldb.findHtmlNode(xmlNode.parentNode, this));
         /*throw new Error();
         if(xmlNode.previousSibling) //should use traverse here
-            this.fixItem(xmlNode.previousSibling, jpf.xmldb.findHTMLNode(xmlNode.previousSibling, this));*/
+            this.fixItem(xmlNode.previousSibling, jpf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
     function animHighlight(oHtml){
@@ -754,7 +754,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         */
         
         if (e.action == "move-away")
-            this.fixItem(e.xmlNode, jpf.xmldb.findHTMLNode(e.xmlNode, this), true);
+            this.fixItem(e.xmlNode, jpf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
         
@@ -985,7 +985,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (!htmlParentNode) {
-                htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
+                htmlParentNode = jpf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
@@ -996,13 +996,13 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$setStyleClass(container, "root");
                 
                 if (this.renderRoot) {
-                    var realParent = jpf.xmldb.findHTMLNode(this.xmlRoot, this);
+                    var realParent = jpf.xmldb.findHtmlNode(this.xmlRoot, this);
                     htmlParentNode = this.$getLayoutNode("item", "container", realParent);
                 }
             }
             
             if (!beforeNode && this.getNextTraverse(xmlNode))
-                beforeNode = jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this);
+                beforeNode = jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this);
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
 
@@ -1032,10 +1032,10 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.slideOpen(htmlParentNode, xmlParentNode);
                 
                 //this.fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.fixItem(xmlParentNode, jpf.xmldb.findHTMLNode(xmlParentNode, this));
+                this.fixItem(xmlParentNode, jpf.xmldb.findHtmlNode(xmlParentNode, this));
                 if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
                     this.fixItem(this.getNextTraverse(xmlNode, true), 
-                        jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true), this));
+                        jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true), this));
                 }
             }
         }
@@ -1053,7 +1053,7 @@ jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Please please consider moving this to jpf.databinding and make it generic.. this is a mess
         /*if(this.renderRoot){
-            var htmlNode = jpf.xmldb.findHTMLNode(this.xmlRoot, this);
+            var htmlNode = jpf.xmldb.findHtmlNode(this.xmlRoot, this);
             if(!htmlNode || htmlNode.parentNode != this.oInt){
                 var nodes = nodes;
                 nodes = [];

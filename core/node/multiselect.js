@@ -620,8 +620,16 @@ jpf.MultiSelect = function(){
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
         if (!this.selectable || this.disabled) return;
 
+        if (this.$skipSelect) {
+            this.$skipSelect = false;
+            return;
+        }
+
         if (this.ctrlselect && !shiftKey)
             ctrlKey = true;
+
+        if (!this.multiselect)
+            ctrlKey = shiftKey = false;
         
         // Selection buffering (for async compatibility)
         if (!this.xmlRoot) {
@@ -696,7 +704,7 @@ jpf.MultiSelect = function(){
         this.indicator    = xmlNode;
 
         //Multiselect with SHIFT Key.
-        if (shiftKey && this.multiselect) {
+        if (shiftKey) {
             var range = this.$calcSelectRange(valueList[0] || lastIndicator,
                 xmlNode);
 
@@ -708,18 +716,13 @@ jpf.MultiSelect = function(){
             this.$selected  =
             this.$indicator = this.$indicate(htmlNode);
         }
-        else if (ctrlKey && this.multiselect) { //Multiselect with CTRL Key.
+        else if (ctrlKey) { //Multiselect with CTRL Key.
             //Node will be unselected
             if (valueList.contains(xmlNode)) {
-                if (!fakeselect) {
-                    selectedList.remove(htmlNode);
-                    valueList.remove(xmlNode);
-                }
-
                 if (this.selected == xmlNode) {
                     var ind = this.$indicator;
                     this.clearSelection(true, true);
-                     this.$deindicate(ind);
+                    this.$deindicate(ind);
 
                     if (valueList.length && !fakeselect) {
                         //this.$selected = selectedList[0];
@@ -728,6 +731,11 @@ jpf.MultiSelect = function(){
                 }
                 else
                     this.$deselect(htmlNode, xmlNode);
+
+                if (!fakeselect) {
+                    selectedList.remove(htmlNode);
+                    valueList.remove(xmlNode);
+                }
 
                 if (htmlNode != this.$indicator)
                     this.$deindicate(this.$indicator);
@@ -1015,6 +1023,9 @@ jpf.MultiSelect = function(){
      */
     this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
         clearTimeout(this.timer);
+
+        if (!this.multiselect)
+            ctrlKey = shiftKey = false;
 
         if (ctrlKey || this.ctrlselect) {
             if (this.$tempsel) {

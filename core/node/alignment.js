@@ -277,6 +277,7 @@ jpf.Alignment = function(){
 
     this.$jmlDestroyers.push(function(){
         this.disableAlignment();
+        this.aData = null;
     });
 };
 // #endif

@@ -168,7 +168,7 @@ jpf.runXslt = function(){
             "import": function(context, xslNode, childStack, result){
                 var file = xslNode.getAttribute("href");
                 if (!this.cache[file]) {
-                    var data = new jpf.http().get(file);
+                    var data = jpf.oHttp.get(file);
                     this.cache[file] = data;
                 }
 

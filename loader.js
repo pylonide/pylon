@@ -249,6 +249,7 @@ jpf.KernelModules = [
     "node/editmode.js",
     "node/jmldom.js",
     "node/media.js",
+    "node/multicheck.js",
     "node/multilevelbinding.js",
     "node/multiselect.js",
     "node/presentation.js",

@@ -487,7 +487,7 @@ jpf.DragDrop = function(){
                 fEl = this.host.$findValueNode(srcEl);
             var el = (fEl
                 ? jpf.xmldb.getNode(fEl)
-                : jpf.xmldb.findXMLNode(srcEl));
+                : jpf.xmldb.findXmlNode(srcEl));
             if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
                 return;
 
@@ -763,7 +763,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel = (fEl
             ? jpf.xmldb.getNode(fEl)
-            : jpf.xmldb.findXMLNode(el));
+            : jpf.xmldb.findXmlNode(el));
         var candrop = o.isDropAllowed
             ? o.isDropAllowed(this.dragdata.selection, elSel || o.xmlRoot)
             : false;
@@ -807,7 +807,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel   = (o.$findValueNode
             ? jpf.xmldb.getNode(o.$findValueNode(el))
-            : jpf.xmldb.findXMLNode(el));
+            : jpf.xmldb.findXmlNode(el));
         var candrop = (o.isDropAllowed)//elSel && 
             ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
             : false;

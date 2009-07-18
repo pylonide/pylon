@@ -404,7 +404,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      *     -1   when thumbnails are scrolling in left
      */
     this.addSelection = function(move) {
-        var htmlElement = jpf.xmldb.findHTMLNode(current, this),
+        var htmlElement = jpf.xmldb.findHtmlNode(current, this),
             ww          = jpf.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,

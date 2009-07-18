@@ -255,25 +255,6 @@ jpf.DataBinding = function(){
         jpf.console.info("Initializing Actions for " + this.tagName
             + "[" + (this.name || '') + "]");
         //#endif
-
-        //@todo revise this
-        //#ifdef __WITH_TRANSACTION
-        if (node && (jpf.isTrue(node.getAttribute("transaction"))
-          || node.selectSingleNode("add|update"))){
-            if (!this.hasFeature(__TRANSACTION__))
-                this.implement(jpf.Transaction); /** @inherits jpf.Transaction */
-
-            //Load ActionTracker & xmldb
-            if (!this.$at)
-                this.$at = new jpf.actiontracker(this);
-
-            this.$at.realtime = isTrue(node.getAttribute("realtime"));
-            this.defaultMode  = node.getAttribute("mode") || "update";
-
-            //Turn caching off, it collides with rendering views on copies of data with the same id's
-            this.caching      = false;
-        }
-        //#endif
     };
 
     /**
@@ -1784,8 +1765,12 @@ jpf.DataBinding = function(){
             this.unloadBindings();
             this.unloadActions();
         }
-        if (this.$model)
+        if (this.$model) {
             this.$model.unregister(this);
+
+            if (!this.$model.name)
+                this.$model.destroy();
+        }
     });
 
     /**
@@ -2726,7 +2711,7 @@ jpf.MultiselectBinding = function(){
 
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch || _self.$withContainer){
-                    var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
+                    var htmlNode = jpf.xmldb.findHtmlNode(sNodes[i], _self);
 
                     //#ifdef __DEBUG
                     if (!_self.$findContainer){
@@ -2746,7 +2731,7 @@ jpf.MultiselectBinding = function(){
                     sortNodes(sNodes[i], container);
                 }
                 else
-                    htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
+                    htmlParent.appendChild(jpf.xmldb.findHtmlNode(sNodes[i], _self));
             }
         })(this.xmlRoot, this.oInt);
 

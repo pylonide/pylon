@@ -408,7 +408,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     //#ifdef __WITH_HTML5
                     //@todo make this work for non html5 validation
                     if (!isValid) {
-                        this.validityState.errorHtml = jpf.xmldb.findHTMLNode(node, this).childNodes[1];
+                        this.validityState.errorHtml = jpf.xmldb.findHtmlNode(node, this).childNodes[1];
                         this.validityState.errorXml  = node;
                         this.invalidmsg = this.applyRuleSetOnNode("invalidmsg", node);
                         break;
@@ -584,7 +584,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop <= oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
@@ -614,7 +614,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScroll ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -648,7 +648,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
@@ -682,7 +682,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                selHtml = jpf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScrollY ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -827,7 +827,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideOpen = function(container, xmlNode){
-        var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+        var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = htmlNode.nextSibling;
 
@@ -1370,7 +1370,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode) return;
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling 
-            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
+            ? jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -2695,7 +2695,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     for (var i = 0, l = lstUpdate.length; i < l; i++) {
                         _self.$updateNode(lstUpdate[i], 
-                            jpf.xmldb.findHTMLNode(lstUpdate[i], _self));
+                            jpf.xmldb.findHtmlNode(lstUpdate[i], _self));
                     }*/
                     
                     if (_self.renaming)
@@ -2703,14 +2703,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     if (_self.$lastUpdated) {
                         _self.$updateNode(_self.$lastUpdated, 
-                            jpf.xmldb.findHTMLNode(_self.$lastUpdated, _self));
+                            jpf.xmldb.findHtmlNode(_self.$lastUpdated, _self));
                         _self.$lastUpdated = null
                     }
                     else {
                         var nodes = _self.getTraverseNodes();
                         for (var i = 0, l = nodes.length; i < l; i++) {
                             _self.$updateNode(nodes[i], 
-                                jpf.xmldb.findHTMLNode(nodes[i], _self));
+                                jpf.xmldb.findHtmlNode(nodes[i], _self));
                         }
                     }
                                         
@@ -2767,7 +2767,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 
                                 var nodes = _self.getTraverseNodes();
                                 for (var s, i = 0, htmlNode, l = nodes.length; i < l; i++) {
-                                    htmlNode = jpf.xmldb.findHTMLNode(nodes[i], _self);
+                                    htmlNode = jpf.xmldb.findHtmlNode(nodes[i], _self);
                                     if (!htmlNode) 
                                         break;
 

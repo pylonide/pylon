@@ -256,6 +256,13 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.layout.removeRule(this.oExt, "resize");
         //#endif
         
+        this.oExt.onmousedown   = 
+        this.oExt.oncontextmenu = 
+        this.oExt.onselectstart = 
+        this.oExt.onmouseup     = 
+        this.oExt.onmousemove   = 
+        this.oExt.onmousewheel  = null;
+        
         window.clearTimeout(timer);
         window.clearInterval(animTimer);
     };

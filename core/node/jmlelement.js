@@ -1151,10 +1151,12 @@ jpf.JmlElement.propHandlers = {
             this.$at = value;
         else {
             this.$at = typeof value == "string" && self[value]
-                ? jpf.JmlParser.getActionTracker(value)
-                : jpf.setReference(value,
-                    jpf.nameserver.register("actiontracker",
-                        value, new jpf.actiontracker()));
+              ? jpf.JmlParser.getActionTracker(value)
+              : jpf.setReference(value,
+                  jpf.nameserver.register("actiontracker",
+                      value, new jpf.actiontracker()));
+            if (!this.$at.name)
+                this.$at.name = value;
         }
     },
     //#endif
