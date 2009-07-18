@@ -724,6 +724,7 @@ jpf.namespace("draw", {
                     t = m.match(/(\d\.?\d*)(.+)/);
                     ac.push(t[1],'*',t[2]);
                     lp = pos+m.length;
+                    return m;
                 }
                 if( openmac){
                     sn.push(ln=4);
@@ -1501,12 +1502,11 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
             d.push(this.statedyns[i]+"=_su[_sv+"+i+"]");
         }
         d=d.join(',');
-
         for(i = 0, j = v.length;i<j;i++){
             style = v[i]; 
             s[s.length]=[
               "if((_st=(_su=_storelist["+i+"]).length)>0){",
-                  "t = _su[0];",
+                  "_sv=0,",d,";",
                   this.beginShape(style),
                   "for(_sv=0;_sv<_st;_sv+=",n,"){",
                     d,",nt = 1-t;",

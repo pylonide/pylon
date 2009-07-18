@@ -163,7 +163,7 @@ jpf.namespace("draw.vml",{
                 }
                 if(style.isshape){
                     s.push(this.$finalizeShape(style));
-                    p.push(",_vmlfill:_n.firstChild,_vmlstroke:_n.lastChild");
+                    p.push(",_vmlfill:_n.lastChild?_n.lastChild.previousSibling:0,_vmlstroke:_n.lastChild");
                 }else{
                     p.push(",_txtused:0,_txtcount:0,_txtnodes:[],_txtdiv:\"",style._txtdiv,"\"");
                     s.push(this.$finalizeFont(style));
@@ -320,9 +320,9 @@ jpf.namespace("draw.vml",{
                             fillopacity = '1';
                             s.push("_s._vmlfill.opacity=",style.fillopacity,";");
                     };
-                    if( this.isDynamic(fill[0]) )
+                    if( this.isDynamic(fill[0]) ){
                         s.push("_s._vmlfill.color=",this.getColor(fill[0]),";");
-                    else color = fill[0];
+                    }else color = fill[0];
                 
                     child.push("<v:fill opacity='",fillopacity,
                         "' color=",this.getColor(color)," type='fill'/>");

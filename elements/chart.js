@@ -133,7 +133,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.JmlParser.parseChildren(x, this.oExt, this);
        
         var ox, oy, lx, ly, bt, stack = [], interact = false;
-            iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
+        var iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
 
         this.oExt.onmousedown = function(e){
 			if(doinit)return;
