@@ -22,50 +22,6 @@
 // #ifdef __WITH_WINDOW
 
 /**
- * @private
- */
-apf.windowManager = {
-    destroy: function(frm){
-        //Remove All Cross Window References Created on Init by apf.windowManager
-        // for (var i = 0; i < this.globals.length; i++)
-        //     frm.win[this.globals[i]] = null;
-    },
-
-    //root    : self,
-    userdata: [],
-
-    /* ********************************************************************
-     FORMS
-     *********************************************************************/
-    forms   : new Array(),
-
-    addForm: function(xmlFormNode){
-        var x = {
-            aml: xmlFormNode,
-            show: function(){
-                alert("not implemented");
-            }
-        };
-        this.forms.push(apf.setReference(x.name, x, true));
-        return x;
-    },
-
-    getForm: function(value){
-        for (var i = 0; i < this.forms.length; i++)
-            if (this.forms[i].name == value)
-                return this.forms[i];
-
-        return this.forms.length ? this.forms[0] : false;
-    },
-
-    closeAll: function(){
-        for (var i = 0; i < this.forms.length; i++)
-            if (this.forms[i].name != "main" && this.forms[i].type != "modal")
-                this.forms[i].hide();
-    }
-};
-
-/**
  * Object representing the window of the aml application. The semantic is
  * similar to that of a window in the browser, except that this window is not
  * the same as the javascript global object. It handles the focussing within
@@ -82,7 +38,7 @@ apf.windowManager = {
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.WindowImplementation = function(){
+apf.window = new (function(){
     apf.register(this, "window", apf.NODE_HIDDEN);
     this.apf = apf;
 
@@ -464,21 +420,6 @@ apf.WindowImplementation = function(){
     };
     
     var lastFocusParent;
-    //#ifdef __WITH_WINDOW_FOCUS
-    this.addEventListener("focus", function(e){
-        if (!apf.window.focussed && lastFocusParent && !apf.isIphone) {
-            apf.window.$focusLast(lastFocusParent);
-        }
-    });
-    this.addEventListener("blur", function(e){
-        if (!apf.window.focussed || apf.isIphone)
-            return;
-
-        apf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
-        lastFocusParent = apf.window.focussed.$focusParent;
-        apf.window.focussed = null;
-    });
-    //#endif
 
     this.$focusDefault = function(amlNode, e){
         var fParent = findFocusParent(amlNode);
@@ -1247,6 +1188,32 @@ apf.WindowImplementation = function(){
         return e.returnValue;
         //#endif
     };
+    
+    this.init = function(){
+        this.document = apf.document = new apf.AmlDocument();
+        
+        //#ifdef __WITH_ACTIONTRACKER
+        this.$at      = new apf.actiontracker();
+        this.$at.name = "default";
+        apf.nameserver.register("actiontracker", "default", this.$at);
+        //#endif
+        
+        //#ifdef __WITH_WINDOW_FOCUS
+        this.addEventListener("focus", function(e){
+            if (!apf.window.focussed && lastFocusParent && !apf.isIphone) {
+                apf.window.$focusLast(lastFocusParent);
+            }
+        });
+        this.addEventListener("blur", function(e){
+            if (!apf.window.focussed || apf.isIphone)
+                return;
+    
+            apf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
+            lastFocusParent = apf.window.focussed.$focusParent;
+            apf.window.focussed = null;
+        });
+        //#endif
+    }
 
     /**
      * @private
@@ -1255,7 +1222,6 @@ apf.WindowImplementation = function(){
         this.$at = null;
 
         apf.destroy(this);
-        apf.windowManager.destroy(this);
 
         apf           =
         this.win      =
@@ -1286,7 +1252,7 @@ apf.WindowImplementation = function(){
 
         document.body.innerHTML = "";
     };
-};
+})();
 
 /**
  * The aml document, this is the root of the DOM Tree and has a nodeType with 
@@ -1302,9 +1268,9 @@ apf.WindowImplementation = function(){
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.DocumentImplementation = function(){
+apf.AmlDocument = function(){
     apf.makeClass(this);
-
+    
     //#ifdef __WITH_AMLDOM
     this.implement(apf.AmlDom);
     //#endif

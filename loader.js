@@ -39,7 +39,7 @@ apf.Modules = [
     "AmlElement",
     "AmlParser",
     "Presentation",
-    "WindowImplementation",
+    "window",
     "XmlDatabase"
 ];
 apf.Elements = [

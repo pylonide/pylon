@@ -62,23 +62,6 @@ apf.AmlParser = {
                 "AML Parser got Markup without any children"));
         // #endif
 
-        //Create window and document
-        /**
-         * The window object of the application representing the browser window.
-         */
-        apf.window          = new apf.WindowImplementation();
-        
-        /**
-         * The DOM document element for this application.
-         */
-        apf.document        = new apf.DocumentImplementation();
-        apf.window.document = apf.document;
-        //#ifdef __WITH_ACTIONTRACKER
-        apf.window.$at      = new apf.actiontracker();
-        apf.window.$at.name = "default";
-        apf.nameserver.register("actiontracker", "default", apf.window.$at);
-        //#endif
-
         //First pass parsing of all AML documents
         for (var docs = [x], i = 0; i < apf.includeStack.length; i++) {
             if (apf.includeStack[i].nodeType)
@@ -199,16 +182,6 @@ apf.AmlParser = {
         var parsing = apf.isParsing;
         apf.isParsing = true;
 
-        if (!apf.window) {
-            apf.window          = new apf.WindowImplementation();
-            apf.document        = new apf.DocumentImplementation();
-            // #ifdef __WITH_ACTIONTRACKER
-            apf.window.document = apf.document;
-            apf.window.$at      = new apf.actiontracker();
-            apf.nameserver.register("actiontracker", "default", apf.window.$at);
-            //#endif
-        }
-        
         if (!this.$aml)
             this.$aml = x;
 
@@ -861,8 +834,6 @@ apf.AmlParser = {
             //Process AML
             o.loadAml(q, amlParent);
 
-            //apf.windowManager.addForm(q); //@todo rearchitect this
-
             return o;
         },
         //#endif
@@ -1053,17 +1024,6 @@ apf.AmlParser = {
             apf.AmlParser.getFromSbStack(amlParent.uniqueId)
                 .addDropRule(q, amlParent);
         },  //not referencable
-
-        "dragdrop" : function(q, amlParent){
-            var rules = apf.getRules(q);
-
-            if (amlParent && amlParent.hasFeature(__DATABINDING__)) {
-                apf.AmlParser.getFromSbStack(amlParent.uniqueId)
-                    .addDragDrop(rules, q);
-            }
-
-            return rules;
-        },
         // #endif
 
         // #ifdef __WITH_TELEPORT

@@ -635,6 +635,10 @@ var apf = {
         }
         catch(e) {};
 
+        //#ifdef __WITH_WINDOW
+        apf.window.init();
+        //#endif
+
         //try{apf.root = !window.opener || !window.opener.apf;}
         //catch(e){apf.root = false}
         this.root = true;
@@ -2219,17 +2223,6 @@ var apf = {
 
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (apf.isParsingPartial) {
-            //Form aml parser
-            if (!apf.window) {
-                apf.window          = new apf.WindowImplementation();
-                apf.document        = new apf.DocumentImplementation();
-                // #ifdef __WITH_ACTIONTRACKER
-                apf.window.document = apf.document;
-                apf.window.$at      = new apf.actiontracker();
-                apf.nameserver.register("actiontracker", "default", apf.window.$at);
-                //#endif
-            }
-
             apf.appsettings.setDefaults();
             apf.hasSingleRszEvent = true;
 
