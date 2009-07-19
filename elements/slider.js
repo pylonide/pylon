@@ -64,14 +64,14 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -90,8 +90,8 @@
  *  <j:slider ref="@value" />
  * </code>
  */
-jpf.range  =
-jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.range  =
+apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
 
     var _self    = this;
@@ -145,7 +145,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         var markers = this.oMarkers.childNodes;
         for (var i = markers.length - 1; i >= 0; i--) {
             if (markers[i].tagName == "u" && markers[i].nodeType == 1) //small hack
-                jpf.removeNode(markers[i]);
+                apf.removeNode(markers[i]);
         }
 
         if (!this.step && this.$jml)
@@ -167,7 +167,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 nodes.push(o);
             }
 
-            jpf.xmldb.htmlImport(nodes, this.oMarkers);
+            apf.xmldb.htmlImport(nodes, this.oMarkers);
         }
     }
     
@@ -226,7 +226,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["progress"] = function(value){
         if (!this.oProgress) {
             this.oProgress =
-              jpf.xmldb.htmlImport(this.$getLayoutNode("progress"),
+              apf.xmldb.htmlImport(this.$getLayoutNode("progress"),
                 this.$getLayoutNode("main", "progress", this.oExt));
         }
 
@@ -281,20 +281,20 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
-                - jpf.getWidthDiff(this.oContainer))
+                - apf.getWidthDiff(this.oContainer))
                 - this.oKnob.offsetWidth;
-            min = parseInt(jpf.getBox(
-                jpf.getStyle(this.oContainer, "padding"))[3]);
+            min = parseInt(apf.getBox(
+                apf.getStyle(this.oContainer, "padding"))[3]);
 
             offset = (((max - min) * multiplier) + min);
             if (animate) {
-                jpf.tween.single(this.oKnob, {
+                apf.tween.single(this.oKnob, {
                     type    : 'left',
                     steps   : 5,
                     interval: 10,
                     from    : this.oKnob.offsetLeft,
                     to      : offset,
-                    anim    : jpf.tween.NORMAL,
+                    anim    : apf.tween.NORMAL,
                     oneach  : function(oNode) {
                         if (_self.oFill)
                             _self.oFill.style.width = (oNode.offsetLeft + 3) + "px";
@@ -309,21 +309,21 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             max = (this.oContainer.offsetHeight
-                - jpf.getHeightDiff(this.oContainer))
+                - apf.getHeightDiff(this.oContainer))
                 - this.oKnob.offsetHeight;
-            min = parseInt(jpf.getBox(
-                jpf.getStyle(this.oContainer, "padding"))[0]);
+            min = parseInt(apf.getBox(
+                apf.getStyle(this.oContainer, "padding"))[0]);
 
             offset = (((max - min) * (1 - multiplier)) + min);
 
             if (animate) {
-                jpf.tween.single(this.oKnob, {
+                apf.tween.single(this.oKnob, {
                     type    : 'top',
                     steps   : 5,
                     interval: 10,
                     from    : this.oKnob.offsetTop,
                     to      : offset,
-                    anim    : jpf.tween.NORMAL,
+                    anim    : apf.tween.NORMAL,
                     oneach  : function(oNode) {
                         if (_self.oFill)
                             _self.oFill.style.height = (oNode.offsetTop + 3) + "px";
@@ -436,8 +436,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.$dir         = this.$getOption("main", "direction") || "horizontal";
 
-        this.oKnob.style.left = (parseInt(jpf.getBox(
-            jpf.getStyle(this.oExt, "padding"))[3])) + "px";
+        this.oKnob.style.left = (parseInt(apf.getBox(
+            apf.getStyle(this.oExt, "padding"))[3])) + "px";
 
         function prepareKnob(e) {
             this.x   = (e.clientX || e.x);
@@ -449,16 +449,16 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             this.startValue = _self.value;
 
             if (_self.$dir == "horizontal") {
-                this.max = parseInt(jpf.getStyle(_self.oContainer, "width"))
+                this.max = parseInt(apf.getStyle(_self.oContainer, "width"))
                     - this.offsetWidth;
-                this.min = parseInt(jpf.getBox(
-                    jpf.getStyle(_self.oContainer, "padding"))[3]);
+                this.min = parseInt(apf.getBox(
+                    apf.getStyle(_self.oContainer, "padding"))[3]);
             }
             else {
-                this.max = parseInt(jpf.getStyle(_self.oContainer, "height"))
+                this.max = parseInt(apf.getStyle(_self.oContainer, "height"))
                     - this.offsetHeight;
-                this.min = parseInt(jpf.getBox(
-                    jpf.getStyle(_self.oContainer, "padding"))[0]);
+                this.min = parseInt(apf.getBox(
+                    apf.getStyle(_self.oContainer, "padding"))[0]);
             }
         }
 
@@ -491,7 +491,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
             _self.$setStyleClass(this, "btndown", ["btnover"]);
 
-            jpf.dragmode.mode = true;
+            apf.dragmode.mode = true;
 
             dragging = true;
             
@@ -507,7 +507,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 e = e || window.event;
                 var o = this.dragNode;
                 if (!o) {
-                    jpf.dragmode.mode = document.onmousemove
+                    apf.dragmode.mode = document.onmousemove
                         = document.onmouseup = null;
 
                     return; //?
@@ -566,7 +566,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (_self.slideDiscreet)
                     _self.$propHandlers["value"].call(_self, knobValue, true);
 
-                jpf.dragmode.mode    = 
+                apf.dragmode.mode    = 
                 document.onmousemove = 
                 document.onmouseup   = null;
 
@@ -576,14 +576,14 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                         - _self.oKnob.offsetWidth)/2) + "px";
                     
                     setTimeout(function(){
-                        jpf.tween.single(_self.oBalloon, {
+                        apf.tween.single(_self.oBalloon, {
                             type : "fade",
                             from : 1,
                             to   : 0,
                             steps : 5,
                             onfinish : function(){
                                 _self.oBalloon.style.display = "none";
-                                if (jpf.isIE)
+                                if (apf.isIE)
                                     _self.oBalloon.style.filter = "";
                             }
                         })
@@ -610,7 +610,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var o = _self.oKnob;
             if ((e.srcElement || e.target) != o) {
-                var p = jpf.getAbsolutePosition(o);
+                var p = apf.getAbsolutePosition(o);
                 prepareKnob.call(o, {
                     x : p[0] + o.offsetWidth / 2,
                     y : p[1] + o.offsetHeight / 2
@@ -622,13 +622,13 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone)
-            jpf.iphone.linkEvents(this.oKnob);
+        if (apf.isIphone)
+            apf.iphone.linkEvents(this.oKnob);
         // #endif
 
         //#ifdef __WITH_LAYOUT
-        jpf.layout.setRules(this.oExt, "knob", 
-            "jpf.all[" + this.uniqueId + "].$resize()", true);
+        apf.layout.setRules(this.oExt, "knob", 
+            "apf.all[" + this.uniqueId + "].$resize()", true);
         //#endif
     };
 
@@ -636,7 +636,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$propHandlers["value"].call(this, this.value);
 
         //@todo this goes wrong with skin switching. smartbindings is called again.
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(){
@@ -646,20 +646,20 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oKnob.onmouseout  = null;
         
         //#ifdef __WITH_LAYOUT
-        jpf.layout.removeRule(this.oExt, "knob");
+        apf.layout.removeRule(this.oExt, "knob");
         //#endif
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     // #endif
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

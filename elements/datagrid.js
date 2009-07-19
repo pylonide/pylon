@@ -76,16 +76,16 @@
  * @define datagrid, spreadsheet, propedit
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.MultiSelect
- * @inherits jpf.Cache   
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.DragDrop
- * @inherits jpf.Rename
+ * @inherits apf.MultiSelect
+ * @inherits apf.Cache   
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.DragDrop
+ * @inherits apf.Rename
  *
  * @event beforelookup  Fires before the value lookup UI is shown.
  *   cancellable: Prevents the lookup value from being processed.
@@ -167,15 +167,15 @@
  * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
 
  */
-jpf.propedit    =
-jpf.spreadsheet = 
-jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.propedit    =
+apf.spreadsheet = 
+apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable  = true; // This object can get the focus
     this.multiselect  = true; // Enable MultiSelect
     this.bufferselect = false;
     
     this.startClosed  = true;
-    this.animType     = jpf.tween.NORMAL;
+    this.animType     = apf.tween.NORMAL;
     this.animSteps    = 3;
     this.animSpeed    = 20;
 
@@ -243,7 +243,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      *              <prop select="name" datatype="string" caption="Name*" 
      *                required="1" maxlength="255" 
      *                invalidmsg="Incorrect name;The name is required."/> 
-     *              <prop select="email" datatype="jpf:email" caption="Email" 
+     *              <prop select="email" datatype="apf:email" caption="Email" 
      *                maxlength="255" 
      *                invalidmsg="Incorrect e-mail;Please retype."/> 
      *              <prop select="date" datatype="xsd:date" caption="Date*" 
@@ -273,7 +273,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$initTemplate = function(){
         //#ifdef __WITH_VALIDATION
         if (!this.hasFeature(__VALIDATION__)) {
-            this.implement(jpf.Validation);
+            this.implement(apf.Validation);
             
             var vRules = {};
             var rules = ["required", "datatype",
@@ -366,7 +366,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     return true;
                 
                 var nodes, isValid = true;
-                var cacheId = this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag);
+                var cacheId = this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag);
                 if (!vRules[cacheId] || !vRules[cacheId].length)
                     vRules[cacheId] = cacheValidRules(cacheId, 
                         (nodes = this.getTraverseNodes()));
@@ -386,9 +386,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     node = nodes[i];
                     rule = rules[i];
                     type = node.getAttribute("type");
-                    valueNode = this.xmlData.selectSingleNode(jpf.getXmlValue(node, "@select|field/@select"));
+                    valueNode = this.xmlData.selectSingleNode(apf.getXmlValue(node, "@select|field/@select"));
                     value = valueNode && (!type || type == "text")
-                        ? valueNode.nodeType == 1 ? jpf.getXmlValue(valueNode, '.') : valueNode.nodeValue
+                        ? valueNode.nodeType == 1 ? apf.getXmlValue(valueNode, '.') : valueNode.nodeValue
                         : "";
 
                     //#ifdef __WITH_HTML5
@@ -408,7 +408,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     //#ifdef __WITH_HTML5
                     //@todo make this work for non html5 validation
                     if (!isValid) {
-                        this.validityState.errorHtml = jpf.xmldb.findHtmlNode(node, this).childNodes[1];
+                        this.validityState.errorHtml = apf.xmldb.findHtmlNode(node, this).childNodes[1];
                         this.validityState.errorXml  = node;
                         this.invalidmsg = this.applyRuleSetOnNode("invalidmsg", node);
                         break;
@@ -432,7 +432,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 return isValid;
             };
             
-            var vgroup = jpf.xmldb.getInheritedAttribute(this.$jml, "validgroup");
+            var vgroup = apf.xmldb.getInheritedAttribute(this.$jml, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
@@ -450,7 +450,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         for (var i = 0; i < def.length; i++) {
             if (!def[i][1]) continue;
             
-            if (jpf.isIE)
+            if (apf.isIE)
                 (win || window).document.styleSheets[0].addRule(def[i][0],
                     def[i][1]);
             else
@@ -570,10 +570,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     return false;
                     
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
 
-                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
                 var hasScroll = oInt.scrollHeight > oInt.offsetHeight;
                 var items     = Math.floor((oInt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -584,12 +584,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop <= oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0])
-                        - parseInt(jpf.getStyle(oInt, jpf.isIE 
+                        - parseInt(apf.getStyle(oInt, apf.isIE 
                             ? "paddingTop" 
                             : "padding-top"));
                 }
@@ -600,10 +600,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     return false;
                     
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
                 var hasScroll = oInt.scrollHeight > oInt.offsetHeight;
                 var items     = Math.floor((oInt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -614,7 +614,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScroll ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -628,10 +628,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     return false;
                     
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
                 var hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
                 var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 var items      = Math.floor((oInt.offsetWidth
@@ -648,12 +648,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0]) 
-                        - parseInt(jpf.getStyle(oInt, jpf.isIE 
+                        - parseInt(apf.getStyle(oInt, apf.isIE 
                             ? "paddingTop" 
                             : "padding-top"));
                 }
@@ -664,10 +664,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     return false;
 
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
                 var hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
                 var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 var items      = Math.floor((oInt.offsetWidth - (hasScrollY ? 15 : 0))
@@ -682,7 +682,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return false;
                 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScrollY ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -748,7 +748,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     // Too slow for IE
     
     this.$focus = function(){
-        if (!this.oExt || (jpf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
+        if (!this.oExt || (apf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
@@ -763,7 +763,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.stopRename(null, true);
         //#endif
 
-        if (!this.oExt || (jpf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
+        if (!this.oExt || (apf.isIE && useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
@@ -807,18 +807,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.noCollapse) 
             return;
         
-        //var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag); // unused?
+        //var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag); // unused?
         var container = htmlNode.nextSibling;
 
-        if (jpf.getStyle(container, "display") == "block") {
+        if (apf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
-            this.slideClose(container, jpf.xmldb.getNode(htmlNode));
+            this.slideClose(container, apf.xmldb.getNode(htmlNode));
         }
         else {
             if (force == 2) return;
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
-            this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
+            this.slideOpen(container, apf.xmldb.getNode(htmlNode));
         }
     };
     
@@ -827,13 +827,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.slideOpen = function(container, xmlNode){
-        var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
+        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = htmlNode.nextSibling;
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p     = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -842,7 +842,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         container.style.display = "block";
 
-        jpf.tween.single(container, {
+        apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : 0, 
             to      : container.scrollHeight, 
@@ -872,14 +872,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
-                .getAttribute(jpf.xmldb.xmlIdTag);
+                .getAttribute(apf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
         
         container.style.height   = container.offsetHeight;
         container.style.overflow = "hidden";
 
-        jpf.tween.single(container, {
+        apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
             to      : 0, 
@@ -916,10 +916,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             //@todo ask rik how this can be cached
             //@todo get xmlUpdate to be called only once per document update for propedit
             var xml = 
-              jpf.getXml('<j:root xmlns:j="' + jpf.ns.jpf + '">\
+              apf.getXml('<j:root xmlns:j="' + apf.ns.apf + '">\
                 <j:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></j:column>\
                 <j:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
-                    var dg = jpf.lookup(' + this.uniqueId + ');\
+                    var dg = apf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
                     if (type == "set") {\
@@ -938,7 +938,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         }\
                     }\
                     else if (type == "dropdown") {\
-                        var v = jpf.getXmlValue(dg.xmlData, select);\
+                        var v = apf.getXmlValue(dg.xmlData, select);\
                         %value("item[@value=\'" + v + "\']");\
                     }\
                     else if (type == "lookup" && $"@multiple" == "multiple"){\
@@ -947,7 +947,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         if (vs) {\
                             n = dg.xmlData;\
                             foreach(select) {]\
-                                <div class="item"><i onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\')">x</i>[%value(vs)]</div>\
+                                <div class="item"><i onclick="apf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\')">x</i>[%value(vs)]</div>\
                             [}\
                         }\
                         else {\
@@ -962,7 +962,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         if (vs) {\
                             local(dg.xmlData.selectSingleNode(select)){\
                                 foreach("node()[local-name()]"){]\
-                                    <div class="item"><i onclick="jpf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</i>[%value(vs)]</div>\
+                                    <div class="item"><i onclick="apf.lookup(' + this.uniqueId + ').$removePropItem(\'[%value(vs).replace(/\'/g, "\\\\\'").replace(/"/g, "&amp;quot;");]\', \'node()\')">x</i>[%value(vs)]</div>\
                                 [}\
                             }\
                         }\
@@ -977,23 +977,23 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         var vs = $"@descfield";\
                         if ($"@multiple" == "single")\
                             vs = "node()/" + vs;\
-                        %jpf.getXmlValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
+                        %apf.getXmlValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
                     }\
                     else if (type == "custom") {\
                         var sep = $"@separator" || "";\
                         var v, output = [];\
                         foreach("field"){\
-                            v = jpf.getXmlValue(dg.xmlData, $"@select");\
+                            v = apf.getXmlValue(dg.xmlData, $"@select");\
                             if (v) output.push(v);\
                         }\
                         if ($"@mask")\
                             output.push($"@mask");\
                         else if (!output.length && select)\
-                            output.push(jpf.getXmlValue(dg.xmlData, select));\
+                            output.push(apf.getXmlValue(dg.xmlData, select));\
                         %output.join(sep);\
                     }\
                     else {\
-                        %jpf.getXmlValue(dg.xmlData, select);\
+                        %apf.getXmlValue(dg.xmlData, select);\
                     }\
                 ]]]></j:column>\
                 <j:traverse select="property|prop" />\
@@ -1035,7 +1035,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             var nodes = xml.childNodes;
             for (var i = 0; i < nodes.length; i++) {
-                var tagName = nodes[i][jpf.TAGNAME];
+                var tagName = nodes[i][apf.TAGNAME];
                 (this.bindingRules[tagName]
                     || (this.bindingRules[tagName] = [])).push(nodes[i]);
             }
@@ -1043,7 +1043,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //#ifdef __DEBUG
         if (!heads) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Parsing bindings jml",
                 "No column definition found"));
         }
@@ -1052,16 +1052,16 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         //@todo This should support multiple color rules, by inserting the rules at the right place.
         if (this.bindingRules && this.bindingRules.color) {
             var clr = this.bindingRules.color[0];
-            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+            apf.setStyleRule("." + this.baseCSSname + (apf.isIE
                 ? " .records .highlight SPAN"
                 : " .records .highlight span"), "color", clr.getAttribute("text"), null, this.oWin);
-            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+            apf.setStyleRule("." + this.baseCSSname + (apf.isIE
                 ? " .records .highlight SPAN"
                 : " .records .highlight span"), "backgroundColor", clr.getAttribute("row"), null, this.oWin);
-            jpf.setStyleRule("." + this.baseCSSname + (jpf.isIE
+            apf.setStyleRule("." + this.baseCSSname + (apf.isIE
                 ? " .records .highlight"
                 : " .records .highlight"), "backgroundColor", clr.getAttribute("row"), null, this.oWin);
-            /*jpf.importCssString(document, 
+            /*apf.importCssString(document, 
                 "." + this.baseCSSname + " .records div.highlight{background-color:" 
                 + clr.getAttribute("row") + ";} ." 
                 + this.baseCSSname + " .records div.highlight span{color:" 
@@ -1127,7 +1127,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if(h.icon){
                 h.sortable = false;
                 oHead.setAttribute("style", "background-image:url("
-                    + jpf.getAbsolutePath(this.iconPath, h.icon) 
+                    + apf.getAbsolutePath(this.iconPath, h.icon) 
                     +")");
                 hCaption.nodeValue = "&nbsp;";
             }
@@ -1135,10 +1135,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 hCaption.nodeValue = h.caption;
 
             //nodes.push(oHead);
-            h.htmlNode = jpf.xmldb.htmlImport(oHead, this.oHead);
+            h.htmlNode = apf.xmldb.htmlImport(oHead, this.oHead);
         }
         
-        //jpf.xmldb.htmlImport(nodes, this.oHead);
+        //apf.xmldb.htmlImport(nodes, this.oHead);
 
         if (!found) { //@todo removal???
             this.$isFixedGrid = true;
@@ -1192,11 +1192,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.oInt.onscroll = null;
         
-        jpf.removeNode(this.oDragHeading);
+        apf.removeNode(this.oDragHeading);
         this.oDragHeading = null;
-        jpf.removeNode(this.oSplitter);
+        apf.removeNode(this.oSplitter);
         this.oSplitter = null;
-        jpf.removeNode(this.oSplitterLeft);
+        apf.removeNode(this.oSplitterLeft);
         this.oSplitterLeft = null;
         
         headParent.innerHTML = "";
@@ -1211,14 +1211,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         var oRow = this.$getLayoutNode("row");
         oRow.setAttribute("id", sLid);
         oRow.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
-        oRow.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');\
+        oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
             var wasSelected = o.$selected == this;\
             o.select(this, event.ctrlKey, event.shiftKey);'
             + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));//, true;o.dragging=1;
-        oRow.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
+        oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
             + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
-        //oRow.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
+        //oRow.setAttribute("onmouseup", 'var o = apf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
         
         //Build the Cells
         for(var c, h, i = 0; i < headings.length; i++){
@@ -1227,21 +1227,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$getNewContext("cell");
             
             if (h.css)
-                jpf.setStyleClass(this.$getLayoutNode("cell"), jpf.JsltInstance.apply(h.css, xmlNode));
+                apf.setStyleClass(this.$getLayoutNode("cell"), apf.JsltInstance.apply(h.css, xmlNode));
 
             if (h.type == "icon"){
                 var node = this.$getLayoutNode("cell", "caption",
                     oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"),
                     h.className)));
-                jpf.xmldb.setNodeValue(node, "&nbsp;");
+                apf.xmldb.setNodeValue(node, "&nbsp;");
                 (node.nodeType == 1 && node || node.parentNode)
                     .setAttribute("style", "background-image:url(" 
-                        + jpf.getAbsolutePath(this.iconPath, 
+                        + apf.getAbsolutePath(this.iconPath, 
                             this.applyRuleSetOnNode([h.xml], xmlNode)) 
                         + ")");
             }
             else {
-                jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
+                apf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
                     oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))),
                     (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""); //@todo for IE but seems not a good idea
             }
@@ -1261,9 +1261,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         // #endif
 
-        //return jpf.xmldb.htmlImport(oRow, htmlParentNode || this.oInt, beforeNode);
+        //return apf.xmldb.htmlImport(oRow, htmlParentNode || this.oInt, beforeNode);
         if (htmlParentNode)
-            jpf.xmldb.htmlImport(oRow, htmlParentNode, beforeNode);
+            apf.xmldb.htmlImport(oRow, htmlParentNode, beforeNode);
         else
             this.nodes.push(oRow);
         
@@ -1271,13 +1271,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var desc = this.applyRuleSetOnNode("description", xmlNode);
             this.$getNewContext("container");
             var oDesc = this.$getLayoutNode("container");
-            jpf.xmldb.setNodeValue(this.$getLayoutNode("container", "container",
+            apf.xmldb.setNodeValue(this.$getLayoutNode("container", "container",
                 oDesc), desc);
             oDesc.setAttribute("class", (oDesc.getAttribute("class") || "")
                 + " row" + this.uniqueId);
             
             if(htmlParentNode) 
-                jpf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
+                apf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
             else 
                 this.nodes.push(oDesc);
         }
@@ -1289,12 +1289,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.pHtmlDoc = this.oDoc;
 
         if (useTable) {
-            jpf.xmldb.htmlImport(this.nodes, this.oInt, null,
+            apf.xmldb.htmlImport(this.nodes, this.oInt, null,
                  "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
                  "</tbody></table>");
         }
         else {
-            jpf.xmldb.htmlImport(this.nodes, this.oInt);
+            apf.xmldb.htmlImport(this.nodes, this.oInt);
         }
 
         this.nodes.length = 0;
@@ -1329,14 +1329,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (h.type == "icon") {
                 (node.nodeType == 1 && node || node.parentNode)
                     .style.backgroundImage = "url(" 
-                        + jpf.getAbsolutePath(this.iconPath, 
+                        + apf.getAbsolutePath(this.iconPath, 
                             this.applyRuleSetOnNode([h.xml], xmlNode))
                         + ")";
             }
             else {
                 node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode)
                     || "").trim() || ""; //@todo for IE but seems not a good idea
-                //jpf.xmldb.setNodeValue(node, 
+                //apf.xmldb.setNodeValue(node, 
                     //this.applyRuleSetOnNode([h.xml], xmlNode));
             }
         }
@@ -1370,7 +1370,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode) return;
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling 
-            ? jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this)
+            ? apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -1396,7 +1396,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.selectCell = function(e, rowHtml, wasSelected) {
         var htmlNode = e.srcElement || e.target;
-        if (htmlNode == rowHtml || !jpf.xmldb.isChildOf(rowHtml, htmlNode))
+        if (htmlNode == rowHtml || !apf.xmldb.isChildOf(rowHtml, htmlNode))
             return; //this is probably not good
         
         while (htmlNode.parentNode != rowHtml)
@@ -1429,21 +1429,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             
         if (lastcell && lastcell.parentNode && lastcell.parentNode.nodeType == 1) {
             if (this.namevalue) {
-                jpf.setStyleClass(lastcell.parentNode.childNodes[0], "", ["celllabel"]);
-                jpf.setStyleClass(lastcell.parentNode.childNodes[1], "", ["cellselected"]);
+                apf.setStyleClass(lastcell.parentNode.childNodes[0], "", ["celllabel"]);
+                apf.setStyleClass(lastcell.parentNode.childNodes[1], "", ["cellselected"]);
             }
             else {
-                jpf.setStyleClass(lastcell, "", ["cellselected"]);
+                apf.setStyleClass(lastcell, "", ["cellselected"]);
             }
         }
 
-        var col = jpf.xmldb.getChildNumber(htmlNode);
+        var col = apf.xmldb.getChildNumber(htmlNode);
         var h   = headings[this.oHead.childNodes[col].getAttribute("hid")];
 
         if (this.namevalue || h.type == "dropdown") {
             if (this.namevalue) {
-                jpf.setStyleClass(htmlNode.parentNode.childNodes[0], "celllabel");
-                jpf.setStyleClass(htmlNode.parentNode.childNodes[1], "cellselected");
+                apf.setStyleClass(htmlNode.parentNode.childNodes[0], "celllabel");
+                apf.setStyleClass(htmlNode.parentNode.childNodes[1], "cellselected");
                 
                 var type     = this.selected.getAttribute("type");
                 var multiple = this.selected.getAttribute("multiple") == "multiple";
@@ -1452,11 +1452,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 var type     = h.type;
                 var multiple = false;
 
-                jpf.setStyleClass(htmlNode, "cellselected");
+                apf.setStyleClass(htmlNode, "cellselected");
             }
             
-            if (jpf.popup.isShowing(this.uniqueId))
-                jpf.popup.forceHide();
+            if (apf.popup.isShowing(this.uniqueId))
+                apf.popup.forceHide();
             
             if (curBtn && curBtn.parentNode)
                 curBtn.parentNode.removeChild(curBtn);
@@ -1477,10 +1477,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         else {
-            jpf.setStyleClass(htmlNode, "cellselected");
+            apf.setStyleClass(htmlNode, "cellselected");
             
-            if (jpf.popup.isShowing(this.uniqueId))
-                jpf.popup.forceHide();
+            if (apf.popup.isShowing(this.uniqueId))
+                apf.popup.forceHide();
             
             if (curBtn && curBtn.parentNode)
                 curBtn.parentNode.removeChild(curBtn);
@@ -1524,7 +1524,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("dragindicator")) return;
 
-        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"),
+        this.oDrag = apf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"),
             document.body);
         
         this.oDrag.style.zIndex   = 1000000;
@@ -1540,11 +1540,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!el) return null;
 
         while(el && el.nodeType == 1 
-          && !el.getAttribute(jpf.xmldb.htmlIdTag)) {
+          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
             el = el.parentNode;
         }
 
-        return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
+        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
             ? el 
             : null;
     };
@@ -1604,7 +1604,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var oldNode = this.xmlData.selectSingleNode(select 
           + (multiple == "single" ? "/node()" : ""));
-        var newNode = jpf.xmldb.copyNode(dataNode);
+        var newNode = apf.xmldb.copyNode(dataNode);
 
         if (multiple != "multiple") {
             var tagName;
@@ -1615,7 +1615,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             select = s.join("/") || null;
             
             if (tagName && tagName != newNode.tagName) {
-                newNode = jpf.xmldb.integrate(newNode, 
+                newNode = apf.xmldb.integrate(newNode, 
                     newNode.ownerDocument.createElement(tagName));
             }
             
@@ -1659,8 +1659,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
         
-        if (jpf.popup.isShowing(this.uniqueId))
-            jpf.popup.hide();
+        if (apf.popup.isShowing(this.uniqueId))
+            apf.popup.hide();
     };
 
     this.$lookup = function(value, isMultiple){
@@ -1682,7 +1682,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var lookupJml = self[this.lookupjml].render(oContainer);
         
-        if (!jpf.popup.isShowing(this.uniqueId)) {
+        if (!apf.popup.isShowing(this.uniqueId)) {
             var mirrorNode = oHtml;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             //oContainer.style.height = "auto";
@@ -1690,12 +1690,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
-            /*oContainer.style[jpf.supportOverflowComponent 
+            /*oContainer.style[apf.supportOverflowComponent 
                 ? "overflowY"
                 : "overflow"] = "hidden";*/
 
-            var widthdiff = jpf.getWidthDiff(oContainer);
-            jpf.popup.show(this.uniqueId, {
+            var widthdiff = apf.getWidthDiff(oContainer);
+            apf.popup.show(this.uniqueId, {
                 x       : -1,
                 y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
@@ -1704,7 +1704,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
-                    /*oContainer.style[jpf.supportOverflowComponent 
+                    /*oContainer.style[apf.supportOverflowComponent 
                         ? "overflowY"
                         : "overflow"] = "auto";*/
                 }
@@ -1760,11 +1760,11 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.namevalue) {
             /*
                 this.createModel
-                ? jpf.xmldb.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
+                ? apf.xmldb.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
                 : 
             */
             return this.xmlData.selectSingleNode(this.selected.getAttribute("select")) ||
-              this.selected.getAttribute("lookup") && jpf.getXml("<stub />");
+              this.selected.getAttribute("lookup") && apf.getXml("<stub />");
         }
         
         var h = headings[this.oHead.childNodes[lastcol || 0].getAttribute("hid")];
@@ -1781,7 +1781,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.namevalue) {
                 var sel = cnode.getAttribute("select");
                 return [sel, this.createModel
-                    ? jpf.xmldb.createNodeFromXpath(this.xmlData, sel)
+                    ? apf.xmldb.createNodeFromXpath(this.xmlData, sel)
                     : this.xmlData.selectSingleNode(sel)];
             }
             
@@ -1839,7 +1839,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         var h;
         
         if (hid == lastSorted) {
-            jpf.setStyleClass(headings[hid].htmlNode, 
+            apf.setStyleClass(headings[hid].htmlNode, 
                 this.toggleSortOrder()
                     ? "ascending"
                     : "descending", ["descending", "ascending"]);
@@ -1848,13 +1848,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (typeof lastSorted != "undefined") {
             h = headings[lastSorted];
-            jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "");
-            jpf.setStyleClass(h.htmlNode, "", ["descending", "ascending"]);
+            apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "");
+            apf.setStyleClass(h.htmlNode, "", ["descending", "ascending"]);
         }
         
         h = headings[hid];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "#f3f3f3");
-        jpf.setStyleClass(h.htmlNode, "ascending", ["descending", "ascending"]);
+        apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "#f3f3f3");
+        apf.setStyleClass(h.htmlNode, "ascending", ["descending", "ascending"]);
         
         this.resort({
             order : "ascending",
@@ -1900,27 +1900,27 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             for (var n, i = 0; i < next.length; i++) {
                 n = next[i];
                 n.width *= diffRatio;
-                jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                apf.setStyleRule("." + this.baseCSSname + " .headings ."
                     + n.className, "width", n.width + "%"); //Set
-                jpf.setStyleRule("." + this.baseCSSname + " .records ."
+                apf.setStyleRule("." + this.baseCSSname + " .records ."
                     + n.className, "width", n.width + "%", null, this.oWin); //Set
             }
             
             h.width = newPerc;
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+            apf.setStyleRule("." + this.baseCSSname + " .headings ."
                 + h.className, "width", h.width + "%"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+            apf.setStyleRule("." + this.baseCSSname + " .records ."
                 + h.className, "width", h.width + "%", null, this.oWin); //Set
         }
         else {
             var diff = newsize - h.width;
             h.width = newsize;
-            if (jpf.isIE && this.oIframe)
+            if (apf.isIE && this.oIframe)
                 h.htmlNode.style.width = newsize + "px";
             else
-                jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+                apf.setStyleRule("." + this.baseCSSname + " .headings ."
                     + h.className, "width", newsize + "px"); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+            apf.setStyleRule("." + this.baseCSSname + " .records ."
                 + h.className, "width", newsize + "px", null, this.oWin); //Set
             
             var hFirst = headings[this.$first];
@@ -1928,10 +1928,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             var vLeft = (this.$fixed + 5) + "px";
 
             if (!this.$isFixedGrid) {
-                //jpf.setStyleRule("." + this.baseCSSname + " .headings ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
-                //jpf.setStyleRule("." + this.baseCSSname + " .records ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
-                jpf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft, null, this.oWin); //Set
-                jpf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft, null, this.oWin); //Set
+                //apf.setStyleRule("." + this.baseCSSname + " .headings ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
+                //apf.setStyleRule("." + this.baseCSSname + " .records ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
+                apf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft, null, this.oWin); //Set
+                apf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft, null, this.oWin); //Set
             
                 //headings and records have same padding-right
                 this.oInt.style.paddingRight  =
@@ -1946,7 +1946,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.hideColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
+        apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
             "visibility", "hidden", null, this.oWin);
         
         //Change percentages here
@@ -1958,7 +1958,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.showColumn = function(nr){
         var h = headings[nr];
-        jpf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
+        apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className,
             "visibility", "visible", null, this.oWin);
         
         //Change percentages here
@@ -1976,8 +1976,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         var hFrom = headings[from];
         var hTo   = headings[to];
         
-        var childNrFrom = jpf.xmldb.getChildNumber(hFrom.htmlNode);
-        var childNrTo   = hTo && jpf.xmldb.getChildNumber(hTo.htmlNode);
+        var childNrFrom = apf.xmldb.getChildNumber(hFrom.htmlNode);
+        var childNrTo   = hTo && apf.xmldb.getChildNumber(hTo.htmlNode);
         this.oHead.insertBefore(hFrom.htmlNode, hTo && hTo.htmlNode || null);
 
         var node, nodes = this.oInt.childNodes;
@@ -1993,18 +1993,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
             
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+            apf.setStyleRule("." + this.baseCSSname + " .headings ."
                 + hReset.className, "marginLeft", "-5px"); //Reset
-            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+            apf.setStyleRule("." + this.baseCSSname + " .records ."
                 + hReset.className, "marginLeft", "-5px"); //Reset
             
             this.$first = this.oHead.firstChild.getAttribute("hid");
             var h = headings[this.$first];
             var vLeft = "-" + (this.$fixed + 5) + "px";
 
-            jpf.setStyleRule("." + this.baseCSSname + " .headings ."
+            apf.setStyleRule("." + this.baseCSSname + " .headings ."
                 + h.className, "marginLeft", vLeft); //Set
-            jpf.setStyleRule("." + this.baseCSSname + " .records ."
+            apf.setStyleRule("." + this.baseCSSname + " .records ."
                 + h.className, "marginLeft", vLeft); //Set
         }*/
     }
@@ -2022,8 +2022,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         if (type == "dropdown" || type == "set") {
-            if (jpf.popup.isShowing(this.uniqueId)){
-                jpf.popup.forceHide();
+            if (apf.popup.isShowing(this.uniqueId)){
+                apf.popup.forceHide();
             }
             else {
                 var oContainer = editors["dropdown_container"];
@@ -2036,7 +2036,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     : oHtml.parentNode;
                 //this.$setStyleClass(oContainer, mirrorNode.className);
                 oContainer.className = "propeditcontainer" + type;
-                oContainer.style[jpf.supportOverflowComponent 
+                oContainer.style[apf.supportOverflowComponent 
                     ? "overflowY"
                     : "overflow"] = "hidden";
                 
@@ -2063,7 +2063,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     var select = this.selected.getAttribute("select");
                     var values = [], n = this.xmlData.selectNodes(select);
                     for (var i = 0; i < n.length; i++) {
-                        values.push(n[i].nodeValue || jpf.getXmlValue(n[i], "."));
+                        values.push(n[i].nodeValue || apf.getXmlValue(n[i], "."));
                     }
                     
                     for (var v, c, i = 0, l = s.length; i < l; i++) {
@@ -2088,7 +2088,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     while (target.parentNode != this)
                         target = target.parentNode;
                     
-                    jpf.setStyleClass(target, "hover");
+                    apf.setStyleClass(target, "hover");
                 };
                 
                 oContainer.firstChild.onmouseout = function(e){
@@ -2101,7 +2101,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     while (target.parentNode != this)
                         target = target.parentNode;
                     
-                    jpf.setStyleClass(target, "", ["hover"]);
+                    apf.setStyleClass(target, "", ["hover"]);
                 };
                 
                 oContainer.firstChild.onmousedown = function(e){
@@ -2116,18 +2116,18 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                     if (type == "set") {
                         if (target.className.indexOf("checked") > -1)
-                            jpf.setStyleClass(target, "", ["checked"]);
+                            apf.setStyleClass(target, "", ["checked"]);
                         else
-                            jpf.setStyleClass(target, "checked");
+                            apf.setStyleClass(target, "checked");
                     }
                     else {
                         _self.rename(_self.selected, target.getAttribute("tag"));
-                        jpf.popup.forceHide();
+                        apf.popup.forceHide();
                     }
                 };
                 
                 var sel = this.selected;
-                jpf.popup.show(this.uniqueId, {
+                apf.popup.show(this.uniqueId, {
                     x       : this.namevalue ? -1 : 0,
                     y       : mirrorNode.offsetHeight - 1,
                     animate : true,
@@ -2189,7 +2189,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                 //#ifdef __DEBUG
                 if (!form) {
-                    throw new Error(jpf.formatErrorString(0, _self,
+                    throw new Error(apf.formatErrorString(0, _self,
                         "Showing form connected to property",
                         "Could not find form by name '" + this.selected.getAttribute("form")
                         + "'", this.selected));
@@ -2208,7 +2208,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 //#ifdef __DEBUG
                 }
                 catch(e){
-                    throw new Error(jpf.formatErrorString(0, _self,
+                    throw new Error(apf.formatErrorString(0, _self,
                         "Executing the code inside the exec property",
                         "Could not find exec by name '" + this.selected.getAttribute("exec")
                         + "'\nError: " + e.message, this.selected));
@@ -2218,7 +2218,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if (!force && type == "children") {
             var select  = this.selected.getAttribute("select");
-            var xmlNode = jpf.xmldb.createNodeFromXpath(this.xmlData, select);//newNodes
+            var xmlNode = apf.xmldb.createNodeFromXpath(this.xmlData, select);//newNodes
             
             this.dispatchEvent("multiedit", {
                 xmlNode  : this.selected,
@@ -2227,13 +2227,13 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1 
-          || !jpf.popup.isShowing(this.uniqueId))
+          || !apf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
     };
     
     this.$btnout = function(oHtml, force){
         if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1
-          || !jpf.popup.isShowing(this.uniqueId))
+          || !apf.popup.isShowing(this.uniqueId))
             this.$setStyleClass(oHtml, "", ["down"]);
     };
     
@@ -2261,9 +2261,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
         widthdiff    = this.$getOption("main", "widthdiff") || 0;
         defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        useiframe    = jpf.isIE && (jpf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
+        useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.JmlParser.parseChildren(this.$jml, null, this);
         
         //Initialize Iframe 
         if (useiframe && !this.oIframe) {
@@ -2271,7 +2271,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             //var sInt = this.oInt.outerHTML 
             var sClass   = this.oInt.className;
             //this.oInt.parentNode.removeChild(this.oInt);
-            this.oIframe = this.oInt.appendChild(document.createElement(jpf.isIE 
+            this.oIframe = this.oInt.appendChild(document.createElement(apf.isIE 
                 ? "<iframe frameborder='0'></iframe>"
                 : "iframe"));
             this.oIframe.frameBorder = 0;
@@ -2280,9 +2280,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
                 <html xmlns="http://www.w3.org/1999/xhtml">\
                     <head><script>\
-                        jpf = {\
+                        apf = {\
                             lookup : function(uid){\
-                                return window.parent.jpf.lookup(uid);\
+                                return window.parent.apf.lookup(uid);\
                             },\
                             Init : {add:function(){},run:function(){}}\
                         };</script>\
@@ -2296,12 +2296,12 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oDoc.documentElement.className = this.oExt.className;
             //this.oDoc.body.className = this.oExt.className;
 
-            jpf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
+            apf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
             
-            if (jpf.isIE) //@todo this can be removed when focussing is fixed for this component
+            if (apf.isIE) //@todo this can be removed when focussing is fixed for this component
                 this.$setStyleClass(this.oDoc.documentElement, this.baseCSSname + "Focus");
             
-            jpf.convertIframe(this.oIframe, true);
+            apf.convertIframe(this.oIframe, true);
 
             // #ifdef __WITH_RENAME
             this.oDoc.body.insertAdjacentHTML("beforeend", this.oTxt.outerHTML);
@@ -2326,7 +2326,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oTxt.refCount  = 1;
             // #endif
             
-            if (jpf.getStyle(this.oDoc.documentElement, jpf.isIE 
+            if (apf.getStyle(this.oDoc.documentElement, apf.isIE 
               ? "overflowY" : "overflow-y") == "auto") {
                 //@todo ie only
                 this.oIframe.onresize = function(){
@@ -2342,7 +2342,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oDoc.documentElement.onmousedown = function(e){
                 if (!e) e = _self.oWin.event;
                 if ((e.srcElement || e.target).tagName == "HTML")
-                    jpf.popup.forceHide();
+                    apf.popup.forceHide();
             }
                         
             this.oDoc.documentElement.onscroll = 
@@ -2352,7 +2352,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 };
         }
         else {
-            if (jpf.getStyle(this.oInt, jpf.isIE 
+            if (apf.getStyle(this.oInt, apf.isIE 
               ? "overflowY" : "overflow-y") == "auto") {
                 this.$resize = function(){
                     _self.oHead.style.marginRight = 
@@ -2361,10 +2361,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
                 
                 //#ifdef __WITH_LAYOUT
-                jpf.layout.setRules(this.oExt, this.uniqueId + "_datagrid",
-                    "var o = jpf.all[" + this.uniqueId + "];\
+                apf.layout.setRules(this.oExt, this.uniqueId + "_datagrid",
+                    "var o = apf.all[" + this.uniqueId + "];\
                      if (o) o.$resize()");
-                jpf.layout.activateRules(this.oExt);
+                apf.layout.activateRules(this.oExt);
                 //#endif
                 
                 this.addEventListener("afterload", this.$resize);
@@ -2374,7 +2374,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInt.onmousedown = function(e){
                 if (!e) e = event;
                 if ((e.srcElement || e.target) == this)
-                    jpf.popup.forceHide();
+                    apf.popup.forceHide();
             }
             
             this.oInt.onscroll = 
@@ -2411,20 +2411,20 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             while (target.parentNode != this)
                 target = target.parentNode;
 
-            jpf.setStyleClass(target, "hover", ["down"]);
+            apf.setStyleClass(target, "hover", ["down"]);
         };
         
         this.oHead.onmouseup = function(e){
             if (!e) e = event;
             var target = e.srcElement || e.target;
             
-            if (target == this || !jpf.xmldb.isChildOf(dragging, target, true)) 
+            if (target == this || !apf.xmldb.isChildOf(dragging, target, true)) 
                 return;
             
             while (target.parentNode != this)
                 target = target.parentNode;
             
-            jpf.setStyleClass(target, "hover", ["down"]);
+            apf.setStyleClass(target, "hover", ["down"]);
             
             if (headings[target.getAttribute("hid")].sortable)
                 _self.sortColumn(parseInt(target.getAttribute("hid")));
@@ -2442,21 +2442,21 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             dragging = target;
             
             //Resizing
-            var pos   = jpf.getAbsolutePosition(target),
+            var pos   = apf.getAbsolutePosition(target),
                 sLeft = _self.oHead.scrollLeft;
             var d     = e.clientX - pos[0] + sLeft;
             if (d < 4 || target.offsetWidth - d - 8 < 3) {
                 var t = d < 4 && target.previousSibling || target;
                 
                 if (headings[t.getAttribute("hid")].resizable) {
-                    pos   = jpf.getAbsolutePosition(t);
-                    jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
+                    pos   = apf.getAbsolutePosition(t);
+                    apf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
                     _self.oPointer.style.display = "block";
                     _self.oPointer.style.left    = (t.offsetLeft - sLeft - 1) + "px";
                     _self.oPointer.style.width   = (t.offsetWidth - widthdiff + 1) + "px";
                     
                     // #ifdef __WITH_PLANE
-                    jpf.plane.show(_self.oPointer, null, true);
+                    apf.plane.show(_self.oPointer, null, true);
                     // #endif
 
                     dragging = true;
@@ -2473,7 +2473,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         _self.oPointer.style.display = "none";
                         
                         // #ifdef __WITH_PLANE
-                        jpf.plane.hide();
+                        apf.plane.hide();
                         // #endif
 
                     };
@@ -2490,7 +2490,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
             
-            jpf.setStyleClass(target, "down", ["hover"]);
+            apf.setStyleClass(target, "down", ["hover"]);
             
             //Moving
             if (!headings[target.getAttribute("hid")].movable) {
@@ -2502,7 +2502,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 return;
             }
             
-            jpf.setStyleClass(_self.oPointer, "move_pointer", ["size_pointer"]);
+            apf.setStyleClass(_self.oPointer, "move_pointer", ["size_pointer"]);
             
             var x = e.clientX - target.offsetLeft, sX = e.clientX,
                 y = e.clientY - target.offsetTop,  sY = e.clientY,
@@ -2524,7 +2524,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
                 if (el.parentNode == copy.parentNode) {
-                    var pos = jpf.getAbsolutePosition(el);
+                    var pos = apf.getAbsolutePosition(el);
                     var beforeNode = (e.clientX - pos[0] > el.offsetWidth / 2
                         ? el.nextSibling
                         : el);
@@ -2533,7 +2533,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         beforeNode ? beforeNode.getAttribute("hid") : null);
                 }
                 
-                jpf.removeNode(copy);
+                apf.removeNode(copy);
             };
 
             document.onmousemove = function(e){
@@ -2545,7 +2545,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     copy = target.cloneNode(true);
                     copy.style.position = "absolute";
-                    var diff = jpf.getWidthDiff(target);
+                    var diff = apf.getWidthDiff(target);
                     copy.style.width    = (target.offsetWidth - diff
                         - widthdiff + 2) + "px";
                     copy.style.left     = target.offsetLeft;
@@ -2553,7 +2553,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     copy.style.margin   = 0;
                     copy.removeAttribute("hid")
                     
-                    jpf.setStyleClass(copy, "drag", ["ascending", "descending"]);
+                    apf.setStyleClass(copy, "drag", ["ascending", "descending"]);
                     target.parentNode.appendChild(copy);
                 }
                 
@@ -2562,7 +2562,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
                 if (el.parentNode == copy.parentNode) {
-                    var pos = jpf.getAbsolutePosition(el);
+                    var pos = apf.getAbsolutePosition(el);
                     _self.oPointer.style.left = (el.offsetLeft 
                         + ((e.clientX - pos[0] > el.offsetWidth / 2)
                             ? el.offsetWidth - 8
@@ -2584,7 +2584,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             while (target.parentNode != this)
                 target = target.parentNode;
             
-            jpf.setStyleClass(target, "", ["hover", "down"]);
+            apf.setStyleClass(target, "", ["hover", "down"]);
         };
         
         this.oHead.onmousemove = function(e){
@@ -2600,7 +2600,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             while (target.parentNode != this)
                 target = target.parentNode;
             
-            var pos   = jpf.getAbsolutePosition(target),
+            var pos   = apf.getAbsolutePosition(target),
                 sLeft = _self.oHead.scrollLeft;
             var d = e.clientX - pos[0] + sLeft;
 
@@ -2640,24 +2640,24 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                 edit = edits[i];
                 
                 if (i < edits.length - 1) {
-                    c.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId
+                    c.setAttribute("onmousedown", "apf.lookup(" + this.uniqueId
                         + ").$btndown(this, event);");
-                    c.setAttribute("onmouseup", "jpf.lookup(" + this.uniqueId
+                    c.setAttribute("onmouseup", "apf.lookup(" + this.uniqueId
                         + ").$btnup(this)");
-                    c.setAttribute("onmouseout", "jpf.lookup(" + this.uniqueId
+                    c.setAttribute("onmouseout", "apf.lookup(" + this.uniqueId
                         + ").$btnout(this)");
                     c.setAttribute("type", edit);
                     
-                    editors[edit] = jpf.xmldb.htmlImport(c, this.oInt)
+                    editors[edit] = apf.xmldb.htmlImport(c, this.oInt)
                 }
                 else {
-                    editors[edit] = c = jpf.xmldb.htmlImport(c, this.oExt)
+                    editors[edit] = c = apf.xmldb.htmlImport(c, this.oExt)
                     editors[edit].style.zIndex = 100000;
                     
-                    jpf.popup.setContent(this.uniqueId, editors[edit],
-                        jpf.skins.getCssString(this.skinName));
+                    apf.popup.setContent(this.uniqueId, editors[edit],
+                        apf.skins.getCssString(this.skinName));
                     
-                    //if (jpf.isTrue(this.$getOption(edit, "jml")))
+                    //if (apf.isTrue(this.$getOption(edit, "jml")))
                         //continue;
                     
                     this.itemHeight = this.$getOption(edit, "item-height") || 18.5;
@@ -2680,8 +2680,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                         node = nodes[i];
                         s = node.getAttribute("select");
                         //action == "insert" || action == "update"
-                        if (jpf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true) ||
-                            jpf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
+                        if (apf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true) ||
+                            apf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
                             lstUpdate.pushUnique(node.tagName == "field"
                                 ? node.parentNode
                                 : node);
@@ -2693,7 +2693,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     for (var i = 0, l = lstUpdate.length; i < l; i++) {
                         _self.$updateNode(lstUpdate[i], 
-                            jpf.xmldb.findHtmlNode(lstUpdate[i], _self));
+                            apf.xmldb.findHtmlNode(lstUpdate[i], _self));
                     }*/
                     
                     if (_self.renaming)
@@ -2701,14 +2701,14 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     if (_self.$lastUpdated) {
                         _self.$updateNode(_self.$lastUpdated, 
-                            jpf.xmldb.findHtmlNode(_self.$lastUpdated, _self));
+                            apf.xmldb.findHtmlNode(_self.$lastUpdated, _self));
                         _self.$lastUpdated = null
                     }
                     else {
                         var nodes = _self.getTraverseNodes();
                         for (var i = 0, l = nodes.length; i < l; i++) {
                             _self.$updateNode(nodes[i], 
-                                jpf.xmldb.findHtmlNode(nodes[i], _self));
+                                apf.xmldb.findHtmlNode(nodes[i], _self));
                         }
                     }
                                         
@@ -2718,7 +2718,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     });
                 }
             };
-            changeListener.uniqueId = jpf.all.push(changeListener) - 1;
+            changeListener.uniqueId = apf.all.push(changeListener) - 1;
             
             var vRules = {};
             this.$_load = this.load;
@@ -2739,9 +2739,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     //@todo This is never removed
                     if (xmlRoot)
-                        jpf.xmldb.addNodeListener(xmlRoot, changeListener);
+                        apf.xmldb.addNodeListener(xmlRoot, changeListener);
 
-                    jpf.setModel(template, {
+                    apf.setModel(template, {
                         $xmlUpdate : function(){
                             //debugger;
                         },
@@ -2752,8 +2752,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 
                             // retrieve the cacheId
                             if (!cacheId) {
-                                cacheId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag) ||
-                                    jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode);
+                                cacheId = xmlNode.getAttribute(apf.xmldb.xmlIdTag) ||
+                                    apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
                             }
 
                             if (!_self.isCached(cacheId)) {
@@ -2765,7 +2765,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
                                 
                                 var nodes = _self.getTraverseNodes();
                                 for (var s, i = 0, htmlNode, l = nodes.length; i < l; i++) {
-                                    htmlNode = jpf.xmldb.findHtmlNode(nodes[i], _self);
+                                    htmlNode = apf.xmldb.findHtmlNode(nodes[i], _self);
                                     if (!htmlNode) 
                                         break;
 
@@ -2818,7 +2818,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$destroy = function(){
-        jpf.popup.removeContent(this.uniqueId);
+        apf.popup.removeContent(this.uniqueId);
         
         //@todo destroy this.oTxt here
         
@@ -2828,27 +2828,27 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             editors["dropdown_container"].onmousedown = null;
         }
         
-        jpf.removeNode(this.oDrag);
+        apf.removeNode(this.oDrag);
         this.oDrag = this.oExt.onclick = this.oInt.onresize = null;
         
         //#ifdef __WITH_LAYOUT
-        jpf.layout.removeRule(this.oInt, "dg" + this.uniqueId);
-        jpf.layout.activateRules(this.oInt);
+        apf.layout.removeRule(this.oInt, "dg" + this.uniqueId);
+        apf.layout.activateRules(this.oInt);
         //#endif
     };
     
     this.counter = 0;
 }).implement(
     //#ifdef __WITH_RENAME
-    jpf.Rename,
+    apf.Rename,
     //#endif
     //#ifdef __WITH_DRAGDROP
-    jpf.DragDrop,
+    apf.DragDrop,
     //#endif
-    jpf.MultiSelect,
-    jpf.Cache,  
-    jpf.DataBinding,
-    jpf.Presentation
+    apf.MultiSelect,
+    apf.Cache,  
+    apf.DataBinding,
+    apf.Presentation
 );
 
 //#endif
@@ -2856,26 +2856,26 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
 /**
  * @private
  */
-jpf.convertIframe = function(iframe, preventSelect){
+apf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
 
-    if (!jpf.isIE)
-        jpf.importClass(jpf.runNonIe, true, win);
+    if (!apf.isIE)
+        apf.importClass(apf.runNonIe, true, win);
         
     //Load Browser Specific Code
     // #ifdef __SUPPORT_SAFARI
     if (this.isSafari) 
-        this.importClass(jpf.runSafari, true, win);
+        this.importClass(apf.runSafari, true, win);
     // #endif
     // #ifdef __SUPPORT_OPERA
     if (this.isOpera) 
-        this.importClass(jpf.runOpera, true, win);
+        this.importClass(apf.runOpera, true, win);
     // #endif
     // #ifdef __SUPPORT_GECKO
     if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
-        this.importClass(jpf.runGecko, true, win);
+        this.importClass(apf.runGecko, true, win);
     // #endif
     
     doc.onkeydown = function(e){
@@ -2890,7 +2890,7 @@ jpf.convertIframe = function(iframe, preventSelect){
         if (!e) e = win.event;
 
         if (!pos)
-            pos = jpf.getAbsolutePosition(iframe);
+            pos = apf.getAbsolutePosition(iframe);
 
         var q = {
             offsetX       : e.offsetX,
@@ -2910,7 +2910,7 @@ jpf.convertIframe = function(iframe, preventSelect){
         if (document.onmousedown)
             document.onmousedown(q);
         
-        if (preventSelect && !jpf.isIE)
+        if (preventSelect && !apf.isIE)
             return false;
     };
     
@@ -2940,7 +2940,7 @@ jpf.convertIframe = function(iframe, preventSelect){
     doc.documentElement.oncontextmenu = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = jpf.getAbsolutePosition(iframe);
+            pos = apf.getAbsolutePosition(iframe);
         
         var q = {
             offsetX       : e.offsetX,
@@ -2965,13 +2965,13 @@ jpf.convertIframe = function(iframe, preventSelect){
     };
 
     doc.documentElement.onmouseover = function(e){
-        pos = jpf.getAbsolutePosition(iframe);
+        pos = apf.getAbsolutePosition(iframe);
     };
 
     doc.documentElement.onmousemove = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = jpf.getAbsolutePosition(iframe);
+            pos = apf.getAbsolutePosition(iframe);
     
         var q = {
             offsetX       : e.offsetX,

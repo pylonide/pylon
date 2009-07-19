@@ -32,18 +32,18 @@
  * progress of the sync process.
  * <code>
  *  <j:progressbar
- *     value="{jpf.offline.progress}"
- *     visible="{jpf.offline.syncing}" />
+ *     value="{apf.offline.progress}"
+ *     visible="{apf.offline.syncing}" />
  * </code>
  *
  * @constructor
  * @allowchild {smartbinding}
  * @addnode elements:progressbar
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
@@ -64,8 +64,8 @@
  *  <j:progressbar ref="@progress" />
  * </code>
  */
-jpf.progress    =
-jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.progress    =
+apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable = false; // This object can get the focus
 
     /**** Properties and Attributes ****/
@@ -95,9 +95,9 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         this.value = parseInt(value) || this.min;
 
         if (this.value >= this.max)
-            jpf.setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
+            apf.setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
         else
-            jpf.setStyleClass(this.oExt, this.baseCSSname + "Running", [this.baseCSSname + "Complete"]);
+            apf.setStyleClass(this.oExt, this.baseCSSname + "Running", [this.baseCSSname + "Complete"]);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
@@ -156,7 +156,7 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         clearInterval(timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";
-        jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Running", this.baseCSSname + "Complete"]);
+        apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Running", this.baseCSSname + "Complete"]);
 
         if(restart)
             timer = setInterval(function(){
@@ -233,13 +233,13 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.autohide)
             this.hide();
         
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     // #endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

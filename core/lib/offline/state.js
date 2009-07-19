@@ -49,66 +49,66 @@
  * @default_private
  * @todo optimize by not getting the default values from the jml
  */
-jpf.namespace("offline.state", {
+apf.namespace("offline.state", {
     enabled   : false,
     states    : {},
     realtime  : true,
     lookup    : {},
 
     init : function(jml){
-        this.namespace = jpf.appsettings.name + ".jpf.offline.state";
+        this.namespace = apf.appsettings.name + ".apf.offline.state";
         
         if (jml.nodeType) {
             if (jml.getAttribute("realtime"))
-                this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
+                this.realtime = !apf.isFalse(jml.getAttribute("realtime"));
             
             if (jml.getAttribute("set"))
                 this.setInstruction = jml.getAttribute("set");
         }
         
-        jpf.addEventListener("exit", function(){
-            if (!jpf.offline.state.realtime) {
-                //jpf.offline.state.search();
-                var lookup  = jpf.offline.state.lookup;
-                var storage = jpf.offline.storage;
-                var ns      = jpf.offline.state.namespace;
+        apf.addEventListener("exit", function(){
+            if (!apf.offline.state.realtime) {
+                //apf.offline.state.search();
+                var lookup  = apf.offline.state.lookup;
+                var storage = apf.offline.storage;
+                var ns      = apf.offline.state.namespace;
                 
                 for (var key in lookup) {
-                    var ns = jpf.offline.state.namespace;
+                    var ns = apf.offline.state.namespace;
                     storage.put(key, lookup[key], ns);
                 }
             }
             
-            if (jpf.offline.state.setInstruction)
-                jpf.offline.state.send();
+            if (apf.offline.state.setInstruction)
+                apf.offline.state.send();
         });
         
         //#ifdef __WITH_REGISTRY
-        var registry       = jpf.extend({}, jpf.offline.storage || jpf.storage);
-        registry.namespace = jpf.appsettings.name + ".jpf.registry";
-        jpf.registry.$export(registry);
-        jpf.registry       = registry;
+        var registry       = apf.extend({}, apf.offline.storage || apf.storage);
+        registry.namespace = apf.appsettings.name + ".apf.registry";
+        apf.registry.$export(registry);
+        apf.registry       = registry;
         //#endif
 
         //@todo This could be optimized if needed
-        if (jpf.offline.storage.getAllPairs(this.namespace, this.lookup)) {
+        if (apf.offline.storage.getAllPairs(this.namespace, this.lookup)) {
             /*
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("restore") === false) {
+            if (apf.offline.dispatchEvent("restore") === false) {
                 this.clear();
                 this.lookup = {};
                 
                 //#ifdef __WITH_OFFLINE_TRANSACTIONS
-                jpf.offline.transactions.clear("undo|redo");
+                apf.offline.transactions.clear("undo|redo");
                 //#endif
             }
         }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
 
-        jpf.offline.transactions.doStateSync = true;
+        apf.offline.transactions.doStateSync = true;
         //#endif
         
         this.enabled = true;
@@ -120,7 +120,7 @@ jpf.namespace("offline.state", {
         //#ifdef __DEBUG
         if (!obj.name && !this.warned) {
             this.warned = true;
-            jpf.console.warn("Components found without name. This means that \
+            apf.console.warn("Components found without name. This means that \
                               when the application changes the state \
                               serialization can break.");
         }
@@ -130,7 +130,7 @@ jpf.namespace("offline.state", {
             return;
         
         var name    = obj.name || obj.uniqueId + "_" + obj.tagName;
-        var storage = jpf.offline.storage;
+        var storage = apf.offline.storage;
         
         //#ifdef __DEBUG
         if (!name || !storage.isValidKey(name)) { //@todo
@@ -162,7 +162,7 @@ jpf.namespace("offline.state", {
     get : function(obj, key, value){
         return this.lookup[(obj.name || obj.uniqueId + "_" + obj.tagName) + "." + key];
         
-        /*return jpf.offline.storage.get(
+        /*return apf.offline.storage.get(
             (obj.name || obj.uniqueId + "." + obj.tagName) + "." + key, 
             this.namespace);*/
     },
@@ -180,23 +180,23 @@ jpf.namespace("offline.state", {
     },
     
     clear : function(){
-        jpf.offline.storage.clear(this.namespace);
+        apf.offline.storage.clear(this.namespace);
         
-        var ns = jpf.registry.getNamespaces();
+        var ns = apf.registry.getNamespaces();
         for (var i = 0; i < ns.length; i++) {
-            jpf.registry.clear(ns[i]);
+            apf.registry.clear(ns[i]);
         }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
-        jpf.offline.transactions.clear("undo|redo");
+        apf.offline.transactions.clear("undo|redo");
         //#endif
     },
 
     search : function(){
-        var storage = jpf.offline.storage;
+        var storage = apf.offline.storage;
         
         //Search for dynamic properties
-        var props, i, j, nodes = jpf.all;
+        var props, i, j, nodes = apf.all;
         for (i = 0; i < nodes.length; i++) {
             if (nodes[i].name && nodes[i].getAvailableProperties) {
                 props = nodes[i].getAvailableProperties();
@@ -213,7 +213,7 @@ jpf.namespace("offline.state", {
     },
     
     send : function(){
-        var storage = jpf.offline.storage;
+        var storage = apf.offline.storage;
         
         var data = {};
         var keys = storage.getKeys(this.namespace);
@@ -222,11 +222,11 @@ jpf.namespace("offline.state", {
             data[keys[i]] = storage.get(keys[i], this.namespace);
         }
         
-        jpf.saveData(this.setInstruction, null, {
+        apf.saveData(this.setInstruction, null, {
             ignoreOffline : true,
-            data          : jpf.serialize(data)
+            data          : apf.serialize(data)
         }, function(data, state, extra){
-            if (extra.tpModule.retryTimeout(extra, state, jpf.offline) === true)
+            if (extra.tpModule.retryTimeout(extra, state, apf.offline) === true)
                 return true;
         });
     }

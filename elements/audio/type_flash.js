@@ -34,26 +34,26 @@
  * @since       1.0
  */
 
-jpf.audio.TypeFlash = function(oAudio, oNode, options) {
+apf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.oAudio              = oAudio;
-    this.isNine              = jpf.flash.isAvailable('9.0.0');
+    this.isNine              = apf.flash.isAvailable('9.0.0');
 
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/audio/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/audio/null.mp3";
+    this.NULL_MP3_PATH       = (apf.appsettings.resourcePath || apf.basePath) + "elements/audio/null.mp3";
     /* #else
-    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/null.mp3";
+    this.NULL_MP3_PATH       = (apf.appsettings.resourcePath || apf.basePath) + "resources/null.mp3";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/audioplayer"
+    this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/audioplayer"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = jpf.CDN + jpf.VERSION + "/resources/null.mp3";
+    this.NULL_MP3_PATH       = apf.CDN + apf.VERSION + "/resources/null.mp3";
     #endif */
 
-    this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
+    this.id = apf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
 
     // Div name, flash name, and container name
@@ -67,16 +67,16 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
 
     // Initialize player
     this.player = null;
-    jpf.extend(this, jpf.audio.TypeInterface);
+    apf.extend(this, apf.audio.TypeInterface);
 
     this.initProperties().setOptions(options).createPlayer();
 }
 
-jpf.audio.TypeFlash.isSupported = function() {
-    return jpf.flash.isAvailable();
+apf.audio.TypeFlash.isSupported = function() {
+    return apf.flash.isAvailable();
 };
 
-jpf.audio.TypeFlash.prototype = {
+apf.audio.TypeFlash.prototype = {
     /**
      * Load an audio file.
      *
@@ -325,7 +325,7 @@ jpf.audio.TypeFlash.prototype = {
                 this.inited = true;
                 this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime",
                     "playheadUpdateInterval").validateNow().makeDelayCalls();
-                this.oAudio.$initHook(jpf.extend(evtObj, jpf.flash.getSandbox(evtObj.sandboxType)));
+                this.oAudio.$initHook(apf.extend(evtObj, apf.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
                 this.oAudio.$metadataHook({
@@ -334,7 +334,7 @@ jpf.audio.TypeFlash.prototype = {
                 });
                 break;
             case "debug":
-                jpf.console.log(">> SWF DBUG: " + evtObj.msg);
+                apf.console.log(">> SWF DBUG: " + evtObj.msg);
                 break;
         }
     },
@@ -383,7 +383,7 @@ jpf.audio.TypeFlash.prototype = {
         div.style.width    = "1px";
         div.style.height   = "1px";
         div.style.left     = "-2000px";
-        div.innerHTML      = jpf.flash.buildContent(
+        div.innerHTML      = apf.flash.buildContent(
             "src",              this.DEFAULT_SWF_PATH,
             "width",            "1",
             "height",           "1",

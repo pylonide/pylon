@@ -28,14 +28,14 @@
  * @define output, insert
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
 
-jpf.output =
-jpf.insert = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "insert", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
+apf.output =
+apf.insert = function(pHtmlNode, tagName){
+    apf.register(this, tagName || "insert", apf.NODE_VISIBLE);/** @inherits apf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
@@ -45,7 +45,7 @@ jpf.insert = function(pHtmlNode, tagName){
     this.editableParts = {
         "main": [["caption", "text()"]]
     };
-    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.implement(apf.DataBinding); /** @inherits apf.DataBinding */
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
@@ -88,7 +88,7 @@ jpf.insert = function(pHtmlNode, tagName){
          dunno why it's selected or called
          */
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(node, this);
+        apf.xmldb.addNodeListener(node, this);
         
         var value = this.applyRuleSetOnNode("caption", node);
         this.setValue(value || typeof value == "string" ? value : "");
@@ -97,7 +97,7 @@ jpf.insert = function(pHtmlNode, tagName){
     /* *********
      INIT
      **********/
-    this.implement(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
     this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = pHtmlNode;
@@ -110,7 +110,7 @@ jpf.insert = function(pHtmlNode, tagName){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
-                jpf.JmlParser.parseChildren(x, this.oExt, this);
+                apf.JmlParser.parseChildren(x, this.oExt, this);
             }
             else 
                 this.setValue(x.firstChild.nodeValue);

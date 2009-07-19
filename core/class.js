@@ -38,7 +38,7 @@
  * </code>
  *
  * Expressions:
- * The use of { and } tell Javeline PlatForm(JPF) that the visible property will 
+ * The use of { and } tell Ajax.org Platform(JPF) that the visible property will 
  * be bound. By specifying myCheckbox.value JPF knows that the value of 
  * myCheckbox should be retrieved for this property. Whenever the checkbox 
  * changes, the slider will show or hide.
@@ -65,7 +65,7 @@
  * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
  *
  * Internals:
- * Property binding in jpf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
+ * Property binding in apf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
  * system. When a binding is established the element that receives the value sets
  * a listener on the property of another element. There can be any number of 
  * elements referenced in a single expression. When any of the properties that 
@@ -74,18 +74,18 @@
  */
 
 /**
- * @term baseclass A baseclass in Javeline Platform (jpf) is a class that 
+ * @term baseclass A baseclass in Ajax.org Platform (apf) is a class that 
  * adds properties, methods, attributes, bindings and actions to the class that
  * inherits from it. Javascript doesn't have most object oriented concepts like
  * classes, class inheritance, interfaces, protected members and so on. When
- * using jpf you will find that some of these concepts have
- * been implemented in a way that enables the core developers of jpf to think in
+ * using apf you will find that some of these concepts have
+ * been implemented in a way that enables the core developers of apf to think in
  * those concepts. The most important one is class inheritance. Because of the
  * freedoms that javascript allows, it is possible to implement {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
  * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
  * 
  * Usage:
- * In jpf multiple inheritance is used on all elements to assign specific traits
+ * In apf multiple inheritance is used on all elements to assign specific traits
  * to jml elements. Check the list of baseclasses on the right to familiarize 
  * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
  * databinding, alignment, etc). At the article of each element that inherits
@@ -93,15 +93,15 @@
  * will show you <strong>from which baseclasses that element has received traits</strong>.
  * Compared to Java and other strict OOP languages, the inheritance tree is
  * inverted. To give an example, in Java for instance, a Lamborghini inherits from 
- * Car which inherits from Vehicle. In jpf Audi inherits from Engine, Wheels,
+ * Car which inherits from Vehicle. In apf Audi inherits from Engine, Wheels,
  * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
  *
  * Class:
- * The jpf.Class baseclass provides all basic features a jpf element needs, such
+ * The apf.Class baseclass provides all basic features a apf element needs, such
  * as event system, property binding and a constructor / destructor.
- * By calling {@link core.jpf.method.makeClass} an object is created that implements
+ * By calling {@link core.apf.method.makeClass} an object is created that implements
  * all <i title="an inherited characteristic (merriam-webster)">traits</i> from
- * jpf.Class. 
+ * apf.Class. 
  * More importantly two functions are added that help with dealing with multiple
  * inheritance.
  *
@@ -109,21 +109,21 @@
  * The first method is the one that tells an object to implement traits from a baseclass.
  * It works as follows:
  * <code>
- *  myObj.implement(jpf.Presentation);
+ *  myObj.implement(apf.Presentation);
  * </code>
- * That lines causes all traits of jpf.Presentation to be added to myObj. Now we
+ * That lines causes all traits of apf.Presentation to be added to myObj. Now we
  * can check if myObj actually has implemented this baseclass.
  * <code>
  *  myObj.hasFeature(__PRESENTATION__);
  * </code>
  * Another way to set up inheritance is using the implement method on a class
- * generated using the jpf.component function.
+ * generated using the apf.component function.
  * <code>
- *  var x = jpf.component(jpf.NODE_VISIBLE, function(){
+ *  var x = apf.component(apf.NODE_VISIBLE, function(){
  *      //code
  *  }).implement(
- *      jpf.Presentation,
- *      jpf.Rename
+ *      apf.Presentation,
+ *      apf.Rename
  *  );
  * </code>
  */
@@ -137,7 +137,7 @@
  * @constructor
  * @baseclass
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  *
@@ -148,7 +148,7 @@
  *     {Mixed}  value         the value it has after the change
  *
  */
-jpf.Class = function(){
+apf.Class = function(){
     this.$jmlLoaders   = [];
     this.$addJmlLoader = function(func){
         if (!this.$jmlLoaders)
@@ -218,7 +218,7 @@ jpf.Class = function(){
 
         if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Property-binding",
                 "Already bound " + bObject.name + "." + bProp + " to " + myProp));
             //#endif
@@ -332,7 +332,7 @@ jpf.Class = function(){
         // #ifdef __DEBUG
         var pEnd = pValue.substr(pValue.length-1, 1);
         if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Dynamic Property Binding",
                 "Invalid binding found: " + pValue));
         }
@@ -377,13 +377,13 @@ jpf.Class = function(){
                 //#endif
 
                 o = p.split(".");
-                if (o.length > 2) { //jpf.offline.syncing
+                if (o.length > 2) { //apf.offline.syncing
                     bProp = o.pop();
                     try{
                         node  = eval(o.join("."));
                     }
                     catch(e){
-                        jpf.console.warn("Could not execute binding test: "
+                        apf.console.warn("Could not execute binding test: "
                             + pValue);
                         continue;
                     }
@@ -415,7 +415,7 @@ jpf.Class = function(){
                     var value = eval(pValue);
                 }
                 catch(e){
-                    jpf.console.warn("Could not execute binding test: "
+                    apf.console.warn("Could not execute binding test: "
                         + pValue);
                     return;
                 }
@@ -430,7 +430,7 @@ jpf.Class = function(){
                 var value = eval(pValue);
             }
             catch(e){
-                jpf.console.warn("Could not execute binding test: "
+                apf.console.warn("Could not execute binding test: "
                     + pValue);
                 return;
             }
@@ -456,20 +456,20 @@ jpf.Class = function(){
      * @param  {Boolean} [forceOnMe] Whether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
-        if (reqValue && !value || !jpf || this.$ignoreSignals)
+        if (reqValue && !value || !apf || this.$ignoreSignals)
             return;
 
         //#ifdef __WITH_LANG_SUPPORT
         if (!forceOnMe) {
             if (this.$isMultiLang[prop]) {
-                jpf.language.removeElement(this.$isMultiLang[prop][0], 
+                apf.language.removeElement(this.$isMultiLang[prop][0], 
                   this.$isMultiLang[prop][1]);
                 
                 delete this.$isMultiLang[prop];
             }
             
             if (/^\$(.*)\$$/.test(value)) {
-                this.$isMultiLang[prop] = [RegExp.$1, jpf.language.addElement(RegExp.$1, {
+                this.$isMultiLang[prop] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
                     jmlNode: this,
                     prop : prop
                 })];
@@ -481,15 +481,15 @@ jpf.Class = function(){
         var oldvalue = this[prop];
         if (String(this[prop]) !== String(value) || typeof value == "object") {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
-            if (typeof jpf.offline != "undefined") {
-                if (jpf.loaded && jpf.offline.state.enabled
+            if (typeof apf.offline != "undefined") {
+                if (apf.loaded && apf.offline.state.enabled
                   && (!this.bindingRules || !this.bindingRules[prop]
                   || this.traverse)) {
-                    jpf.offline.state.set(this, prop, typeof value == "object"
+                    apf.offline.state.set(this, prop, typeof value == "object"
                         ? value.name
                         : value);
                 }
-                else if (jpf.offline.enabled) {
+                else if (apf.offline.enabled) {
 
                 }
             }
@@ -525,15 +525,15 @@ jpf.Class = function(){
         //#--ifdef __DEBUG
         var id, ovalue = this[prop];//value;
         for (id in nodes) {
-            if (jpf.isSafari && (typeof nodes[id] != "object" || !nodes[id]))
+            if (apf.isSafari && (typeof nodes[id] != "object" || !nodes[id]))
                 continue;
 
-            for (var o = jpf.lookup(id), i = nodes[id].length - 1; i >= 0; --i) {
+            for (var o = apf.lookup(id), i = nodes[id].length - 1; i >= 0; --i) {
                 try {
                     value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
                 }
                 catch(e) {
-                    jpf.console.warn("Could not execute binding test: "
+                    apf.console.warn("Could not execute binding test: "
                         + nodes[id][i][1]);
                     continue;
                 }
@@ -590,7 +590,7 @@ jpf.Class = function(){
         if (options && options.name)
             e = options;
         else if (!e)
-            e = new jpf.Event(eventName, options);
+            e = new apf.Event(eventName, options);
 
         if (this.disabled)
             result = false;
@@ -625,8 +625,8 @@ jpf.Class = function(){
         }
         
         //#ifdef __WITH_EVENT_BUBBLING
-        if (e.bubbles && !e.cancelBubble && this != jpf) {
-            rValue = (this.parentNode || jpf).dispatchEvent(eventName, null, e);
+        if (e.bubbles && !e.cancelBubble && this != apf) {
+            rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e);
 
             if (rValue != undefined)
                 result = rValue;
@@ -644,8 +644,8 @@ jpf.Class = function(){
      */
     this.addEventListener = function(eventName, callback, useCapture){
         //#ifdef __PROFILER
-        if (jpf.profiler)
-            jpf.profiler.wrapFunction(Profiler_functionTemplate());
+        if (apf.profiler)
+            apf.profiler.wrapFunction(Profiler_functionTemplate());
         //#endif
 
         if (eventName.indexOf("on") == 0)
@@ -697,11 +697,11 @@ jpf.Class = function(){
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
 
-        //Remove from jpf.all
+        //Remove from apf.all
         if (typeof this.uniqueId == "undefined")
             return;
 
-        jpf.all[this.uniqueId] = undefined;
+        apf.all[this.uniqueId] = undefined;
 
         if (!this.nodeFunc) { //If this is not a JmlNode, we're done.
             //Remove id from global js space
@@ -726,7 +726,7 @@ jpf.Class = function(){
 
         //Remove from focus list - Should be in JmlNode
         if (this.$focussable && this.focussable)
-            jpf.window.$removeFocus(this);
+            apf.window.$removeFocus(this);
 
         //#ifdef __WITH_PROPERTY_BINDING
         //Remove dynamic properties
@@ -745,7 +745,7 @@ jpf.Class = function(){
 
         //#ifdef __DEBUG
         if (deep !== false && this.childNodes) {
-            jpf.console.warn("You have destroyed a Jml Node without destroying\
+            apf.console.warn("You have destroyed a Jml Node without destroying\
                               it's children. Please be aware that if you don't\
                               maintain a reference, memory might leak");
         }
@@ -753,11 +753,11 @@ jpf.Class = function(){
         
         //#ifdef __WITH_LANG_SUPPORT
         for (prop in this.$isMultiLang) {
-            jpf.language.removeElement(this.$isMultiLang[prop][0], 
+            apf.language.removeElement(this.$isMultiLang[prop][0], 
                 this.$isMultiLang[prop][1]);
         }
         
-        jpf.language.clear(this.uniqueId);
+        apf.language.clear(this.uniqueId);
         //#endif
 
         //Remove id from global js space
@@ -765,7 +765,7 @@ jpf.Class = function(){
             self[this.id || this.name] = null;
         
         //#ifdef __WITH_NAMESERVER
-        jpf.nameserver.remove(this.tagName, this);
+        apf.nameserver.remove(this.tagName, this);
         //#endif
     };
 };
@@ -777,7 +777,7 @@ jpf.Class = function(){
  * @constructor
  * @default_private
  */
-jpf.Event = function(name, data){
+apf.Event = function(name, data){
     this.name = name;
 
     // #ifdef __WITH_EVENT_BUBBLING
@@ -809,11 +809,11 @@ jpf.Event = function(name, data){
         // #endif
     };
     
-    jpf.extend(this, data);
+    apf.extend(this, data);
     //this.returnValue = undefined;
 };
 
-jpf.implement(jpf.Class);
-jpf.Init.run('class');
+apf.implement(apf.Class);
+apf.Init.run('class');
 
 // #endif

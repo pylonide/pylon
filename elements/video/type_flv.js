@@ -33,20 +33,20 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeFlv = function(oVideo, node, options) {
+apf.video.TypeFlv = function(oVideo, node, options) {
     this.oVideo              = oVideo;
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/video/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "elements/video/FAVideo.swf";
     /* #else
-    this.DEFAULT_SWF_PATH    = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "resources/FAVideo.swf";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/videoplayer.swf";
+    this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/videoplayer.swf";
     #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
-    this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
+    this.id = apf.flash.addPlayer(this); // Manager manages multiple players
     this.inited       = false;
     this.resizeTimer  = null;
 
@@ -62,16 +62,16 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
 
     // Initialize player
     this.player = null;
-    jpf.extend(this, jpf.video.TypeInterface);
+    apf.extend(this, apf.video.TypeInterface);
 
     this.initProperties().setOptions(options).createPlayer();
 }
 
-jpf.video.TypeFlv.isSupported = function() {
-    return jpf.flash.isAvailable();
+apf.video.TypeFlv.isSupported = function() {
+    return apf.flash.isAvailable();
 };
 
-jpf.video.TypeFlv.prototype = {
+apf.video.TypeFlv.prototype = {
     /**
      * Play an FLV. Does a call to the flash player to load or load & play the
      * video, depending on the 'autoPlay' flag (TRUE for play).
@@ -219,7 +219,7 @@ jpf.video.TypeFlv.prototype = {
     },
 
     /*setFullscreen: function(value) {
-        jpf.console.info('j:video::flash - going fullscreen = ' + value);
+        apf.console.info('j:video::flash - going fullscreen = ' + value);
         return this.callMethod('setFullscreen', value);
     },*/
 
@@ -328,7 +328,7 @@ jpf.video.TypeFlv.prototype = {
                 this.oVideo.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "fullscreen":
-                jpf.console.log('fullscreen: ', evtObj.state);
+                apf.console.log('fullscreen: ', evtObj.state);
                 this.oVideo.fullscreen = false;
             case "init":
                 this.inited = true;
@@ -343,12 +343,12 @@ jpf.video.TypeFlv.prototype = {
                 this.onResize();
                 var node = this.oVideo.oInt;
                 setTimeout(function() {
-                    jpf.layout.forceResize(node);
+                    apf.layout.forceResize(node);
                 }, 1000);
                 break;
             // #ifdef __DEBUG
             case "debug":
-                jpf.console.log('Flash debug: ' + evtObj.msg);
+                apf.console.log('Flash debug: ' + evtObj.msg);
                 break;
             // #endif
         }
@@ -386,12 +386,12 @@ jpf.video.TypeFlv.prototype = {
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
             "previewImagePath"];
 
-        jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
-            "(jpf.all[" + this.oVideo.uniqueId + "].player && jpf.all["
+        apf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
+            "(apf.all[" + this.oVideo.uniqueId + "].player && apf.all["
             + this.oVideo.uniqueId + "].player.onResize \
-                ? jpf.all[" + this.oVideo.uniqueId + "].player \
-                : {onResize:jpf.K}).onResize()");
-        jpf.layout.activateRules(this.oVideo.oExt);
+                ? apf.all[" + this.oVideo.uniqueId + "].player \
+                : {onResize:apf.K}).onResize()");
+        apf.layout.activateRules(this.oVideo.oExt);
 
         return this;
     },
@@ -402,7 +402,7 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        var content = jpf.flash.buildContent(
+        var content = apf.flash.buildContent(
             "src",              this.DEFAULT_SWF_PATH,
             "width",            "100%",
             "height",           "100%",
@@ -490,7 +490,7 @@ jpf.video.TypeFlv.prototype = {
     },
 
     $destroy: function() {
-        jpf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo");
+        apf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo");
         if (this.player) {
             try {
                 this.stop();

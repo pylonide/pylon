@@ -70,10 +70,10 @@
  *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *   {Number}         state     the state of the call
  *     Possible values:
- *     jpf.SUCCESS  the request was successfull
- *     jpf.TIMEOUT  the request has timed out.
- *     jpf.ERROR    an error has occurred while making the request.
- *     jpf.OFFLINE  the request was made while the application was offline.
+ *     apf.SUCCESS  the request was successfull
+ *     apf.TIMEOUT  the request has timed out.
+ *     apf.ERROR    an error has occurred while making the request.
+ *     apf.OFFLINE  the request was made while the application was offline.
  *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
@@ -113,24 +113,24 @@
  * @see element.model
  * @see element.model.attribute.submission
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.model = function(data, caching){
-    jpf.register(this, "model", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
+apf.model = function(data, caching){
+    apf.register(this, "model", apf.NODE_HIDDEN);/** @inherits apf.Class */
     this.data    = data;
     this.caching = caching;
     this.cache   = {};
     var _self    = this;
 
-    if (!jpf.globalModel)
-        jpf.globalModel = this;
+    if (!apf.globalModel)
+        apf.globalModel = this;
 
     this.saveOriginal = true;
 
     //#ifdef __DEBUG
-    jpf.console.info("Creating Model");
+    apf.console.info("Creating Model");
     //#endif
 
     this.$supportedProperties = ["submission", "load"];
@@ -144,7 +144,7 @@ jpf.model = function(data, caching){
      */
     this.loadInJmlNode = function(jmlNode, xpath){
         if (this.data && xpath) {
-            if (!jpf.supportNamespaces && (this.data.prefix || this.data.scopeName))
+            if (!apf.supportNamespaces && (this.data.prefix || this.data.scopeName))
                 (this.data.nodeType == 9 ? this.data : this.data.ownerDocument)
                     .setProperty("SelectionNamespaces", "xmlns:"
                      + (this.data.prefix || this.data.scopeName) + "='"
@@ -152,7 +152,7 @@ jpf.model = function(data, caching){
 
             var xmlNode = this.data.selectSingleNode(xpath);
             if (!xmlNode)
-                jmlNode.$listenRoot = jpf.xmldb.addNodeListener(this.data, jmlNode);
+                jmlNode.$listenRoot = apf.xmldb.addNodeListener(this.data, jmlNode);
         }
         else
             xmlNode = this.data || null;
@@ -234,8 +234,8 @@ jpf.model = function(data, caching){
     this.toString = function(){
         if (!this.data) return "Model has no data.";
         
-        var xml = jpf.xmldb.clearConnections(this.data.cloneNode(true));
-        return jpf.formatXml(xml.xml || xml.serialize());
+        var xml = apf.xmldb.clearConnections(this.data.cloneNode(true));
+        return apf.formatXml(xml.xml || xml.serialize());
     };
 
     /**
@@ -245,7 +245,7 @@ jpf.model = function(data, caching){
      */
     this.getXml = function(){
         return this.data
-            ? jpf.xmldb.clearConnections(this.data.cloneNode(true))
+            ? apf.xmldb.clearConnections(this.data.cloneNode(true))
             : false;
     };
 
@@ -257,11 +257,11 @@ jpf.model = function(data, caching){
      * @return  {XMLNode}  the changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
-        var node = jpf.xmldb.createNodeFromXpath(this.data, xpath);
+        var node = apf.xmldb.createNodeFromXpath(this.data, xpath);
         if (!node)
             return null;
 
-        jpf.xmldb.setTextNode(node, value);
+        apf.xmldb.setTextNode(node, value);
         return node;
     };
 
@@ -272,7 +272,7 @@ jpf.model = function(data, caching){
      * @return  {String}  value of the XMLNode
      */
     this.queryValue = function(xpath){
-        return jpf.getXmlValue(this.data, xpath);
+        return apf.getXmlValue(this.data, xpath);
     };
 	
     /**
@@ -282,7 +282,7 @@ jpf.model = function(data, caching){
      * @return  {String}  value of the XMLNode
      */	
     this.queryValues = function(xpath){
-        return jpf.getXmlValue(this.data, xpath);
+        return apf.getXmlValue(this.data, xpath);
     };
 	
     /**
@@ -310,16 +310,16 @@ jpf.model = function(data, caching){
      */
     this.appendXml = function(xmlNode){
         if (typeof xmlNode == "string")
-            xmlNode = jpf.getXml(xmlNode);
+            xmlNode = apf.getXml(xmlNode);
         else {
             xmlNode = !model.nodeType //Check if a model was passed
                 ? model.getXml()
-                : jpf.xmldb.copyNode(xmlNode);
+                : apf.xmldb.copyNode(xmlNode);
         }
         
         if (!xmlNode) return;
 
-        jpf.xmldb.appendChild(this.data, xmlNode);
+        apf.xmldb.appendChild(this.data, xmlNode);
     };
 
     //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
@@ -327,11 +327,11 @@ jpf.model = function(data, caching){
      * @private
      */
     this.getBindNode = function(bindId){
-        var bindObj = jpf.nameserver.get("bind", bindId);
+        var bindObj = apf.nameserver.get("bind", bindId);
 
         //#ifdef __DEBUG
         if (!bindObj) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Binding Component", "Could not find bind element with name '"
                 + x.getAttribute("bind") + "'"));
         }
@@ -446,7 +446,7 @@ jpf.model = function(data, caching){
      * model. The reset() method returns the model to this point.
      */
     this.savePoint = function(){
-        this.copy = jpf.xmldb.copyNode(this.data);
+        this.copy = apf.xmldb.copyNode(this.data);
     };
 
 
@@ -464,7 +464,7 @@ jpf.model = function(data, caching){
     /* *********** PARSE ***********/
 
     //#ifdef __WITH_XFORMS
-    //@todo move this to use jpf.subnode
+    //@todo move this to use apf.subnode
     var model = this;
     function cSubmission(x){
         this.tagName = "submission";
@@ -475,11 +475,11 @@ jpf.model = function(data, caching){
             return model;
         }
 
-        jpf.makeClass(this);
+        apf.makeClass(this);
 
-        this.implement(jpf.XForms); /** @inherits jpf.XForms */
+        this.implement(apf.XForms); /** @inherits apf.XForms */
         //#ifdef __WITH_JMLDOM
-        this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
+        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
         //#endif
     }
     function cBind(x){
@@ -503,7 +503,7 @@ jpf.model = function(data, caching){
 
             //#ifdef __DEBUG
             if (!typeHandlers[this.type]) {
-                throw new Error(jpf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
+                throw new Error(apf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
             }
             //#endif
 
@@ -511,7 +511,7 @@ jpf.model = function(data, caching){
                 if (nodes[i].childNodes > 1)
                     continue; //The association is ignored since the element contains child elements.
                 // #ifdef __WITH_XSD
-                if (!jpf.XSDParser.checkType(this.type, nodes[i]))
+                if (!apf.XSDParser.checkType(this.type, nodes[i]))
                     return false;
                 // #endif
             }
@@ -519,10 +519,10 @@ jpf.model = function(data, caching){
             return true;
         };
 
-        jpf.makeClass(this);
+        apf.makeClass(this);
 
         //#ifdef __WITH_JMLDOM
-        this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
+        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
         //#endif
     }
     //#endif
@@ -539,7 +539,7 @@ jpf.model = function(data, caching){
 
         //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
-        this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
+        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
         //#endif
 
         //Events
@@ -560,7 +560,7 @@ jpf.model = function(data, caching){
         //Parse submissions
         var oSub;
         //#ifdef __WITH_XFORMS
-        var subs = $xmlns(x, "submission", jpf.ns.jml);
+        var subs = $xmlns(x, "submission", apf.ns.jml);
         for (var i = 0; i < subs.length; i++) {
             if (!subs[i].getAttribute("id")) {
                 if (!defSubmission)
@@ -569,12 +569,12 @@ jpf.model = function(data, caching){
             }
 
             submissions[subs[i].getAttribute("id")] = subs[i];
-            oSub = jpf.setReference(subs[i].getAttribute("id"), new cSubmission(subs[i]));
+            oSub = apf.setReference(subs[i].getAttribute("id"), new cSubmission(subs[i]));
         }
         //#endif
 
         if (!defSubmission)
-            defSubmission = x.getAttribute("submission"); //Javeline Extension on XForms
+            defSubmission = x.getAttribute("submission");
 
         this.submitType    = x.getAttribute("submittype");
         this.useComponents = x.getAttribute("useComponents");
@@ -584,24 +584,24 @@ jpf.model = function(data, caching){
 
         //Find load string
         var instanceNode;
-        loadProcInstr = jpf.parseExpression(x.getAttribute("load") || x.getAttribute("get"));
+        loadProcInstr = apf.parseExpression(x.getAttribute("load") || x.getAttribute("get"));
         if (!loadProcInstr) {
-            var prefix = jpf.findPrefix(x, jpf.ns.jml);
-            if (!jpf.supportNamespaces)
+            var prefix = apf.findPrefix(x, apf.ns.jml);
+            if (!apf.supportNamespaces)
                 if (prefix)
                     (x.nodeType == 9
                         ? x
                         : x.ownerDocument).setProperty("SelectionNamespaces",
-                            "xmlns:" + prefix + "='" + jpf.ns.jml + "'");
+                            "xmlns:" + prefix + "='" + apf.ns.jml + "'");
             if (prefix)
                 prefix += ":";
 
-            var loadNode = x.selectSingleNode(prefix + "load");//$xmlns(x, "load", jpf.ns.jml)[0];
+            var loadNode = x.selectSingleNode(prefix + "load");//$xmlns(x, "load", apf.ns.jml)[0];
             if (loadNode)
                 loadProcInstr = loadNode.getAttribute("get");
             //#ifdef __WITH_XFORMS
             else {
-                instanceNode = $xmlns(x, "instance", jpf.ns.jml)[0];
+                instanceNode = $xmlns(x, "instance", apf.ns.jml)[0];
                 if (instanceNode && instanceNode.getAttribute("src"))
                     loadProcInstr = "url:" + instanceNode.getAttribute("src");
             }
@@ -610,11 +610,11 @@ jpf.model = function(data, caching){
 
         //Process bind nodes
         //#ifdef __WITH_XFORMS
-        var binds = $xmlns(x, "bind", jpf.ns.jml);
+        var binds = $xmlns(x, "bind", apf.ns.jml);
         for (var i = 0; i < binds.length; i++) {
             bindValidation.push([binds[i].getAttribute("nodeset"), binds[i]]);
             if (binds[i].getAttribute("id"))
-                jpf.nameserver.register("bind", binds[i].getAttribute("id"),
+                apf.nameserver.register("bind", binds[i].getAttribute("id"),
                     new cBind(binds[i]));
         }
         //#endif
@@ -623,14 +623,14 @@ jpf.model = function(data, caching){
         if (!oSub && !loadProcInstr) {
             var xmlNode = instanceNode || x;
             if (xmlNode.childNodes.length) {
-                if (jpf.getNode(xmlNode, [0])) {
+                if (apf.getNode(xmlNode, [0])) {
                     this.load((xmlNode.xml || xmlNode.serialize())
                         .replace(new RegExp("^<" + xmlNode.tagName + "[^>]*>"), "")
                         .replace(new RegExp("<\/\s*" + xmlNode.tagName + "[^>]*>$"), "")
                         .replace(/xmlns=\"[^"]*\"/g, ""));
                 }
                 // we also support JSON data loading in a model CDATA section
-                else if (jpf.isJSON(xmlNode.childNodes[0].nodeValue)) {
+                else if (apf.isJSON(xmlNode.childNodes[0].nodeValue)) {
                     this.load(xmlNode.childNodes[0].nodeValue);
                 }
             }
@@ -641,16 +641,16 @@ jpf.model = function(data, caching){
             this.load("<data />");
 
         //Load data into model if allowed
-        if (!jpf.isFalse(x.getAttribute("init")))
+        if (!apf.isFalse(x.getAttribute("init")))
             this.init();
 
         //Connect to a remote smartbinding
         if (x.getAttribute("remote")) {
-            this.rsb = jpf.nameserver.get("remote", x.getAttribute("remote"));
+            this.rsb = apf.nameserver.get("remote", x.getAttribute("remote"));
 
             //#ifdef __DEBUG
             if (!this.rsb || !this.rsb.models) {
-                throw new Error(jpf.formatErrorString(0, null,
+                throw new Error(apf.formatErrorString(0, null,
                     "Loading JML into model",
                     "Could not find reference to remote smartbinding: '"
                     + x.getAttribute("remote") + "'", x))
@@ -712,16 +712,16 @@ jpf.model = function(data, caching){
         }
         else {
             //#ifdef __WITH_OFFLINE_MODELS
-            if (typeof jpf.offline != "undefined" && jpf.offline.models.enabled) {
+            if (typeof apf.offline != "undefined" && apf.offline.models.enabled) {
                 //Check if there's stored data
-                if (jpf.offline.models.loadModel(this)) {
+                if (apf.offline.models.loadModel(this)) {
                     return;
                 }
 
                 //Hmm we're offline, lets wait until we're online again
                 //@todo this will ruin getting data from offline resources
-                if (loadProcInstr && !jpf.offline.onLine) {
-                    jpf.offline.models.addToInitQueue(this);
+                if (loadProcInstr && !apf.offline.onLine) {
+                    apf.offline.models.addToInitQueue(this);
                     return;
                 }
             }
@@ -772,7 +772,7 @@ jpf.model = function(data, caching){
                 eval(instrType).test
             }
             catch (e) {
-                throw new Error(jpf.formatErrorString(1031, null,
+                throw new Error(apf.formatErrorString(1031, null,
                     "Model Creation", "Could not find object reference to \
                     connect databinding: '" + instrType + "'", dataNode))
             }
@@ -795,22 +795,22 @@ jpf.model = function(data, caching){
         }
 
         this.state = 1;
-        jpf.getData(instruction, xmlContext, options, function(data, state, extra){
+        apf.getData(instruction, xmlContext, options, function(data, state, extra){
             _self.dispatchEvent("afterretrieve");
 
             //#ifdef __WITH_OFFLINE_MODELS
-            if (state == jpf.OFFLINE) {
-                jpf.offline.models.addToInitQueue(this);
+            if (state == apf.OFFLINE) {
+                apf.offline.models.addToInitQueue(this);
                 return false;
             }
             //#endif
 
             _self.state = 0;
 
-            if (state != jpf.SUCCESS) {
+            if (state != apf.SUCCESS) {
                 var oError;
 
-                oError = new Error(jpf.formatErrorString(1032,
+                oError = new Error(apf.formatErrorString(1032,
                     _self, "Inserting xml data", "Could not load data \
                     Instruction:" + instruction + "\n\
                     Url: " + extra.url + "\n\
@@ -871,19 +871,19 @@ jpf.model = function(data, caching){
             return false;
 
         if (typeof xmlNode == "string")
-            xmlNode = jpf.getXmlDom(xmlNode).documentElement;
+            xmlNode = apf.getXmlDom(xmlNode).documentElement;
 
         doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
 
-        if (jpf.isIE && this.$jml && this.$jml.getAttribute("ns"))
+        if (apf.isIE && this.$jml && this.$jml.getAttribute("ns"))
             xmlNode.ownerDocument.setProperty("SelectionNamespaces", this.$jml.getAttribute("ns"));
         
         if (xmlNode) {
-            jpf.xmldb.nodeConnect(
-                jpf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
+            apf.xmldb.nodeConnect(
+                apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
             if (!nocopy && this.saveOriginal)
-                this.copy = jpf.xmldb.copyNode(xmlNode);
+                this.copy = apf.xmldb.copyNode(xmlNode);
         }
 
         this.data = xmlNode;
@@ -924,14 +924,14 @@ jpf.model = function(data, caching){
         var jmlNode = options.jmlNode;
         //#endif
 
-        jpf.getData(instruction, xmlContext, options, function(data, state, extra){
+        apf.getData(instruction, xmlContext, options, function(data, state, extra){
             _self.dispatchEvent("afterretrieve");
 
-            if (state != jpf.SUCCESS) {
+            if (state != apf.SUCCESS) {
                 var oError;
 
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(1032,
+                oError = new Error(apf.formatErrorString(1032,
                     _self, "Inserting xml data", "Could not insert data for \
                     Instruction:" + instruction + "\n\
                     Url: " + extra.url + "\n\
@@ -947,7 +947,7 @@ jpf.model = function(data, caching){
 
             //#ifdef __DEBUG
             if (!options.insertPoint) {
-                throw new Error(jpf.formatErrorString(0, jmlNode || _self,
+                throw new Error(apf.formatErrorString(0, jmlNode || _self,
                     "Inserting data", "Could not determine insertion point for \
                     instruction: " + instruction));
             }
@@ -958,8 +958,8 @@ jpf.model = function(data, caching){
                 insertPoint = _self.data.selectSingleNode(options.insertPoint);
 
             //Call insert function
-            (options.jmlNode || _self).insert(data, options.insertPoint, jpf.extend({
-                clearContents: jpf.isTrue(extra.userdata[1])
+            (options.jmlNode || _self).insert(data, options.insertPoint, apf.extend({
+                clearContents: apf.isTrue(extra.userdata[1])
             }, options));
 
             if (callback)
@@ -975,18 +975,18 @@ jpf.model = function(data, caching){
      */
     this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){
         if (typeof XMLRoot != "object")
-            XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
+            XMLRoot = apf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode)
             parentXMLNode = this.data;
 
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 
         //Integrate XMLTree with parentNode
-        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLNode,
-          jpf.extend({copyAttributes: true}, options));
+        var newNode = apf.xmldb.integrate(XMLRoot, parentXMLNode,
+          apf.extend({copyAttributes: true}, options));
 
         //Call __XMLUpdate on all listeners
-        jpf.xmldb.applyChanges("insert", parentXMLNode);
+        apf.xmldb.applyChanges("insert", parentXMLNode);
 
         //this.dispatchEvent("afterinsert");
 
@@ -1101,7 +1101,7 @@ jpf.model = function(data, caching){
 
         //#ifdef __DEBUG
         if (!xmlNode) {
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(apf.formatErrorString(0, this, 
                 "Submitting model",
                 "Could not submit data, because no data was passed and the \
                  model does not have data loaded."));
@@ -1133,13 +1133,13 @@ jpf.model = function(data, caching){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
+                throw new Error(apf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
                 //#endif
             }
 
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post")
-        //    throw new Error(jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$jml));
+        //    throw new Error(apf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$jml));
         //#endif
 
         if (this.dispatchEvent("beforesubmit", {
@@ -1155,12 +1155,12 @@ jpf.model = function(data, caching){
 
         var model = this;
         function cbFunc(data, state, extra){
-            if ((state == jpf.TIMEOUT 
-              || (_self.retryOnError && state == jpf.ERROR))
-              && extra.retries < jpf.maxHttpRetries)
+            if ((state == apf.TIMEOUT 
+              || (_self.retryOnError && state == apf.ERROR))
+              && extra.retries < apf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                if (state != jpf.SUCCESS) {
+                if (state != apf.SUCCESS) {
                     model.dispatchEvent("submiterror", extra);
 
                     //#ifdef __WITH_XFORMS
@@ -1169,7 +1169,7 @@ jpf.model = function(data, caching){
                     //#endif
                 }
                 else {
-                    model.dispatchEvent("submitsuccess", jpf.extend({
+                    model.dispatchEvent("submitsuccess", apf.extend({
                         data: data
                     }, extra));
 
@@ -1192,7 +1192,7 @@ jpf.model = function(data, caching){
                             if ((extra.http.getResponseHeader("Content-Type") || "").indexOf("xml") > -1) {
                                 if (sub.getAttribute("replace") == "instance") {
                                     try {
-                                        var xml = jpf.xmldb.getXml(xml);
+                                        var xml = apf.xmldb.getXml(xml);
                                         this.load(xml);
                                         model.dispatchEvent("xforms-submit-done");
                                     }
@@ -1221,14 +1221,14 @@ jpf.model = function(data, caching){
         if (type == "array" || type == "xml") {
             var data = type == "array"
                 ? this.getJsonObject()
-                : jpf.xmldb.serializeNode(xmlNode);
+                : apf.xmldb.serializeNode(xmlNode);
 
-            jpf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
+            apf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
         else {
             var data = useComponents
                 ? this.getCgiString()
-                : jpf.xmldb.convertXml(jpf.xmldb.copyNode(xmlNode), type != "native" ? type : "cgivars");
+                : apf.xmldb.convertXml(apf.xmldb.copyNode(xmlNode), type != "native" ? type : "cgivars");
 
             if (instruction.match(/^rpc\:/)) {
                 rpc = rpc.split(".");
@@ -1242,7 +1242,7 @@ jpf.model = function(data, caching){
                 if (instruction.match(/^url/))
                     instruction += (instruction.match(/\?/) ? "&" : "?") + data;
 
-                jpf.saveData(instruction, xmlNode, null, cbFunc);
+                apf.saveData(instruction, xmlNode, null, cbFunc);
             }
         }
 
@@ -1251,7 +1251,7 @@ jpf.model = function(data, caching){
 
     this.$destroy = function(){
         if (this.session && this.data)
-            jpf.saveData(this.session, this.getXml());
+            apf.saveData(this.session, this.getXml());
     };
 };
 

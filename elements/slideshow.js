@@ -61,10 +61,10 @@
  * @attribute {String}  loadmsg        this text displayd while the picture is loading.
  * @attribute {Boolean} scalewidth     whether the width of the thumbnail is scaled relative to its height.
  * 
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Cache
- * @inherits jpf.MultiselectBinding
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Cache
+ * @inherits apf.MultiselectBinding
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
@@ -79,7 +79,7 @@
  * @binding title    Determines the image description text.
  * @binding thumb    Determines the url to thumbnail file.
  */
-jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;
     this.title          = "number";
     this.thumbheight    = 50;
@@ -204,7 +204,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             this.otNext.style.visibility     = "hidden";
         }
 
-        jpf.tween.single(this.oCurtain, {
+        apf.tween.single(this.oCurtain, {
             steps    : 3,
             type     : "fade",
             from     : 0,
@@ -226,10 +226,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
                     clearTimeout(_self.timer);
 
-                    var ww = jpf.isIE
+                    var ww = apf.isIE
                         ? document.documentElement.offsetWidth
                         : window.innerWidth;
-                    var wh = jpf.isIE
+                    var wh = apf.isIE
                         ? document.documentElement.offsetHeight
                         : window.innerHeight;
 
@@ -243,16 +243,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                    titleHeight / 2
                                    + _self.oConsole.offsetHeight / 2);
 
-                    var diff = jpf.getDiff(b);
+                    var diff = apf.getDiff(b);
                     var checkWH = [false, false];
 
-                    jpf.tween.single(b, {
-                        steps    : jpf.isGecko
+                    apf.tween.single(b, {
+                        steps    : apf.isGecko
                             ? 20
                             : (Math.abs(imgWidth - b.offsetWidth) > 40
                                 ? 10
                                 : 3),
-                        anim     : jpf.tween.EASEIN,
+                        anim     : apf.tween.EASEIN,
                         type     : "mwidth",
                         from     : b.offsetWidth - diff[0],
                         to       : Math.min(imgWidth, ww - hSpace),
@@ -261,13 +261,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     });
 
-                    jpf.tween.single(b, {
-                        steps    : jpf.isGecko
+                    apf.tween.single(b, {
+                        steps    : apf.isGecko
                             ? 20
                             : (Math.abs(imgHeight - b.offsetHeight) > 40
                                 ? 10
                                 : 3),
-                        anim     : jpf.tween.EASEIN,
+                        anim     : apf.tween.EASEIN,
                         type     : "mheight",
                         margin   : -1*(bottomPanel - 10),
                         from     : b.offsetHeight - diff[1],
@@ -303,14 +303,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                 : "move";
 
                             im.style.display = "block";
-                            jpf.tween.single(im, {
+                            apf.tween.single(im, {
                                 steps : 5,
                                 type  : "fade",
                                 from  : 0,
                                 to    : 1
                             });
 
-                            jpf.tween.single(_self.oTitle, {
+                            apf.tween.single(_self.oTitle, {
                                 steps : 10,
                                 type  : "fade",
                                 from  : 0,
@@ -352,14 +352,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         
                         _self.oImage.style.display = "block";
                         
-                        jpf.tween.single(_self.oImage, {
+                        apf.tween.single(_self.oImage, {
                             steps : 5,
                             type  : "fade",
                             from  : 0,
                             to    : 1
                         });
 
-                        jpf.tween.single(_self.oTitle, {
+                        apf.tween.single(_self.oTitle, {
                             steps : 10,
                             type  : "fade",
                             from  : 0,
@@ -404,15 +404,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      *     -1   when thumbnails are scrolling in left
      */
     this.addSelection = function(move) {
-        var htmlElement = jpf.xmldb.findHtmlNode(current, this),
-            ww          = jpf.isIE
+        var htmlElement = apf.xmldb.findHtmlNode(current, this),
+            ww          = apf.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
-            diffp       = jpf.getDiff(_self.otPrevious),
-            diffn       = jpf.getDiff(_self.otNext),
-            bp          = parseInt(jpf.getStyle(_self.otPrevious, "width")),
-            bn          = parseInt(jpf.getStyle(_self.otNext, "width")),
-            ew          = parseInt(jpf.getStyle(htmlElement, "width"));
+            diffp       = apf.getDiff(_self.otPrevious),
+            diffn       = apf.getDiff(_self.otNext),
+            bp          = parseInt(apf.getStyle(_self.otPrevious, "width")),
+            bn          = parseInt(apf.getStyle(_self.otNext, "width")),
+            ew          = parseInt(apf.getStyle(htmlElement, "width"));
 
         /* checking visiblity */
         if (htmlElement.offsetLeft + ew + 5 >
@@ -511,14 +511,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         onuse = true;
 
-        jpf.tween.single(img, {
+        apf.tween.single(img, {
             steps : 3,
             type  : "fade",
             from  : 1,
             to    : 0
         });
 
-        jpf.tween.single(_self.oTitle, {
+        apf.tween.single(_self.oTitle, {
             steps    : 3,
             type     : "fade",
             from     : 1,
@@ -533,15 +533,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 img.src = _src;
 
                 /* Safari and Chrome fix for reloading current image */
-                if (img.src == _src_temp && (jpf.isChrome || jpf.isSafari)) {
+                if (img.src == _src_temp && (apf.isChrome || apf.isSafari)) {
                     onuse = false;
-                    jpf.tween.single(img, {
+                    apf.tween.single(img, {
                         steps : 3,
                         type  : "fade",
                         from  : 0,
                         to    : 1
                     });
-                    jpf.tween.single(_self.oTitle, {
+                    apf.tween.single(_self.oTitle, {
                         steps : 3,
                         type  : "fade",
                         from  : 0,
@@ -611,9 +611,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //#ifdef __WITH_LAYOUT
         //@todo add this to $destroy
-        var rules = "var o = jpf.all[" + this.uniqueId + "];\
+        var rules = "var o = apf.all[" + this.uniqueId + "];\
                      if (o) o.$resize()";
-        jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling",
+        apf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling",
                             rules, true);
         //#endif
 
@@ -691,7 +691,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 return;
             
             e = e || event;
-            if (jpf.isChrome || jpf.isSafari) {
+            if (apf.isChrome || apf.isSafari) {
                 SafariChromeFix = SafariChromeFix ? false : true;
                 if (!SafariChromeFix)
                     return;
@@ -719,7 +719,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             return false;
         };
 
-        jpf.addEventListener("mousescroll", onmousescroll_);
+        apf.addEventListener("mousescroll", onmousescroll_);
         /* end of mouse wheel */
 
         this.oClose.onclick = function() {
@@ -731,14 +731,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         var timer;
         this.oImage.onmousedown = function(e) {
             e = e || event;
-            var ww = jpf.isIE
+            var ww = apf.isIE
                     ? document.documentElement.offsetWidth
                     : window.innerWidth,
-                wh = jpf.isIE
+                wh = apf.isIE
                     ? document.documentElement.offsetHeight
                     : window.innerHeight,
                 b = _self.oBody,
-                diff = jpf.getDiff(b),
+                diff = apf.getDiff(b),
                 dx = b.offsetWidth - diff[0] - _self.oImage.offsetWidth,
                 dy = b.offsetHeight - diff[1] - _self.oImage.offsetHeight;
             var t = parseInt(_self.oImage.style.top),
@@ -786,23 +786,23 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * element, depends on browser window size.
      */
     this.$resize = function() {
-        var ww        = jpf.isIE
+        var ww        = apf.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
-            wh        = jpf.isIE
+            wh        = apf.isIE
                 ? document.documentElement.offsetHeight
                 : window.innerHeight,
             b         = _self.oBody,
             img       = _self.oImage,
             imgWidth  = img.offsetWidth,
             imgHeight = img.offsetHeight,
-            diff      = jpf.getDiff(b),
+            diff      = apf.getDiff(b),
             wt        = Math.min(imgWidth, ww - hSpace);
 
         if (wt > -1) {
            b.style.width      = wt + "px";
            b.style.marginLeft = -1 * (wt / 2
-               + (parseInt(jpf.getStyle(b, "borderLeftWidth")) || diff[0] / 2))
+               + (parseInt(apf.getStyle(b, "borderLeftWidth")) || diff[0] / 2))
                + "px";
         }
 
@@ -815,7 +815,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         if (ht > -1) {
             b.style.height    = ht + "px";
             b.style.marginTop = -1 * (ht / 2
-                + (parseInt(jpf.getStyle(b, "borderTopWidth")) || diff[1] / 2)
+                + (parseInt(apf.getStyle(b, "borderTopWidth")) || diff[1] / 2)
                     + bottomPanel)
                 + "px";
         }
@@ -842,7 +842,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {HTMLElement}   oThumb   html representation of thumbnail element
      */
     this.$clickThumb = function(oThumb) {
-        current = jpf.xmldb.getNode(oThumb);
+        current = apf.xmldb.getNode(oThumb);
         this.addSelection();
         this.$refresh();
     }
@@ -859,7 +859,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             pictureBox = this.otBody.childNodes[i];
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
 
-            diff = jpf.getDiff(pictureBox);
+            diff = apf.getDiff(pictureBox);
             
             bh = this.thumbheight - 10 - diff[1];
             
@@ -882,15 +882,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             widthSum += w + diff[0]
-                     + (parseInt(jpf.getStyle(pictureBox, "margin-left")
-                         || jpf.getStyle(pictureBox, "marginLeft")))
-                     + (parseInt(jpf.getStyle(pictureBox, "margin-right")
-                         || jpf.getStyle(pictureBox, "marginRight")));
+                     + (parseInt(apf.getStyle(pictureBox, "margin-left")
+                         || apf.getStyle(pictureBox, "marginLeft")))
+                     + (parseInt(apf.getStyle(pictureBox, "margin-right")
+                         || apf.getStyle(pictureBox, "marginRight")));
             document.body.removeChild(img);
             pictureBox.style.width = w + "px";
         }
 
-        var thumbDiff = jpf.getDiff(this.otBody);
+        var thumbDiff = apf.getDiff(this.otBody);
 
         this.otPrevious.style.visibility = this.otNext.style.visibility =
             widthSum < this.oThumbnails.offsetWidth - thumbDiff[0]
@@ -899,7 +899,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$load = function(xmlRoot) {
-        jpf.xmldb.addNodeListener(xmlRoot, this);
+        apf.xmldb.addNodeListener(xmlRoot, this);
         var nodes = this.getTraverseNodes(),
             length = nodes.length;
 
@@ -910,7 +910,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             pictureBox.style.backgroundImage = 'url(' + (thumb ? thumb : this.defaultthumb) +  ')';
 
             this.$setStyleClass(pictureBox, "sspictureBox");
-            diff = jpf.getDiff(pictureBox);
+            diff = apf.getDiff(pictureBox);
             
             bh = this.thumbheight - 10 - diff[1];
             
@@ -938,7 +938,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             pictureBox.style.width = w + "px";
             pictureBox.style.marginTop = pictureBox.style.marginBottom = "5px";
 
-            jpf.xmldb.nodeConnect(this.documentId, nodes[i], pictureBox, this);
+            apf.xmldb.nodeConnect(this.documentId, nodes[i], pictureBox, this);
 
             pictureBox.onclick = function(e) {
                 _self.$clickThumb(this);
@@ -966,27 +966,27 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         _self.oInt.style.display = "block";
         _self.oExt.style.display = "block";
 
-        jpf.tween.single(_self.oCurtain, {
+        apf.tween.single(_self.oCurtain, {
             steps    : 10, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
                 _self.oBeam.style.display = "block";
-                jpf.tween.single(_self.oBeam, {
+                apf.tween.single(_self.oBeam, {
                     steps    : 10, 
                     type     : "fade",
                     from     : 0,
                     to       : 1,
                     onfinish : function() {
                         _self.oBody.style.display = "block";
-                        jpf.tween.single(_self.oBody, {
+                        apf.tween.single(_self.oBody, {
                             steps    : 5, 
                             type     : "fade",
                             from     : 0,
                             to       : 1,
                             onfinish : function() {
-                                if (jpf.isIE) {
+                                if (apf.isIE) {
                                     _self.oBody.style.filter = "";
                                     _self.oBeam.style.filter = "";
                                 }
@@ -1004,7 +1004,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Restores window scrollbars */
         _self.oExt.style.display = "block";
 
-        jpf.tween.single(_self.oBody, {
+        apf.tween.single(_self.oBody, {
             steps    : 10, 
             type     : "fade",
             from     : 1,
@@ -1014,7 +1014,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         });
         
-        jpf.tween.single(_self.oBeam, {
+        apf.tween.single(_self.oBeam, {
             steps    : 10, 
             type     : "fade",
             from     : 1,
@@ -1022,7 +1022,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             onfinish : function() {
                 _self.oBeam.style.display = "none";
                 
-                jpf.tween.single(_self.oCurtain, {
+                apf.tween.single(_self.oCurtain, {
                     steps    : 10, 
                     type     : "fade",
                     from     : 0.7,
@@ -1058,26 +1058,26 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$loadJml = function(x) {
         var nodes = x.childNodes;
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
     };
 
     var oEmpty;
     this.$setClearMessage = function(msg, className) {
-        var ww = jpf.isIE
+        var ww = apf.isIE
             ? document.documentElement.offsetWidth
             : window.innerWidth;
-        var bp = parseInt(jpf.getStyle(_self.otPrevious, "width"));
-        var bn = parseInt(jpf.getStyle(_self.otNext, "width"));
-        var ew = parseInt(jpf.getStyle(_self.oEmpty, "width"));
+        var bp = parseInt(apf.getStyle(_self.otPrevious, "width"));
+        var bn = parseInt(apf.getStyle(_self.otNext, "width"));
+        var ew = parseInt(apf.getStyle(_self.oEmpty, "width"));
         
         oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
-        jpf.xmldb.setNodeValue(oEmpty, msg || "");
+        apf.xmldb.setNodeValue(oEmpty, msg || "");
 
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         oEmpty.style.display = "block";
         oEmpty.style.left = ((ww - ew) / 2 - bp - bn) + "px";
-        jpf.setStyleClass(oEmpty, className, ["ssloading", "ssempty", "offline"]);
+        apf.setStyleClass(oEmpty, className, ["ssloading", "ssempty", "offline"]);
     };
 
     this.$removeClearMessage = function() {
@@ -1092,7 +1092,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.dataset = fragment.dataset;
 
-        if (!jpf.window.hasFocus(this))
+        if (!apf.window.hasFocus(this))
             this.blur();
     };
 
@@ -1106,7 +1106,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return fragment;
     };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache,
-             jpf.MultiselectBinding);
+}).implement(apf.Presentation, apf.DataBinding, apf.Cache,
+             apf.MultiselectBinding);
 
 // #endif

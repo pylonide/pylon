@@ -60,11 +60,11 @@ var __DELAYEDRENDER__ = 1 << 11
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8.9
  */
-jpf.DelayedRender = function(){
+apf.DelayedRender = function(){
     this.$regbase   = this.$regbase | __DELAYEDRENDER__;
     this.$rendered  = false;
 
@@ -94,11 +94,11 @@ jpf.DelayedRender = function(){
         this.dispatchEvent("beforerender");
 
         if (typeof this.usedelay == "undefined")
-            this.usedelay = jpf.isTrue(jpf.xmldb.getInheritedAttribute(this.$jml,
+            this.usedelay = apf.isTrue(apf.xmldb.getInheritedAttribute(this.$jml,
                 "use-render-delay"));
 
         if (this.usedelay || usedelay)
-            setTimeout("jpf.lookup(" + this.uniqueId + ").$renderparse()", 10);
+            setTimeout("apf.lookup(" + this.uniqueId + ").$renderparse()", 10);
         else
             this.$renderparse();
     };
@@ -107,7 +107,7 @@ jpf.DelayedRender = function(){
         if (this.$rendered)
             return;
 
-        jpf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
+        apf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
 
         this.$jml.setAttribute("render-status", "done");
         this.$jml.removeAttribute("render"); //Experimental

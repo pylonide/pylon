@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-jpf.editor.plugin('link', function(){
+apf.editor.plugin('link', function(){
     this.name        = 'link';
     this.icon        = 'link';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ jpf.editor.plugin('link', function(){
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -64,19 +64,19 @@ jpf.editor.plugin('link', function(){
 
     this.queryState = function(editor) {
         if (editor.selection.isCollapsed() || editor.selection.getSelectedNode().tagName == "A")
-            return jpf.editor.DISABLED;
+            return apf.editor.DISABLED;
         return this.state;
     };
 
     this.submit = function(e) {
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
 
         if (!this.oUrl.value.replace("http://", "")) return;
 
-        this.editor.executeCommand("CreateLink", "javascript:jpftmp(0);");
+        this.editor.executeCommand("CreateLink", "javascript:apftmp(0);");
         var oLink, aLinks = this.editor.oDoc.getElementsByTagName("a");
         for (var i = 0; i < aLinks.length && !oLink; i++)
-            if (aLinks[i].href == "javascript:jpftmp(0);")
+            if (aLinks[i].href == "javascript:apftmp(0);")
                 oLink = aLinks[i];
         if (oLink) {
             var val = this.oUrl.value;
@@ -128,10 +128,10 @@ jpf.editor.plugin('link', function(){
         this.oTitle  = document.getElementById(idTitle);
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
-            jpf.sanitizeTextbox(this.oUrl);
-            jpf.sanitizeTextbox(this.oTarget);
-            jpf.sanitizeTextbox(this.oTitle);
+        if (apf.hasFocusBug) {
+            apf.sanitizeTextbox(this.oUrl);
+            apf.sanitizeTextbox(this.oTarget);
+            apf.sanitizeTextbox(this.oTitle);
             this.oUrl.onselectstart   = this.oTarget.onselectstart =
             this.oTitle.onselectstart = function(e) {
                 e = e || window.event;
@@ -141,9 +141,9 @@ jpf.editor.plugin('link', function(){
         //#endif
 
         this.appendJmlNode(
-            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+            '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
              <j:button caption="' + this.editor.translate('insert') + '" \
-               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',
           document.getElementById(idBtns))
 
@@ -159,20 +159,20 @@ jpf.editor.plugin('link', function(){
     };
 });
 
-jpf.editor.plugin('unlink', function(){
+apf.editor.plugin('unlink', function(){
     this.name        = 'unlink';
     this.icon        = 'unlink';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
-        if (this.queryState(editor) == jpf.editor.DISABLED)
+        if (this.queryState(editor) == apf.editor.DISABLED)
             return;
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             editor.executeCommand('Unlink');
         }
         else {
@@ -191,9 +191,9 @@ jpf.editor.plugin('unlink', function(){
 
     this.queryState = function(editor) {
         if (editor.selection.getSelectedNode().tagName == "A")
-            return jpf.editor.OFF;
+            return apf.editor.OFF;
 
-        return jpf.editor.DISABLED;
+        return apf.editor.DISABLED;
     };
 });
 

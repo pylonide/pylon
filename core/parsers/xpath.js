@@ -1,5 +1,5 @@
 // #ifdef __PARSER_XPATH || __SUPPORT_SAFARI || __SUPPORT_IE && __WITH_PRESENTATION
-jpf.runXpath = function(){
+apf.runXpath = function(){
 
 /**
  *    Workaround for the lack of having an XPath parser on safari.
@@ -15,7 +15,7 @@ jpf.runXpath = function(){
  * @parser
  * @private
  */
-jpf.XPath = {
+apf.XPath = {
     cache : {},
 
     getSelf : function(htmlNode, tagName, info, count, num, sResult){
@@ -58,7 +58,7 @@ jpf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
-            //jpf.console.error(e.name + " " + e.type + ":" + jpf.XPath.lastExpr + "\n\n" + query);
+            //apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
@@ -136,7 +136,7 @@ jpf.XPath = {
         if (tagName == "node()") {
             tagName = "*";
             prefix = "";
-            if (jpf.isIE)
+            if (apf.isIE)
                 var nodes = htmlNode.getElementsByTagName("*");
             else {
                 var nodes = [];
@@ -155,7 +155,7 @@ jpf.XPath = {
         }
         else {
             var nodes = htmlNode.getElementsByTagName((prefix
-              && (jpf.isGecko || jpf.isOpera) ? prefix + ":" : "") + tagName);
+              && (apf.isGecko || apf.isOpera) ? prefix + ":" : "") + tagName);
         }
 
         for (var i = 0; i < nodes.length; i++) {
@@ -341,7 +341,7 @@ jpf.XPath = {
             else if (sections[i] == "self::node()")
                 results.push([this.getSelf, null]);
             else if (sections[i].match(/self::(.*)$/))
-                results.push([this.doQuery, ["jpf.XPath.doXpathFunc(htmlNode, 'local-name') == '" + RegExp.$1 + "'"]]);
+                results.push([this.doQuery, ["apf.XPath.doXpathFunc(htmlNode, 'local-name') == '" + RegExp.$1 + "'"]]);
             else {
                 var query = sections[i];
 
@@ -358,7 +358,7 @@ jpf.XPath = {
 
                 results.push([this.doQuery, [this.compileQuery(query), true]])
 
-                //throw new Error("---- Javeline Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
+                //throw new Error("---- APF Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
             }
         }
 
@@ -367,7 +367,7 @@ jpf.XPath = {
     },
 
     compileQuery : function(code){
-        var c = new jpf.CodeCompilation(code);
+        var c = new apf.CodeCompilation(code);
         return c.compile();
     },
 
@@ -402,9 +402,9 @@ jpf.XPath = {
 
         switch(type){
             case "position":
-                return jpf.xmldb.getChildNumber(contextNode) + 1;
+                return apf.xmldb.getChildNumber(contextNode) + 1;
             case "format-number":
-                return jpf.formatNumber(arg1); //@todo this should actually do something
+                return apf.formatNumber(arg1); //@todo this should actually do something
             case "floor":
                 return Math.floor(arg1);
             case "ceiling":
@@ -418,7 +418,7 @@ jpf.XPath = {
             case "last":
                 return arg1 ? arg1[arg1.length-1] : null;
             case "local-name":
-                return xmlNode ? xmlNode.tagName : contextNode.tagName;//[jpf.TAGNAME]
+                return xmlNode ? xmlNode.tagName : contextNode.tagName;//[apf.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":
@@ -512,7 +512,7 @@ function getNodeValue(sResult){
  * @constructor
  * @private
  */
-jpf.CodeCompilation = function(code){
+apf.CodeCompilation = function(code){
     this.data = {
         F : [],
         S : [],
@@ -576,7 +576,7 @@ jpf.CodeCompilation = function(code){
     this.insert = function(){
         var data = this.data;
         code = code.replace(/(\d+)X_\s*==\s*(\d+S_)/g, function(d, nr, str){
-            return "jpf.XPath.selectNodeExtended('"
+            return "apf.XPath.selectNodeExtended('"
                 +  data.X[nr].replace(/'/g, "\\'") + "', htmlNode, " + str + ")";
         });
 
@@ -584,7 +584,7 @@ jpf.CodeCompilation = function(code){
             var value = data[type][nr];
 
             if (type == "F") {
-                return "jpf.XPath.doXpathFunc(htmlNode, '" + value + "', ";
+                return "apf.XPath.doXpathFunc(htmlNode, '" + value + "', ";
             }
             else if (type == "S") {
                 return "'" + value + "'";
@@ -593,7 +593,7 @@ jpf.CodeCompilation = function(code){
                 return value;
             }
             else if (type == "X") {
-                return "jpf.XPath.selectNodeExtended('"
+                return "apf.XPath.selectNodeExtended('"
                     + value.replace(/'/g, "\\'") + "', htmlNode)";
             }
         });

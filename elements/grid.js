@@ -70,14 +70,14 @@
  * @addnode elements
  * @constructor
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.grid = apf.component(apf.NODE_VISIBLE, function(){
     var id;
     var update  = false;
-    var l       = jpf.layout;
+    var l       = apf.layout;
     var _self   = this;
     var updater = {
         $updateLayout : function(){
@@ -118,7 +118,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["padding"]    =
     this.$propHandlers["margin"]     =
     this.$propHandlers["cellheight"] = function(value){
-        if (!update && jpf.loaded)
+        if (!update && apf.loaded)
             l.queue(_self.oExt, updater);
         update = true;
     };
@@ -181,9 +181,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     //#ifdef __WITH_PROPERTY_WATCH
     function propChange(name, old, value){
-        if (update && jpf.isTrue(value) && _self.oExt.offsetHeight) {
+        if (update && apf.isTrue(value) && _self.oExt.offsetHeight) {
             _self.$updateGrid();
-            jpf.layout.activateRules(_self.oExt);
+            apf.layout.activateRules(_self.oExt);
             
             var p = _self;
             while (p) {
@@ -199,7 +199,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     function setPercentage(expr, value){
         return typeof expr == "string" 
-            ? expr.replace(jpf.percentageMatch, "((" + value + " * $1)/100)")
+            ? expr.replace(apf.percentageMatch, "((" + value + " * $1)/100)")
             : expr;
     }
     
@@ -228,7 +228,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.cellheight = parseInt(this.cellheight);
         var cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
         var collength   = cols.length;
-        var margin      = jpf.getBox(this.margin);
+        var margin      = apf.getBox(this.margin);
         var rowheight   = [];
         this.padding    = parseInt(this.padding);
         
@@ -238,7 +238,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         var span, jNode, jNodes = this.childNodes;
         for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
             jNode = jNodes[i];
-            if (jNode.nodeFunc != jpf.NODE_VISIBLE || !jNode.visible)
+            if (jNode.nodeFunc != apf.NODE_VISIBLE || !jNode.visible)
                 continue;
             
             //#ifdef __WITH_ANCHORING
@@ -246,15 +246,15 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                 jNode.disableAnchoring();
             //#endif
             
-            m = jpf.getBox(jNode.getAttribute("margin"));
+            m = apf.getBox(jNode.getAttribute("margin"));
             //for (j = 0; j < 4; j++)
                 //m[j] += this.padding;
 
-            diff = jpf.getDiff(jNode.oExt);
+            diff = apf.getDiff(jNode.oExt);
             oExt = jNode.oExt;
             if (!oExt.getAttribute("id")) 
-                jpf.setUniqueHtmlId(oExt);
-            if (jpf.isIE)
+                apf.setUniqueHtmlId(oExt);
+            if (apf.isIE)
                 oExt.style.position = "absolute"; //Expensive
             
             span = jNode.getAttribute("span");
@@ -267,7 +267,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
                 oHtml   : oExt,
                 hordiff : diff[0],
                 verdiff : diff[1],
-                id      : (jpf.hasHtmlIdsInJs 
+                id      : (apf.hasHtmlIdsInJs 
                     ? oExt.getAttribute("id")
                     : "document.getElementById('" + oExt.getAttribute("id") + "')")
                 //"ids[" + (this.ids.push(oExt) - 1) + "]"
@@ -298,7 +298,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var total, combCol, fillCol = null, fillRow = null;
         var rule = [
-            "var ids = jpf.all[" + this.uniqueId + "].ids",
+            "var ids = apf.all[" + this.uniqueId + "].ids",
             "var total = 0, pHeight = ids[0].offsetHeight - " 
                 + ((rowheight.length - 1) * this.padding + margin[0] + margin[2]),
             "var pWidth  = ids[0].offsetWidth - " 
@@ -461,7 +461,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         //rule.join("\n"), true);
-        jpf.layout.setRules(this.oExt, "grid", (rule.length 
+        apf.layout.setRules(this.oExt, "grid", (rule.length 
             ? "try{" + rule.join(";}catch(e){};\ntry{") + ";}catch(e){};" 
             : ""), true);
 
@@ -475,9 +475,9 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt = this.oExt;
         
         if (!this.oExt.getAttribute("id")) 
-            jpf.setUniqueHtmlId(this.oExt);
+            apf.setUniqueHtmlId(this.oExt);
 
-        id = jpf.hasHtmlIdsInJs 
+        id = apf.hasHtmlIdsInJs 
             ? this.oExt.getAttribute("id")
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
@@ -487,18 +487,18 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.style.minHeight = "10px";
         
         if (this.$jml.getAttribute("class")) 
-            jpf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
+            apf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
 
-        if (!jpf.isIE && !jpf.grid.$initedcss) {
-            jpf.importCssString(document, ".grid>*{position:absolute}");
-            jpf.grid.$initedcss = true;
+        if (!apf.isIE && !apf.grid.$initedcss) {
+            apf.importCssString(document, ".grid>*{position:absolute}");
+            apf.grid.$initedcss = true;
         }
     };
     
     this.$loadJml = function(x){
-        jpf.JmlParser.parseChildren(x, this.oInt, this, true);
+        apf.JmlParser.parseChildren(x, this.oInt, this, true);
 
-        if (!this.width && (jpf.getStyle(this.oExt, "position") == "absolute"
+        if (!this.width && (apf.getStyle(this.oExt, "position") == "absolute"
           || this.left || this.top || this.right || this.bottom || this.anchors))
             this.oExt.style.width  = "100%"
         

@@ -21,18 +21,18 @@
 
 // #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
-jpf.editor.plugin('print', function(){
+apf.editor.plugin('print', function(){
     this.name        = 'print';
     this.icon        = 'print';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+p';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
-        if (jpf.print)
-            jpf.print(editor.getValue());
+        if (apf.print)
+            apf.print(editor.getValue());
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
@@ -42,18 +42,18 @@ jpf.editor.plugin('print', function(){
     };
 });
 
-jpf.editor.plugin('preview', function(){
+apf.editor.plugin('preview', function(){
     this.name        = 'preview';
     this.icon        = 'preview';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+p';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
-        if (jpf.printer)
-            jpf.printer.preview(editor.getValue());
+        if (apf.printer)
+            apf.printer.preview(editor.getValue());
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

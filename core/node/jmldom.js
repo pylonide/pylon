@@ -26,18 +26,18 @@ var __WITH_JMLDOM__ = 1 << 14;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM
  * is the primary method for accessing and manipulating an xml document. This
- * includes html documents and jml documents. Every element in the javeline
+ * includes html documents and jml documents. Every element in the ajax.org
  * markup language can be manipulated using the W3C DOM. This means
  * that every element and attribute you can set in the xml format, can be
  * changed, set, removed reparented, etc runtime. This offers a great deal of
  * flexibility. Well known methods
  * from this specification are .appendChild .removeChild .setAttribute and
- * insertBefore to name a few. Javeline PlatForm aims to implement DOM1
+ * insertBefore to name a few. Ajax.org Platform aims to implement DOM1
  * completely and parts of DOM2. Which should be extended in the future to fully
  * implement DOM Level 2. For more information see {@link http://www.w3.org/DOM/} 
  * or {@link http://www.w3schools.com/dom/default.asp}.
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:window id="winExample" title="Example">
  *      <j:button id="tstButton" />
@@ -45,15 +45,15 @@ var __WITH_JMLDOM__ = 1 << 14;
  * </code>
  * Document Object Model in javascript
  * <code>
- *  //The following line is only there for completeness sake. In fact jpf
+ *  //The following line is only there for completeness sake. In fact apf
  *  //automatically adds a reference in javascript called winExample based
  *  //on the id it has.
- *  var winExample = jpf.document.getElementById("winExample");
+ *  var winExample = apf.document.getElementById("winExample");
  *  winExample.setAttribute("title", "Example");
  *  winExample.setAttribute("icon", "icoFolder.gif");
  *  winExample.setAttribute("left", "100");
  *
- *  var lblNew = jpf.document.createElement("label");
+ *  var lblNew = apf.document.createElement("label");
  *  winExample.appendChild(lblNew);
  *  lblNew.setAttribute("caption", "Example");
  *
@@ -77,28 +77,28 @@ var __WITH_JMLDOM__ = 1 << 14;
  * @constructor
  * @baseclass
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
+apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Number specifying the type of node within the document.
      *   Possible values:
-     *   jpf.NODE_ELEMENT
-     *   jpf.NODE_ATTRIBUTE
-     *   jpf.NODE_TEXT
-     *   jpf.NODE_CDATA_SECTION
-     *   jpf.NODE_ENTITY_REFERENCE
-     *   jpf.NODE_ENTITY
-     *   jpf.NODE_PROCESSING_INSTRUCTION
-     *   jpf.NODE_COMMENT
-     *   jpf.NODE_DOCUMENT
-     *   jpf.NODE_DOCUMENT_TYPE
-     *   jpf.NODE_DOCUMENT_FRAGMENT
-     *   jpf.NODE_NOTATION
+     *   apf.NODE_ELEMENT
+     *   apf.NODE_ATTRIBUTE
+     *   apf.NODE_TEXT
+     *   apf.NODE_CDATA_SECTION
+     *   apf.NODE_ENTITY_REFERENCE
+     *   apf.NODE_ENTITY
+     *   apf.NODE_PROCESSING_INSTRUCTION
+     *   apf.NODE_COMMENT
+     *   apf.NODE_DOCUMENT
+     *   apf.NODE_DOCUMENT_TYPE
+     *   apf.NODE_DOCUMENT_FRAGMENT
+     *   apf.NODE_NOTATION
      */
-    this.nodeType      = jpf.NODE_ELEMENT;
+    this.nodeType      = apf.NODE_ELEMENT;
     this.$regbase      = this.$regbase | __WITH_JMLDOM__;
     
     //#ifndef __PACKAGED
@@ -148,13 +148,13 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * The document node of this application
      */
-    if (jpf.document)
-        this.ownerDocument = jpf.document;
+    if (apf.document)
+        this.ownerDocument = apf.document;
 
     if (tagName) {
         if (typeof tagName == "number") {
-            if (tagName == jpf.NODE_DOCUMENT_FRAGMENT) {
-                this.nodeType = jpf.NODE_DOCUMENT_FRAGMENT;
+            if (tagName == apf.NODE_DOCUMENT_FRAGMENT) {
+                this.nodeType = apf.NODE_DOCUMENT_FRAGMENT;
                 
                 /**
                  * @private
@@ -180,8 +180,8 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             /**
              * The purpose of this element
              * Possible values:
-             * jpf.NODE_VISIBLE     this element has a gui representation
-             * jpf.NODE_HIDDEN      this element does not display a gui
+             * apf.NODE_VISIBLE     this element has a gui representation
+             * apf.NODE_HIDDEN      this element does not display a gui
              */
             this.nodeFunc   = nodeFunc;
     
@@ -225,13 +225,13 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.insertBefore = function(jmlNode, beforeNode){
         //#ifdef __DEBUG
         if (!jmlNode || !jmlNode.nodeFunc || !jmlNode.hasFeature(__WITH_JMLDOM__)){
-            throw new Error(jpf.formatErrorString(1072, this,
+            throw new Error(apf.formatErrorString(1072, this,
                 "Insertbefore DOM operation",
                 "Invalid argument passed. Expecting a JMLElement."));
         }
         //#endif
         
-        if (jmlNode.nodeType == jpf.NODE_DOCUMENT_FRAGMENT) {
+        if (jmlNode.nodeType == apf.NODE_DOCUMENT_FRAGMENT) {
             var nodes = jmlNode.childNodes.slice(0);
             for (var i = 0, l = nodes.length; i < l; i++) {
                 this.insertBefore(nodes[i], beforeNode);
@@ -250,7 +250,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(1072, this,
+                throw new Error(apf.formatErrorString(1072, this,
                     "Insertbefore DOM operation",
                     "Before node is not a child of the parent node specified"));
                 //#endif
@@ -306,7 +306,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
 
             //@todo this is a hack, a good solution should be found
             var containsIframe = jmlNode.oExt.getElementsByTagName("iframe").length > 0;
-            if (jmlNode.oExt && !jpf.isGecko && !containsIframe) {
+            if (jmlNode.oExt && !apf.isGecko && !containsIframe) {
                 jmlNode.pHtmlNode.insertBefore(jmlNode.oExt,
                     beforeNode && beforeNode.oExt || null);
             }
@@ -330,7 +330,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.removeNode = function(doOnlyAdmin){
         //#ifdef __DEBUG
         if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Removing node from parent",
                 "Invalid DOM Call. removeNode() does not take any arguments."));
         }
@@ -341,7 +341,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
 
         //#ifdef __DEBUG
         if (!this.parentNode.childNodes.contains(this)) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Removing node from parent",
                 "Passed node is not a child of this node.", this.$jml));
         }
@@ -350,7 +350,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.parentNode.childNodes.remove(this);
 
         //If we're not loaded yet, just remove us from the jml to be parsed
-        if (this.$jmlLoaded && !jpf.isDestroying) {
+        if (this.$jmlLoaded && !apf.isDestroying) {
             //this.parentNode.$jml.removeChild(this.$jml);
 
             if (this.oExt && this.oExt.parentNode)
@@ -398,7 +398,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.removeChild = function(childNode) {
         //#ifdef __DEBUG
         if (!childNode || !childNode.nodeFunc) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Removing a child node",
                 "Invalid Argument. removeChild() requires one argument of type JMLElement."));
         }
@@ -436,7 +436,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      */
     this.cloneNode = function(deep){
         var jml = this.serialize(true, true, !deep);
-        return jpf.document.createElement(jml);
+        return apf.document.createElement(jml);
     };
 
     /**
@@ -463,7 +463,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             ? node
             : (skipFormat
                 ? node.xml || node.serialize()
-                : jpf.formatXml(node.xml || node.serialize()));
+                : apf.formatXml(node.xml || node.serialize()));
     };
 
     /**
@@ -485,11 +485,11 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             return this;
         }
 
-        if (this.nodeFunc == jpf.NODE_VISIBLE && !this.$drawn)
+        if (this.nodeFunc == apf.NODE_VISIBLE && !this.$drawn)
             return this;
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (jpf.dynPropMatch.test(value))
+        if (apf.dynPropMatch.test(value))
             this.setDynamicProperty(name, value);
         else 
         //#endif
@@ -538,26 +538,26 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
      * Queries the jml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
-     * see {@link core.documentimplementation.method.evaluate evaluate on the jpf.document}
+     * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
      * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
      * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} list of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
-        return jpf.XPath.selectNodes(sExpr,
+        return apf.XPath.selectNodes(sExpr,
             contextNode || (this.nodeType == 9 ? this.documentElement : this));
     };
 
     /**
      * Queries the jml dom using the W3C xPath query language and returns a single
      * node. This is not an official API call but can be useful in certain cases.
-     * see {@link core.documentimplementation.method.evaluate evaluate on the jpf.document}
+     * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
      * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
      * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {JmlNode} the first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
-        return jpf.XPath.selectNodes(sExpr,
+        return apf.XPath.selectNodes(sExpr,
             contextNode || (this.nodeType == 9 ? this.documentElement : this))[0];
     };
     // #endif
@@ -588,7 +588,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         setNamedItem    : function(node){
             //#ifdef __DEBUG
             if (!node || node.nodeType != 2) {
-                throw new Error(jpf.formatError(0, _self,
+                throw new Error(apf.formatError(0, _self,
                     "Setting attribute",
                     "Invalid node passed to setNamedItem"));
             }
@@ -599,7 +599,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         removeNamedItem : function(name){
             //#ifdef __DEBUG
             if (!_self[name]) {
-                throw new Error(jpf.formatError(0, _self,
+                throw new Error(apf.formatError(0, _self,
                     "Removing attribute",
                     "Attribute isn't set"));
             }
@@ -632,7 +632,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * When the node is a document, it returns the XML namespace for the current 
      * document.
      */
-    this.namespaceURI = jpf.ns.jml;
+    this.namespaceURI = apf.ns.jml;
     
     this.$setParent = function(pNode){
         if (pNode && pNode.childNodes.indexOf(this) > -1)

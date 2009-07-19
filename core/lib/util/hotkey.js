@@ -3,17 +3,17 @@
 /**
  * @private
  */
-jpf.hotkeys = {};
+apf.hotkeys = {};
 
 /**
  * @private
  */
-jpf.keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
+apf.keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
 
 /**
  * @private
  */
-jpf.keyNames = {
+apf.keyNames = {
     "32" : "Spacebar",
     "13" : "Enter",
     "9"  : "Tab",
@@ -46,7 +46,7 @@ jpf.keyNames = {
  * Registers a hotkey handler to a key combination.
  * Example:
  * <code>
- *   jpf.registerHotkey('Ctrl-Z', undoHandler);
+ *   apf.registerHotkey('Ctrl-Z', undoHandler);
  * </code>
  * @param {String}   hotkey  the key combination to user. This is a
  * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
@@ -54,18 +54,18 @@ jpf.keyNames = {
  * @param {Function} handler the code to be executed when the key
  * combination is pressed.
  */
-jpf.registerHotkey = function(hotkey, handler){
+apf.registerHotkey = function(hotkey, handler){
     var hashId = 0, key;
 
     var keys = hotkey.splitSafe("\\-|\\+| ", null, true),
         bHasCtrl = false,
         bHasMeta = false;
     for (var i = 0; i < keys.length; i++) {
-        if (jpf.keyMods[keys[i]]) {
-            hashId = hashId | jpf.keyMods[keys[i]];
-            if (jpf.isMac) {
-                bHasCtrl = (jpf.keyMods[keys[i]] === jpf.keyMods["ctrl"]);
-                bHasMeta = (jpf.keyMods[keys[i]] === jpf.keyMods["meta"]);
+        if (apf.keyMods[keys[i]]) {
+            hashId = hashId | apf.keyMods[keys[i]];
+            if (apf.isMac) {
+                bHasCtrl = (apf.keyMods[keys[i]] === apf.keyMods["ctrl"]);
+                bHasMeta = (apf.keyMods[keys[i]] === apf.keyMods["meta"]);
             }
         }
         else
@@ -73,7 +73,7 @@ jpf.registerHotkey = function(hotkey, handler){
     }
 
     if (bHasCtrl && !bHasMeta) //for improved Mac hotkey support
-        hashId = hashId | jpf.keyMods["meta"];
+        hashId = hashId | apf.keyMods["meta"];
 
     //#ifdef __DEBUG
     if (!key) {
@@ -81,22 +81,22 @@ jpf.registerHotkey = function(hotkey, handler){
     }
     //#endif
 
-    (jpf.hotkeys[hashId] || (jpf.hotkeys[hashId] = {}))[key] = handler;
+    (apf.hotkeys[hashId] || (apf.hotkeys[hashId] = {}))[key] = handler;
 
-    if (!jpf.initHotkey) {
-        jpf.initHotkey = true;
-        jpf.addEventListener("hotkey", function(e){
+    if (!apf.initHotkey) {
+        apf.initHotkey = true;
+        apf.addEventListener("hotkey", function(e){
             // enable meta-hotkey support for macs, like for Apple-Z, Apple-C, etc.
-            if (jpf.isMac && e.metaKey)
+            if (apf.isMac && e.metaKey)
                 e.ctrlKey = true;
             var hashId = 0 | (e.ctrlKey ? 1 : 0)
                 | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
 
-            var key = jpf.keyNames[e.keyCode];
+            var key = apf.keyNames[e.keyCode];
             if (!hashId && !key) //Hotkeys should always have one of the modifiers
                 return;
 
-            var handler = (jpf.hotkeys[hashId] || {})[(key
+            var handler = (apf.hotkeys[hashId] || {})[(key
                 || String.fromCharCode(e.keyCode)).toLowerCase()];
             if (handler) {
                 handler();
@@ -110,7 +110,7 @@ jpf.registerHotkey = function(hotkey, handler){
  * Removes a registered hotkey.
  * @param {String} hotkey the hotkey combination.
  */
-jpf.removeHotkey = function(hotkey){
-    jpf.registerHotkey(hotkey, null);
+apf.removeHotkey = function(hotkey){
+    apf.registerHotkey(hotkey, null);
 };
 //#endif

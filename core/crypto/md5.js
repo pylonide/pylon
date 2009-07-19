@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_MD5
 
-jpf.crypto.MD5 = {
+apf.crypto.MD5 = {
     /*
      * Configurable variables. You may need to tweak these to be compatible with
      * the server-side, but the defaults work in most cases.

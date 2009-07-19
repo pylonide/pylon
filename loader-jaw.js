@@ -23,25 +23,25 @@
 
 /* ***************************************************************
 **
-**      Bootloader for Javeline PlatForm to run on JAW
+**      Bootloader for Ajax.org Platform to run on JAW
 **
-**      First include jpf.js, then include this file (jaw.js)
+**      First include apf.js, then include this file (jaw.js)
 **      Then just go about it as you would with the packaged version
 **      Adapt this file to include your preferred modules
 **
 ****************************************************************/
 
-if (!jpf.basePath)
-    jpf.basePath = "./";
+if (!apf.basePath)
+    apf.basePath = "./";
 
-jpf.Modules = [
+apf.Modules = [
     "JmlParser",
     "XmlDatabase"
 ];
-jpf.Components = [
+apf.Components = [
     
 ];
-jpf.KernelModules = [
+apf.KernelModules = [
     "xmldatabase.js",
     
     "crypto/base64.js",
@@ -66,11 +66,11 @@ jpf.KernelModules = [
     "debug/debug.js"
     // "datainstructions.js"
 ];
-jpf.TelePortModules = [
+apf.TelePortModules = [
     "http.js"         // for simple HTTP transactions
 ];
 
 //Load depencies & start
-jpf.startDependencies();
+apf.startDependencies();
 
 //#endif

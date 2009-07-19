@@ -28,12 +28,12 @@
  * @param {String} value        the css value of the property.
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */
-jpf.setStyleRule = function(name, type, value, stylesheet, win){
+apf.setStyleRule = function(name, type, value, stylesheet, win){
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
-                var rules = sheets[j][jpf.styleSheetRules];
+                var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText == name) {
                         rules.item(i).style[type] = value;
@@ -45,7 +45,7 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
         }
     }
     else {
-        var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
+        var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText == name) {
                 rules.item(i).style[type] = value;
@@ -63,12 +63,12 @@ jpf.setStyleRule = function(name, type, value, stylesheet, win){
  * @param {String} type         the css property to change.
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */
-jpf.getStyleRule = function(name, type, stylesheet, win){
+apf.getStyleRule = function(name, type, stylesheet, win){
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
-                var rules = sheets[j][jpf.styleSheetRules];
+                var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText == name) {
                         return rules.item(i).style[type];
@@ -79,7 +79,7 @@ jpf.getStyleRule = function(name, type, stylesheet, win){
         }
     }
     else {
-        var rules = (win || self).document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
+        var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText == name) {
                 return rules.item(i).style[type];
@@ -97,7 +97,7 @@ jpf.getStyleRule = function(name, type, stylesheet, win){
  * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
  * @returns {HTMLElement}
  */
-jpf.setStyleClass = function(oHtml, className, exclusion, special){
+apf.setStyleClass = function(oHtml, className, exclusion, special){
     if (!oHtml || this.disabled)
         return;
 
@@ -114,7 +114,7 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
 
     //#ifdef __DEBUG
     if (oHtml.nodeFunc) {
-        throw new Error(jpf.formatErrorString(0, this,
+        throw new Error(apf.formatErrorString(0, this,
             "Setting style class",
             "Trying to set style class on jml node. Only xml or html nodes can \
              be passed to this function"));
@@ -136,12 +136,12 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
  * @param {String} cssString  the css definition
  * @param {String} media      the media to which this css applies (i.e. 'print' or 'screen')
  */
-jpf.importCssString = function(doc, cssString, media){
+apf.importCssString = function(doc, cssString, media){
     doc = doc || document;
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
     //#ifdef __WITH_OPACITY_RUNTIME_FIX
-    if (!jpf.supportOpacity) {
+    if (!apf.supportOpacity) {
         cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g,
             function(m, m1){
                 return "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=" + (m1*100) + ")";
@@ -149,7 +149,7 @@ jpf.importCssString = function(doc, cssString, media){
     }
     //#endif
 
-    if (jpf.canCreateStyleNode) {
+    if (apf.canCreateStyleNode) {
         //var head  = document.getElementsByTagName("head")[0];
         var style = doc.createElement("style");
         style.appendChild(doc.createTextNode(cssString));
@@ -176,8 +176,8 @@ jpf.importCssString = function(doc, cssString, media){
  * @param {String}      prop  the property to read
  * @returns {String}
  */
-jpf.getStyleRecur = function(el, prop) {
-    var value = jpf.hasComputedStyle
+apf.getStyleRecur = function(el, prop) {
+    var value = apf.hasComputedStyle
         ? document.defaultView.getComputedStyle(el,'').getPropertyValue(
             prop.replace(/([A-Z])/g, function(m, m1){
                 return "-" + m1.toLowerCase();
@@ -197,7 +197,7 @@ jpf.getStyleRecur = function(el, prop) {
  * @param {Number}      y   the y coordinate in pixels
  * @returns {Boolean}
  */
-jpf.isInRect = function(oHtml, x, y){
+apf.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
     if (x < pos[0] || y < pos[1] || x > oHtml.offsetWidth + pos[0] - 10
       || y > oHtml.offsetHeight + pos[1] - 10)
@@ -212,7 +212,7 @@ jpf.isInRect = function(oHtml, x, y){
  * @param {HTMLElement} o  the element to check
  * @returns {HTMLElement}
  */
-jpf.getOverflowParent = function(o){
+apf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
 
     o = o.offsetParent;
@@ -229,7 +229,7 @@ jpf.getOverflowParent = function(o){
  * @param {HTMLElement} o  the element to check
  * @returns {HTMLElement}
  */
-jpf.getPositionedParent = function(o){
+apf.getPositionedParent = function(o){
     o = o.offsetParent;
     while (o && o.tagName.toLowerCase() != "body"
       && "absolute|relative".indexOf(this.getStyle(o, "position")) == -1) {
@@ -246,28 +246,28 @@ jpf.getPositionedParent = function(o){
  * @param {Boolean}     [inclSelf]  whether to include the position of the element to check in the return value.
  * @returns {Array} the x and y coordinate of oHtml.
  */
-jpf.getAbsolutePosition = function(o, refParent, inclSelf){
+apf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;
 
     var bw, bh, fl;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
-        bw = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
+        bw = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, apf.descPropJs
             ? "borderLeftWidth" : "border-left-width");
         
-        wt += (jpf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
+        wt += (apf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
 
-        if (jpf.isIE && !jpf.isIE8 && jpf.getStyle(o, "styleFloat") == "none" 
-          && jpf.getStyle(o, "position") == "relative") {
+        if (apf.isIE && !apf.isIE8 && apf.getStyle(o, "styleFloat") == "none" 
+          && apf.getStyle(o, "position") == "relative") {
             var q = o.previousSibling;
             while (q) {
                 if (q.nodeType == 1) {
-                    var fl = jpf.getStyle(q, "styleFloat");
+                    var fl = apf.getStyle(q, "styleFloat");
                     if (fl == "left") {
-                        wt -= parseInt(jpf.getStyle(o, "marginLeft"));
+                        wt -= parseInt(apf.getStyle(o, "marginLeft"));
                         break;
                     }
                     else if (fl == "right")
@@ -278,9 +278,9 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         }
 
         //Border - Top
-        bh = jpf.isOpera || jpf.isIE8 ? 0 : this.getStyle(o, jpf.descPropJs
+        bh = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, apf.descPropJs
             ? "borderTopWidth" : "border-top-width");
-        ht += (jpf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
+        ht += (apf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
             ? 2
             : parseInt(bh) || 0) + o.offsetTop;
 
@@ -302,7 +302,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
                 ht -= (o = o.previousSibling).offsetHeight + cp;
         }
 
-        if (jpf.isIE && !o.offsetParent && o.parentNode.nodeType == 1) {
+        if (apf.isIE && !o.offsetParent && o.parentNode.nodeType == 1) {
             wt -= o.parentNode.scrollLeft;
             ht -= o.parentNode.scrollTop;
         }
@@ -310,7 +310,7 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         o = o.offsetParent;
     }
 
-    return [wt - (jpf.isIE && !jpf.isIE8 ? 0 : 0), ht];
+    return [wt - (apf.isIE && !apf.isIE8 ? 0 : 0), ht];
 };
 
 // #endif

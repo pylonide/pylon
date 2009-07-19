@@ -24,7 +24,7 @@
 /**
  * Element allowing data synchronization between multiple clients using the same
  * application or application part. This element is designed as thecore of 
- * collaborative application logic for Javeline PlatForm. The children of this
+ * collaborative application logic for Ajax.org Platform. The children of this
  * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
  * models to this element, all changes to their data will be streamed through
  * this element to all listening client over a choosen protocol. 
@@ -34,7 +34,7 @@
  * <code>
  *  <j:teleport>
  *      <j:xmpp id="myXMPP"
- *        url           = "http://javeline.com:5280/http-bind" 
+ *        url           = "http://ajax.org:5280/http-bind" 
  *        model         = "mdlRoster" 
  *        connection    = "bosh" 
  *  </j:teleport>
@@ -61,7 +61,7 @@
  *  <j:button action="remove" target="lstPersons">Remove</j:button>
  *  <j:button action="rename" target="lstPersons">Rename</j:button>
  *  
- *  <j:button onclick="myXMPP.connect('testuser@javeline.com', 'testpass')">
+ *  <j:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
  *      Login
  *  </j:button>
  * </code>
@@ -70,7 +70,7 @@
  * to remote smartbindings. When multiple people are working within the same
  * application it's important to have a system that prevents corruption of data
  * and data loss by either user overwriting records edited during the same period.
- * Javeline PlatForm has built in support for optimistic and pessimistic locking
+ * Ajax.org Platform has built in support for optimistic and pessimistic locking
  * in smartbindings. For more information please see {@link term.locking}.
  * 
  * Advanced:
@@ -88,7 +88,7 @@
  * collaborative protocols (i.e. xmpp). In many cases offline rsb messages should 
  * not be stored after the user has been offline for longer then a certain time.
  * For instance 10 minutes. An accumulation of change messages would create a
- * serious scaling problem and is not preferred. jpf.offline has built in support
+ * serious scaling problem and is not preferred. apf.offline has built in support
  * for this type of timeout. By setting the rsb-timeout attribute it is aware
  * of when the server has timed out. When this timeout is reached the application 
  * will reload all it's data from the server and discard all offline rsb 
@@ -135,7 +135,7 @@
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific {@link term.datanode data node}.
  */
 /**
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.983
  *
@@ -145,7 +145,7 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
  */
-jpf.remote = function(name, xmlNode, parentNode){
+apf.remote = function(name, xmlNode, parentNode){
     this.name   = name;
     this.lookup = {};
     this.select = [];
@@ -153,7 +153,7 @@ jpf.remote = function(name, xmlNode, parentNode){
     
     //#ifdef __WITH_JMLDOM_FULL
     this.parentNode = parentNode;
-    jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+    apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
     //#endif
     
     //#ifdef __WITH_OFFLINE
@@ -163,17 +163,17 @@ jpf.remote = function(name, xmlNode, parentNode){
     var _self = this;
     
     this.sendChange = function(args, model){
-        if (!jpf.xmldb.disableRSB)
+        if (!apf.xmldb.disableRSB)
             return;
         
         var message = [this.buildMessage(args, model)];
         
         //#ifdef __DEBUG
-        jpf.console.info('Sending RSB message\n' + jpf.serialize(message));
+        apf.console.info('Sending RSB message\n' + apf.serialize(message));
         //#endif
         
-        this.transport.sendMessage(null, jpf.serialize(message),
-            null, jpf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
+        this.transport.sendMessage(null, apf.serialize(message),
+            null, apf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
     };
     
     this.buildMessage = function(args, model){
@@ -198,23 +198,23 @@ jpf.remote = function(name, xmlNode, parentNode){
     };
     
     this.processQueue = function(qHost){
-        if (!jpf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
+        if (!apf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
             return;
         
         //#ifdef __DEBUG
-        jpf.console.info('Sending RSB message\n' + jpf.serialize(qHost.rsbQueue));
+        apf.console.info('Sending RSB message\n' + apf.serialize(qHost.rsbQueue));
         //#endif
         
-        this.transport.sendMessage(null, jpf.serialize(qHost.rsbQueue), 
-            null, jpf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
+        this.transport.sendMessage(null, apf.serialize(qHost.rsbQueue), 
+            null, apf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
         
         qHost.rsbQueue = [];
     };
     
     //#ifdef __WITH_OFFLINE
-    if (jpf.offline.enabled) {
+    if (apf.offline.enabled) {
         var queue = [];
-        jpf.offline.addEventListener("afteronline", function(){
+        apf.offline.addEventListener("afteronline", function(){
             for (var i = 0; i < queue.length; i++) {
                 _self.receiveChange(queue[i]);
             }
@@ -225,11 +225,11 @@ jpf.remote = function(name, xmlNode, parentNode){
     //#endif
     
     this.receiveChange = function(message){
-        if (jpf.xmldb.disableRSB)
+        if (apf.xmldb.disableRSB)
             return;
 
         //#ifdef __WITH_OFFLINE
-        if (jpf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
+        if (apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
             queue.push(message);
             return;
         }
@@ -239,13 +239,13 @@ jpf.remote = function(name, xmlNode, parentNode){
         if (message.timestamp < this.discardBefore)
             return;
         
-        var model = jpf.nameserver.get("model", message.model);
+        var model = apf.nameserver.get("model", message.model);
         var q = message.args;
         
         //#ifdef __DEBUG
         if (!model) {
             //Maybe make this a warning?
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(apf.formatErrorString(0, this, 
                 "Remote Smartbinding Received", "Could not find model when \
                  receiving data for it with name '" + message.model + "'"));
         }
@@ -255,44 +255,44 @@ jpf.remote = function(name, xmlNode, parentNode){
         var xmlNode = this.xpathToXml(q[1], model.data);
         if (!xmlNode) return;
         
-        var disableRSB       = jpf.xmldb.disableRSB;
-        jpf.xmldb.disableRSB = 2; //Feedback prevention
+        var disableRSB       = apf.xmldb.disableRSB;
+        apf.xmldb.disableRSB = 2; //Feedback prevention
 
         switch (q[0]) {
             case "setTextNode":
-                jpf.xmldb.setTextNode(xmlNode, q[2], q[3]);
+                apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
                 break;
             case "setAttribute":
-                jpf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
+                apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
                 break;
             case "addChildNode":
-                jpf.xmldb.addChildNode(xmlNode, q[2], q[3],
+                apf.xmldb.addChildNode(xmlNode, q[2], q[3],
                     this.xpathToXml(q[4], model.data), q[5]);
                 break;
             case "appendChild":
                 var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                jpf.xmldb.appendChild(xmlNode, //@todo check why there's clearConnections here
-                    jpf.xmldb.clearConnections(q[2]), beforeNode, q[4], q[5]);
+                apf.xmldb.appendChild(xmlNode, //@todo check why there's clearConnections here
+                    apf.xmldb.clearConnections(q[2]), beforeNode, q[4], q[5]);
                 break;
             case "moveNode":
                 var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
                 var sNode = this.xpathToXml(q[2], model.data);
-                jpf.xmldb.appendChild(xmlNode, sNode, beforeNode,
+                apf.xmldb.appendChild(xmlNode, sNode, beforeNode,
                     q[4], q[5]);
                 break;
             case "removeNode":
-                jpf.xmldb.removeNode(xmlNode, q[2]);
+                apf.xmldb.removeNode(xmlNode, q[2]);
                 break;
         }
 
-        jpf.xmldb.disableRSB = disableRSB;
+        apf.xmldb.disableRSB = disableRSB;
     };
     
-    this.xmlToXpath = jpf.remote.xmlToXpath;
-    this.xpathToXml = jpf.remote.xpathToXml;
+    this.xmlToXpath = apf.remote.xmlToXpath;
+    this.xpathToXml = apf.remote.xpathToXml;
     
     //#ifdef __DEBUG
-    jpf.console.info(name
+    apf.console.info(name
         ? "Creating remote [" + name + "]"
         : "Creating implicitly assigned remote");
     //#endif
@@ -307,7 +307,7 @@ jpf.remote = function(name, xmlNode, parentNode){
          */
         this.transport = self[x.getAttribute("transport")];
         this.transport.addEventListener('datachange', function(e){
-            var data = jpf.unserialize(e.data); //@todo error check here.. invalid message
+            var data = apf.unserialize(e.data); //@todo error check here.. invalid message
             for (var i = 0; i < data.length; i++)
                 _self.receiveChange(data[i]);
         });
@@ -320,7 +320,7 @@ jpf.remote = function(name, xmlNode, parentNode){
                 this.select.push(nodes[i].getAttribute("select"),
                     nodes[i].getAttribute("unique"));
             else 
-                this.lookup[nodes[i][jpf.TAGNAME]] = nodes[i].getAttribute("unique");
+                this.lookup[nodes[i][apf.TAGNAME]] = nodes[i].getAttribute("unique");
         }
     };
     
@@ -330,19 +330,19 @@ jpf.remote = function(name, xmlNode, parentNode){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
-jpf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
+apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (useJid) {
         //#ifdef __DEBUG
-        if (!xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
-            throw new Error(jpf.formatErrorString(0, null, 
+        if (!xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
+            throw new Error(apf.formatErrorString(0, null, 
                 "Converting XML to Xpath", 
                 "Error xml node without j_id found whilst \
                  trying to use it.", xmlNode));
         }
         //#endif
         
-        return "//node()[@" + jpf.xmldb.xmlIdTag + "='" 
-            + xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "']";
+        return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
+            + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
     }
     
     if (this.lookup && this.select) {
@@ -367,7 +367,7 @@ jpf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
 
     if (!xmlNode.parentNode) {
         //#ifdef __DEBUG
-        throw new Error(jpf.formatErrorString(0, null, 
+        throw new Error(apf.formatErrorString(0, null, 
             "Converting XML to Xpath", 
             "Error xml node without parent and non matching context cannot\
              be converted to xml.", xmlNode));
@@ -382,14 +382,14 @@ jpf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
         lNode = lNode.parentNode;
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
     
-    return str.join("/") + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]";
+    return str.join("/") + "[" + (apf.xmldb.getChildNumber(xmlNode) + 1) + "]";
 };
     
 //for RSB: Xpath statement --> xmlNode
-jpf.remote.xpathToXml = function(xpath, xmlNode){
+apf.remote.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG
-        throw new Error(jpf.formatErrorString(0, null, 
+        throw new Error(apf.formatErrorString(0, null, 
             "Converting Xpath to XML", 
             "Error context xml node is empty, thus xml node cannot \
              be found for '" + xpath + "'"));

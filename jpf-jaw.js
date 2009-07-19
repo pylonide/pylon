@@ -22,15 +22,15 @@
 //#ifdef __SUPPORT_JAW
 
 /** 
- * Javeline Platform for jaw
+ * Ajax.org Platform for jaw
  *
  * @author    Ruben Daniels ruben@javeline.com
  * @version   1.0
  * @url       http://www.ajax.org
  */
 
-//Start of the Javeline PlatForm namespace
-jpf = {
+//Start of the Ajax.org Platform namespace
+apf = {
     SUCCESS : 1,
     TIMEOUT : 2,
     ERROR   : 3,
@@ -56,43 +56,43 @@ jpf = {
         this.TAGNAME  = "localName";
         
         //this.importClass(runJaw, true);
-        jpf.runJaw();
+        apf.runJaw();
         
-        jpf.xmldb = new jpf.XmlDatabase();
+        apf.xmldb = new apf.XmlDatabase();
         
-        this.implement(jpf.Class);
+        this.implement(apf.Class);
     },
     
     startDependencies : function(){
         var i;
         // Load Kernel Modules
         for (i = 0; i < this.KernelModules.length; i++)
-            jpf.include("core/" + this.KernelModules[i], true);
+            apf.include("core/" + this.KernelModules[i], true);
         
         // Load TelePort Modules
         for (i = 0; i < this.TelePortModules.length; i++)
-            jpf.include("elements/teleport/" + this.TelePortModules[i], true);
+            apf.include("elements/teleport/" + this.TelePortModules[i], true);
 
         for (i = 0; i < this.Jaw.length; i++)
-            jpf.include("./" + this.Jaw[i], true);
+            apf.include("./" + this.Jaw[i], true);
         
         // Load Components
         for (i = 0; i < this.Components.length; i++) {
             var c = this.Components[i];
-            jpf.include("elements/" + c + ".js", true);
+            apf.include("elements/" + c + ".js", true);
         }
         
-        jpf.start();
+        apf.start();
     },
     
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(jpf.formatErrorString(1018, null, 
+            throw new Error(apf.formatErrorString(1018, null, 
                 "importing class", 
                 "Could not load reference. Reference is null"));
     
         if (!strip)
-            return jpf.exec(ref.toString());
+            return apf.exec(ref.toString());
         
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
@@ -100,7 +100,7 @@ jpf = {
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
     
-        return jpf.exec(q);
+        return apf.exec(q);
     },
     
     /**
@@ -109,7 +109,7 @@ jpf = {
     * @method
     */
     toString : function(){
-        return "[Javeline (jpf)]";
+        return "[Ajax.org Platform (apf)]";
     },
     
     all : [],
@@ -123,7 +123,7 @@ jpf = {
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this, 
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
                     this.$jml));
@@ -137,15 +137,15 @@ jpf = {
     },
     
     /**
-    * This method transforms an object into a Javeline Class
-    * @param {Object}    oBlank Required Object to be transformed into a Javeline Class
+    * This method transforms an object into a Ajax.org Class
+    * @param {Object}    oBlank Required Object to be transformed into a Ajax.org Class
     * @method
     */
     makeClass : function(oBlank){
         if (oBlank.implement) return;
         
         oBlank.implement = this.implement;
-        oBlank.implement(jpf.Class);
+        oBlank.implement(apf.Class);
         
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
@@ -237,28 +237,28 @@ jpf = {
         
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write("Fatal error: " + msg + "\nStacktrace:\n" + jpf.stacktrace(), "error", subtype, data);
+            this.write("Fatal error: " + msg + "\nStacktrace:\n" + apf.stacktrace(), "error", subtype, data);
             out.write("Execution stopped");
             //#endif
             throw new Error();
-            //this.write(jpf.stacktrace());
+            //this.write(apf.stacktrace());
         },
         
         dir : function(obj){
-            this.info(jpf.vardump(obj, null, true));
+            this.info(apf.vardump(obj, null, true));
         }
     },
 
     namespace : function(name, oNamespace){
-        eval("jpf." + name + " = oNamespace");
+        eval("apf." + name + " = oNamespace");
     },
     
     formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = ["---- Javeline Error ----"];
+        var str = ["---- APF Error ----"];
         if (jmlContext) {
             var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
-                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.com\/2005\/jml" \/\>/g, "")
+                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
             
             //Set file and line number
@@ -286,7 +286,7 @@ jpf = {
     /* Init */
     
     include : function(sourceFile, doBase){
-        jpf.console.info("including js file: " + sourceFile);
+        apf.console.info("including js file: " + sourceFile);
         include(sourceFile);
         //var fd = fs.child(sourceFile);
         //eval(fd.data, self);
@@ -322,7 +322,7 @@ Function.prototype.toHTMLNode = function(highlight){
     TYPE_BOOLEAN    = "Boolean";
     TYPE_FUNCTION   = "Function";
     TYPE_DOMNODE    = "XMLNode";
-    TYPE_JAVNODE    = "JMLElement";
+    TYPE_APFNODE    = "JMLElement";
     
     STATE_UNDEFINED = "undefined";
     STATE_NULL      = "null";
@@ -345,7 +345,7 @@ Function.prototype.toHTMLNode = function(highlight){
     
         if (typeof variable == "object") {
             if (variable.hasFeature)
-                return TYPE_JAVNODE;
+                return TYPE_APFNODE;
             if (variable.tagName || variable.nodeValue)
                 return TYPE_DOMNODE;
         }
@@ -377,7 +377,7 @@ Function.prototype.toHTMLNode = function(highlight){
                 argName  = (namedArgs[i] || "NOT_NAMED").trim();// args += "<b>" + arr[i] + "</b>";
                 
                 args.push("[" + getType(this.arguments[i]) + "] " + argName);
-                //info.push("Value: " + jpf.vardump(this.arguments[i], null, false));
+                //info.push("Value: " + apf.vardump(this.arguments[i], null, false));
             }
         }
         
@@ -388,7 +388,7 @@ Function.prototype.toHTMLNode = function(highlight){
     }
 };
 
-jpf.stacktrace = function(){
+apf.stacktrace = function(){
         var list = [], seen = {}, loop, end;
         
         //Opera doesnt support caller... weird...

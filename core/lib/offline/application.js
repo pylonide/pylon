@@ -48,7 +48,7 @@
  * @default_private
  * @todo a later version should also clear models and thus undo state
  */
-jpf.namespace("offline.application", {
+apf.namespace("offline.application", {
     enabled   : false,
     urls      : [],
     providers : ["deskrun", "gears"],
@@ -57,7 +57,7 @@ jpf.namespace("offline.application", {
         if (this.enabled)
             return;
 
-        this.namespace = jpf.appsettings.name + ".jpf.offline.application";
+        this.namespace = apf.appsettings.name + ".apf.offline.application";
 
         if (typeof jml == "string") {
             this.providers = jml.split("|");
@@ -70,14 +70,14 @@ jpf.namespace("offline.application", {
                 this.providers = jml.getAttribute("providers").split("|");
 
             if (jml.getAttribute("auto-install"))
-                this.autoInstall = jpf.isTrue(jml.getAttribute("auto-install"));
+                this.autoInstall = apf.isTrue(jml.getAttribute("auto-install"));
         }
 
         //Check for an available offline provider
         for (var i = 0; i < this.providers.length; i++) {
             if (!this[this.providers[i]]) {
                 //#ifdef __DEBUG
-                jpf.console.warn("Module not loaded for offline provider: "
+                apf.console.warn("Module not loaded for offline provider: "
                                     + this.providers[i]);
                 //#endif
                 continue;
@@ -99,37 +99,37 @@ jpf.namespace("offline.application", {
             if (this.autoInstall) {
                 if (this.install() === false) {
                     //#ifdef __DEBUG
-                    jpf.console.warn("Could not install any of the preferred \
+                    apf.console.warn("Could not install any of the preferred \
                                          offline providers:"
                                         + this.providers.join(", "));
                     //#endif
 
-                    jpf.offline.application = null; //Can't put the app offline
+                    apf.offline.application = null; //Can't put the app offline
                     return this.providers[0];
                 }
             }
             else {
                 //#ifdef __DEBUG
-                jpf.console.warn("Could not find any of the specified \
+                apf.console.warn("Could not find any of the specified \
                                      offline providers:"
                                     + this.providers.join(", "));
                 //#endif
 
-                jpf.offline.application = null; //Can't put the app offline
+                apf.offline.application = null; //Can't put the app offline
                 return this.providers[0];
             }
         }
 
-        if (!jpf.loaded) { //@todo you might want to consider creating single run events
-            jpf.addEventListener("load", function(){
-                if (jpf.offline.application.enabled)
-                    jpf.offline.application.save();
-                jpf.removeEventListener("load", arguments.callee);
+        if (!apf.loaded) { //@todo you might want to consider creating single run events
+            apf.addEventListener("load", function(){
+                if (apf.offline.application.enabled)
+                    apf.offline.application.save();
+                apf.removeEventListener("load", arguments.callee);
             });
         }
         else {
-            jpf.offline.addEventListener("load", function(){
-                jpf.offline.application.save();
+            apf.offline.addEventListener("load", function(){
+                apf.offline.application.save();
             });
         }
 
@@ -139,9 +139,9 @@ jpf.namespace("offline.application", {
     },
 
     install : function(){
-        if (jpf.offline.dispatchEvent("beforeinstall") === false) {
+        if (apf.offline.dispatchEvent("beforeinstall") === false) {
             //#ifdef __DEBUG
-            jpf.console.warn("Installation cancelled");
+            apf.console.warn("Installation cancelled");
             //#endif
             return false;
         }
@@ -158,7 +158,7 @@ jpf.namespace("offline.application", {
             }
         }
 
-        jpf.offline.dispatchEvent("afterinstall");
+        apf.offline.dispatchEvent("afterinstall");
 
         if (!this.provider)
             return false;
@@ -170,7 +170,7 @@ jpf.namespace("offline.application", {
     },
 
     cache : function(url){
-        //if(!new jpf.url(url).isSameLocation())
+        //if(!new apf.url(url).isSameLocation())
             //return;
         if (url.indexOf(":") > -1 && url.indexOf("http://" + location.host) == -1)
             return;
@@ -183,37 +183,37 @@ jpf.namespace("offline.application", {
     },
 
     refresh : function(callback){
-        var storage = jpf.offline.storage;
+        var storage = apf.offline.storage;
 
         if(this.versionGet){
             var oldVersion = storage.get("oldVersion", this.namespace);
             var newVersion = null;
             var _self      = this;
 
-            jpf.getData(this.versionGet, null, null,
+            apf.getData(this.versionGet, null, null,
                 function(newVersion, state, extra){
-                    if (state == jpf.TIMEOUT)
-                        return extra.tpModule.retryTimeout(extra, state, jpf.offline);
+                    if (state == apf.TIMEOUT)
+                        return extra.tpModule.retryTimeout(extra, state, apf.offline);
 
-                    if (state == jpf.OFFLINE)
+                    if (state == apf.OFFLINE)
                         return;
 
-                    if (state == jpf.ERROR)
+                    if (state == apf.ERROR)
                         storage.remove("oldVersion", _self.namespace);
 
-                    if (jpf.debug || !newVersion || !oldVersion
+                    if (apf.debug || !newVersion || !oldVersion
                         || oldVersion != newVersion){
 
                         //#ifdef __DEBUG
-                        jpf.console.info("Refreshing offline file list");
+                        apf.console.info("Refreshing offline file list");
                         //#endif
 
                         // #ifdef __WITH_OFFLINE_STATE
-                        if (jpf.offline.state.enabled) {
-                            jpf.offline.state.clear();
+                        if (apf.offline.state.enabled) {
+                            apf.offline.state.clear();
 
-                            if (jpf.offline.state.realtime)
-                                jpf.offline.state.search();
+                            if (apf.offline.state.realtime)
+                                apf.offline.state.search();
                         }
                         // #endif
 
@@ -223,7 +223,7 @@ jpf.namespace("offline.application", {
                     }
                     else{
                         //#ifdef __DEBUG
-                        jpf.console.info("No need to refresh offline file list");
+                        apf.console.info("No need to refresh offline file list");
                         //#endif
 
                         callback({
@@ -234,7 +234,7 @@ jpf.namespace("offline.application", {
         }
         else{
             //#ifdef __DEBUG
-            jpf.console.info("Refreshing offline file list");
+            apf.console.info("Refreshing offline file list");
             //#endif
 
             this.search();
@@ -273,7 +273,7 @@ jpf.namespace("offline.application", {
         var _self = this, j, rule, sheet, sheets = document.styleSheets;
         for (i = 0; i < sheets.length; i++) {
             sheet = sheets[i];
-            if (jpf.isIE) { //@todo multibrowser test this
+            if (apf.isIE) { //@todo multibrowser test this
                 if (sheet.readOnly) {
                     sheet.cssText.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
                         _self.cache(url);
@@ -299,13 +299,13 @@ jpf.namespace("offline.application", {
         }
 
         //Cache Skin CSS
-        jpf.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+        apf.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
             _self.cache(url);
             return "";
         });
 
         //Jml based sources
-        if (jpf.JmlParser.$jml) {
+        if (apf.JmlParser.$jml) {
             function callback(item){
                 if(!item.nodeType) return;
 
@@ -315,20 +315,20 @@ jpf.namespace("offline.application", {
                 }
             }
 
-            callback(jpf.JmlParser.$jml);
-            jpf.includeStack.forEach(callback);
+            callback(apf.JmlParser.$jml);
+            apf.includeStack.forEach(callback);
         }
 
         //Cached resources??
     },
 
     save : function(callback){
-        if (!jpf.offline.onLine) {
+        if (!apf.offline.onLine) {
             var func = function(){
-                jpf.offline.application.save();
-                jpf.offline.removeEventListener("afteronline", func)
+                apf.offline.application.save();
+                apf.offline.removeEventListener("afteronline", func)
             }
-            jpf.offline.addEventListener("afteronline", func);
+            apf.offline.addEventListener("afteronline", func);
 
             return;
         }

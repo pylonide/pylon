@@ -21,29 +21,29 @@
 
 // #ifdef __ENABLE_EDITOR_COLOR || __INC_ALL
 
-jpf.editor.colorPlugin = function(sName) {
+apf.editor.colorPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.colspan     = 18;
 
     var panelBody;
 
     var colorAtoms = ['00', '33', '66', '99', 'CC', 'FF'];
     function generatePalette() {
-        jpf.editor.colorPlugin.palette = [];
+        apf.editor.colorPlugin.palette = [];
         var r, g, b, iCol;
         for (r = 0; r < colorAtoms.length; r++) {
             for (g = 0; g < colorAtoms.length; g++) {
                 iCol = (r % 3) * 6 + g;
                 for (b = 0; b < colorAtoms.length; b++) {
-                    if (!jpf.editor.colorPlugin.palette[iCol])
-                        jpf.editor.colorPlugin.palette[iCol] = [];
-                    jpf.editor.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
+                    if (!apf.editor.colorPlugin.palette[iCol])
+                        apf.editor.colorPlugin.palette[iCol] = [];
+                    apf.editor.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
                         red  : colorAtoms[r],
                         green: colorAtoms[g],
                         blue : colorAtoms[b]
@@ -97,12 +97,12 @@ jpf.editor.colorPlugin = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 296 : 292, 167);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 296 : 292, 167);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -125,39 +125,39 @@ jpf.editor.colorPlugin = function(sName) {
     this.queryState = function(editor) {
         var cmdName   = this.name == "forecolor"
             ? 'ForeColor'
-            : jpf.isIE ? 'BackColor' : 'HiliteColor';
+            : apf.isIE ? 'BackColor' : 'HiliteColor';
         this.state    = editor.getCommandState(cmdName);
         var currValue = "";
         try {
             currValue = editor.oDoc.queryCommandValue(cmdName);
         }
         catch (ex) {}
-        if (jpf.isIE)
+        if (apf.isIE)
             currValue = '#' + RGBToBGRToRGB(int2Color(currValue));
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
     };
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
+        e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sColor = e.target.getAttribute('rel');
         if (sColor) {
-            jpf.popup.forceHide();
-//            if (this.name == "backcolor" && jpf.isGecko)
+            apf.popup.forceHide();
+//            if (this.name == "backcolor" && apf.isGecko)
 //                this.setStyleMethod(true);
             this.editor.executeCommand(this.name == "forecolor"
                 ? 'ForeColor'
-                : jpf.isIE ? 'BackColor' : 'HiliteColor',
+                : apf.isIE ? 'BackColor' : 'HiliteColor',
                 '#' + sColor);
-//            if (this.name == "backcolor" && jpf.isGecko)
+//            if (this.name == "backcolor" && apf.isGecko)
 //                this.setStyleMethod(false);
         }
     };
 
     this.createPanelBody = function() {
-        if (!jpf.editor.colorPlugin.palette)
+        if (!apf.editor.colorPlugin.palette)
             generatePalette();
 
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -165,7 +165,7 @@ jpf.editor.colorPlugin = function(sName) {
         panelBody.style.display = "none";
         var aHtml = [];
 
-        var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
+        var row, col, colorCode, palette = apf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
             aHtml.push('<div class="editor_panelrow">');
             for (col= 0; col < palette.length; col++) {
@@ -174,7 +174,7 @@ jpf.editor.colorPlugin = function(sName) {
                     palette[col][row].blue;
                 aHtml.push('<a class="editor_smallcell editor_panelcell" style="background-color:#',
                     colorCode, ';" rel="', colorCode,
-                    '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
+                    '" href="javascript:;" onmousedown="apf.lookup(', this.uniqueId,
                     ').submit(event);">\
                     &nbsp;</a>');
             }
@@ -191,9 +191,9 @@ jpf.editor.colorPlugin = function(sName) {
         delete this.colorPreview;
     };
 };
-jpf.editor.colorPlugin.palette = null;
+apf.editor.colorPlugin.palette = null;
 
-jpf.editor.plugin('forecolor', jpf.editor.colorPlugin);
-jpf.editor.plugin('backcolor', jpf.editor.colorPlugin);
+apf.editor.plugin('forecolor', apf.editor.colorPlugin);
+apf.editor.plugin('backcolor', apf.editor.colorPlugin);
 
 // #endif

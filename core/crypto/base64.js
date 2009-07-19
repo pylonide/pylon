@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_BASE64
 
-jpf.crypto.Base64 = (function() {
+apf.crypto.Base64 = (function() {
     
     var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     
@@ -33,7 +33,7 @@ jpf.crypto.Base64 = (function() {
         if (!data)
             return data;
 
-        data = jpf.crypto.UTF8.encode(data + "");
+        data = apf.crypto.UTF8.encode(data + "");
 
         do { // pack three octets into four hexets
             o1 = data.charCodeAt(i++);
@@ -98,7 +98,7 @@ jpf.crypto.Base64 = (function() {
         }
         while (i < data.length);
 
-        return jpf.crypto.UTF8.decode(tmp_arr.join(""));
+        return apf.crypto.UTF8.decode(tmp_arr.join(""));
     }
     
     return {
@@ -108,7 +108,7 @@ jpf.crypto.Base64 = (function() {
     
 })();
 
-jpf.crypto.UTF8 = {
+apf.crypto.UTF8 = {
     // private method for UTF-8 encoding
     encode : function (string) {
         // Encodes an ISO-8859-1 string to UTF-8

@@ -37,7 +37,7 @@
  * @private
  */
 
-jpf.textbox.autocomplete = function(){
+apf.textbox.autocomplete = function(){
     /*
         missing features:
         - web service based autocomplete
@@ -53,7 +53,7 @@ jpf.textbox.autocomplete = function(){
         autocomplete.sort      = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = jpf.xmldb.htmlImport(this.$getLayoutNode("container"),
+        this.oContainer = apf.xmldb.htmlImport(this.$getLayoutNode("container"),
             this.oExt.parentNode, this.oExt.nextSibling);	
     };
     
@@ -108,7 +108,7 @@ jpf.textbox.autocomplete = function(){
                 //Get data from model
                 var nodes = self[autocomplete.nodeset[0]].data.selectNodes(autocomplete.nodeset[1]);
                 for(var value, suggestData = [], i = 0; i < nodes.length; i++) {
-                    value = jpf.getXmlValue(nodes[i], autocomplete.value);
+                    value = apf.getXmlValue(nodes[i], autocomplete.value);
                     if (value)
                         suggestData.push(value.toLowerCase());
                 }
@@ -139,13 +139,13 @@ jpf.textbox.autocomplete = function(){
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.$getNewContext("item")
             var oItem = this.$getLayoutNode("item");
-            jpf.xmldb.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
+            apf.xmldb.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
             oItem.setAttribute("onmouseout",  'this.className = ""');
             oItem.setAttribute("onmousedown", 'event.cancelBubble = true');
             oItem.setAttribute("onclick",
-               "var o = jpf.lookup(" + this.uniqueId + ");\
+               "var o = apf.lookup(" + this.uniqueId + ");\
                 o.oInt.value = this.innerHTML;\
                 o.change(this.innerHTML);\
                 o.oInt.select();\
@@ -154,7 +154,7 @@ jpf.textbox.autocomplete = function(){
             
             arr.push(this.$getLayoutNode("item"));
         }
-        jpf.xmldb.htmlImport(arr, this.oContainer);
+        apf.xmldb.htmlImport(arr, this.oContainer);
         
         this.oContainer.style.display = "block";
     };

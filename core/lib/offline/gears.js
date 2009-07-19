@@ -25,7 +25,7 @@
  * Offline provider that uses Google gears.
  * @default_private
  */
-jpf.namespace("offline.application.gears", {
+apf.namespace("offline.application.gears", {
     localServer : null,
     lastStore   : null,
     cancelID    : null,
@@ -35,13 +35,13 @@ jpf.namespace("offline.application.gears", {
     init : function(){
         // clip at 64 characters, the max length of a resource store name
         this.name = this.storeName.truncate(64);
-        this.storeName = jpf.appsettings.name + ".jpf.offline";
+        this.storeName = apf.appsettings.name + ".apf.offline";
         
         try{
-            this.localServer = jpf.nameserver.get("google", "gears").create("beta.localserver", "1.0");
+            this.localServer = apf.nameserver.get("google", "gears").create("beta.localserver", "1.0");
         }
         catch(e){
-            jpf.console.warn("Error loading gears: " + e.message);
+            apf.console.warn("Error loading gears: " + e.message);
             return false;
         }
         
@@ -51,11 +51,11 @@ jpf.namespace("offline.application.gears", {
     install : function(){
         //@todo make a script to install gears here
         
-        jpf.isGears = true;
+        apf.isGears = true;
     },
     
     isAvailable : function(){
-        return jpf.isGears && location.protocol != "file:";
+        return apf.isGears && location.protocol != "file:";
     },
     
     clear : function(){
@@ -75,7 +75,7 @@ jpf.namespace("offline.application.gears", {
         }
         catch(e) {
             //#ifdef __DEBUG;
-            jpf.console.warn("Gears failed to start local storage: " + e.message);
+            apf.console.warn("Gears failed to start local storage: " + e.message);
             //#endif
             
             return false;
@@ -116,8 +116,8 @@ jpf.namespace("offline.application.gears", {
                     _self.refreshing = false;
                     
                     if(newVersion)
-                        jpf.storage.put("oldVersion", newVersion, null,
-                            jpf.offline.application.storeName);
+                        apf.storage.put("oldVersion", newVersion, null,
+                            apf.offline.application.storeName);
                     
                     if (callback) {
                         callback({

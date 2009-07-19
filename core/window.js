@@ -24,9 +24,9 @@
 /**
  * @private
  */
-jpf.windowManager = {
+apf.windowManager = {
     destroy: function(frm){
-        //Remove All Cross Window References Created on Init by jpf.windowManager
+        //Remove All Cross Window References Created on Init by apf.windowManager
         // for (var i = 0; i < this.globals.length; i++)
         //     frm.win[this.globals[i]] = null;
     },
@@ -46,7 +46,7 @@ jpf.windowManager = {
                 alert("not implemented");
             }
         };
-        this.forms.push(jpf.setReference(x.name, x, true));
+        this.forms.push(apf.setReference(x.name, x, true));
         return x;
     },
 
@@ -75,22 +75,22 @@ jpf.windowManager = {
  * @event focus             Fires when the browser window receives focus.
  *
  * @constructor
- * @inherits jpf.Class
+ * @inherits apf.Class
  * @default_private
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.WindowImplementation = function(){
-    jpf.register(this, "window", jpf.NODE_HIDDEN);
-    this.jpf = jpf;
+apf.WindowImplementation = function(){
+    apf.register(this, "window", apf.NODE_HIDDEN);
+    this.apf = apf;
 
     /**
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[Javeline Component : " + (this.name || "") + " (jpf.window)]";
+        return "[APF Component : " + (this.name || "") + " (apf.window)]";
     };
 
     /**
@@ -104,11 +104,11 @@ jpf.WindowImplementation = function(){
      * @private
      */
     this.loadCodeFile = function(url){
-        //if(jpf.isSafari) return;
+        //if(apf.isSafari) return;
         if (self[url])
-            jpf.importClass(self[url], true, this.win);
+            apf.importClass(self[url], true, this.win);
         else
-            jpf.include(url);//, this.document);
+            apf.include(url);//, this.document);
     };
 
     //#ifdef __WITH_TASKBAR_FLASHING
@@ -118,28 +118,28 @@ jpf.WindowImplementation = function(){
      * certain conditions.
      */
     this.flash = function(){
-        if (jpf.window.hasFocus() || jpf.isIphone)
+        if (apf.window.hasFocus() || apf.isIphone)
             return;
 
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.Flash();
-        else if (jpf.isIE) {
+        else if (apf.isIE) {
             if (!this.popup)
                 this.popup = window.createPopup();
 
-            if (jpf.window.stopFlash)
+            if (apf.window.stopFlash)
                 return;
 
             state += "x"
 
             function doFlash(nopopup) {
-                if (jpf.window.hasFocus())
+                if (apf.window.hasFocus())
                     return;
 
                 window.focus();
 
                 function doPopup() {
-                    if (jpf.window.hasFocus())
+                    if (apf.window.hasFocus())
                         return;
 
                     this.popup.hide();
@@ -152,12 +152,12 @@ jpf.WindowImplementation = function(){
 
                     clearInterval(this.flashTimer);
                     this.flashTimer = setInterval(function(){
-                        if (!jpf.window.popup.isOpen
-                          || !jpf.window.popup.document.p.isOpen) {
-                            clearInterval(jpf.window.flashTimer);
+                        if (!apf.window.popup.isOpen
+                          || !apf.window.popup.document.p.isOpen) {
+                            clearInterval(apf.window.flashTimer);
 
-                            if (!jpf.window.hasFocus()) {
-                                jpf.window.popup.hide();
+                            if (!apf.window.hasFocus()) {
+                                apf.window.popup.hide();
                                 document.body.focus();
                                 state = "d";
                                 determineAction();
@@ -169,23 +169,23 @@ jpf.WindowImplementation = function(){
 
                 if (nopopup)
                     setTimeout(function(){
-                        doPopup.call(jpf.window)
+                        doPopup.call(apf.window)
                     }, 10);
                 else
-                    doPopup.call(jpf.window);
+                    doPopup.call(apf.window);
             }
 
             if ("TEXTAREA|INPUT|SELECT".indexOf(document.activeElement.tagName) > -1) {
                 document.activeElement.blur();
                 document.body.focus();
-                jpf.window.stopFlash = true;
+                apf.window.stopFlash = true;
                 setTimeout(function(){
-                    doFlash.call(jpf.window, true);
-                    jpf.window.stopFlash = false;
+                    doFlash.call(apf.window, true);
+                    apf.window.stopFlash = false;
                 }, 10);
             }
             else {
-                doFlash.call(jpf.window);
+                doFlash.call(apf.window);
             }
         }
     };
@@ -195,7 +195,7 @@ jpf.WindowImplementation = function(){
      * Show the browser window.
      */
     this.show = function(){
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.Show();
     };
 
@@ -203,7 +203,7 @@ jpf.WindowImplementation = function(){
      * Hide the browser window.
      */
     this.hide = function(){
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.Hide();
         else {
             this.loaded = false;
@@ -216,7 +216,7 @@ jpf.WindowImplementation = function(){
      * Focus the browser window.
      */
     this.focus = function(){
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.SetFocus();
         else
             window.focus();
@@ -227,7 +227,7 @@ jpf.WindowImplementation = function(){
      * @param {String} url the location of the .ico file.
      */
     this.setIcon = function(url){
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
     };
 
@@ -238,7 +238,7 @@ jpf.WindowImplementation = function(){
     this.setTitle = function(value){
         this.title = value || "";
 
-        if (jpf.isDeskrun)
+        if (apf.isDeskrun)
             jdwin.caption = value;
         else
             document.title = (value || "");
@@ -248,7 +248,7 @@ jpf.WindowImplementation = function(){
      * @private
      */
     this.loadJml = function(x){
-        if (x[jpf.TAGNAME] == "deskrun")
+        if (x[apf.TAGNAME] == "deskrun")
             this.loadDeskRun(x);
         else {
 
@@ -256,8 +256,8 @@ jpf.WindowImplementation = function(){
     };
 
     //#ifdef __DESKRUN
-    var jdwin   = jpf.isDeskrun ? window.external : null;
-    var jdshell = jpf.isDeskrun ? jdwin.shell : null;
+    var jdwin   = apf.isDeskrun ? window.external : null;
+    var jdshell = apf.isDeskrun ? jdwin.shell : null;
 
     /**
      * @private
@@ -265,12 +265,12 @@ jpf.WindowImplementation = function(){
     this.loadDeskRun = function(q){
         jdwin.style = q.getAttribute("style") || "ismain|taskbar|btn-close|btn-max|btn-min|resizable";
 
-        jpf.appsettings.drRegName = q.getAttribute("record");
+        apf.appsettings.drRegName = q.getAttribute("record");
         if (q.getAttribute("minwidth"))
             jdwin.setMin(q.getAttribute("minwidth"), q.getAttribute("minheight"));
         if (q.getAttribute("record")
-          && jdshell.RegGet(jpf.appsettings.drRegName + "/window")) {
-            var winpos = jdshell.RegGet(jpf.appsettings.drRegName + "/window");
+          && jdshell.RegGet(apf.appsettings.drRegName + "/window")) {
+            var winpos = jdshell.RegGet(apf.appsettings.drRegName + "/window");
             if (winpos) {
                 winpos = winpos.split(",");
                 window.external.width  = Math.max(q.getAttribute("minwidth"),
@@ -292,18 +292,18 @@ jpf.WindowImplementation = function(){
             jdwin.height = q.getAttribute("height") || 600;
         }
 
-        jdwin.caption = q.getAttribute("caption") || "Javeline DeskRun";
+        jdwin.caption = q.getAttribute("caption") || "DeskRun";
         jdwin.icon    = q.getAttribute("icon") || 100;
 
-        var ct = $xmlns(q, "context", jpf.ns.jml);
+        var ct = $xmlns(q, "context", apf.ns.jml);
         if (ct.length) {
             ct = ct[0];
-            if (!jpf.appsettings.tray)
-                jpf.appsettings.tray = window.external.CreateWidget("trayicon")
-            var tray = jpf.appsettings.tray;
+            if (!apf.appsettings.tray)
+                apf.appsettings.tray = window.external.CreateWidget("trayicon")
+            var tray = apf.appsettings.tray;
 
             tray.icon = q.getAttribute("tray") || 100;
-            tray.tip  = q.getAttribute("tooltip") || "Javeline DeskRun";
+            tray.tip  = q.getAttribute("tooltip") || "DeskRun";
             tray.PopupClear();
             tray.PopupItemAdd("Exit", 3);
             tray.PopupItemAdd("SEP", function(){});
@@ -313,11 +313,11 @@ jpf.WindowImplementation = function(){
                 if (nodes[i].nodeType != 1)
                     continue;
 
-                if (nodes[i][jpf.TAGNAME] == "divider") {
+                if (nodes[i][apf.TAGNAME] == "divider") {
                     tray.PopupItemAdd("SEP", function(){});
                 }
                 else {
-                    tray.PopupItemAdd(jpf.getXmlValue(nodes[i], "."),
+                    tray.PopupItemAdd(apf.getXmlValue(nodes[i], "."),
                         nodes[i].getAttribute("href")
                         ? new Function("window.open('" + nodes[i].getAttribute("href") + "')")
                         : new Function(nodes[i].getAttribute("onclick")));
@@ -325,7 +325,7 @@ jpf.WindowImplementation = function(){
             }
         }
 
-        jdwin.shell.debug = jpf.debug ? 7 : 0;
+        jdwin.shell.debug = apf.debug ? 7 : 0;
         jdwin.Show();
         jdwin.SetFocus();
     };
@@ -363,7 +363,7 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __DEBUG
         if (list[tabindex]) {
-            jpf.console.warn("Jml node already exist for tabindex " + tabindex
+            apf.console.warn("Jml node already exist for tabindex " + tabindex
                              + ". Will insert " + jmlNode.tagName + " ["
                              + (jmlNode.name || "") + "] before existing one");
         }
@@ -420,7 +420,7 @@ jpf.WindowImplementation = function(){
 
         this.$settingFocus = null;
 
-        jpf.dispatchEvent("movefocus", {
+        apf.dispatchEvent("movefocus", {
             toElement : this.focussed
         });
 
@@ -431,14 +431,14 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __DEBUG
         if (!hadAlreadyFocus)
-            jpf.console.info("Focus given to " + this.focussed.tagName +
+            apf.console.info("Focus given to " + this.focussed.tagName +
                 " [" + (this.focussed.name || "") + "]");
         //#endif
 
         //#ifdef __WITH_OFFLINE_STATE
-        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
-          && jpf.offline.state.realtime)
-            jpf.offline.state.set(this, "focus", jmlNode.name || jmlNode.uniqueId);
+        if (typeof apf.offline != "undefined" && apf.offline.state.enabled
+          && apf.offline.state.realtime)
+            apf.offline.state.set(this, "focus", jmlNode.name || jmlNode.uniqueId);
         //#endif
     };
 
@@ -447,14 +447,14 @@ jpf.WindowImplementation = function(){
             return false;
 
         //#ifdef __DEBUG
-        jpf.console.info(this.focussed.tagName + " ["
+        apf.console.info(this.focussed.tagName + " ["
             + (this.focussed.name || "") + "] was blurred.");
         //#endif
 
-        jpf.window.focussed.$focusParent.$lastFocussed = null;
+        apf.window.focussed.$focusParent.$lastFocussed = null;
         this.focussed = null;
 
-        jpf.dispatchEvent("movefocus", {
+        apf.dispatchEvent("movefocus", {
             fromElement : jmlNode
         });
 
@@ -466,17 +466,17 @@ jpf.WindowImplementation = function(){
     var lastFocusParent;
     //#ifdef __WITH_WINDOW_FOCUS
     this.addEventListener("focus", function(e){
-        if (!jpf.window.focussed && lastFocusParent && !jpf.isIphone) {
-            jpf.window.$focusLast(lastFocusParent);
+        if (!apf.window.focussed && lastFocusParent && !apf.isIphone) {
+            apf.window.$focusLast(lastFocusParent);
         }
     });
     this.addEventListener("blur", function(e){
-        if (!jpf.window.focussed || jpf.isIphone)
+        if (!apf.window.focussed || apf.isIphone)
             return;
 
-        jpf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
-        lastFocusParent = jpf.window.focussed.$focusParent;
-        jpf.window.focussed = null;
+        apf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
+        lastFocusParent = apf.window.focussed.$focusParent;
+        apf.window.focussed = null;
     });
     //#endif
 
@@ -486,10 +486,10 @@ jpf.WindowImplementation = function(){
     }
 
     this.$focusRoot = function(e){
-        var docEl = jpf.document.documentElement;
+        var docEl = apf.document.documentElement;
         if (this.$focusLast(docEl, e) === false) {
             //docEl.$lastFocussed = null;
-            //this.moveNext(null, jpf.document.documentElement, true, e);
+            //this.moveNext(null, apf.document.documentElement, true, e);
         }
     };
 
@@ -541,7 +541,7 @@ jpf.WindowImplementation = function(){
             }
 
             if (!node)
-                this.$focus(jpf.document.documentElement);//return false;//
+                this.$focus(apf.document.documentElement);//return false;//
 
             /*@todo get this back from SVN
             var node, list = jmlNode.$tabList;
@@ -554,7 +554,7 @@ jpf.WindowImplementation = function(){
                 }
             }
 
-            this.$focus(jpf.document.documentElement);*/
+            this.$focus(apf.document.documentElement);*/
         }
     };
 
@@ -577,22 +577,22 @@ jpf.WindowImplementation = function(){
         } while(node && !node.isWindowContainer);
         //(!node.$focussable || node.focussable === false)
 
-        return node || jpf.document.documentElement;
+        return node || apf.document.documentElement;
     }
 
     //Dom handler
     //@todo make this look at the dom tree insertion point to determine tabindex
     function moveFocus(){
         if (this.isWindowContainer)
-            jpf.window.$tabIndex.push(this);
+            apf.window.$tabIndex.push(this);
         else
-            jpf.window.$addFocus(this, this.tabindex, true)
+            apf.window.$addFocus(this, this.tabindex, true)
     }
 
     //Dom handler
     function removeFocus(doOnlyAdmin){
         if (this.isWindowContainer) {
-            jpf.window.$tabList.remove(this);
+            apf.window.$tabList.remove(this);
             return;
         }
 
@@ -620,25 +620,25 @@ jpf.WindowImplementation = function(){
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
 
-        if (switchWindows && jpf.window.focussed) {
-            var p = jpf.window.focussed.$focusParent;
+        if (switchWindows && apf.window.focussed) {
+            var p = apf.window.focussed.$focusParent;
             if (p.visible && p.modal)
                 return false;
         }
 
-        var jmlNode = relObject || jpf.window.focussed;
+        var jmlNode = relObject || apf.window.focussed;
         var fParent = jmlNode
             ? (switchWindows && jmlNode.isWindowContainer
-                ? jpf.window
+                ? apf.window
                 : jmlNode.$focusParent)
-            : jpf.document.documentElement;
+            : apf.document.documentElement;
         var list    = fParent.$tabList;
 
-        if (jmlNode && (switchWindows || jmlNode != jpf.document.documentElement)) {
+        if (jmlNode && (switchWindows || jmlNode != apf.document.documentElement)) {
             start   = (list || []).indexOf(jmlNode);
             if (start == -1) {
                 //#ifdef __DEBUG
-                jpf.console.warn("Moving focus from element which isn't in the list\
+                apf.console.warn("Moving focus from element which isn't in the list\
                                   of it's parent. This should never happen.");
                 //#endif
 
@@ -671,12 +671,12 @@ jpf.WindowImplementation = function(){
         }
         while (!jmlNode
             || jmlNode.disabled
-            || jmlNode == jpf.window.focussed
+            || jmlNode == apf.window.focussed
             || (switchWindows ? !jmlNode.visible : jmlNode.oExt && !jmlNode.oExt.offsetHeight)
             || jmlNode.focussable === false
             || switchWindows && !jmlNode.$tabList.length);
 
-        if (fParent == jpf.window)
+        if (fParent == apf.window)
             this.$focusLast(jmlNode, {mouse:true}, switchWindows);
         else
             this.$focus(jmlNode, e);
@@ -691,26 +691,26 @@ jpf.WindowImplementation = function(){
      */
     this.focusDefault = function(){
         //#ifdef __WITH_OFFLINE_STATE
-        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled) {
-            var node, id = jpf.offline.state.get(this, "focus");
+        if (typeof apf.offline != "undefined" && apf.offline.state.enabled) {
+            var node, id = apf.offline.state.get(this, "focus");
 
             if (id == -1)
                 return this.$focusRoot();
 
             if (id)
-                node = self[id] || jpf.lookup(id);
+                node = self[id] || apf.lookup(id);
 
             if (node) {
                 if (!node.$focussable) {
                     //#ifdef __DEBUG
-                    jpf.console.warn("Invalid offline state detected. The \
+                    apf.console.warn("Invalid offline state detected. The \
                                       application was probably changed in \
                                       between sessions. Resetting offline state\
                                       and rebooting.");
                     //#endif
 
-                    jpf.offline.clear();
-                    jpf.offline.reboot();
+                    apf.offline.clear();
+                    apf.offline.reboot();
                 }
                 else {
                     this.$focus(node);
@@ -721,7 +721,7 @@ jpf.WindowImplementation = function(){
         //#endif
 
         if (this.moveNext() === false) {
-            this.moveNext(null, jpf.document.documentElement, true)
+            this.moveNext(null, apf.document.documentElement, true)
         }
     };
 
@@ -730,17 +730,17 @@ jpf.WindowImplementation = function(){
     /**** Set Window Events ****/
 
     window.onbeforeunload = function(){
-        return jpf.dispatchEvent("exit");
+        return apf.dispatchEvent("exit");
     };
 
     //#ifdef __DESKRUN
-    if (jpf.isDeskrun)
+    if (apf.isDeskrun)
         window.external.onbeforeunload = window.onbeforeunload;
     //#endif
 
     window.onunload = function(){
-        jpf.window.isExiting = true;
-        jpf.window.destroy();
+        apf.window.isExiting = true;
+        apf.window.destroy();
     };
 
     //#ifdef __WITH_WINDOW_FOCUS
@@ -748,7 +748,7 @@ jpf.WindowImplementation = function(){
     var timer, state = "", last = "";
     this.$focusfix = function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) return;
+        if (apf.isIphone) return;
         // #endif
         state += "a";
         clearTimeout(timer);
@@ -758,7 +758,7 @@ jpf.WindowImplementation = function(){
 
     this.$focusfix2 = function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) return;
+        if (apf.isIphone) return;
         // #endif
         state += "b";
         clearTimeout(timer);
@@ -767,7 +767,7 @@ jpf.WindowImplementation = function(){
 
     this.$blurfix = function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) return;
+        if (apf.isIphone) return;
         // #endif
         state += "c";
         clearTimeout(timer);
@@ -777,21 +777,21 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
 
-        //jpf.console.info(state);
+        //apf.console.info(state);
         if (state == "e" || state == "c"
           || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
-                jpf.window.dispatchEvent("blur");
-                //jpf.console.warn("blur");
+                apf.window.dispatchEvent("blur");
+                //apf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
-                jpf.window.dispatchEvent("focus");
-                //jpf.console.warn("focus");
+                apf.window.dispatchEvent("focus");
+                //apf.console.warn("focus");
             }
         }
 
@@ -801,10 +801,10 @@ jpf.WindowImplementation = function(){
 
     window.onfocus = function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone)
-            return jpf.window.dispatchEvent("focus");
+        if (apf.isIphone)
+            return apf.window.dispatchEvent("focus");
         // #endif
-        if (jpf.hasFocusBug) {
+        if (apf.hasFocusBug) {
             state += "d";
             clearTimeout(timer);
             timer = setTimeout(determineAction);
@@ -812,17 +812,17 @@ jpf.WindowImplementation = function(){
         else {
             clearTimeout(iframeFixTimer)
             iframeFix.newState = "focus";
-            //jpf.console.warn("win-focus");
+            //apf.console.warn("win-focus");
             iframeFixTimer = setTimeout(iframeFix, 10);
         }
     };
 
     window.onblur = function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone)
-            return jpf.window.dispatchEvent("blur");
+        if (apf.isIphone)
+            return apf.window.dispatchEvent("blur");
         // #endif
-        if (jpf.hasFocusBug) {
+        if (apf.hasFocusBug) {
             state += "e";
             clearTimeout(timer);
             timer = setTimeout(determineAction);
@@ -830,7 +830,7 @@ jpf.WindowImplementation = function(){
         else {
             clearTimeout(iframeFixTimer)
             iframeFix.newState = "blur";
-            //jpf.console.warn("win-blur");
+            //apf.console.warn("win-blur");
             iframeFixTimer = setTimeout(iframeFix, 10);
         }
     };
@@ -845,8 +845,8 @@ jpf.WindowImplementation = function(){
 
         last = newState;
 
-        jpf.window.dispatchEvent(last);
-        //jpf.console.warn(last);
+        apf.window.dispatchEvent(last);
+        //apf.console.warn(last);
     }
 
     this.hasFocus = function(){
@@ -862,9 +862,9 @@ jpf.WindowImplementation = function(){
             e = event;
 
         //#ifdef __WITH_CONTEXTMENU
-        var jmlNode = jpf.findHost(e.srcElement || e.target)
-              || jpf.window.focussed
-              || jpf.document && jpf.document.documentElement;
+        var jmlNode = apf.findHost(e.srcElement || e.target)
+              || apf.window.focussed
+              || apf.document && apf.document.documentElement;
 
         if (jmlNode.tagName == "menu") //The menu is already visible
             return false;
@@ -874,11 +874,11 @@ jpf.WindowImplementation = function(){
         if (jmlNode && jmlNode.tagName == "menu")
             jmlNode = jmlNode.parentNode;
 
-        if (jpf.contextMenuKeyboard) {
+        if (apf.contextMenuKeyboard) {
             if (jmlNode) {
                 pos = jmlNode.selected
-                    ? jpf.getAbsolutePosition(jmlNode.$selected)
-                    : jpf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
+                    ? apf.getAbsolutePosition(jmlNode.$selected)
+                    : apf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
             }
             else
                 pos = [0, 0];
@@ -902,14 +902,14 @@ jpf.WindowImplementation = function(){
 
         ev.bubbles = true; //@todo discuss this, are we ok with bubbling?
 
-        jpf.contextMenuKeyboard = null;
+        apf.contextMenuKeyboard = null;
 
-        if ((jmlNode || jpf).dispatchEvent("contextmenu", ev) === false
+        if ((jmlNode || apf).dispatchEvent("contextmenu", ev) === false
           || ev.returnValue === false)
             return false;
         //#endif
 
-        if (jpf.appsettings.disableRightClick)
+        if (apf.appsettings.disableRightClick)
             return false;
     };
 
@@ -917,51 +917,51 @@ jpf.WindowImplementation = function(){
     document.onmousedown = function(e){
         e = e || window.event;
 
-        var jmlNode = jpf.findHost(e.srcElement || e.target);
+        var jmlNode = apf.findHost(e.srcElement || e.target);
         
         // #ifdef __WITH_POPUP
-        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId)
-            jpf.popup.forceHide();
+        if (apf.popup.last && apf.popup.last != jmlNode.uniqueId)
+            apf.popup.forceHide();
         // #endif
 
         //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left
         if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false)
-          && jpf.appsettings.allowBlur && jmlNode.canHaveChildren != 2) {
+          && apf.appsettings.allowBlur && jmlNode.canHaveChildren != 2) {
             lastFocusParent = null;
-            if (jpf.window.focussed)
-                jpf.window.focussed.blur();
+            if (apf.window.focussed)
+                apf.window.focussed.blur();
         }
-        else if ((p = jpf.window.focussed && jpf.window.focussed.$focusParent || lastFocusParent)
+        else if ((p = apf.window.focussed && apf.window.focussed.$focusParent || lastFocusParent)
             && p.visible && p.modal && jmlNode.$focusParent != p) {
-                jpf.window.$focusLast(p, {mouse: true});
+                apf.window.$focusLast(p, {mouse: true});
         }
-        else if (!jmlNode && jpf.window.focussed) {
-            jpf.window.$focusRoot();
+        else if (!jmlNode && apf.window.focussed) {
+            apf.window.$focusRoot();
         }
         else if (!jmlNode.disabled && jmlNode.focussable !== false) {
-            if (jmlNode.$focussable === jpf.KEYBOARD_MOUSE)
-                jpf.window.$focus(jmlNode, {mouse: true});
+            if (jmlNode.$focussable === apf.KEYBOARD_MOUSE)
+                apf.window.$focus(jmlNode, {mouse: true});
             else if (jmlNode.canHaveChildren == 2) {
-                if (!jpf.appsettings.allowBlur || !jpf.window.focussed 
-                  || jpf.window.focussed.$focusParent != jmlNode)
-                    jpf.window.$focusLast(jmlNode, {mouse: true});
+                if (!apf.appsettings.allowBlur || !apf.window.focussed 
+                  || apf.window.focussed.$focusParent != jmlNode)
+                    apf.window.$focusLast(jmlNode, {mouse: true});
             }
             else
-                jpf.window.$focusDefault(jmlNode, {mouse: true});
+                apf.window.$focusDefault(jmlNode, {mouse: true});
         }
         else
-            jpf.window.$focusDefault(jmlNode, {mouse: true});
+            apf.window.$focusDefault(jmlNode, {mouse: true});
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
+        if (apf.hasFocusBug) {
             var isContentEditable = ta[(e.srcElement || e.target).tagName]
                 && !(e.srcElement || e.target).disabled || jmlNode.$isContentEditable
                 && jmlNode.$isContentEditable(e) && !jmlNode.disabled;
 
             if (!jmlNode || !isContentEditable)
-                jpf.window.$focusfix();
+                apf.window.$focusfix();
         }
         else if (!last) {
             window.onfocus();
@@ -969,21 +969,21 @@ jpf.WindowImplementation = function(){
         //#endif
         //#endif
 
-        jpf.dispatchEvent("mousedown", {
+        apf.dispatchEvent("mousedown", {
             htmlEvent : e,
             jmlNode   : jmlNode
         });
 
         //Non IE/ iPhone selection handling
-        var canSelect = !(!jpf.isIphone && !jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
-          && (!jpf.isParsingPartial || jmlNode)
+        var canSelect = !(!apf.isIphone && !apf.isIE && (apf.JmlParser && !apf.appsettings.allowSelect
+          && (!apf.isParsingPartial || jmlNode)
           // #ifdef __WITH_DRAGMODE
-          || jpf.dragmode.mode
+          || apf.dragmode.mode
           // #endif
           ) && !ta[e.target.tagName]);
 
         if (canSelect && !jmlNode.canHaveChildren 
-          || !jpf.xmldb.isChildOf(jmlNode.oInt, e.target))
+          || !apf.xmldb.isChildOf(jmlNode.oInt, e.target))
             canSelect = false;
         
         if (!canSelect)
@@ -994,17 +994,17 @@ jpf.WindowImplementation = function(){
     document.onselectstart = function(e){
         if (!e) e = event;
         
-        var canSelect = !(jpf.JmlParser && !jpf.appsettings.allowSelect
+        var canSelect = !(apf.JmlParser && !apf.appsettings.allowSelect
           // #ifdef __WITH_DRAGMODE
-          || jpf.dragmode.mode
-          || jpf.dragmode.isDragging
+          || apf.dragmode.mode
+          || apf.dragmode.isDragging
           // #endif
         );
 
         if (canSelect) {
-            var jmlNode = jpf.findHost(e.srcElement);
+            var jmlNode = apf.findHost(e.srcElement);
             if (!jmlNode.canHaveChildren 
-              || !jpf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
+              || !apf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
                 canSelect = false;
         }
 
@@ -1019,9 +1019,9 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
 
         //#ifdef __WITH_KEYBOARD
-        if (jpf.window.focussed
-          && !jpf.window.focussed.disableKeyboard
-          && jpf.window.focussed.dispatchEvent("keyup", {
+        if (apf.window.focussed
+          && !apf.window.focussed.disableKeyboard
+          && apf.window.focussed.dispatchEvent("keyup", {
                 keyCode  : e.keyCode,
                 ctrlKey  : e.ctrlKey,
                 shiftKey : e.shiftKey,
@@ -1033,7 +1033,7 @@ jpf.WindowImplementation = function(){
         }
         //#endif
 
-        jpf.dispatchEvent("keyup", null, e);
+        apf.dispatchEvent("keyup", null, e);
     };
 
     //#ifdef __WITH_MOUSESCROLL
@@ -1044,7 +1044,7 @@ jpf.WindowImplementation = function(){
         var delta = null;
         if (e.wheelDelta) {
             delta = e.wheelDelta / 120;
-            if (jpf.isOpera)
+            if (apf.isOpera)
                 delta *= -1;
         }
         else if (e.detail)
@@ -1052,7 +1052,7 @@ jpf.WindowImplementation = function(){
 
         if (delta !== null) {
             var ev = {delta: delta, target: e.target || e.srcElement};
-            var res = jpf.dispatchEvent("mousescroll", ev);
+            var res = apf.dispatchEvent("mousescroll", ev);
             if (res === false || ev.returnValue === false) {
                 if (e.preventDefault)
                     e.preventDefault();
@@ -1078,27 +1078,27 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __WITH_CONTEXTMENU
         if (e.keyCode == 93)
-            jpf.contextMenuKeyboard = true;
+            apf.contextMenuKeyboard = true;
         // #endif
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
-        var ctrlKey = jpf.isMac ? e.metaKey : e.ctrlKey;
-        if (jpf.appsettings.undokeys && ctrlKey) {
+        var ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
+        if (apf.appsettings.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
-                var o = jpf.window.focussed;
+                var o = apf.window.focussed;
                 while (o && !o.getActionTracker && !o.$at)
                     o = o.parentNode;
-                if (!o) o = jpf.window;
+                if (!o) o = apf.window;
                 (o.$at || o.getActionTracker()).undo();
             }
             //Ctrl-Y - Redo
             else if (e.keyCode == 89) {
-                var o = jpf.window.focussed;
+                var o = apf.window.focussed;
                 while (o && !o.getActionTracker && !o.$at)
                     o = o.parentNode;
-                if (!o) o = jpf.window;
+                if (!o) o = apf.window;
                 (o.$at || o.getActionTracker()).redo();
             }
         }
@@ -1115,10 +1115,10 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __WITH_HOTKEY
         //Hotkey
-        if (jpf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
+        if (apf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
-            if (jpf.canDisableKeyCodes) {
+            if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
@@ -1140,23 +1140,23 @@ jpf.WindowImplementation = function(){
         if (e.metaKey)
             keys.push("Meta");
 
-        if (jpf.keyNames[e.keyCode])
-            keys.push(jpf.keyNames[e.keyCode]);
+        if (apf.keyNames[e.keyCode])
+            keys.push(apf.keyNames[e.keyCode]);
 
         if (keys.length) {
             if (e.keyCode > 46)
                 keys.push(String.fromCharCode(e.keyCode));
-            jpf.setProperty("hotkey", keys.join("-"));
+            apf.setProperty("hotkey", keys.join("-"));
         }
         //#endif
 
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        if (jpf.window.focussed && !jpf.window.focussed.disableKeyboard
-          && jpf.window.focussed.dispatchEvent("keydown", eInfo) === false) {
+        if (apf.window.focussed && !apf.window.focussed.disableKeyboard
+          && apf.window.focussed.dispatchEvent("keydown", eInfo) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
-            if (jpf.canDisableKeyCodes) {
+            if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
@@ -1167,25 +1167,25 @@ jpf.WindowImplementation = function(){
 
         //#ifdef __WITH_FOCUS
         //Focus handling
-        else if ((!jpf.appsettings.disableTabbing || jpf.window.focussed) && e.keyCode == 9) {
+        else if ((!apf.appsettings.disableTabbing || apf.window.focussed) && e.keyCode == 9) {
             //Window focus handling
-            if (e.ctrlKey && jpf.window.focussed) {
-                var w = jpf.window.focussed.$focusParent;
+            if (e.ctrlKey && apf.window.focussed) {
+                var w = apf.window.focussed.$focusParent;
                 if (w.modal) {
                     e.returnValue = false;
                     return false;
                 }
 
-                jpf.window.moveNext(e.shiftKey,
-                    jpf.window.focussed.$focusParent, true);
+                apf.window.moveNext(e.shiftKey,
+                    apf.window.focussed.$focusParent, true);
 
-                var w = jpf.window.focussed.$focusParent;
+                var w = apf.window.focussed.$focusParent;
                 if (w && w.bringToFront)
                     w.bringToFront();
             }
             //Element focus handling
-            else if(!jpf.window.focussed || jpf.window.focussed.tagName != "menu")
-                jpf.window.moveNext(e.shiftKey);
+            else if(!apf.window.focussed || apf.window.focussed.tagName != "menu")
+                apf.window.moveNext(e.shiftKey);
 
             e.returnValue = false;
             return false;
@@ -1193,11 +1193,11 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //Disable backspace behaviour triggering the backbutton behaviour
-        var altKey = jpf.isMac ? e.metaKey : e.altKey;
-        if (jpf.appsettings.disableBackspace
+        var altKey = apf.isMac ? e.metaKey : e.altKey;
+        if (apf.appsettings.disableBackspace
           && (e.keyCode == 8 || altKey && (e.keyCode == 37 || e.keyCode == 39))
           && !ta[(e.srcElement || e.target).tagName]) {
-            if (jpf.canDisableKeyCodes) {
+            if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
@@ -1213,8 +1213,8 @@ jpf.WindowImplementation = function(){
         }*/
 
         //Disable F5 refresh behaviour
-        if (jpf.appsettings.disableF5 && (e.keyCode == 116 || e.keyCode == 117)) {
-            if (jpf.canDisableKeyCodes) {
+        if (apf.appsettings.disableF5 && (e.keyCode == 116 || e.keyCode == 117)) {
+            if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
@@ -1228,21 +1228,21 @@ jpf.WindowImplementation = function(){
         }
         
         
-        /*if (browserNavKeys[e.keyCode] && jpf.window.focussed 
-          && jpf.appsettings.autoDisableNavKeys)
+        /*if (browserNavKeys[e.keyCode] && apf.window.focussed 
+          && apf.appsettings.autoDisableNavKeys)
             e.returnValue = false;*/
 
         if (e.keyCode == 27)
             e.returnValue = false;
 
-        if (!jpf.appsettings.allowSelect
+        if (!apf.appsettings.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
           && !ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
           && (!e.srcElement || e.srcElement.contentEditable != "true")) {
             e.returnValue = false;
         }
 
-        //jpf.dispatchEvent("keydown", null, eInfo);
+        //apf.dispatchEvent("keydown", null, eInfo);
 
         return e.returnValue;
         //#endif
@@ -1254,10 +1254,10 @@ jpf.WindowImplementation = function(){
     this.destroy = function(){
         this.$at = null;
 
-        jpf.destroy(this);
-        jpf.windowManager.destroy(this);
+        apf.destroy(this);
+        apf.windowManager.destroy(this);
 
-        jpf           =
+        apf           =
         this.win      =
         this.window   =
         this.document = null;
@@ -1290,43 +1290,43 @@ jpf.WindowImplementation = function(){
 
 /**
  * The jml document, this is the root of the DOM Tree and has a nodeType with 
- * value 9 (jpf.NODE_DOCUMENT). 
+ * value 9 (apf.NODE_DOCUMENT). 
  *
  * @constructor
- * @inherits jpf.JmlDom
- * @inherits jpf.Class
+ * @inherits apf.JmlDom
+ * @inherits apf.Class
  * @default_private 
  * @see baseclass.jmldom
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.DocumentImplementation = function(){
-    jpf.makeClass(this);
+apf.DocumentImplementation = function(){
+    apf.makeClass(this);
 
     //#ifdef __WITH_JMLDOM
-    this.implement(jpf.JmlDom);
+    this.implement(apf.JmlDom);
     //#endif
 
     /**
      * The type of node within the document.
      *   Possible values:
-     *   jpf.NODE_ELEMENT
-     *   jpf.NODE_ATTRIBUTE
-     *   jpf.NODE_TEXT
-     *   jpf.NODE_CDATA_SECTION
-     *   jpf.NODE_ENTITY_REFERENCE
-     *   jpf.NODE_ENTITY
-     *   jpf.NODE_PROCESSING_INSTRUCTION
-     *   jpf.NODE_COMMENT
-     *   jpf.NODE_DOCUMENT
-     *   jpf.NODE_DOCUMENT_TYPE
-     *   jpf.NODE_DOCUMENT_FRAGMENT
-     *   jpf.NODE_NOTATION
+     *   apf.NODE_ELEMENT
+     *   apf.NODE_ATTRIBUTE
+     *   apf.NODE_TEXT
+     *   apf.NODE_CDATA_SECTION
+     *   apf.NODE_ENTITY_REFERENCE
+     *   apf.NODE_ENTITY
+     *   apf.NODE_PROCESSING_INSTRUCTION
+     *   apf.NODE_COMMENT
+     *   apf.NODE_DOCUMENT
+     *   apf.NODE_DOCUMENT_TYPE
+     *   apf.NODE_DOCUMENT_FRAGMENT
+     *   apf.NODE_NOTATION
      */
-    this.nodeType   = jpf.NODE_DOCUMENT;
-    this.nodeFunc   = jpf.NODE_HIDDEN;
+    this.nodeType   = apf.NODE_DOCUMENT;
+    this.nodeFunc   = apf.NODE_HIDDEN;
     this.$jmlLoaded = true;
 
     /**
@@ -1340,17 +1340,17 @@ jpf.DocumentImplementation = function(){
         },
         //#endif
 
-        uniqueId      : jpf.all.push(this) - 1,
+        uniqueId      : apf.all.push(this) - 1,
         nodeType      :  1,
-        nodeFunc      : jpf.NODE_HIDDEN,
+        nodeFunc      : apf.NODE_HIDDEN,
         tagName       : "application",
         parentNode    : this,
         ownerDocument : this,
         pHtmlNode     : document.body,
-        $jml          : jpf.JmlParser.$jml,
+        $jml          : apf.JmlParser.$jml,
         $tabList      : [], //Prevents documentElement from being focussed
         $jmlLoaded    : true,
-        $focussable   : jpf.KEYBOARD,
+        $focussable   : apf.KEYBOARD,
         focussable    : true,
         visible       : true,
 
@@ -1371,13 +1371,13 @@ jpf.DocumentImplementation = function(){
         this.documentElement.insertBefore.apply(this.documentElement, arguments);
     };
 
-    jpf.implement.call(this.documentElement, jpf.Class);
+    apf.implement.call(this.documentElement, apf.Class);
     //#ifdef __WITH_FOCUS
-    jpf.window.$addFocus(this.documentElement);
+    apf.window.$addFocus(this.documentElement);
     //#endif
 
     //#ifdef __WITH_JMLDOM
-    jpf.implement.call(this.documentElement, jpf.JmlDom);
+    apf.implement.call(this.documentElement, apf.JmlDom);
     //#endif
 
     /**
@@ -1407,59 +1407,59 @@ jpf.DocumentImplementation = function(){
             x = tagName;
         }
         else if (tagName.indexOf("<") > -1) {
-            x = jpf.getXml(tagName)
+            x = apf.getXml(tagName)
         }
         else {
-            var prefix = jpf.findPrefix(jpf.JmlParser.$jml, jpf.ns.jml);
-            var doc = jpf.JmlParser.$jml.ownerDocument;
+            var prefix = apf.findPrefix(apf.JmlParser.$jml, apf.ns.jml);
+            var doc = apf.JmlParser.$jml.ownerDocument;
 
-            if(jpf.JmlParser.$jml && doc.createElementNS) {
-                x = doc.createElementNS(jpf.ns.jml, prefix + ":" + tagName);
+            if(apf.JmlParser.$jml && doc.createElementNS) {
+                x = doc.createElementNS(apf.ns.jml, prefix + ":" + tagName);
             }
             else {
-                x = jpf.getXml("<" + prefix + ":" + tagName + " xmlns:"
-                               + prefix + "='" + jpf.ns.jml + "' />", true);
+                x = apf.getXml("<" + prefix + ":" + tagName + " xmlns:"
+                               + prefix + "='" + apf.ns.jml + "' />", true);
             }
         }
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             if (!prefix)
                 prefix = x.prefix;
 
             x.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:" + prefix + "='" + jpf.ns.jml + "'");
+                "xmlns:" + prefix + "='" + apf.ns.jml + "'");
         }
 
-        tagName = x[jpf.TAGNAME];
+        tagName = x[apf.TAGNAME];
         var initId;
 
-        if (typeof jpf[tagName] != "function") { //Call JMLParser??
-            o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x);
-            if (jpf.JmlParser.handler[tagName]) {
+        if (typeof apf[tagName] != "function") { //Call JMLParser??
+            o = new apf.JmlDom(tagName, null, apf.NODE_HIDDEN, x);
+            if (apf.JmlParser.handler[tagName]) {
                 initId = o.$domHandlers["reparent"].push(function(b, pNode){
                     this.$domHandlers.reparent[initId] = null;
 
                     if (!pNode.$jmlLoaded)
                         return; //the jmlParser will handle the rest
 
-                    o = jpf.JmlParser.handler[tagName](this.$jml,
+                    o = apf.JmlParser.handler[tagName](this.$jml,
                         pNode, pNode.oInt);
 
-                    if (o) jpf.extend(this, o); //ruins prototyped things
+                    if (o) apf.extend(this, o); //ruins prototyped things
 
                     //Add this component to the nameserver
                     if (o && this.name)
-                        jpf.nameserver.register(tagName, this.name, o);
+                        apf.nameserver.register(tagName, this.name, o);
 
                     if (this.name)
-                        jpf.setReference(name, o);
+                        apf.setReference(name, o);
 
                     o.$jmlLoaded = true;
                 }) - 1;
             }
         }
         else {
-            o = new jpf[tagName](null, tagName, x);
+            o = new apf[tagName](null, tagName, x);
             if (o.loadJml) {
                 initId = o.$domHandlers["reparent"].push(function(b, pNode){
                     this.$domHandlers.reparent[initId] = null;
@@ -1496,31 +1496,31 @@ jpf.DocumentImplementation = function(){
                         o.$reappendToParent = null;
                     }
 
-                    var parsing = jpf.isParsing;
-                    jpf.isParsing = true;
-                    jpf.JmlParser.parseFirstPass([x]);
+                    var parsing = apf.isParsing;
+                    apf.isParsing = true;
+                    apf.JmlParser.parseFirstPass([x]);
 
                     loadJml(o, pNode && pNode.oInt || document.body);
 
                     //#ifdef __WITH_ALIGNMENT
                     if (pNode && pNode.pData)
-                        jpf.layout.compileAlignment(pNode.pData);
+                        apf.layout.compileAlignment(pNode.pData);
                     //#endif
 
                     //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
                     if (pNode.pData)
-                        jpf.layout.activateRules(pNode.oInt || document.body);
-                    //jpf.layout.activateRules();//@todo maybe use processQueue
+                        apf.layout.activateRules(pNode.oInt || document.body);
+                    //apf.layout.activateRules();//@todo maybe use processQueue
                     //#endif
 
-                    jpf.JmlParser.parseLastPass();
-                    jpf.isParsing = parsing;
+                    apf.JmlParser.parseLastPass();
+                    apf.isParsing = parsing;
                 }) - 1;
             }
         }
 
         if (o.name)
-            jpf.setReference(o.name, o);
+            apf.setReference(o.name, o);
 
         o.$jml = x;
 
@@ -1528,7 +1528,7 @@ jpf.DocumentImplementation = function(){
     };
     
     this.createDocumentFragment = function(){
-        return new jpf.JmlDom(jpf.NODE_DOCUMENT_FRAGMENT)
+        return new apf.JmlDom(apf.NODE_DOCUMENT_FRAGMENT)
     }
     //#endif
 
@@ -1537,7 +1537,7 @@ jpf.DocumentImplementation = function(){
      * See W3C evaluate
      */
     this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
-        var result = jpf.XPath.selectNodes(sExpr,
+        var result = apf.XPath.selectNodes(sExpr,
             contextNode || this.documentElement);
 
         /**
@@ -1566,15 +1566,15 @@ jpf.DocumentImplementation = function(){
 /**
  * @private
  */
-jpf.sanitizeTextbox = function(oTxt){
+apf.sanitizeTextbox = function(oTxt){
     oTxt.onfocus = function(){
-        if (jpf.window)
-            jpf.window.$focusfix2();
+        if (apf.window)
+            apf.window.$focusfix2();
     };
 
     oTxt.onblur = function(){
-        if (jpf.window)
-            jpf.window.$blurfix();
+        if (apf.window)
+            apf.window.$blurfix();
     };
 }
 // #endif

@@ -27,11 +27,11 @@
  * @constructor
  * @parser
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.JSImplementation = function(){
+apf.JSImplementation = function(){
     //------------------------------------------------------------------------------------
     
     var types = ['[', '{', '(', 'text', 'xpath', 'word', 'sep', 'ws', 'semi', 'sh', 'op', 'col', 'str', 'regex', 'comment'];
@@ -225,6 +225,6 @@ jpf.JSImplementation = function(){
         };
     };
 };
-jpf.JavascriptParser = new jpf.JSImplementation();
+apf.JavascriptParser = new apf.JSImplementation();
 
 //#endif

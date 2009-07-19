@@ -84,14 +84,14 @@
  * 
  * @constructor
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  * 
  * @author      
  * @version     %I%, %G% 
  * 
  * @allowchild event
  */
-jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.timeout    = 2000;
     this.position   = "top-right";
@@ -159,10 +159,10 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
-        var ww = jpf.isIE
+        var ww = apf.isIE
             ? document.documentElement.offsetWidth
             : window.innerWidth;
-        var wh = jpf.isIE 
+        var wh = apf.isIE 
             ? document.documentElement.offsetHeight
             : window.innerHeight;
         
@@ -186,7 +186,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
         oNoti.style.display = "block";
 
-        var margin = jpf.getBox(this.margin || "0");
+        var margin = apf.getBox(this.margin || "0");
         var nh     = oNoti.offsetHeight;
         var nw     = oNoti.offsetWidth;
 
@@ -301,8 +301,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var isMouseOver = false;
 
-        jpf.tween.css(oNoti, "notifier_shown", {
-            anim     : jpf.tween.NORMAL,
+        apf.tween.css(oNoti, "notifier_shown", {
+            anim     : apf.tween.NORMAL,
             steps    : 10,
             interval : 10,
             onfinish : function(container) {
@@ -315,8 +315,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             if (isMouseOver)
                 return;
 
-            jpf.tween.css(oNoti, "notifier_hidden", {
-                anim    : jpf.tween.NORMAL,
+            apf.tween.css(oNoti, "notifier_hidden", {
+                anim    : apf.tween.NORMAL,
                 steps   : 10,
                 interval: 20,
                 onfinish: function(container) {
@@ -342,9 +342,9 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             var tEl = e.explicitOriginalTarget || e.toElement;
             if (isMouseOver)
                 return;
-            if (tEl == oNoti || jpf.xmldb.isChildOf(oNoti, tEl)) {
-                jpf.tween.css(oNoti, "notifier_hover", {
-                    anim    : jpf.tween.NORMAL,
+            if (tEl == oNoti || apf.xmldb.isChildOf(oNoti, tEl)) {
+                apf.tween.css(oNoti, "notifier_hover", {
+                    anim    : apf.tween.NORMAL,
                     steps   : 10,
                     interval: 20,
                     onfinish: function(container) {
@@ -362,8 +362,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             if (!isMouseOver)
                 return;
 
-            if (jpf.xmldb.isChildOf(tEl, oNoti) ||
-               (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+            if (apf.xmldb.isChildOf(tEl, oNoti) ||
+               (!apf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 isMouseOver = false;
                 hideWindow();
             }
@@ -394,11 +394,11 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             if (node.nodeType != 1)
                 continue;
 
-            if (node[jpf.TAGNAME] == "event")
-                ev = new jpf.event(this.pHtmlNode, "event").loadJml(node, this)
+            if (node[apf.TAGNAME] == "event")
+                ev = new apf.event(this.pHtmlNode, "event").loadJml(node, this)
         }
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 /**
  * Displays a popup element with a message with optionally an icon at the
@@ -408,7 +408,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
  *
  * @event click Fires when the user clicks on the representation of this event.
  */
-jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
+apf.event = apf.component(apf.NODE_HIDDEN, function() {
     var _self         = this;
     var hasInitedWhen = false;
 

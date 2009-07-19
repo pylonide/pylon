@@ -31,7 +31,7 @@ var __VALIDATION__ = 1 << 6;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -55,7 +55,7 @@ var __VALIDATION__ = 1 << 6;
  *   {Number}  keyCode   which key was pressed. This is an ascii number.
  *   {Event}   htmlEvent the html event object that triggered this event from being called.
  */
-jpf.JmlElement = function(){
+apf.JmlElement = function(){
     //#ifdef __USE_TOSTRING
     /**
      * Returns a string representation of this element.
@@ -73,7 +73,7 @@ jpf.JmlElement = function(){
 
     /**** Convenience functions for gui nodes ****/
 
-    if (this.nodeFunc == jpf.NODE_VISIBLE) {
+    if (this.nodeFunc == apf.NODE_VISIBLE) {
 
         //#ifdef __WITH_CONVENIENCE_API
 
@@ -212,7 +212,7 @@ jpf.JmlElement = function(){
          * Call-chaining is supported.
          */
         this.bringToFront  = function(){
-            this.setProperty("zindex", jpf.all.length + 1);
+            this.setProperty("zindex", apf.all.length + 1);
             return this;
         };
 
@@ -247,8 +247,8 @@ jpf.JmlElement = function(){
              * @param {Number} tabindex the position in the list
              */
             this.setTabIndex = function(tabindex){
-                jpf.window.$removeFocus(this);
-                jpf.window.$addFocus(this, tabindex);
+                apf.window.$removeFocus(this);
+                apf.window.$addFocus(this, tabindex);
                 return this;
             };
 
@@ -259,14 +259,14 @@ jpf.JmlElement = function(){
             this.focus = function(noset, e, nofix){
                 if (!noset) {
                     if (this.isWindowContainer) {
-                        jpf.window.$focusLast(this, e, true);
+                        apf.window.$focusLast(this, e, true);
                     }
                     else {
-                        jpf.window.$focus(this, e);
+                        apf.window.$focus(this, e);
 
                         //#ifdef __WITH_WINDOW_FOCUS
-                        if (!nofix && jpf.hasFocusBug)
-                            jpf.window.$focusfix();
+                        if (!nofix && apf.hasFocusBug)
+                            apf.window.$focusfix();
                         //#endif
                     }
 
@@ -289,15 +289,15 @@ jpf.JmlElement = function(){
              */
             this.blur = function(noset, e){
                 //#ifdef __WITH_POPUP
-                if (jpf.popup.isShowing(this.uniqueId))
-                    jpf.popup.forceHide(); //This should be put in a more general position
+                if (apf.popup.isShowing(this.uniqueId))
+                    apf.popup.forceHide(); //This should be put in a more general position
                 //#endif
                 
                 if (this.$blur)
                     this.$blur(e);
 
                 if (!noset)
-                    jpf.window.$blur(this);
+                    apf.window.$blur(this);
 
                 this.dispatchEvent("blur", {
                     srcElement : this,
@@ -311,8 +311,8 @@ jpf.JmlElement = function(){
              * @returns {Boolean} indicating whether this element has the focus
              */
             this.hasFocus = function(){
-                return jpf.window.focussed == this || this.isWindowContainer
-                    && (jpf.window.focussed || {}).$focusParent == this;
+                return apf.window.focussed == this || this.isWindowContainer
+                    && (apf.window.focussed || {}).$focusParent == this;
             };
         }
         /* #else
@@ -324,7 +324,7 @@ jpf.JmlElement = function(){
 
     // #ifdef __WITH_JMLDOM
     if (!this.hasFeature(__WITH_JMLDOM__))
-        this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
+        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
     // #endif
 
     /**
@@ -334,7 +334,7 @@ jpf.JmlElement = function(){
     this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
-            jpf.setReference(this.name, this);
+            apf.setReference(this.name, this);
 
         if (!x)
             x = this.$jml;
@@ -347,10 +347,10 @@ jpf.JmlElement = function(){
         this.$jml = x;
 
         //Drawing, Skinning, Positioning and Editing
-        if (this.nodeFunc != jpf.NODE_HIDDEN) {
+        if (this.nodeFunc != apf.NODE_HIDDEN) {
             /* #ifdef __WITH_EDITMODE
-            this.implement(jpf.EditMode); // @inherits jpf.EditMode
-            if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
+            this.implement(apf.EditMode); // @inherits apf.EditMode
+            if(apf.xmldb.getInheritedAttribute(x, "editmode") == "true")
                 this.enableEditing();
             #endif */
 
@@ -363,11 +363,11 @@ jpf.JmlElement = function(){
             if (id)
                 this.oExt.setAttribute("id", id);
 
-            var pTagName = x.parentNode && x.parentNode[jpf.TAGNAME] || "";
+            var pTagName = x.parentNode && x.parentNode[apf.TAGNAME] || "";
             //#ifdef __WITH_GRID
             if (pTagName == "grid") {
                 //#ifdef __WITH_ANCHORING
-                this.implement(jpf.Anchoring);
+                this.implement(apf.Anchoring);
                 //#endif
 
                 this.$propHandlers["width"]  =
@@ -381,7 +381,7 @@ jpf.JmlElement = function(){
             if (x.getAttribute("align")
               || x.parentNode && x.parentNode.nodeType == 1
               && "vbox|hbox".indexOf(pTagName) > -1) { //@todo temp
-                this.implement(jpf.Alignment); /** @inherits jpf.Alignment */
+                this.implement(apf.Alignment); /** @inherits apf.Alignment */
                 //@todo temporarily disabled, hopefully it doesnt cause drawing problems
                 //this.oExt.style.display = "none";
                 this.enableAlignment();
@@ -391,7 +391,7 @@ jpf.JmlElement = function(){
 
             //#ifdef __WITH_ANCHORING
             if (this.$positioning != "basic") {
-                this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
+                this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
                 this.enableAnchoring();
             }
             /* #else
@@ -409,15 +409,15 @@ jpf.JmlElement = function(){
             this.$draw();
 
         // #ifdef __DEBUG
-        if (this.nodeFunc == jpf.NODE_VISIBLE) {
-            if (jpf.debug && this.oExt && this.oExt.nodeType)
+        if (this.nodeFunc == apf.NODE_VISIBLE) {
+            if (apf.debug && this.oExt && this.oExt.nodeType)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }
         // #endif
 
         if (!ignoreBindclass) { //Is this still needed?
             if (!this.hasFeature(__DATABINDING__) && x.getAttribute("smartbinding")) {
-                this.implement(jpf.DataBinding);
+                this.implement(apf.DataBinding);
                 this.$xmlUpdate = this.$load = function(){};
             }
         }
@@ -426,8 +426,8 @@ jpf.JmlElement = function(){
 
         // #ifdef __WITH_OFFLINE_STATE
         var offlineLookup;
-        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled)
-            offlineLookup = jpf.offline.state.getAll(this);
+        if (typeof apf.offline != "undefined" && apf.offline.state.enabled)
+            offlineLookup = apf.offline.state.getAll(this);
         // #endif
 
         //Parse all attributes
@@ -440,15 +440,15 @@ jpf.JmlElement = function(){
 
             //#ifdef __WITH_LANG_SUPPORT
             if (/^\$(.*)\$$/.test(value)) {
-                this.$isMultiLang[name] = [RegExp.$1, jpf.language.addElement(RegExp.$1, {
+                this.$isMultiLang[name] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
                     jmlNode: this,
                     prop : name
                 })];
             }else
             //#endif
             //#ifdef __WITH_PROPERTY_BINDING
-            if (value && jpf.dynPropMatch.test(value)) {
-                jpf.JmlParser.stateStack.push({
+            if (value && apf.dynPropMatch.test(value)) {
+                apf.JmlParser.stateStack.push({
                     node  : this,
                     name  : name,
                     value : value
@@ -458,7 +458,7 @@ jpf.JmlElement = function(){
             {
                 //#ifdef __WITH_PROPERTY_BINDING
                 if (name == "disabled") {
-                    jpf.JmlParser.stateStack.push({
+                    apf.JmlParser.stateStack.push({
                         node  : this,
                         name  : name,
                         value : value
@@ -483,11 +483,11 @@ jpf.JmlElement = function(){
                 #endif */
 
                 if (this.$booleanProperties[name])
-                    value = jpf.isTrue(value);
+                    value = apf.isTrue(value);
 
                 this[name] = value;
                 (this.$propHandlers && this.$propHandlers[name]
-                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, name)
+                  || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, name)
             }
         }
 
@@ -495,23 +495,23 @@ jpf.JmlElement = function(){
         for (name in offlineLookup) {
             value = offlineLookup[name];
             (this.$propHandlers && this.$propHandlers[name]
-                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, name);
+                  || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, name);
         }
         //#endif
         
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults tag in appsettings
-        if (jpf.appsettings.defaults[this.tagName]) {
-            d = jpf.appsettings.defaults[this.tagName];
+        if (apf.appsettings.defaults[this.tagName]) {
+            d = apf.appsettings.defaults[this.tagName];
             for (i = 0, l = d.length; i < l; i++) {
                 name = d[i][0], value = d[i][1];
                 if (this[name] === undefined) {
                     if (this.$booleanProperties[name])
-                        value = jpf.isTrue(value);
+                        value = apf.isTrue(value);
 
                     this[name] = value;
                     (this.$propHandlers && this.$propHandlers[name]
-                      || jpf.JmlElement.propHandlers[name] || jpf.K)
+                      || apf.JmlElement.propHandlers[name] || apf.K)
                         .call(this, value, name);
                 }
             }
@@ -522,7 +522,7 @@ jpf.JmlElement = function(){
 
         //#ifdef __WITH_FOCUS
         if (this.$focussable && this.focussable === undefined)
-            jpf.JmlElement.propHandlers.focussable.call(this);
+            apf.JmlElement.propHandlers.focussable.call(this);
         //#endif
 
         // isSelfLoading is set when JML is being inserted
@@ -542,7 +542,7 @@ jpf.JmlElement = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && !this.hasFeature(__MULTISELECT__) && this.xmlRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse) {
-            return jpf.xmldb.setNodeValue(this.getNodeFromRule(
+            return apf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.xmlRoot, null, null, true),
                 value, !this.$onlySetXml);
         }
@@ -550,12 +550,12 @@ jpf.JmlElement = function(){
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.xmlRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
-            return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
+            return apf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
                 this.xmlRoot, null, null, true), value, !this.$onlySetXml);
         #endif */
 
         if (this.$booleanProperties[prop])
-            value = jpf.isTrue(value);
+            value = apf.isTrue(value);
 
         this[prop] = value;
 
@@ -563,8 +563,8 @@ jpf.JmlElement = function(){
             return;
 
         return (this.$propHandlers && this.$propHandlers[prop]
-            || jpf.JmlElement.propHandlers[prop]
-            || jpf.K).call(this, value, force, prop);
+            || apf.JmlElement.propHandlers[prop]
+            || apf.K).call(this, value, force, prop);
     };
 
     /**
@@ -575,7 +575,7 @@ jpf.JmlElement = function(){
      */
     this.replaceJml = function(jmlDefNode, options) {
         //#ifdef __DEBUG
-        jpf.console.info("Remove all jml from element");
+        apf.console.info("Remove all jml from element");
         //#endif
 
         if (!options) options = {};
@@ -601,7 +601,7 @@ jpf.JmlElement = function(){
                 oItem.destroy(true);
 
             if (oItem.oExt != this.oInt)
-                jpf.removeNode(oItem.oExt);
+                apf.removeNode(oItem.oExt);
         }
         
         var nodes = options.oIntJML.childNodes;
@@ -623,19 +623,19 @@ jpf.JmlElement = function(){
      */
     this.insertJml = function(jmlDefNode, options){
         //#ifdef __DEBUG
-        jpf.console.info("Loading sub jml from external source");
+        apf.console.info("Loading sub jml from external source");
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if (typeof jpf.offline != "undefined" && !jpf.offline.onLine)
+        if (typeof apf.offline != "undefined" && !apf.offline.onLine)
             return false; //it's the responsibility of the dev to check this
         //#endif
 
         var callback = function(data, state, extra){
-            if (state != jpf.SUCCESS) {
+            if (state != apf.SUCCESS) {
                 var oError;
 
-                oError = new Error(jpf.formatErrorString(1019, _self,
+                oError = new Error(apf.formatErrorString(1019, _self,
                     "Loading extra jml from datasource",
                     "Could not load JML from remote resource \n\n"
                     + extra.message));
@@ -647,7 +647,7 @@ jpf.JmlElement = function(){
             }
 
             //#ifdef __DEBUG
-            jpf.console.info("Runtime inserting jml");
+            apf.console.info("Runtime inserting jml");
             //#endif
 
             if (options.clear)
@@ -659,9 +659,9 @@ jpf.JmlElement = function(){
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = jpf.getJmlDocFromString(data.indexOf("<j:application") > -1
+                    data = apf.getJmlDocFromString(data.indexOf("<j:application") > -1
                       ? data 
-                      : "<j:application xmlns:j='" + jpf.ns.jml +"'>" 
+                      : "<j:application xmlns:j='" + apf.ns.jml +"'>" 
                           + data + "</j:application>", true).documentElement;
 
                 if (jml.ownerDocument.importNode) {
@@ -674,7 +674,7 @@ jpf.JmlElement = function(){
                         jml.insertBefore(data.childNodes[i], jml.firstChild);
             }
 
-            jpf.JmlParser.parseMoreJml(jml, options.oInt || _self.oInt, _self,
+            apf.JmlParser.parseMoreJml(jml, options.oInt || _self.oInt, _self,
                 (options.isHidden && (options.oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
             
@@ -687,18 +687,18 @@ jpf.JmlElement = function(){
 
         if (typeof jmlDefNode == "string") {
             //Process Instruction
-            if (jpf.datainstr[jmlDefNode.split(":")[0]]){
-                return jpf.getData(jmlDefNode, null, {
+            if (apf.datainstr[jmlDefNode.split(":")[0]]){
+                return apf.getData(jmlDefNode, null, {
                     ignoreOffline : true
                 }, callback);
             }
             //Jml string
             else
-                jmlDefNode = jpf.getJmlDocFromString(jmlDefNode);
+                jmlDefNode = apf.getJmlDocFromString(jmlDefNode);
         }
 
         //Xml Node is assumed
-        return callback(jmlDefNode, jpf.SUCCESS);
+        return callback(jmlDefNode, apf.SUCCESS);
     };
 
     if (
@@ -764,7 +764,7 @@ jpf.JmlElement = function(){
 
                     // #ifdef __DEBUG
                     if (!self[menuId]) {
-                        throw new Error(jpf.formatErrorString(0, this,
+                        throw new Error(apf.formatErrorString(0, this,
                             "Showing contextmenu",
                             "Could not find contextmenu by name: '" + menuId + "'"),
                             this.$jml);
@@ -782,7 +782,7 @@ jpf.JmlElement = function(){
             //IE6 compatiblity
             /*
             @todo please test that disabling this is OK
-            if (!jpf.appsettings.disableRightClick) {
+            if (!apf.appsettings.disableRightClick) {
                 document.oncontextmenu = function(){
                     document.oncontextmenu = null;
                     e.cancelBubble = true;
@@ -802,7 +802,7 @@ jpf.JmlElement = function(){
 
             // #ifdef __DEBUG
             if (!self[menuId]) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Showing contextmenu",
                     "Could not find contextmenu by name: '" + menuId + "'",
                     this.$jml));
@@ -819,15 +819,15 @@ jpf.JmlElement = function(){
 };
 
 /**
- * @for jpf.jmlNode
+ * @for apf.jmlNode
  * @private
  */
-jpf.JmlElement.propHandlers = {
+apf.JmlElement.propHandlers = {
     /**
      * @attribute {String} id the identifier of this element. When set this
      * identifier is the name of the variable in javascript to access this
      * element directly. This identifier is also the way to get a reference to
-     * this element using jpf.document.getElementById.
+     * this element using apf.document.getElementById.
      * Example:
      * <code>
      *  <j:bar id="barExample" />
@@ -843,7 +843,7 @@ jpf.JmlElement.propHandlers = {
         if (self[this.name] == this)
             self[this.name] = null;
 
-        jpf.setReference(value, this);
+        apf.setReference(value, this);
         this.name = value;
     },
 
@@ -857,11 +857,11 @@ jpf.JmlElement.propHandlers = {
             this.focussable = true;
 
         if (this.focussable) {
-            jpf.window.$addFocus(this, this.tabindex
+            apf.window.$addFocus(this, this.tabindex
                 || this.$jml.getAttribute("tabindex"));
         }
         else {
-            jpf.window.$removeFocus(this);
+            apf.window.$removeFocus(this);
         }
     },
     //#endif
@@ -881,21 +881,21 @@ jpf.JmlElement.propHandlers = {
         if (this.tagName == "modalwindow") 
             return; // temp fix
 
-        if (jpf.isFalse(value) || typeof value == "undefined") {
+        if (apf.isFalse(value) || typeof value == "undefined") {
             this.oExt.style.display = "none";
             
             if (this.$hide && !this.$noAlignUpdate)
                 this.$hide();
 
-            if (jpf.window.focussed == this || this.canHaveChildren
-              && jpf.xmldb.isChildOf(this, jpf.window.focussed, false)) {
-                if (jpf.appsettings.allowBlur)
+            if (apf.window.focussed == this || this.canHaveChildren
+              && apf.xmldb.isChildOf(this, apf.window.focussed, false)) {
+                if (apf.appsettings.allowBlur)
                     this.blur();
                 else
-                    jpf.window.moveNext();
+                    apf.window.moveNext();
             }
         }
-        else if (jpf.isTrue(value)) {
+        else if (apf.isTrue(value)) {
             // #ifdef __WITH_DELAYEDRENDER
             if (this.hasFeature(__DELAYEDRENDER__))
                 this.$render();
@@ -906,26 +906,26 @@ jpf.JmlElement.propHandlers = {
             if (this.$show && !this.$noAlignUpdate)
                 this.$show();
             
-            if (jpf.hasSingleRszEvent)
-                jpf.layout.forceResize();//this.oInt
+            if (apf.hasSingleRszEvent)
+                apf.layout.forceResize();//this.oInt
         }
     },
 
     /**
      * @attribute {Boolean} disabled whether this element's functions are active.
-     * For elements that can contain other jpf.NODE_VISIBLE elements this
+     * For elements that can contain other apf.NODE_VISIBLE elements this
      * attribute applies to all it's children.
      */
     "disabled": function(value){
         //For child containers we only disable its children
         if (this.canHaveChildren) {
             //@todo Fix focus here first.. else it will jump whilst looping
-            value = this.disabled = jpf.isTrue(value);
+            value = this.disabled = apf.isTrue(value);
 
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
-                    if (node.nodeFunc == jpf.NODE_VISIBLE) {
+                    if (node.nodeFunc == apf.NODE_VISIBLE) {
                         if (value && node.disabled != -1)
                             node.$disabled = node.disabled || false;
                         node.setProperty("disabled", value ? -1 : null);
@@ -956,11 +956,11 @@ jpf.JmlElement.propHandlers = {
             }
         }
 
-        if (jpf.isTrue(value) || value == -1) {
+        if (apf.isTrue(value) || value == -1) {
             this.disabled = false;
-            if (jpf.window.focussed == this) {
-                jpf.window.moveNext(true); //@todo should not include window
-                if (jpf.window.focussed == this)
+            if (apf.window.focussed == this) {
+                apf.window.moveNext(true); //@todo should not include window
+                if (apf.window.focussed == this)
                     this.$blur();
             }
 
@@ -978,13 +978,13 @@ jpf.JmlElement.propHandlers = {
             this.disabled = value;
         }
         else {
-            if (this.hasFeature(__DATABINDING__) && jpf.appsettings.autoDisable
+            if (this.hasFeature(__DATABINDING__) && apf.appsettings.autoDisable
               & !this.isBoundComplete())
                 return false;
 
             this.disabled = false;
 
-            if (jpf.window.focussed == this)
+            if (apf.window.focussed == this)
                 this.$focus();
 
             if (this.hasFeature(__PRESENTATION__))
@@ -1010,7 +1010,7 @@ jpf.JmlElement.propHandlers = {
      * focus handling.
      */
     "disable-keyboard": function(value){
-        this.disableKeyboard = jpf.isTrue(value);
+        this.disableKeyboard = apf.isTrue(value);
     },
 
     /**
@@ -1019,7 +1019,7 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "left": function(value){
-        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.left = value + "px";
     },
@@ -1030,7 +1030,7 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "top": function(value){
-        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.top = value + "px";
     },
@@ -1041,7 +1041,7 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "right": function(value){
-        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.right = value + "px";
     },
@@ -1052,7 +1052,7 @@ jpf.JmlElement.propHandlers = {
      * expression.
      */
     "bottom": function(value){
-        if ("absolute|relative".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.bottom = value + "px";
     },
@@ -1067,7 +1067,7 @@ jpf.JmlElement.propHandlers = {
      */
     "width": function(value){
         this.oExt.style.width = Math.max(0, value
-            - jpf.getWidthDiff(this.oExt)) + "px";
+            - apf.getWidthDiff(this.oExt)) + "px";
     },
 
     /**
@@ -1080,7 +1080,7 @@ jpf.JmlElement.propHandlers = {
      */
     "height": function(value){
         this.oExt.style.height = Math.max(0,
-            value - jpf.getHeightDiff(this.oExt)) + "px";
+            value - apf.getHeightDiff(this.oExt)) + "px";
     },
 
     //#ifdef __WITH_ALIGNMENT
@@ -1091,7 +1091,7 @@ jpf.JmlElement.propHandlers = {
         //#endif
 
         if (!this.hasFeature(__ALIGNMENT__)) {
-            this.implement(jpf.Alignment);
+            this.implement(apf.Alignment);
             this.oExt.style.display = "none";
             this.enableAlignment();
         }
@@ -1116,12 +1116,12 @@ jpf.JmlElement.propHandlers = {
 
     //#ifdef __WITH_INTERACTIVE
     "resizable": function(value){
-        this.implement(jpf.Interactive);
+        this.implement(apf.Interactive);
         this.$propHandlers["resizable"].apply(this, arguments);
     },
 
     "draggable": function(value){
-        this.implement(jpf.Interactive);
+        this.implement(apf.Interactive);
         this.$propHandlers["draggable"].apply(this, arguments);
     },
     //#endif
@@ -1151,10 +1151,10 @@ jpf.JmlElement.propHandlers = {
             this.$at = value;
         else {
             this.$at = typeof value == "string" && self[value]
-              ? jpf.JmlParser.getActionTracker(value)
-              : jpf.setReference(value,
-                  jpf.nameserver.register("actiontracker",
-                      value, new jpf.actiontracker()));
+              ? apf.JmlParser.getActionTracker(value)
+              : apf.setReference(value,
+                  apf.nameserver.register("actiontracker",
+                      value, new apf.actiontracker()));
             if (!this.$at.name)
                 this.$at.name = value;
         }
@@ -1164,7 +1164,7 @@ jpf.JmlElement.propHandlers = {
     // #ifdef __WITH_DELAYEDRENDER
     "render": function(value) {
         if (!this.hasFeature(__DELAYEDRENDER__)) {
-            this.implement(jpf.DelayedRender);
+            this.implement(apf.DelayedRender);
         
             this.visible = false;
             this.oExt.style.display = "none";
@@ -1183,11 +1183,11 @@ jpf.JmlElement.propHandlers = {
             return;
         
         /**
-         * @inherits jpf.DataBinding
-         * @inherits jpf.Transaction
+         * @inherits apf.DataBinding
+         * @inherits apf.Transaction
          */
         if (!this.hasFeature(__DATABINDING__)) {
-            this.implement(jpf.DataBinding);
+            this.implement(apf.DataBinding);
 
             if (this.actions)
                 this.$propHandlers["actions"].call(this, this.actions);
@@ -1196,7 +1196,7 @@ jpf.JmlElement.propHandlers = {
         }
          
         if (!this.hasFeature(__TRANSACTION__))
-            this.implement(jpf.Transaction);
+            this.implement(apf.Transaction);
     },
     //#endif
 
@@ -1224,9 +1224,9 @@ jpf.JmlElement.propHandlers = {
         if (!value) //@todo think about whether this has more meaning
             return;
 
-        var cg = jpf.nameserver.get("alias", value);
+        var cg = apf.nameserver.get("alias", value);
         if (!cg) {
-            cg = jpf.nameserver.register("alias", value, {
+            cg = apf.nameserver.register("alias", value, {
                 name  : value,
                 props : {},
                 $handlePropSet : function(prop, value, forceOnMe){
@@ -1320,8 +1320,8 @@ jpf.JmlElement.propHandlers = {
                     jmlNode.$alias = this;
                 }
             });
-            jpf.makeClass(cg);
-            jpf.setReference(value, cg);
+            apf.makeClass(cg);
+            apf.setReference(value, cg);
 
             var events = {}, events_capture = {};
             cg.addEventListener = function(eventName, callback, useCapture){
@@ -1350,9 +1350,9 @@ jpf.JmlElement.propHandlers = {
 document.onkeydown = function(e){
     if (!e) e = event;
     if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
-        if (!jpf.debugwin.resPath)
-            jpf.debugwin.init();
-        jpf.debugwin.activate();
+        if (!apf.debugwin.resPath)
+            apf.debugwin.init();
+        apf.debugwin.activate();
     }
 };
 //#endif

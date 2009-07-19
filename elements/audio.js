@@ -35,8 +35,8 @@
  * 
  * @return {Audio} Returns a new audio
  * @type {Audio}
- * @inherits jpf.Presentation
- * @inherits jpf.Media
+ * @inherits apf.Presentation
+ * @inherits apf.Media
  * @constructor
  * @allowchild {text}
  * @addnode elements:audio
@@ -50,7 +50,7 @@
  * @since       1.0
  */
 
-jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
+apf.audio = apf.component(apf.NODE_HIDDEN, function() {
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
 
     this.mainBind = "src";
@@ -66,7 +66,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', jpf.Media.NETWORK_LOADING);
+                this.setProperty('networkState', apf.Media.NETWORK_LOADING);
                 this.player.load(this.src);
             }
         }
@@ -139,12 +139,12 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             else if (mimeType.indexOf('quicktime') > -1)
                 playerType = "TypeQT";
             else if (mimeType.indexOf('wmv') > -1)
-                playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
+                playerType = apf.isMac ? "TypeQT" : "TypeWmp";
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
 
-            if (playerType && jpf.audio[playerType] &&
-              jpf.audio[playerType].isSupported()) {
+            if (playerType && apf.audio[playerType] &&
+              apf.audio[playerType].isSupported()) {
                 return playerType;
             }
         }
@@ -158,8 +158,8 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {Boolean}
      */
     this.$isSupported = function() {
-        return (jpf.audio[this.playerType]
-            && jpf.audio[this.playerType].isSupported());
+        return (apf.audio[this.playerType]
+            && apf.audio[this.playerType].isSupported());
     };
 
     /**
@@ -168,7 +168,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new jpf.audio[this.playerType](this, this.oExt, {
+        this.player = new apf.audio[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -230,7 +230,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$errorHook = function(e) {
-        jpf.console.error(e.error);
+        apf.console.error(e.error);
     };
 
     /**
@@ -247,7 +247,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         this.setProperty('totalBytes', e.totalBytes);
         var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
         if (iDiff <= 20)
-            this.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
+            this.setProperty('readyState', apf.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -261,7 +261,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$stateChangeHook = function(e) {
         //for audio, we only use this for connection errors: connectionError
         if (e.state == "connectionError") {
-            this.networkState = jpf.Media.HAVE_NOTHING;
+            this.networkState = apf.Media.HAVE_NOTHING;
             //this.setProperty("readyState", this.networkState);
             this.$propHandlers["readyState"].call(this, this.networkState);
         }
@@ -310,8 +310,8 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', jpf.Media.NETWORK_LOADED);
-        this.setProperty('readyState',   jpf.Media.HAVE_FUTURE_DATA);
+        this.setProperty('networkState', apf.Media.NETWORK_LOADED);
+        this.setProperty('readyState',   apf.Media.HAVE_FUTURE_DATA);
         this.setProperty('duration',     this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -329,7 +329,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$metadataHook = function(e) {
-        this.oVideo.setProperty('readyState', jpf.Media.HAVE_METADATA);
+        this.oVideo.setProperty('readyState', apf.Media.HAVE_METADATA);
         if (e.waveData)
             this.setProperty('waveform', e.waveData);
         if (e.peakData)
@@ -347,7 +347,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      */
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "jpf_audio " + (this.$jml.getAttributeNode("class") || "");
+        this.oExt.className = "apf_audio " + (this.$jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
     };
 
@@ -362,7 +362,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
         else
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(bRuntime) {
@@ -376,12 +376,12 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
-    jpf.Media
+    apf.Media
 );
 
-jpf.audio.TypeInterface = {
+apf.audio.TypeInterface = {
     properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],
 
     /**
@@ -414,12 +414,12 @@ jpf.audio.TypeInterface = {
 
         if (typeof id == "object")
             return id;
-        if (jpf.isIE)
+        if (apf.isIE)
             return window[id];
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
-                elem = jpf.lookup(id);
+                elem = apf.lookup(id);
             return elem;
         }
     }

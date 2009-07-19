@@ -191,11 +191,11 @@ var __DRAGDROP__ = 1 << 5;
 /**
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.DragDrop = function(){
+apf.DragDrop = function(){
     this.$regbase = this.$regbase | __DRAGDROP__;
 
     /* **********************
@@ -256,7 +256,7 @@ jpf.DragDrop = function(){
      */
     this.isDragAllowed = function(x){
         //#ifdef __WITH_OFFLINE
-        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
+        if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
@@ -272,7 +272,7 @@ jpf.DragDrop = function(){
 
         for (var i = 0; i < rules.length; i++) {
             if (x.selectSingleNode("self::" +
-              jpf.parseExpression(rules[i].getAttribute("select"))
+              apf.parseExpression(rules[i].getAttribute("select"))
               .split("|").join("|self::")))
                 return rules[i];
         }
@@ -297,7 +297,7 @@ jpf.DragDrop = function(){
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE
-        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
+        if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
@@ -315,7 +315,7 @@ jpf.DragDrop = function(){
 
             tgt = target || target == this.xmlRoot && target || null;
 
-            if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
+            if (data && tgt && !apf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, null];
         }
 
@@ -326,7 +326,7 @@ jpf.DragDrop = function(){
 
         for (var op, strTgt, i = 0; i < rules.length; i++) {
             data = x.selectSingleNode("self::" +
-                jpf.parseExpression(rules[i].getAttribute("select"))
+                apf.parseExpression(rules[i].getAttribute("select"))
                 .split("|").join("|self::"));
                 
             if (!data)
@@ -341,10 +341,10 @@ jpf.DragDrop = function(){
             }
             else
                 tgt = target.selectSingleNode("self::" +
-                    jpf.parseExpression(strTgt)
+                    apf.parseExpression(strTgt)
                     .split("|").join("|self::"));
 
-            if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
+            if (data && tgt && !apf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
         }
 
@@ -365,11 +365,11 @@ jpf.DragDrop = function(){
         var action = rule && rule.getAttribute("action") || defaction;
 
         //copy-condition convenience variables
-        var internal = jpf.DragServer.dragdata.host == this;
+        var internal = apf.DragServer.dragdata.host == this;
         var ctrlKey  = event.ctrlKey;
         var keyCode  = event.keyCode;
 
-        //jpf.parseExpression
+        //apf.parseExpression
         var ifcopy = rule
             ? (rule.getAttribute("copy-condition")
                 ? eval(rule.getAttribute("copy-condition"))
@@ -431,14 +431,14 @@ jpf.DragDrop = function(){
     /**
      * Loads the dragdrop rules from the j:dragdrop element
      *
-     * @param  {Array}      rules     the rules array created using {@link core.jpf.method.getrules}
+     * @param  {Array}      rules     the rules array created using {@link core.apf.method.getrules}
      * @param  {XMLElement} [node] the reference to the j:dragdrop element
      * @see  SmartBinding
      * @private
      */
     this.loadDragDrop = function(rules, node){
         //#ifdef __DEBUG
-        jpf.console.info("Initializing Drag&Drop for " + this.tagName
+        apf.console.info("Initializing Drag&Drop for " + this.tagName
             + "[" + (this.name || '') + "]");
         //#endif
 
@@ -458,14 +458,14 @@ jpf.DragDrop = function(){
         //Setup External Object
         this.oExt.dragdrop = false;
 
-        this.oExt[jpf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
+        this.oExt[apf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             e = e || window.event;
             // #ifdef __SUPPORT_IPHONE
-            if (jpf.isIphone) {
+            if (apf.isIphone) {
                 if (e.touches.length == 1) return;
                 var old_e = e;
                 e = e.touches[0];
-                var pos = jpf.getAbsolutePosition(e.target, this);
+                var pos = apf.getAbsolutePosition(e.target, this);
                 e.offsetX = pos[0];
                 e.offsetY = pos[1];
             }
@@ -477,9 +477,9 @@ jpf.DragDrop = function(){
             this.host.dragging = 0;
 
             var srcElement = e.srcElement || e.target;
-            if (!jpf.isIphone && this.host.allowdeselect
+            if (!apf.isIphone && this.host.allowdeselect
               && (srcElement == this
-              || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
+              || srcElement.getAttribute(apf.xmldb.htmlIdTag)))
                 return this.host.clearSelection(); //hacky
 
             //MultiSelect must have carret behaviour AND deselect at clicking white
@@ -488,8 +488,8 @@ jpf.DragDrop = function(){
             if (this.host.$findValueNode)
                 fEl = this.host.$findValueNode(srcEl);
             var el = (fEl
-                ? jpf.xmldb.getNode(fEl)
-                : jpf.xmldb.findXmlNode(srcEl));
+                ? apf.xmldb.getNode(fEl)
+                : apf.xmldb.findXmlNode(srcEl));
             if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
                 return;
 
@@ -497,7 +497,7 @@ jpf.DragDrop = function(){
                 this.host.dragging = 1;
 
                 // #ifdef __SUPPORT_IPHONE
-                if (jpf.isIphone)
+                if (apf.isIphone)
                     old_e.preventDefault();
                 //#endif
                 
@@ -506,8 +506,8 @@ jpf.DragDrop = function(){
                     ? d.html || d.documentElement
                     : d.body
 
-                var scrollX = (jpf.isIE ? d.scrollLeft : window.pageXOffset),
-                    scrollY = (jpf.isIE ? d.scrollTop  : window.pageYOffset);
+                var scrollX = (apf.isIE ? d.scrollLeft : window.pageXOffset),
+                    scrollY = (apf.isIE ? d.scrollTop  : window.pageYOffset);
                 var oParent = srcEl.offsetParent;
                 while (oParent && oParent != d && oParent.tagName != "BODY") {
                     scrollX -= oParent.scrollLeft;
@@ -515,42 +515,42 @@ jpf.DragDrop = function(){
                     oParent = oParent.offsetParent;
                 }
                 
-                if (jpf.isIE8) {
+                if (apf.isIE8) {
                     var loopEl = srcEl;
-                    while (!loopEl.getAttribute(jpf.xmldb.htmlIdTag)) {
+                    while (!loopEl.getAttribute(apf.xmldb.htmlIdTag)) {
                         loopEl = loopEl.parentNode;
                     }
-                    var pos = jpf.getAbsolutePosition(loopEl);
+                    var pos = apf.getAbsolutePosition(loopEl);
                 }
 
-                jpf.DragServer.coordinates = {
+                apf.DragServer.coordinates = {
                     srcElement : srcEl,
                     doc        : d,
                     scrollX    : scrollX,
                     scrollY    : scrollY,
-                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (jpf.isIE8 ? e.clientX - pos[0] : e.offsetX)) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
-                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (jpf.isIE8 ? e.clientY - pos[1] : e.offsetY)) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
+                    offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (apf.isIE8 ? e.clientX - pos[0] : e.offsetX)) - scrollX, //|| apf.event.layerX - srcEl.offsetLeft,
+                    offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (apf.isIE8 ? e.clientY - pos[1] : e.offsetY)) - scrollY, //|| apf.event.layerY - srcEl.offsetTop,
                     clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,//e.clientX,
                     clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
                 };
 
-                jpf.DragServer.start(this.host);
+                apf.DragServer.start(this.host);
             }
 
             //e.cancelBubble = true;
         };
 
-        this.oExt[jpf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
+        this.oExt[apf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
             //if (!e) e = event;
             if (this.host.dragging != 1) return;//e.button != 1 ||
-            //if(Math.abs(jpf.DragServer.coordinates.offsetX - (e.layerX ? e.layerX - jpf.DragServer.coordinates.srcElement.offsetLeft : e.offsetX)) < 6 && Math.abs(jpf.DragServer.coordinates.offsetY - (e.layerX ? e.layerY - jpf.DragServer.coordinates.srcElement.offsetTop : e.offsetY)) < 6)
+            //if(Math.abs(apf.DragServer.coordinates.offsetX - (e.layerX ? e.layerX - apf.DragServer.coordinates.srcElement.offsetLeft : e.offsetX)) < 6 && Math.abs(apf.DragServer.coordinates.offsetY - (e.layerX ? e.layerY - apf.DragServer.coordinates.srcElement.offsetTop : e.offsetY)) < 6)
                 //return;
 
-            //jpf.DragServer.start(this.host);
+            //apf.DragServer.start(this.host);
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
+        if (apf.isIphone) {
             this.oExt.ontouchend = this.oExt.ontouchcancel = function(){
                 this.host.dragging = 0;
             };
@@ -587,7 +587,7 @@ jpf.DragDrop = function(){
           = this.icoDenied = this.oExt.dragdrop = this.oExt.ondragmove
           = this.oExt.ondragstart = null;
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
+        if (apf.isIphone) {
             this.oExt.ontouchstart = this.oExt.ontouchmove
                 = this.oExt.ontouchend = this.oExt.ontouchcancel = null;
         }
@@ -656,9 +656,9 @@ jpf.DragDrop = function(){
     };
 
     this.$propHandlers["dragdrop"] = function(value){
-        var sb = this.smartBinding || (jpf.isParsing
-            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
+        var sb = this.smartBinding || (apf.isParsing
+            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -667,14 +667,14 @@ jpf.DragDrop = function(){
         }
 
         // #ifdef __DEBUG
-        if (!jpf.nameserver.get("dragdrop", value))
-            throw new Error(jpf.formatErrorString(1066, this,
+        if (!apf.nameserver.get("dragdrop", value))
+            throw new Error(apf.formatErrorString(1066, this,
                 "Connecting dragdrop",
                 "Could not find dragdrop by name '"
                 + value + "'", this.$jml));
         // #endif
 
-        sb.addDragDrop(jpf.nameserver.get("dragdrop", value));
+        sb.addDragDrop(apf.nameserver.get("dragdrop", value));
     };
 
     this.$jmlDestroyers.push(function(){
@@ -686,23 +686,23 @@ jpf.DragDrop = function(){
  * Central object for dragdrop handling.
  * @private
  */
-jpf.DragServer = {
+apf.DragServer = {
     Init : function(){
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
+        if (apf.isIphone) {
             this.ontouchmove = this.onmousemove;
             this.ontouchend = this.ontouchcancel = this.onmouseup;
         }
         //#endif
 
-        jpf.dragmode.defineMode("dragdrop", this);
+        apf.dragmode.defineMode("dragdrop", this);
 
-        jpf.addEventListener("hotkey", function(e){
-            if (jpf.window.dragging && e.keyCode == 27) {
+        apf.addEventListener("hotkey", function(e){
+            if (apf.window.dragging && e.keyCode == 27) {
                 if (document.body.lastHost && document.body.lastHost.dragOut)
-                    document.body.lastHost.dragOut(jpf.dragHost);
+                    document.body.lastHost.dragOut(apf.dragHost);
 
-                return jpf.DragServer.stopdrag();
+                return apf.DragServer.stopdrag();
             }
         });
     },
@@ -723,7 +723,7 @@ jpf.DragServer = {
 
         var data = srcRule.nodeType
             ? selection.selectSingleNode("self::" +
-                jpf.parseExpression(srcRule.getAttribute("select"))
+                apf.parseExpression(srcRule.getAttribute("select"))
                 .split("|").join("|self::"))
             : selection;
 
@@ -742,7 +742,7 @@ jpf.DragServer = {
             return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
         host.dragging = 2;
 
-        jpf.dragmode.setMode("dragdrop");
+        apf.dragmode.setMode("dragdrop");
     },
 
     stop : function(runEvent){
@@ -755,7 +755,7 @@ jpf.DragServer = {
         //????EVENT: ondragstop
         //if(runEvent && this.dragdata.host.ondragstop) this.dragdata.host.ondragstop();
 
-        jpf.dragmode.clear();
+        apf.dragmode.clear();
         this.dragdata = null;
     },
 
@@ -776,8 +776,8 @@ jpf.DragServer = {
 
         //Check Permission
         var elSel = (fEl
-            ? jpf.xmldb.getNode(fEl)
-            : jpf.xmldb.findXmlNode(el));
+            ? apf.xmldb.getNode(fEl)
+            : apf.xmldb.findXmlNode(el));
         var candrop = o.isDropAllowed
             ? o.isDropAllowed(this.dragdata.selection, elSel || o.xmlRoot)
             : false;
@@ -820,15 +820,15 @@ jpf.DragServer = {
     dragdrop : function(o, el, srcO, e){
         //Check Permission
         var elSel   = (o.$findValueNode
-            ? jpf.xmldb.getNode(o.$findValueNode(el))
-            : jpf.xmldb.findXmlNode(el));
+            ? apf.xmldb.getNode(o.$findValueNode(el))
+            : apf.xmldb.findXmlNode(el));
         var candrop = (o.isDropAllowed)//elSel && 
             ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
             : false;
 
         //EVENT - cancellable: ondragdrop
         if (candrop) {
-            if (o.dispatchEvent("dragdrop", jpf.extend({candrop : candrop},
+            if (o.dispatchEvent("dragdrop", apf.extend({candrop : candrop},
               this.dragdata)) === false)
                 candrop = false;
             else {
@@ -854,7 +854,7 @@ jpf.DragServer = {
 
         //REQUIRED INTERFACE: __dragdrop()
         if (o && o.$dragdrop) {
-            o.$dragdrop(el, jpf.extend({
+            o.$dragdrop(el, apf.extend({
                 htmlEvent : e,
                 xmlNode   : rNode
             }, this.dragdata), candrop);
@@ -870,26 +870,26 @@ jpf.DragServer = {
     ***********************/
 
     onmousemove : function(e){
-        if (!jpf.DragServer.dragdata) return;
+        if (!apf.DragServer.dragdata) return;
         e = e || window.event;
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
+        if (apf.isIphone) {
             e.preventDefault();
             if (!e.touches)
-                return jpf.DragServer.stop(true);
+                return apf.DragServer.stop(true);
             e = e.touches[0];
         }
         //#endif
         
-        var dragdata = jpf.DragServer.dragdata,
+        var dragdata = apf.DragServer.dragdata,
             c = {
                 clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
                 clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
             };
 
         if (!dragdata.started
-          && Math.abs(jpf.DragServer.coordinates.clientX - c.clientX) < 6
-          && Math.abs(jpf.DragServer.coordinates.clientY - c.clientY) < 6)
+          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6)
             return;
 
         if (!dragdata.started) {
@@ -908,38 +908,38 @@ jpf.DragServer = {
         if (dragdata.indicator)
             dragdata.indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (apf.isGecko
             ? window.pageXOffset
             : 0) : c.clientX;
-        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (apf.isGecko
             ? window.pageYOffset
             : 0) : c.clientY;
-        var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
-            jpf.DragServer.dragdata.y);
+        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
 
         dragdata.indicator.style.top = storeIndicatorTopPos;
-        //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left+" "+jpf.DragServer.dragdata.x+" "+jpf.DragServer.dragdata.y);
+        //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
         //Set Indicator
         dragdata.host.$moveDragIndicator(c);
 
         //get element and call events
-        var receiver = jpf.findHost(el);
+        var receiver = apf.findHost(el);
 
         //Run Events
-        jpf.DragServer.dragout(receiver);
+        apf.DragServer.dragout(receiver);
         if (receiver)
-            jpf.DragServer.dragover(receiver, el, e);
+            apf.DragServer.dragover(receiver, el, e);
 
-        jpf.DragServer.lastTime = new Date().getTime();
+        apf.DragServer.lastTime = new Date().getTime();
     },
 
     onmouseup : function(e){
         e = e || window.event;
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) {
+        if (apf.isIphone) {
             e.preventDefault();
             if (!e.changedTouches)
-                return jpf.DragServer.stop(true);
+                return apf.DragServer.stop(true);
             e = e.changedTouches[0];
         }
         //#endif
@@ -949,44 +949,44 @@ jpf.DragServer = {
             clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
         };
 
-        if (!jpf.DragServer.dragdata.started
-          && Math.abs(jpf.DragServer.coordinates.clientX - c.clientX) < 6
-          && Math.abs(jpf.DragServer.coordinates.clientY - c.clientY) < 6) {
-            jpf.DragServer.stop(true)
+        if (!apf.DragServer.dragdata.started
+          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6) {
+            apf.DragServer.stop(true)
             return;
         }
 
         //get Element at x, y
-        var indicator = jpf.DragServer.dragdata.indicator;
+        var indicator = apf.DragServer.dragdata.indicator;
         var storeIndicatorTopPos = indicator.style.top;
-        //jpf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
+        //apf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
         if (indicator)
             indicator.style.top = "10000px";
 
-        jpf.DragServer.dragdata.x = e.pageX ? e.pageX - (jpf.isGecko
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (apf.isGecko
             ? window.pageXOffset
             : 0) : c.clientX;
-        jpf.DragServer.dragdata.y = e.pageY ? e.pageY - (jpf.isGecko
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (apf.isGecko
             ? window.pageYOffset
             : 0) : c.clientY;
 
-        var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
-            jpf.DragServer.dragdata.y);
+        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
 
         indicator.style.top = storeIndicatorTopPos;
-        //jpf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
+        //apf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
 
         //get element and call events
-        var host = jpf.findHost(el);
+        var host = apf.findHost(el);
 
         //Run Events
-        if (host != jpf.DragServer.host)
-            jpf.DragServer.dragout(host);
-        jpf.DragServer.dragdrop(host, el, jpf.DragServer.dragdata.host, e);
-        jpf.DragServer.stop(true);
+        if (host != apf.DragServer.host)
+            apf.DragServer.dragout(host);
+        apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
+        apf.DragServer.stop(true);
 
         //Clear Selection
-        if (jpf.isNS) {
+        if (apf.isNS) {
             var selObj = window.getSelection();
             if (selObj)
                 selObj.collapseToEnd();
@@ -994,9 +994,9 @@ jpf.DragServer = {
     }
 };
 
-if (jpf.dragmode)
-    jpf.DragServer.Init();
+if (apf.dragmode)
+    apf.DragServer.Init();
 else
-    jpf.Init.addConditional(function(){jpf.DragServer.Init();}, null, 'jpf.dragmode');
+    apf.Init.addConditional(function(){apf.DragServer.Init();}, null, 'apf.dragmode');
 
 // #endif

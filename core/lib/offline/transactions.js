@@ -39,17 +39,17 @@
  * @default_private
  * @todo remove serialize here
  */
-jpf.namespace("offline.transactions", {
+apf.namespace("offline.transactions", {
     enabled   : false,
        
     init : function(){
-        this.namespace = jpf.appsettings.name + ".jpf.offline.transactions";
+        this.namespace = apf.appsettings.name + ".apf.offline.transactions";
         this.enabled   = true;
         
         //#ifdef __WITH_OFFLINE_STATE
-        jpf.addEventListener("load", function(){
-            jpf.offline.transactions.rebuildActionQueues();
-            jpf.removeEventListener("load", arguments.callee);
+        apf.addEventListener("load", function(){
+            apf.offline.transactions.rebuildActionQueues();
+            apf.removeEventListener("load", arguments.callee);
         });
         //#endif
     },
@@ -61,7 +61,7 @@ jpf.namespace("offline.transactions", {
      * can be used to notify the user that we're offline.
      */
     actionNotAllowed : function(){
-        jpf.offline.dispatchEvent("transactioncancel", {
+        apf.offline.dispatchEvent("transactioncancel", {
             message : "Transaction is not allowed",
             bubbles : true
         });
@@ -72,7 +72,7 @@ jpf.namespace("offline.transactions", {
     //@todo you might want to error on dotts in the at name
     addAction : function(at, qItem, type){
         //#ifdef __DEBUG
-        if (!at.name || !jpf.storage.base.isValidKey(at.name)) {
+        if (!at.name || !apf.storage.base.isValidKey(at.name)) {
             //@todo
             throw new Error("Invalid or missing name for actiontracker \
                 used for offline transactions '" + at.name + "'.");
@@ -80,10 +80,10 @@ jpf.namespace("offline.transactions", {
         //#endif
         
         var namespace = this.namespace + "." + at.name + "." + type;
-        var storage   = jpf.offline.storage;
+        var storage   = apf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         
-        storage.put(len, jpf.serialize(type == "queue"
+        storage.put(len, apf.serialize(type == "queue"
             ? {
                 undo    : qItem.undo,
                 undoObj : qItem.undoObj.$export()
@@ -94,7 +94,7 @@ jpf.namespace("offline.transactions", {
     
     removeAction : function(at, fromTop, type){
         var namespace = this.namespace + "." + at.name + "." + type;
-        var storage   = jpf.offline.storage;
+        var storage   = apf.offline.storage;
         
         //@todo add checks for stack sanity
         if (fromTop) {
@@ -130,7 +130,7 @@ jpf.namespace("offline.transactions", {
     },
     
     rebuildActionQueues : function(){
-        var storage    = jpf.offline.storage;
+        var storage    = apf.offline.storage;
         var namespaces = storage.getNamespaces();
         if (!namespaces) return;
         var lookup, re = new RegExp(this.namespace + "\\.([^\\.]*)\\.([^\\.]*)");
@@ -142,12 +142,12 @@ jpf.namespace("offline.transactions", {
         
         var i, j, qItem, stack, namespace, at, start, len, type;
         for (i = 0; i < ats.length; i++) {
-            at        = jpf.nameserver.get("actiontracker", ats[i][0]);
+            at        = apf.nameserver.get("actiontracker", ats[i][0]);
             type      = ats[i][1];
             
             //#ifdef __DEBUG
             if (!at) { //@todo
-                throw new Error(jpf.formatErrorString(0, null,
+                throw new Error(apf.formatErrorString(0, null,
                     "Rebuilding Action Queue",
                     "An actiontracker could not be found by the name of '" 
                     + ats[i][0] + "'"));
@@ -163,7 +163,7 @@ jpf.namespace("offline.transactions", {
             stack     = [];
             
             //#ifdef __DEBUG
-            jpf.console.info("Restoring " + type + " stack for " 
+            apf.console.info("Restoring " + type + " stack for " 
                              + (at.name == "default"
                                 ? "the default actiontracker"
                                 : "the '" + at.name + "' actiontracker")
@@ -172,33 +172,33 @@ jpf.namespace("offline.transactions", {
 
             if (type == "queue") {
                 for (j = len - 1; j >= start; j--) {
-                    qItem            = jpf.unserialize(lookup[j]);
-                    qItem.undoObj    = new jpf.UndoData(qItem.undoObj, at).$import();
+                    qItem            = apf.unserialize(lookup[j]);
+                    qItem.undoObj    = new apf.UndoData(qItem.undoObj, at).$import();
                     stack.unshift(qItem);
                 }
             }
             else {
                 for (j = len - 1; j >= start; j--) {
-                    qItem    = jpf.unserialize(lookup[j]);
-                    stack.unshift(new jpf.UndoData(qItem, at).$import());
+                    qItem    = apf.unserialize(lookup[j]);
+                    stack.unshift(new apf.UndoData(qItem, at).$import());
                 }
             }
             
             at.$loadQueue(stack, type);
             
-            jpf.offline.sLookup = null;
+            apf.offline.sLookup = null;
         }
     },
     
     clearActions : function(at, type){
-        jpf.offline.storage.clear(this.namespace + "." + at.name + "." + type);
+        apf.offline.storage.clear(this.namespace + "." + at.name + "." + type);
     },
     
     clear : function(queues){
         if (!queues)
             queues = "undo|redo|queue";
         
-        var storage    = jpf.offline.storage;
+        var storage    = apf.offline.storage;
         var namespaces = storage.getNamespaces();
         var re         = new RegExp(this.namespace + "\\.([^\\.]*)\\.(" + queues + ")");
         
@@ -214,7 +214,7 @@ jpf.namespace("offline.transactions", {
     },
 
     getSyncLength : function(){
-        var ats = jpf.nameserver.getAll("actiontracker");
+        var ats = apf.nameserver.getAll("actiontracker");
         
         var len = 0;
         for (var i = 0; i < ats.length; i++)
@@ -224,7 +224,7 @@ jpf.namespace("offline.transactions", {
     },
 
     sync : function(callback){
-        var ats = jpf.nameserver.getAll("actiontracker");
+        var ats = apf.nameserver.getAll("actiontracker");
         
         var qNr = 0, len = 0;
         for (var i = 0; i < ats.length; i++) {
@@ -255,8 +255,8 @@ jpf.namespace("offline.transactions", {
  * @private
  * @method
  */
-jpf.namespace("offline.canTransact", function(){
-    if(!jpf.offline.enabled || this.onLine || this.transactions.enabled)
+apf.namespace("offline.canTransact", function(){
+    if(!apf.offline.enabled || this.onLine || this.transactions.enabled)
         return true;
     
     //Transactions can be enabled from this event

@@ -35,20 +35,20 @@ var __XFORMS__ = 1 << 17;
  *  IE: http://msdn.microsoft.com/msdnmag/issues/02/03/xml/
  *
  * @experimental
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9.8
  */
-jpf.XForms = function(){
+apf.XForms = function(){
     this.$regbase = this.$regbase|__XFORMS__;
     
     function getModel(name){
         if (name){
-            var model = jpf.nameserver.get("model", name);
+            var model = apf.nameserver.get("model", name);
             
             //#ifdef __DEBUG
             if (!model) {
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this, 
                     "Resetting form", 
                     "Could not find model '" + name + "'"));
             }
@@ -75,11 +75,11 @@ jpf.XForms = function(){
             getModel.call(this, model).isValid(); 
         },
         "xforms-next" : function(){
-            jpf.window.moveNext(null, this);
+            apf.window.moveNext(null, this);
             return false;
         },
         "xforms-previous" : function(){
-            jpf.window.moveNext(true, this);
+            apf.window.moveNext(true, this);
             return false;
         },
         "xforms-focus" : function(){
@@ -174,7 +174,7 @@ jpf.XForms = function(){
                     : getXmlValue(actionNode, "text()");
             
                 var dataNode = findXFormsData.call(this, actionNode);
-                jpf.xmldb.setNodeValue(dataNode, value, true);
+                apf.xmldb.setNodeValue(dataNode, value, true);
                 break;
             case "setindex":
                 break;
@@ -212,7 +212,7 @@ jpf.XForms = function(){
      * @private
      */
     this.parseXFormTag = function(xmlNode){
-        switch (xmlNode[jpf.TAGNAME]) {
+        switch (xmlNode[apf.TAGNAME]) {
             case "filename":
             case "mediatype":
             case "itemset":

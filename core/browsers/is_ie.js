@@ -24,7 +24,7 @@
  * Compatibility layer for Internet Explorer browsers.
  * @private
  */
-jpf.runIE = function(){
+apf.runIE = function(){
 
     /* ******** XML Compatibility ************************************************
      Extensions to the xmldb
@@ -49,38 +49,38 @@ jpf.runIE = function(){
 
     /* #ifdef __TP_IFRAME
      if (hasIESecurity)
-        jpf.importClass(runTpIframe, true, self);
+        apf.importClass(runTpIframe, true, self);
      #endif */
     //#ifndef __PACKAGED
     if (hasIESecurity)
-        jpf.include(jpf.basePath + "teleport/iframe.js");
+        apf.include(apf.basePath + "teleport/iframe.js");
     //#endif
 
-    jpf.getHttpReq = hasIESecurity
+    apf.getHttpReq = hasIESecurity
         ? function(){
-            if (jpf.teleport.availHTTP.length)
-                return jpf.teleport.availHTTP.pop();
+            if (apf.teleport.availHTTP.length)
+                return apf.teleport.availHTTP.pop();
 
             // #ifdef __DESKRUN
-            //if(jpf.isDeskrun && !self.useNativeHttp)
+            //if(apf.isDeskrun && !self.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
 
             return new XMLHttpRequest();
         }
         : function(){
-            if (jpf.teleport.availHTTP.length)
-                return jpf.teleport.availHTTP.pop();
+            if (apf.teleport.availHTTP.length)
+                return apf.teleport.availHTTP.pop();
 
             // #ifdef __DESKRUN
-            //if(jpf.isDeskrun && !jpf.useNativeHttp)
+            //if(apf.isDeskrun && !apf.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
 
             return new ActiveXObject("microsoft.XMLHTTP");
         };
 
-    jpf.getXmlDom = hasIESecurity
+    apf.getXmlDom = hasIESecurity
         ? function(message, noError){
             var xmlParser = getDOMParser(message, noError);
             return xmlParser;
@@ -92,19 +92,19 @@ jpf.runIE = function(){
                 xmlParser.preserveWhiteSpace = true;
 
             if (message) {
-                if (jpf.cantParseXmlDefinition)
+                if (apf.cantParseXmlDefinition)
                     message = message.replace(/\] \]/g, "] ]")
                                      .replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
 
                 xmlParser.loadXML(message);
 
                 //#ifdef __WITH_XMLDATABASE
-                if (xmlParser.parseError != 0 && jpf.xmldb && jpf.isJSON(message)) {
+                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJSON(message)) {
                     try {
-                        xmlParser = jpf.xmldb.fromJson(message, noError);
+                        xmlParser = apf.xmldb.fromJson(message, noError);
                     }
                     catch(e) {
-                        throw new Error(jpf.formatErrorString(1051, null,
+                        throw new Error(apf.formatErrorString(1051, null,
                             "JSON to XML conversion error occurred.",
                             "\nSource Text : " + message.replace(/\t/gi, " ")));
                     }
@@ -118,7 +118,7 @@ jpf.runIE = function(){
             return xmlParser;
         };
 
-    jpf.xmlParseError = function(xml){
+    apf.xmlParseError = function(xml){
         var xmlParseError = xml.parseError;
         if (xmlParseError != 0) {
             /*
@@ -132,7 +132,7 @@ jpf.runIE = function(){
              srcText         Returns the full text of the line containing the error. Read-only.
              url             Contains the URL of the XML document containing the last error. Read-only.
              */
-            throw new Error(jpf.formatErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
+            throw new Error(apf.formatErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
         }
 
         return xml;
@@ -144,14 +144,14 @@ jpf.runIE = function(){
      * @param {String}      prop  the property to read
      * @returns {String}
      */
-    jpf.getStyle = function(el, prop) {
+    apf.getStyle = function(el, prop) {
         return el.currentStyle[prop];
     };
 
     //function extendXmlDb(){
-    if (jpf.XmlDatabase) {
+    if (apf.XmlDatabase) {
         //#ifdef __WITH_XMLDATABASE
-        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
+        apf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
             var id;
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 var str, i, l;
@@ -159,7 +159,7 @@ jpf.runIE = function(){
                     str.push(xmlNode[i].xml);
                 str = str.join("");
 
-                str = jpf.html_entity_decode(str)
+                str = apf.html_entity_decode(str)
                     .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
 
                 if (pre) {
@@ -179,7 +179,7 @@ jpf.runIE = function(){
                         + str + "</tr></table>");
                     var x = document.body.lastChild.firstChild.firstChild;
                     for (i = x.childNodes.length - 1; i >= 0; i--)
-                        htmlNode.appendChild(x.childNodes[jpf.hasDynamicItemList ? 0 : i]);
+                        htmlNode.appendChild(x.childNodes[apf.hasDynamicItemList ? 0 : i]);
                 }
 
                 //Fix IE image loading bug
@@ -187,7 +187,7 @@ jpf.runIE = function(){
                     this.nodes = [];
 
                 id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
-                setTimeout('jpf.xmldb.doNodes(' + id + ')');
+                setTimeout('apf.xmldb.doNodes(' + id + ')');
 
                 return null;
             }
@@ -198,12 +198,12 @@ jpf.runIE = function(){
                 return htmlNode.insertBefore(xmlNode, beforeNode);
             //if(htmlNode.ownerDocument && htmlNode.ownerDocument != document) return htmlNode.insertBefore(xmlNode, beforeNode);
 
-            var strHTML = jpf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
+            var strHTML = apf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
             var pNode = (beforeNode || htmlNode);
             if (pNode.nodeType == 11) {
                 id = xmlNode.getAttribute("id");
                 if (!id)
-                    throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
@@ -214,7 +214,7 @@ jpf.runIE = function(){
                 }
                 catch(e) {
                     //#ifdef __DEBUG
-                    jpf.console.warn("Warning found block element inside a " 
+                    apf.console.warn("Warning found block element inside a " 
                       + pNode.tagName 
                       + " element. Rendering will give unexpected results");
                     //#endif
@@ -227,7 +227,7 @@ jpf.runIE = function(){
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         };
 
-        jpf.XmlDatabase.prototype.doNodes = function(id){
+        apf.XmlDatabase.prototype.doNodes = function(id){
             var nodes = this.nodes[id];
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].getAttribute("find"))
@@ -237,64 +237,64 @@ jpf.runIE = function(){
         };
 
         //Initialize xmldb
-        jpf.xmldb = new jpf.XmlDatabase();
+        apf.xmldb = new apf.XmlDatabase();
 
         //#endif
     }
 
-    //jpf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
+    //apf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
     //if (!hasIESecurity)
-        jpf.Init.run('xmldb');
+        apf.Init.run('xmldb');
 
-    jpf.getHorBorders = function(oHtml){
+    apf.getHorBorders = function(oHtml){
         return Math.max(0,
-              (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
+              (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0))
     };
 
-    jpf.getVerBorders = function(oHtml){
+    apf.getVerBorders = function(oHtml){
         return Math.max(0,
-              (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
+              (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))
     };
 
-    jpf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
+    apf.getWidthDiff = function(oHtml){
+        return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0))
     };
 
-    jpf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
+    apf.getHeightDiff = function(oHtml){
+        return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))
     };
 
-    jpf.getDiff = function(oHtml){
-        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0)),
-            Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))]
+    apf.getDiff = function(oHtml){
+        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0)),
+            Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))]
     };
     
-    jpf.getMargin = function(oHtml) {
-        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "marginRight")) || 0)),
-            Math.max(0, (parseInt(jpf.getStyle(oHtml, "marginTop")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "marginBottom")) || 0))]
+    apf.getMargin = function(oHtml) {
+        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0)),
+            Math.max(0, (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0))]
     };
 
     // #ifdef __WITH_POPUP_IE
     /**
      * @private
      */
-    jpf.popup2 = {
+    apf.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){
             if (!this.popup)
@@ -309,7 +309,7 @@ jpf.runIE = function(){
             if (content.parentNode)
                 content.parentNode.removeChild(content);
             if (style)
-                jpf.importCssString(this.popup.document, style);
+                apf.importCssString(this.popup.document, style);
 
             return this.popup.document;
         },
@@ -323,10 +323,10 @@ jpf.runIE = function(){
             this.popup = window.createPopup();
 
             this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=' + jpf.ns.jml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=' + apf.ns.jml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
                 <head>\
                     <script>\
-                    var jpf = {\
+                    var apf = {\
                         all: [],\
                         lookup:function(uniqueId){\
                             return this.all[uniqueId] || {\
@@ -335,7 +335,7 @@ jpf.runIE = function(){
                         }\
                     };\
                     function destroy(){\
-                        jpf.all=null;\
+                        apf.all=null;\
                     }\
                     </script>\
                     <style>\
@@ -343,10 +343,10 @@ jpf.runIE = function(){
                     BODY{margin:0}\
                     </style>\
                 </head>\
-                <body onmouseover="if(!self.jpf) return;if(this.c){jpf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
+                <body onmouseover="if(!self.apf) return;if(this.c){apf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
                 </html>');
 
-            var c = jpf;
+            var c = apf;
             this.popup.document.body.onmousemove = function(){
                 this.c = c
             }
@@ -386,7 +386,7 @@ jpf.runIE = function(){
 
         forceHide: function(){
             if (this.last)
-                jpf.lookup(this.last).dispatchEvent("popuphide");
+                apf.lookup(this.last).dispatchEvent("popuphide");
         },
 
         destroy: function(){
@@ -399,7 +399,7 @@ jpf.runIE = function(){
     //#endif
 
     //#ifdef __WITH_PRESENTATION
-    jpf.importClass(jpf.runXpath, true, self);
+    apf.importClass(apf.runXpath, true, self);
     //#endif
 }
 

@@ -32,14 +32,14 @@
  * @constructor
  * @baseclass
  *
- * @inherits jpf.MultiSelect
- * @inherits jpf.Cache
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.MultiSelect
+ * @inherits apf.Cache
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  * @default_private
@@ -82,12 +82,12 @@
  *   object:
  *   {String} value the value that was entered.
  */
-jpf.BaseList = function(){
+apf.BaseList = function(){
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.implement(jpf.Validation);
+    this.implement(apf.Validation);
     //#endif
     //#ifdef __WITH_XFORMS
-    this.implement(jpf.XForms);
+    this.implement(apf.XForms);
     //#endif
 
     // #ifdef __WITH_CSS_BINDS
@@ -180,21 +180,21 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
                 items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                     + margin[1] + margin[3]));
 
-                margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
 
                 node = this.getNextTraverseSelected(node, false);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
                 else return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -207,10 +207,10 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
                 hasScroll = oExt.scrollHeight > oExt.offsetHeight;
                 items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -222,7 +222,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -235,10 +235,10 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
 
                 node = this.getNextTraverseSelected(node, true);
                 if (node)
@@ -246,7 +246,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) {
                     oExt.scrollTop = selHtml.offsetTop
@@ -260,10 +260,10 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
                 hasScroll = oExt.scrollHeight > oExt.offsetHeight;
                 items     = Math.floor((oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -275,7 +275,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -289,10 +289,10 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
                 hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
                 items      = Math.floor((oExt.offsetWidth
@@ -310,7 +310,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -323,10 +323,10 @@ jpf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? jpf.xmldb.getNode(this.$tempsel)
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
                 hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
                 items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
@@ -342,7 +342,7 @@ jpf.BaseList = function(){
                 else
                     return;
 
-                selHtml = jpf.xmldb.findHtmlNode(node, this);
+                selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -417,11 +417,11 @@ jpf.BaseList = function(){
         if (elIcon) {
             if (elIcon.nodeType == 1) {
                 elIcon.style.backgroundImage = "url(" + 
-                  jpf.getAbsolutePath(this.iconPath,
+                  apf.getAbsolutePath(this.iconPath,
                       this.applyRuleSetOnNode("icon", xmlNode)) + ")";
             }
             else {
-                elIcon.nodeValue =jpf.getAbsolutePath(this.iconPath, 
+                elIcon.nodeValue =apf.getAbsolutePath(this.iconPath, 
                     this.applyRuleSetOnNode("icon", xmlNode));
             }
         }
@@ -430,11 +430,11 @@ jpf.BaseList = function(){
             if (elImage) {
                 if (elImage.nodeType == 1) {
                     elImage.style.backgroundImage = "url(" + 
-                        jpf.getAbsolutePath(jpf.hostPath,
+                        apf.getAbsolutePath(apf.hostPath,
                             this.applyRuleSetOnNode("image", xmlNode)) + ")";
                 }
                 else {
-                    elImage.nodeValue = jpf.getAbsolutePath(jpf.hostPath, 
+                    elImage.nodeValue = apf.getAbsolutePath(apf.hostPath, 
                         this.applyRuleSetOnNode("image", xmlNode));
                 }
             }
@@ -472,7 +472,7 @@ jpf.BaseList = function(){
         var oPHtmlNode = htmlNode.parentNode;
         var nNode      = this.getNextTraverse(xmlNode);
         var beforeNode = nNode
-            ? jpf.xmldb.findHtmlNode(nNode, this)
+            ? apf.xmldb.findHtmlNode(nNode, this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -493,24 +493,24 @@ jpf.BaseList = function(){
 
         Item.setAttribute("id", Lid);
 
-        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
-        elSelect.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
-        elSelect.setAttribute("onmouseout", 'jpf.setStyleClass(this, "", ["hover"]);');
+        //elSelect.setAttribute("oncontextmenu", 'apf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
+        elSelect.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
+        elSelect.setAttribute("onmouseout", 'apf.setStyleClass(this, "", ["hover"]);');
 
         if (this.hasFeature(__RENAME__)) {
-            elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
+            elSelect.setAttribute("ondblclick", 'var o = apf.lookup(' + this.uniqueId + '); ' +
                 // #ifdef __WITH_RENAME
                 'o.stopRename();' +
                 // #endif
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
-                'var o = jpf.lookup(' + this.uniqueId
+                'var o = apf.lookup(' + this.uniqueId
                 + ');if(!o.renaming && o.hasFocus() \
-                  && jpf.xmldb.isChildOf(o.$selected, this, true) \
+                  && apf.xmldb.isChildOf(o.$selected, this, true) \
                   && o.selected) this.dorename = true;\
                   if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
                       o.select(this, event.ctrlKey, event.shiftKey)');
-            elSelect.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');\
+            elSelect.setAttribute("onmouseup", 'var o = apf.lookup(' + this.uniqueId + ');\
                 if(this.dorename && o.mode == "normal")' +
                 // #ifdef __WITH_RENAME
                     'o.startDelayedRename(event);' +
@@ -520,10 +520,10 @@ jpf.BaseList = function(){
                     o.select(this, event.ctrlKey, event.shiftKey)');
         }
         else {
-            elSelect.setAttribute("ondblclick", 'var o = jpf.lookup('
+            elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
                 + this.uniqueId + '); o.choose()');
             elSelect.setAttribute(this.itemSelectEvent
-                || "onmousedown", 'var o = jpf.lookup(' + this.uniqueId
+                || "onmousedown", 'var o = apf.lookup(' + this.uniqueId
                 + '); o.select(this, event.ctrlKey, event.shiftKey)');
         }
 
@@ -531,32 +531,32 @@ jpf.BaseList = function(){
         if (elIcon) {
             if (elIcon.nodeType == 1)
                 elIcon.setAttribute("style", "background-image:url("
-                    + jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode))
+                    + apf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode))
                     + ")");
             else
-                elIcon.nodeValue = jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode));
+                elIcon.nodeValue = apf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode("icon", xmlNode));
         }
         else if (elImage) {
             if (elImage.nodeType == 1)
                 elImage.setAttribute("style", "background-image:url("
-                    + jpf.getAbsolutePath(jpf.hostPath, this.applyRuleSetOnNode("image", xmlNode))
+                    + apf.getAbsolutePath(apf.hostPath, this.applyRuleSetOnNode("image", xmlNode))
                     + ")");
             else {
-                if (jpf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
+                if (apf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
                     var p = elImage.ownerElement.parentNode;
                     var img = p.appendChild(p.ownerDocument.createElement("img"));
                     img.setAttribute("src", 
-                        jpf.getAbsolutePath(jpf.hostPath, this.applyRuleSetOnNode("image", xmlNode)));
+                        apf.getAbsolutePath(apf.hostPath, this.applyRuleSetOnNode("image", xmlNode)));
                 }
                 else {
                     elImage.nodeValue = 
-                        jpf.getAbsolutePath(jpf.hostPath, this.applyRuleSetOnNode("image", xmlNode));
+                        apf.getAbsolutePath(apf.hostPath, this.applyRuleSetOnNode("image", xmlNode));
                 }
             }
         }
 
         if (elCaption) {
-            jpf.xmldb.setNodeValue(elCaption,
+            apf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
 
             //#ifdef __WITH_JML_BINDINGS
@@ -579,7 +579,7 @@ jpf.BaseList = function(){
             this.$addModifier(xmlNode, Item);
 
         if (htmlParentNode)
-            jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
+            apf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
         else
             nodes.push(Item);
     };
@@ -592,20 +592,20 @@ jpf.BaseList = function(){
             var elSelect  = this.$getLayoutNode("item", "select");
 
             Item.setAttribute("class", "more");
-            elSelect.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId
+            elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId
                 + ');o.clearSelection();o.$setStyleClass(this, "more_down");');
-            elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
+            elSelect.setAttribute("onmouseout", 'apf.lookup(' + this.uniqueId
                 + ').$setStyleClass(this, "", ["more_down"]);');
-            elSelect.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
+            elSelect.setAttribute("onmouseup", 'apf.lookup(' + this.uniqueId
                 + ').startMore(this)');
 
             if (elCaption)
-                jpf.xmldb.setNodeValue(elCaption,
+                apf.xmldb.setNodeValue(elCaption,
                     this.more.match(/caption:(.*)(;|$)/i)[1]);
             nodes.push(Item);
         }
 
-        jpf.xmldb.htmlImport(nodes, this.oInt);
+        apf.xmldb.htmlImport(nodes, this.oInt);
         nodes.length = 0;
 
         //#ifdef __WITH_JML_BINDINGS
@@ -636,12 +636,12 @@ jpf.BaseList = function(){
         if (!this.actionRules || !this.actionRules["add"]) {
             if (this.traverse && !this.traverse.match(/[\/\[]/)) {
                 xmlNode = "<" + this.traverse + (this.traverse.match(/^j:/) 
-                    ? " xmlns:j='" + jpf.ns.jml + "'" 
+                    ? " xmlns:j='" + apf.ns.jml + "'" 
                     : "") + " custom='1' />";
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Could not start more",
                     "No add action rule is defined for this component",
                     this.$jml));
@@ -749,10 +749,10 @@ jpf.BaseList = function(){
         this.select(this.getTraverseNodes()[0], null, null, null, true);
     };
 
-    this.implement(jpf.MultiSelect,
-                   jpf.Cache,
-                   jpf.Presentation,
-                   jpf.DataBinding);
+    this.implement(apf.MultiSelect,
+                   apf.Cache,
+                   apf.Presentation,
+                   apf.DataBinding);
 
     /**
      * Generates a list of items based on a string.
@@ -776,13 +776,13 @@ jpf.BaseList = function(){
         }
 
         if (strData.length) {
-            var sNode = new jpf.smartbinding(null,
-                jpf.getXmlDom("<smartbindings xmlns='"
-                    + jpf.ns.jml
+            var sNode = new apf.smartbinding(null,
+                apf.getXmlDom("<smartbindings xmlns='"
+                    + apf.ns.jml
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
                     + strData.join("") + "</items></model></smartbindings>")
                   .documentElement);
-            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
+            apf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
     };
 }

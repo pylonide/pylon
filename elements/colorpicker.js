@@ -30,14 +30,14 @@
  * @define colorpicker
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
  * @attribute {String} color the color that is selected in the color picker.
  *
@@ -58,7 +58,7 @@
  *  <j:colorpicker ref="@color" />
  * </code>
  */
-jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
     //Options
     this.$focussable = true; // This object can get the focus
 
@@ -237,7 +237,7 @@ jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
         this.pHolder.style.zIndex = 10;
         this.pHolder.onmousedown  = function(){
 
-            this.ty = jpf.getAbsolutePosition(this)[1] - 20;
+            this.ty = apf.getAbsolutePosition(this)[1] - 20;
 
             _self.movePointer();
             document.onmousemove = _self.movePointer
@@ -355,15 +355,15 @@ jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
         this.pHolder.host    = null;
     }
 }).implement(
-    jpf.Presentation
+    apf.Presentation
     // #ifdef __WITH_DATABINDING
-    ,jpf.DataBinding
+    ,apf.DataBinding
     // #endif
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    ,jpf.Validation
+    ,apf.Validation
     //#endif
     //#ifdef __WITH_XFORMS
-    ,jpf.XForms
+    ,apf.XForms
     //#endif
 );
 

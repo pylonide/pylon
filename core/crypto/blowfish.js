@@ -29,7 +29,7 @@
 
 (function(global) {
 
-if (typeof jpf.crypto == "undefined") jpf.crypto = {};
+if (typeof apf.crypto == "undefined") apf.crypto = {};
 
 function stringtoints(instring){
     var binary = [];
@@ -160,8 +160,8 @@ function base64encode(binary){
  *	Algorithm gently taken from i-code.co.uk. Thanks Stephen!
  *
  */
-jpf.crypto.Blowfish = function(){this.init.apply(this, arguments);};
-jpf.crypto.Blowfish.prototype = {
+apf.crypto.Blowfish = function(){this.init.apply(this, arguments);};
+apf.crypto.Blowfish.prototype = {
     init: function(m){
         this.P;
         this.S;

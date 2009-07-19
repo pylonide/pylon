@@ -29,12 +29,12 @@
  * @addnode elements:browser
  * @define browser
  *
- * @inherits jpf.JmlElement
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- * @inherits jpf.DataBinding
+ * @inherits apf.JmlElement
+ * @inherits apf.Validation
+ * @inherits apf.XForms
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -55,7 +55,7 @@
  *  <j:colorpicker ref="@url" />
  * </code>
  */
-jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.browser = apf.component(apf.NODE_VISIBLE, function(){
     /**
      * Retrieves the current url that is displayed.
      */
@@ -130,7 +130,7 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
             parentNode = this.pHtmlNode;
 
         //Build Main Skin
-        if (jpf.cannotSizeIframe) {
+        if (apf.cannotSizeIframe) {
             this.oExt = parentNode.appendChild(document.createElement("DIV"))
                 .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
             this.oExt.style.width  = "100px";
@@ -157,13 +157,13 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){};
 }).implement(
     // #ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation,
+    apf.Validation,
     // #endif
     // #ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     // #endif
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding
+    apf.DataBinding
     // #endif
 );
 // #endif

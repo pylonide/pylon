@@ -33,11 +33,11 @@
  *
  * @allownode simpleType, complexType
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.XSDImplementation = function(){
+apf.XSDImplementation = function(){
     var typeHandlers = {
         //XSD datetypes [L10n potential]
         "xsd:dateTime": function(value){
@@ -264,29 +264,29 @@ jpf.XSDImplementation = function(){
             return true;
         },
 
-        //Javeline PlatForm datatypes
-        "jpf:url": function(value){
+        //Ajax.org Platform datatypes
+        "apf:url": function(value){
             //@todo please make this better
             return /\b(https?|ftp):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i.test(value.trim());
         },
-        "jpf:website": function(value){
+        "apf:website": function(value){
             //@todo please make this better
             return /^(?:http:\/\/)?([\w-]+\.)+\w{2,4}$/.test(value.trim());
         },
-        "jpf:email": function(value){
+        "apf:email": function(value){
             return /^[A-Z0-9\.\_\%\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,4}$/i
                 .test(value.trim());
         },
-        "jpf:creditcard": function(value){
+        "apf:creditcard": function(value){
             value = value.replace(/ /g, "");
-            value = value.pad(21, "0", jpf.PAD_LEFT);
+            value = value.pad(21, "0", apf.PAD_LEFT);
             for (var total = 0, r, i = value.length; i >= 0; i--) {
                 r = value.substr(i, 1) * (i % 2 + 1);
                 total += r > 9 ? r - 9 : r;
             }
             return total % 10 === 0;
         },
-        "jpf:expdate": function(value){
+        "apf:expdate": function(value){
             value = value.replace(/-/g, "/");
             value = value.split("/");//.match(/(\d{2})\/(\d{2})/);
             var dt = new Date(value[0] + "/01/" + value[1]);
@@ -298,17 +298,17 @@ jpf.XSDImplementation = function(){
 
             return true;
         },
-        "jpf:wechars": function(value){
+        "apf:wechars": function(value){
             return /^[0-9A-Za-z\xC0-\xCF\xD1-\xD6\xD8-\xDD\xDF-\xF6\xF8-\xFF -\.',]+$/
               .test(value)
         },
-        "jpf:phonenumber": function(value){
+        "apf:phonenumber": function(value){
             return /^[\d\+\- \(\)]+$/.test(value)
         },
-        "jpf:faxnumber": function(value){
+        "apf:faxnumber": function(value){
             return /^[\d\+\- \(\)]+$/.test(value)
         },
-        "jpf:mobile": function(value){
+        "apf:mobile": function(value){
             return /^[\d\+\- \(\)]+$/.test(value)
         }
     };
@@ -316,17 +316,17 @@ jpf.XSDImplementation = function(){
     var custumTypeHandlers = {};
 
     this.parse = function(xmlNode){
-        if (xmlNode[jpf.TAGNAME] == "complextype")
+        if (xmlNode[apf.TAGNAME] == "complextype")
             this.parseComplexType(xmlNode);
         else
-            if (xmlNode[jpf.TAGNAME] == "simpletype")
+            if (xmlNode[apf.TAGNAME] == "simpletype")
                 this.parseSimpleType(xmlNode);
             else {
-                var i, nodes = $xmlns(xmlNode, "complextype", jpf.ns.xsd);
+                var i, nodes = $xmlns(xmlNode, "complextype", apf.ns.xsd);
                 for (i = 0; i < nodes.length; i++)
                     this.parseComplexType(nodes[i]);
 
-                nodes = $xmlns(xmlNode, "simpletype", jpf.ns.xsd);
+                nodes = $xmlns(xmlNode, "simpletype", apf.ns.xsd);
                 for (i = 0; i < nodes.length; i++)
                     this.parseSimpleType(nodes[i]);
             }
@@ -334,7 +334,7 @@ jpf.XSDImplementation = function(){
 
     this.getValue = function(xmlNode){
         return xmlNode.nodeType == 1
-            ? jpf.getXmlValue(xmlNode, "text()")
+            ? apf.getXmlValue(xmlNode, "text()")
             : xmlNode.nodeValue;
     };
 
@@ -369,13 +369,13 @@ jpf.XSDImplementation = function(){
     var simpleTypeHandler = {
         //Direct childnodes
         "restriction": function(xmlNode, func){
-            func.push("if (!jpf.XSDParser.matchType(value, '"
+            func.push("if (!apf.XSDParser.matchType(value, '"
                 + xmlNode.getAttribute("base") + "')) return false;");
 
             var nodes = xmlNode.childNodes;
             for (var i = 0; i < nodes.length; i++) {
-                if (simpleTypeHandler[nodes[i][jpf.TAGNAME]])
-                    simpleTypeHandler[nodes[i][jpf.TAGNAME]](nodes[i], func);
+                if (simpleTypeHandler[nodes[i][apf.TAGNAME]])
+                    simpleTypeHandler[nodes[i][apf.TAGNAME]](nodes[i], func);
             }
         },
 
@@ -431,7 +431,7 @@ jpf.XSDImplementation = function(){
         "enumeration": function(xmlNode, func){
             if (func.enum_done) return;
 
-            var enum_nodes = $xmlns(xmlNode.parentNode, "enumeration", jpf.ns.xsd);
+            var enum_nodes = $xmlns(xmlNode.parentNode, "enumeration", apf.ns.xsd);
             func.enum_done = true;
             for (var re = [], k = 0; k < enum_nodes.length; k++)
                 re.push(enum_nodes[k].getAttribute("value"));
@@ -447,12 +447,12 @@ jpf.XSDImplementation = function(){
 
     this.parseSimpleType = function(xmlNode){
         var func = [];
-        func.push("var value = jpf.XSDParser.getValue(xmlNode);");
+        func.push("var value = apf.XSDParser.getValue(xmlNode);");
 
         var nodes = xmlNode.childNodes;
         for (var i = 0; i < nodes.length; i++) {
-            if (simpleTypeHandler[nodes[i][jpf.TAGNAME]])
-                simpleTypeHandler[nodes[i][jpf.TAGNAME]](nodes[i], func);
+            if (simpleTypeHandler[nodes[i][apf.TAGNAME]])
+                simpleTypeHandler[nodes[i][apf.TAGNAME]](nodes[i], func);
         }
 
         func.push("return true;");
@@ -476,5 +476,5 @@ jpf.XSDImplementation = function(){
     };
 };
 
-jpf.XSDParser = new jpf.XSDImplementation();
+apf.XSDParser = new apf.XSDImplementation();
 //#endif

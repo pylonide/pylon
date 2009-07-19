@@ -29,7 +29,7 @@ var __PRESENTATION__ = 1 << 9;
  * @allowchild  style, presentation
  * @attribute src
  */
-jpf.skins = {
+apf.skins = {
     skins  : {},
     css    : [],
     events : ["onmousemove", "onmousedown", "onmouseup", "onmouseout",
@@ -55,10 +55,10 @@ jpf.skins = {
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
             : "";
         var mediaPath = (xmlNode.getAttribute("media-path")
-            ? jpf.getAbsolutePath(base || jpf.hostPath, xmlNode.getAttribute("media-path"))
+            ? apf.getAbsolutePath(base || apf.hostPath, xmlNode.getAttribute("media-path"))
             : (refNode ? refNode.getAttribute("media-path") : null));
         var iconPath  = (xmlNode.getAttribute("icon-path")
-            ? jpf.getAbsolutePath(base || jpf.hostPath, xmlNode.getAttribute("icon-path"))
+            ? apf.getAbsolutePath(base || apf.hostPath, xmlNode.getAttribute("icon-path"))
             : (refNode ? refNode.getAttribute("icon-path") : null));
         if (!name)
             name = "default";
@@ -121,7 +121,7 @@ jpf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var i, l, nodes = $xmlns(xmlNode, "style", jpf.ns.jml), tnode, node;
+        var i, l, nodes = $xmlns(xmlNode, "style", apf.ns.jml), tnode, node;
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
 
@@ -152,7 +152,7 @@ jpf.skins = {
             }
         }
 
-        nodes = $xmlns(xmlNode, "alias", jpf.ns.jpf);
+        nodes = $xmlns(xmlNode, "alias", apf.ns.apf);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].firstChild)
                 continue;
@@ -166,7 +166,7 @@ jpf.skins = {
             return;
 
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        jpf.importCssString(document, cssString);
+        apf.importCssString(document, cssString);
 
         //#ifdef __WITH_OFFLINE_APPLICATION
         this.loadedCss += cssString;
@@ -182,7 +182,7 @@ jpf.skins = {
         var template = skin.templates[name[1]];
         this.importSkinDef(template, skin.base, skin.name);
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        jpf.importCssString(win.document, cssString);
+        apf.importCssString(win.document, cssString);
 
         this.css = [];
     },
@@ -197,7 +197,7 @@ jpf.skins = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(jpf.formatErrorString(1076, null,
+            throw new Error(apf.formatErrorString(1076, null,
                 "Retrieving Skin",
                 "Could not find skin '" + name + "'", jmlNode.$jml));
         }
@@ -217,7 +217,7 @@ jpf.skins = {
                 return false;
             
             // #ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(1077, null,
+            throw new Error(apf.formatErrorString(1077, null,
                 "Retrieving Template",
                 "Could not find skin '" + name + "'", cJml));
             // #endif
@@ -234,17 +234,17 @@ jpf.skins = {
             originals = this.skins[name].originals[type] = {};
 
             // #ifdef __DEBUG
-            if (!$xmlns(skin, "presentation", jpf.ns.jml)[0]) {
-                throw new Error(jpf.formatErrorString(1078, null,
+            if (!$xmlns(skin, "presentation", apf.ns.jml)[0]) {
+                throw new Error(apf.formatErrorString(1078, null,
                     "Retrieving Template",
                     "Missing presentation tag in '" + name + "'", cJml));
             }
             // #endif
 
-            var nodes = $xmlns(skin, "presentation", jpf.ns.jml)[0].childNodes;
+            var nodes = $xmlns(skin, "presentation", apf.ns.jml)[0].childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
-                originals[nodes[i].baseName || nodes[i][jpf.TAGNAME]] = nodes[i];
+                originals[nodes[i].baseName || nodes[i][apf.TAGNAME]] = nodes[i];
             }
         }
 
@@ -256,14 +256,14 @@ jpf.skins = {
     },
 
     getCssString : function(skinName){
-        return jpf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
-            "style", jpf.ns.jml)[0], "text()");
+        return apf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
+            "style", apf.ns.jml)[0], "text()");
     },
 
     changeSkinset : function(value){
-        var node = jpf.document.documentElement;
+        var node = apf.document.documentElement;
         while (node) {
-            if (node && node.nodeFunc == jpf.NODE_VISIBLE
+            if (node && node.nodeFunc == apf.NODE_VISIBLE
               && node.hasFeature(__PRESENTATION__) && !node.skinset) {
                 node.$propHandlers["skinset"].call(node, value);//$forceSkinChange
                 node.skinset = null;
@@ -386,11 +386,11 @@ jpf.skins = {
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.Presentation = function(){
+apf.Presentation = function(){
     var pNodes, originalNodes;
 
     this.$regbase = this.$regbase | __PRESENTATION__;
@@ -444,7 +444,7 @@ jpf.Presentation = function(){
      * @attribute {String} style the css style applied to the this element. This can be a string containing one or more css rules.
      */
     this.$propHandlers["style"] = function(value){
-        if (!jpf.isParsing)
+        if (!apf.isParsing)
             this.oExt.setAttribute("style", value);
     }
 
@@ -463,7 +463,7 @@ jpf.Presentation = function(){
     function changeSkin(skin, skinset){
         clearTimeout(skinTimer);
 
-        //var skinName = (skinset || this.skinset || jpf.appsettings.skinset)
+        //var skinName = (skinset || this.skinset || apf.appsettings.skinset)
         //    + ":" + (skin || this.skin || this.tagName);
 
         //#ifdef __WITH_MULTISELECT
@@ -506,10 +506,10 @@ jpf.Presentation = function(){
             if (classes[i] && classes[i] != oldBase)
                 newclasses.push(classes[i].replace(oldBase, this.baseCSSname));
         }
-        jpf.setStyleClass(this.oExt, newclasses.join(" "));
+        apf.setStyleClass(this.oExt, newclasses.join(" "));
 
         //Copy events
-        var en, ev = jpf.skins.events;
+        var en, ev = apf.skins.events;
         for (i = 0, l = ev.length; i < l; i++) {
             en = ev[i];
             if (typeof oExt[en] == "function" && !this.oExt[en])
@@ -546,7 +546,7 @@ jpf.Presentation = function(){
             this.$disable();
 
         //Check focussed state
-        if (this.$focussable && jpf.window.focussed == this)
+        if (this.$focussable && apf.window.focussed == this)
             this.$focus();
 
         //#ifdef __WITH_DATABINDING
@@ -599,7 +599,7 @@ jpf.Presentation = function(){
 
     /**** Private methods ****/
 
-    this.$setStyleClass = jpf.setStyleClass;
+    this.$setStyleClass = apf.setStyleClass;
 
     /**
      * Initializes the skin for this element when none has been set up.
@@ -608,8 +608,8 @@ jpf.Presentation = function(){
      */
     this.$loadSkin = function(skinName){
         this.baseSkin = skinName || this.skinName || (this.skinset || this.$jml
-            && jpf.xmldb.getInheritedAttribute(this.$jml, "skinset") 
-            || jpf.appsettings.skinset)
+            && apf.xmldb.getInheritedAttribute(this.$jml, "skinset") 
+            || apf.appsettings.skinset)
             + ":" + (this.skin || this.$jml
             && this.$jml.getAttribute("skin") || this.tagName);
 
@@ -622,28 +622,28 @@ jpf.Presentation = function(){
         //this.skinset  = this.skinName.split(":")[0];
 
         pNodes = {}; //reset the pNodes collection
-        originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml, true);
+        originalNodes = apf.skins.getTemplate(this.skinName, this.$jml, true);
 
         if (!originalNodes) {
             var skin = this.skin || this.$jml && this.$jml.getAttribute("skin");
             if (skin) {
                 var skinset = this.skinName.split(":")[0];
                 this.baseName = this.skinName = "default:" + skin;
-                originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+                originalNodes = apf.skins.getTemplate(this.skinName, this.$jml);
                 
                 if (!originalNodes && skinset != "default") {
                     this.baseName = this.skinName = skinset + ":" + this.tagName;
-                    originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml, true);
+                    originalNodes = apf.skins.getTemplate(this.skinName, this.$jml, true);
                 }
             }
             
             if (!originalNodes) {
                 this.baseName = this.skinName = "default:" + this.tagName;
-                originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
+                originalNodes = apf.skins.getTemplate(this.skinName, this.$jml);
             }
 
             if (!originalNodes) {
-                throw new Error(jpf.formatErrorString(1077, this,
+                throw new Error(apf.formatErrorString(1077, this,
                     "Presentation",
                     "Could not load skin: " + this.skinName, this.$jml));
             }
@@ -652,7 +652,7 @@ jpf.Presentation = function(){
         }
 
         if (originalNodes)
-            jpf.skins.setSkinPaths(this.skinName, this);
+            apf.skins.setSkinPaths(this.skinName, this);
     };
 
     this.$getNewContext = function(type, jmlNode){
@@ -662,7 +662,7 @@ jpf.Presentation = function(){
         }
 
         if (!originalNodes[type]) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Getting new skin item",
                 "Missing node in skin description '" + type + "'"));
         }
@@ -696,7 +696,7 @@ jpf.Presentation = function(){
 
             if (!this.$dcache[type + "." + this.skinName]) {
                 this.$dcache[type + "." + this.skinName] = true;
-                jpf.console.info("Could not find node '" + type
+                apf.console.info("Could not find node '" + type
                                  + "' in '" + this.skinName + "'", "skin");
             }
             //#endif
@@ -704,7 +704,7 @@ jpf.Presentation = function(){
         }
 
         if (!section)
-            return jpf.getFirstElement(node);
+            return apf.getFirstElement(node);
 
         var textNode = node.selectSingleNode("@" + section);
         if (!textNode) {
@@ -714,7 +714,7 @@ jpf.Presentation = function(){
 
             if (!this.$dcache[section + "." + this.skinName]) {
                 this.$dcache[section + "." + this.skinName] = true;
-                jpf.console.info("Could not find textnode '" + section
+                apf.console.info("Could not find textnode '" + section
                                  + "' in '" + this.skinName + "'", "skin");
             }
             //#endif
@@ -722,8 +722,8 @@ jpf.Presentation = function(){
         }
 
         return (htmlNode
-            ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode)
-            : jpf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
+            ? apf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode)
+            : apf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     };
 
     this.$getOption = function(type, section){
@@ -732,7 +732,7 @@ jpf.Presentation = function(){
         //var node = pNodes[type];
         var node = pNodes[type] || originalNodes[type];
         if (!section)
-            return node;//jpf.getFirstElement(node);
+            return node;//apf.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
 
         return option ? option.nodeValue : "";
@@ -761,10 +761,10 @@ jpf.Presentation = function(){
         if (func)
             func.call(this, oExt);
 
-        oExt = jpf.xmldb.htmlImport(oExt, pNode);
+        oExt = apf.xmldb.htmlImport(oExt, pNode);
         oExt.host = this;
         if (jml && jml.getAttribute("bgimage"))
-            oExt.style.backgroundImage = "url(" + jpf.getAbsolutePath(
+            oExt.style.backgroundImage = "url(" + apf.getAbsolutePath(
                 this.mediaPath, jml.getAttribute("bgimage")) + ")";
 
 
@@ -794,7 +794,7 @@ jpf.Presentation = function(){
         this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
     };
 
-    if (jpf.hasCssUpdateScrollbarBug) {
+    if (apf.hasCssUpdateScrollbarBug) {
         this.$fixScrollBug = function(){
             if (this.oInt != this.oExt)
                 this.oFocus = this.oInt;

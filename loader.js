@@ -21,9 +21,9 @@
 
 /* ***************************************************************
 **
-**      Bootloader for Javeline PlatForm
+**      Bootloader for Ajax.org Platform
 **
-**      First include jpf.js, then include this file (loader.js)
+**      First include apf.js, then include this file (loader.js)
 **      Then just go about it as you would with the packaged version
 **      Adapt this file to include your preferred modules
 **
@@ -31,10 +31,10 @@
 
 // #ifndef __PACKAGED
 
-if (!jpf.basePath)
-    jpf.basePath = "./";
+if (!apf.basePath)
+    apf.basePath = "./";
 
-jpf.Modules = [
+apf.Modules = [
     "DataBinding",
     "JmlElement",
     "JmlParser",
@@ -42,7 +42,7 @@ jpf.Modules = [
     "WindowImplementation",
     "XmlDatabase"
 ];
-jpf.Elements = [
+apf.Elements = [
     "_base/basebutton",
     "_base/baselist",
     "_base/basesimple",
@@ -157,7 +157,7 @@ jpf.Elements = [
     //"video/type_vlc",
     "video/type_wmp"
 ];
-jpf.KernelModules = [
+apf.KernelModules = [
     "class.js",
     "component.js",
     "datainstructions.js",
@@ -260,10 +260,10 @@ jpf.KernelModules = [
     "node/xforms.js",
     "node/interactive.js"
 ];
-jpf.TelePortModules = [
+apf.TelePortModules = [
     "http.js",         // for simple HTTP transactions
-    //"socket.js",     // Javeline HTTP Socket Implementation
-    //"poll.js",         // Javeline Polling Engine
+    //"socket.js",     // APF HTTP Socket Implementation
+    //"poll.js",         // APF Polling Engine
     "rpc.js",         // RPC Baseclass (needs HTTP class)
     "xmpp.js",        // XMPP class providing the XMPP comm layer
     "webdav.js",
@@ -276,16 +276,16 @@ jpf.TelePortModules = [
     "rpc/cgi.js"      // CGI
 ]
 
-jpf.Init.addConditional(function(){
-    jpf.dispatchEvent("domready");
+apf.Init.addConditional(function(){
+    apf.dispatchEvent("domready");
 }, null, ["body", "class"]);
 
 /*if(document.body)
-    jpf.Init.run('body');
+    apf.Init.run('body');
 else*/
-    jpf.addDomLoadEvent(function(){jpf.Init.run('body');});
+    apf.addDomLoadEvent(function(){apf.Init.run('body');});
 
 //Load depencies & start
-jpf.startDependencies();
+apf.startDependencies();
 
 // #endif

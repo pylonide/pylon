@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-jpf.editor.plugin('fontstyle', function() {
+apf.editor.plugin('fontstyle', function() {
     this.name         = 'fontstyle';
     this.icon         = 'fontstyle';
-    this.type         = jpf.editor.TOOLBARITEM;
-    this.subType      = jpf.editor.TOOLBARPANEL;
+    this.type         = apf.editor.TOOLBARITEM;
+    this.subType      = apf.editor.TOOLBARPANEL;
     this.hook         = 'ontoolbar';
     this.buttonNode   = null;
-    this.state        = jpf.editor.OFF;
+    this.state        = apf.editor.OFF;
 
     var panelBody, oStyles = null;
 
@@ -38,7 +38,7 @@ jpf.editor.plugin('fontstyle', function() {
             var node, aCss, bCss, oNode = editor.$getOption('fontstyles');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(jpf.formatErrorString(0, editor,
+                throw new Error(apf.formatErrorString(0, editor,
                     "Initializing plugin: fontstyle",
                     "No fontstyle block found in skin definition"));
             // #endif
@@ -53,7 +53,7 @@ jpf.editor.plugin('fontstyle', function() {
                         function(m, caption, css, className){
                             // #ifdef __DEBUG
                             if (!css || css.charAt(css.length - 1) != "}")
-                                throw new Error(jpf.formatErrorString(0, editor,
+                                throw new Error(apf.formatErrorString(0, editor,
                                     "Initializing plugin: fontstyle",
                                     "Invalid fontstyle block, please check if formatting rules have been applied"));
                             // #endif
@@ -77,9 +77,9 @@ jpf.editor.plugin('fontstyle', function() {
             if (aCss.length) {
                 // insert resulting CSS into container document AND inside the
                 // document of the editor's iframe
-                jpf.importCssString(window.document, bCss.join(""));
-                jpf.importCssString(editor.oDoc, aCss.join(""));
-                if (jpf.isIE) {
+                apf.importCssString(window.document, bCss.join(""));
+                apf.importCssString(editor.oDoc, aCss.join(""));
+                if (apf.isIE) {
                     // removing text nodes from the HEAD section, which are added
                     // by IE in some cases.
                     var nodes = editor.oDoc.getElementsByTagName('head')[0].childNodes;
@@ -107,7 +107,7 @@ jpf.editor.plugin('fontstyle', function() {
         if (!panelBody) {
             this.editor = editor;
 
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody(editor));
+            apf.popup.setContent(this.uniqueId, this.createPanelBody(editor));
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -144,14 +144,14 @@ jpf.editor.plugin('fontstyle', function() {
 
     this.submit = function(e, sStyle) {
         if (!sStyle) {
-            e = new jpf.AbstractEvent(e || window.event);
+            e = new apf.AbstractEvent(e || window.event);
             while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
                 e.target = e.target.parentNode;
             sStyle = e.target.getAttribute('rel');
         }
 
         if (sStyle) {
-            jpf.popup.forceHide();
+            apf.popup.forceHide();
             var sel = this.editor.selection;
 
             sel.set();
@@ -170,13 +170,13 @@ jpf.editor.plugin('fontstyle', function() {
             }
             else if (o && (sel.isCollapsed() 
               || sel.getContent('text') == o.node.innerHTML)
-              && jpf.xmldb.isChildOf(o.node, sel.getSelectedNode(), true)) {
+              && apf.xmldb.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
-                jpf.setStyleClass(o.node, sStyle, [o.cname]);
+                apf.setStyleClass(o.node, sStyle, [o.cname]);
             }
             else {
                 if (sel.isCollapsed()) {
-                    if (jpf.isIE) {
+                    if (apf.isIE) {
                         var oNode = sel.getRange().parentElement();
                         var p = this.editor.oDoc.createElement("span");
                         p.className = sStyle;
@@ -216,7 +216,7 @@ jpf.editor.plugin('fontstyle', function() {
                                 return (m1 ? '<span class="' + sStyle + '">' + m1 + '</span>' : '') + m2 + (m3 ? '<span class="' + sStyle + '">' + m3 + '</span>' : '');
                             })
                           .replace(/^\s*<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)(?:\s.*?|)>|<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>\s*$/gi, "");
-                        if (jpf.isIE) 
+                        if (apf.isIE) 
                             s = s.replace(/<\/P>/, "");
                     }
                     else {
@@ -240,11 +240,11 @@ jpf.editor.plugin('fontstyle', function() {
         if (o) {
             if (this.stylePreview.innerHTML != o.caption)
                 this.stylePreview.innerHTML = o.caption;
-            this.state = jpf.editor.ON;
+            this.state = apf.editor.ON;
         }
         else {
             this.stylePreview.innerHTML = "Style";
-            this.state = jpf.editor.OFF;
+            this.state = apf.editor.OFF;
         }
 
         return this.state;
@@ -257,11 +257,11 @@ jpf.editor.plugin('fontstyle', function() {
 
         getStyles(editor);
         var aHtml = ['<a class="editor_panelcell editor_fontstyle" rel="normal" \
-            href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId, 
+            href="javascript:;" onmouseup="apf.lookup(', this.uniqueId, 
             ').submit(event);"><span>Normal</span></a>'];
         for (var i in oStyles) {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
-                i, '" href="javascript:;" onmouseup="jpf.lookup(',
+                i, '" href="javascript:;" onmouseup="apf.lookup(',
                 this.uniqueId, ').submit(event);"><span class="', i, '">',
                 oStyles[i].caption, '</span></a>')
         }
@@ -279,14 +279,14 @@ jpf.editor.plugin('fontstyle', function() {
 
 //##############################################################################
 
-jpf.editor.plugin('blockformat', function() {
+apf.editor.plugin('blockformat', function() {
     this.name         = 'blockformat';
     this.icon         = 'blockformat';
-    this.type         = jpf.editor.TOOLBARITEM;
-    this.subType      = jpf.editor.TOOLBARPANEL;
+    this.type         = apf.editor.TOOLBARITEM;
+    this.subType      = apf.editor.TOOLBARPANEL;
     this.hook         = 'ontoolbar';
     this.buttonNode   = null;
-    this.state        = jpf.editor.OFF;
+    this.state        = apf.editor.OFF;
     this.node         = null;
 
     var panelBody,
@@ -312,7 +312,7 @@ jpf.editor.plugin('blockformat', function() {
             var i, j, node, oNode = editor.$getOption('blockformats');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(jpf.formatErrorString(0, editor,
+                throw new Error(apf.formatErrorString(0, editor,
                     "Initializing plugin: Blockformat",
                     "No block formats found in skin definition"));
             // #endif
@@ -343,7 +343,7 @@ jpf.editor.plugin('blockformat', function() {
         if (!panelBody) {
             this.editor = editor;
 
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody(editor));
+            apf.popup.setContent(this.uniqueId, this.createPanelBody(editor));
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
@@ -370,12 +370,12 @@ jpf.editor.plugin('blockformat', function() {
             var sBlock = blocksMap[tagName];
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
-            this.state = jpf.editor.ON;
+            this.state = apf.editor.ON;
             this.node  = oNode;
         }
         else {
             this.blockPreview.innerHTML = "Normal";
-            this.state = jpf.editor.OFF;
+            this.state = apf.editor.OFF;
             this.node  = null;
         }
         return this.state;
@@ -383,27 +383,27 @@ jpf.editor.plugin('blockformat', function() {
 
     this.submit = function(e, sBlock) {
         if (!sBlock) {
-            e = new jpf.AbstractEvent(e || window.event);
+            e = new apf.AbstractEvent(e || window.event);
             while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
                 e.target = e.target.parentNode;
             sBlock = e.target.getAttribute('rel');
         }
 
         if (sBlock) {
-            jpf.popup.forceHide();
+            apf.popup.forceHide();
             var oNode, sel = this.editor.selection;
 
             sel.set();
             this.editor.$visualFocus();
             var s = sel.getContent();
-            if (sBlock == "normal" && this.queryState(this.editor) == jpf.editor.ON) {
+            if (sBlock == "normal" && this.queryState(this.editor) == apf.editor.ON) {
                 // revert style to NORMAL, i.e. no style at all.
                 /*sel.selectNode(this.node);
                 sel.setContent(this.node.innerHTML);*/
                 
                 var n = this.node.childNodes, p = this.node.parentNode;
                 
-                if (jpf.isIE) {
+                if (apf.isIE) {
                     var textlength = sel.getContent('text').length;
                     var l = p.insertBefore(p.ownerDocument.createElement("p"), this.node);
                     
@@ -427,12 +427,12 @@ jpf.editor.plugin('blockformat', function() {
                     p.removeChild(this.node);
                 }
                 
-                this.state = jpf.editor.OFF;
+                this.state = apf.editor.OFF;
                 this.node  = null;
                 this.blockPreview.innerHTML = "Normal";
             }
             else if (sel.isCollapsed() || s.trim() == "") {
-                if (jpf.isIE) {
+                if (apf.isIE) {
                     var startNode, oNode;
                     oNode = startNode = sel.getRange().parentElement();
                     while(!oNode.tagName.match(blocksRE4) && oNode.tagName != "BODY") {
@@ -472,7 +472,7 @@ jpf.editor.plugin('blockformat', function() {
 
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
-                if (oNode.tagName.match(blocksRE4) && s.length == oNode[jpf.hasInnerText ? 'innerText' : 'textContent'].length) {
+                if (oNode.tagName.match(blocksRE4) && s.length == oNode[apf.hasInnerText ? 'innerText' : 'textContent'].length) {
                     var p = this.editor.oDoc.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
@@ -485,12 +485,12 @@ jpf.editor.plugin('blockformat', function() {
                     }
                     if (oNode && oNode.tagName != "BODY") {
                         var s2;
-                        if (oNode.tagName == "P" && jpf.isIE) {
+                        if (oNode.tagName == "P" && apf.isIE) {
                             s2 = '<' + sBlock + '>' + s.trim().replace(blocksRE3, '') + '</' + sBlock + '>';
                             addedNode = sel.setContent(s2);
                         }
                         else {
-                            s2 = '<P __jpf_placeholder="true">' + s + '</P>';
+                            s2 = '<P __apf_placeholder="true">' + s + '</P>';
                             sel.setContent(s2);
                             
                             var sBlock2 = oNode.tagName;
@@ -499,7 +499,7 @@ jpf.editor.plugin('blockformat', function() {
                                 return (pos != 0 
                                         ? (first = true) && '</' + sBlock2 + '>' 
                                         : '') +
-                                    '<' + sBlock + ' __jpf_placeholder="true">' + s.replace(blocksRE3, '') + 
+                                    '<' + sBlock + ' __apf_placeholder="true">' + s.replace(blocksRE3, '') + 
                                     '</' + sBlock + '>' + 
                                     (pos < oNode.innerHTML.length - s.length 
                                         ? (last = true) && '<' + sBlock2 + '>' 
@@ -514,8 +514,8 @@ jpf.editor.plugin('blockformat', function() {
                             oNode.innerHTML = html.join("");
                             var addedNode, n = oNode.getElementsByTagName(sBlock);
                             for (var i = 0; i < n.length; i++) {
-                                if (n[i].getAttribute("__jpf_placeholder")) {
-                                    n[i].removeAttribute("__jpf_placeholder");
+                                if (n[i].getAttribute("__apf_placeholder")) {
+                                    n[i].removeAttribute("__apf_placeholder");
                                     addedNode = n[i];
                                     break;
                                 }
@@ -527,7 +527,7 @@ jpf.editor.plugin('blockformat', function() {
                             p.removeChild(oNode);
                         }
                         
-                        if (jpf.isIE) {
+                        if (apf.isIE) {
                             addedNode.parentNode.insertBefore(
                                 addedNode.ownerDocument.createElement("P"),
                                 addedNode);
@@ -540,7 +540,7 @@ jpf.editor.plugin('blockformat', function() {
                             + s.replace(/<p>(.*?)<\/p>(.)/gi, "$1<br />$2")
                                .replace(blocksRE3, '') + '</' + sBlock + '>');
                        
-                        if (jpf.isIE) {
+                        if (apf.isIE) {
                             addedNode.parentNode.insertBefore(
                                 addedNode.ownerDocument.createElement("P"),
                                 addedNode);
@@ -567,7 +567,7 @@ jpf.editor.plugin('blockformat', function() {
             aFormats = getFormats(editor);
         for (var i = 0, j = aFormats.length; i < j; i++) {
             aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
-                aFormats[i], '" href="javascript:;" onmouseup="jpf.lookup(',
+                aFormats[i], '" href="javascript:;" onmouseup="apf.lookup(',
                 this.uniqueId, ').submit(event);"><', aFormats[i], '>',
                 blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
         }

@@ -63,18 +63,18 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- * @inherits jpf.DragDrop
- * @inherits jpf.MultiSelect
- * @inherits jpf.Cache
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Rename
+ * @inherits apf.Validation
+ * @inherits apf.XForms
+ * @inherits apf.DragDrop
+ * @inherits apf.MultiSelect
+ * @inherits apf.Cache
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Rename
  *
  * @binding insert Determines how new data is loaded when the user expands 
  * an item. For instance by clicking on the + button. This way only the root nodes
@@ -125,7 +125,7 @@
  *  </j:tree>
  * </code>
  */
-jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     //Options
     this.isTreeArch   = true; // This element has a tree architecture.
     this.$focussable  = true; // This object can get the focus.
@@ -133,7 +133,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.bufferselect = true;
     
     this.startcollapsed  = true;
-    this.animType        = jpf.tween.NORMAL;
+    this.animType        = apf.tween.NORMAL;
     this.animOpenStep    = 3;
     this.animCloseStep   = 1;
     this.animSpeed       = 10;
@@ -188,7 +188,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
         if ("check|radio".indexOf(value) > -1) {
-            this.implement(jpf.MultiCheck);
+            this.implement(apf.MultiCheck);
             
             this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
@@ -230,7 +230,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         (function(node){
             var nodes = node.selectNodes(xpath);
             for (var i = nodes.length - 1; i >= 0; i--) {
-                _self.slideToggle(jpf.xmldb.getHtmlNode(nodes[i], _self), 1, true);
+                _self.slideToggle(apf.xmldb.getHtmlNode(nodes[i], _self), 1, true);
                 arguments.callee(nodes[i]);
             }
         })(this.xmlRoot);
@@ -266,23 +266,23 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!htmlNode)
             htmlNode = this.$selected;
         
-        var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
+        var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
             id = (htmlNode = htmlNode.parentNode)
-                .getAttribute(jpf.xmldb.htmlIdTag);
+                .getAttribute(apf.xmldb.htmlIdTag);
 
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!container) return;
         
-        if (jpf.getStyle(container, "display") == "block") {
+        if (apf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
-            this.slideClose(container, jpf.xmldb.getNode(htmlNode), immediate);
+            this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate);
         }
         else {
             if (force == 2) return;
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
-            this.slideOpen(container, jpf.xmldb.getNode(htmlNode), immediate);
+            this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate);
         }
     };
     
@@ -294,7 +294,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
-        var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
+        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
         
@@ -304,7 +304,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -324,7 +324,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         }
 
-        jpf.tween.single(container, {
+        apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : 0, 
             to      : container.scrollHeight, 
@@ -358,12 +358,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
-                .getAttribute(jpf.xmldb.xmlIdTag);
+                .getAttribute(apf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
         
         if (!container) {
-            var htmlNode = jpf.xmldb.findHtmlNode(xmlNode, this);
+            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
             container = this.$findContainer(htmlNode);
         }
         
@@ -376,7 +376,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         }
 
-        jpf.tween.single(container, {
+        apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
             to      : 0, 
@@ -416,7 +416,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("dragindicator")) return;
-        this.oDrag = jpf.xmldb.htmlImport(
+        this.oDrag = apf.xmldb.htmlImport(
             this.$getLayoutNode("dragindicator"), document.body);
         
         this.oDrag.style.zIndex   = 1000000;
@@ -432,11 +432,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!el) return null;
 
         while(el && el.nodeType == 1 
-          && !el.getAttribute(jpf.xmldb.htmlIdTag)) {
+          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
             el = el.parentNode;
         }
 
-        return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
+        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
             ? el 
             : null;
     };
@@ -461,7 +461,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.lastel = this.$findValueNode(el);
         
         if (action == "list-append") {
-            var htmlNode = jpf.xmldb.findHtmlNode(this.getTraverseParent(jpf.xmldb.getNode(this.lastel)), this);
+            var htmlNode = apf.xmldb.findHtmlNode(this.getTraverseParent(apf.xmldb.getNode(this.lastel)), this);
             
             this.lastel = htmlNode
                 ? this.$getLayoutNode("item", "container", htmlNode)
@@ -533,7 +533,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
           && xmlParentNode == this.xmlRoot && !beforeNode) {
             this.nodes.push(htmlNode);
-            if (!jpf.xmldb.isChildOf(htmlNode, container, true) && removeContainer)
+            if (!apf.xmldb.isChildOf(htmlNode, container, true) && removeContainer)
                 this.nodes.push(container);
             
             this.$setStyleClass(htmlNode,  "root");
@@ -541,7 +541,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (!htmlParentNode) {
-                htmlParentNode = jpf.xmldb.findHtmlNode(xmlNode.parentNode, this);
+                htmlParentNode = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
@@ -553,7 +553,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             
             if (!beforeNode && this.getNextTraverse(xmlNode))
-                beforeNode = jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this);
+                beforeNode = apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this);
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -564,14 +564,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
-                jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlNode, container, true) && removeContainer) 
-                    var container = jpf.xmldb.htmlImport(container, 
+                apf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
+                if (!apf.xmldb.isChildOf(htmlNode, container, true) && removeContainer) 
+                    var container = apf.xmldb.htmlImport(container, 
                         htmlParentNode, beforeNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlParentNode, container, true) && removeContainer) 
+                if (!apf.xmldb.isChildOf(htmlParentNode, container, true) && removeContainer) 
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 
@@ -582,10 +582,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
                 //this.$fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.$fixItem(xmlParentNode, jpf.xmldb.findHtmlNode(xmlParentNode, this));
+                this.$fixItem(xmlParentNode, apf.xmldb.findHtmlNode(xmlParentNode, this));
                 if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
                     this.$fixItem(this.getNextTraverse(xmlNode, true), 
-                        jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
+                        apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
                         this));
                 }
             }
@@ -603,11 +603,11 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$fill = function(){
         //if(!this.nodes.length) return;
         //this.oInt.innerHTML = "";
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
+        apf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
 
         //for(var i=0;i<this.nodes.length;i++)
-            //jpf.xmldb.htmlImport(this.nodes[i], this.oInt);
+            //apf.xmldb.htmlImport(this.nodes[i], this.oInt);
         //this.nodes.length = 0;
     };
     
@@ -624,13 +624,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             //if isLast fix previousSibling
             if (prevSib = this.getNextTraverse(xmlNode, true))
                 this.$fixItem(prevSib, this.getNodeFromCache(prevSib
-                    .getAttribute(jpf.xmldb.xmlIdTag) + "|" 
+                    .getAttribute(apf.xmldb.xmlIdTag) + "|" 
                     + this.uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.traverse).length == 1)
                 this.$fixItem(xmlNode.parentNode, this.getNodeFromCache(
-                    xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag) 
+                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
                     + "|" + this.uniqueId), null, false, true); 
         }
         else {
@@ -674,28 +674,28 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var oItem = this.$getLayoutNode("item");
         //@todo this should use dispatchEvent, and be moved to oExt
         oItem.setAttribute("onmouseover",
-            "var o = jpf.lookup(" + this.uniqueId + ");\
+            "var o = apf.lookup(" + this.uniqueId + ");\
             if (o.onmouseover) o.onmouseover(event, this);\
-            jpf.setStyleClass(this, 'hover');");
+            apf.setStyleClass(this, 'hover');");
         oItem.setAttribute("onmouseout",
-            "var o = jpf.lookup(" + this.uniqueId + ");\
+            "var o = apf.lookup(" + this.uniqueId + ");\
             if (o.onmouseout) o.onmouseout(event, this);\
-            jpf.setStyleClass(this, '', ['hover']);");
+            apf.setStyleClass(this, '', ['hover']);");
         oItem.setAttribute("onmousedown",
-            "var o = jpf.lookup(" + this.uniqueId + ");\
+            "var o = apf.lookup(" + this.uniqueId + ");\
             if (o.onmousedown) o.onmousedown(event, this);");
         
         //Set open/close skin class & interaction
-        this.$setStyleClass(this.$getLayoutNode("item", "class"), treeState[state]).setAttribute(jpf.xmldb.htmlIdTag, Lid);
+        this.$setStyleClass(this.$getLayoutNode("item", "class"), treeState[state]).setAttribute(apf.xmldb.htmlIdTag, Lid);
         this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         //this.$setStyleClass(oItem, xmlNode.tagName)
         var elOpenClose = this.$getLayoutNode("item", "openclose");
         if (hasChildren && elOpenClose) {
             elOpenClose.setAttribute("onmousedown",
-                "var o = jpf.lookup(" + this.uniqueId + ");\
+                "var o = apf.lookup(" + this.uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\
-                jpf.cancelBubble(event, o);");
+                apf.cancelBubble(event, o);");
             
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
@@ -703,7 +703,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.$mode) {
             var elCheck = this.$getLayoutNode("item", "check");
             elCheck.setAttribute("onmousedown",
-                "var o = jpf.lookup(" + this.uniqueId + ");\
+                "var o = apf.lookup(" + this.uniqueId + ");\
                 o.checkToggle(this);\o.$skipSelect = true;");
             
             if (this.isChecked(xmlNode))
@@ -717,23 +717,23 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (elIcon) {
             if (ocAction != "ondblclick") {
                 elIcon.setAttribute(ocAction, 
-                  "var o = jpf.lookup(" + this.uniqueId + ");" +
+                  "var o = apf.lookup(" + this.uniqueId + ");" +
                    (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey);" : "") +
                    (true ? "o.slideToggle(this);" : ""));
             }
             if (ocAction != "onmousedown") {
                 elIcon.setAttribute("onmousedown", 
-                  "jpf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);");
+                  "apf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);");
             }
             
             elIcon.setAttribute("ondblclick", 
-              "var o = jpf.lookup(" + this.uniqueId + ");\
+              "var o = apf.lookup(" + this.uniqueId + ");\
               o.choose();" + 
               //#ifdef __WITH_RENAME
               "o.stopRename();" + 
               //#endif
               (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
-              "jpf.cancelBubble(event,o);");
+              "apf.cancelBubble(event,o);");
         }
 
         //Select interaction
@@ -741,7 +741,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var strMouseDown = 
             "if (!o.renaming && o.hasFocus() \
-               && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
+               && apf.xmldb.isChildOf(o.$selected, this) && o.selected)\
                  this.dorename = true;\
              o.select(this, event.ctrlKey, event.shiftKey);\
              if (o.onmousedown)\
@@ -749,33 +749,33 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (ocAction != "ondblclick") {
             elSelect.setAttribute(ocAction, 
-              "var o = jpf.lookup(" + this.uniqueId + ");" +
+              "var o = apf.lookup(" + this.uniqueId + ");" +
                (ocAction == "onmousedown" ? strMouseDown : "") +
                (true ? "o.slideToggle(this);" : ""));
         }
         if (ocAction != "onmousedown") {
             elSelect.setAttribute("onmousedown", 
-              "var o = jpf.lookup(" + this.uniqueId + ");" + strMouseDown);
+              "var o = apf.lookup(" + this.uniqueId + ");" + strMouseDown);
         }
         
         elSelect.setAttribute("ondblclick", 
-          "var o = jpf.lookup(" + this.uniqueId + ");\
+          "var o = apf.lookup(" + this.uniqueId + ");\
           o.choose();" + 
           //#ifdef __WITH_RENAME
           "o.stopRename();this.dorename=false;" + 
           //#endif
           (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
-          "jpf.cancelBubble(event,o);");
+          "apf.cancelBubble(event,o);");
         
         //#ifdef __WITH_RENAME
         elSelect.setAttribute("onmouseup", 
-            "var o = jpf.lookup(" + this.uniqueId + ");\
+            "var o = apf.lookup(" + this.uniqueId + ");\
             if (this.dorename && !o.$mode) \
                 o.startDelayedRename(event);\
             this.dorename = false;");
         //#endif
         
-        //elItem.setAttribute("contextmenu", "alert(1);var o = jpf.lookup(" + this.uniqueId + ");o.dispatchEvent("contextMenu", o.selected);");
+        //elItem.setAttribute("contextmenu", "alert(1);var o = apf.lookup(" + this.uniqueId + ");o.dispatchEvent("contextMenu", o.selected);");
         
         //Setup Nodes Identity (Look)
         if (elIcon) {
@@ -790,7 +790,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var elCaption = this.$getLayoutNode("item", "caption");
         if (elCaption) 
-            jpf.xmldb.setNodeValue(elCaption,
+            apf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
         
         var strTooltip = this.applyRuleSetOnNode("tooltip", xmlNode)
@@ -827,14 +827,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode, true);
-        //this.$fixItem(xmlNode.parentNode, jpf.xmldb.findHtmlNode(xmlNode.parentNode, this));
+        //this.$fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
         /*throw new Error();
         if(xmlNode.previousSibling) //should use traverse here
-            this.$fixItem(xmlNode.previousSibling, jpf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
+            this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
     this.$moveNode = function(xmlNode, htmlNode){
-        if (!self.jpf.debug && !htmlNode) 
+        if (!self.apf.debug && !htmlNode) 
             return;
             
         if (this.$hasLoadStatus(xmlNode.parentNode, "potential")) {
@@ -846,12 +846,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         var oPHtmlNode = htmlNode.parentNode;
-        var pHtmlNode  = jpf.xmldb.findHtmlNode(xmlNode.parentNode, this);
+        var pHtmlNode  = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
         //if(!pHtmlNode) return;
         
         var nSibling = this.getNextTraverse(xmlNode);
         var beforeNode = nSibling 
-            ? jpf.xmldb.findHtmlNode(nSibling, this) 
+            ? apf.xmldb.findHtmlNode(nSibling, this) 
             : null;
         var pContainer = pHtmlNode 
             ? this.$getLayoutNode("item", "container", pHtmlNode) 
@@ -879,10 +879,10 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$fixItem(xmlNode, htmlNode);
         
         var tParent = this.getTraverseParent(xmlNode);
-        this.$fixItem(tParent, jpf.xmldb.findHtmlNode(tParent, this));
+        this.$fixItem(tParent, apf.xmldb.findHtmlNode(tParent, this));
         if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
             this.$fixItem(this.getNextTraverse(xmlNode, true),
-                jpf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
+                apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
                 this));
         }
     };
@@ -929,7 +929,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (!this.getTraverseNodes(xmlNode).length) {
             this.$getNewContext("loading");
-            jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
+            apf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
         }
     };
     
@@ -950,8 +950,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (rule.getAttribute("get")) {
                 // #ifdef __WITH_OFFLINE_TRANSACTIONS
-                if (!jpf.offline.onLine) {
-                    jpf.offline.transactions.actionNotAllowed();
+                if (!apf.offline.onLine) {
+                    apf.offline.transactions.actionNotAllowed();
                     this.slideClose(container, xmlNode);
                     return;
                 }
@@ -970,7 +970,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loading");
-            this.$removeLoading(jpf.xmldb.findHtmlNode(xmlNode, this));
+            this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
             var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
@@ -990,12 +990,12 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         */
         
         if (e.action == "move-away")
-            this.$fixItem(e.xmlNode, jpf.xmldb.findHtmlNode(e.xmlNode, this), true);
+            this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
         
         var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(
-            jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
+            apf.xmldb.xmlIdTag) + "|" + this.uniqueId);
         if (!htmlNode) return;
         
         if (this.$hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
@@ -1104,7 +1104,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     return;
                 
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var sNode = this.getNextTraverse(node, true);
@@ -1113,8 +1113,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     
                     do {
                         var container = this.$getLayoutNode("item", "container",
-                            this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
-                        if (container && jpf.getStyle(container, "display") == "block" 
+                            this.getNodeFromCache(apf.xmldb.getID(sNode, this)));
+                        if (container && apf.getStyle(container, "display") == "block" 
                           && nodes.length) {
                                 sNode = nodes[nodes.length-1];
                         }
@@ -1143,14 +1143,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     return;
                     
                 var node = this.$tempsel 
-                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
                     var container = this.$getLayoutNode("item", "container",
-                        this.getNodeFromCache(jpf.xmldb.getID(node, this)));
-                    if (container && jpf.getStyle(container, "display") != "block")
+                        this.getNodeFromCache(apf.xmldb.getID(node, this)));
+                    if (container && apf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
                 
@@ -1277,7 +1277,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Need fix...
         //this.oExt.style.MozUserSelect = "none";
 
-        if (jpf.hasCssUpdateScrollbarBug && !this.mode)
+        if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         this.oExt.onclick = function(e){
@@ -1289,7 +1289,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
-            this.startcollapsed = !jpf.isFalse(this.$getOption("main", "startcollapsed"));
+            this.startcollapsed = !apf.isFalse(this.$getOption("main", "startcollapsed"));
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
@@ -1298,27 +1298,27 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$destroy = function(){
         this.oExt.onclick = null;
         
-        jpf.removeNode(this.oDrag);
+        apf.removeNode(this.oDrag);
         this.oDrag = null;
     };
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation, 
+    apf.Validation, 
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
     //#ifdef __WITH_RENAME
-    jpf.Rename,
+    apf.Rename,
     //#endif
     //#ifdef __WITH_DRAGDROP
-    jpf.DragDrop, 
+    apf.DragDrop, 
     //#endif
     
-    jpf.MultiSelect, 
-    jpf.Cache,
-    jpf.Presentation, 
-    jpf.DataBinding
+    apf.MultiSelect, 
+    apf.Cache,
+    apf.Presentation, 
+    apf.DataBinding
 );
 
 // #endif

@@ -62,7 +62,7 @@ var __INTERACTIVE__ = 1 << 21;
  *
  * @constructor
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       1.0
  *
@@ -70,7 +70,7 @@ var __INTERACTIVE__ = 1 << 21;
  * @see element.appsettings.attribute.resize-outline
  * @see element.appsettings.attribute.drag-outline
  */
-jpf.Interactive = function(){
+apf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
@@ -79,9 +79,9 @@ jpf.Interactive = function(){
     this.$regbase = this.$regbase | __INTERACTIVE__;
 
     this.$propHandlers["draggable"] = function(value){
-        if (jpf.isFalse(value))
+        if (apf.isFalse(value))
             this.draggable = value = false;
-        else if (jpf.isTrue(value))
+        else if (apf.isTrue(value))
             this.draggable = value = true;
         
         var o = this.oDrag || this.oExt;
@@ -101,9 +101,9 @@ jpf.Interactive = function(){
     };
 
     this.$propHandlers["resizable"] = function(value){
-        if (jpf.isFalse(value))
+        if (apf.isFalse(value))
             this.resizable = value = false;
-        else if (jpf.isTrue(value))
+        else if (apf.isTrue(value))
             this.resizable = value = true;
         
         var o = this.oResize || this.oExt;
@@ -133,7 +133,7 @@ jpf.Interactive = function(){
         
         rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
         rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
-        marginBox = jpf.getBox(jpf.getStyle(this.oExt, jpf.isIE ? "borderWidth" : "border-width"));
+        marginBox = apf.getBox(apf.getStyle(this.oExt, apf.isIE ? "borderWidth" : "border-width"));
     };
     
     /*
@@ -152,39 +152,39 @@ jpf.Interactive = function(){
     function dragStart(e){
         if (!e) e = event;
 
-        if (!_self.draggable || jpf.dragmode.isDragging)
+        if (!_self.draggable || apf.dragmode.isDragging)
             return;
         
         //#ifdef __WITH_OUTLINE
-        dragOutline = !(_self.dragOutline == false || !jpf.appsettings.dragOutline);
+        dragOutline = !(_self.dragOutline == false || !apf.appsettings.dragOutline);
         /*#else
         dragOutline = false;        
         #endif */
         
-        jpf.dragmode.isDragging = true;
+        apf.dragmode.isDragging = true;
         overThreshold           = false;
         
         //#ifdef __WITH_POPUP
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
         //#endif
         
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
+        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.oExt, "position")) > -1;
         if (!posAbs)
             _self.oExt.style.position = "relative";
 
         //@todo not for docking
         //#ifdef __WITH_PLANE
         if (posAbs && !_self.aData) {
-            jpf.plane.show(dragOutline
+            apf.plane.show(dragOutline
                 ? oOutline
                 : _self.oExt);//, true
         }
         //#endif
 
         var pos = posAbs 
-            ? jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
-            : [parseInt(jpf.getStyle(_self.oExt, "left")) || 0, 
-               parseInt(jpf.getStyle(_self.oExt, "top")) || 0];
+            ? apf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
+            : [parseInt(apf.getStyle(_self.oExt, "left")) || 0, 
+               parseInt(apf.getStyle(_self.oExt, "top")) || 0];
             
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
@@ -196,7 +196,7 @@ jpf.Interactive = function(){
         if (posAbs && dragOutline) {
             oOutline.className     = "drag";
             
-            var diffOutline = jpf.getDiff(oOutline);
+            var diffOutline = apf.getDiff(oOutline);
             _self.oExt.parentNode.appendChild(oOutline);
             oOutline.style.left    = pos[0] + "px";
             oOutline.style.top     = pos[1] + "px";
@@ -206,7 +206,7 @@ jpf.Interactive = function(){
         //#endif
 
         //#ifdef __WITH_DRAGMODE
-        jpf.dragmode.mode = true;
+        apf.dragmode.mode = true;
         //#endif
         
         document.onmousemove = dragMove;
@@ -214,12 +214,12 @@ jpf.Interactive = function(){
             document.onmousemove = document.onmouseup = null;
             
             //#ifdef __WITH_DRAGMODE
-            jpf.dragmode.mode = false;
+            apf.dragmode.mode = false;
             //#endif
             
             //#ifdef __WITH_PLANE
             if (posAbs && !_self.aData)
-                jpf.plane.hide();
+                apf.plane.hide();
             //#endif
 
             if (overThreshold) {
@@ -237,18 +237,18 @@ jpf.Interactive = function(){
                 _self.oExt.style.position = "relative";
             
             if (_self.showdragging)
-                jpf.setStyleClass(_self.oExt, "", ["dragging"]);
+                apf.setStyleClass(_self.oExt, "", ["dragging"]);
             
             if (posAbs && dragOutline)
                 oOutline.style.display = "none";
             
-            jpf.dragmode.isDragging = false;
+            apf.dragmode.isDragging = false;
             
             if (_self.dispatchEvent)
                 _self.dispatchEvent("drag");
         };
         
-        if (jpf.isIE)
+        if (apf.isIE)
             document.onmousedown();
 
         return false;
@@ -258,7 +258,7 @@ jpf.Interactive = function(){
         if(!e) e = event;
         
         if (!overThreshold && _self.showdragging)
-            jpf.setStyleClass(_self.oExt, "dragging");
+            apf.setStyleClass(_self.oExt, "dragging");
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
         var dx = e.clientX - oX,
@@ -291,19 +291,19 @@ jpf.Interactive = function(){
             return;
         
         //#ifdef __WITH_OUTLINE
-        resizeOutline = !(_self.resizeOutline == false || !jpf.appsettings.resizeOutline);
+        resizeOutline = !(_self.resizeOutline == false || !apf.appsettings.resizeOutline);
         /*#else
         resizeOutline = false;        
         #endif */
         
         if (!resizeOutline) {
-            var diff = jpf.getDiff(_self.oExt);
+            var diff = apf.getDiff(_self.oExt);
             hordiff  = diff[0];
             verdiff  = diff[1];
         }
         
         //@todo This is probably not gen purpose
-        startPos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent);
+        startPos = apf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
         
@@ -325,13 +325,13 @@ jpf.Interactive = function(){
             return;
         
         //#ifdef __WITH_POPUP
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
         //#endif
 
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
-        jpf.dragmode.isDragging = true;
+        apf.dragmode.isDragging = true;
         overThreshold           = false;
 
         var r = "|" + resizeType + "|"
@@ -354,7 +354,7 @@ jpf.Interactive = function(){
 
         //#ifdef __WITH_PLANE
         if (posAbs) {
-            jpf.plane.show(resizeOutline
+            apf.plane.show(resizeOutline
                 ? oOutline
                 : _self.oExt);//, true
         }
@@ -363,7 +363,7 @@ jpf.Interactive = function(){
         //#ifdef __WITH_OUTLINE
         if (resizeOutline) {
             oOutline.className     = "resize";
-            var diffOutline = jpf.getDiff(oOutline);
+            var diffOutline = apf.getDiff(oOutline);
             hordiff = diffOutline[0];
             verdiff = diffOutline[1];
             
@@ -377,11 +377,11 @@ jpf.Interactive = function(){
         //#endif
         
         if (lastCursor === null)
-            lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
+            lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
         //#ifdef __WITH_DRAGMODE
-        jpf.dragmode.mode = true;
+        apf.dragmode.mode = true;
         //#endif
 
         document.onmousemove = resizeMove;
@@ -389,16 +389,16 @@ jpf.Interactive = function(){
             document.onmousemove = document.onmouseup = null;
             
             //#ifdef __WITH_DRAGMODE
-            jpf.dragmode.mode = false;
+            apf.dragmode.mode = false;
             //#endif
             
             //#ifdef __WITH_PLANE
             if (posAbs)
-                jpf.plane.hide();
+                apf.plane.hide();
             //#endif
             
             if (resizeOutline) {
-                var diff = jpf.getDiff(_self.oExt);
+                var diff = apf.getDiff(_self.oExt);
                 hordiff  = diff[0];
                 verdiff  = diff[1];
             }
@@ -423,13 +423,13 @@ jpf.Interactive = function(){
             if (resizeOutline)
                 oOutline.style.display = "none";
             
-            jpf.dragmode.isDragging = false;
+            apf.dragmode.isDragging = false;
             
             if (_self.dispatchEvent)
                 _self.dispatchEvent("resize");
         };
         
-        if (jpf.isIE)
+        if (apf.isIE)
             document.onmousedown();
         
         return false;
@@ -452,7 +452,7 @@ jpf.Interactive = function(){
             return;*/
         
         if (lastTime && new Date().getTime() 
-          - lastTime < (resizeOutline ? 6 : jpf.mouseEventBuffer))
+          - lastTime < (resizeOutline ? 6 : apf.mouseEventBuffer))
             return;
         lastTime = new Date().getTime();
         
@@ -497,14 +497,14 @@ jpf.Interactive = function(){
                     e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
 
-        if (jpf.hasSingleRszEvent)
-            jpf.layout.forceResize(_self.oInt);
+        if (apf.hasSingleRszEvent)
+            apf.layout.forceResize(_self.oInt);
     }
     
     function getResizeType(x, y){
         var cursor  = "", 
             tcursor = "";
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
+        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.oExt, "position")) > -1;
 
         if (_self.resizable == true || _self.resizable == "vertical") {
             if (y < rszborder + marginBox[0])
@@ -533,14 +533,14 @@ jpf.Interactive = function(){
             return;
 
         //@todo This is probably not gen purpose
-        var pos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent
+        var pos = apf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent
         var sLeft = 0;//;
         var sTop = 0;//;
         var x = e.clientX - pos[0] + sLeft + document.documentElement.scrollLeft;
         var y = e.clientY - pos[1] + sTop + document.documentElement.scrollTop;
         
         if (!originalCursor)
-            originalCursor = jpf.getStyle(this, "cursor");
+            originalCursor = apf.getStyle(this, "cursor");
         
         var cursor = getResizeType.call(_self.oExt, x, y);
         this.style.cursor = cursor 
@@ -552,12 +552,12 @@ jpf.Interactive = function(){
         this.pHtmlDoc = window.document;
     
     //#ifdef __WITH_OUTLINE
-    var oOutline = this.pHtmlDoc.getElementById("jpf_outline");
+    var oOutline = this.pHtmlDoc.getElementById("apf_outline");
     if (!oOutline) {
         oOutline = this.pHtmlDoc.body.appendChild(this.pHtmlDoc.createElement("div"));
         
         oOutline.refCount = 0;
-        oOutline.setAttribute("id", "jpf_outline");
+        oOutline.setAttribute("id", "apf_outline");
         
         oOutline.style.position = "absolute";
         oOutline.style.display  = "none";

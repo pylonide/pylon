@@ -24,10 +24,10 @@
 /**
  * @private
  */
-jpf.printer = {
+apf.printer = {
     //#ifdef __WITH_JMLDOM_FULL
     tagName  : "printer",
-    nodeFunc : jpf.NODE_HIDDEN,
+    nodeFunc : apf.NODE_HIDDEN,
     //#endif
     
     lastContent : "",
@@ -47,8 +47,8 @@ jpf.printer = {
             zIndex          = 100000000;
         }
         
-        jpf.importCssString(document, "#print_content{display:none}");
-        jpf.importCssString(document, (jpf.hasCSSChildOfSelector
+        apf.importCssString(document, "#print_content{display:none}");
+        apf.importCssString(document, (apf.hasCSSChildOfSelector
           ? "body #print_content{display:block} body>*{display:none}"
           : "body #print_content, body #print_content *{display:block} body *{display:none}")
             , "print");
@@ -61,15 +61,15 @@ jpf.printer = {
             for (i = 0; i < attr.length; i++) {
                 a = attr[i];
                 if (a.nodeName.indexOf("on") == 0)
-                    jpf.addEventListener(a.nodeName, new Function(a.nodeValue));
+                    apf.addEventListener(a.nodeName, new Function(a.nodeValue));
             }
         }
 
         // #ifdef __WITH_IEPNGFIX
         function printPNGFix(disable) {
-            if (jpf.supportPng24) return;
+            if (apf.supportPng24) return;
             // #ifdef __WITH_APPSETTINGS
-            if (!jpf.appsettings.iePngFix) return;
+            if (!apf.appsettings.iePngFix) return;
             // #endif
             for (var e, i = 0, j = document.all.length; i < j; i++) {
                 e = document.all[i];
@@ -91,14 +91,14 @@ jpf.printer = {
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(true);
             // #endif
-            jpf.dispatchEvent("beforeprint");
+            apf.dispatchEvent("beforeprint");
         };
         
         window.onafterprint = function(){
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(false);
             // #endif
-            jpf.dispatchEvent("afterprint");
+            apf.dispatchEvent("afterprint");
         };
     },
     
@@ -118,11 +118,11 @@ jpf.printer = {
  * Sents html to a printer in formatted form.
  * @param {String} strHtml the html to be printed.
  */
-jpf.print = function(strHtml){
-    if (!jpf.printer.inited)
-        jpf.printer.init();
+apf.print = function(strHtml){
+    if (!apf.printer.inited)
+        apf.printer.init();
     
-    jpf.printer.preview(strHtml);
+    apf.printer.preview(strHtml);
     window.print();
 }
 

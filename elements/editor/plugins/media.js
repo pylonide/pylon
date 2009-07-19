@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-jpf.editor.plugin('media', function(){
+apf.editor.plugin('media', function(){
     this.name        = 'media';
     this.icon        = 'media';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+m';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this plugin

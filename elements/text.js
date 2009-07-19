@@ -31,14 +31,14 @@
  * @define text
  * @addnode elements
  *
- * @inherits jpf.Cache
+ * @inherits apf.Cache
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.1
  * @todo Please refactor this object
  */
-jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.text = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can't get the focus
     this.focussable  = false;
     this.$hasStateMessages = true;
@@ -102,7 +102,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         //Iframe bug fix for IE (leaves screen white);
-        if (jpf.cannotSizeIframe && this.oIframe)
+        if (apf.cannotSizeIframe && this.oIframe)
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
         if (this.scrolldown && this.$scrolldown)
@@ -179,7 +179,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Refresh Properties
         if (this.addOnly) {
-            jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
+            apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
             var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
                 + "|" + this.uniqueId);
 
@@ -194,7 +194,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$load = function(node){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(node, this);
+        apf.xmldb.addNodeListener(node, this);
         var value = this.applyRuleSetOnNode("value", node);
 
         if (value || typeof value == "string") {
@@ -239,15 +239,15 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
         if (lastClass)
             this.$removeClearMessage();
-        jpf.setStyleClass(this.oExt, 
+        apf.setStyleClass(this.oExt, 
             (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
         
         if (msg) {
             if (this.oInt.offsetHeight 
-              && jpf.getStyle(this.oInt, "height") == "auto" 
+              && apf.getStyle(this.oInt, "height") == "auto" 
               && (changedHeight = true))
                 this.oInt.style.height = (this.oInt.offsetHeight 
-                  - jpf.getHeightDiff(this.oInt)) + "px";
+                  - apf.getHeightDiff(this.oInt)) + "px";
             this.oInt.innerHTML = msg;
             lastMsg = this.oInt.innerHTML;
         }
@@ -255,7 +255,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$removeClearMessage = function(){
         if (lastClass) {
-            jpf.setStyleClass(this.oExt, "", [lastClass]);
+            apf.setStyleClass(this.oExt, "", [lastClass]);
             lastClass = null;
         }
         
@@ -276,7 +276,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        if (jpf.hasCssUpdateScrollbarBug && !jpf.getStyle(this.oInt, "padding"))
+        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.oInt, "padding"))
             this.$fixScrollBug();
 
         this.oScroll = this.oFocus ? this.oFocus.parentNode : this.oInt;
@@ -284,7 +284,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$scrolldown = true;
         this.oScroll.onscroll = function(){
             _self.$scrolldown = this.scrollTop >= this.scrollHeight
-                - this.offsetHeight + jpf.getVerBorders(this);
+                - this.offsetHeight + apf.getVerBorders(this);
         }
         clearInterval(timer);
         timer = setInterval(function(){
@@ -294,7 +294,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         }, 60);
 
         if (this.oInt.tagName.toLowerCase() == "iframe") {
-            if (jpf.isIE) {
+            if (apf.isIE) {
                 this.oIframe = this.oInt;
                 var iStyle = this.skin.selectSingleNode("iframe_style");
                 this.oIframe.contentWindow.document.write(
@@ -304,7 +304,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
                         <script>\
                             document.onkeydown = function(e){\
                                 if (!e) e = event;\
-                                if (" + 'top.jpf.disableF5' + " && e.keyCode == 116) {\
+                                if (" + 'top.apf.disableF5' + " && e.keyCode == 116) {\
                                     e.keyCode = 0;\
                                     return false;\
                                 }\
@@ -357,15 +357,15 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this["empty-message"] && !this.childNodes.length)
             this.$setClearMessage(this["empty-message"]);
         
-        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(){
         clearInterval(timer);
-        jpf.removeNode(this.oDrag);
+        apf.removeNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;
         this.oScroll.onscoll = null;
@@ -374,9 +374,9 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     // #ifdef __WITH_CACHE
-    jpf.Cache,
+    apf.Cache,
     // #endif
-    jpf.BaseSimple
+    apf.BaseSimple
 );
 
 // #endif

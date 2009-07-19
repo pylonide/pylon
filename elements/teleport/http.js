@@ -32,16 +32,16 @@
  * Example:
  * Retrieving content over http synchronously:
  * <code>
- *  var http = new jpf.http();
+ *  var http = new apf.http();
  *  var data = http.get("http://www.example.com/mydata.jsp", null, {async: false});
  *  alert(data);
  * </code>
  * Example:
  * Retrieving content over http asynchronously:
  * <code>
- *  var http = new jpf.http();
+ *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
- *      if (state != jpf.SUCCESS)
+ *      if (state != apf.SUCCESS)
  *          return alert('an error has occurred');
  *
  *      alert(data);
@@ -50,10 +50,10 @@
  * Example:
  * Async http request with retry.
  * <code>
- *  var http = new jpf.http();
+ *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
- *      if (state != jpf.SUCCESS) {
- *          var oError = new Error(jpf.formatErrorString(0, null,
+ *      if (state != apf.SUCCESS) {
+ *          var oError = new Error(apf.formatErrorString(0, null,
  *              "While loading data", "Could not load data" + extra.message);
  *
  *          if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
@@ -73,10 +73,10 @@
  *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *     {Number}         state     the state of the call
  *       Possible values:
- *       jpf.SUCCESS  the request was successfull
- *       jpf.TIMEOUT  the request has timed out.
- *       jpf.ERROR    an error has occurred while making the request.
- *       jpf.OFFLINE  the request was made while the application was offline.
+ *       apf.SUCCESS  the request was successfull
+ *       apf.TIMEOUT  the request has timed out.
+ *       apf.ERROR    an error has occurred while making the request.
+ *       apf.OFFLINE  the request was made while the application was offline.
  *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -89,11 +89,11 @@
  * @addnode teleport
  * @default_private
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.http = function(){
+apf.http = function(){
     this.queue     = [null];
     this.callbacks = {};
     this.cache     = {};
@@ -121,55 +121,55 @@ jpf.http = function(){
     this.routeServer = null;
     
     if (!this.uniqueId)
-        this.uniqueId = jpf.all.push(this) - 1;
+        this.uniqueId = apf.all.push(this) - 1;
 
     var _self = this;
 
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
 
     this.toString = this.toString || function(){
-        return "[Javeline TelePort Component : (HTTP)]";
+        return "[Ajax.org Teleport Component : (HTTP)]";
     }
 
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE
-    var namespace = jpf.appsettings.name + ".jpf.http";
+    var namespace = apf.appsettings.name + ".apf.http";
 
     /**
-     * Saves the jpf http cache to the available {@link core.storage storage engine}.
+     * Saves the apf http cache to the available {@link core.storage storage engine}.
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
-        if (!jpf.serialize)
-            throw new Error(jpf.formatErrorMessage(1079, this,
+        if (!apf.serialize)
+            throw new Error(apf.formatErrorMessage(1079, this,
                 "HTTP save cache",
                 "Could not find JSON library."));
         // #endif
 
         // #ifdef __DEBUG
-        jpf.console.info("[HTTP] Loading HTTP Cache", "teleport");
+        apf.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
 
-        var strResult = jpf.serialize(comm.cache);
-        jpf.storage.put("cache_" + _self.name, strResult,
-            jpf.appsettings.name + ".jpf.http");
+        var strResult = apf.serialize(comm.cache);
+        apf.storage.put("cache_" + _self.name, strResult,
+            apf.appsettings.name + ".apf.http");
     };
 
     /**
-     * Loads the jpf http cache from the available {@link core.storage storage engine}.
+     * Loads the apf http cache from the available {@link core.storage storage engine}.
      */
     this.loadCache = function(){
-        var strResult = jpf.storage.get("cache_" + _self.name,
-            jpf.appsettings.name + ".jpf.http");
+        var strResult = apf.storage.get("cache_" + _self.name,
+            apf.appsettings.name + ".apf.http");
 
         // #ifdef __DEBUG
-        jpf.console.info("[HTTP] Loading HTTP Cache", "steleport");
+        apf.console.info("[HTTP] Loading HTTP Cache", "steleport");
         // #endif
 
         if (!strResult)
             return false;
 
-        this.cache = jpf.unserialize(strResult);
+        this.cache = apf.unserialize(strResult);
 
         return true;
     };
@@ -178,8 +178,8 @@ jpf.http = function(){
      * Removes the stored http cache from the available {@link core.storage storage engine}.
      */
     this.clearCache = function(){
-        jpf.storage.remove("cache_" + _self.name,
-            jpf.appsettings.name + ".jpf.http");
+        apf.storage.remove("cache_" + _self.name,
+            apf.appsettings.name + ".apf.http");
     };
     //#endif
 
@@ -225,24 +225,24 @@ jpf.http = function(){
             options = {};
 
         //#ifdef __WITH_OFFLINE
-        var bHasOffline = (typeof jpf.offline != "undefined");
-        if (bHasOffline && !jpf.offline.onLine && options.notWhenOffline)
+        var bHasOffline = (typeof apf.offline != "undefined");
+        if (bHasOffline && !apf.offline.onLine && options.notWhenOffline)
             return false;
 
-        if (bHasOffline && !jpf.offline.onLine && !options.ignoreOffline) {
-            if (jpf.offline.queue.enabled) {
+        if (bHasOffline && !apf.offline.onLine && !options.ignoreOffline) {
+            if (apf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
-                var info = jpf.extend({
+                var info = apf.extend({
                     url      : url,
                     callback : callback,
                     retry    : function(){
                         _self.get(this.url, this.callback, this, id);
                     },
-                    $object : [this.name, "jpf.oHttp", "new jpf.http()"],
+                    $object : [this.name, "apf.oHttp", "new apf.http()"],
                     $retry : "this.object.get(this.url, this.callback, this)"
                 }, options);
 
-                jpf.offline.queue.add(info);
+                apf.offline.queue.add(info);
 
                 return;
             }
@@ -254,22 +254,22 @@ jpf.http = function(){
             */
 
             //#ifdef __DEBUG
-            jpf.console.warn("Executing HTTP request even though application is offline");
+            apf.console.warn("Executing HTTP request even though application is offline");
             //#endif
         }
         //#endif
 
         var async = options.async
-            || typeof options.async == "undefined" || jpf.isOpera;
+            || typeof options.async == "undefined" || apf.isOpera;
 
         //#ifdef __SUPPORT_SAFARI
-        if (jpf.isSafari)
-            url = jpf.html_entity_decode(url);
+        if (apf.isSafari)
+            url = apf.html_entity_decode(url);
         //#endif
 
         var data = options.data || "";
 
-        if (jpf.isNot(id)) {
+        if (apf.isNot(id)) {
             //#ifdef __WITH_HTTP_CACHE
             if (this.cache[url] && this.cache[url][data]) {
                 var http = {
@@ -281,7 +281,7 @@ jpf.http = function(){
             }
             else
             //#endif
-                var http = jpf.getHttpReq();
+                var http = apf.getHttpReq();
 
             id = this.queue.push({
                 http     : http,
@@ -294,7 +294,7 @@ jpf.http = function(){
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) {
                 if (async)
-                    return setTimeout("jpf.lookup(" + this.uniqueId
+                    return setTimeout("apf.lookup(" + this.uniqueId
                         + ").receive(" + id + ");", 50);
                 else
                     return this.receive(id);
@@ -306,7 +306,7 @@ jpf.http = function(){
 
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching)
-                http = jpf.getHttpReq();
+                http = apf.getHttpReq();
             else
             //#endif
                 http.abort();
@@ -314,7 +314,7 @@ jpf.http = function(){
 
         if (async) {
             //#ifdef __SUPPORT_IE5
-            if (jpf.hasReadyStateBug) {
+            if (apf.hasReadyStateBug) {
                 this.queue[id].starttime = new Date().getTime();
                 this.queue[id].timer = setInterval(function(){
                     var diff = new Date().getTime() - _self.queue[id].starttime;
@@ -341,14 +341,14 @@ jpf.http = function(){
             }
         }
 
-        var autoroute = this.autoroute && jpf.isOpera
+        var autoroute = this.autoroute && apf.isOpera
             ? true //Bug in opera
             : (options.autoroute || this.shouldAutoroute);
         var httpUrl = autoroute ? this.routeServer : url;
 
         // #ifdef __DEBUG
         if (!options.hideLogMessage) {
-            jpf.console.info("[HTTP] Making request[" + id + "] using "
+            apf.console.info("[HTTP] Making request[" + id + "] using "
                 + (this.method || options.method || "GET") + " to " + url
                 + (autoroute
                     ? "<span style='color:green'>[via: " + httpUrl + "]</span>"
@@ -361,27 +361,27 @@ jpf.http = function(){
         var errorFound = false;
         try {
             if (options.nocache)
-                httpUrl = jpf.getNoCacheUrl(httpUrl);
+                httpUrl = apf.getNoCacheUrl(httpUrl);
 
             //#ifdef __WITH_QUERYAPPEND
-            if (jpf.appsettings.queryAppend) {
+            if (apf.appsettings.queryAppend) {
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + jpf.appsettings.queryAppend;
+                    + apf.appsettings.queryAppend;
             }
             //#endif
             
             //Currently we don't support html5 cross domain access
-            if (jpf.hasHtml5XDomain 
+            if (apf.hasHtml5XDomain 
               && httpUrl.match(/^http:\/\//) 
-              && !new jpf.url(httpUrl).isSameLocation())
+              && !new apf.url(httpUrl).isSameLocation())
                 throw new Error("Access Denied");
             
             http.open(this.method || options.method || "GET", httpUrl,
                 async, options.username || null, options.password || null);
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
-            if (!jpf.isSafari)
-                http.setRequestHeader("User-Agent", "Javeline TelePort 2.0"); //@deprecated
+            if (!apf.isSafari)
+                http.setRequestHeader("User-Agent", "Ajax.org Teleport 2.0"); //@deprecated
             http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             if (!options.headers || !options.headers["Content-type"])
                 http.setRequestHeader("Content-type", this.contentType
@@ -411,7 +411,7 @@ jpf.http = function(){
                         _self.receive(id);
                     }
                     http.open(this.method || options.method || "GET", (options.nocache
-                        ? jpf.getNoCacheUrl(httpUrl)
+                        ? apf.getNoCacheUrl(httpUrl)
                         : httpUrl), async);
 
                     this.queue[id].http = http;
@@ -425,7 +425,7 @@ jpf.http = function(){
             // Retry request by routing it
             if (!useOtherXH && this.autoroute && !autoroute) {
                 //#ifdef __SUPPORT_IE5
-                if (!jpf.isNot(id))
+                if (!apf.isNot(id))
                     clearInterval(this.queue[id].timer);
                 //#endif
 
@@ -437,7 +437,7 @@ jpf.http = function(){
 
             if (!useOtherXH) {
                 //Routing didn't work either... Throwing error
-                var noClear = callback ? callback(null, jpf.ERROR, {
+                var noClear = callback ? callback(null, apf.ERROR, {
                     userdata: options.userdata,
                     http    : http,
                     url     : url,
@@ -481,12 +481,12 @@ jpf.http = function(){
                     : "Browser is currently working offline";
 
                 //#ifdef __DEBUG
-                jpf.console.info(msg, "teleport");
+                apf.console.info(msg, "teleport");
                 //#endif
 
                 var state = window.navigator.onLine
-                    ? jpf.ERROR
-                    : jpf.TIMEOUT;
+                    ? apf.ERROR
+                    : apf.TIMEOUT;
 
                 // File not found
                 var noClear = callback ? callback(null, state, {
@@ -508,7 +508,7 @@ jpf.http = function(){
             return this.receive(id);
         }
         else {
-            if (jpf.isIE && location.protocol == "file:"
+            if (apf.isIE && location.protocol == "file:"
               && url.indexOf("http://") == -1) {
                 setTimeout(function(){
                     send.call(_self, true);
@@ -552,7 +552,7 @@ jpf.http = function(){
 
         // #ifdef __DEBUG
         if (!qItem.options.hideLogMessage) {
-            jpf.console.info("[HTTP] Receiving [" + id + "]"
+            apf.console.info("[HTTP] Receiving [" + id + "]"
                 + (http.isCaching
                     ? "[<span style='color:orange'>cached</span>]"
                     : "")
@@ -587,7 +587,7 @@ jpf.http = function(){
             if (http.status == 401) {
                 var wasDelayed = qItem.isAuthDelayed;
                 qItem.isAuthDelayed = true;
-                if (jpf.auth.authRequired(extra, wasDelayed) === true)
+                if (apf.auth.authRequired(extra, wasDelayed) === true)
                     return;
             }
             //#endif
@@ -608,10 +608,10 @@ jpf.http = function(){
             else {
                 try {
                     var xmlDoc = (http.responseXML && http.responseXML.documentElement)
-                        ? jpf.xmlParseError(http.responseXML)
-                        : jpf.getXmlDom(http.responseText);
+                        ? apf.xmlParseError(http.responseXML)
+                        : apf.getXmlDom(http.responseText);
 
-                    if (!jpf.supportNamespaces)
+                    if (!apf.supportNamespaces)
                         xmlDoc.setProperty("SelectionLanguage", "XPath");
 
                     extra.data = xmlDoc.documentElement;
@@ -627,7 +627,7 @@ jpf.http = function(){
             extra.message = errorMessage.join("\n");
 
             // Send callback error state
-            if (!callback || !callback(null, jpf.ERROR, extra))
+            if (!callback || !callback(null, apf.ERROR, extra))
                 this.clearQueueItem(id);
 
             return;
@@ -643,7 +643,7 @@ jpf.http = function(){
         //#endif
 
         //Http call was successfull Success
-        if (!callback || !callback(extra.data, jpf.SUCCESS, extra))
+        if (!callback || !callback(extra.data, apf.SUCCESS, extra))
             this.clearQueueItem(id);
 
         return extra.data;
@@ -675,10 +675,10 @@ jpf.http = function(){
         http.abort();
 
         // #ifdef __DEBUG
-        jpf.console.info("HTTP Timeout [" + id + "]", "teleport");
+        apf.console.info("HTTP Timeout [" + id + "]", "teleport");
         // #endif
 
-        var noClear = callback ? callback(null, jpf.TIMEOUT, {
+        var noClear = callback ? callback(null, apf.TIMEOUT, {
             userdata: qItem.options.userdata,
             http    : http,
             url     : qItem.url,
@@ -699,25 +699,25 @@ jpf.http = function(){
      * @param {Object}  extra      the information object given as a third argument of the http request callback.
      * @param {Number}  state      the return code of the http request.
      *   Possible values:
-     *   jpf.SUCCESS  the request was successfull
-     *   jpf.TIMEOUT  the request has timed out.
-     *   jpf.ERROR    an error has occurred while making the request.
-     *   jpf.OFFLINE  the request was made while the application was offline.
+     *   apf.SUCCESS  the request was successfull
+     *   apf.TIMEOUT  the request has timed out.
+     *   apf.ERROR    an error has occurred while making the request.
+     *   apf.OFFLINE  the request was made while the application was offline.
      * @param {JmlNode} [jmlNode]    the element receiving the error event.
      * @param {Error}   [oError]     the error to be thrown when the request is not retried.
      * @param {Number}  [maxRetries] the number of retries that are done before the request times out. Default is 3.
      */
     this.retryTimeout = function(extra, state, jmlNode, oError, maxRetries){
-        if (state == jpf.TIMEOUT
-          && extra.retries < (maxRetries || jpf.maxHttpRetries))
+        if (state == apf.TIMEOUT
+          && extra.retries < (maxRetries || apf.maxHttpRetries))
             return extra.tpModule.retry(extra.id);
 
-        oError = oError || new Error(jpf.formatErrorString(0,
-            this, "Communication " + (state == jpf.TIMEOUT
+        oError = oError || new Error(apf.formatErrorString(0,
+            this, "Communication " + (state == apf.TIMEOUT
                 ? "timeout"
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
 
-        if ((jmlNode || jpf).dispatchEvent("error", jpf.extend({
+        if ((jmlNode || apf).dispatchEvent("error", apf.extend({
             error   : oError,
             state   : state,
             bubbles : true
@@ -744,7 +744,7 @@ jpf.http = function(){
         clearInterval(this.queue[id].timer);
         //#endif
 
-        jpf.teleport.releaseHTTP(this.queue[id].http);
+        apf.teleport.releaseHTTP(this.queue[id].http);
 
         this.queue[id] = null;
         delete this.queue[id];
@@ -758,7 +758,7 @@ jpf.http = function(){
      * Example:
      * <code>
      *  function callback(data, state, extra){
-     *      if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+     *      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
@@ -777,7 +777,7 @@ jpf.http = function(){
         //#endif
 
         // #ifdef __DEBUG
-        jpf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
+        apf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         // #endif
 
         qItem.retries++;
@@ -815,7 +815,7 @@ jpf.http = function(){
                 var callback = self[x.childNodes[i].getAttribute("receive") || receive];
                 var options  = {
                     useXML  : x.childNodes[i].getAttribute("type") == "XML",
-                    async   : !jpf.isFalse(x.childNodes[i].getAttribute("async"))
+                    async   : !apf.isFalse(x.childNodes[i].getAttribute("async"))
                 }
 
                 this[x.childNodes[i].getAttribute("name")] = function(data, userdata){
@@ -843,7 +843,7 @@ jpf.http = function(){
             }
 
             var name = "http" + Math.round(Math.random() * 100000);
-            jpf.setReference(name, this);
+            apf.setReference(name, this);
 
             return name + ".getURL()";
         };
@@ -859,6 +859,6 @@ jpf.http = function(){
 
 // #endif
 
-//Init.addConditional(function(){jpf.Comm.register("http", "variables", HTTP);}, null, ['Kernel']);
-jpf.Init.run('http');
+//Init.addConditional(function(){apf.Comm.register("http", "variables", HTTP);}, null, ['Kernel']);
+apf.Init.run('http');
 

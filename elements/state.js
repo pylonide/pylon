@@ -23,7 +23,7 @@
 /**
  * @private
  */
-jpf.StateServer = {
+apf.StateServer = {
     states: {},
     groups: {},
     locs  : {},
@@ -44,20 +44,20 @@ jpf.StateServer = {
         if (!this.groups[name]) {
             this.groups[name] = [];
 
-            var pState = new jpf.state(null, "state");
+            var pState = new apf.state(null, "state");
             pState.parentNode = pNode;
-            pState.implement(jpf.JmlDom);
+            pState.implement(apf.JmlDom);
             pState.name   = name;
             pState.toggle = function(){
-                for (var next = 0, i = 0; i < jpf.StateServer.groups[name].length; i++) {
-                    if (jpf.StateServer.groups[name][i].active) {
+                for (var next = 0, i = 0; i < apf.StateServer.groups[name].length; i++) {
+                    if (apf.StateServer.groups[name][i].active) {
                         next = i + 1;
                         break;
                     }
                 }
 
-                jpf.StateServer.groups[name][
-                    (next == jpf.StateServer.groups[name].length) ? 0 : next
+                apf.StateServer.groups[name][
+                    (next == apf.StateServer.groups[name].length) ? 0 : next
                   ].activate();
             }
 
@@ -128,11 +128,11 @@ jpf.StateServer = {
  * @define state
  * @addnode global
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.state = apf.component(apf.NODE_HIDDEN, function(){
 
     /**** Properties and Attributes ****/
 
@@ -143,12 +143,12 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
      */
     this.$propHandlers["active"] = function(value){
         //Activate State
-        if (jpf.isTrue(value)) {
+        if (apf.isTrue(value)) {
             if (this.group) {
-                var nodes = jpf.StateServer.groups[this.group];
+                var nodes = apf.StateServer.groups[this.group];
                 if (!nodes) {
-                    jpf.StateServer.addGroup(this.group, this);
-                    nodes = jpf.StateServer.groups[this.group];
+                    apf.StateServer.addGroup(this.group, this);
+                    nodes = apf.StateServer.groups[this.group];
                 }
                 
                 for (var i = 0; i < nodes.length; i++) {
@@ -161,7 +161,7 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     //#ifdef __DEBUG
-                    throw new Error(jpf.formatErrorString(1013, this,
+                    throw new Error(apf.formatErrorString(1013, this,
                         "Setting State",
                         "Could not find object to give state: '"
                         + q[i][0] + "' on property '" + q[i][1] + "'"));
@@ -186,7 +186,7 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
             this.dispatchEvent("change");
 
             //#ifdef __DEBUG
-            jpf.console.info("Setting state '" + this.name + "' to ACTIVE");
+            apf.console.info("Setting state '" + this.name + "' to ACTIVE");
             //#endif
         }
 
@@ -196,7 +196,7 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
             this.dispatchEvent("change");
 
             //#ifdef __DEBUG
-            jpf.console.info("Setting state '" + this.name + "' to INACTIVE");
+            apf.console.info("Setting state '" + this.name + "' to INACTIVE");
             //#endif
         }
     };
@@ -237,14 +237,14 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$signalElements = [];
 
     this.$loadJml = function(x){
-        jpf.StateServer.addState(this);
+        apf.StateServer.addState(this);
 
         this.group = x.getAttribute("group");
         if (this.group)
-            jpf.StateServer.addGroup(this.group, this);
+            apf.StateServer.addGroup(this.group, this);
 
         if (x.getAttribute("location"))
-            jpf.StateServer.locs[x.getAttribute("location")] = this;
+            apf.StateServer.locs[x.getAttribute("location")] = this;
 
         //Properties initialization
         var attr = x.attributes;
@@ -262,9 +262,9 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
 
     this.$destroy = function(){
         this.$signalElements = null;
-        jpf.StateServer.removeState(this);
+        apf.StateServer.removeState(this);
         if (this.group)
-            jpf.StateServer.removeGroup(this.group, this);
+            apf.StateServer.removeGroup(this.group, this);
     };
 });
 

@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-jpf.editor.plugin('code', function() {
+apf.editor.plugin('code', function() {
     this.name        = 'code';
     this.icon        = 'code';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+h';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.noDisable   = true;
     this.regex       = null;
 
@@ -48,7 +48,7 @@ jpf.editor.plugin('code', function() {
 
             editor.plugins.active = this;
             // disable the editor...
-            editor.setProperty('state', jpf.editor.DISABLED);
+            editor.setProperty('state', apf.editor.DISABLED);
 
             // show the textarea and position it correctly...
             this.setSize(editor);
@@ -60,7 +60,7 @@ jpf.editor.plugin('code', function() {
             editor.plugins.active = null;
             
             oCont.style.display = "none";
-            editor.setProperty('state', jpf.editor.OFF);
+            editor.setProperty('state', apf.editor.OFF);
             
             propagateChange();
             
@@ -96,7 +96,7 @@ jpf.editor.plugin('code', function() {
             .replace(/\n/g, ''));
 
         try{
-            jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
+            apf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
         }
         catch(e){
             if (confirm("Er zit een fout in de html. Klik op OK om deze \
@@ -146,7 +146,7 @@ jpf.editor.plugin('code', function() {
         oToolbar = oCont.getElementsByTagName('div')[0];
         //oToolbar.className = "";
         this.editor.drawToolbars(oToolbar, 'codetoolbar',
-            'jpf.all[' + this.uniqueId + '].$buttonClick(event, this);', true);
+            'apf.all[' + this.uniqueId + '].$buttonClick(event, this);', true);
         // @todo make this hack disappear...
         oToolbar.innerHTML = oToolbar.innerHTML;
         var btns = oToolbar.getElementsByTagName("div");
@@ -155,14 +155,14 @@ jpf.editor.plugin('code', function() {
             if (!item) continue;
 
             oButtons[item] = btns[i];
-            jpf.setStyleClass(btns[i], 'editor_enabled',
+            apf.setStyleClass(btns[i], 'editor_enabled',
                 ['editor_selected', 'editor_disabled']);
             btns[i].disabled = false;
         }
 
         oPreview = oCont.getElementsByTagName('textarea')[0];//oCont.appendChild(document.createElement('textarea'));
         // make selections in IE possible.
-        if (jpf.isIE)
+        if (apf.isIE)
             oPreview.onselectstart = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
@@ -173,7 +173,7 @@ jpf.editor.plugin('code', function() {
         oCont.style.display  = "none";
         
         //#ifdef __WITH_WINDOW_FOCUS
-        jpf.sanitizeTextbox(oPreview);
+        apf.sanitizeTextbox(oPreview);
         // #endif
     }
 
@@ -185,9 +185,9 @@ jpf.editor.plugin('code', function() {
         oCont.style.top       = editor.oToolbar.offsetHeight + "px";
         oCont.style.width     = 
         oToolbar.style.width  = w + "px";
-        oPreview.style.width  = w - (jpf.isIE ? 2 : 0) + "px";
-        oCont.style.height    = h + (jpf.isIE ? 2 : 3) + "px";
-        oPreview.style.height = h - (jpf.isIE ? 26 : 24) + "px";
+        oPreview.style.width  = w - (apf.isIE ? 2 : 0) + "px";
+        oCont.style.height    = h + (apf.isIE ? 2 : 3) + "px";
+        oPreview.style.height = h - (apf.isIE ? 26 : 24) + "px";
     };
 
     var elements = {
@@ -200,7 +200,7 @@ jpf.editor.plugin('code', function() {
     };
 
     this.$buttonClick = function(e, oButton) {
-        jpf.setStyleClass(oButton, "active");
+        apf.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
         if (elements[item])
             insertElement.apply(this, elements[item]);
@@ -208,7 +208,7 @@ jpf.editor.plugin('code', function() {
         this.editor.$visualFocus();
         oPreview.focus();
 
-        jpf.setStyleClass(oButton, "", ["active"]);
+        apf.setStyleClass(oButton, "", ["active"]);
     }
 
     function insertElement(sStart, sEnd) {
@@ -216,13 +216,13 @@ jpf.editor.plugin('code', function() {
         var range, val, end;
         if (!sEnd) {
             // no end tag provided, so insert sStart at the current caret position
-            if (jpf.hasMsRangeObject) {
+            if (apf.hasMsRangeObject) {
                 range = document.selection.createRange();
                 range.collapse();
                 range.text = sStart;
                 range.moveEnd("character", sStart.length);
                 range.collapse();
-                if (jpf.window.focussed == this.editor)
+                if (apf.window.focussed == this.editor)
                     range.select();
             }
             else {
@@ -238,13 +238,13 @@ jpf.editor.plugin('code', function() {
         else {
             // end tag provided, so we need to encapsulate the selection with
             // sStart and sEnd
-            if (jpf.hasMsRangeObject) {
+            if (apf.hasMsRangeObject) {
                 range = document.selection.createRange();
                 val   = range.text;
                 range.text = sStart + val + sEnd;
                 range.moveStart("character", -(val.length + sEnd.length));
                 range.moveEnd("character", -sEnd.length);
-                if (jpf.window.focussed == this.editor)
+                if (apf.window.focussed == this.editor)
                     range.select();
             }
             else {
@@ -318,8 +318,8 @@ jpf.editor.plugin('code', function() {
 
     this.queryState = function(editor) {
         if (editor.plugins.active == this)
-            return jpf.editor.SELECTED;
-        return jpf.editor.OFF;
+            return apf.editor.SELECTED;
+        return apf.editor.OFF;
     };
 
     this.destroy = function() {

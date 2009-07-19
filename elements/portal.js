@@ -51,15 +51,15 @@
  * Remarks:
  * A docklet xml is a piece of jml that should be in the following form:
  * <code>
- *  <j:docklet xmlns:j="http://www.javeline.com/2005/jml" 
+ *  <j:docklet xmlns:j="http://ajax.org/2005/aml" 
  *    caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <j:script><![CDATA[
  *          function BillHistory(){
- *              //Create a Javeline class
- *              jpf.makeClass(this);
+ *              //Create a Ajax.org Class
+ *              apf.makeClass(this);
  *
  *              //Implement the portal.docklet baseclass
- *              this.implement(jpf.portal.docklet);
+ *              this.implement(apf.portal.docklet);
  *
  *              this.$init = function(xmlSettings, oDocklet){
  *                  //Process xml settings
@@ -83,13 +83,13 @@
  * @allowchild {smartbinding}
  * @addnode elements:portal
  *
- * @inherits jpf.Presentation
- * @inherits jpf.MultiSelect
- * @inherits jpf.DataBinding
- * @inherits jpf.JmlElement
- * @inherits jpf.Cache
+ * @inherits apf.Presentation
+ * @inherits apf.MultiSelect
+ * @inherits apf.DataBinding
+ * @inherits apf.JmlElement
+ * @inherits apf.Cache
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
@@ -99,7 +99,7 @@
  * @binding column    Determines the column in which the docklet is created.
  * @binding caption   Determines the caption of the docklet.
  */
-jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
 
@@ -179,7 +179,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$setCurrentFragment = function(fragment){
         this.oInt.appendChild(fragment);
 
-        if (!jpf.window.hasFocus(this))
+        if (!apf.window.hasFocus(this))
             this.blur();
     };
 
@@ -190,10 +190,10 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$setClearMessage = function(msg){
-        var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
+        var oEmpty = apf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
-            jpf.xmldb.setNodeValue(empty, msg || "");
+            apf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     };
@@ -207,7 +207,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var portalNode = this;
     function createDocklet(strXml, docklet, dataNode){
-        var uId = jpf.all.length;
+        var uId = apf.all.length;
         var col = [];
         strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
           function(m, id1, id2){
@@ -224,7 +224,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
               });
         }
         
-        var xmlNode = jpf.getJmlDocFromString(strXml).documentElement;
+        var xmlNode = apf.getJmlDocFromString(strXml).documentElement;
         
         /* Model replacement - needs to be build
          var models = xmlNode.selectNodes("//model/@id");
@@ -237,7 +237,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Load docklet
         docklet.$jml      = xmlNode;
-        docklet.skinset   = jpf.xmldb.getInheritedAttribute(_self.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+        docklet.skinset   = apf.xmldb.getInheritedAttribute(_self.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
         xmlNode.setAttribute("skinset", docklet.skinset);
         docklet.skin      = "docklet";
         docklet.skinName  = null;
@@ -251,7 +251,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
         
         docklet.$loadJml(xmlNode, name);
-        jpf.JmlParser.parseLastPass();
+        apf.JmlParser.parseLastPass();
 
         if (xmlNode.getAttribute("width"))
             docklet.setProperty("width", xmlNode.getAttribute("width"));
@@ -278,11 +278,11 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
         var pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
-        var docklet   = new jpf.modalwindow(pHtmlNode, "window");
-        docklet.implement(jpf.modalwindow.widget);
+        var docklet   = new apf.modalwindow(pHtmlNode, "window");
+        docklet.implement(apf.modalwindow.widget);
 
         docklet.parentNode = this;
-        docklet.implement(jpf.JmlDom);
+        docklet.implement(apf.JmlDom);
         //this.applyRuleSetOnNode("border", xmlNode);
 
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
@@ -290,12 +290,12 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (docklet_cache[srcUrl]) {
             var strXml = docklet_cache[srcUrl];
-            //if (jpf.isSafariOld)
-                //xmlNode = jpf.getJmlDocFromString(xmlNode).documentElement;
+            //if (apf.isSafariOld)
+                //xmlNode = apf.getJmlDocFromString(xmlNode).documentElement;
             createDocklet(strXml, docklet, dataNode);
         }
         else {
-            jpf.setModel(srcUrl, {
+            apf.setModel(srcUrl, {
                 load: function(xmlNode){
                     if (!xmlNode || this.isLoaded)
                         return;
@@ -304,7 +304,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
                     var strXml = xmlNode.xml || xmlNode.serialize();
 
                     //#ifdef __SUPPORT_SAFARI2
-                    if (jpf.isSafariOld) {
+                    if (apf.isSafariOld) {
                         strXml = strXml.replace(/name/, "name='"
                             + xmlNode.getAttribute("name") + "'");
                         docklet_cache[srcUrl] = strXml;
@@ -332,7 +332,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
-            jpf.JmlParser.parseLastPass();
+            apf.JmlParser.parseLastPass();
         }
     });
 
@@ -352,7 +352,7 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$columns   = [];
     this.addColumn = function(size){
         this.$getNewContext("column");
-        var col = jpf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
+        var col = apf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
         var id = this.$columns.push(col) - 1;
 
         //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
@@ -377,22 +377,22 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         }
 
         //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
 
         if (document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);
     };
 }).implement(
-    jpf.Cache,
-    jpf.Presentation,
-    jpf.MultiSelect,
-    jpf.DataBinding
+    apf.Cache,
+    apf.Presentation,
+    apf.MultiSelect,
+    apf.DataBinding
 );
 
 /**
  * @constructor
  */
-jpf.portal.docklet = function(){
+apf.portal.docklet = function(){
     this.init = function(xmlSettings, oWidget){
         this.xmlSettings = xmlSettings
         this.oWidget = oWidget;

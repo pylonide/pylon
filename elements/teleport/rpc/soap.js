@@ -25,9 +25,9 @@
 /**
  * Implementation of the SOAP RPC protocol.
  * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
- * plugin of jpf.teleport. 
+ * plugin of apf.teleport. 
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" 
@@ -65,32 +65,32 @@
  *
  * @addenum rpc[@protocol]:soap
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @inherits jpf.rpc
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @inherits apf.rpc
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.soap = function(){
+apf.soap = function(){
     this.supportMulticall = false;
     this.method         = "POST";
     this.useXML           = true;
 
     this.nsName           = "m";
-    this.nsURL            = "http://www.javeline.org";
+    this.nsURL            = "http://www.ajax.org";
     
     this.namedArguments   = true;
 
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
 
     // Stand Alone
     if (!this.uniqueId) {
-        jpf.makeClass(this);
-        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
+        apf.makeClass(this);
+        this.implement(apf.BaseComm, apf.http, apf.rpc);
     }
 
     // Serialize Objects
@@ -231,7 +231,7 @@ jpf.soap = function(){
                 19980717T14:08:55
                 */
 
-                var sn = jpf.dateSeparator;
+                var sn = apf.dateSeparator;
 
                 if(/^(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})/
                   .test(data.firstChild.nodeValue)){//data.text)){
@@ -249,7 +249,7 @@ jpf.soap = function(){
                     : parseInt(data.firstChild.nodeValue))
                 break;
             case "SOAP-ENC:base64":
-                return jpf.crypt.Base64.decode(data.firstChild.nodeValue);
+                return apf.crypt.Base64.decode(data.firstChild.nodeValue);
                 break;
             case "SOAP-ENC:Array":
                 var nodes = data.childNodes;
@@ -266,7 +266,7 @@ jpf.soap = function(){
             default:
                 //Custom Type
                 if (type && !self[type])
-                    throw new Error(jpf.formatErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
+                    throw new Error(apf.formatErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
 
                 var nodes = data.childNodes;
                 var o = type ? new self[type] : {};
@@ -302,7 +302,7 @@ jpf.soap = function(){
         var data = extra.data;
 
         // IE Hack
-        if (!jpf.supportNamespaces)
+        if (!apf.supportNamespaces)
             data.ownerDocument.setProperty("SelectionNamespaces",
                 "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xds='http://www.w3.org/2001/XMLSchema' xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'");
 

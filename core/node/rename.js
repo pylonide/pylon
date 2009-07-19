@@ -50,11 +50,11 @@ var __RENAME__ = 1 << 10;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.Rename = function(){
+apf.Rename = function(){
     this.$regbase     = this.$regbase|__RENAME__;
 
     this.canrename    = true;
@@ -92,7 +92,7 @@ jpf.Rename = function(){
     }
     
     function $keydown(e){
-        if (!this.renaming && jpf.isCharacter(e.keyCode))
+        if (!this.renaming && apf.isCharacter(e.keyCode))
             this.startRename();
     }
     
@@ -130,7 +130,7 @@ jpf.Rename = function(){
             return;
 
         clearTimeout(renameTimer);
-        renameTimer = setTimeout('jpf.lookup('
+        renameTimer = setTimeout('apf.lookup('
             + this.uniqueId + ').startRename()', time || 400);
     };
 
@@ -166,8 +166,8 @@ jpf.Rename = function(){
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
         elCaption.host = this;
 
-        if (jpf.isTrue(this.$getOption("main", "scalerename"))) {
-            var diff = jpf.getWidthDiff(this.oTxt);
+        if (apf.isTrue(this.$getOption("main", "scalerename"))) {
+            var diff = apf.getWidthDiff(this.oTxt);
             this.oTxt.style.width = (wdt - diff - 3) + "px";
         }
 
@@ -176,12 +176,12 @@ jpf.Rename = function(){
             ? this.$getCaptionXml(renameSubject)
             : this.getNodeFromRule("caption", renameSubject);
 
-        this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] = startEmpty || !xmlNode
+        this.oTxt[apf.hasContentEditable ? "innerHTML" : "value"] = startEmpty || !xmlNode
             ? ""
             : (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
                 ? unescape(decodeURI(xmlNode.nodeValue))
-                : (jpf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
-                    ? jpf.xmldb.getNodeValue(xmlNode)
+                : (apf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
+                    ? apf.xmldb.getNodeValue(xmlNode)
                     : this.applyRuleSetOnNode("caption", renameSubject))) || "";
 
         this.oTxt.unselectable = "Off";
@@ -205,7 +205,7 @@ jpf.Rename = function(){
             return false;
 
         if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1) {
-            if (jpf.isIE8 || jpf.isIE7Emulate)
+            if (apf.isIE8 || apf.isIE7Emulate)
                 this.oTxt.blur();
             
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
@@ -223,13 +223,13 @@ jpf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable
+            this.replacedNode.innerHTML = this.oTxt[apf.hasContentEditable
                 ? "innerText"
                 : "value"];
 
              //this.$selected.innerHTML = this.oTxt.innerHTML;
             this.rename(renameSubject,
-                this.oTxt[jpf.hasContentEditable ? "innerText" : "value"]
+                this.oTxt[apf.hasContentEditable ? "innerText" : "value"]
                 .replace(/<.*?nobr>/gi, ""));
         }
 
@@ -278,10 +278,10 @@ jpf.Rename = function(){
     //#endif
 
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
-        if (jpf.hasContentEditable) {
+        if (apf.hasContentEditable) {
             this.oTxt = this.pHtmlDoc.createElement("DIV");
             this.oTxt.contentEditable = true;
-            if (jpf.isIE6)
+            if (apf.isIE6)
                 this.oTxt.style.width = "1px";
             //this.oTxt.canHaveHTML = false;
         }
@@ -292,8 +292,8 @@ jpf.Rename = function(){
         }
         
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
-            jpf.sanitizeTextbox(this.oTxt);
+        if (apf.hasFocusBug)
+            apf.sanitizeTextbox(this.oTxt);
         //#endif
 
         this.oTxt.refCount         = 0;
@@ -304,7 +304,7 @@ jpf.Rename = function(){
         };
         // #ifdef __WITH_WINDOW_FOCUS
         //this.oTxt.host = this;
-        jpf.sanitizeTextbox(this.oTxt);
+        apf.sanitizeTextbox(this.oTxt);
         // #endif
 
         this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
@@ -314,11 +314,11 @@ jpf.Rename = function(){
             if (!this.host.$autocomplete)
                 return;
 
-            this.host.$lookup(this[jpf.hasContentEditable ? "innerHTML" : "value"]);
+            this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
         }
 
         this.oTxt.select = function(){
-            if (!jpf.hasMsRangeObject)
+            if (!apf.hasMsRangeObject)
                 return this.focus();
 
             var r = document.selection.createRange();
@@ -326,7 +326,7 @@ jpf.Rename = function(){
             try {
                 r.moveToElementText(this);
 
-                if (jpf.isFalse(this.host.$getOption("main", "selectrename")) 
+                if (apf.isFalse(this.host.$getOption("main", "selectrename")) 
                   || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
                     r.collapse(this.host.$renameStartCollapse);
             } catch(e) {} //BUG!!!!
@@ -335,21 +335,21 @@ jpf.Rename = function(){
         };
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
+        if (apf.hasFocusBug) {
             this.oTxt.onfocus = function(){
-                if (jpf.window)
-                    jpf.window.$focusfix2();
+                if (apf.window)
+                    apf.window.$focusfix2();
             };
         }
         //#endif
 
         this.oTxt.onblur = function(){
-            if (jpf.isGecko)
+            if (apf.isGecko)
                 return; //bug in firefox calling onblur too much
 
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.window.$blurfix();
+            if (apf.hasFocusBug)
+                apf.window.$blurfix();
             //#endif
 
             if (this.host.$autocomplete)

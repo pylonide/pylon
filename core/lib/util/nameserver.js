@@ -24,7 +24,7 @@
 /**
  * @private
  */
-jpf.namespace("nameserver", {
+apf.namespace("nameserver", {
     lookup : {},
     
     add : function(type, item){
@@ -70,7 +70,7 @@ jpf.namespace("nameserver", {
         var name, arr = [];
         for (name in this.lookup[type]) {
             //#ifdef __SUPPORT_SAFARI2
-            if (jpf.isSafariOld
+            if (apf.isSafariOld
               && (!this.lookup[type][name]
               || typeof this.lookup[type][name] != "object"))
                 continue;
@@ -97,12 +97,12 @@ jpf.namespace("nameserver", {
  * Object which provides a means to store key values pairs in a named context.
  * This objects primary purpose is to provide a way to serialize the state
  * of all the custom state you introduce when building the application. This way
- * you can use {@link element.offline jpf.offline} to start the application in 
+ * you can use {@link element.offline apf.offline} to start the application in 
  * the exact state it was when your user closed the app.
  *
  * @see core.storage
  */
-jpf.registry = jpf.extend({
+apf.registry = apf.extend({
     /**
      * Stores a key value pair.
      * @param {String} key       the identifier of the information.
@@ -165,14 +165,14 @@ jpf.registry = jpf.extend({
             }
         }
     }
-}, jpf.nameserver);
+}, apf.nameserver);
 
 /**
  * @private
  */
-jpf.registry.lookup = {};
+apf.registry.lookup = {};
 
-jpf.registry.get = function(key, namespace){
+apf.registry.get = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };
 

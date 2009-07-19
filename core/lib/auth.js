@@ -107,7 +107,7 @@
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
  *   bubbles: yes
  *
- * @inherits jpf.Class
+ * @inherits apf.Class
  *
  * @attribute {String}  login           the {@link term.datainstruction data instruction} on how to log in to a service.
  * @attribute {String}  logout          the {@link term.datainstruction data instruction} on how to log out of a service.
@@ -128,7 +128,7 @@
  *
  * @default_private
  */
-jpf.auth = {
+apf.auth = {
     services   : {},
     cache      : {},
     retry      : true,
@@ -148,7 +148,7 @@ jpf.auth = {
     inProcess  : 0,
 
     init : function(jml){
-        jpf.makeClass(this);
+        apf.makeClass(this);
 
         this.inited = true;
         if (!jml)
@@ -161,10 +161,10 @@ jpf.auth = {
         }
 
         if (jml.getAttribute("retry"))
-            this.retry = jpf.isTrue(jml.getAttribute("retry"));
+            this.retry = apf.isTrue(jml.getAttribute("retry"));
 
         if (jml.getAttribute("autostart"))
-            this.autoStart = jpf.isTrue(jml.getAttribute("autostart"));
+            this.autoStart = apf.isTrue(jml.getAttribute("autostart"));
 
         //Handling
         var loginWindow  = jml.getAttribute("window");
@@ -194,7 +194,7 @@ jpf.auth = {
             });
 
             function failFunction(e){
-                var st = (e.state == jpf.TIMEOUT
+                var st = (e.state == apf.TIMEOUT
                     ? errorState
                     : failState) || failState
 
@@ -228,7 +228,7 @@ jpf.auth = {
                 }
 
                 if (e.data && modelLogin) {
-                    var model = jpf.nameserver.get("model", modelLogin);
+                    var model = apf.nameserver.get("model", modelLogin);
                     if (model) model.load(e.data);
                 }
             });
@@ -241,7 +241,7 @@ jpf.auth = {
 
             //#ifdef __DEBUG
             if (!nodes[i].getAttribute("name")) {
-                throw new Error(jpf.formatErrorString(0, this, "Parsing \
+                throw new Error(apf.formatErrorString(0, this, "Parsing \
                     login settings", "Invalid format for the service tag, \
                     missing name attribute: <j:service name='' />", nodes[i]));
             }
@@ -260,9 +260,9 @@ jpf.auth = {
         }
 
         if (this.autoStart) {
-            jpf.addEventListener("load", function(){
-                jpf.auth.authRequired();
-                jpf.removeEventListener("load", arguments.callee);
+            apf.addEventListener("load", function(){
+                apf.auth.authRequired();
+                apf.removeEventListener("load", arguments.callee);
             });
         }
     },
@@ -293,9 +293,9 @@ jpf.auth = {
             if (len != ++pos)
                 return;
 
-            jpf.auth.inProcess = 0; //Idle
-            jpf.auth.loggedIn  = true;
-            jpf.auth.clearQueue();
+            apf.auth.inProcess = 0; //Idle
+            apf.auth.loggedIn  = true;
+            apf.auth.clearQueue();
 
             if (callback)
                 callback();
@@ -319,7 +319,7 @@ jpf.auth = {
             return false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Retrying login...", "auth");
+        apf.console.info("Retrying login...", "auth");
         //#endif
 
         //@todo shouldn't I be using inProces here?
@@ -329,9 +329,9 @@ jpf.auth = {
             if (len != ++pos)
                 return;
 
-            jpf.auth.inProcess = 0; //Idle
-            jpf.auth.loggedIn  = true;
-            jpf.auth.clearQueue();
+            apf.auth.inProcess = 0; //Idle
+            apf.auth.loggedIn  = true;
+            apf.auth.clearQueue();
         }
 
         for (var name in this.services) {
@@ -349,18 +349,18 @@ jpf.auth = {
         var _self   = options.userdata = this;
 
         //#ifdef __WITH_OFFLINE
-        options.ignoreOffline = true; //We don't want to be cached by jpf.offline
+        options.ignoreOffline = true; //We don't want to be cached by apf.offline
         //#endif
 
         //#ifdef __DEBUG
-        jpf.console.info("Logging " + type + " on service '"
+        apf.console.info("Logging " + type + " on service '"
             + service + "'", "auth");
         //#endif
 
         //Execute login call
-        jpf.saveData(xmlNode.getAttribute("log" + type), null, options,
+        apf.saveData(xmlNode.getAttribute("log" + type), null, options,
           function(data, state, extra){
-            if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+            if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
 
             /*
@@ -368,7 +368,7 @@ jpf.auth = {
                 here to test the data for login information
             */
             var result = _self.dispatchEvent("log" + type + "check",
-                jpf.extend({
+                apf.extend({
                     state   : state,
                     data    : data,
                     bubbles : true
@@ -376,23 +376,23 @@ jpf.auth = {
 
             var loginFailed = typeof result == "boolean"
                 ? !result
-                : !(state == jpf.SUCCESS || type == "out" && extra.http.status == 401);
+                : !(state == apf.SUCCESS || type == "out" && extra.http.status == 401);
 
             if (loginFailed) {
-                jpf.auth.inProcess = 0; //Idle
+                apf.auth.inProcess = 0; //Idle
 
                 if (isRelogin) //If we're retrying then we'll step out here
                     return _self.authRequired();
 
                 //#ifdef __DEBUG
-                jpf.console.info("Log " + type + " failure for service '"
+                apf.console.info("Log " + type + " failure for service '"
                     + service + "'", "auth");
                 //#endif
 
-                var commError = new Error(jpf.formatErrorString(0, null,
+                var commError = new Error(apf.formatErrorString(0, null,
                     "Logging " + type, "Error logging in: " + extra.message));
 
-                if (_self.dispatchEvent("log" + type + "fail", jpf.extend({
+                if (_self.dispatchEvent("log" + type + "fail", apf.extend({
                     error   : commError,
                     state   : state,
                     bubbles : true
@@ -420,20 +420,20 @@ jpf.auth = {
                 if (_self.cache[service || "default"])
                      _self.cache[service || "default"] = null;
                 
-                jpf.auth.authRequired();
+                apf.auth.authRequired();
             }
 
             if (callback)
                 callback();
 
-            _self.dispatchEvent("log" + type + "success", jpf.extend({
+            _self.dispatchEvent("log" + type + "success", apf.extend({
                 state   : state,
                 data    : data,
                 bubbles : true
             }, extra));
 
             //#ifdef __DEBUG
-            jpf.console.info("Log " + type + " success for service '"
+            apf.console.info("Log " + type + " success for service '"
                 + service + "'", "auth");
             //#endif
         });
@@ -466,7 +466,7 @@ jpf.auth = {
             //#ifdef __DEBUG
             //Dunno what's up, lets tell the developer
             else
-                jpf.console.warn("Unable to retry queue item after \
+                apf.console.warn("Unable to retry queue item after \
                     successfull logging in. It seems the protocol that sent \
                     the message doesn't allow it.");
             //#endif
@@ -523,9 +523,9 @@ jpf.auth = {
             /*
                 Apparently our credentials aren't valid anymore,
                 or retry is turned off. If this event returns false
-                the developer will call jpf.auth.login() at a later date.
+                the developer will call apf.auth.login() at a later date.
             */
-            var result = this.dispatchEvent("authrequired", jpf.extend({
+            var result = this.dispatchEvent("authrequired", apf.extend({
                 bubbles : true
             }, options));
         }

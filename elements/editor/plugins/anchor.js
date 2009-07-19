@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-jpf.editor.plugin('anchor', function() {
+apf.editor.plugin('anchor', function() {
     this.name        = 'anchor';
     this.icon        = 'anchor';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+a';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ jpf.editor.plugin('anchor', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -65,13 +65,13 @@ jpf.editor.plugin('anchor', function() {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = editor.selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute('name'))
-            return jpf.editor.ON;
+            return apf.editor.ON;
 
         return this.state;
     };
 
     this.submit = function(e) {
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
 
         if (!this.oName.value) return;
 
@@ -95,14 +95,14 @@ jpf.editor.plugin('anchor', function() {
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
         this.appendJmlNode(
-            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+            '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
              <j:button caption="Insert" \
-               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',
           document.getElementById(idButton));
         this.oName = document.getElementById(idName);
         //#ifdef __WITH_WINDOW_FOCUS
-        jpf.sanitizeTextbox(this.oName);
+        apf.sanitizeTextbox(this.oName);
         // #endif
         return panelBody;
     };

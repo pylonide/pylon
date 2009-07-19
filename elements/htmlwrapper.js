@@ -25,19 +25,19 @@
  * @constructor
  */
 
-jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
-    this.uniqueId  = jpf.all.push(this) - 1;
-    this.implement = jpf.implement;
+apf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
+    this.uniqueId  = apf.all.push(this) - 1;
+    this.implement = apf.implement;
     this.oExt      = htmlNode;
     this.pHtmlDoc  = document;
     this.pHtmlNode = pHtmlNode;
     
     // #ifdef __WITH_ANCHORING
-    this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
+    this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
     // #endif
     
     // #ifdef __WITH_ALIGNMENT
-    this.implement(jpf.Alignment); /** @inherits jpf.Alignment */
+    this.implement(apf.Alignment); /** @inherits apf.Alignment */
     // #endif
     
     var copy = htmlNode.cloneNode();
@@ -45,7 +45,7 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
 
     // @todo : check this code, it looks disfuncional to me.
     this.enableAlignment = function(purge){
-        var l = jpf.layout.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
+        var l = apf.layout.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
         if (!this.aData) {
             if (x.getAttribute(namespace + ":align")) 
                 x.setAttribute("align", x.getAttribute(namespace + ":align"));
@@ -66,7 +66,7 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
             if (x.getAttribute(namespace + ":min-height")) 
                 x.setAttribute("min-height", x.getAttribute(namespace + ":min-height"));
             
-            this.aData = jpf.layout.parseXml(x, l, this);
+            this.aData = apf.layout.parseXml(x, l, this);
             this.aData.stackId = this.parentNode.aData.children.push(this.aData) - 1;
             this.aData.parent = this.parentNode;
         }

@@ -25,7 +25,7 @@
  * @constructor
  * @private
  */
-jpf.AbstractEvent = function(event, win) {
+apf.AbstractEvent = function(event, win) {
     win = win || window;
     var doc = win.document;
     event = event || win.event;
@@ -41,7 +41,7 @@ jpf.AbstractEvent = function(event, win) {
 
     if (this.type.indexOf("key") != -1) {
         this.code = event.which || event.keyCode;
-        /*this.key = jpf.AbstractEvent.KEYS.fromCode(this.code);
+        /*this.key = apf.AbstractEvent.KEYS.fromCode(this.code);
         if (this.type == 'keydown') {
             var fKey = this.code - 111;
             if (fKey > 0 && fKey < 13)
@@ -105,7 +105,7 @@ jpf.AbstractEvent = function(event, win) {
     };
 };
 
-jpf.AbstractEvent.KEYS = {
+apf.AbstractEvent.KEYS = {
     'enter'    : 13,
     'up'       : 38,
     'down'     : 40,
@@ -126,11 +126,11 @@ jpf.AbstractEvent.KEYS = {
     }
 };
 
-jpf.AbstractEvent.stop = function(event) {
-    return (new jpf.AbstractEvent(event)).stop();
+apf.AbstractEvent.stop = function(event) {
+    return (new apf.AbstractEvent(event)).stop();
 };
 
-jpf.AbstractEvent.addListener = function(el, type, fn){
+apf.AbstractEvent.addListener = function(el, type, fn){
     if (el.addEventListener)
         el.addEventListener(type, fn, false);
     else if (el.attachEvent)
@@ -138,7 +138,7 @@ jpf.AbstractEvent.addListener = function(el, type, fn){
     return this;
 };
 
-jpf.AbstractEvent.removeListener = function(el, type, fn){
+apf.AbstractEvent.removeListener = function(el, type, fn){
     if (el.removeEventListener)
         el.removeEventListener(type, fn, false);
     else if (el.detachEvent)

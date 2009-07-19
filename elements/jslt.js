@@ -38,13 +38,13 @@
  * @allowchild [cdata]
  * @addnode elements:jslt
  *
- * @inherits jpf.DataBinding
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
     this.$hasStateMessages = true;
     this.mainBind = "contents";
     this.focussable = false;
@@ -58,14 +58,14 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.oExt)
             return;
 
-        jpf.setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        apf.setStyleClass(this.oExt, this.baseCSSname + "Focus");
     };
 
     this.$blur = function(){
         if (!this.oExt)
             return;
 
-        jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
     this.getValue = function(){
@@ -76,15 +76,15 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
         if (lastClass)
             this.$removeClearMessage();
-        jpf.setStyleClass(this.oExt, 
+        apf.setStyleClass(this.oExt, 
             (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
         
         if (msg) {
             if (this.oInt.offsetHeight 
-              && jpf.getStyle(this.oInt, "height") == "auto" 
+              && apf.getStyle(this.oInt, "height") == "auto" 
               && (changedHeight = true))
                 this.oInt.style.height = (this.oInt.offsetHeight 
-                  - jpf.getHeightDiff(this.oInt)) + "px";
+                  - apf.getHeightDiff(this.oInt)) + "px";
             this.oInt.innerHTML = msg;
             lastMsg = this.oInt.innerHTML;
         }
@@ -92,7 +92,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$removeClearMessage = function(){
         if (lastClass) {
-            jpf.setStyleClass(this.oExt, "", [lastClass]);
+            apf.setStyleClass(this.oExt, "", [lastClass]);
             lastClass = null;
         }
         
@@ -111,13 +111,13 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (this.createJml) {
             if (typeof code == "string") 
-                code = jpf.xmldb.getXml(code);
+                code = apf.xmldb.getXml(code);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
             // of the this.$jml xml. 
-            jpf.JmlParser.parseChildren(value, this.oInt, this);
-            if (jpf.JmlParser.inited) 
-                jpf.JmlParser.parseLastPass();
+            apf.JmlParser.parseChildren(value, this.oInt, this);
+            if (apf.JmlParser.inited) 
+                apf.JmlParser.parseLastPass();
         }
         else {
             this.oInt.innerHTML = value;
@@ -134,7 +134,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(this.$jml)
+        this.oInt = this.oExt = apf.isParsing && apf.xmldb.isOnlyChild(this.$jml)
             ? this.pHtmlNode 
             : this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.host = this;
@@ -144,7 +144,7 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        this.createJml = jpf.isTrue(x.getAttribute("jml"));
+        this.createJml = apf.isTrue(x.getAttribute("jml"));
         
         //Events
         var a, i, attr = x.attributes;
@@ -165,12 +165,12 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
                 </bindings>\
             </smartbinding>";
 
-            jpf.JmlParser.addToSbStack(this.uniqueId, 
-                new jpf.smartbinding(null, jpf.xmldb.getXml(strBind)));
+            apf.JmlParser.addToSbStack(this.uniqueId, 
+                new apf.smartbinding(null, apf.xmldb.getXml(strBind)));
         }
     };
 }).implement(
-    jpf.DataBinding
+    apf.DataBinding
 );
 
 // #endif

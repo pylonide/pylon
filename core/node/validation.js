@@ -48,11 +48,11 @@ var __VALIDATION__ = 1 << 6;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.Validation = function(){
+apf.Validation = function(){
     this.isActive = true;
     this.$regbase = this.$regbase | __VALIDATION__;
 
@@ -227,7 +227,7 @@ jpf.Validation = function(){
 
         errBox.setMessage(this.invalidmsg);
         
-        jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
+        apf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         this.showMe(); //@todo scroll refHtml into view
 
         errBox.display(this);
@@ -237,7 +237,7 @@ jpf.Validation = function(){
             this.select(this.validityState.errorXml);
         //#endif
         
-        if (jpf.window.focussed && jpf.window.focussed != this)
+        if (apf.window.focussed && apf.window.focussed != this)
             this.focus(null, {mouse:true}); //arguable...
     };
 
@@ -307,15 +307,15 @@ jpf.Validation = function(){
      *   {String} xsd:unsignedShort
      *   {String} xsd:unsignedByte
      *   {String} xsd:positiveInteger
-     *   {String} jpf:url
-     *   {String} jpf:website
-     *   {String} jpf:email
-     *   {String} jpf:creditcard
-     *   {String} jpf:expdate
-     *   {String} jpf:wechars
-     *   {String} jpf:phonenumber
-     *   {String} jpf:faxnumber
-     *   {String} jpf:mobile
+     *   {String} apf:url
+     *   {String} apf:website
+     *   {String} apf:email
+     *   {String} apf:creditcard
+     *   {String} apf:expdate
+     *   {String} apf:wechars
+     *   {String} apf:phonenumber
+     *   {String} apf:faxnumber
+     *   {String} apf:mobile
      * @attribute  {Integer}  min          the minimal value for which the value of this element is valid.
      * @attribute  {Integer}  max          the maximum value for which the value of this element is valid.
      * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
@@ -329,7 +329,7 @@ jpf.Validation = function(){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         /* Temp disabled, because I don't understand it (RLD)
         this.addEventListener("beforechange", function(){
-            if (this.xmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
+            if (this.xmlRoot && apf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
         });*/
 
@@ -346,9 +346,9 @@ jpf.Validation = function(){
             if (y && y.tagName && y.tagName.match(/submitform|xforms$/)) {
                 // #ifdef __DEBUG
                 if (!y.tagName.match(/submitform|xforms$/))
-                    throw new Error(jpf.formatErrorString(1070, this, this.tagName, "Could not find Form element whilst trying to bind to it's Data."));
+                    throw new Error(apf.formatErrorString(1070, this, this.tagName, "Could not find Form element whilst trying to bind to it's Data."));
                 if (!y.getAttribute("id"))
-                    throw new Error(jpf.formatErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
+                    throw new Error(apf.formatErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
                 // #endif
 
                 this.form = eval(y.getAttribute("id"));
@@ -358,7 +358,7 @@ jpf.Validation = function(){
 
         // validgroup
         if (!this.form && !x.getAttribute("validgroup")) {
-            var vgroup = jpf.xmldb.getInheritedAttribute(x, "validgroup");
+            var vgroup = apf.xmldb.getInheritedAttribute(x, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
@@ -389,10 +389,10 @@ jpf.Validation = function(){
                 vgroup = value;
             }
             else {
-                vgroup = jpf.nameserver.get("validgroup", value);
+                vgroup = apf.nameserver.get("validgroup", value);
             }
 
-            this.$validgroup = vgroup || new jpf.ValidationGroup(value);
+            this.$validgroup = vgroup || new apf.ValidationGroup(value);
             this.$validgroup.add(this);
 
             /*
@@ -427,10 +427,10 @@ jpf.Validation = function(){
             return this.$setRule("datatype");
 
         this.$setRule("datatype", this.multiselect
-            ? "this.xmlRoot && jpf.XSDParser.checkType('"
+            ? "this.xmlRoot && apf.XSDParser.checkType('"
                 + value + "', this.getTraverseNodes())"
-            : "jpf.XSDParser.matchType(value, '" + value + "')");
-        //this.xmlRoot && jpf.XSDParser.checkType('" + value + "', this.xmlRoot) || !this.xmlRoot && 
+            : "apf.XSDParser.matchType(value, '" + value + "')");
+        //this.xmlRoot && apf.XSDParser.checkType('" + value + "', this.xmlRoot) || !this.xmlRoot && 
     };
     //#endif
 
@@ -503,18 +503,18 @@ jpf.Validation = function(){
             rvCache[value] = -1;
             
             var instr = this.$jml.getAttribute('valid-test').split("==");
-            jpf.getData(instr[0], this.xmlRoot, {
+            apf.getData(instr[0], this.xmlRoot, {
                value : this.getValue() 
             }, function(data, state, extra){
-                  if (state != jpf.SUCCESS) {
-                      if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                  if (state != apf.SUCCESS) {
+                      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
                           return extra.tpModule.retry(extra.id);
                       else {
-                          var commError = new Error(jpf.formatErrorString(0, _self, 
+                          var commError = new Error(apf.formatErrorString(0, _self, 
                             "Validating entry at remote source", 
                             "Communication error: \n\n" + extra.message));
 
-                          if (_self.dispatchEvent("error", jpf.extend({
+                          if (_self.dispatchEvent("error", apf.extend({
                             error : commError, 
                             state : status
                           }, extra)) !== false)
@@ -523,7 +523,7 @@ jpf.Validation = function(){
                       }
                   }
 
-                  rvCache[value] = instr[1] ? data == instr[1] : jpf.isTrue(data);
+                  rvCache[value] = instr[1] ? data == instr[1] : apf.isTrue(data);
                   
                   if(!rvCache[value]){
                     if (!_self.hasFocus())
@@ -581,16 +581,16 @@ jpf.Validation = function(){
  *
  * @event validation Fires when the validation group isn't validated.
  *
- * @inherits jpf.Class
+ * @inherits apf.Class
  * @constructor
  * @default_private
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.ValidationGroup = function(name){
-    jpf.makeClass(this);
+apf.ValidationGroup = function(name){
+    apf.makeClass(this);
 
     /**
      * When set to true, only visible elements are validated. Default is false.
@@ -617,19 +617,19 @@ jpf.ValidationGroup = function(name){
     this.remove     = function(o){ this.childNodes.remove(o); };
 
     if (name)
-        jpf.setReference(name, this);
+        apf.setReference(name, this);
 
     this.name = name || "validgroup" + this.uniqueId;
-    jpf.nameserver.register("validgroup", this.name, this);
+    apf.nameserver.register("validgroup", this.name, this);
 
     /**
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[Javeline Validation Group]";
+        return "[APF Validation Group]";
     };
 
-    var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
+    var errbox; //@todo think about making this global apf.ValidationGroup.errbox
     /**
      * Retrieves {@link element.errorbox} used for a specified element.
      *
@@ -639,9 +639,9 @@ jpf.ValidationGroup = function(name){
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {
-            errbox           = new jpf.errorbox(null, "errorbox");
+            errbox           = new apf.errorbox(null, "errorbox");
             errbox.pHtmlNode = o.oExt.parentNode;
-            errbox.skinset   = jpf.xmldb.getInheritedAttribute(o.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            errbox.skinset   = apf.xmldb.getInheritedAttribute(o.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             var cNode        = o.$jml.ownerDocument.createElement("errorbox");
             errbox.loadJml(cNode);
         }
@@ -745,7 +745,7 @@ jpf.ValidationGroup = function(name){
                 }
             //#ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Validating Page",
                     "Error in javascript validation string of page: '"
                     + page.validation + "'", page.$jml));

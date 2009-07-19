@@ -52,7 +52,7 @@
  *     false   only choosen panels will be expanded
  * @see panel expanded="true" 
  * 
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  * 
  * Example:
  * Horizontal acccordion component with 5 panels. First and third panel will be 
@@ -144,12 +144,12 @@
  * @version     %I%, %G%
  * @since       2.2
  */
-jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     this.canHaveChildren = true;
     this.$focussable     = false;
 
-    this.animtype1      = jpf.tween.NORMAL;
-    this.animtype2      = jpf.tween.NORMAL;
+    this.animtype1      = apf.tween.NORMAL;
+    this.animtype2      = apf.tween.NORMAL;
     this.animdelay      = 10;
     this.hoverdelay     = 500;
     this.multiexpand    = true;
@@ -157,9 +157,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.startexpanded  = true;
 
     var animStep = {};
-    animStep[jpf.tween.NORMAL] = 5;
-    animStep[jpf.tween.EASEIN] = 10;
-    animStep[jpf.tween.EASEOUT] = 10;
+    animStep[apf.tween.NORMAL] = 5;
+    animStep[apf.tween.EASEIN] = 10;
+    animStep[apf.tween.EASEOUT] = 10;
     
     var _self    = this;
     
@@ -313,7 +313,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             if (id2) {
                 _self.$setStyleClass(panels[id2].panel.oExt, "", ["active"]);
                 
-                jpf.tween.multi(panel.oBody, {
+                apf.tween.multi(panel.oBody, {
                     steps    : animStep[_self.animtype1],
                     anim     : _self.animtype1,
                     interval : _self.animdelay,
@@ -354,7 +354,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 });
             }
             else {
-                jpf.tween.single(panel.oBody, {
+                apf.tween.single(panel.oBody, {
                     steps    : animStep[_self.animtype1],
                     type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                     from     : 0,
@@ -408,7 +408,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             panels[id].opened = false;
         }
         else {
-            jpf.tween.single(panel.oBody, {
+            apf.tween.single(panel.oBody, {
                 steps    : animStep[_self.animtype2],
                 type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                 from     : _self.$dir == "vertical"
@@ -452,9 +452,9 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
     var animType = {
-        "normal"  : jpf.tween.NORMAL,
-        "easein"  : jpf.tween.EASEIN,
-        "easeout" : jpf.tween.EASEOUT,
+        "normal"  : apf.tween.NORMAL,
+        "easein"  : apf.tween.EASEIN,
+        "easeout" : apf.tween.EASEOUT,
         "none"    : "none"
     }
 
@@ -477,8 +477,8 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
             if (node.nodeType != 1) 
                 continue;
 
-            if (node[jpf.TAGNAME] == "panel") {
-                var panel = new jpf.panel(this.oInt, "panel");
+            if (node[apf.TAGNAME] == "panel") {
+                var panel = new apf.panel(this.oInt, "panel");
                 var opened = node.getAttribute("expanded")
                     ? (node.getAttribute("expanded") == "true"
                         ? true
@@ -493,7 +493,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 var oCaption = this.$getLayoutNode("panel", "caption", panel.oExt);
                 var oIcon = this.$getLayoutNode("panel", "icon", panel.oExt);
                 
-                jpf.setUniqueHtmlId(oTitle);
+                apf.setUniqueHtmlId(oTitle);
                 (oCaption || oTitle).appendChild(document.createTextNode(node.getAttribute("title")))
 
                 //this.$setStyleClass(oTitle, "NotActive");
@@ -533,7 +533,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
 
                 var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
-                jpf.setUniqueHtmlId(oBody);
+                apf.setUniqueHtmlId(oBody);
 
                 panels[oTitle.id] = {
                     panel  : panel,
@@ -548,7 +548,7 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (!this.oExt.offsetHeight) {
                         var openTitleId = oTitle.id;
                         function propChange(name, old, value){
-                            if (jpf.isTrue(value) && _self.oExt.offsetHeight) {
+                            if (apf.isTrue(value) && _self.oExt.offsetHeight) {
                                 _self.slideDown(openTitleId);
                                 
                                 var p = _self;
@@ -588,6 +588,6 @@ jpf.accordion = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
         
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 // #endif

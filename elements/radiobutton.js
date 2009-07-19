@@ -25,11 +25,11 @@
  * @constructor
  * @private
  *
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  */
-jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
     this.radiobuttons = [];
     this.visible = true;
 
@@ -141,13 +141,13 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding
+    apf.DataBinding
     // #endif
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    ,jpf.Validation
+    ,apf.Validation
     //#endif
     //#ifdef __WITH_XFORMS
-    ,jpf.XForms
+    ,apf.XForms
     //#endif
 );
 
@@ -180,9 +180,9 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -208,7 +208,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  * @see baseclass.jmlnode.event.afterchange
  */
-jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {
         "main": [["label", "text()"]]
@@ -234,16 +234,16 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.radiogroup)
             this.radiogroup.removeRadio(this);
 
-        this.radiogroup = jpf.nameserver.get("radiogroup", value);
+        this.radiogroup = apf.nameserver.get("radiogroup", value);
         if (!this.radiogroup) {
-            var rg = new jpf.radiogroup(this.pHtmlNode, "radiogroup");
+            var rg = new apf.radiogroup(this.pHtmlNode, "radiogroup");
             
             rg.id = rg.name = value;
             rg.errBox     = this.errBox;
             rg.parentNode = this.parentNode; //is this one needed?
 
-            jpf.nameserver.register("radiogroup", value, rg);
-            jpf.setReference(value, rg);
+            apf.nameserver.register("radiogroup", value, rg);
+            apf.setReference(value, rg);
 
             //x = oRB.$jml;
             //rg.oExt = oRB.oExt;
@@ -280,7 +280,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
         if (!this.oIcon)
-            return jpf.console.warn("No icon defined in the Button skin", "button");
+            return apf.console.warn("No icon defined in the Button skin", "button");
         /* #else
         if (!this.oIcon) return;
         #endif */
@@ -290,7 +290,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
 
-        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
+        apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     /**
@@ -434,7 +434,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             if ((e.srcElement || e.target) == this)
                 return;
 
-            jpf.setStyleClass(this, _self.baseCSSname + "Down");
+            apf.setStyleClass(this, _self.baseCSSname + "Down");
         }
 
         this.oExt.onmouseover = function(e){
@@ -442,12 +442,12 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             if ((e.srcElement || e.target) == this)
                 return;
 
-            jpf.setStyleClass(this, _self.baseCSSname + "Over");
+            apf.setStyleClass(this, _self.baseCSSname + "Over");
         }
 
         this.oExt.onmouseout =
         this.oExt.onmouseup  = function(){
-            jpf.setStyleClass(this, "", [_self.baseCSSname + "Down", _self.baseCSSname + "Over"]);
+            apf.setStyleClass(this, "", [_self.baseCSSname + "Down", _self.baseCSSname + "Over"]);
         }
     };
 
@@ -569,7 +569,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             this.radiogroup.removeRadio(this, true);
     }
 }).implement(
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

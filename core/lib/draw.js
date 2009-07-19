@@ -23,12 +23,12 @@
 /**
  * @private
  */
-jpf.namespace("draw", {
+apf.namespace("draw", {
     
     initDriver : function(){
         // initialize by copying either canvas of VML into my object.
         if(!this.initLayer){
-            var k,o=jpf.supportVML?jpf.draw.vml:jpf.draw.canvas;
+            var k,o=apf.supportVML?apf.draw.vml:apf.draw.canvas;
             for(k in o){
                 this[k]=o[k];
             } 
@@ -459,12 +459,12 @@ jpf.namespace("draw", {
                     //idx = i;//s.$storelist.length - 1;
                     //calculate the ID for this class/style
                     cls   = s.$clslist?(s.$clslist[o.$cls]||0):0;
-                    state = jpf.draw.stateBit[o.$state]||0;
+                    state = apf.draw.stateBit[o.$state]||0;
                     o.$lutvalue = state|cls;
                     o.$store = n;
                     if(t=o.overlay){ // compute overlay target
                         if(t == 'base') ovl = cls?cls:0x10000000;
-                        else  ovl = (s.$clslist?(s.$clslist[t]||0):0)|(jpf.draw.stateBit[t]||0);
+                        else  ovl = (s.$clslist?(s.$clslist[t]||0):0)|(apf.draw.stateBit[t]||0);
                     }else ovl = 0;
                     // check if we have any $clsovls to add aswell
                     s.$storelut[ state|cls ] = i;//s.$storelist.length-1;
@@ -668,7 +668,7 @@ jpf.namespace("draw", {
         //TODO pull out 0 multiplication
         //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
         
-        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.$rndtab');
+        if(code.match('_rndtab'))s.push('_rndtab=apf.draw.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
          
         code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
@@ -810,7 +810,7 @@ jpf.namespace("draw", {
             if(sm)throw({t:"JSS Error - Unclosed string found "+sm,p:lp});
             if(sn.length>0)throw({t:"JSS Error - Unclosed object found "+sn[sn.length-1],p:lp});
         }catch(e){
-            jpf.alert_r(e);
+            apf.alert_r(e);
             if(err)err.v = e.p>=0 ? e.t+" at: "+e.p+" ->"+s.slice((t=e.p-4)<0?0:t,7)+"<-" : e.t;
             return null;
         }
@@ -841,8 +841,8 @@ jpf.namespace("draw", {
 			var t = arguments[i];
 			// check what t is and insert
 			s.push(i>2?",":"");
-			if(jpf.draw.colors[t])
-				s.push( "'", jpf.draw.colors[t], "'" );
+			if(apf.draw.colors[t])
+				s.push( "'", apf.draw.colors[t], "'" );
 			else if(t.match(/\(/))
 				s.push(t);
 			else if(t.match(/^#/))
@@ -1001,7 +1001,7 @@ jpf.namespace("draw", {
 	hsv : function(h,s,v){
 		if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
 			return this.$hsvpack(r,g,b);
-		return "jpf.draw.$hsvpack("+h+","+s+","+v+");";
+		return "apf.draw.$hsvpack("+h+","+s+","+v+");";
 	},
 	rgbf : function(r,g,b){
 		return this.rgb(parseFloat(r)==r?r*255:"255*("+r+")",
@@ -1167,11 +1167,11 @@ jpf.namespace("draw", {
         s.push("switch(_t?_t._mid:0){" );
         for(i = 0, j = v.length;i<j;i++){
             style = v[i]; 
-            //alert(jpf.vardump(style).replace(/\t/g,'@').replace(/\n/g,'#'));
+            //alert(apf.vardump(style).replace(/\t/g,'@').replace(/\n/g,'#'));
             this.style = style;
             if(v[i])
                 s[s.length]=[
-                "case ",style._mid,":{","/*"+jpf.vardump(style,0,1)+"*/\n",
+                "case ",style._mid,":{","/*"+apf.vardump(style,0,1)+"*/\n",
                      this.mousefunc.apply(this.mousethis,a),
                 "}break;"].join('');
         }
@@ -1450,7 +1450,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         if(!v || !v.length) return s.join('');
     
         s.push("_storelut = _s.$storelut, _storelist = _s.$storelist,_overlaylut = _s.$overlaylut,",
-               "_translut = jpf.draw.stateTransition, _speedlut = _s.$speedlut ;\n");
+               "_translut = apf.draw.stateTransition, _speedlut = _s.$speedlut ;\n");
         
         for(i = 0, n = v.length;i<n;i++){
             s[s.length]="_storelist["+i+"].length=";
@@ -1547,7 +1547,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
         /*
         for(i = l._styles.length-2;i>=0;i--){
             if(!l._styles[i]._prev && 
-                jpf.draw.equalStyle( l._styles[i], style )){
+                apf.draw.equalStyle( l._styles[i], style )){
                 style._prev = i;
                 break;
             }
@@ -1580,7 +1580,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
                        "],_tn=_s._txtnodes,_tc = _s._txtcount;\n");
         }*/
         s.push("if((_l=(",needed,
-               ")) > _tn.length-_tc)jpf.draw.$allocText(_s,_l);");
+               ")) > _tn.length-_tc)apf.draw.$allocText(_s,_l);");
         return s.join('');
     },
     

@@ -51,9 +51,9 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.BaseSimple
+ * @inherits apf.BaseSimple
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -77,7 +77,7 @@
  * </code>
  */
 
-jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.img = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["image","@src"]]};
     //#endif
@@ -118,14 +118,14 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.oImg) {
                 //#ifdef __WITH_LAYOUT
                 //@todo add this to $destroy
-                var pNode = jpf.hasSingleRszEvent ? this.pHtmlNode : this.oExt;
-                jpf.layout.setRules(pNode, this.uniqueId + "_image",
-                    "var o = jpf.all[" + this.uniqueId + "];\
+                var pNode = apf.hasSingleRszEvent ? this.pHtmlNode : this.oExt;
+                apf.layout.setRules(pNode, this.uniqueId + "_image",
+                    "var o = apf.all[" + this.uniqueId + "];\
                      if (o) o.$resize()");
-                jpf.layout.activateRules(pNode);
+                apf.layout.activateRules(pNode);
                 
                 this.oImg.onload = function(){
-                    jpf.layout.forceResize(pNode);
+                    apf.layout.forceResize(pNode);
                 }
                 //#endif
             }
@@ -160,7 +160,7 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$resize = function(){
-        var diff = jpf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.oExt);
         var wratio = 1, hratio = 1;
         
         this.oImg.style.width = "";
@@ -176,7 +176,7 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         else if (hratio > wratio && hratio > 1)
             this.oImg.style.height = "100%";
         
-        this.oImg.style.top = ((this.oExt.offsetHeight - jpf.getHeightDiff(this.oExt) 
+        this.oImg.style.top = ((this.oExt.offsetHeight - apf.getHeightDiff(this.oExt) 
             - this.oImg.offsetHeight) / 2) + "px";
     }
     
@@ -184,10 +184,10 @@ jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
         
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
     };
 }).implement(
-    jpf.BaseSimple
+    apf.BaseSimple
 );
 
 // #endif

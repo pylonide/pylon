@@ -34,20 +34,20 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeSilverlight = function(oVideo, node, options) {
+apf.video.TypeSilverlight = function(oVideo, node, options) {
     this.oVideo         = oVideo;
-    if (!jpf.video.TypeSilverlight.INITED) {
-        jpf.silverlight.startup();
-        jpf.video.TypeSilverlight.INITED = true;
+    if (!apf.video.TypeSilverlight.INITED) {
+        apf.silverlight.startup();
+        apf.video.TypeSilverlight.INITED = true;
     }
 
     // #ifndef __PACKAGED
-    this.DEFAULT_PLAYER = (jpf.appsettings.resourcePath || jpf.basePath) + "elements/video/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (apf.appsettings.resourcePath || apf.basePath) + "elements/video/wmvplayer.xaml";
     /* #else
-    this.DEFAULT_PLAYER = (jpf.appsettings.resourcePath || jpf.basePath) + "resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (apf.appsettings.resourcePath || apf.basePath) + "resources/wmvplayer.xaml";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_PLAYER = jpf.CDN + jpf.VERSION + "/resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = apf.CDN + apf.VERSION + "/resources/wmvplayer.xaml";
     #endif */
     this.htmlElement    = node;
     this.options        = {
@@ -90,7 +90,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         }
     }
 
-    jpf.silverlight.createObjectEx({
+    apf.silverlight.createObjectEx({
         id:            this.oVideo.uniqueId + "_Player",
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
@@ -104,23 +104,23 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         },
         events:        {
             onLoad:  this.onLoadHandler,
-            onError: jpf.silverlight.default_error_handler
+            onError: apf.silverlight.default_error_handler
         },
         context:       this
     });
 
-    //jpf.extend(this, jpf.video.TypeInterface);
-    jpf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight",
-        "jpf.all[" + this.oVideo.uniqueId + "].player.resizePlayer()");
+    //apf.extend(this, apf.video.TypeInterface);
+    apf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight",
+        "apf.all[" + this.oVideo.uniqueId + "].player.resizePlayer()");
 };
 
-jpf.video.TypeSilverlight.isSupported = function(){
-    return jpf.silverlight.isAvailable("1.0");
+apf.video.TypeSilverlight.isSupported = function(){
+    return apf.silverlight.isAvailable("1.0");
 };
 
-jpf.video.TypeSilverlight.INITED = false;
+apf.video.TypeSilverlight.INITED = false;
 
-jpf.video.TypeSilverlight.prototype = {
+apf.video.TypeSilverlight.prototype = {
     /**
      * Play a WMV movie. Does a call to the XAML Silverlight player to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
@@ -366,7 +366,7 @@ jpf.video.TypeSilverlight.prototype = {
         var _self = this;
         this.pollTimer = setTimeout(function() {
             if (_self.oVideo && !_self.oVideo.ready && _self.video.CanSeek)
-                _self.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
+                _self.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
             _self.oVideo.$changeHook({
                 type        : "change",
                 playheadTime: Math.round(_self.video.Position.Seconds * 1000)
@@ -445,7 +445,7 @@ jpf.video.TypeSilverlight.prototype = {
     },
 
     $destroy: function() {
-        jpf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight");
+        apf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight");
         this.stopPlayPoll();
         if (this.player) {
             this.player = this.video = this.preview = null;

@@ -27,9 +27,9 @@
  * Example:
  * <code language="javascript">
  * // create a new JML component: <j:foo />
- * jpf.foo = jpf.component(jpf.NODE_VISIBLE, {
+ * apf.foo = apf.component(apf.NODE_VISIBLE, {
  *     // component body (method and property declaration)
- * }).implement(jpf.barInterface);
+ * }).implement(apf.barInterface);
  * </code>
  * 
  * @classDescription         This class serves as a baseclass for new elements
@@ -50,7 +50,7 @@
  * @private
  */
 
-jpf.component = function(nodeFunc, oBase) {
+apf.component = function(nodeFunc, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
         this.$init.apply(this, arguments);
@@ -67,16 +67,16 @@ jpf.component = function(nodeFunc, oBase) {
 
     // the 'nodeFunc' flag specifies the function that a node/ component represents
     // within JPF.
-    fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
+    fC.prototype.nodeFunc = nodeFunc || apf.NODE_HIDDEN;
 
     // #ifdef __DESKRUN
     // deprecated Deskrun feature
-    if (nodeFunc == jpf.NODE_MEDIAFLOW)
+    if (nodeFunc == apf.NODE_MEDIAFLOW)
         DeskRun.register(fC.prototype);
     // #endif
 
-    // The implement function is copied from 'jpf.implement'
-    fC.prototype.implement = jpf.implement;
+    // The implement function is copied from 'apf.implement'
+    fC.prototype.implement = apf.implement;
 
     // If the '$init' function is not present yet, we shall define it - the
     // starting engine of a JPF component
@@ -100,7 +100,7 @@ jpf.component = function(nodeFunc, oBase) {
         /**
          * Even though '$init()' COULD be overridden, it is still the engine
          * for every new element. It takes care of the basic inheritance
-         * difficulties and created the necessary hooks with the Javeline Platform.
+         * difficulties and created the necessary hooks with the Ajax.org Platform.
          * Note: a developer can still use 'init()' as the function to execute
          *       upon instantiation, while '$init()' is used by JPF.
          * 
@@ -110,18 +110,18 @@ jpf.component = function(nodeFunc, oBase) {
          */
         fC.prototype.$init = function(pHtmlNode, sName){
             if (typeof sName != "string") 
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this, 
                 "Error creating component",
                 "Dependencies not met, please provide a component name when \
-                 instantiating it (ex.: new jpf.tree(oParent, 'tree') )"));
+                 instantiating it (ex.: new apf.tree(oParent, 'tree') )"));
 
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             
-            this.uniqueId      = jpf.all.push(this) - 1;
+            this.uniqueId      = apf.all.push(this) - 1;
             
-            //Oops duplicate code.... (also in jpf.register)
+            //Oops duplicate code.... (also in apf.register)
             this.$propHandlers = {}; //@todo fix this in each component
             this.$domHandlers  = {
                 "remove"      : [],
@@ -130,9 +130,9 @@ jpf.component = function(nodeFunc, oBase) {
                 "removechild" : []
             };
             
-            if (nodeFunc != jpf.NODE_HIDDEN) {
+            if (nodeFunc != apf.NODE_HIDDEN) {
                 if (typeof this.$focussable == "undefined")
-                    this.$focussable = jpf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
+                    this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
                 
                 this.$booleanProperties = {
                     //#ifdef __WITH_KEYBOARD
@@ -157,13 +157,13 @@ jpf.component = function(nodeFunc, oBase) {
             }
             
             /** 
-             * @inherits jpf.Class
-             * @inherits jpf.JmlElement
+             * @inherits apf.Class
+             * @inherits apf.JmlElement
              */
             // the ORDER is crucial here.
-            this.implement(jpf.Class);
+            this.implement(apf.Class);
             this.implement.apply(this, aImpl);
-            this.implement(jpf.JmlElement, this.base || jpf.K);
+            this.implement(apf.JmlElement, this.base || apf.K);
             
             if (typeof this['init'] == "function")
                 this.init();
@@ -177,7 +177,7 @@ jpf.component = function(nodeFunc, oBase) {
  * This is code to construct a subnode, these are simpler and almost
  * have no inheritance
  */
-jpf.subnode = function(nodeFunc, oBase) {
+apf.subnode = function(nodeFunc, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
         this.$init.apply(this, arguments);
@@ -192,9 +192,9 @@ jpf.subnode = function(nodeFunc, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
+    fC.prototype.nodeFunc = nodeFunc || apf.NODE_HIDDEN;
 
-    fC.prototype.implement  = jpf.implement;
+    fC.prototype.implement  = apf.implement;
 
     if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
@@ -213,7 +213,7 @@ jpf.subnode = function(nodeFunc, oBase) {
         /**
          * Even though '__init()' COULD be overridden, it is still the engine
          * for every new element. It takes care of the basic inheritance
-         * difficulties and created the necessary hooks with the Javeline Platform.
+         * difficulties and created the necessary hooks with the Ajax.org Platform.
          * Note: a developer can still use 'init()' as the function to execute
          *       upon instantiation, while '__init()' is used by JPF.
          * 
@@ -224,10 +224,10 @@ jpf.subnode = function(nodeFunc, oBase) {
          */
         fC.prototype.$init = function(pHtmlNode, sName, parentNode){
             if (typeof sName != "string") 
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this, 
                     "Error creating component",
                     "Dependencies not met, please provide a component name when \
-                     instantiating it (ex.: new jpf.tree(oParent, 'tree') )"));
+                     instantiating it (ex.: new apf.tree(oParent, 'tree') )"));
 
             this.tagName      = sName;
             this.pHtmlNode    = pHtmlNode || document.body;
@@ -240,15 +240,15 @@ jpf.subnode = function(nodeFunc, oBase) {
                 "removechild" : []
             };
             
-            this.uniqueId     = jpf.all.push(this) - 1;
+            this.uniqueId     = apf.all.push(this) - 1;
             
             /** 
-             * @inherits jpf.Class
+             * @inherits apf.Class
              */
             // the ORDER is crucial here.
-            this.implement(jpf.Class);
+            this.implement(apf.Class);
             this.implement.apply(this, aImpl);
-            this.implement(jpf.JmlDom, this.base || jpf.K);
+            this.implement(apf.JmlDom, this.base || apf.K);
             
             if (typeof this['init'] == "function")
                 this.init();

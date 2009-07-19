@@ -24,7 +24,7 @@
 /**
  * @private
  */
-jpf.iepngfix = (function() {
+apf.iepngfix = (function() {
 	var sNodes           = null, 
         aNodes           = null,
         applyPositioning = true,
@@ -33,7 +33,7 @@ jpf.iepngfix = (function() {
 	
 	var fnLoadPngs = function() {
 	    if (!shim)
-	        shim = jpf.skins.skins["default"].mediaPath + '/blank.gif';
+	        shim = apf.skins.skins["default"].mediaPath + '/blank.gif';
 	    
         if (aNodes === null) {
             if (sNodes)

@@ -28,7 +28,7 @@
  * @experimental
  * @todo test this
  */
-jpf.lineselect = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.lineselect = apf.component(apf.NODE_VISIBLE, function(){
     this.deselect = function(){
         this.value = this.selected = null;
     }
@@ -69,10 +69,10 @@ jpf.lineselect = jpf.component(jpf.NODE_VISIBLE, function(){
             else if(ar[i].match(/warning \P/)) var clr = "yellow";
             else var clr = "white";
             
-            ar[i] = "<div style='color:" + clr + "' onmousedown='" + 'jpf.lookup(' + this.uniqueId + ').select(this)' + "' ondblclick=\"" + 'jpf.lookup(' + this.uniqueId + ').dispatchEvent(\'onchoose\', this.innerHTML)' + "\" class='" + this.skin.clsItem + "'>" + ar[i] + "</div>";
+            ar[i] = "<div style='color:" + clr + "' onmousedown='" + 'apf.lookup(' + this.uniqueId + ').select(this)' + "' ondblclick=\"" + 'apf.lookup(' + this.uniqueId + ').dispatchEvent(\'onchoose\', this.innerHTML)' + "\" class='" + this.skin.clsItem + "'>" + ar[i] + "</div>";
         }
                 
-        this.oExt.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>Javeline Script Encoder</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
+        this.oExt.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>APF Packager</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
         //this.parentNode.style.width = "100%";
     }
     
@@ -128,6 +128,6 @@ jpf.lineselect = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt = this.oExt;
     }
 }).implement(
-    jpf.Presentation
+    apf.Presentation
 );
 // #endif

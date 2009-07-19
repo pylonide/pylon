@@ -42,18 +42,18 @@ Function.prototype.dataType = "function";
  * Converts a javascript object to a cgi string.
  * @see core.xmldatabase.method.convertXml
  */
-jpf.getCgiString = function(args, multicall, mcallname){
+apf.getCgiString = function(args, multicall, mcallname){
     var vars = [];
 
     function recur(o, stack) {
         var prop;
-        if (jpf.isArray(o)) {
+        if (apf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
         } 
         else if (typeof o == "object") {
             for (prop in o) {
-                if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -71,7 +71,7 @@ jpf.getCgiString = function(args, multicall, mcallname){
             recur(args[0][i], "f%5B" + i + "%5D");
     } else {
         for (prop in args) {
-            if (jpf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+            if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
 
             recur(args[prop], prop);
@@ -85,7 +85,7 @@ jpf.getCgiString = function(args, multicall, mcallname){
  * Converts a cgi string to a javascript object.
  * @see core.xmldatabase.method.convertXml
  */
-jpf.fromCgiString = function(args) {
+apf.fromCgiString = function(args) {
     if (!args)
         return false;
 
@@ -134,22 +134,22 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
  *
  * @param {mixed} obj1, obj2, obj3, etc.
  * @type Function
- * @see jpf.extend
+ * @see apf.extend
  */
 Function.prototype.extend = function() {
-    jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
+    apf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
     return this;
 };
 
 /**
- * Attach a Function object to an event as handler method. If jpf.AbstractEvent
+ * Attach a Function object to an event as handler method. If apf.AbstractEvent
  * is available, the active event is extended with convinience accessors as
- * declared in jpf.AbstractEvent
+ * declared in apf.AbstractEvent
  *
  * @param {Object} The context the execute the Function within
  * @param {mixed}  param1, param2, param3, etc.
  * @type Function
- * @see jpf.AbstractEvent
+ * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
     var __method = this, args = Array.prototype.slice.call(arguments), 
@@ -159,7 +159,7 @@ Function.prototype.bindWithEvent = function() {
         if (!event) event = window.event;
         // #ifdef __WITH_ABSTRACTEVENT
         if (ev !== false)
-            event = new jpf.AbstractEvent(event, window);
+            event = new apf.AbstractEvent(event, window);
         // #endif
         return __method.apply(o, [event].concat(args)
             .concat(Array.prototype.slice.call(arguments)));
@@ -785,8 +785,8 @@ String.prototype.pad = function(len, pad, dir) {
         : (Array(len).join(pad) + this).slice(-len);
 };
 
-jpf.PAD_LEFT  = false;
-jpf.PAD_RIGHT = true;
+apf.PAD_LEFT  = false;
+apf.PAD_RIGHT = true;
 
 /**
  * Special String.split; optionally lowercase a string and trim all results from
@@ -884,7 +884,7 @@ String.prototype.appendRandomNumber = function(length) {
     // Create a new string from the old one, don't just create a copy
     var source = this.toString();
     for (var i = 1; i <= length; i++) {
-        source += jpf.randomGenerator.generate(1, 9);
+        source += apf.randomGenerator.generate(1, 9);
     }
     return source;
 };
@@ -900,7 +900,7 @@ String.prototype.prependRandomNumber = function(length) {
     // Create a new string from the old one, don't just create a copy
     var source = this.toString();
     for (var i = 1; i <= length; i++) {
-        source = jpf.randomGenerator.generate(1, 9) + source;
+        source = apf.randomGenerator.generate(1, 9) + source;
     }
     return source;
 };

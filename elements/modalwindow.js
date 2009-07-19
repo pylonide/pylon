@@ -25,7 +25,7 @@
 /**
  * @private
  */
-jpf.WinServer = {
+apf.WinServer = {
     count : 9000,
     wins  : [],
 
@@ -100,14 +100,14 @@ jpf.WinServer = {
  * @allowchild {elements}, {smartbinding}, {anyjml}
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DelayedRender
- * @inherits jpf.Docking
- * @inherits jpf.Transaction
+ * @inherits apf.Presentation
+ * @inherits apf.DelayedRender
+ * @inherits apf.Docking
+ * @inherits apf.Transaction
  *
  * @event display       Fires when the window is displayed.
  * @event close         Fires when the window is closed.
@@ -122,15 +122,15 @@ jpf.WinServer = {
  *   {Boolean} edit       whether the window is in the edit state.
  *   {Boolean} closed     whether the window is closed.
  */
-jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
     this.collapsedHeight   = 30;
     this.canHaveChildren   = 2;
-    this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
+    this.animate           = true;//!apf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
     this.kbclose           = false;
-    this.$focussable       = jpf.KEYBOARD;
+    this.$focussable       = apf.KEYBOARD;
     this.state             = "normal";
     this.edit              = false;
     var _self              = this;
@@ -219,10 +219,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var iFrom  = 0,
             iTo    = 0,
-            innerW = (jpf.isIE
+            innerW = (apf.isIE
                 ? this.oExt.offsetParent.offsetWidth
                 : window.innerWidth),
-            innerH = (jpf.isIE
+            innerH = (apf.isIE
                 ? this.oExt.offsetParent.offsetHeight
                 : window.innerHeight),
             cX     = Math.max(0, ((innerW - this.oExt.offsetWidth)  / 2)),
@@ -251,13 +251,13 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
         }
         
-        jpf.tween.single(this.oExt, {
-            steps   : jpf.isIphone ? 5 : 30,
+        apf.tween.single(this.oExt, {
+            steps   : apf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,
             type    : sType,
-            anim    : jpf.tween.EASEIN
+            anim    : apf.tween.EASEIN
         });
         return this;
     };
@@ -282,26 +282,26 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
             case "bottom":
                 iFrom = this.oExt.offsetTop;
-                iTo = (jpf.isIE
+                iTo = (apf.isIE
                     ? this.oExt.offsetParent.offsetHeight
                     : window.innerHeight) + this.oExt.offsetHeight + pad;
                 break;
             case "right":
                 iFrom = this.oExt.offsetLeft;
-                iTo   = (jpf.isIE
+                iTo   = (apf.isIE
                     ? this.oExt.offsetParent.offsetWidth
                     : window.innerWidth) + this.oExt.offsetLeft + pad;
                 sType = "left";
                 break;
         }
 
-        jpf.tween.single(this.oExt, {
-            steps   : jpf.isIphone ? 5 : 30,
+        apf.tween.single(this.oExt, {
+            steps   : apf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,
             type    : sType,
-            anim    : jpf.tween.EASEOUT,
+            anim    : apf.tween.EASEOUT,
             onfinish: function() { _self.setProperty("visible", false); }
         });
         return this;
@@ -328,7 +328,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.bringToFront = function(){
-        jpf.WinServer.setTop(this);
+        apf.WinServer.setTop(this);
         return this;
     };
 
@@ -351,7 +351,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.syncAlignment = function(oItem){
         if (oItem.hidden == 3)
-            jpf.WinServer.setTop(this);
+            apf.WinServer.setTop(this);
 
         if (oItem.state > 0) {
             this.$setStyleClass(this.oExt, this.baseCSSname + "Min",
@@ -385,7 +385,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value && !this.oCover) {
             var oCover = this.$getLayoutNode("cover");
             if (oCover) {
-                this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
+                this.oCover = apf.xmldb.htmlImport(oCover, this.pHtmlNode);
 
                 if (!this.visible)
                     this.oCover.style.display = "none";
@@ -422,12 +422,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.oIcon) return;
 
         this.oIcon.style.display = value ? "block" : "none";
-        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
+        apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
-        if (jpf.isTrue(value)){
+        if (apf.isTrue(value)){
             //if (!x && !y && !center) center = true;
 
             // #ifdef __WITH_DELAYEDRENDER
@@ -446,16 +446,16 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
             this.oExt.style.display = "block"; //Some form of inheritance detection
 
-            //!jpf.isIE &&
-            if (jpf.layout && this.oInt)
-                jpf.layout.forceResize(this.oInt); //@todo this should be recursive down
+            //!apf.isIE &&
+            if (apf.layout && this.oInt)
+                apf.layout.forceResize(this.oInt); //@todo this should be recursive down
 
             //if (this.modal) 
                 //this.oExt.style.position = "fixed";
             
             if (this.center) {
                 var size = !this.oExt.offsetParent || this.oExt.offsetParent.tagName == "BODY"
-                    ? [jpf.getWindowWidth(), jpf.getWindowHeight()]
+                    ? [apf.getWindowWidth(), apf.getWindowHeight()]
                     : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight, 0, 0];
 
                 if (size.length == 2) {
@@ -478,11 +478,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             else
                 this.dispatchEvent("display");
 
-            if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
+            if (!apf.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
                 var nodes = document.getElementsByTagName("select");
                 for (var i = 0; i < nodes.length; i++) {
-                    var oStyle = jpf.getStyle(nodes[i], "display");
+                    var oStyle = apf.getStyle(nodes[i], "display");
                     hEls.push([nodes[i], oStyle]);
                     nodes[i].style.display = "none";
                 }
@@ -495,25 +495,25 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.bringToFront();
             
             // #ifdef __WITH_FOCUS
-            if (!jpf.isParsing && (this.model 
+            if (!apf.isParsing && (this.model 
               || (!this.dockable || !this.aData) && !this.$isWidget))
                 this.focus(false, {mouse:true});
             // #endif
             
-            if (jpf.isIE) {
+            if (apf.isIE) {
                 var cls = this.oExt.className;
                 this.oExt.className = "rnd" + Math.random();
                 this.oExt.className = cls;
             }
         }
-        else if (jpf.isFalse(value)) {
+        else if (apf.isFalse(value)) {
             //this.setProperty("visible", false);
             if (this.oCover)
                 this.oCover.style.display = "none";
 
             this.oExt.style.display = "none";
 
-            if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
+            if (!apf.canHaveHtmlOverSelects && this.hideselects) {
                 for (var i = 0; i < hEls.length; i++) {
                     hEls[i][0].style.display = hEls[i][1];
                 }
@@ -523,7 +523,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$hide();
 
             if (this.hasFocus())
-                jpf.window.moveNext(true, this, true);//go backward to detect modals
+                apf.window.moveNext(true, this, true);//go backward to detect modals
 
             this.dispatchEvent("close");
         }
@@ -574,19 +574,19 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             || o.maximized != lastState.maximized)) {
 
             if (lastheight) // this.aData && this.aData.hidden == 3 ??
-                this.oExt.style.height = lastheight;//(lastheight - jpf.getHeightDiff(this.oExt)) + "px";
+                this.oExt.style.height = lastheight;//(lastheight - apf.getHeightDiff(this.oExt)) + "px";
 
             if (lastpos) {
                 if (this.animate && !noanim) {
                     //Pre remove paused event because of not having onresize
-                    //if (jpf.hasSingleRszEvent)
-                        //delete jpf.layout.onresize[jpf.layout.getHtmlId(this.pHtmlNode)];
+                    //if (apf.hasSingleRszEvent)
+                        //delete apf.layout.onresize[apf.layout.getHtmlId(this.pHtmlNode)];
 
                     var htmlNode = this.oExt;
-                    var position = jpf.getStyle(htmlNode, "position");
+                    var position = apf.getStyle(htmlNode, "position");
                     if (position != "absolute") {
-                        var l = parseInt(jpf.getStyle(htmlNode, "left")) || 0;
-                        var t = parseInt(jpf.getStyle(htmlNode, "top")) || 0;
+                        var l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                        var t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
                     }
                     else {
                         var l = htmlNode.offsetLeft;
@@ -594,7 +594,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
 
                     _self.animstate = 1;
-                    jpf.tween.multi(htmlNode, {
+                    apf.tween.multi(htmlNode, {
                         steps    : 5,
                         interval : 10,
                         tweens   : [
@@ -604,8 +604,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                             {type: "height", from: this.oExt.offsetHeight - verdiff, to: lastpos[3]}
                         ],
                         oneach   : function(){
-                            if (jpf.hasSingleRszEvent)
-                                jpf.layout.forceResize(_self.oInt);
+                            if (apf.hasSingleRszEvent)
+                                apf.layout.forceResize(_self.oInt);
                         },
                         onfinish : function(){
                             _self.$propHandlers["state"].call(_self, value, true);
@@ -631,8 +631,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.aData.restore();
             //#endif
             
-            if (jpf.layout)
-                jpf.layout.play(this.pHtmlNode);
+            if (apf.layout)
+                apf.layout.play(this.pHtmlNode);
 
             if (lastzindex) {
                 this.oExt.style.zIndex = lastzindex[0];
@@ -661,22 +661,22 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 //#endif
 
                 if (!this.aData || !this.aData.minimize) {
-                    lastheight = jpf.getStyle(this.oExt, "height");//this.oExt.offsetHeight;
+                    lastheight = apf.getStyle(this.oExt, "height");//this.oExt.offsetHeight;
 
                     this.oExt.style.height = Math.max(0, this.collapsedHeight
-                        - jpf.getHeightDiff(this.oExt)) + "px";
+                        - apf.getHeightDiff(this.oExt)) + "px";
                 }
 
                 if (this.hasFocus())
-                    jpf.window.moveNext(null, this, true);
-                //else if(jpf.window.focussed)
-                    //jpf.window.focussed.$focus({mouse: true});
+                    apf.window.moveNext(null, this, true);
+                //else if(apf.window.focussed)
+                    //apf.window.focussed.$focus({mouse: true});
             }
             else {
                 styleClass.push(this.baseCSSname + "Min");
 
                 setTimeout(function(){
-                    jpf.window.$focusLast(_self);
+                    apf.window.$focusLast(_self);
                 });
             }
         }
@@ -695,15 +695,15 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.animstate = 0;
                 var hasAnimated = false, htmlNode = this.oExt;
                 
-                var position = jpf.getStyle(htmlNode, "position");
+                var position = apf.getStyle(htmlNode, "position");
                 if (position == "absolute") {
                     pNode.style.overflow = "hidden";
                     var l = htmlNode.offsetLeft;
                     var t = htmlNode.offsetTop;
                 }
                 else {
-                    var l = parseInt(jpf.getStyle(htmlNode, "left")) || 0;
-                    var t = parseInt(jpf.getStyle(htmlNode, "top")) || 0;
+                    var l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                    var t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
                 }
                 
                 lastpos = [l, t, this.oExt.offsetWidth - hordiff, 
@@ -711,16 +711,16 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                            pNode.style.overflow];
                 
                 function setMax(){
-                    var w = !jpf.isIE && pNode == document.documentElement
+                    var w = !apf.isIE && pNode == document.documentElement
                         ? window.innerWidth
                         : pNode.offsetWidth;
 
-                    var h = !jpf.isIE && pNode == document.documentElement
+                    var h = !apf.isIE && pNode == document.documentElement
                         ? window.innerHeight
                         : pNode.offsetHeight;
                     
                     if (position != "absolute") {
-                        var diff = jpf.getDiff(pNode);
+                        var diff = apf.getDiff(pNode);
                         w -= diff[0];
                         h -= diff[0];
                     }
@@ -728,7 +728,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated = true;
-                        jpf.tween.multi(htmlNode, {
+                        apf.tween.multi(htmlNode, {
                             steps    : 5,
                             interval : 10,
                             tweens   : [
@@ -740,8 +740,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                                  to: (h - verdiff + marginBox[0] + marginBox[2])}
                             ],
                             oneach   : function(){
-                                if (jpf.hasSingleRszEvent)
-                                    jpf.layout.forceResize(_self.oInt);
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.oInt);
                             },
                             onfinish : function(){
                                 _self.animstate = 0;
@@ -759,8 +759,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                 }
 
-                if (jpf.layout)
-                    jpf.layout.pause(this.pHtmlNode, setMax);
+                if (apf.layout)
+                    apf.layout.pause(this.pHtmlNode, setMax);
 
                 lastzindex = [
                     this.oExt.style.zIndex || 1, 
@@ -768,8 +768,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 ];
                 
                 if (this.oCover)
-                    this.oCover.style.zIndex = jpf.WinServer.count + 1;
-                this.oExt.style.zIndex = jpf.WinServer.count + 2;
+                    this.oCover.style.zIndex = apf.WinServer.count + 1;
+                this.oExt.style.zIndex = apf.WinServer.count + 2;
             }
             else {
                 styleClass.push(this.baseCSSname + "Max");
@@ -813,8 +813,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //#endif
 
-            if (!this.animate && jpf.hasSingleRszEvent && jpf.layout)
-                jpf.layout.forceResize(_self.oInt);
+            if (!this.animate && apf.hasSingleRszEvent && apf.layout)
+                apf.layout.forceResize(_self.oInt);
         }
     };
 
@@ -830,7 +830,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["buttons"] = function(value){
         //#ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone) return;
+        if (apf.isIphone) return;
         //#endif
         var buttons = value.split("|");
         var nodes   = this.oButtons.childNodes;
@@ -864,11 +864,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$getNewContext("button");
                 btn = this.$getLayoutNode("button");
                 setButtonEvents(btn);
-                btn = jpf.xmldb.htmlImport(btn, this.oButtons);
+                btn = apf.xmldb.htmlImport(btn, this.oButtons);
             }
 
             this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
-            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").$toggle('"
+            btn.onclick = new Function("apf.lookup(" + this.uniqueId + ").$toggle('"
                                        + buttons[i] + "')");
             btn.style.display = "block";
             oButtons[buttons[i]] = btn;
@@ -880,7 +880,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
     //#ifdef __WITH_KEYBOARD
     //#ifdef __SUPPORT_IPHONE
-    if (!jpf.isIphone) {
+    if (!apf.isIphone) {
     //#endif
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -941,8 +941,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 return;
         }
 
-        if (jpf.hasSingleRszEvent)
-            jpf.layout.forceResize(this.oInt);
+        if (apf.hasSingleRszEvent)
+            apf.layout.forceResize(this.oInt);
         
         return retValue;
     }, true);
@@ -960,29 +960,29 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown",
-            "jpf.setStyleClass(this, 'down');\
+            "apf.setStyleClass(this, 'down');\
              event.cancelBubble = true; \
-             jpf.findHost(this).oExt.onmousedown(event);\
+             apf.findHost(this).oExt.onmousedown(event);\
              document.onmousedown(event);");
         btn.setAttribute("onmouseup",
-            "jpf.setStyleClass(this, '', ['down'])");
+            "apf.setStyleClass(this, '', ['down'])");
         btn.setAttribute("onmouseover",
-            "jpf.setStyleClass(this, 'hover')");
+            "apf.setStyleClass(this, 'hover')");
         btn.setAttribute("onmouseout",
-            "jpf.setStyleClass(this, '', ['hover', 'down'])");
+            "apf.setStyleClass(this, '', ['hover', 'down'])");
     }
 
     /**** Init ****/
 
     var marginBox, hordiff, verdiff;
     this.$draw = function(){
-        this.popout = jpf.isTrue(this.$jml.getAttribute("popout"));
+        this.popout = apf.isTrue(this.$jml.getAttribute("popout"));
         if (this.popout)
             this.pHtmlNode = document.body;
 
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-            if (!oButtons || jpf.isIphone || !this.$jml.getAttribute("buttons"))
+            if (!oButtons || apf.isIphone || !this.$jml.getAttribute("buttons"))
                 return;
 
             var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
@@ -1002,14 +1002,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oIcon.style.display = "none";
 
         //#ifdef __SUPPORT_IPHONE
-        if (!jpf.isIphone) {
+        if (!apf.isIphone) {
         //#endif
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
 
             //because of some issue I don't understand oExt.onmousedown is not called
             if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
-                jpf.WinServer.setTop(_self);
+                apf.WinServer.setTop(_self);
 
             if (lastState.maximized)
                 return false;
@@ -1025,14 +1025,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.oExt.onmousedown = function(){
             //#ifdef __WITH_FOCUS
-            var p = jpf.window.focussed;
+            var p = apf.window.focussed;
             if (p && p.$focusParent != _self && p.$focusParent.modal)
                 return false;
             //#endif
             
             //Set ZIndex on oExt mousedown
             if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
-                jpf.WinServer.setTop(_self);
+                apf.WinServer.setTop(_self);
 
             if (!lastState.normal)
                 return false;
@@ -1044,28 +1044,28 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         //#ifdef __SUPPORT_IPHONE
         }
         //#endif
-        var diff = jpf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.oExt);
         hordiff  = diff[0];
         verdiff  = diff[1];
-        marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
+        marginBox = apf.getBox(apf.getStyle(this.oExt, "borderWidth"));
 
         /*var v;
-        if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
-            this.$jml.setAttribute("visible", "{" + jpf.isTrue(v) + "}");
+        if (!apf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
+            this.$jml.setAttribute("visible", "{" + apf.isTrue(v) + "}");
         }*/
     };
 
     this.$loadJml = function(x){
-        jpf.WinServer.setTop(this);
+        apf.WinServer.setTop(this);
 
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         this.oInt = this.oInt
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
+            ? apf.JmlParser.replaceNode(oInt, this.oInt)
+            : apf.JmlParser.parseChildren(this.$jml, oInt, this, true);
 
         //#ifdef __SUPPORT_IPHONE
-        if (!jpf.isIphone) {
+        if (!apf.isIphone) {
         //#endif
             (this.oTitle.nodeType != 1
               ? this.oTitle.parentNode
@@ -1080,7 +1080,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     
             if (typeof this.draggable == "undefined") {
                 (this.$propHandlers.draggable
-                    || jpf.JmlElement.propHandlers.draggable).call(this, true);
+                    || apf.JmlElement.propHandlers.draggable).call(this, true);
                 this.draggable = true;
             }
 
@@ -1122,7 +1122,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.center && this.visible) {
             this.visible = false;
             this.oExt.style.display = "none"; /* @todo temp done for project */
-            jpf.JmlParser.stateStack.push({
+            apf.JmlParser.stateStack.push({
                 node  : this,
                 name  : "visible",
                 value : "true"
@@ -1144,7 +1144,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oDrag) {
             this.oDrag.host = null;
             this.oDrag.onmousedown = null;
-            jpf.removeNode(this.oDrag);
+            apf.removeNode(this.oDrag);
             this.oDrag = null;
         }
 
@@ -1161,11 +1161,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     // #ifdef __WITH_DELAYEDRENDER
-    jpf.DelayedRender,
+    apf.DelayedRender,
     // #endif
     //#ifdef __WITH_DOCKING
-    jpf.Docking,
+    apf.Docking,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 // #endif

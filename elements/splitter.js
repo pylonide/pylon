@@ -26,8 +26,8 @@
  * @private
  */
 
-jpf.splitter = function(pHtmlNode){
-    jpf.register(this, "splitter", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
+apf.splitter = function(pHtmlNode){
+    apf.register(this, "splitter", apf.NODE_VISIBLE);/** @inherits apf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
@@ -37,7 +37,7 @@ jpf.splitter = function(pHtmlNode){
     /* ***********************
             Inheritance
     ************************/
-    this.implement(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.implement(apf.Presentation); /** @inherits apf.Presentation */
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -66,7 +66,7 @@ jpf.splitter = function(pHtmlNode){
         var jmlNode  = this.refNode;
         var htmlNode = this.refHtml;
 
-        var v          = jpf.layout.vars;
+        var v          = apf.layout.vars;
         var oItem      = this.oItem;
         var needRecalc = false;
         
@@ -167,35 +167,35 @@ jpf.splitter = function(pHtmlNode){
 
         if (needRecalc) {
             /*
-            var l = jpf.layout.layouts[this.oExt.parentNode.getAttribute("id")];
-            jpf.layout.compileAlignment(l.root);
-            jpf.layout.activateRules(this.oExt.parentNode);
+            var l = apf.layout.layouts[this.oExt.parentNode.getAttribute("id")];
+            apf.layout.compileAlignment(l.root);
+            apf.layout.activateRules(this.oExt.parentNode);
 
             */
             
-            jpf.layout.compile(this.oExt.parentNode);
-            jpf.layout.activateRules(this.oExt.parentNode);
+            apf.layout.compile(this.oExt.parentNode);
+            apf.layout.activateRules(this.oExt.parentNode);
             
-            if (jpf.hasSingleRszEvent)
-                jpf.layout.forceResize();
+            if (apf.hasSingleRszEvent)
+                apf.layout.forceResize();
 
             return;
         }
 
-        jpf.layout.forceResize(this.oExt.parentNode);
+        apf.layout.forceResize(this.oExt.parentNode);
     };
     
     this.onmouseup = function(){
         jmlNode.$setStyleClass(jmlNode.oExt, "", ["moving"]);
 
         // #ifdef __WITH_PLANE
-        jpf.plane.hide();
+        apf.plane.hide();
         // #endif
 
         jmlNode.update();
         jmlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
         
-        jpf.dragmode.clear();
+        apf.dragmode.clear();
     };
     
     this.onmousemove = function(e){
@@ -203,14 +203,14 @@ jpf.splitter = function(pHtmlNode){
 
         if (jmlNode.type == "vertical") {
             if (e.clientX >= 0) {
-                var pos = jpf.getAbsolutePosition(jmlNode.oExt.offsetParent);
+                var pos = apf.getAbsolutePosition(jmlNode.oExt.offsetParent);
                 jmlNode.oExt.style.left = (Math.min(jmlNode.max,
                     Math.max(jmlNode.min, (e.clientX - pos[0]) - jmlNode.tx))) + "px";
             }
         }
         else {
             if (e.clientY >= 0) {
-                var pos = jpf.getAbsolutePosition(jmlNode.oExt.offsetParent);
+                var pos = apf.getAbsolutePosition(jmlNode.oExt.offsetParent);
                 jmlNode.oExt.style.top = (Math.min(jmlNode.max,
                     Math.max(jmlNode.min, (e.clientY - pos[1]) - jmlNode.ty))) + "px";
             }
@@ -223,7 +223,7 @@ jpf.splitter = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    //this.implement(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    //this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
     
     var lastinit, sizeArr, verdiff, hordiff;
     this.init = function(size, refNode, oItem){
@@ -239,7 +239,7 @@ jpf.splitter = function(pHtmlNode){
         var pNode;
         if (refNode) {
             if (typeof refNode != "object")
-                refNode = jpf.lookup(refNode);
+                refNode = apf.lookup(refNode);
             this.refNode = refNode;
             this.refHtml = this.refNode.oExt;
             pNode        = this.refHtml.parentNode;
@@ -253,16 +253,16 @@ jpf.splitter = function(pHtmlNode){
         if (pNode && pNode != this.oExt.parentNode)
             pNode.appendChild(this.oExt);
         
-        var diff = jpf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.oExt);
         verdiff  = diff[0];
         hordiff  = diff[1];
         sizeArr  = [];
         
         this.type = oItem.parent.vbox ? "horizontal" : "vertical";
         
-        var layout = jpf.layout.get(this.oExt.parentNode).layout;
+        var layout = apf.layout.get(this.oExt.parentNode).layout;
         var name   = "splitter" + this.uniqueId;
-        layout.addRule("var " + name + " = jpf.lookup(" + this.uniqueId + ").oExt");
+        layout.addRule("var " + name + " = apf.lookup(" + this.uniqueId + ").oExt");
         
         var vleft   = [name + ".style.left = "];
         var vtop    = [name + ".style.top = "];
@@ -316,8 +316,8 @@ jpf.splitter = function(pHtmlNode){
         layout.addRule(vleft.join(""));
         layout.addRule(vtop.join(""));
 
-        //if(!jpf.p) jpf.p = new jpf.ProfilerClass();
-        //jpf.p.start();
+        //if(!apf.p) apf.p = new apf.ProfilerClass();
+        //apf.p.start();
         
         //Determine min and max
         var row = oItem.parent.children;
@@ -403,8 +403,8 @@ jpf.splitter = function(pHtmlNode){
                 + (max.join("+")||0) + ")");
         }
 
-        //jpf.p.stop();
-        //document.title = jpf.p.totalTime;	
+        //apf.p.stop();
+        //document.title = apf.p.totalTime;	
         
         this.$setStyleClass(this.oExt, this.type,
             [this.type == "horizontal" ? "vertical" : "horizontal"]);
@@ -425,7 +425,7 @@ jpf.splitter = function(pHtmlNode){
             if (!e)
                 e = event;
             
-            var pos = jpf.getAbsolutePosition(this);
+            var pos = apf.getAbsolutePosition(this);
             if (jmlNode.type == "vertical")
                 jmlNode.tx = e.clientX - pos[0];
             else
@@ -438,7 +438,7 @@ jpf.splitter = function(pHtmlNode){
             e.cancelBubble = true;
             
             // #ifdef __WITH_PLANE
-            jpf.plane.show(this);
+            apf.plane.show(this);
             // #endif
 
             jmlNode.$setStyleClass(this, "moving");
@@ -446,7 +446,7 @@ jpf.splitter = function(pHtmlNode){
             jmlNode.$setStyleClass(document.body,
                 jmlNode.type == "vertical" ? "w-resize" : "n-resize",
                 [jmlNode.type == "vertical" ? "n-resize" : "w-resize"]);
-            jpf.dragmode.setMode("splitter" + jmlNode.uniqueId);
+            apf.dragmode.setMode("splitter" + jmlNode.uniqueId);
         }
     };
         
@@ -474,12 +474,12 @@ jpf.splitter = function(pHtmlNode){
     };
     
     // #ifdef __WITH_PLANE
-    jpf.plane.init();
+    apf.plane.init();
     // #endif
-    jpf.dragmode.defineMode("splitter" + this.uniqueId, this);
+    apf.dragmode.defineMode("splitter" + this.uniqueId, this);
     
     this.$destroy = function(){
-        jpf.dragmode.removeMode("splitter" + this.uniqueId);
+        apf.dragmode.removeMode("splitter" + this.uniqueId);
     };
 };
 // #endif

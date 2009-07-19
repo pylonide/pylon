@@ -54,13 +54,13 @@ var __MULTIBINDING__ = 1 << 7;
  * @private
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.MultiLevelBinding = function(jmlNode){
-    this.uniqueId = jpf.all.push(this) - 1;
-    this.nodeFunc = jpf.NODE_HIDDEN;
+apf.MultiLevelBinding = function(jmlNode){
+    this.uniqueId = apf.all.push(this) - 1;
+    this.nodeFunc = apf.NODE_HIDDEN;
     this.tagName  = "MultiBinding";
     this.name     = jmlNode.name + "_multibinding";
 
@@ -76,8 +76,8 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     jmlNode.$regbase = jmlNode.$regbase | __MULTIBINDING__;
     
-    jpf.makeClass(this);
-    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    apf.makeClass(this);
+    this.implement(apf.DataBinding); /** @inherits apf.DataBinding */
 
     this.getActionTracker = function(ignoreMe){
         return jmlNode.getActionTracker(ignoreMe);
@@ -94,7 +94,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         
         //#ifdef __DEBUG
         if (!jmlNode.traverse && !jmlNode.bindingRules[jmlNode.mainBind]) {
-            throw new Error(jpf.formatErrorString(0, jmlNode, 
+            throw new Error(apf.formatErrorString(0, jmlNode, 
               "Executing selection change",
               "The default bind rule isn't set. Expected '" 
               + jmlNode.mainBind + "' rule to exist"));
@@ -221,7 +221,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.$load = function(XMLRoot){
         //if(jmlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         this.$updateSelection();
         
@@ -307,7 +307,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.getSelectionValue = function(xmlNode){
-        return jpf.getXmlValue(xmlNode, "text()")
+        return apf.getXmlValue(xmlNode, "text()")
     };
     
     this.getSelectionNodeByValue = function(value, nodes){
@@ -326,13 +326,13 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     this.createSelectionNode = function(xmlNode){
         if (this.mode == "copy") {
-            return jpf.xmldb.clearConnections(xmlNode.cloneNode(true));
+            return apf.xmldb.clearConnections(xmlNode.cloneNode(true));
         }
         else if (this.xmlRoot) {
             var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
             var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.$jml.getAttribute("ref"));
-            jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
-            jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
+            apf.xmldb.createNodeFromXpath(selNode, this.xpath);
+            apf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             
             return selNode;
         }
@@ -385,7 +385,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 //This seems cumbersome... check abstraction
                 xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                     mlNode.xmlRoot, null, null, true);
-                jpf.xmldb.setNodeValue(xmlNode, "");
+                apf.xmldb.setNodeValue(xmlNode, "");
                 if (this.$updateOtherBindings) 
                     this.$updateOtherBindings();
                 if (this.$showSelection) 
@@ -421,7 +421,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 //mlNode.change("");
                 
                 //This should be researched better....
-                jpf.xmldb.setNodeValue(jpf.xmldb.createNodeFromXpath(mlNode.xmlRoot,
+                apf.xmldb.setNodeValue(apf.xmldb.createNodeFromXpath(mlNode.xmlRoot,
                     mlNode.bindingRules[mlNode.mainBind][0].getAttribute("select")),
                     "", true);
             }

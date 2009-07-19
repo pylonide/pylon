@@ -34,14 +34,14 @@
  * @define toc
  * @addnode elements
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  * @todo test if this element still works with the refactored basetab
  *    
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.toc = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"Page" : [["caption","@caption"]]};
     // #endif
@@ -112,7 +112,7 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
         setTimeout(function(){
             _self.$represent.set(nr);
         }, 1);
-        //setTimeout("jpf.lookup(" + this.$represent.uniqueId + ").set(" + nr + ");", 1);
+        //setTimeout("apf.lookup(" + this.$represent.uniqueId + ").set(" + nr + ");", 1);
     };
     
     /**** Private Methods ****/
@@ -158,26 +158,26 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
             var oPage    = this.$getLayoutNode("page");
             this.$setStyleClass(oPage, "page" + i);
             
-            oPage.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId 
+            oPage.setAttribute("onmouseover", 'apf.lookup(' + this.uniqueId 
                 + ').$setStyleClass(this, "hover", null);');
-            oPage.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId 
+            oPage.setAttribute("onmouseout", 'apf.lookup(' + this.uniqueId 
                 + ').$setStyleClass(this, "", ["hover"]);');
             
             if(!pages[i].$jml.getAttribute("caption")){
                 // #ifdef __DEBUG
-                jpf.console.warn("Page element without caption found.");
+                apf.console.warn("Page element without caption found.");
                 // #endif
                 //continue;
             }
             else {
-                jpf.xmldb.setNodeValue(oCaption, 
+                apf.xmldb.setNodeValue(oCaption, 
                     pages[i].$jml.getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
-                    jpf.lookup(" + this.uniqueId + ").gotoPage(" + i + ");\
+                    apf.lookup(" + this.uniqueId + ").gotoPage(" + i + ");\
                 });");
-            p.push(jpf.xmldb.htmlImport(oPage, this.oInt));
+            p.push(apf.xmldb.htmlImport(oPage, this.oInt));
             l[i] = p[p.length - 1];
         }
         
@@ -188,7 +188,7 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setActivePage(0);
         
         //#ifdef __SUPPORT_GECKO
-        if (jpf.isGecko) {
+        if (apf.isGecko) {
             var tocNode = this;
             setTimeout(function(){
                 tocNode.oExt.style.height = tocNode.oExt.offsetHeight + 1 + "px";
@@ -210,13 +210,13 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         // #ifdef __DEBUG
         if (!this.represent)
-            throw new Error(jpf.formatErrorString(1013, this, 
+            throw new Error(apf.formatErrorString(1013, this, 
                 "Find representation", 
                 "Could not find representation for the Toc: '" 
                 + this.name + "'", x))
         // #endif
     };
 }).implement(
-    jpf.Presentation
+    apf.Presentation
 );
 // #endif

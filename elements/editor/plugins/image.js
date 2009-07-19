@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-jpf.editor.plugin('image', function(){
+apf.editor.plugin('image', function(){
     this.name        = 'image';
     this.icon        = 'image';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+i';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ jpf.editor.plugin('image', function(){
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -67,8 +67,8 @@ jpf.editor.plugin('image', function(){
     this.submit = function(e) {
         var sUrl = this.oUrl.value;
         if (sUrl) {
-            jpf.popup.forceHide();
-            var oUrl = new jpf.url(sUrl);
+            apf.popup.forceHide();
+            var oUrl = new apf.url(sUrl);
             if (!oUrl.protocol || !oUrl.host || !oUrl.file) 
                 alert("Please enter a valid URL");
             else
@@ -90,15 +90,15 @@ jpf.editor.plugin('image', function(){
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oUrl = document.getElementById(idUrl);
         this.appendJmlNode(
-            '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+            '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
              <j:button caption="Insert"\
-               onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',
           document.getElementById(idBtns));
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
-            jpf.sanitizeTextbox(this.oUrl);
+        if (apf.hasFocusBug) {
+            apf.sanitizeTextbox(this.oUrl);
             this.oUrl.onselectstart = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
@@ -116,14 +116,14 @@ jpf.editor.plugin('image', function(){
     };
 });
 
-jpf.editor.plugin('imagespecial', function() {
+apf.editor.plugin('imagespecial', function() {
     this.name        = 'imagespecial';
     this.icon        = 'image';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+j';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var winHandle;
 

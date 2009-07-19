@@ -44,12 +44,12 @@
  * @allowchild autocomplete, {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.DataBinding
- * @inherits jpf.Presentation
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.DataBinding
+ * @inherits apf.Presentation
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.1
  *
@@ -78,10 +78,10 @@
  *   {Number}  keyCode   which key was pressed. This is an ascii number.
  * @event clear     Fires when the content of this element is cleared. 
  */
-jpf.input    =
-jpf.secret   =
-jpf.textarea =
-jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.input    =
+apf.secret   =
+apf.textarea =
+apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable       = true; // This object can get the focus
     var masking            = false;
     var _self              = this;
@@ -179,7 +179,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      * </code>
      */
     this.$propHandlers["mask"] = function(value){
-        if (this.mask.toLowerCase() == "password")// || !jpf.hasMsRangeObject)
+        if (this.mask.toLowerCase() == "password")// || !apf.hasMsRangeObject)
             return;
 
         if (!value) {
@@ -188,7 +188,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (!masking) {
             masking = true;
-            this.implement(jpf.textbox.masking);
+            this.implement(apf.textbox.masking);
             this.focusselect = false;
             this.realtime    = false;
         }
@@ -203,11 +203,11 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "initial-message");
+            || apf.xmldb.getInheritedAttribute(this.$jml, "initial-message");
 
         if (this.initialMsg) {
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
+            if (apf.hasFocusBug)
                 this.oInt.onblur();
             //#endif
             this.$propHandlers["value"].call(this, this.initialMsg, true);
@@ -222,7 +222,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : jpf.isTrue(jpf.xmldb.getInheritedAttribute(this.$jml, "realtime")) || false;
+            : apf.isTrue(apf.xmldb.getInheritedAttribute(this.$jml, "realtime")) || false;
     };
 
     /**
@@ -298,7 +298,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
      * @private
      */
     this.insert = function(text){
-        if (jpf.hasMsRangeObject) {
+        if (apf.hasMsRangeObject) {
             try {
                 this.oInt.focus();
             }
@@ -318,16 +318,16 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$clear = function(){
         this.value = "";//@todo what about property binding?
         
-        if (this.initialMsg && jpf.window.focussed != this) {
+        if (this.initialMsg && apf.window.focussed != this) {
             this.$propHandlers["value"].call(this, this.initialMsg, true);
-            jpf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
+            apf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
         }
         else {
             this.$propHandlers["value"].call(this, "");
         }
         
         if (!this.oInt.tagName.toLowerCase().match(/input|textarea/i)) {
-            if (jpf.hasMsRangeObject) {
+            if (apf.hasMsRangeObject) {
                 try {
                     var range = document.selection.createRange();
                     range.moveStart("sentence", -1);
@@ -356,7 +356,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
                 return false;
 
         // @todo: revisit this IF statement - dead code?
-        if (false && jpf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
+        if (false && apf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
             if ((text = this.dispatchEvent("keydown", {
                 text : this.onpaste(text)}) === false))
@@ -383,7 +383,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.initialMsg && this.oInt.value == this.initialMsg) {
             this.$propHandlers["value"].call(this, "", true);
-            jpf.setStyleClass(this.oExt, "", [this.baseCSSname + "Initial"]);
+            apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Initial"]);
         }
         
         function delay(){
@@ -405,7 +405,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.select();
         };
 
-        if ((!e || e.mouse) && jpf.isIE) {
+        if ((!e || e.mouse) && apf.isIE) {
             clearInterval(fTimer);
             fTimer = setInterval(delay, 1);
         }
@@ -424,24 +424,24 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.initialMsg && this.oInt.value == "") {
             this.$propHandlers["value"].call(this, this.initialMsg, true);
-            jpf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
+            apf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
         }
 
-        /*if (jpf.hasMsRangeObject) {
+        /*if (apf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
             r.collapse();
             r.select();
         }*/
 
         try {
-            if (jpf.isIE || !e || e.srcElement != jpf.window)
+            if (apf.isIE || !e || e.srcElement != apf.window)
                 this.oInt.blur();
         }
         catch(e) {}
 
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
-            setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
+            setTimeout("var o = apf.lookup(" + this.uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
         
@@ -462,12 +462,12 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //#ifdef __WITH_HTML5
             else if (this.tagName == "email") {
-                this.datatype = "jpf:email";
-                this.$propHandlers["datatype"].call(this, "jpf:email");
+                this.datatype = "apf:email";
+                this.$propHandlers["datatype"].call(this, "apf:email");
             }
             else if (this.tagName == "url") {
-                this.datatype = "jpf:url";
-                this.$propHandlers["datatype"].call(this, "jpf:url");
+                this.datatype = "apf:url";
+                this.$propHandlers["datatype"].call(this, "apf:url");
             }
             //#endif
 
@@ -478,7 +478,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oInt    = this.$getLayoutNode("main", "input", this.oExt);
         this.oButton = this.$getLayoutNode("main", "button", this.oExt);
 
-        if (!jpf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
+        if (!apf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
             var node  = this.oInt;
             this.oInt = node.parentNode.insertBefore(document.createElement("textarea"), node);
             node.parentNode.removeChild(node);
@@ -522,8 +522,8 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (e.keyCode == 13 && value != this.value)
                     _self.change(value);
             }
-            else if (jpf.isSafari && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
-                setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
+            else if (apf.isSafari && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
+                setTimeout("var o = apf.lookup(" + _self.uniqueId + ");\
                     o.change(o.getValue())");
 
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
@@ -576,11 +576,11 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
         };
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
-            jpf.sanitizeTextbox(this.oInt);
+        if (apf.hasFocusBug)
+            apf.sanitizeTextbox(this.oInt);
         //#endif
 
-        if (jpf.hasAutocompleteXulBug)
+        if (apf.hasAutocompleteXulBug)
             this.oInt.setAttribute("autocomplete", "off");
 
         if (!this.oInt.tagName.toLowerCase().match(/input|textarea/)) {
@@ -608,9 +608,9 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$loadJml = function(x){
         //Autocomplete
-        var ac = $xmlns(x, "autocomplete", jpf.ns.jml)[0];
+        var ac = $xmlns(x, "autocomplete", apf.ns.jml)[0];
         if (ac) {
-            this.implement(jpf.textbox.autocomplete);
+            this.implement(apf.textbox.autocomplete);
             this.initAutocomplete(ac);
         }
 
@@ -622,10 +622,10 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
 
-        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else if (!ac)
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(){
@@ -642,15 +642,15 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
     //#ifdef __WITH_VALIDATION
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

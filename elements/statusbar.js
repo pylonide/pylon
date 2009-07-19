@@ -30,9 +30,9 @@
  * <code>
  *   <j:statusbar align="bottom">
  *      <j:panel>
- *          Javeline PlatForm
+ *          Ajax.org Platform
  *      </j:panel>
- *      <j:progressbar value="{jpf.offline.position}" />
+ *      <j:progressbar value="{apf.offline.position}" />
  *      <j:panel>
  *      
  *      </j:panel>
@@ -45,12 +45,12 @@
  * @allowchild progressbar
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
 
-jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -68,7 +68,7 @@ jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
             return;
         
         jmlNode.$propHandlers["caption"] = function(value){
-            jpf.xmldb.setNodeValue(
+            apf.xmldb.setNodeValue(
                 this.$getLayoutNode("panel", "caption", this.oExt), value);
         }
         jmlNode.$propHandlers["icon"] = function(value){
@@ -113,9 +113,9 @@ jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
             if (node.nodeType != 1) 
                 continue;
             
-            tagName = node[jpf.TAGNAME];
+            tagName = node[apf.TAGNAME];
             if (tagName == "panel") {
-                bar = new jpf.panel(this.oInt, tagName);
+                bar = new apf.panel(this.oInt, tagName);
                 bar.skinName = this.skinName
                 insertChild.call(this, bar);
                 bar.loadJml(node, this);
@@ -129,7 +129,7 @@ jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
                     jmlNode.setCaption(node.firstChild.nodeValue);*/
             }
             else if (tagName == "progressbar") {
-                new jpf.progressbar(this.oInt, tagName).loadJml(node, this);
+                new apf.progressbar(this.oInt, tagName).loadJml(node, this);
             }
         }
         
@@ -137,6 +137,6 @@ jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setStyleClass(bar.oExt, bar.baseCSSname + "Last");
         }
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 // #endif

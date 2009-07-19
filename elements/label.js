@@ -45,9 +45,9 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.BaseSimple
+ * @inherits apf.BaseSimple
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -69,7 +69,7 @@
  * </code>
  */
 
-jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.label = apf.component(apf.NODE_VISIBLE, function(){
     var _self = this;
     
     this.$focussable = false;
@@ -129,16 +129,16 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.setProperty("value", x.firstChild.nodeValue.trim());
         else
-            jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+            apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
-    jpf.BaseSimple
+    apf.BaseSimple
 )
 
 //#endif

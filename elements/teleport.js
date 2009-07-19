@@ -122,7 +122,7 @@
  *
  *      // Send a message to John
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
- *          jpf.xmpp.MSG_CHAT);
+ *          apf.xmpp.MSG_CHAT);
  *  </j:script>
  * </code>
  * 
@@ -132,10 +132,10 @@
  *
  * @default_private
  */
-jpf.teleport = {
+apf.teleport = {
     //#ifdef __WITH_JMLDOM_FULL
     tagName  : "teleport",
-    nodeFunc : jpf.NODE_HIDDEN,
+    nodeFunc : apf.NODE_HIDDEN,
     //#endif
     
     modules: new Array(),
@@ -163,7 +163,7 @@ jpf.teleport = {
         
         //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
-        jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+        apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
         //#endif
         
         var id, obj, nodes = this.$jml.childNodes;
@@ -171,10 +171,10 @@ jpf.teleport = {
             if (nodes[i].nodeType != 1) 
                 continue;
             
-            obj = new jpf.BaseComm(nodes[i]);
+            obj = new apf.BaseComm(nodes[i]);
             
             if (id = nodes[i].getAttribute("id"))
-                jpf.setReference(id, obj);
+                apf.setReference(id, obj);
         }
         
         this.loaded = true;
@@ -187,7 +187,7 @@ jpf.teleport = {
     
     availHTTP  : [],
     releaseHTTP: function(http){
-        if (jpf.brokenHttpAbort) 
+        if (apf.brokenHttpAbort) 
             return;
         if (self.XMLHttpRequestUnSafe && http.constructor == XMLHttpRequestUnSafe) 
             return;
@@ -199,7 +199,7 @@ jpf.teleport = {
     
     destroy: function(){
         //#ifdef __DEBUG
-        jpf.console.info("Cleaning teleport");
+        apf.console.info("Cleaning teleport");
         //#endif
         
         for (var i = 0; i < this.availHTTP.length; i++)
@@ -214,41 +214,41 @@ jpf.teleport = {
  * @baseclass
  * @private
  */
-jpf.BaseComm = function(x){
-    jpf.makeClass(this);
-    this.uniqueId = jpf.all.push(this) - 1;
+apf.BaseComm = function(x){
+    apf.makeClass(this);
+    this.uniqueId = apf.all.push(this) - 1;
     this.$jml      = x;
     
     /**
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[Javeline Teleport Component : " + (this.name || "")
+        return "[Ajax.org Teleport Component : " + (this.name || "")
             + " (" + this.type + ")]";
     }
     
     if (this.$jml) {
         this.name = x.getAttribute("id");
-        this.type = x[jpf.TAGNAME];
+        this.type = x[apf.TAGNAME];
         
         // Implement the specified baseclass
-        if (!jpf[this.type]) 
-            throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.$jml));
+        if (!apf[this.type]) 
+            throw new Error(apf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Ajax.org Teleport Component '" + this.type + "'", this.$jml));
         
-        this.implement(jpf[this.type]);
+        this.implement(apf[this.type]);
         if (this.useHTTP) {
             // Implement HTTP Module
-            if (!jpf.http) 
-                throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.$jml));
-            this.implement(jpf.http);
+            if (!apf.http) 
+                throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Ajax.org Teleport HTTP Component", this.$jml));
+            this.implement(apf.http);
         }
         
         if (this.$jml.getAttribute("protocol")) {
             // Implement Module
             var proto = this.$jml.getAttribute("protocol").toLowerCase();
-            if (!jpf[proto]) 
-                throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.$jml));
-            this.implement(jpf[proto]);
+            if (!apf[proto]) 
+                throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Ajax.org Teleport RPC Component '" + proto + "'", this.$jml));
+            this.implement(apf[proto]);
         }
     }
     
@@ -259,4 +259,4 @@ jpf.BaseComm = function(x){
 
 // #endif
 
-jpf.Init.run('Teleport');
+apf.Init.run('Teleport');

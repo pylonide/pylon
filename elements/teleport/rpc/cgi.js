@@ -24,9 +24,9 @@
 
 /**
  * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
- * plugin of jpf.teleport.
+ * plugin of apf.teleport.
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="cgi">
@@ -69,28 +69,28 @@
  *
  * @constructor
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @inherits jpf.rpc
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @inherits apf.rpc
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @default_private
  */
-jpf.cgi = function(){
+apf.cgi = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
 
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
 
     // Stand Alone
     if (!this.uniqueId) {
-        jpf.makeClass(this);
-        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
+        apf.makeClass(this);
+        this.implement(apf.BaseComm, apf.http, apf.rpc);
     }
 
     this.unserialize = function(str){
@@ -113,7 +113,7 @@ jpf.cgi = function(){
             else if (typeof o == "object") {
                 for (prop in o) {
                     //#ifdef __SUPPORT_SAFARI2
-                    if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                    if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
                         continue;
                     //#endif
 
@@ -136,7 +136,7 @@ jpf.cgi = function(){
         else {
             for (prop in args) {
                 //#ifdef __SUPPORT_SAFARI2
-                if (jpf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+                if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                     continue;
                 //#endif
 
@@ -227,7 +227,7 @@ jpf.cgi = function(){
 };
 
 // #ifdef __WITH_DATA_INSTRUCTIONS
-jpf.namespace("datainstr.url", function(xmlContext, options, callback){
+apf.namespace("datainstr.url", function(xmlContext, options, callback){
     if (!options.parsed) {
         var url = options.instrData.join(":");
         
@@ -239,7 +239,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
                 return o
                     ? (o.nodeType >= 2 && o.nodeType <= 4
                         ? o.nodeValue
-                        : o.xml || o.serialize()) //jpf.xmldb.convertXml(o, "cgivars"))
+                        : o.xml || o.serialize()) //apf.xmldb.convertXml(o, "cgivars"))
                     : ""
             });
         }
@@ -256,7 +256,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
             }
             catch(e){
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(0, null,
+                throw new Error(apf.formatErrorString(0, null,
                     "Saving/Loading data", "Could not execute javascript \
                     code in process instruction '" + js
                     + "' with error " + e.message));
@@ -273,7 +273,7 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
         var httpBody = (args && args.length)
             ? (args[0].nodeType
                 ? args[0].xml || args[0].serialize()
-                : jpf.serialize(args[0]))
+                : apf.serialize(args[0]))
             : query;
 
         if (options.preparse) {
@@ -288,11 +288,11 @@ jpf.namespace("datainstr.url", function(xmlContext, options, callback){
         var httpBody = options.parsed[2];
     }
 
-    var oHttp = jpf.oHttp;
+    var oHttp = apf.oHttp;
     oHttp.contentType = "application/x-www-form-urlencoded";
     oHttp.method = (options.instrType.replace(/url.?/, "") || "GET").toUpperCase();
-    oHttp.get(jpf.getAbsolutePath(jpf.appsettings.baseurl, url + (oHttp.method == "GET" ? "?" + query : "")), callback,
-        jpf.extend(oHttp.method == "GET" ? {} : {data : httpBody}, options));
+    oHttp.get(apf.getAbsolutePath(apf.appsettings.baseurl, url + (oHttp.method == "GET" ? "?" + query : "")), callback,
+        apf.extend(oHttp.method == "GET" ? {} : {data : httpBody}, options));
 });
 
 // #endif

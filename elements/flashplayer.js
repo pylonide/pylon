@@ -29,9 +29,9 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.BaseSimple
+ * @inherits apf.BaseSimple
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
@@ -52,7 +52,7 @@
  *  <j:flashplayer ref="@src" />
  * </code>
  */
-jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     //this.editableParts = {"main" : [["image","@src"]]};
     //#endif
@@ -106,10 +106,10 @@ jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
     };
 }).implement(
-    jpf.BaseSimple
+    apf.BaseSimple
 );
 
 // #endif

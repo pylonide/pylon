@@ -40,7 +40,7 @@
  *              icon    = "icoPhone.gif"
  *              caption = "Change Skin" />
  *          <j:divider />
- *          <j:progressbar value="jpf.offline.position" />
+ *          <j:progressbar value="apf.offline.position" />
  *      </j:bar>
  *  </j:toolbar>
  *
@@ -58,14 +58,14 @@
  * @addnode elements
  * @allowchild bar, menubar
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  */
 
-jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.toolbar = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -94,9 +94,9 @@ jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
             if (node.nodeType != 1) 
                 continue;
             
-            tagName = node[jpf.TAGNAME];
+            tagName = node[apf.TAGNAME];
             if ("bar|menubar".indexOf(tagName) > -1) {
-                bar = new jpf.bar(this.oInt, tagName);
+                bar = new apf.bar(this.oInt, tagName);
                 bar.skinName = this.skinName
                 bar.loadJml(node, this);
                 
@@ -106,7 +106,7 @@ jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
                     //#ifdef __DEBUG
                     bar.$domHandlers["insert"].push(function(jmlNode){
                         if (jmlNode.tagName != "button") {
-                            throw new Error(jpf.formatErrorStrin(0, this,
+                            throw new Error(apf.formatErrorStrin(0, this,
                                 "Appending a child",
                                 "A menubar can only contain j:button elements"));
                         }
@@ -116,6 +116,6 @@ jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 // #endif

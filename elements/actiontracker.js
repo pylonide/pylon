@@ -39,7 +39,7 @@
  * will be synchronized to the data store when the application comes online.
  *
  * @constructor
- * @inherits jpf.Class
+ * @inherits apf.Class
  *
  * @define actiontracker
  * @addnode smartbinding, global
@@ -61,10 +61,10 @@
  *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *     {Number}         state     the state of the call
  *       Possible values:
- *       jpf.SUCCESS  the request was successfull
- *       jpf.TIMEOUT  the request has timed out.
- *       jpf.ERROR    an error has occurred while making the request.
- *       jpf.OFFLINE  the request was made while the application was offline.
+ *       apf.SUCCESS  the request was successfull
+ *       apf.TIMEOUT  the request has timed out.
+ *       apf.ERROR    an error has occurred while making the request.
+ *       apf.OFFLINE  the request was made while the application was offline.
  *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -77,22 +77,22 @@
  *   object:
  *     {Number}         state     the state of the call
  *       Possible values:
- *       jpf.SUCCESS  the request was successfull
- *       jpf.TIMEOUT  the request has timed out.
- *       jpf.ERROR    an error has occurred while making the request.
- *       jpf.OFFLINE  the request was made while the application was offline.
+ *       apf.SUCCESS  the request was successfull
+ *       apf.TIMEOUT  the request has timed out.
+ *       apf.ERROR    an error has occurred while making the request.
+ *       apf.OFFLINE  the request was made while the application was offline.
  *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
  *     {Http}           tpModule  the teleport module that is making the request.
  *     {Number}         id        the id of the request.
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.actiontracker = function(parentNode){
-    jpf.makeClass(this);
+apf.actiontracker = function(parentNode){
+    apf.makeClass(this);
 
     var _self       = this;
     var stackDone   = [];
@@ -108,7 +108,7 @@ jpf.actiontracker = function(parentNode){
     this.tagName    = "actiontracker";
     if (parentNode)
         this.parentNode = parentNode;
-    this.implement(jpf.JmlDom); /** @inherits jpf.JmlDom */
+    this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
     //#endif
 
     /**
@@ -131,7 +131,7 @@ jpf.actiontracker = function(parentNode){
                 break;
             //#ifdef __WITH_ALIAS
             case "alias":
-                jpf.JmlElement.propHandlers.alias.call(this, value);
+                apf.JmlElement.propHandlers.alias.call(this, value);
             //#endif
             default:
                 this[prop] = value;
@@ -151,7 +151,7 @@ jpf.actiontracker = function(parentNode){
             }
             else {
                 value = this.$booleanProperties[a.nodeName]
-                  ? jpf.isTrue(a.nodeValue)
+                  ? apf.isTrue(a.nodeValue)
                   : a.nodeValue;
                 this.setProperty(a.nodeName, value);
             }
@@ -165,7 +165,7 @@ jpf.actiontracker = function(parentNode){
      *                        Executing or undoing the action.
      */
     this.define = function(action, func){
-        jpf.actiontracker.actions[action] = func;
+        apf.actiontracker.actions[action] = func;
     };
 
     /**
@@ -175,8 +175,8 @@ jpf.actiontracker = function(parentNode){
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
             ? this.parentNode.getActionTracker(true)
-            : (jpf.window.$at != this
-                ? jpf.window.$at
+            : (apf.window.$at != this
+                ? apf.window.$at
                 : null);
     };
 
@@ -197,9 +197,9 @@ jpf.actiontracker = function(parentNode){
             return;
 
         //Execute action
-        var UndoObj = new jpf.UndoData(options, this);
+        var UndoObj = new apf.UndoData(options, this);
         if (options.action)
-            jpf.actiontracker.actions[options.action](UndoObj, false, this);
+            apf.actiontracker.actions[options.action](UndoObj, false, this);
 
         //Add action to stack
         UndoObj.id = stackDone.push(UndoObj) - 1;
@@ -207,8 +207,8 @@ jpf.actiontracker = function(parentNode){
         this.setProperty("undolength", stackDone.length);
 
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-        if (typeof jpf.offline != "undefined") {
-            var t = jpf.offline.transactions;
+        if (typeof apf.offline != "undefined") {
+            var t = apf.offline.transactions;
             if (t.doStateSync) {
                 t.addAction(this, UndoObj, "undo");
                 t.clearActions(this, "redo");
@@ -232,9 +232,9 @@ jpf.actiontracker = function(parentNode){
 
     //deprecated??
     this.$addActionGroup = function(done, rpc){
-        var UndoObj = new jpf.UndoData("group", null, [
-            //@todo jpf.copyArray is deprecated and no longer exists
-            jpf.copyArray(done, UndoData), jpf.copyArray(rpc, UndoData)
+        var UndoObj = new apf.UndoData("group", null, [
+            //@todo apf.copyArray is deprecated and no longer exists
+            apf.copyArray(done, UndoData), apf.copyArray(rpc, UndoData)
         ]);
         stackDone.push(UndoObj);
         this.setProperty("undolength", stackDone.length);
@@ -245,7 +245,7 @@ jpf.actiontracker = function(parentNode){
     /**
      * Synchronizes all held back changes to the data store.
      * @todo I don't really know if this stacking into the parent is
-     * still used, for instance for jpf.Transactions. please think
+     * still used, for instance for apf.Transactions. please think
      * about it.
      */
     this.purge = function(nogrouping, forcegrouping){//@todo, maybe add noReset argument
@@ -316,15 +316,15 @@ jpf.actiontracker = function(parentNode){
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
             //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-            if (typeof jpf.offline != "undefined" && jpf.offline.transactions.doStateSync) {
-                jpf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
-                jpf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
+            if (typeof apf.offline != "undefined" && apf.offline.transactions.doStateSync) {
+                apf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
+                apf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
             }
             //#endif
 
             //Undo Client Side Action
             if (UndoObj.action)
-                jpf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
+                apf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
 
             if (!rollback) {
                 if (UndoObj.multiple) 
@@ -340,7 +340,7 @@ jpf.actiontracker = function(parentNode){
         }
 
         //#ifdef __DEBUG
-        jpf.console.info("Executing " + (undo ? "undo" : "redo"));
+        apf.console.info("Executing " + (undo ? "undo" : "redo"));
         //#endif
 
         //Undo the last X places - where X = id;
@@ -356,7 +356,7 @@ jpf.actiontracker = function(parentNode){
                 undoStack.length--;
 
                 //#ifdef __DEBUG
-                jpf.console.error("The actiontracker is in an invalid \
+                apf.console.error("The actiontracker is in an invalid \
                                    state. The entire undo and redo stack will \
                                    be cleared to prevent further corruption\
                                    This is a serious error, please contact \
@@ -367,8 +367,8 @@ jpf.actiontracker = function(parentNode){
                 stackUndone = [];
 
                 //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-                if (typeof jpf.offline != "undefined") {
-                    var t = jpf.offline.transactions;
+                if (typeof apf.offline != "undefined") {
+                    var t = apf.offline.transactions;
                     if (t.doStateSync)
                         t.clear("undo|redo");
                 }
@@ -389,13 +389,13 @@ jpf.actiontracker = function(parentNode){
     }
 
     this.$receive = function(data, state, extra, UndoObj, callback){
-        if (state == jpf.TIMEOUT
+        if (state == apf.TIMEOUT
           && extra.tpModule.retryTimeout(extra, state, this) === true)
             return true;
 
-        if (state != jpf.SUCCESS) {
+        if (state != apf.SUCCESS) {
             //Tell anyone that wants to hear about our failure :(
-            if (this.dispatchEvent("actionfail", jpf.extend(extra, {
+            if (this.dispatchEvent("actionfail", apf.extend(extra, {
                 state   : state,
                 message : "Could not sent Action RPC request for control "
                             + this.name
@@ -405,7 +405,7 @@ jpf.actiontracker = function(parentNode){
             })) === false) {
 
                 //#ifdef __DEBUG
-                jpf.console.warn("You have cancelled the automatic undo \
+                apf.console.warn("You have cancelled the automatic undo \
                     process! Please be aware that if you don't retry this call \
                     the queue will fill up and none of the other actions will \
                     be sent through.");
@@ -423,7 +423,7 @@ jpf.actiontracker = function(parentNode){
                        is it intuitive enough for the user that redo will
                        let the user retry the action??
             */
-            if (typeof jpf.offline != "undefined" && !jpf.offline.reloading)
+            if (typeof apf.offline != "undefined" && !apf.offline.reloading)
                 this.undo(UndoObj.id, extra.userdata, true);
 
             if (callback)
@@ -440,13 +440,13 @@ jpf.actiontracker = function(parentNode){
                 */
                 execStack = [];
                 
-                var oError = new Error(jpf.formatErrorString(0, this, 
+                var oError = new Error(apf.formatErrorString(0, this, 
                     "Executing action",
                     "Error sending action to the server:\n"
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
                     + extra.message));
                 
-                if ((extra.jmlNode || jpf).dispatchEvent("error", jpf.extend({
+                if ((extra.jmlNode || apf).dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -458,7 +458,7 @@ jpf.actiontracker = function(parentNode){
         }
         else {
             //Tell anyone that wants to hear about our success
-            this.dispatchEvent("actionsuccess", jpf.extend(extra, {
+            this.dispatchEvent("actionsuccess", apf.extend(extra, {
                 state   : state,
                 bubbles : true
             }, extra));
@@ -484,8 +484,8 @@ jpf.actiontracker = function(parentNode){
             execStack.length--;
 
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
-            if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
-                jpf.offline.transactions.removeAction(this, true, "queue");
+            if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+                apf.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
             UndoObj.clearRsbQueue();
@@ -501,7 +501,7 @@ jpf.actiontracker = function(parentNode){
                 execStack.unshift({
                     undoObj : (undoObj.tagName 
                         ? undoObj 
-                        : new jpf.UndoData(undoObj, this)).preparse(undo, this),
+                        : new apf.UndoData(undoObj, this)).preparse(undo, this),
                     undo   : undo
                 });
             }
@@ -519,8 +519,8 @@ jpf.actiontracker = function(parentNode){
         execStack.push(qItem) - 1;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
-            jpf.offline.transactions.addAction(this, qItem, "queue");
+        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+            apf.offline.transactions.addAction(this, qItem, "queue");
         //#endif
 
         //The queue was empty, yay! we're gonna exec immediately
@@ -534,7 +534,7 @@ jpf.actiontracker = function(parentNode){
             in release mode.
         */
         if (execStack[0].undoObj != UndoObj){
-            throw new Error(jpf.formatErrorString(0, this, "Executing Next \
+            throw new Error(apf.formatErrorString(0, this, "Executing Next \
                 action in queue", "The execution stack was corrupted. This is \
                 a fatal error. The application should be restarted. You will \
                 lose all your changes. Please contact the administrator."));
@@ -547,8 +547,8 @@ jpf.actiontracker = function(parentNode){
         var lastItem = execStack.shift();
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (typeof jpf.offline != "undefined" && jpf.offline.transactions.enabled) //We want to maintain the stack for sync
-            jpf.offline.transactions.removeAction(this, null, "queue");
+        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+            apf.offline.transactions.removeAction(this, null, "queue");
         //#endif
 
         //Check if there is a new action to execute;
@@ -623,10 +623,10 @@ jpf.actiontracker = function(parentNode){
  * @constructor
  * @default_private
  */
-jpf.UndoData = function(settings, at){
+apf.UndoData = function(settings, at){
     this.tagName = "UndoData";
     this.extra   = {};
-    jpf.extend(this, settings);
+    apf.extend(this, settings);
 
     if (at)
         this.at = at;
@@ -671,20 +671,20 @@ jpf.UndoData = function(settings, at){
         //this can be optimized
         var rsb = this.rsbModel
             ? this.rsbModel.rsb
-            : jpf.remote;
+            : apf.remote;
 
         //Record arguments
-        var sLookup = (typeof jpf.offline != "undefined" && jpf.offline.sLookup)
-            ? jpf.offline.sLookup
-            : (jpf.offline.sLookup = {});
+        var sLookup = (typeof apf.offline != "undefined" && apf.offline.sLookup)
+            ? apf.offline.sLookup
+            : (apf.offline.sLookup = {});
         if (!sLookup.count) sLookup.count = 0;
         var xmlNode, xmlId, args = this.args.slice();
 
         for (var i = 0; i < args.length; i++) {
             if(args[i] && args[i].nodeType) {
                 if (!serialState.argsModel) {
-                    var model = jpf.nameserver.get("model",
-                        jpf.xmldb.getXmlDocId(args[i]));
+                    var model = apf.nameserver.get("model",
+                        apf.xmldb.getXmlDocId(args[i]));
 
                     if(model)
                         serialState.argsModel = model.name || model.uniqueId;
@@ -707,7 +707,7 @@ jpf.UndoData = function(settings, at){
 
         //#ifdef __DEBUG
         if (!serialState.argsModel)
-            jpf.console.warn("Could not determine model for serialization \
+            apf.console.warn("Could not determine model for serialization \
                 of undo state. Will not be able to undo the state when the \
                 server errors. This creates a potential risk of loosing \
                 all changes on sync!")
@@ -721,8 +721,8 @@ jpf.UndoData = function(settings, at){
                 model we'll just record the xpath
             */
             if (xmlNode.nodeType == 2
-              || jpf.xmldb.isChildOf(model.data, xmlNode, true)) {
-                xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+              || apf.xmldb.isChildOf(model.data, xmlNode, true)) {
+                xmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
                 return {
                     xpath  : rsb.xmlToXpath(xmlNode, model.data, true),
                     lookup : xmlId
@@ -734,10 +734,10 @@ jpf.UndoData = function(settings, at){
                 while(contextNode.parentNode && contextNode.parentNode.nodeType == 1) //find topmost parent
                     contextNode = xmlNode.parentNode;
 
-                xmlId = contextNode.getAttribute(jpf.xmldb.xmlIdTag);
+                xmlId = contextNode.getAttribute(apf.xmldb.xmlIdTag);
                 if (!xmlId) {
                     xmlId = "serialize" + sLookup.count++;
-                    contextNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
+                    contextNode.setAttribute(apf.xmldb.xmlIdTag, xmlId);
                 }
 
                 var obj = {
@@ -746,8 +746,8 @@ jpf.UndoData = function(settings, at){
                 }
 
                 if (!sLookup[xmlId]) {
-                    contextNode.setAttribute(jpf.xmldb.xmlDocTag,
-                        jpf.xmldb.getXmlDocId(contextNode));
+                    contextNode.setAttribute(apf.xmldb.xmlDocTag,
+                        apf.xmldb.getXmlDocId(contextNode));
 
                     sLookup[xmlId] = contextNode;
                     obj.xml        = contextNode.xml || contextNode.serialize();
@@ -760,22 +760,22 @@ jpf.UndoData = function(settings, at){
 
     this.$import = function(){
         if (this.rsbModel)
-            this.rsbModel = jpf.nameserver.get("model", this.rsbModel);
+            this.rsbModel = apf.nameserver.get("model", this.rsbModel);
 
         if (this.argsModel) {
-            var model = jpf.nameserver.get("model", this.argsModel)
-                || jpf.lookup(this.argsModel);
+            var model = apf.nameserver.get("model", this.argsModel)
+                || apf.lookup(this.argsModel);
 
             //Record arguments
-            var sLookup =  (typeof jpf.offline != "undefined" && jpf.offline.sLookup)
-                ? jpf.offline.sLookup
-                : (jpf.offline.sLookup = {});
+            var sLookup =  (typeof apf.offline != "undefined" && apf.offline.sLookup)
+                ? apf.offline.sLookup
+                : (apf.offline.sLookup = {});
             if (!sLookup.count) sLookup.count = 0;
 
             var args = this.args;
             var rsb  = this.rsbModel
                 ? this.rsbModel.rsb
-                : jpf.remote;
+                : apf.remote;
 
             for (var xmlNode, i = 0; i < args.length; i++) {
                 if(args[i] && args[i].xpath)
@@ -809,8 +809,8 @@ jpf.UndoData = function(settings, at){
 
         function unserializeNode(xmlSerial, model){
             if (xmlSerial.xml) {
-                xmlNode = jpf.xmldb.getXml(xmlSerial.xml);
-                sLookup[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)] = xmlNode;
+                xmlNode = apf.xmldb.getXml(xmlSerial.xml);
+                sLookup[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = xmlNode;
             }
             else if (xmlSerial.lookup) {
                 xmlNode = sLookup[xmlSerial.lookup];
@@ -870,7 +870,7 @@ jpf.UndoData = function(settings, at){
         //#endif
         options.preparse = false;
 
-        jpf.saveData(dataInstruction, null, options,
+        apf.saveData(dataInstruction, null, options,
             function(data, state, extra){
                 extra.jmlNode = _self.jmlNode;
                 return at.$receive(data, state, extra, _self, callback);
@@ -888,9 +888,9 @@ jpf.UndoData = function(settings, at){
         if (!dataInstruction)
             return this;
 
-        options = jpf.extend({
+        options = apf.extend({
             //undoObj   : this,
-            userdata  : jpf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
+            userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             preparse  : true
         }, this.extra);
@@ -902,7 +902,7 @@ jpf.UndoData = function(settings, at){
         }
         //#endif
 
-        jpf.saveData(dataInstruction,
+        apf.saveData(dataInstruction,
             this.selNode || this.xmlNode, options); //@todo please check if at the right time selNode is set
 
         return this;
@@ -914,15 +914,15 @@ jpf.UndoData = function(settings, at){
  * @todo test if .extra has impact on speed
  * @private
  */
-jpf.actiontracker.actions = {
+apf.actiontracker.actions = {
     "setTextNode" : function(UndoObj, undo){
         var q = UndoObj.args;
 
         // Set Text Node
         if (!undo)
-            jpf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
         else //Undo Text Node Setting
-            jpf.xmldb.setTextNode(q[0], UndoObj.extra.oldValue, q[2]);
+            apf.xmldb.setTextNode(q[0], UndoObj.extra.oldValue, q[2]);
     },
 
     "setAttribute" : function(UndoObj, undo){
@@ -934,14 +934,14 @@ jpf.actiontracker.actions = {
             UndoObj.extra.name = q[1];
             UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
 
-            jpf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
         }
         // Undo Attribute Setting
         else {
             if (!UndoObj.extra.oldValue)
-                jpf.xmldb.removeAttribute(q[0], q[1]);
+                apf.xmldb.removeAttribute(q[0], q[1]);
             else
-                jpf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[3]);
+                apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[3]);
         }
     },
 
@@ -954,11 +954,11 @@ jpf.actiontracker.actions = {
             UndoObj.extra.name = q[1];
             UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
 
-            jpf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
         }
         //Undo Attribute Removal
         else
-            jpf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[2]);
+            apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[2]);
     },
 
     /**
@@ -977,7 +977,7 @@ jpf.actiontracker.actions = {
             }
             UndoObj.extra.oldValues = oldValues;
 
-            jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
+            apf.xmldb.applyChanges("attribute", q[0], UndoObj);
         }
         //Undo Attribute Setting
         else {
@@ -988,7 +988,7 @@ jpf.actiontracker.actions = {
                     q[0].setAttribute(prop, UndoObj.extra.oldValues[prop]);
             }
 
-            jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
+            apf.xmldb.applyChanges("attribute", q[0], UndoObj);
         }
     },
 
@@ -997,10 +997,10 @@ jpf.actiontracker.actions = {
 
         //Set Attribute
         if (!undo)
-            jpf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
         //Undo Attribute Setting
         else
-            jpf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
     },
 
     "addChildNode" : function(UndoObj, undo){
@@ -1008,10 +1008,10 @@ jpf.actiontracker.actions = {
 
         //Add Child Node
         if (!undo)
-            jpf.xmldb.addChildNode(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.addChildNode(q[0], q[1], q[2], q[3], UndoObj);
         //Remove Child Node
         else
-            jpf.xmldb.removeNode(UndoObj.extra.addedNode);
+            apf.xmldb.removeNode(UndoObj.extra.addedNode);
     },
 
     "appendChild" : function(UndoObj, undo){
@@ -1019,10 +1019,10 @@ jpf.actiontracker.actions = {
 
         //Append Child Node
         if (!undo)
-            jpf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
+            apf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
         //Remove Child Node
         else
-            jpf.xmldb.removeNode(q[1]);
+            apf.xmldb.removeNode(q[1]);
     },
 
     "moveNode" : function(UndoObj, undo){
@@ -1030,10 +1030,10 @@ jpf.actiontracker.actions = {
 
         //Move Node
         if (!undo)
-            jpf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
         //Move Node to previous position
         else
-            jpf.xmldb.moveNode(UndoObj.extra.parent, q[1],
+            apf.xmldb.moveNode(UndoObj.extra.parent, q[1],
                 UndoObj.extra.beforeNode, q[3]);
     },
 
@@ -1042,10 +1042,10 @@ jpf.actiontracker.actions = {
 
         //Remove Node
         if (!undo)
-            jpf.xmldb.removeNode(q[0], q[1], UndoObj);
+            apf.xmldb.removeNode(q[0], q[1], UndoObj);
         //Append Child Node
         else
-            jpf.xmldb.appendChild(UndoObj.extra.parent,
+            apf.xmldb.appendChild(UndoObj.extra.parent,
                 UndoObj.extra.removedNode, UndoObj.extra.beforeNode);
     },
 
@@ -1056,12 +1056,12 @@ jpf.actiontracker.actions = {
         if (undo) {
             var d = UndoObj.extra.removeList;
             for (var i = d.length - 1; i >= 0; i--) {
-                jpf.xmldb.appendChild(d[i].pNode,
+                apf.xmldb.appendChild(d[i].pNode,
                     d[i].removedNode, d[i].beforeNode);
             }
         }
         else
-            jpf.xmldb.removeNodeList(UndoObj.args, UndoObj);
+            apf.xmldb.removeNodeList(UndoObj.args, UndoObj);
     },
 
     "setUndoObject" : function(UndoObj, undo){
@@ -1085,11 +1085,11 @@ jpf.actiontracker.actions = {
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
             if (UndoObj.extra.newNode) {
-                jpf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
+                apf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
             }
             else {
                 var newNodes = [];
-                jpf.xmldb.setNodeValue(q[0], q[1], true, {
+                apf.xmldb.setNodeValue(q[0], q[1], true, {
                     undoObj  : UndoObj,
                     xpath    : q[2],
                     newNodes : newNodes,
@@ -1103,10 +1103,10 @@ jpf.actiontracker.actions = {
         else {
             if (UndoObj.extra.newNode) {
                 UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
-                jpf.xmldb.removeNode(UndoObj.extra.newNode);
+                apf.xmldb.removeNode(UndoObj.extra.newNode);
             }
             else
-                jpf.xmldb.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
+                apf.xmldb.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
         }
     },
 
@@ -1114,27 +1114,27 @@ jpf.actiontracker.actions = {
     "multicall" : function(UndoObj, undo, at){
         var prop, q = UndoObj.args;
 
-        var dUpdate = jpf.xmldb.delayUpdate;
-        jpf.xmldb.delayUpdate = true;
+        var dUpdate = apf.xmldb.delayUpdate;
+        apf.xmldb.delayUpdate = true;
 
         // Set Calls
         if (!undo) {
             for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
                     q[i].extra = {}
-                jpf.actiontracker.actions[q[i].func](q[i], false, at);
+                apf.actiontracker.actions[q[i].func](q[i], false, at);
             }
         }
         // Undo Calls
         else {
             for (var i = q.length - 1; i >= 0; i--)
-                jpf.actiontracker.actions[q[i].func](q[i], true, at);
+                apf.actiontracker.actions[q[i].func](q[i], true, at);
         }
 
-        jpf.xmldb.delayUpdate = dUpdate;
+        apf.xmldb.delayUpdate = dUpdate;
 
         //if (!dUpdate)
-            //jpf.xmldb.notifyQueued();
+            //apf.xmldb.notifyQueued();
     },
 
     /**
@@ -1147,23 +1147,23 @@ jpf.actiontracker.actions = {
         if (!undo) {
             // Add
             for (var i = 0; i < q[1].length; i++){
-                jpf.xmldb.appendChild(q[0], q[1][i],
+                apf.xmldb.appendChild(q[0], q[1][i],
                     null, null, null, UndoObj);
             }
 
             // Remove
             for (var i = 0; i < q[2].length; i++)
-                jpf.xmldb.removeNode(q[2][i], null, UndoObj);
+                apf.xmldb.removeNode(q[2][i], null, UndoObj);
         }
         // Undo Text Node Setting
         else {
             // Add
             for (var i = 0; i < q[2].length; i++)
-                jpf.xmldb.appendChild(q[0], q[2][i]);
+                apf.xmldb.appendChild(q[0], q[2][i]);
 
             // Remove
             for (var i = 0; i < q[1].length; i++)
-                jpf.xmldb.removeNode(q[1][i]);
+                apf.xmldb.removeNode(q[1][i]);
         }
     }
 };

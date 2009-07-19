@@ -147,17 +147,17 @@
  *
  * @constructor
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Cache
- * @inherits jpf.MultiSelect
- * @inherits jpf.BaseList
- * @inherits jpf.Rename
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Cache
+ * @inherits apf.MultiSelect
+ * @inherits apf.BaseList
+ * @inherits apf.Rename
  *
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  */
-jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
     this.objCanvas;
     this.nodes = [];
 
@@ -240,7 +240,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("onkeydown", onkeydown_, true);
 
-    jpf.addEventListener("contextmenu", function() {return false;});
+    apf.addEventListener("contextmenu", function() {return false;});
     //#endif
 
     // #ifdef __WITH_RENAME
@@ -294,7 +294,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!o)
             return;
 
-        var objBlock = jpf.flow.isBlock(o);
+        var objBlock = apf.flow.isBlock(o);
 
         if (objBlock) {
             if (resizeManager) {
@@ -327,7 +327,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         this.$setStyleClass(o, "", ["selected"]);
 
-        var objBlock = jpf.flow.isBlock(o);
+        var objBlock = apf.flow.isBlock(o);
         this.$deselectCaption(objBlock.caption);
 
         resizeManager.hide();
@@ -717,9 +717,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt        = this.$getExternal();
         this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
 
-        _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
-        jpf.flow.init();
-        /*jpf.flow.onconnectionrename = function(e) {
+        _self.objCanvas = new apf.flow.getCanvas(this.oInt);
+        apf.flow.init();
+        /*apf.flow.onconnectionrename = function(e) {
             _self.$beforeRename(e);
         }*/
     };
@@ -737,8 +737,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$dragdrop = function(el, dragdata, candrop) {
-        var blockPos  = jpf.getAbsolutePosition(dragdata.indicator);
-        var canvasPos = jpf.getAbsolutePosition(_self.objCanvas.htmlElement);
+        var blockPos  = apf.getAbsolutePosition(dragdata.indicator);
+        var canvasPos = apf.getAbsolutePosition(_self.objCanvas.htmlElement);
 
         this.moveTo(
             [dragdata.xmlNode],
@@ -801,11 +801,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
                 if (!found) {
                     if (objBlocks[blockId] && objBlocks[cCurrent[i].ref]) {
-                        var ConToDel = jpf.flow.findConnector(
+                        var ConToDel = apf.flow.findConnector(
                             objBlocks[blockId], cCurrent[i].output,
                             objBlocks[cCurrent[i].ref], cCurrent[i].input);
                         if (ConToDel) {
-                            jpf.flow.removeConnector(ConToDel.connector.htmlElement);
+                            apf.flow.removeConnector(ConToDel.connector.htmlElement);
                         }
                         xmlConnections[blockId].removeIndex(i);
                     }
@@ -846,7 +846,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         xmlNode : cNew[i]
                     });
 
-                    new jpf.flow.addConnector(_self.objCanvas,
+                    new apf.flow.addConnector(_self.objCanvas,
                         objBlocks[blockId], objBlocks[ref], {
                             output : output,
                             input  : input,
@@ -858,7 +858,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     xmlConnections[blockId] = r;
                 }
                 else {
-                    jpf.console.info("Destination block don't exist.");
+                    apf.console.info("Destination block don't exist.");
                 }
             }
         }
@@ -877,8 +877,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
-//jpf.flow.alert_r(xmlNode)
-jpf.console.info("ADD");
+//apf.flow.alert_r(xmlNode)
+apf.console.info("ADD");
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
@@ -886,7 +886,7 @@ jpf.console.info("ADD");
         var elimageContainer = this.$getLayoutNode("block", "imagecontainer");
         var elCaption        = this.$getLayoutNode("block", "caption");
 
-        elCaption.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId
+        elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.uniqueId
             + ').$beforeRename(event); return false;');
 
         this.nodes.push(block);
@@ -955,7 +955,7 @@ jpf.console.info("ADD");
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
-//jpf.flow.alert_r(xmlNode);
+//apf.flow.alert_r(xmlNode);
         xmlNode.setAttribute("id", id);
         xmlNode.setAttribute("width", width);
         xmlNode.setAttribute("height", height);
@@ -964,18 +964,18 @@ jpf.console.info("ADD");
         xmlNode.setAttribute("top", top);
         xmlNode.setAttribute("zindex", zindex);
         xmlNode.setAttribute("cap-pos", capPos);
-//jpf.flow.alert_r(xmlNode);
+//apf.flow.alert_r(xmlNode);
 
         this.$setStyleClass(elCaption, capPos);
 
         elSelect.setAttribute(this.itemSelectEvent ||
-            "onmousedown", 'var o = jpf.lookup('
+            "onmousedown", 'var o = apf.lookup('
             + this.uniqueId
             + '); o.select(this, event.ctrlKey, event.shiftKey)');
 
 
 
-        jpf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
+        apf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
         xmlBlocks[id] = xmlNode;
 
         /* Creating Connections */
@@ -1001,11 +1001,11 @@ jpf.console.info("ADD");
     };
 
     this.$fill = function() {
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
-jpf.console.info("FILL");
+        apf.xmldb.htmlImport(this.nodes, this.oInt);
+apf.console.info("FILL");
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
-                htmlElement = jpf.xmldb.findHtmlNode(xmlBlock, this),
+                htmlElement = apf.xmldb.findHtmlNode(xmlBlock, this),
                 type = xmlBlocks[id].getAttribute("type") || null,
                 inputList = {};
 
@@ -1068,7 +1068,7 @@ jpf.console.info("FILL");
                 capPos  : this.applyRuleSetOnNode("cap-pos", xmlBlock)
             }
 
-            var objBlock = jpf.flow.isBlock(htmlElement);
+            var objBlock = apf.flow.isBlock(htmlElement);
 
             if (objBlock) {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
@@ -1076,7 +1076,7 @@ jpf.console.info("FILL");
                 objBlock.initBlock();
             }
             else {
-                var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
+                var objBlock = apf.flow.addBlock(htmlElement, _self.objCanvas, other);
 
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
@@ -1092,13 +1092,13 @@ jpf.console.info("FILL");
             var c = xmlConnections[id] || [];
 
             for (var i = 0, l = c.length; i < l; i++) {
-                var con = jpf.flow.findConnector(objBlocks[id], c[i].output,
+                var con = apf.flow.findConnector(objBlocks[id], c[i].output,
                                                  objBlocks[c[i].ref], c[i].input);
                 if (!con) {
                     if (objBlocks[id] && objBlocks[c[i].ref]) {
                         //it's called because connection labels must be aligned
                         objBlocks[id].onMove();
-                        new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
+                        new apf.flow.addConnector(_self.objCanvas, objBlocks[id],
                                                   objBlocks[c[i].ref], {
                             output  : c[i].output,
                             input   : c[i].input,
@@ -1136,7 +1136,7 @@ jpf.console.info("FILL");
         /* Try to draw rest of connections */
         for (var i = connToPaint.length-1; i >= 0 ; i--) {
             if (objBlocks[connToPaint[i].id] && objBlocks[connToPaint[i].id2]) {
-                new jpf.flow.addConnector(_self.objCanvas,
+                new apf.flow.addConnector(_self.objCanvas,
                                           objBlocks[connToPaint[i].id],
                                           objBlocks[connToPaint[i].id2], {
                     output  : connToPaint[i].output,
@@ -1170,19 +1170,19 @@ jpf.console.info("FILL");
             this.$loadInlineData(this.$jml);
 
         /* Loading template */
-        jpf.getData(this.$jml.getAttribute("template"), null, null,
+        apf.getData(this.$jml.getAttribute("template"), null, null,
                     function(data, state, extra) {
-            if (state == jpf.SUCCESS) {
+            if (state == apf.SUCCESS) {
                 _self.loadTemplate(data);
             }
             else {
-                jpf.console.info("An error has occurred: " + extra.message, 2);
+                apf.console.info("An error has occurred: " + extra.message, 2);
                 return;
             }
         });
 
         /* Resize */
-        resizeManager = new jpf.resize();
+        resizeManager = new apf.resize();
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
@@ -1191,18 +1191,18 @@ jpf.console.info("FILL");
         resizeManager.onresize = function(htmlElement, t, l, w, h) {
             if (!htmlElement)
                 return;
-            var objBlock = jpf.flow.isBlock(htmlElement);
+            var objBlock = apf.flow.isBlock(htmlElement);
             objBlock.moveTo(t, l);
             objBlock.resize(w, h);
             objBlock.updateOutputs();
             objBlock.onMove();
         };
 
-        jpf.flow.onaftermove = function(dt, dl) {
+        apf.flow.onaftermove = function(dt, dl) {
             _self.moveTo(_self.selected, dl, dt);
         };
 
-        jpf.flow.onblockmove = function() {
+        apf.flow.onblockmove = function() {
             resizeManager.show();
         };
     };
@@ -1216,7 +1216,7 @@ jpf.console.info("FILL");
      * @param {XMLElement}   data   xml representation of template
      */
     this.loadTemplate = function(data) {
-        template = jpf.xmldb.getBindXmlNode(data);
+        template = apf.xmldb.getBindXmlNode(data);
         this.$checkLoadQueue();
     };
 
@@ -1225,12 +1225,12 @@ jpf.console.info("FILL");
     };
 
 }).implement(
-    jpf.Presentation,
-    jpf.DataBinding,
-    jpf.Cache,
-    jpf.MultiSelect,
-    jpf.BaseList,
-    jpf.Rename,
-    jpf.DragDrop
+    apf.Presentation,
+    apf.DataBinding,
+    apf.Cache,
+    apf.MultiSelect,
+    apf.BaseList,
+    apf.Rename,
+    apf.DragDrop
 );
 //#endif

@@ -26,7 +26,7 @@
  * All parts are publicly accessible after parsing like 'url.port' or 'url.host'.
  * Example:
  * <code>
- *   var url = new jpf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
+ *   var url = new apf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
@@ -42,16 +42,16 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.url = function(str) {
+apf.url = function(str) {
     var base;
     if (str.indexOf(":") == -1 && (base = window.location.toString()).indexOf(":") != -1) {
-        base = new jpf.url(base);
-        str = jpf.getAbsolutePath("http://" + base.host + "/"
+        base = new apf.url(base);
+        str = apf.getAbsolutePath("http://" + base.host + "/"
             + (base.directory.charAt(base.directory.length - 1) == "/"
                  ? base.directory
                  : base.directory + '/'), str);
     }
-    var o    = jpf.url.options,
+    var o    = apf.url.options,
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
     i        = 14;
     this.uri = str.toString(); //copy string
@@ -98,7 +98,7 @@ jpf.url = function(str) {
     }
 };
 
-jpf.url.options = {
+apf.url.options = {
     strictMode: false,
     key: ["source", "protocol", "authority", "userInfo", "user", "password",
           "host", "port", "relative", "path", "directory", "file", "query",

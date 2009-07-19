@@ -21,15 +21,15 @@
 
 // #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
-jpf.editor.plugin('blockquote', function(){
+apf.editor.plugin('blockquote', function(){
     this.name        = 'blockquote';
     this.icon        = 'blockquote';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+b';
     this.buttonBuilt = false;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         editor.executeCommand('FormatBlock', 'BLOCKQUOTE');

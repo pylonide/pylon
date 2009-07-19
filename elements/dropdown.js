@@ -84,14 +84,14 @@
  * @allowchild item, {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.BaseList
- * @inherits jpf.JmlElement
+ * @inherits apf.BaseList
+ * @inherits apf.JmlElement
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -134,7 +134,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
+            || apf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
     };
     
     /**** Public methods ****/
@@ -166,20 +166,20 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$propHandlers["maxitems"].call(this, this.xmlRoot ? this.getTraverseNodes().length : 0);
         
         this.oSlider.style.display = "block";
-        this.oSlider.style[jpf.supportOverflowComponent
+        this.oSlider.style[apf.supportOverflowComponent
             ? "overflowY"
             : "overflow"] = "hidden";
         
         this.oSlider.style.display = "";
         this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
         
-        //var pos = jpf.getAbsolutePosition(this.oExt);
+        //var pos = apf.getAbsolutePosition(this.oExt);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2 - this.widthdiff) + "px";
 
         var _self = this;
 
-        jpf.popup.show(this.uniqueId, {
+        apf.popup.show(this.uniqueId, {
             x       : 0,
             y       : this.oExt.offsetHeight,
             animate : true,
@@ -188,7 +188,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             height  : this.containerHeight,
             callback: function(container){
                 if (!_self.ignoreOverflow) {
-                    container.style[jpf.supportOverflowComponent
+                    container.style[apf.supportOverflowComponent
                         ? "overflowY"
                         : "overflow"] = "auto";
                 }
@@ -206,12 +206,12 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = jpf.xmldb.findHtmlNode(this.selected, this);
+            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
             if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
         
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
-        jpf.popup.hide();
+        apf.popup.hide();
         return false;
     };
     
@@ -311,12 +311,12 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             // Set Caption bind
             var bc = this.$getMultiBind(), caption;
             if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.xmlRoot,
+                var xmlNode = apf.xmldb.createNodeFromXpath(bc.xmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
     
-                jpf.xmldb.setNodeValue(xmlNode,
+                apf.xmldb.setNodeValue(xmlNode,
                     this.applyRuleSetOnNode("caption", this.selected));
             }
         }
@@ -335,7 +335,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /*this.$focus = function(){
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }*/
     
@@ -454,22 +454,22 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId
+            oExt.setAttribute("onmouseover", 'var o = apf.lookup(' + this.uniqueId
                 + ');o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
-            oExt.setAttribute("onmouseout", 'var o = jpf.lookup(' + this.uniqueId
+            oExt.setAttribute("onmouseout", 'var o = apf.lookup(' + this.uniqueId
                 + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
             
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
-                oButton.setAttribute("onmousedown", 'jpf.lookup('
+                oButton.setAttribute("onmousedown", 'apf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
             
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
-                oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
+                oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
@@ -484,13 +484,13 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         
-        this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("container"),
+        this.oSlider = apf.xmldb.htmlImport(this.$getLayoutNode("container"),
             document.body);
         this.oInt = this.$getLayoutNode("container", "contents", this.oSlider);
         
         //Set up the popup
-        this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
-            jpf.skins.getCssString(this.skinName));
+        this.pHtmlDoc = apf.popup.setContent(this.uniqueId, this.oSlider,
+            apf.skins.getCssString(this.skinName));
         
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
@@ -498,7 +498,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.itemHeight     = this.$getOption("main", "item-height") || 18.5;
         this.widthdiff      = this.$getOption("main", "width-diff") || 0;
-        this.ignoreOverflow = jpf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
+        this.ignoreOverflow = apf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
         
         if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml);
@@ -510,12 +510,12 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$destroy = function(){
-        jpf.popup.removeContent(this.uniqueId);
-        jpf.removeNode(this.oSlider);
+        apf.popup.removeContent(this.uniqueId);
+        apf.removeNode(this.oSlider);
         this.oSlider = null;
     };
 }).implement(
-    jpf.BaseList
+    apf.BaseList
 );
 
 // #endif

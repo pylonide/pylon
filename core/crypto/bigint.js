@@ -49,7 +49,7 @@
 
 // #ifdef __WITH_BIGINT || __WITH_RSA
 
-jpf.crypto.BigInt = (function() {
+apf.crypto.BigInt = (function() {
     var biRadixBase = 2;
     var biRadixBits = 16;
     var bitsPerDigit = biRadixBits;

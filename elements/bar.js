@@ -44,12 +44,12 @@
  * @allowchild {elements}, {anyjml}
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.panel = 
-jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.panel = 
+apf.bar   = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     this.canHaveChildren = true;
@@ -102,8 +102,8 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
             : "main", "container", this.oExt);
         
         this.oInt = this.oInt
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(x, oInt, this);
+            ? apf.JmlParser.replaceNode(oInt, this.oInt)
+            : apf.JmlParser.parseChildren(x, oInt, this);
     };
     
     /*#ifdef __WITH_SKIN_CHANGE
@@ -111,6 +111,6 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
         
     }
     //#endif*/
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 // #endif

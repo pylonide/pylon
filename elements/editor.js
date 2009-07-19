@@ -43,10 +43,10 @@
  * @version     %I%, %G%
  * @since       1.0
  *
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- * @inherits jpf.DataBinding
- * @inherits jpf.Presentation
+ * @inherits apf.Validation
+ * @inherits apf.XForms
+ * @inherits apf.DataBinding
+ * @inherits apf.Presentation
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -65,7 +65,7 @@
  *  <j:colorpicker ref="body/text()" />
  * </code>
  */
-jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     var inited, complete, oButtons = {};
 
     /**** Default Properties ****/
@@ -75,7 +75,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.value           = "";
     this.$value          = "";
-    this.state           = jpf.editor.ON;
+    this.state           = apf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['pasteword', 'tablewizard'];
     this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
@@ -103,7 +103,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         if (typeof html != "string")// || html == ""
-            html = "";//jpf.isIE ? "<br />" :
+            html = "";//apf.isIE ? "<br />" :
 
         // If the HTML string is the same as the contents of the iframe document,
         // don't do anything...
@@ -113,7 +113,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$value = html;
 
         html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-            "<br _jpf_marker='1' /><br _jpf_marker='1' />");
+            "<br _apf_marker='1' /><br _apf_marker='1' />");
 
         html = this.prepareHtml(html);
 
@@ -123,7 +123,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             this.oDoc.body.innerHTML = html;
 
-            if (jpf.isGecko) {
+            if (apf.isGecko) {
                 var oNode, oParent = this.oDoc.body;
                 while (oParent.childNodes.length) {
                     oNode = oParent.firstChild;
@@ -139,14 +139,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     oParent = oNode;
                 }
             }
-            else if (jpf.isSafari) {
+            else if (apf.isSafari) {
                 this.oDoc.designMode = "on";
             }
-            else if (jpf.isIE) {
+            else if (apf.isIE) {
                 // yes, we fix hyperlinks...%&$#*@*!
                 var s, aLinks = this.oDoc.getElementsByTagName("a");
                 for (var i = 0, j = aLinks.length; i < j; i++) {
-                    s = aLinks[i].getAttribute("_jpf_href");
+                    s = aLinks[i].getAttribute("_apf_href");
                     if (s) { //prefix 'http://' if it's not there yet...
                         aLinks[i].href = (s.indexOf("http://") == -1 
                             ? "http://" : "") + s;
@@ -170,7 +170,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         setTimeout(function() {
             _self.notifyAll(value);
             if (_self.plugins && _self.plugins.isActive('code'))
-                _self.notify('code', jpf.editor.SELECTED);
+                _self.notify('code', apf.editor.SELECTED);
         });
     };
 
@@ -186,7 +186,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : jpf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
+            : apf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
     };
     
     this.$propHandlers["language"] = function(value){
@@ -205,7 +205,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$addListeners();
             inited = justinited = true;
         }
-        if (jpf.isIE) {
+        if (apf.isIE) {
             setTimeout(function() {
                 _self.oDoc.body.contentEditable = true;
             });
@@ -213,7 +213,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             try {
                 this.oDoc.designMode = 'on';
-                if (jpf.isGecko) {
+                if (apf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
                     this.oDoc.execCommand('enableObjectResizing', false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
@@ -275,7 +275,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.getValue = function(bStrict) {
         var xhtml = (this.$value = this.exportHtml(this.getXHTML('text'), bStrict));
         if (this.output == "dom") { //@todo might need a bit more love...
-            var dom      = jpf.getXml('<jpf_cool>' + xhtml + '</jpf_cool>'),
+            var dom      = apf.getXml('<apf_cool>' + xhtml + '</apf_cool>'),
                 fragment = document.createDocumentFragment();
             for (var i = 0, j = dom.childNodes.length; i < j; i++) {
                 try {
@@ -367,13 +367,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         // Convert strong and em to b and i in FF since it can't handle them
-        if (jpf.isGecko) {//@todo what about the other browsers?
+        if (apf.isGecko) {//@todo what about the other browsers?
             html = html.replace(prepareRE[0], '<$1b$2>')
                        .replace(prepareRE[1], '<$1i$2>');
         }
-        else if (jpf.isIE) {
+        else if (apf.isIE) {
             html = html.replace(prepareRE[2], '&#39;') // IE can't handle apos
-                       .replace(prepareRE[4], '$1$2 _jpf_href=$2$3');
+                       .replace(prepareRE[4], '$1$2 _apf_href=$2$3');
                        //.replace(prepareRE[5], '<p>&nbsp;</p>');
 
             // <BR>'s need to be replaced to be properly handled as
@@ -420,7 +420,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             capture = false;
                     }
                     else {
-                        if ((bdepth.length || lastBlockClosed) && br.indexOf("_jpf_marker") > -1) {
+                        if ((bdepth.length || lastBlockClosed) && br.indexOf("_apf_marker") > -1) {
                             //debugger;
                             //donothing
                         }
@@ -502,10 +502,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             // compile 'em regezz
             exportRE = [
                 /<br[^>]*><\/li>/gi,
-                /<br[^>]*_jpf_placeholder="1"\/?>/gi,
+                /<br[^>]*_apf_placeholder="1"\/?>/gi,
                 /<(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
                 /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
-                /[\s]*_jpf_href="?[^\s^>]+"?/gi,
+                /[\s]*_apf_href="?[^\s^>]+"?/gi,
                 /(".*?"|'.*?')|(\w)=([^'"\s>]+)/gi,
                 /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
                 /<p>&nbsp;$/mig,
@@ -516,7 +516,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             ];
         }
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             html = html.replace(exportRE[7], '<p></p>')
                        .replace(exportRE[9], '<br />')
                        .replace(exportRE[10], '')
@@ -534,11 +534,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                        
         //@todo: Ruben: Maybe make this a setting (paragraphs="true")
         //@todo might be able to unify this function with the one above.
-        if (jpf.isIE && !noParagraph) {
+        if (apf.isIE && !noParagraph) {
             var str = [], capture = true, strP = [], depth = [], bdepth = [];
             html.replace(exportRE[8], function(m, br, inline, close, tag, block, bclose, btag, any){
                 if (inline) {
-                    if (jpf.isIE) {
+                    if (apf.isIE) {
                         inline = inline.replace(exportRE[5], function(m, str, m, v){
                             return str || m + "=\"" + v + "\"";
                         });//'$2="$3"') //quote un-quoted attributes
@@ -579,7 +579,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }
                     else
-                        str.push("<p>&nbsp;</p>"); //jpf.editor.ALTP.start ... end
+                        str.push("<p>&nbsp;</p>"); //apf.editor.ALTP.start ... end
                 }
                 else if (block){
                     if (bclose) {
@@ -596,7 +596,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                     }
                     else {
-                        if (jpf.isIE) {
+                        if (apf.isIE) {
                             block = block.replace(exportRE[5], function(m, str, m, v){
                                 return str || m + "=\"" + v + "\"";
                             });//'$2="$3"') //quote un-quoted attributes
@@ -633,16 +633,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             html = str.join("");
         }
         else {
-            html = html.replace(/<br[^>]*_jpf_marker="1"[^>]*>/gi, '<br />');
+            html = html.replace(/<br[^>]*_apf_marker="1"[^>]*>/gi, '<br />');
         }
         
         // #ifdef __DEBUG
         // check for VALID XHTML in DEBUG mode...
         try {
-            jpf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
+            apf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
         }
         catch(ex) {
-            jpf.console.error(ex.message + "\n" + html.escapeHTML());
+            apf.console.error(ex.message + "\n" + html.escapeHTML());
         }
         // #endif
         
@@ -658,8 +658,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.plugins.isPlugin(cmdName) && inited && complete
-          && this.state != jpf.editor.DISABLED) {
-            if (jpf.isIE) {
+          && this.state != apf.editor.DISABLED) {
+            if (apf.isIE) {
                 if (!this.oDoc.body.innerHTML)
                     return commandQueue.push([cmdName, cmdParam]);
                 else
@@ -670,7 +670,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             
             if (cmdName.toLowerCase() == "removeformat") {
                 /*this.plugins.get('paragraph', 'fontstyle').forEach(function(plugin){
-                    if (plugin.queryState(_self) == jpf.editor.ON) {
+                    if (plugin.queryState(_self) == apf.editor.ON) {
                         plugin.submit(null, 'normal');
                     }
                 });*/
@@ -682,7 +682,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
                     return !disallowed[tag] ? m : "";
                 });
-                if (jpf.isIE) {
+                if (apf.isIE) {
                     var htmlNode = this.selection.setContent("<div>" + c + "</div>");
                     this.selection.selectNode(htmlNode);
                     htmlNode.removeNode(false);
@@ -698,17 +698,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             // make sure that the command didn't leave any <P> tags behind (cleanup)
             cmdName    = cmdName.toLowerCase();
             var bNoSel = (cmdName == "SelectAll");
-            if (jpf.isIE) {
+            if (apf.isIE) {
                 if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
-                  && this.getCommandState(cmdName) == jpf.editor.OFF) {
+                  && this.getCommandState(cmdName) == apf.editor.OFF) {
                     bNoSel = true;
                 }
                 else if (cmdName == "outdent") {
                     bNoSel = true;
                     var pLists = this.plugins.get('bullist', 'numlist');
                     if (pLists.length) {
-                        if (pLists[0].queryState(_self) != jpf.editor.OFF
-                          && pLists[1].queryState(_self) != jpf.editor.OFF)
+                        if (pLists[0].queryState(_self) != apf.editor.OFF
+                          && pLists[1].queryState(_self) != apf.editor.OFF)
                             bNoSel = false;
                     }
                     var oNode = this.selection.getSelectedNode();
@@ -728,7 +728,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
             setTimeout(function() {
                 //_self.notifyAll(); // @todo This causes pain, find out why
-                if (jpf.isIE && !bNoSel)
+                if (apf.isIE && !bNoSel)
                    _self.selection.set();
                 _self.$visualFocus();
             });
@@ -742,26 +742,26 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type Number
      */
     this.getCommandState = function(cmdName) {
-        if (jpf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
-            return jpf.editor.DISABLED;
+        if (apf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
+            return apf.editor.DISABLED;
         try {
             if (!this.oDoc.queryCommandEnabled(cmdName))
-                return jpf.editor.DISABLED;
+                return apf.editor.DISABLED;
             else
                 return this.oDoc.queryCommandState(cmdName)
-                    ? jpf.editor.ON
-                    : jpf.editor.OFF;
+                    ? apf.editor.ON
+                    : apf.editor.OFF;
         }
         catch (e) {
-            return jpf.editor.OFF;
+            return apf.editor.OFF;
         }
     };
 
     /**
-     * Make an instance of jpf.popup (identified with a pointer to the cached
+     * Make an instance of apf.popup (identified with a pointer to the cached
      * DOM node - sCacheId) visible to the user.
      *
-     * @param {jpf.editor.plugin} oPlugin  The plugin instance
+     * @param {apf.editor.plugin} oPlugin  The plugin instance
      * @param {String}            sCacheId Pointer to the cached DOM node
      * @param {DOMElement}        oRef     Button node to show popup below to
      * @param {Number}            iWidth   New width of the popup
@@ -769,10 +769,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
-        if (jpf.popup.last && jpf.popup.last != sCacheId) {
-            var o = jpf.lookup(jpf.popup.last);
+        if (apf.popup.last && apf.popup.last != sCacheId) {
+            var o = apf.lookup(apf.popup.last);
             if (o) {
-                o.state = jpf.editor.OFF;
+                o.state = apf.editor.OFF;
                 this.notify(o.name, o.state);
             }
         }
@@ -781,17 +781,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.selection.set();
         this.$visualFocus();
 
-        oPlugin.state = jpf.editor.ON;
-        this.notify(oPlugin.name, jpf.editor.ON);
+        oPlugin.state = apf.editor.ON;
+        this.notify(oPlugin.name, apf.editor.ON);
 
-        if (jpf.popup.isShowing(sCacheId))
+        if (apf.popup.isShowing(sCacheId))
             return;
 
         // using setTimeout here, because I want the popup to be shown AFTER the
         // event bubbling is complete. Another click handler further up the DOM
-        // tree may call a jpf.popup.forceHide();
+        // tree may call a apf.popup.forceHide();
         setTimeout(function() {
-            jpf.popup.show(sCacheId, {
+            apf.popup.show(sCacheId, {
                 x        : 0,
                 y        : 22,
                 animate  : false,
@@ -804,7 +804,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         e = e || window.event;
                         var key = e.which || e.keyCode;
                         if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
-                            return oPlugin.submit(new jpf.AbstractEvent(e));
+                            return oPlugin.submit(new apf.AbstractEvent(e));
                     }
                 }
             });
@@ -842,7 +842,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onClick(e) {
-        if (oBookmark && jpf.isGecko) {
+        if (oBookmark && apf.isGecko) {
             var oNewBm = _self.selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
                 //this.selection.moveToBookmark(oBookmark);
@@ -853,7 +853,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var which = e.which, button = e.button;
         setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
-            if (jpf.window.focussed != this) {
+            if (apf.window.focussed != this) {
                 //this.$visualFocus(true);
                 _self.focus({});
             }
@@ -861,7 +861,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.$focus({});
         });
 
-        jpf.AbstractEvent.stop(e);
+        apf.AbstractEvent.stop(e);
     }
 
     /**
@@ -872,8 +872,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
-        if (_self.state == jpf.editor.DISABLED) return;
-        //if (jpf.isIE)
+        if (_self.state == apf.editor.DISABLED) return;
+        //if (apf.isIE)
         //    this.$visualFocus(true);
         var ret = _self.plugins.notifyAll('context', e);
     }
@@ -907,7 +907,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onKeydown(e) {
         e = e || window.event;
         var i, found, code = e.which || e.keyCode;
-        if (jpf.isIE) {
+        if (apf.isIE) {
             if (commandQueue.length > 0 && _self.oDoc.body.innerHTML.length > 0) {
                 for (i = 0; i < commandQueue.length; i++)
                     _self.executeCommand(commandQueue[i][0], commandQueue[i][1]);
@@ -922,7 +922,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 case 85:  // U
                 //case 86:  // V |_ See onPaste()
                 //case 118: // v |  event handler...
-                    if ((e.ctrlKey || (jpf.isMac && e.metaKey)) && !e.shiftKey 
+                    if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey 
                       && !e.altKey && _self.realtime)
                         _self.change(_self.getValue());
                     break;
@@ -947,7 +947,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         else {
             _self.$visualFocus();
-            if ((e.ctrlKey || (jpf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
+            if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
                 found = false;
                 switch (code) {
                     case 66: // B
@@ -967,7 +967,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         break;
                     case 86:  // V
                     case 118: // v
-                        if (!jpf.isGecko)
+                        if (!apf.isGecko)
                             onPaste.call(_self);
                         //found = true;
                         break;
@@ -976,7 +976,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         found = true;
                 }
                 if (found) {
-                    jpf.AbstractEvent.stop(e);
+                    apf.AbstractEvent.stop(e);
                     if (_self.realtime)
                         _self.change(_self.getValue());
                 }
@@ -994,14 +994,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 meta   : e.metaKey
             });
             if (found) {
-                jpf.AbstractEvent.stop(e);
+                apf.AbstractEvent.stop(e);
                 return false;
             }
         }
 
         if (code == 9) { // tab
             if (listBehavior.call(_self, e)) {
-                jpf.AbstractEvent.stop(e);
+                apf.AbstractEvent.stop(e);
                 return false;
             }
         }
@@ -1034,7 +1034,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         function keyupHandler() {
             clearTimeout(keyupTimer);
-            if (_self.state == jpf.editor.DISABLED) return;
+            if (_self.state == apf.editor.DISABLED) return;
             _self.notifyAll();
             _self.dispatchEvent('typing', {editor: _self, event: e});
             _self.plugins.notifyAll('typing', e.code);
@@ -1061,9 +1061,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!pLists || !pLists.length) return false;
         if (typeof e.shift != "undefined")
            e.shiftKey = e.shift;
-        var pList = pLists[0].queryState(this) == jpf.editor.ON
+        var pList = pLists[0].queryState(this) == apf.editor.ON
             ? pLists[0]
-            : pLists[1].queryState(this) == jpf.editor.ON
+            : pLists[1].queryState(this) == apf.editor.ON
                 ? pLists[1]
                 : null;
         if (!pList) return false;
@@ -1086,7 +1086,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$visualFocus = function(bNotify) {
         // setting focus to the iframe content, upsets the 'code' plugin
         var bCode = this.plugins.isActive('code');
-        if (jpf.window.focussed == this && !bCode) {
+        if (apf.window.focussed == this && !bCode) {
             try {
                 _self.oWin.focus();
             }
@@ -1094,8 +1094,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         if (bCode) {
-            _self.notifyAll(jpf.editor.DISABLED);
-            _self.notify('code', jpf.editor.SELECTED);
+            _self.notifyAll(apf.editor.DISABLED);
+            _self.notify('code', apf.editor.SELECTED);
         }
         else if (bNotify)
             _self.notifyAll();
@@ -1113,8 +1113,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         this.setProperty('state', this.plugins.isActive('code')
-            ? jpf.editor.DISABLED
-            : jpf.editor.OFF);
+            ? apf.editor.DISABLED
+            : apf.editor.OFF);
 
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
@@ -1132,7 +1132,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             catch(e) {}
         }
 
-        if (e && e.mouse && jpf.isIE) {
+        if (e && e.mouse && apf.isIE) {
             clearInterval(fTimer);
             fTimer = setInterval(delay, 1);
         }
@@ -1148,7 +1148,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {Boolean}
      */
     this.$isContentEditable = function(e){
-        return jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
+        return apf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
     };
 
     /**
@@ -1162,9 +1162,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.oExt)
             return;
 
-        var pParent = jpf.popup.last && jpf.lookup(jpf.popup.last);
+        var pParent = apf.popup.last && apf.lookup(apf.popup.last);
         if (pParent && pParent.editor == this)
-            jpf.popup.forceHide();
+            apf.popup.forceHide();
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
@@ -1172,7 +1172,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.realtime || bCode)
             this.change(bCode ? this.plugins.get('code').getValue() : this.getValue());
 
-        this.setProperty('state', jpf.editor.DISABLED);
+        this.setProperty('state', apf.editor.DISABLED);
     };
 
     /**
@@ -1181,31 +1181,31 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * @type {void}
     */
     this.$addListeners = function() {
-        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick);
-        //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup);
-        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown);
-        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e){
+        apf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick);
+        //apf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
+        apf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup);
+        apf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown);
+        apf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e){
             e = e || window.event;
             _self.selection.cache();
-            jpf.popup.forceHide();
+            apf.popup.forceHide();
             //this.notifyAll();
             document.onmousedown(e);
         });
 
-        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
-        jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
-            //if (!jpf.isIE)
+        apf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
+        apf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
+            //if (!apf.isIE)
                 window.onfocus(e.event);
         });
-        jpf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
-            //if (!jpf.isIE)
+        apf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
+            //if (!apf.isIE)
                 window.onblur(e.event);
         });
 
         this.oDoc.host = this;
 
-        jpf.AbstractEvent.addListener(this.oDoc.body, 'paste', onPaste);
+        apf.AbstractEvent.addListener(this.oDoc.body, 'paste', onPaste);
     };
 
     //this.addEventListener("contextmenu", onContextmenu);
@@ -1219,7 +1219,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function buttonEnable() {
-        jpf.setStyleClass(this, 'editor_enabled',
+        apf.setStyleClass(this, 'editor_enabled',
             ['editor_selected', 'editor_disabled']);
         this.disabled = false;
     }
@@ -1231,7 +1231,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function buttonDisable() {
-        jpf.setStyleClass(this, 'editor_disabled',
+        apf.setStyleClass(this, 'editor_disabled',
             ['editor_selected', 'editor_enabled']);
         this.disabled = true;
     }
@@ -1247,7 +1247,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$buttonClick = function(e, oButton) {
         _self.selection.cache();
 
-        jpf.setStyleClass(oButton, 'active');
+        apf.setStyleClass(oButton, 'active');
         var item = oButton.getAttribute("type");
 
         //context 'this' is the buttons' DIV domNode reference
@@ -1256,19 +1256,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             e.state    = getState(item, e.isPlugin);
         }
 
-        if (e.state == jpf.editor.DISABLED) {
+        if (e.state == apf.editor.DISABLED) {
             buttonDisable.call(oButton);
         }
         else {
             if (this.disabled)
                 buttonEnable.call(oButton);
 
-            if (e.state == jpf.editor.ON) {
-                jpf.setStyleClass(oButton, 'editor_selected');
+            if (e.state == apf.editor.ON) {
+                apf.setStyleClass(oButton, 'editor_selected');
                 oButton.selected = true;
             }
             else {
-                jpf.setStyleClass(oButton, '', ['editor_selected']);
+                apf.setStyleClass(oButton, '', ['editor_selected']);
                 oButton.selected = false;
             }
 
@@ -1282,7 +1282,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 e.state = getState(item, e.isPlugin);
             }
         }
-        jpf.setStyleClass(oButton, "", ["active"]);
+        apf.setStyleClass(oButton, "", ["active"]);
     };
 
     /**
@@ -1298,15 +1298,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function getState(id, isPlugin) {
         if (isPlugin) {
             var plugin = _self.plugins.get(id);
-            if (_self.state == jpf.editor.DISABLED && !plugin.noDisable)
-                return jpf.editor.DISABLED;
+            if (_self.state == apf.editor.DISABLED && !plugin.noDisable)
+                return apf.editor.DISABLED;
             return plugin.queryState
                 ? plugin.queryState(_self)
                 : _self.state;
         }
 
-        if (_self.state == jpf.editor.DISABLED)
-            return jpf.editor.DISABLED;
+        if (_self.state == apf.editor.DISABLED)
+            return apf.editor.DISABLED;
 
         return _self.getCommandState(id);
     }
@@ -1339,11 +1339,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         oButton.state = state;
 
-        if (state == jpf.editor.DISABLED)
+        if (state == apf.editor.DISABLED)
             buttonDisable.call(oButton);
-        else if (state == jpf.editor.HIDDEN)
+        else if (state == apf.editor.HIDDEN)
             oButton.style.display = "none";
-        else if (state == jpf.editor.VISIBLE)
+        else if (state == apf.editor.VISIBLE)
             oButton.style.display = "";
         else {
             if (oButton.style.display == 'none')
@@ -1353,8 +1353,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 buttonEnable.call(oButton);
 
             var btnState = (oButton.selected)
-                ? jpf.editor.ON
-                : jpf.editor.OFF;
+                ? apf.editor.ON
+                : apf.editor.OFF;
 
             if (state != btnState) {
                 this.$buttonClick({
@@ -1387,15 +1387,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.translate = function(key, bIsPlugin) {
         // #ifdef __DEBUG
-        if ((!bIsPlugin && !jpf.editor.i18n[_self.language][key])
-          || (bIsPlugin && !jpf.editor.i18n[_self.language]['plugins'][key]))
-            jpf.console.error('Translation does not exist' 
+        if ((!bIsPlugin && !apf.editor.i18n[_self.language][key])
+          || (bIsPlugin && !apf.editor.i18n[_self.language]['plugins'][key]))
+            apf.console.error('Translation does not exist' 
                 + (bIsPlugin ? ' for plugin' : '') + ': ' + key);
         // #endif
         
         return bIsPlugin 
-            ? jpf.editor.i18n[_self.language]['plugins'][key]
-            : jpf.editor.i18n[_self.language][key];
+            ? apf.editor.i18n[_self.language]['plugins'][key]
+            : apf.editor.i18n[_self.language][key];
     };
 
     /**** Init ****/
@@ -1418,12 +1418,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         for (i = 0, l = oNode.childNodes.length; i < l; i++) {
             node = oNode.childNodes[i];
-            if (node.nodeType != 1 || node[jpf.TAGNAME] != sSkinTag)
+            if (node.nodeType != 1 || node[apf.TAGNAME] != sSkinTag)
                 continue;
 
             //#ifdef __DEBUG
-            /*if (node[jpf.TAGNAME] != "toolbar") {
-                throw new Error(jpf.formatErrorString(0, this,
+            /*if (node[apf.TAGNAME] != "toolbar") {
+                throw new Error(apf.formatErrorString(0, this,
                     "Creating toolbars",
                     "Invalid element found in toolbars definition",
                     node));
@@ -1435,7 +1435,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
                 //#ifdef __DEBUG;
                 if (bNode.nodeType != 3 && bNode.nodeType != 4) {
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Creating toolbars",
                         "Invalid element found in toolbar definition",
                         bNode));
@@ -1450,7 +1450,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
             this.$getNewContext("toolbar");
             tb = bAfterRender
-                ? jpf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
+                ? apf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
                 : oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
@@ -1459,14 +1459,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (item == "|") { //seperator!
                     this.$getNewContext("divider");
                     if (bAfterRender)
-                        jpf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
+                        apf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
                     else
                         tb.appendChild(this.$getLayoutNode("divider"));
                 }
                 else {
                     this.$getNewContext("button");
                     oButton = bAfterRender
-                        ? oButton = jpf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
+                        ? oButton = apf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
                         : oButton = tb.appendChild(this.$getLayoutNode("button"));
                     
                     bIsPlugin = false;
@@ -1475,7 +1475,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         plugin = plugins.add(item);
                         // #ifdef __DEBUG
                         if (!plugin)
-                            jpf.console.error('Plugin \'' + item + '\' can not \
+                            apf.console.error('Plugin \'' + item + '\' can not \
                                                be found and/ or instantiated.',
                                                'editor');
                         // #endif
@@ -1486,7 +1486,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         plugin = plugin || plugins.get(item);
                         if (!plugin)
                             continue;
-                        if (plugin.type != jpf.editor.TOOLBARITEM)
+                        if (plugin.type != apf.editor.TOOLBARITEM)
                             continue;
 
                         this.$getLayoutNode("button", "label", oButton)
@@ -1501,10 +1501,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         oButton.setAttribute("title", this.translate(item));
                     }
 
-                    oButton.setAttribute("onmousedown", sBtnClick || "jpf.all["
+                    oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
                         + _self.uniqueId + "].$buttonClick(event, this);");
-                    oButton.setAttribute("onmouseover", "jpf.setStyleClass(this, 'hover');");
-                    oButton.setAttribute("onmouseout", "jpf.setStyleClass(this, '', ['hover']);");
+                    oButton.setAttribute("onmouseover", "apf.setStyleClass(this, 'hover');");
+                    oButton.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);");
 
                     oButton.setAttribute("type", item);
                 }
@@ -1513,7 +1513,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             buttons = null;
         }
         
-        if (jpf.isIE) {
+        if (apf.isIE) {
             var nodes = oParent.getElementsByTagName("*");
             for (i = nodes.length - 1; i >= 0; i--)
                 nodes[i].setAttribute("unselectable", "On");
@@ -1535,8 +1535,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 .call(this, this.$jml.getAttribute("language"));
         }
 
-        this.plugins   = new jpf.editor.plugins(this.$plugins, this);
-        this.selection = new jpf.editor.selection(this);
+        this.plugins   = new apf.editor.plugins(this.$plugins, this);
+        this.selection = new apf.editor.selection(this);
 
         this.oExt = this.$getExternal("main", null, function(oExt){
             this.drawToolbars(this.$getLayoutNode("main", "toolbar"));
@@ -1571,10 +1571,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDoc = this.oWin.document;
 
         // get the document style (CSS) from the skin:
-        // see: jpf.presentation.getCssString(), where the following statement
+        // see: apf.presentation.getCssString(), where the following statement
         // is derived from.
-        var sCss = jpf.getXmlValue($xmlns(jpf.skins.skins[this.skinName.split(":")[0]].xml,
-            "docstyle", jpf.ns.jml)[0], "text()");
+        var sCss = apf.getXmlValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
+            "docstyle", apf.ns.jml)[0], "text()");
         if (!sCss) {
             sCss = "\
                 html {\
@@ -1629,24 +1629,24 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDoc.close();
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
-            jpf.sanitizeTextbox(this.oDoc.body);
+        if (apf.hasFocusBug)
+            apf.sanitizeTextbox(this.oDoc.body);
         //#endif
 
         //#ifdef __WITH_LAYOUT
         // setup layout rules:
         //@todo add this to $destroy
-        jpf.layout.setRules(this.oExt, this.uniqueId + "_editor",
-            "var o = jpf.all[" + this.uniqueId + "];\
+        apf.layout.setRules(this.oExt, this.uniqueId + "_editor",
+            "var o = apf.all[" + this.uniqueId + "];\
             if (o) o.$resize()");
-        jpf.layout.activateRules(this.oExt);
+        apf.layout.activateRules(this.oExt);
         //#endif
 
         // do the magic, make the editor editable.
         this.makeEditable();
 
         setTimeout(function() {
-            _self.setProperty('state', jpf.editor.DISABLED);
+            _self.setProperty('state', apf.editor.DISABLED);
         })
     };
 
@@ -1684,16 +1684,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$loadJml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
         
-        //jpf.ed = this;
-        //jpf.ed.iframe.contentWindow.document == jpf.ed.oDoc
+        //apf.ed = this;
+        //apf.ed.iframe.contentWindow.document == apf.ed.oDoc
     };
 
     this.$destroy = function() {
@@ -1704,25 +1704,25 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 }).implement(
      //#ifdef __WITH_VALIDATION
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
-jpf.editor.ON             = 1;
-jpf.editor.OFF            = 0;
-jpf.editor.DISABLED       = -1;
-jpf.editor.VISIBLE        = 2;
-jpf.editor.HIDDEN         = 3;
-jpf.editor.SELECTED       = 4;
+apf.editor.ON             = 1;
+apf.editor.OFF            = 0;
+apf.editor.DISABLED       = -1;
+apf.editor.VISIBLE        = 2;
+apf.editor.HIDDEN         = 3;
+apf.editor.SELECTED       = 4;
 
-jpf.editor.i18n = {
+apf.editor.i18n = {
     'en_GB': {
         'cancel': 'Cancel',
         'insert': 'Insert',

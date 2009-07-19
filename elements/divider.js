@@ -26,7 +26,7 @@
  * @define divider
  * @constructor
  */
-jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
+apf.divider = apf.subnode(apf.NODE_HIDDEN, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
             return;
@@ -60,7 +60,7 @@ jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
             this.$setParent(parentNode);
 
         this.skinName = this.parentNode.skinName;
-        this.oExt = jpf.xmldb.htmlImport(
+        this.oExt = apf.xmldb.htmlImport(
             this.parentNode.$getLayoutNode("divider"), this.pHtmlNode);
     }
 });

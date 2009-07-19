@@ -21,17 +21,17 @@
 
 // #ifdef __ENABLE_EDITOR_LIST || __INC_ALL
 
-jpf.editor.listPlugin = function(sName) {
+apf.editor.listPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
-    var emptyRegex = jpf.isIE
-        ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
+    var emptyRegex = apf.isIE
+        ? /^(&nbsp;)?<DIV[^>]*_apf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
         : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
@@ -104,9 +104,9 @@ jpf.editor.listPlugin = function(sName) {
         //    moveListItems(oSibling.nextSibling, oSibling);
 
         editor.selection.selectNode(oNode);
-        if (!jpf.isIE)
+        if (!apf.isIE)
             editor.selection.getRange().setStart(oNode, 0);
-        editor.selection.collapse(!jpf.isIE);
+        editor.selection.collapse(!apf.isIE);
         editor.$visualFocus();
         return true;
     };
@@ -121,13 +121,13 @@ jpf.editor.listPlugin = function(sName) {
         var state = editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
-        if (state == jpf.editor.DISABLED)
-            return jpf.editor.OFF;
+        if (state == apf.editor.DISABLED)
+            return apf.editor.OFF;
         return state;
     };
 };
 
-jpf.editor.plugin('bullist', jpf.editor.listPlugin);
-jpf.editor.plugin('numlist', jpf.editor.listPlugin);
+apf.editor.plugin('bullist', apf.editor.listPlugin);
+apf.editor.plugin('numlist', apf.editor.listPlugin);
 
 // #endif

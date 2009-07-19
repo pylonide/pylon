@@ -58,12 +58,12 @@
  *
  * @constructor
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  * @default_private
  */
-jpf.rpc = function(){
+apf.rpc = function(){
     if (!this.supportMulticall)
         this.multicall = false;
 
@@ -73,7 +73,7 @@ jpf.rpc = function(){
     this.useHTTP = true;
 
     this.TelePortModule = true;
-    this.routeServer    = jpf.host + "/cgi-bin/rpcproxy.cgi";
+    this.routeServer    = apf.host + "/cgi-bin/rpcproxy.cgi";
     this.autoroute      = false;
     this.namedArguments = false;
 
@@ -92,7 +92,7 @@ jpf.rpc = function(){
 
         //#ifdef __DEBUG
         if (names.length && !this.namedArguments) {
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Parsing Teleport definition", 
                 "Found j:variable element, but this protocol does not support\
                 name based arguments."));
@@ -135,16 +135,16 @@ jpf.rpc = function(){
             name = nodes[i].getAttribute("name");
 
             if (nodes[i].getAttribute("value"))
-                value = jpf.parseExpression(nodes[i].getAttribute("value"));
+                value = apf.parseExpression(nodes[i].getAttribute("value"));
             else {
                 value = args[j++];
 
-                if (jpf.isNot(value) && nodes[i].getAttribute("default"))
-                    value = jpf.parseExpression(nodes[i].getAttribute("default"));
+                if (apf.isNot(value) && nodes[i].getAttribute("default"))
+                    value = apf.parseExpression(nodes[i].getAttribute("default"));
             }
 
             //Encode string optionally
-            value = jpf.isTrue(nodes[i].getAttribute("encoded"))
+            value = apf.isTrue(nodes[i].getAttribute("encoded"))
                 ? encodeURIComponent(value)
                 : value;
 
@@ -178,17 +178,17 @@ jpf.rpc = function(){
         function pCallback(data, state, extra){
             extra.data = data;
 
-            if(state != jpf.SUCCESS)
+            if(state != apf.SUCCESS)
                 callback(null, state, extra);
             else if (_self.isValid && !_self.isValid(extra))
-                callback(null, jpf.ERROR, extra);
+                callback(null, apf.ERROR, extra);
             else
                 callback(_self.unserialize(extra.data), state, extra);
         }
 
         // Sent the request
-        var url  = jpf.getAbsolutePath(this.baseurl, this.url);
-        var info = this.get(url, pCallback, jpf.extend({
+        var url  = apf.getAbsolutePath(this.baseurl, this.url);
+        var info = this.get(url, pCallback, apf.extend({
             async    : this[name].async,
             userdata : this[name].userdata,
             nocache  : true,
@@ -207,12 +207,12 @@ jpf.rpc = function(){
     this.purge = function(callback, userdata, async, extradata){
         //#ifdef __DEBUG
         if (!this.stack[this.url] || !this.stack[this.url].length)
-            throw new Error(jpf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
+            throw new Error(apf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
         //#endif
 
         // Get Data
         var data = this.serialize("multicall", [this.stack[this.url]]); //function of module
-        var url  = jpf.getAbsolutePath(this.baseurl, this.url);
+        var url  = apf.getAbsolutePath(this.baseurl, this.url);
         if (extradata) {
             for (var vars = [], i = 0; i < extradata.length; i++) {
                 vars.push(encodeURIComponent(extradata[i][0]) + "="
@@ -295,14 +295,14 @@ jpf.rpc = function(){
     this.load = function(x){
         this.$jml       = x;
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.url       = jpf.parseExpression(x.getAttribute("url"));
-        this.baseurl   = jpf.parseExpression(
-                             jpf.xmldb.getInheritedAttribute(
+        this.url       = apf.parseExpression(x.getAttribute("url"));
+        this.baseurl   = apf.parseExpression(
+                             apf.xmldb.getInheritedAttribute(
                                 this.$jml, "baseurl")) || "";
-        this.multicall = jpf.isTrue(x.getAttribute("multicall"));
+        this.multicall = apf.isTrue(x.getAttribute("multicall"));
         if (x.getAttribute("type"))
             this.useXML    = x.getAttribute("type") == "XML";
-        this.autoroute = jpf.isTrue(x.getAttribute("autoroute"));
+        this.autoroute = apf.isTrue(x.getAttribute("autoroute"));
         this.routeServer = x.getAttribute("route-server") || this.routeServer;
 
         if (this.url)
@@ -317,24 +317,24 @@ jpf.rpc = function(){
                 continue;
 
             //#ifdef __DEBUG
-            if (q[i][jpf.TAGNAME] != "method") {
-                throw new Error(jpf.formatErrorString(0, this,
+            if (q[i][apf.TAGNAME] != "method") {
+                throw new Error(apf.formatErrorString(0, this,
                     "Parsing RPC Teleport node",
                     "Found element which is not a method", q[i]));
             }
             //#endif
 
-            url = jpf.parseExpression(q[i].getAttribute("url"));
+            url = apf.parseExpression(q[i].getAttribute("url"));
             if (url)
                 this.urls[q[i].getAttribute("name")] = url;
 
             //Add Method
             this.addMethod(q[i].getAttribute("name"),
                 q[i].getAttribute("receive") || x.getAttribute("receive"),
-                q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", jpf.ns.jml);
-                !jpf.isFalse(q[i].getAttribute("async")),
-                jpf.isTrue(q[i].getAttribute("caching")),
-                jpf.isTrue(q[i].getAttribute("ignore-offline")),
+                q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", apf.ns.jml);
+                !apf.isFalse(q[i].getAttribute("async")),
+                apf.isTrue(q[i].getAttribute("caching")),
+                apf.isTrue(q[i].getAttribute("ignore-offline")),
                 q[i].getAttribute("method-name"));
         }
     };
@@ -364,7 +364,7 @@ jpf.rpc = function(){
 
 // #ifdef __WITH_DATA_INSTRUCTIONS
 //instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest
-jpf.datainstr.rpc = function(xmlContext, options, callback){
+apf.datainstr.rpc = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(
         options.instrData.join(":"), xmlContext, options.args, options);
 
@@ -381,7 +381,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
 
     //#ifdef __DEBUG
     if (!obj)
-        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+        throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
             "Could not find RPC object by name '" + q[0] + "' in data \
             '" + options.instruction + "'"));
     //#endif
@@ -393,7 +393,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //Set information later neeed
     //#ifdef __DEBUG
     if (!obj[method])
-        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+        throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
             "Could not find RPC function by name '" + method + "' in data \
             instruction '" + options.instruction + "'"));
     //#endif
@@ -415,7 +415,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     }
 
     //#ifdef __WITH_OFFLINE
-    if(typeof jpf.offline != "undefined" && !jpf.offline.onLine)
+    if(typeof apf.offline != "undefined" && !apf.offline.onLine)
         return;
     //#endif
 

@@ -67,14 +67,14 @@
  * @allowchild item, divider, check, radio
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  */
-jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
-    this.$focussable  = jpf.KEYBOARD;
+apf.menu = apf.component(apf.NODE_VISIBLE, function(){
+    this.$focussable  = apf.KEYBOARD;
     this.$positioning = "basic"
     //var _self         = this;
     //var blurring      = false;
@@ -92,7 +92,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             this.oExt.style.display = "none";
 
-            var lastFocus = jpf.menu.lastFocus;
+            var lastFocus = apf.menu.lastFocus;
 
             //@todo test this with a list being the opener of the menu
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
@@ -107,25 +107,25 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             //#ifdef __WITH_FOCUS
             else if (lastFocus) {
                 //We're being hidden because some other object gets focus
-                if (jpf.window.$settingFocus) {
-                    if (jpf.window.$settingFocus != lastFocus && lastFocus.$blur)
+                if (apf.window.$settingFocus) {
+                    if (apf.window.$settingFocus != lastFocus && lastFocus.$blur)
                         lastFocus.$blur();
                     this.$blur();
 
-                    if (jpf.window.$settingFocus.tagName != "menu") //not menu walking
-                        jpf.menu.lastFocus = null;
+                    if (apf.window.$settingFocus.tagName != "menu") //not menu walking
+                        apf.menu.lastFocus = null;
                 }
                 //We're being hidden because window looses focus
-                else if (!jpf.window.hasFocus()) {
+                else if (!apf.window.hasFocus()) {
                     if (lastFocus.$blur)
                         lastFocus.$blur();
                     this.$blur();
 
-                    jpf.window.focussed = lastFocus;
+                    apf.window.focussed = lastFocus;
                     if (lastFocus.$focusParent)
                         lastFocus.$focusParent.$lastFocussed = lastFocus;
 
-                    jpf.menu.lastFocus = null;
+                    apf.menu.lastFocus = null;
                 }
                 //We're just being hidden
                 else if (this.$hideTree) {
@@ -133,22 +133,22 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                         this.$hideTree = -1
 
                     var visTest = (lastFocus.disabled || !lastFocus.visible)
-                        && lastFocus != jpf.document.documentElement;
+                        && lastFocus != apf.document.documentElement;
 
                     if (nofocus || visTest) {
                         if (lastFocus.$blur)
                             lastFocus.$blur();
                         this.$blur();
-                        jpf.window.focussed = null;
+                        apf.window.focussed = null;
 
-                        if (visTest && jpf.window.moveNext() === false)
-                            jpf.window.$focusRoot();
+                        if (visTest && apf.window.moveNext() === false)
+                            apf.window.$focusRoot();
                     }
                     else {
                         lastFocus.focus(null, null, true);
                     }
 
-                    jpf.menu.lastFocus = null;
+                    apf.menu.lastFocus = null;
                 }
             }
             //#endif
@@ -172,7 +172,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$hideTree = null;
 
             if (this.$selected) {
-                jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                apf.setStyleClass(this.$selected.oExt, "", ["hover"]);
                 this.$selected = null;
             }
         }
@@ -232,7 +232,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.visible = false;
         this.show();
-        jpf.popup.show(this.uniqueId, {
+        apf.popup.show(this.uniqueId, {
             x            : x,
             y            : y,
             animate      : noanim || !this.anim ? false : "fade",
@@ -242,11 +242,11 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         });
 
         var lastFocus      =
-        jpf.menu.lastFocus = opener && opener.$focussable === true
+        apf.menu.lastFocus = opener && opener.$focussable === true
             ? opener
-            : jpf.menu.lastFocus || jpf.window.focussed;
+            : apf.menu.lastFocus || apf.window.focussed;
         
-        jpf.popup.last = null;
+        apf.popup.last = null;
         this.focus();
 
         //Make the component that provides context appear to have focus
@@ -333,9 +333,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     return;
 
                 if (this.$selected)
-                    jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                    apf.setStyleClass(this.$selected.oExt, "", ["hover"]);
 
-                jpf.setStyleClass(node.oExt, "hover");
+                apf.setStyleClass(node.oExt, "hover");
                 this.$selected = node;
                 break;
             case 40:
@@ -350,9 +350,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     return;
 
                 if (this.$selected)
-                    jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                    apf.setStyleClass(this.$selected.oExt, "", ["hover"]);
 
-                jpf.setStyleClass(node.oExt, "hover");
+                apf.setStyleClass(node.oExt, "hover");
                 this.$selected = node;
                 break;
             case 37:
@@ -383,7 +383,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     //@todo Ahum bad abstraction boundary
                     var op = this.opener;
                     this.hide();
-                    jpf.setStyleClass(op.oExt, "hover");
+                    apf.setStyleClass(op.oExt, "hover");
                     op.parentNode.$showingSubMenu = null;
                 }
 
@@ -453,7 +453,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 
     this.addEventListener("focus", function(){
-        jpf.popup.last = this.uniqueId;
+        apf.popup.last = this.uniqueId;
     });
 
     this.addEventListener("blur", forceHide);
@@ -468,7 +468,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
         this.oOverlay = this.$getLayoutNode("main", "overlay", this.oExt);
 
-        jpf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
+        apf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
 
     this.$loadJml = function(x){
@@ -498,16 +498,16 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 node = nodes[i];
                 if (node.nodeType != 1) continue;
 
-                var tagName = node[jpf.TAGNAME];
+                var tagName = node[apf.TAGNAME];
                 if ("item|radio|check".indexOf(tagName) > -1) {
-                    new jpf.item(oInt, tagName).loadJml(node, this);
+                    new apf.item(oInt, tagName).loadJml(node, this);
                 }
                 else if (tagName == "divider") {
-                    new jpf.divider(oInt, tagName).loadJml(node, this);
+                    new apf.divider(oInt, tagName).loadJml(node, this);
                 }
                 //#ifdef __DEBUG
                 else {
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Parsing children of menu component",
                         "Unknown component found as child of menu", node));
                 }
@@ -517,9 +517,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(){
-        jpf.popup.removeContent(this.uniqueId);
+        apf.popup.removeContent(this.uniqueId);
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 /**
  * Item of a menu displaying a clickable area.
@@ -556,9 +556,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
  *   object:
  *   {String} value the value of the clicked element.
  */
-jpf.radio =
-jpf.check =
-jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
+apf.radio =
+apf.check =
+apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
     this.$focussable = false;
     var _self        = this;
 
@@ -588,7 +588,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              * </code>
              */
             case "submenu":
-                jpf.setStyleClass(this.oExt, "submenu");
+                apf.setStyleClass(this.oExt, "submenu");
                 break;
             /**
              * @attribute {String} value the value of this element.
@@ -656,16 +656,16 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              */
             case "hotkey":
                 if (this.oHotkey)
-                    jpf.xmldb.setNodeValue(this.oHotkey, value);
+                    apf.xmldb.setNodeValue(this.oHotkey, value);
 
                 if (lastHotkey)
-                    jpf.removeHotkey(lastHotkey);
+                    apf.removeHotkey(lastHotkey);
 
                 if (value) {
                     lastHotkey = value;
-                    jpf.registerHotkey(value, function(){
+                    apf.registerHotkey(value, function(){
                         //hmm not very scalable...
-                        var buttons = jpf.document.getElementsByTagName("button");
+                        var buttons = apf.document.getElementsByTagName("button");
                         for (var i = 0; i < buttons.length; i++) {
                             if (buttons[i].submenu == _self.parentNode.name) {
                                 var btn = buttons[i];
@@ -693,13 +693,13 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              */
             case "icon":
                 if (this.oIcon)
-                    jpf.skins.setIcon(this.oIcon, value, this.parentNode.iconPath);
+                    apf.skins.setIcon(this.oIcon, value, this.parentNode.iconPath);
                 break;
             /**
              * @attribute {String} caption the text displayed on the item.
              */
             case "caption":
-                jpf.xmldb.setNodeValue(this.oCaption, value);
+                apf.xmldb.setNodeValue(this.oCaption, value);
                 break;
             /**
              * @attribute {Boolean} checked whether the item is checked.
@@ -708,10 +708,10 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 if (this.tagName != "check")
                     return;
 
-                if (jpf.isTrue(value))
-                    jpf.setStyleClass(this.oExt, "checked");
+                if (apf.isTrue(value))
+                    apf.setStyleClass(this.oExt, "checked");
                 else
-                    jpf.setStyleClass(this.oExt, "", ["checked"]);
+                    apf.setStyleClass(this.oExt, "", ["checked"]);
                 break;
             /**
              * @attribute {Boolean} checked whether the item is selected.
@@ -720,19 +720,19 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 if (this.tagName != "radio")
                     return;
 
-                if (jpf.isTrue(value))
-                    jpf.setStyleClass(this.oExt, "selected");
+                if (apf.isTrue(value))
+                    apf.setStyleClass(this.oExt, "selected");
                 else
-                    jpf.setStyleClass(this.oExt, "", ["selected"]);
+                    apf.setStyleClass(this.oExt, "", ["selected"]);
                 break;
             /**
              * @attribute {Boolean} disabled whether the item is active.
              */
             case "disabled":
-                if (jpf.isTrue(value))
-                    jpf.setStyleClass(this.oExt, "disabled");
+                if (apf.isTrue(value))
+                    apf.setStyleClass(this.oExt, "disabled");
                 else
-                    jpf.setStyleClass(this.oExt, "", ["disabled"]);
+                    apf.setStyleClass(this.oExt, "", ["disabled"]);
                 break;
         }
     };
@@ -743,7 +743,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
      * @private
      */
     this.enable = function(list){
-        jpf.setStyleClass(this.oExt,
+        apf.setStyleClass(this.oExt,
             this.parentNode.baseCSSname + "Disabled");
     };
 
@@ -751,7 +751,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
      * @private
      */
     this.disable = function(list){
-        jpf.setStyleClass(this.oExt, null,
+        apf.setStyleClass(this.oExt, null,
             [this.parentNode.baseCSSname + "Disabled"]);
     };
 
@@ -817,17 +817,17 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
     var timer;
     this.$out = function(e){
-        if (jpf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
-          || jpf.xmldb.isChildOf(this.oExt, e.srcElement || e.target))  //@todo test FF
+        if (apf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || apf.xmldb.isChildOf(this.oExt, e.srcElement || e.target))  //@todo test FF
             return;
 
         clearTimeout(timer);
         if (!this.submenu || this.$submenu(true)) {
-            jpf.setStyleClass(this.oExt, '', ['hover']);
+            apf.setStyleClass(this.oExt, '', ['hover']);
 
             var sel = this.parentNode.$selected;
             if (sel && sel != this)
-                jpf.setStyleClass(sel.oExt, "", ["hover"]);
+                apf.setStyleClass(sel.oExt, "", ["hover"]);
 
             this.parentNode.$selected = null;
         }
@@ -835,13 +835,13 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
     this.$over = function(e, force){
         if (this.parentNode.$selected)
-            jpf.setStyleClass(this.parentNode.$selected.oExt, "", ["hover"]);
+            apf.setStyleClass(this.parentNode.$selected.oExt, "", ["hover"]);
 
-        jpf.setStyleClass(this.oExt, "hover");
+        apf.setStyleClass(this.oExt, "hover");
         this.parentNode.$selected = this;
 
-        if (!force && (jpf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
-          || jpf.xmldb.isChildOf(this.oExt, e.fromElement || e.target)))  //@todo test FF
+        if (!force && (apf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || apf.xmldb.isChildOf(this.oExt, e.fromElement || e.target)))  //@todo test FF
             return;
 
         var ps = this.parentNode.$showingSubMenu;
@@ -874,7 +874,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         var menu = self[this.submenu];
         if (!menu) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Displaying submenu",
                 "Could not find submenu '" + this.submenu + "'", this.$jml));
             //#endif
@@ -888,7 +888,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
             this.parentNode.$showingSubMenu = menu;
 
-            var pos = jpf.getAbsolutePosition(this.oExt);
+            var pos = apf.getAbsolutePosition(this.oExt);
             menu.display(pos[0] + this.oExt.offsetWidth + 1,
                 pos[1], false, this,
                 this.parentNode.xmlReference, this.parentNode.uniqueId);
@@ -899,7 +899,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 return false;
             }
 
-            jpf.setStyleClass(this.oExt, '', ['hover']);
+            apf.setStyleClass(this.oExt, '', ['hover']);
             menu.hide();
             return true;
         }
@@ -913,16 +913,16 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         p.$getNewContext("item");
         var elItem = p.$getLayoutNode("item");
 
-        var o = 'jpf.lookup(' + this.uniqueId + ')';
+        var o = 'apf.lookup(' + this.uniqueId + ')';
         elItem.setAttribute("onmouseup",   o + '.$up(event)');
         elItem.setAttribute("onmouseover", o + '.$over(event)');
         elItem.setAttribute("onmouseout",  o + '.$out(event)');
         elItem.setAttribute("onmousedown", o + '.$down()');
         elItem.setAttribute("onclick",     o + '.$click()');
 
-        jpf.setStyleClass(elItem, this.tagName);
+        apf.setStyleClass(elItem, this.tagName);
 
-        this.oExt = jpf.xmldb.htmlImport(elItem, this.parentNode.oInt);
+        this.oExt = apf.xmldb.htmlImport(elItem, this.parentNode.oInt);
         this.oCaption = p.$getLayoutNode("item", "caption", this.oExt)
         this.oIcon = p.$getLayoutNode("item", "icon", this.oExt);
         this.oHotkey = p.$getLayoutNode("item", "hotkey", this.oExt);

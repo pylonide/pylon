@@ -28,7 +28,7 @@
  * @constructor
  * @private
  */
-jpf.scrollbar = function(){
+apf.scrollbar = function(){
     var SCROLLVALUE  = 0;
     var STEPVALUE    = 0.03;
     var BIGSTEPVALUE = 0.1;
@@ -38,26 +38,26 @@ jpf.scrollbar = function(){
     var SLIDEMAXHEIGHT;
     var _self = this;
     
-    var offsetName = jpf.isIE ? "offset" : "layer";
+    var offsetName = apf.isIE ? "offset" : "layer";
     
     //Init Class
-    var uniqueId = this.uniqueId = jpf.all.push(this) - 1;
-    jpf.makeClass(this);
+    var uniqueId = this.uniqueId = apf.all.push(this) - 1;
+    apf.makeClass(this);
     
     //Init Skin
     this.realtime = true;
     this.$supportedProperties = [];
     this.$propHandlers = {};
-    this.implement(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.implement(apf.Presentation); /** @inherits apf.Presentation */
     if (this.$loadSkin) 
         this.$loadSkin("default:scrollbar");
     
     //Init DragDrop mode
-    jpf.dragmode.defineMode("scrollbar" + this.uniqueId, this);
+    apf.dragmode.defineMode("scrollbar" + this.uniqueId, this);
     
     //Build Skin
     this.$getNewContext("main");
-    this.oExt               = jpf.xmldb.htmlImport(this.$getLayoutNode("main"), document.body);
+    this.oExt               = apf.xmldb.htmlImport(this.$getLayoutNode("main"), document.body);
     this.oExt.host          = this;
     this.oExt.style.display = "none";
     
@@ -86,7 +86,7 @@ jpf.scrollbar = function(){
         TIMER = setTimeout(function(){
             TIMER = setInterval(function(){
                 CURVALUE -= STEPVALUE;
-                jpf.lookup(uniqueId).setScroll();
+                apf.lookup(uniqueId).setScroll();
             }, 20);
         }, 300);
     };
@@ -105,7 +105,7 @@ jpf.scrollbar = function(){
         TIMER = setTimeout(function(){
             TIMER = setInterval(function(){
                 CURVALUE += STEPVALUE;
-                jpf.lookup(uniqueId).setScroll();
+                apf.lookup(uniqueId).setScroll();
             }, 20);
         }, 300);
     };
@@ -125,7 +125,7 @@ jpf.scrollbar = function(){
             e = event;
         STARTPOS = [e[offsetName + "X"], e[offsetName + "Y"] + BTN.offsetHeight];
 
-        jpf.dragmode.setMode("scrollbar" + _self.uniqueId);
+        apf.dragmode.setMode("scrollbar" + _self.uniqueId);
         
         e.cancelBubble = true;
         return false;
@@ -150,7 +150,7 @@ jpf.scrollbar = function(){
             offset = e[offsetName + "Y"];
             TIMER = setTimeout(function(){
                 TIMER = setInterval(function(){
-                    jpf.lookup(uniqueId).scrollDown(offset);
+                    apf.lookup(uniqueId).scrollDown(offset);
                 }, 20);
             }, 300);
         }
@@ -166,7 +166,7 @@ jpf.scrollbar = function(){
                 offset = e[offsetName + "Y"];
                 TIMER = setTimeout(function(){
                     TIMER = setInterval(function(){
-                        jpf.lookup(uniqueId).scrollUp(offset);
+                        apf.lookup(uniqueId).scrollUp(offset);
                     }, 20);
                 }, 300);
             }
@@ -187,7 +187,7 @@ jpf.scrollbar = function(){
             return false;
         
         var next = BTN.offsetHeight + (e.clientY - STARTPOS[1]
-            - jpf.getAbsolutePosition(MAIN)[1] - BTN.offsetHeight / 3);
+            - apf.getAbsolutePosition(MAIN)[1] - BTN.offsetHeight / 3);
         var min = BTN.offsetHeight;
         if (next < min) 
             next = min;
@@ -206,7 +206,7 @@ jpf.scrollbar = function(){
         STARTPOS = false;
         if (!_self.realtime)
             setScroll();
-        jpf.dragmode.clear();
+        apf.dragmode.clear();
     };
     
     var LIST, viewheight, scrollheight;
@@ -240,7 +240,7 @@ jpf.scrollbar = function(){
             var delta = null;
             if (e.wheelDelta) {
                 delta = e.wheelDelta / 120;
-                if (jpf.isOpera)
+                if (apf.isOpera)
                     delta *= -1;
             }
             else if (e.detail)
@@ -248,7 +248,7 @@ jpf.scrollbar = function(){
     
             if (delta !== null) {
                 var ev = {delta: delta};
-                var res = jpf.dispatchEvent("mousescroll", ev);
+                var res = apf.dispatchEvent("mousescroll", ev);
                 if (res === false || ev.returnValue === false) {
                     if (e.preventDefault)
                         e.preventDefault();
@@ -259,7 +259,7 @@ jpf.scrollbar = function(){
     
                 
             STEPVALUE = (o.limit / o.length) / 5;
-            CURVALUE += ((jpf.isOpera ? 1 : -1) * delta * STEPVALUE);
+            CURVALUE += ((apf.isOpera ? 1 : -1) * delta * STEPVALUE);
             setScroll(true);
         }
         

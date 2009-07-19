@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-jpf.editor.plugin('pastetext', function() {
+apf.editor.plugin('pastetext', function() {
     this.name        = 'pastetext';
     this.icon        = 'pastetext';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+v';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ jpf.editor.plugin('pastetext', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -66,7 +66,7 @@ jpf.editor.plugin('pastetext', function() {
     };
 
     this.submit = function(e) {
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
 
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
@@ -96,7 +96,7 @@ jpf.editor.plugin('pastetext', function() {
         var idBtns = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
-           this.editor.translate('paste_keyboardmsg').sprintf(jpf.isMac ? 'CMD+V' : 'CTRL+V')
+           this.editor.translate('paste_keyboardmsg').sprintf(apf.isMac ? 'CMD+V' : 'CTRL+V')
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
               cols="60" rows="10" class="editor_textarea"></textarea>\
@@ -105,19 +105,19 @@ jpf.editor.plugin('pastetext', function() {
         this.oArea = document.getElementById(idArea);
         
         //#ifdef __WITH_WINDOW_FOCUS
-        jpf.sanitizeTextbox(this.oArea);
+        apf.sanitizeTextbox(this.oArea);
         // #endif
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             this.oArea.onselectstart = this.oArea.onpaste = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
         }
         this.appendJmlNode(
-           '<j:toolbar xmlns:j="' + jpf.ns.jml + '"><j:bar>\
+           '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
             <j:button caption="' + this.editor.translate('insert') + '" \
-              onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />\
+              onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
             </j:bar></j:toolbar>',
           document.getElementById(idBtns));
 
@@ -130,13 +130,13 @@ jpf.editor.plugin('pastetext', function() {
         delete this.oArea;
     };
 });
-jpf.editor.plugin('pasteword', function() {
+apf.editor.plugin('pasteword', function() {
     this.name        = 'pasteword';
     this.icon        = 'pasteword';
-    this.type        = jpf.editor.CMDMACRO;
+    this.type        = apf.editor.CMDMACRO;
     this.hook        = 'onpaste';
     this.keyBinding  = 'ctrl+shift+v';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     
     this.parse = function(sContent) {
         // Cleanup Word content

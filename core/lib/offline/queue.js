@@ -24,25 +24,25 @@
 /**
  * Object handling queuing of actions that can only be executed whilst online.
  * These actions are stored in the queue and executed in serie when the 
- * application comes online again. This is done after jpf.auth has logged the
+ * application comes online again. This is done after apf.auth has logged the
  * user into the application again, if necesary. This object is used for HTTP
  * XMPP and Webdav, but is general purpose and can be used to store any 
  * action that should only be executed while online. 
  *
  * @default_private
  */
-jpf.namespace("offline.queue", {
+apf.namespace("offline.queue", {
     enabled : false,
     stack   : [],
     
     init : function(){
-        this.namespace = jpf.appsettings.name + ".jpf.offline.queue";
+        this.namespace = apf.appsettings.name + ".apf.offline.queue";
         this.enabled   = true;
     },
     
     add : function(commInfo){
         var namespace = this.namespace;
-        var storage   = jpf.offline.storage;
+        var storage   = apf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         
         //Add the commInfo to the stack
@@ -51,7 +51,7 @@ jpf.namespace("offline.queue", {
         //Check here for xml nodes in storeInfo??
         
         //Store http info
-        storage.put(len, jpf.serialize(commInfo), namespace);
+        storage.put(len, apf.serialize(commInfo), namespace);
         storage.put("length", ++len, namespace);
 
         /*
@@ -71,10 +71,10 @@ jpf.namespace("offline.queue", {
                            the request communicates. You might want to look\
                            at using an actiontracker.";
             
-            jpf.console.warn(strWarn);
+            apf.console.warn(strWarn);
             //#endif
             
-            callback(null, jpf.OFFLINE, jpf.extend({
+            callback(null, apf.OFFLINE, apf.extend({
                 offline : true
                 //#ifdef __DEBUG
                 , message : strWarn
@@ -88,7 +88,7 @@ jpf.namespace("offline.queue", {
     },
     
     getSyncLength : function(){
-        return parseInt(jpf.offline.storage.get("length", this.namespace)) || 0;
+        return parseInt(apf.offline.storage.get("length", this.namespace)) || 0;
     },
     
     //Sync all transactions, let offline decide when
@@ -100,7 +100,7 @@ jpf.namespace("offline.queue", {
         }
 
         var namespace = this.namespace;
-        var storage   = jpf.offline.storage;
+        var storage   = apf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         var start     = parseInt(storage.get("start", namespace)) || 0;
         var commInfo;
@@ -112,13 +112,13 @@ jpf.namespace("offline.queue", {
             commInfo = this.$getCommInfo(storage.get(start, namespace));
             if (!commInfo) {
                 //#ifdef __DEBUG
-                jpf.console.error("Error syncing queue items. This is a serious\
+                apf.console.error("Error syncing queue items. This is a serious\
                 error. The queue stack has become corrupted. It will now be \
                 cleared and the queued offline messages will be lost!"); //@todo
                 //#endif
                 
                 this.clear();
-                jpf.offline.stopSync();
+                apf.offline.stopSync();
                 
                 return callback({finished: true});
             }
@@ -141,7 +141,7 @@ jpf.namespace("offline.queue", {
                 // We're done with this one
                 storage.remove(start, namespace);
                 storage.put("start", start+1, namespace);
-                jpf.offline.queue.stack[start] = null;
+                apf.offline.queue.stack[start] = null;
                 
                 callback({
                     position : start,
@@ -159,7 +159,7 @@ jpf.namespace("offline.queue", {
                 }
                 else {
                     //Next!
-                    jpf.offline.queue.sync(callback, true);
+                    apf.offline.queue.sync(callback, true);
                 }
             }
         }
@@ -168,14 +168,14 @@ jpf.namespace("offline.queue", {
     },
     
     clear : function(){
-         jpf.offline.storage.clear(this.namespace);
+         apf.offline.storage.clear(this.namespace);
     },
     
     $getCommInfo : function(strCommItem){
         if (!strCommItem)
             return false;
         
-        var commObject, commInfo = jpf.unserialize(strCommItem);
+        var commObject, commInfo = apf.unserialize(strCommItem);
         for (var i = 0; i < commInfo.$object.length; i++) {
             commObject = self[commInfo.$object[i]] || eval(commInfo.$object[i]);
             if (commObject)

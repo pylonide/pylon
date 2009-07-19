@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_DATETIME || __INC_ALL
 
-jpf.editor.dateTimePlugin = function(sName) {
+apf.editor.dateTimePlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "insertdate" ? 'ctrl+shift+d' : 'ctrl+shift+t';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.i18n        = { //default English (en_GB)
         date_format  :"%Y-%m-%d",
         time_format  :"%H:%M:%S",
@@ -74,7 +74,7 @@ jpf.editor.dateTimePlugin = function(sName) {
     };
 };
 
-jpf.editor.plugin('insertdate', jpf.editor.dateTimePlugin);
-jpf.editor.plugin('inserttime', jpf.editor.dateTimePlugin);
+apf.editor.plugin('insertdate', apf.editor.dateTimePlugin);
+apf.editor.plugin('inserttime', apf.editor.dateTimePlugin);
 
 // #endif

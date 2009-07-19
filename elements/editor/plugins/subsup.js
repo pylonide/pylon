@@ -21,18 +21,18 @@
 
 // #ifdef __ENABLE_EDITOR_SUBSUP || __INC_ALL
 
-jpf.editor.subSupCommand = function(sName) {
+apf.editor.subSupCommand = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "sub" ? 'ctrl+alt+s' : 'ctrl+shift+s';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         var other = this.name == "sub" ? 'Superscript' : 'Subscript';
-        if (editor.getCommandState(other) == jpf.editor.ON)
+        if (editor.getCommandState(other) == apf.editor.ON)
             editor.executeCommand(other);
         editor.executeCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
 
@@ -45,7 +45,7 @@ jpf.editor.subSupCommand = function(sName) {
             : 'Superscript');
     };
 }
-jpf.editor.plugin('sub', jpf.editor.subSupCommand);
-jpf.editor.plugin('sup', jpf.editor.subSupCommand);
+apf.editor.plugin('sub', apf.editor.subSupCommand);
+apf.editor.plugin('sup', apf.editor.subSupCommand);
 
 // #endif

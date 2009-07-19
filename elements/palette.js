@@ -31,12 +31,12 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.XForms
- * @inherits jpf.Presentation
- * @inherits jpf.Validation
- * @inherits jpf.DataBinding
+ * @inherits apf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.Validation
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -57,7 +57,7 @@
  *  <j:palette ref="@color" />
  * </code>
  */
-jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.palette = apf.component(apf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     
@@ -101,16 +101,16 @@ jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
         var oItem = this.$getLayoutNode("item");
         
         if (oContainer == this.oCustom) {
-            oItem.setAttribute("onmousedown", "jpf.lookup(" 
+            oItem.setAttribute("onmousedown", "apf.lookup(" 
                 + this.uniqueId + ").$doCustom(this)");
-            oItem.setAttribute("ondblclick", "jpf.lookup(" 
+            oItem.setAttribute("ondblclick", "apf.lookup(" 
                 + this.uniqueId + ").$doCustom(this, true)");
         }
         else 
-            oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId 
+            oItem.setAttribute("onmousedown", "apf.lookup(" + this.uniqueId 
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
         
-        oItem = jpf.xmldb.htmlImport(oItem, oContainer, null, true);
+        oItem = apf.xmldb.htmlImport(oItem, oContainer, null, true);
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
     };
     
@@ -154,19 +154,19 @@ jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
         for (i = 0; i < 9; i++) 
             this.$addColor("ffffff");
         
-        //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
+        //this.oViewer.setAttribute("ondblclick", "apf.lookup(" + this.uniqueId + ").openColorPicker()");
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     // #endif
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

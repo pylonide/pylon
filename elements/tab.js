@@ -40,7 +40,7 @@
  *          <j:checkbox>Test checkbox</j:checkbox>
  *          <j:checkbox>Test checkbox</j:checkbox>
  *      </j:page>
- *      <j:page caption="Javeline">
+ *      <j:page caption="Ajax.org">
  *          <j:checkbox>This ok?</j:checkbox>
  *          <j:checkbox>This better?</j:checkbox>
  *      </j:page>
@@ -52,18 +52,18 @@
  * @allowchild page
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.1
  *
- * @inherits jpf.BaseTab
+ * @inherits apf.BaseTab
  */
 
-jpf["switch"] =
-jpf.pages     =
-jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
+apf["switch"] =
+apf.pages     =
+apf.tab       = apf.component(apf.NODE_VISIBLE, function(){
     this.$hasButtons = this.tagName == "tab";
-    this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard
+    this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
 
     /**** Init ****/
 
@@ -76,6 +76,6 @@ jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
     };
-}).implement(jpf.BaseTab);
+}).implement(apf.BaseTab);
 
 // #endif

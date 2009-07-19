@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_SEARCH || __INC_ALL
 
-jpf.editor.searchPlugin = function(sName) {
+apf.editor.searchPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = this.name == "search" ? 'ctrl+f' : 'ctrl+shift+f';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ jpf.editor.searchPlugin = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -68,12 +68,12 @@ jpf.editor.searchPlugin = function(sName) {
     };
 
     this.submit = function(e) {
-        //e = new jpf.AbstractEvent(e || window.event);
+        //e = new apf.AbstractEvent(e || window.event);
         var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
         if (!val)
             return;
 
-        if (jpf.isIE)
+        if (apf.isIE)
             this.editor.selection.set();
         //this.editor.oDoc.execCommand('SelectAll');
         //this.editor.executeCommand('SelectAll');
@@ -85,7 +85,7 @@ jpf.editor.searchPlugin = function(sName) {
 
         var found = false;
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             var sel   = this.editor.selection;
             var range = sel.getRange();
             if (!(found = range.findText(val, 1, flag))) {
@@ -123,7 +123,7 @@ jpf.editor.searchPlugin = function(sName) {
         else
             e.cancelBubble = true;
 
-        if (!jpf.isIE) {
+        if (!apf.isIE) {
             // IE cannot show the selection anywhere else then where the cursor
             // is, so no show for them users...
             var _self = this;
@@ -155,7 +155,7 @@ jpf.editor.searchPlugin = function(sName) {
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             while (range.findText(val, 1, flag)) {
                 range.scrollIntoView();
                 range.select();
@@ -181,7 +181,7 @@ jpf.editor.searchPlugin = function(sName) {
     this.replace = function() {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
-        if (jpf.isIE) {
+        if (apf.isIE) {
             this.editor.selection.set();
             this.editor.selection.getRange().duplicate().pasteHTML(sRepl);
         }
@@ -219,17 +219,17 @@ jpf.editor.searchPlugin = function(sName) {
         this.oCase   = document.getElementById(idCase);
         
         var aJml = [
-            '<j:toolbar xmlns:j="', jpf.ns.jml, '"><j:bar>\
+            '<j:toolbar xmlns:j="', apf.ns.jml, '"><j:bar>\
              <j:button caption="Find next" \
-               onclick="jpf.lookup(', this.uniqueId, ').submit(event)" />'];
+               onclick="apf.lookup(', this.uniqueId, ').submit(event)" />'];
         if (this.name == "replace") {
             this.oReplace = document.getElementById(idReplace);
             aJml.push(
                 '<j:button caption="Replace" \
-                  onclick="jpf.lookup(', this.uniqueId, ').onDoReplClick(event)" \
+                  onclick="apf.lookup(', this.uniqueId, ').onDoReplClick(event)" \
                   id="', idReplBtn, '" />\
                 <j:button caption="Replace all" \
-                  onclick="jpf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
+                  onclick="apf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
                   id="', idReplAllBtn, '" />');
         }
         aJml.push('</j:bar></j:toolbar>');
@@ -243,19 +243,19 @@ jpf.editor.searchPlugin = function(sName) {
         }
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
+        if (apf.hasFocusBug) {
             var fSel = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
-            jpf.sanitizeTextbox(this.oSearch);
+            apf.sanitizeTextbox(this.oSearch);
             this.oSearch.onselectstart = fSel;
             if (this.oReplace) {
-                jpf.sanitizeTextbox(this.oReplace);
+                apf.sanitizeTextbox(this.oReplace);
                 this.oReplace.onselectstart = fSel;
             }
             // checkboxes also need the focus fix:
-            jpf.sanitizeTextbox(this.oCase);
+            apf.sanitizeTextbox(this.oCase);
         }
         //#endif
 
@@ -276,7 +276,7 @@ jpf.editor.searchPlugin = function(sName) {
     };
 };
 
-jpf.editor.plugin('search',  jpf.editor.searchPlugin);
-jpf.editor.plugin('replace', jpf.editor.searchPlugin);
+apf.editor.plugin('search',  apf.editor.searchPlugin);
+apf.editor.plugin('replace', apf.editor.searchPlugin);
 
 // #endif

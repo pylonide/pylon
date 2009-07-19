@@ -41,11 +41,11 @@
  * @allowchild page, {elements}, {anyjml}
  * @addnode elements
  *
- * @inherits jpf.DataBinding
- * @inherits jpf.BaseTab
- * @inherits jpf.ValidationGroup
+ * @inherits apf.DataBinding
+ * @inherits apf.BaseTab
+ * @inherits apf.ValidationGroup
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
@@ -54,8 +54,8 @@
  * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
  */
 
-jpf.xforms     =
-jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.xforms     =
+apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
 
@@ -103,7 +103,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var message = this.getPage().$jml.getAttribute("loadmessage");
             if (message)
-                (jpf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
+                (apf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
         }
     };
@@ -138,7 +138,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         this.set(this.activepagenr + 1);//nextpagenr
         //this.activepagenr = nextpagenr;
 
-        //if(!no_error && !nextpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!no_error && !nextpage) throw new Error(apf.formatErrorString(1006, this, "Form", "End of pages reached."));
 
         //nextpage.show();
         //if(nextpage.$rendered) this.hideLoader();
@@ -168,7 +168,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.getPage().hide();
         //this.activepagenr = active;
 
-        //if(!prevpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!prevpage) throw new Error(apf.formatErrorString(1006, this, "Form", "End of pages reached."));
 
         //prevpage.show();
 
@@ -258,7 +258,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
             objEl.setInactive();
         }
 
-        if (objEl.nodeFunc == jpf.NODE_VISIBLE)
+        if (objEl.nodeFunc == apf.NODE_VISIBLE)
             objEl.setZIndex(--this.zCount);
 
         if (this.listsHeldBack[name]) {
@@ -332,12 +332,12 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         /*
             new Function(
-                "jpf.lookup(" + this.uniqueId + ").showLoader(true);setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
+                "apf.lookup(" + this.uniqueId + ").showLoader(true);setTimeout("apf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
 
             action == "previous" ?
-                "jpf.lookup(" + this.uniqueId + ")." + action + "()" :
-                "jpf.lookup(" + this.uniqueId + ").showLoader();setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
+                "apf.lookup(" + this.uniqueId + ")." + action + "()" :
+                "apf.lookup(" + this.uniqueId + ").showLoader();setTimeout("apf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
         */
     };
@@ -401,7 +401,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                         var nodes = this.xmlRoot.selectSingleNode("node()[@lid='" + lid + "']");
 
                         for(var i=0;i<nodes.length;i++){
-                            jpf.xmldb.removeNode(nodes[i]);
+                            apf.xmldb.removeNode(nodes[i]);
                         }
                     }*/
                 }
@@ -423,14 +423,14 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
-        if (!jpf.teleport.hasLoadRule(xmlCommNode)) return;
+        if (!apf.teleport.hasLoadRule(xmlCommNode)) return;
 
         this.dispatchEvent(isList ? "beforeloadlist" : "beforeloadvalue");
 
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!
         if (nodes.length) {
-            var arr, arg = xmlCommNode.getAttribute(jpf.teleport.lastRuleFound.args);
+            var arr, arg = xmlCommNode.getAttribute(apf.teleport.lastRuleFound.args);
             arg = arg ? arg.split(";") : [];
 
             if (xmlCommNode.getAttribute("argarray"))
@@ -440,7 +440,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)) { //Where does item come from??? || item == nodes[j].getAttribute("element")
                     var el    = self[nodes[j].getAttribute("element")];
                     var xpath = el.getMainBindXpath();
-                    var xNode = jpf.xmldb.createNodeFromXpath(this.xmlRoot, xpath);
+                    var xNode = apf.xmldb.createNodeFromXpath(this.xmlRoot, xpath);
                     var nType = xNode.nodeType;
                     (arr || arg)[nodes[j].getAttribute("argnr") || j] =
                         "xpath:" + xpath + (nType == 1 ? "/text()" : "");
@@ -448,7 +448,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 else
                     if(nodes[j].getAttribute("argtype") == "xpath") {
                         (arr || arg)[nodes[j].getAttribute("argnr") || j] =
-                            "xpath:" + nodes[j].getAttribute("select");//jpf.getXmlValue(this.xmlRoot, );
+                            "xpath:" + nodes[j].getAttribute("select");//apf.getXmlValue(this.xmlRoot, );
                     }
             }
 
@@ -456,19 +456,19 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                 arg[xmlCommNode.getAttribute("argarray")] = "(" + arr.join(",") + ")";
             }
 
-            xmlCommNode.setAttribute(jpf.teleport.lastRuleFound.args, arg.join(";"));
+            xmlCommNode.setAttribute(apf.teleport.lastRuleFound.args, arg.join(";"));
         }
 
         //this.xmlRoot.firstChild
         //if(confirm("do you want to debug?")) throw new Error();
 
         var jNode = self[xmlCommNode.getAttribute("element")];
-        if (jNode && jNode.nodeFunc == jpf.NODE_VISIBLE)
+        if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE)
             jNode.$setStyleClass(jNode.oExt, "loading", ["loaded"]);
 
-        //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
-        jpf.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
-            Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId
+        //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", apf.getUniqueId());
+        apf.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
+            Function('data', 'state', 'extra', 'apf.lookup(' + this.uniqueId
                 + ').' + (isList ? 'loadLists' : 'loadValues')
                 + '(data, state, extra)'), null, data);
     };
@@ -487,7 +487,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                     forceActive = true;
                 else
                     if (nodes[i].getAttribute("ref") && this.xmlRoot
-                      && jpf.xmldb.getNodeValue(this.xmlRoot
+                      && apf.xmldb.getNodeValue(this.xmlRoot
                       .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
                         forceActive = true;
                         nodes[i].setAttribute("show", "true");
@@ -532,29 +532,29 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         catch(e) {
             return false;
-            //throw new Error(jpf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
+            //throw new Error(apf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
     };
 
     this.loadValues = function(data, state, extra){
-        if (state != jpf.SUCCESS) {
-            if (extra.retries < jpf.maxHttpRetries)
+        if (state != apf.SUCCESS) {
+            if (extra.retries < apf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(jpf.formatErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
+                throw new Error(apf.formatErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
         }
 
         if (extra.userdata[0].getAttribute("returntype") == "array") {
             //integrate array
             for (var i = 0; i < data.length; i++) {
                 var pnode = this.xmlRoot.selectSingleNode("//" + data[i][0]);
-                jpf.xmldb.setTextNode(pnode, data[i][1] || "");
+                apf.xmldb.setTextNode(pnode, data[i][1] || "");
             }
         }
         else {
             //integrate xml
             if (typeof data != "object")
-                data = jpf.getXmlDom(data).documentElement;
+                data = apf.getXmlDom(data).documentElement;
             var nodes     = data.childNodes;
             var strUnique = extra.userdata[0].getAttribute("unique");
 
@@ -568,24 +568,24 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
                     : null;
                 if (node) {
                     //Move all this into the xmldb
-                    jpf.xmldb.copyConnections(node, xmlNode);
-                    jpf.xmldb.notifyListeners(xmlNode);
+                    apf.xmldb.copyConnections(node, xmlNode);
+                    apf.xmldb.notifyListeners(xmlNode);
 
                     //node.setAttribute("lid", data.getAttribute("lid"));
 
                     //hack!! - should be recursive
                     var valueNode = xmlNode.selectSingleNode("value");
                     if (valueNode) {
-                        jpf.xmldb.copyConnections(node
+                        apf.xmldb.copyConnections(node
                             .selectSingleNode("value"), valueNode);
-                        jpf.xmldb.notifyListeners(valueNode);
+                        apf.xmldb.notifyListeners(valueNode);
                     }
                 }
 
                 this.xmlRoot.insertBefore(xmlNode, node); //consider using replaceChild here
                 if (node)
                     this.xmlRoot.removeChild(node);
-                jpf.xmldb.applyChanges("attribute", xmlNode);
+                apf.xmldb.applyChanges("attribute", xmlNode);
             }
         }
 
@@ -593,11 +593,11 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.loadLists = function(data, state, extra){
-        if (state != jpf.SUCCESS){
-            if (extra.retries < jpf.maxHttpRetries)
+        if (state != apf.SUCCESS){
+            if (extra.retries < apf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(jpf.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
+                throw new Error(apf.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
         }
 
         if (!self[extra.userdata[0].getAttribute("element")])
@@ -606,9 +606,9 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
-        if (jNode && jNode.nodeFunc == jpf.NODE_VISIBLE) {
+        if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE) {
             jNode.$setStyleClass(jNode.oExt, "loaded", ["loading"]);
-            setTimeout("var jNode = jpf.lookup(" + jNode.uniqueId + ");\
+            setTimeout("var jNode = apf.lookup(" + jNode.uniqueId + ");\
                 jNode.$setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
         }
 
@@ -651,7 +651,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
             //Hack!!! maybe traverse
             if (el.length) {
-                throw new Error(jpf.formatErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(apf.formatErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
 
             el.clearError();
@@ -678,8 +678,8 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     this.smartBinding = {};
 
     this.$load = function(XMLRoot, id){
-        jpf.xmldb.addNodeListener(XMLRoot, this);
-        //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");
+        apf.xmldb.addNodeListener(XMLRoot, this);
+        //this.setConnections(apf.xmldb.getElement(XMLRoot, 0), "select");
         //this.setConnections(XMLRoot, "select");
     };
 
@@ -697,13 +697,13 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     function onafterload(){
         //Clear all error states
         for (name in this.elements) {
-            if (jpf.isSafari && (!this.elements[name]
+            if (apf.isSafari && (!this.elements[name]
               || !this.elements[name].$jmlLoaders))
                 continue;
 
             //Hack!!! maybe traverse
             if (this.elements[name].length) {
-                throw new Error(jpf.formatErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(apf.formatErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
             }
 
             this.elements[name].clearError();
@@ -737,10 +737,10 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
-            var jmlNode = self[element].$jml;//jpf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$jml);
+            var jmlNode = self[element].$jml;//apf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$jml);
 
-            if (jmlNode && !jpf.xmldb.getBoundValue(jmlNode, this.xmlRoot)) {
-                var fNextQNode = jpf.xmldb
+            if (jmlNode && !apf.xmldb.getBoundValue(jmlNode, this.xmlRoot)) {
+                var fNextQNode = apf.xmldb
                     .selectSingleNode(".//node()[@checknext='true']", this.$jml);
                 if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("afterchange");
@@ -776,12 +776,12 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     /* *********
         INIT
     **********/
-    this.implement(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
 
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
-            var htmlNode   = jpf.getFirstElement(oJml);
-            this.loadState = jpf.xmldb.htmlImport(htmlNode, this.oInt);
+            var htmlNode   = apf.getFirstElement(oJml);
+            this.loadState = apf.xmldb.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }
     };
@@ -833,7 +833,7 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         this.method        = (this.$jml.getAttribute("method") || "get").toLowerCase();
         this.useComponents = this.$jml.getAttribute("usecomponents") || true;
 
-        jpf.setModel(x.getAttribute("model"), this);
+        apf.setModel(x.getAttribute("model"), this);
 
         this.$loadChildren(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
@@ -841,9 +841,9 @@ jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
         });
     };
 }).implement(
-    jpf.DataBinding,
-    jpf.BaseTab,
-    jpf.ValidationGroup
+    apf.DataBinding,
+    apf.BaseTab,
+    apf.ValidationGroup
 );
 
 // #endif

@@ -61,7 +61,7 @@
  *   {Number} position the number of the item in the list that is currently processed.
  *   {Number} length   the total number of items in the list.
  *
- * @inherits jpf.Class
+ * @inherits apf.Class
  *
  * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
  * Example:
@@ -69,7 +69,7 @@
  * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
  *    <j:Label>Synchronizing your changes</j:label>
  *    <j:progressbar value="{offline.progress}" />
- *    <j:button onclick="jpf.offline.stopSync()">Cancel</j:button>
+ *    <j:button onclick="apf.offline.stopSync()">Cancel</j:button>
  *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
  * </j:modalwindow>
  * </code>
@@ -91,7 +91,7 @@
  * 
  * @default_private
  */
-jpf.namespace("offline", {
+apf.namespace("offline", {
     /**
      * whether offline support is enabled.
      * @type {Boolean}
@@ -110,7 +110,7 @@ jpf.namespace("offline", {
     rsbTimeout  : 600000,//After 10 minutes, we assume the RSB messaged will be destroyed
 
     init : function(jml){
-        jpf.makeClass(this);
+        apf.makeClass(this);
 
         //Read configuration
         if (jml) {
@@ -138,28 +138,28 @@ jpf.namespace("offline", {
                 }
             }
             else {
-                jpf.extend(this, jml);
+                apf.extend(this, jml);
             }
         }
 
         // #ifdef __WITH_OFFLINE_APPLICATION
-        var provider = jpf.offline.application.init(jml)
+        var provider = apf.offline.application.init(jml)
         // #endif
 
         //Check for storage provider
         if (provider) {
-            this.storage = jpf.storage.getProvider(provider);
+            this.storage = apf.storage.getProvider(provider);
 
             //#ifdef __DEBUG
             if (this.storage)
-                jpf.console.info("Installed storage provider '" + provider + "'");
+                apf.console.info("Installed storage provider '" + provider + "'");
             //#endif
         }
 
         if (!this.storage) {
-            this.storage = jpf.storage.initialized
-                ? jpf.storage
-                : jpf.storage.init(); //autodetect
+            this.storage = apf.storage.initialized
+                ? apf.storage
+                : apf.storage.init(); //autodetect
         }
 
         if (!this.storage) {
@@ -172,17 +172,17 @@ jpf.namespace("offline", {
         }
 
         if (!this.storage.isPermanent()) {
-            jpf.addEventListener("exit", function(){
-                return jpf.offline.dispatchEvent("losechanges");
+            apf.addEventListener("exit", function(){
+                return apf.offline.dispatchEvent("losechanges");
             });
         }
 
         if (this.storage.asyncInit) {
-            jpf.JmlParser.shouldWait = true;
+            apf.JmlParser.shouldWait = true;
             this.storage.ready(function(){
-                jpf.offline.storage.onready = null; //Prevent being called twice
-                jpf.offline.continueInit();
-                jpf.JmlParser.continueStartup();
+                apf.offline.storage.onready = null; //Prevent being called twice
+                apf.offline.continueInit();
+                apf.JmlParser.continueStartup();
             });
 
             return;
@@ -214,12 +214,12 @@ jpf.namespace("offline", {
         else //Else we try to go online
             this.goOnline();
 
-        jpf.offline.dispatchEvent("load");
+        apf.offline.dispatchEvent("load");
     },
 
     $destroy : function(){
         //#ifdef __DEBUG
-        jpf.console.info("Cleaning offline");
+        apf.console.info("Cleaning offline");
         //#endif
 
         if (this.provider && this.provider.destroy)
@@ -277,8 +277,8 @@ jpf.namespace("offline", {
         }
 
         //#ifdef __WITH_AUTH
-        //if (jpf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
-        //    jpf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
+        //if (apf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
+        //    apf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
         //#endif
 
         //#ifdef __WITH_OFFLINE_DETECTOR
@@ -293,10 +293,10 @@ jpf.namespace("offline", {
              * @private
              */
             this.initial = {
-                disableRSB : jpf.xmldb.disableRSB //@todo record this in storage
+                disableRSB : apf.xmldb.disableRSB //@todo record this in storage
             }
         }
-        jpf.xmldb.disableRSB = true;
+        apf.xmldb.disableRSB = true;
         //#endif
 
         this.inProcess = this.IDLE;
@@ -304,7 +304,7 @@ jpf.namespace("offline", {
         this.dispatchEvent("afteroffline");
 
         //#ifdef __DEBUG
-        jpf.console.info("The application is now working offline.")
+        apf.console.info("The application is now working offline.")
         //#endif
 
         return true;//success
@@ -328,7 +328,7 @@ jpf.namespace("offline", {
         this.reloading  = false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Trying to go online.")
+        apf.console.info("Trying to go online.")
         //#endif
 
         //#ifdef __WITH_OFFLINE_DETECTOR
@@ -343,7 +343,7 @@ jpf.namespace("offline", {
 
         //Reset RSB in original state
         if (this.initial)
-            jpf.xmldb.disableRSB = this.initial.disableRSB;
+            apf.xmldb.disableRSB = this.initial.disableRSB;
         //#endif
 
         var callback = function(){
@@ -359,8 +359,8 @@ jpf.namespace("offline", {
 
         //#ifdef __WITH_AUTH
         //First let's log in to the services that need it before syncing changes
-        if (jpf.auth.needsLogin && jpf.auth.loggedIn) { // && !jpf.auth.loggedIn
-            jpf.auth.authRequired({
+        if (apf.auth.needsLogin && apf.auth.loggedIn) { // && !apf.auth.loggedIn
+            apf.auth.authRequired({
                 object : this,
                 retry  : callback
             });
@@ -383,7 +383,7 @@ jpf.namespace("offline", {
         if (!this.rsbTimeout)
             return;
 
-        var i, j, rsbs = jpf.nameserver.getAll("remote");
+        var i, j, rsbs = apf.nameserver.getAll("remote");
         for (i = 0; i < rsbs.length; i++) {
             var rsb = rsbs[i];
             if (this.reloading
@@ -391,7 +391,7 @@ jpf.namespace("offline", {
                 if (!this.reloading) {
                     if (this.dispatchEvent("beforereload") === false) {
                         //#ifdef __DEBUG
-                        jpf.console.warn("Warning, potential data corruption\
+                        apf.console.warn("Warning, potential data corruption\
                             because you've cancelled reloading the data of all \
                             remote smartbinding synchronized models.");
                         //#endif
@@ -408,7 +408,7 @@ jpf.namespace("offline", {
                     rsb.models[j].clear();
 
                     // #ifdef __WITH_OFFLINE_MODEL
-                    jpf.offline.models.addToInitQueue(rsb.models[j])
+                    apf.offline.models.addToInitQueue(rsb.models[j])
                     /* #else
                     rbs[i].models[j].init();
                     #endif */
@@ -418,16 +418,16 @@ jpf.namespace("offline", {
 
         if (this.reloading) {
             //#ifdef __DEBUG
-            jpf.console.warn("The application has been offline longer than the \
+            apf.console.warn("The application has been offline longer than the \
                               server timeout. To maintain consistency the models\
                               are reloaded. All undo stacks will be purged.");
             //#endif
 
             //#ifdef __WITH_OFFLINE_TRANSACTIONS && __WITH_OFFLINE_STATE
-            jpf.offline.transactions.clear("undo|redo");
+            apf.offline.transactions.clear("undo|redo");
             //#endif
 
-            var ats = jpf.nameserver.getAll("actiontracker");
+            var ats = apf.nameserver.getAll("actiontracker");
             for (var i = 0; i < ats.length; i++) {
                 ats[i].reset();
             }
@@ -446,13 +446,13 @@ jpf.namespace("offline", {
             this.storage.remove("offlinetime", this.namespace);
 
             //#ifdef __DEBUG
-            jpf.console.info("Syncing done.")
-            jpf.console.info("The application is now working online.")
+            apf.console.info("Syncing done.")
+            apf.console.info("The application is now working online.")
             //#endif
         }
         else {
             //#ifdef __DEBUG
-            jpf.console.info("Syncing was cancelled. Going online failed")
+            apf.console.info("Syncing was cancelled. Going online failed")
             //#endif
 
             //Going online has failed. Going offline again
@@ -468,7 +468,7 @@ jpf.namespace("offline", {
             return false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Clearing all offline and state cache");
+        apf.console.info("Clearing all offline and state cache");
         //#endif
 
          for (i = this.resources.length - 1; i >= 0; i--) {
@@ -488,7 +488,7 @@ jpf.namespace("offline", {
         this.setProperty("syncing", true);
 
         //#ifdef __DEBUG
-        jpf.console.info("Start syncing offline changes.")
+        apf.console.info("Start syncing offline changes.")
         //#endif
 
         var syncResources = [],
@@ -509,7 +509,7 @@ jpf.namespace("offline", {
             }
         }
 
-        var fln      = jpf.offline;
+        var fln      = apf.offline;
         var callback = function(extra){
             if (fln.inProcess == fln.STOPPING) {
                 if (!extra.finished && extra.length - 1 != extra.position) {
@@ -545,7 +545,7 @@ jpf.namespace("offline", {
             fln.setProperty("position", syncPos);
             fln.setProperty("length", syncLength);
 
-            fln.dispatchEvent("sync", jpf.extend(extra, {
+            fln.dispatchEvent("sync", apf.extend(extra, {
                 position : syncPos,
                 length   : syncLength
             }));
@@ -557,7 +557,7 @@ jpf.namespace("offline", {
         }
         else {
             //#ifdef __DEBUG
-            jpf.console.info("Nothing to synchronize.")
+            apf.console.info("Nothing to synchronize.")
             //#endif
 
             this.$goOnlineDone(true);
@@ -568,7 +568,7 @@ jpf.namespace("offline", {
             When going online check loadedWhenOffline of
             the multiselect widgets and reload() them
         */
-        var nodes = jpf.all; //@todo maintaining a list is more efficient, is it necesary??
+        var nodes = apf.all; //@todo maintaining a list is more efficient, is it necesary??
         for (i = 0; i < nodes.length; i++) {
             if (nodes[i].loadedWhenOffline)
                 nodes[i].reload();
@@ -583,7 +583,7 @@ jpf.namespace("offline", {
     }
 });
 /*#else
-jpf.offline = {
+apf.offline = {
     onLine : true
 }
 #endif */

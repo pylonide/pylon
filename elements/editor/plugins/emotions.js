@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-jpf.editor.plugin('emotions', function() {
+apf.editor.plugin('emotions', function() {
     this.name        = 'emotions';
     this.icon        = 'emotions';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.colspan     = 4;
     this.emotions    = [];
 
@@ -54,7 +54,7 @@ jpf.editor.plugin('emotions', function() {
                     this.emotions = node.nodeValue.splitSafe(",");
             }
 
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -72,14 +72,14 @@ jpf.editor.plugin('emotions', function() {
     };
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
+        e = new apf.AbstractEvent(e || window.event);
         this.editor.$visualFocus();
         var icon = e.target.getAttribute('rel');
         // @todo still iffy...
         if (!icon || icon == null)
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
         this.editor.insertHTML('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />', true);
         //this.restoreSelection();
@@ -97,7 +97,7 @@ jpf.editor.plugin('emotions', function() {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
-                emotions[i], '" href="javascript:;" onmousedown="jpf.lookup(',
+                emotions[i], '" href="javascript:;" onmousedown="apf.lookup(',
                 this.uniqueId, ').submit(event);">\
                 <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
                 </a>');

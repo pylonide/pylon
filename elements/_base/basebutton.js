@@ -34,7 +34,7 @@
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  */
 
-jpf.BaseButton = function(pHtmlNode){
+apf.BaseButton = function(pHtmlNode){
     var refKeyDown   = 0;     // Number of keys pressed.
     var refMouseDown = 0;     // Mouse button down?
     var mouseOver    = false; // Mouse hovering over the button?
@@ -66,7 +66,7 @@ jpf.BaseButton = function(pHtmlNode){
         var oNode = this.$getLayoutNode("main", "background", this.oExt);
         // #ifdef __DEBUG
         if (!oNode)
-            return jpf.console.warn("No background defined in the Button skin", "button");
+            return apf.console.warn("No background defined in the Button skin", "button");
         /* #else
         if (!oNode) return;
         #endif */
@@ -211,7 +211,7 @@ jpf.BaseButton = function(pHtmlNode){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (this == tEl || jpf.xmldb.isChildOf(this, tEl))
+            if (this == tEl || apf.xmldb.isChildOf(this, tEl))
                 return;
 
             mouseOver    = false;
@@ -221,11 +221,11 @@ jpf.BaseButton = function(pHtmlNode){
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone)
-            jpf.iphone.linkEvents(this.oExt);
+        if (apf.isIphone)
+            apf.iphone.linkEvents(this.oExt);
         // #endif
 
-        if (jpf.hasClickFastBug)
+        if (apf.hasClickFastBug)
             this.oExt.ondblclick = this.oExt.onmouseup;
     };
 

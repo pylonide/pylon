@@ -27,7 +27,7 @@
  * cookies, because they can take up a lot of bandwidth, especially for Ajax
  * applications.
  */
-jpf.setcookie = function(name, value, expire, path, domain, secure){
+apf.setcookie = function(name, value, expire, path, domain, secure){
     var ck = name + "=" + escape(value) + ";";
     if (expire) ck += "expires=" + new Date(expire
         + new Date().getTimezoneOffset() * 60).toGMTString() + ";";
@@ -43,7 +43,7 @@ jpf.setcookie = function(name, value, expire, path, domain, secure){
  * Gets the value of a stored name/value pair called a cookie.
  * @param {String} name the name of the stored cookie.
  */
-jpf.getcookie = function (name){
+apf.getcookie = function (name){
   var aCookie = document.cookie.split("; ");
   for (var i=0; i < aCookie.length; i++) {
       var aCrumb = aCookie[i].split("=");
@@ -58,7 +58,7 @@ jpf.getcookie = function (name){
  * Deletes a stored name/value pair called a cookie.
  * @param {String} name the name of the stored cookie.
  */
-jpf.delcookie = function (name, domain){
+apf.delcookie = function (name, domain){
     document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
         + (domain ? 'domain='+domain : '');
 };

@@ -50,7 +50,7 @@
 /**
  * @private
  */
-jpf.date = (function() {
+apf.date = (function() {
 
 return {
     masks : {
@@ -408,7 +408,7 @@ return {
 
 })();
 
-jpf.date.dateFormat = (function () {
+apf.date.dateFormat = (function () {
     var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
         timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
         timezoneClip = /[^-+\dA-Z]/g,
@@ -421,7 +421,7 @@ jpf.date.dateFormat = (function () {
 
     // Regexes and supporting functions are cached through closure
     return function (date, mask, utc) {
-        var dF = jpf.date;
+        var dF = apf.date;
 
         // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
         if (arguments.length == 1 && (typeof date == "string"
@@ -523,16 +523,16 @@ jpf.date.dateFormat = (function () {
  *     s      seconds, no leading zero for single-digit seconds
  *     ss     seconds, leading zero for single-digit seconds
  */
-jpf.date.getDateTime = function(datetime, format) {
+apf.date.getDateTime = function(datetime, format) {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
     var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC:)(?:[-+]\d{4})?)\b/g;
     var alteration = 0;
     var time, y = new Date().getFullYear(), m = 1, d = 1,
         h = 12, M = 0, s = 0;
-    var i18n = jpf.date.i18n;
+    var i18n = apf.date.i18n;
 
     if (!format) {
-        throw new Error(jpf.formatErrorString(0, null,
+        throw new Error(apf.formatErrorString(0, null,
             "date-format", "Date format is null"));
     }
 
@@ -549,7 +549,7 @@ jpf.date.getDateTime = function(datetime, format) {
             case 'M':
             case 's':
                 if (!/[\/, :\-](d|m|h|H|M|s)$|^(d|m|h|H|M|s)[\/, :\-]|[\/, :\-](d|m|h|H|M|s)[\/, :\-]/.test(format)) {
-                    throw new Error(jpf.formatErrorString(0, null,
+                    throw new Error(apf.formatErrorString(0, null,
                         "date-format", "Dates without leading zero needs separators"));
                 }
 
@@ -607,11 +607,11 @@ jpf.date.getDateTime = function(datetime, format) {
 
 // For convenience...
 Date.prototype.format = function (mask, utc) {
-    return jpf.date.dateFormat(this, mask, utc);
+    return apf.date.dateFormat(this, mask, utc);
 };
 
 Date.parse = function (datetime, format) {
-    return jpf.date.getDateTime(datetime, format);
+    return apf.date.getDateTime(datetime, format);
 };
 
 // #ifdef __WITH_DATE_EXT
@@ -648,10 +648,10 @@ Date.prototype.addSeconds       = function(sec) {
     if (sec < 0)
         return this.subtractSeconds(Math.abs(sec));
 
-    return this.addSpan(new jpf.date.span(sec));
+    return this.addSpan(new apf.date.span(sec));
 };
 Date.prototype.addSpan          = function(span) {
-    if (!(span instanceof jpf.date.span)) return this;
+    if (!(span instanceof apf.date.span)) return this;
     var d;
 
     this.setSeconds(this.getSeconds() + span.seconds);
@@ -664,7 +664,7 @@ Date.prototype.addSpan          = function(span) {
     if (this.getMinutes() >= 60) {
         this.setHours(this.getHours() + 1);
         if (this.getHours() >= 24) {
-            d = jpf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
+            d = apf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
             this.setFullYear(parseInt(d.year), parseInt(d.month), parseInt(d.day));
             this.setHours(this.getHours() - 24);
         }
@@ -673,14 +673,14 @@ Date.prototype.addSpan          = function(span) {
 
     this.setHours(this.getHours() + span.hours);
     if (this.getHours() >= 24) {
-        d = jpf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
+        d = apf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
         this.setFullYear(parseInt(d.year), parseInt(d.month), parseInt(d.day));
         this.setHours(this.getHours() - 24);
     }
 
-    d = jpf.date.dateToDays(this.getDate(), this.getMonth(), this.getFullYear());
+    d = apf.date.dateToDays(this.getDate(), this.getMonth(), this.getFullYear());
     d += span.days;
-    var d2 = jpf.date.daysToDate(d);
+    var d2 = apf.date.daysToDate(d);
 
     this.setFullYear(parseInt(d2.year), parseInt(d2.month), parseInt(d2.day));
     return this;
@@ -692,10 +692,10 @@ Date.prototype.subtractSeconds  = function(sec) {
     if (sec < 0)
         return this.addSeconds(Math.abs(sec));
 
-    return this.subtractSpan(new jpf.date.span(sec));
+    return this.subtractSpan(new apf.date.span(sec));
 };
 Date.prototype.subtractSpan     = function(span) {
-    if (!(span instanceof jpf.date.span)) return this;
+    if (!(span instanceof apf.date.span)) return this;
     var d;
 
     this.setSeconds(this.getSeconds() - span.seconds);
@@ -708,7 +708,7 @@ Date.prototype.subtractSpan     = function(span) {
     if (this.getMinutes() < 0) {
         this.setHours(this.getHours() - 1);
         if (this.getHours() < 0) {
-            d = jpf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
+            d = apf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
             this.setFullYear(parseInt(d.year), parseInt(d.month), parseInt(d.day));
             this.setHours(this.getHours() + 24);
         }
@@ -717,26 +717,26 @@ Date.prototype.subtractSpan     = function(span) {
 
     this.setHours(this.getHours() - span.hours);
     if (this.getHours() < 0) {
-        d = jpf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
+        d = apf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
         this.setFullYear(parseInt(d.year), parseInt(d.month), parseInt(d.day));
         this.setHours(this.getHours() + 24);
     }
 
-    d = jpf.date.dateToDays(this.getDate(), this.getMonth(), this.getFullYear());
+    d = apf.date.dateToDays(this.getDate(), this.getMonth(), this.getFullYear());
     d -= span.days;
-    var d2 = jpf.date.daysToDate(d);
+    var d2 = apf.date.daysToDate(d);
     
     this.setFullYear(parseInt(d2.year), parseInt(d2.month), parseInt(d2.day));
     return this;
 };
 Date.prototype.before           = function(when) {
-    return (jpf.date.compare(this, when) == -1);
+    return (apf.date.compare(this, when) == -1);
 };
 Date.prototype.after            = function(when) {
-    return (jpf.date.compare(this, when) == 1);
+    return (apf.date.compare(this, when) == 1);
 };
 Date.prototype.equals           = function(when) {
-    return (jpf.date.compare(this, when) === 0);
+    return (apf.date.compare(this, when) === 0);
 };
 Date.prototype.isFuture         = function() {
     return this.after(new Date());
@@ -745,42 +745,42 @@ Date.prototype.isPast           = function() {
     return this.before(new Date());
 };
 Date.prototype.isLeapYear       = function() {
-    return jpf.date.isLeapYear(this.getFullYear());
+    return apf.date.isLeapYear(this.getFullYear());
 };
 Date.prototype.getJulianDate    = function() {
-    return jpf.date.julianDate(this.getDate(), this.getMonth(), this.getFullYear());
+    return apf.date.julianDate(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getWeekOfYear    = function() {
     debugger;
-    return jpf.date.weekOfYear(this.getDate(), this.getMonth(), this.getFullYear());
+    return apf.date.weekOfYear(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getQuarterOfYear = function() {
-    return jpf.date.quarterOfYear(this.getMonth());
+    return apf.date.quarterOfYear(this.getMonth());
 };
 Date.prototype.getDaysInMonth   = function() {
-    return jpf.date.daysInMonth(this.getMonth(), this.getFullYear());
+    return apf.date.daysInMonth(this.getMonth(), this.getFullYear());
 };
 Date.prototype.getWeeksInMonth  = function() {
-    return jpf.date.weeksInMonth(this.getMonth(), this.getFullYear());
+    return apf.date.weeksInMonth(this.getMonth(), this.getFullYear());
 };
 Date.prototype.getNextDay       = 
 Date.prototype.getNextWeekday   = function() {
-    var d = jpf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
+    var d = apf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
     return this.copy().setFullYear(d.year, d.month, d.day);
 };
 Date.prototype.getPrevDay       =
 Date.prototype.getPrevWeekday   = function() {
-    var d = jpf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
+    var d = apf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
     return this.copy().setFullYear(d.year, d.month, d.day);
 };
 Date.prototype.getCalendarWeek  = function() {
-    return jpf.date.getCalendarWeek(this.getDate(), this.getMonth(), this.getFullYear());
+    return apf.date.getCalendarWeek(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getCalendarMonth = function() {
-    return jpf.date.getCalendarMonth(this.getMonth(), this.getFullYear());
+    return apf.date.getCalendarMonth(this.getMonth(), this.getFullYear());
 };
 Date.prototype.getCalendarYear = function() {
-    return jpf.date.getCalendarYear(this.getFullYear());
+    return apf.date.getCalendarYear(this.getFullYear());
 };
 // #endif
 

@@ -31,11 +31,11 @@ var __CACHE__ = 1 << 2;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.Cache = function(){
+apf.Cache = function(){
     /* ********************************************************************
                                         PROPERTIES
     *********************************************************************/
@@ -72,7 +72,7 @@ jpf.Cache = function(){
         //#ifdef __WITH_MULTISELECT
         if (xmlNode && this.hasFeature(__MULTISELECT__) && this.isTreeArch) {
             var cacheItem = this.getCacheItemByHtmlId(
-                xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
+                xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.uniqueId);
             if (cacheItem && !cache[id]) {
                 /*
                     Ok so it is, let's borrow it for a while
@@ -83,7 +83,7 @@ jpf.Cache = function(){
                 this.clear(true);
 
                 var oHtml = this.getNodeFromCache(
-                    xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
+                    xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                 /**
                  * @private
                  */
@@ -94,7 +94,7 @@ jpf.Cache = function(){
                     cacheItem  : cacheItem
                 };
 
-                this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
+                this.documentId = apf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
                 this.xmlRoot    = xmlNode;
 
@@ -181,7 +181,7 @@ jpf.Cache = function(){
     this.getNodeByXml = function(xmlNode){
         return xmlNode
             ? (this.getNodeFromCache((typeof xmlNode == "object"
-                ? xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
+                ? xmlNode.getAttribute(apf.xmldb.xmlIdTag)
                 : xmlNode) + "|" + this.uniqueId))
             : null;
     };
@@ -285,8 +285,8 @@ jpf.Cache = function(){
             this.$removeClearMessage();
 
         if (this.caching && (this.cacheID || this.xmlRoot))
-            this.setCache(this.cacheID || this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
-                + this.xmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
+            this.setCache(this.cacheID || this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag) || "doc"
+                + this.xmlRoot.getAttribute(apf.xmldb.xmlDocTag), fragment);
 
         this.documentId = this.xmlRoot = this.cacheID = null;
 
@@ -324,7 +324,7 @@ jpf.Cache = function(){
         cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
 
         if (remove)
-            jpf.removeNode(cache[id]);
+            apf.removeNode(cache[id]);
 
         cache[id] = null;
     };
@@ -376,7 +376,7 @@ jpf.Cache = function(){
 
     // #ifdef __WITH_MULTISELECT
     if (this.hasFeature(__MULTISELECT__))
-        this.implement(jpf.MultiselectCache);
+        this.implement(apf.MultiselectCache);
     // #endif
 
     this.$jmlDestroyers.push(function(){
@@ -391,7 +391,7 @@ jpf.Cache = function(){
  * @constructor
  * @private
  */
-jpf.MultiselectCache = function(){
+apf.MultiselectCache = function(){
     this.$getCurrentFragment = function(){
         var fragment = this.oInt.ownerDocument.createDocumentFragment();
 
@@ -405,7 +405,7 @@ jpf.MultiselectCache = function(){
     this.$setCurrentFragment = function(fragment){
         this.oInt.appendChild(fragment);
 
-        if (!jpf.window.hasFocus(this))
+        if (!apf.window.hasFocus(this))
             this.blur();
     };
 
@@ -424,7 +424,7 @@ jpf.MultiselectCache = function(){
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
 
-            oEmpty = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
+            oEmpty = apf.xmldb.htmlImport(xmlEmpty, this.oInt);
         }
         else {
             this.oInt.appendChild(oEmpty);
@@ -433,10 +433,10 @@ jpf.MultiselectCache = function(){
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
 
         if (empty)
-            jpf.xmldb.setNodeValue(empty, msg || "");
+            apf.xmldb.setNodeValue(empty, msg || "");
 
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
-        jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
+        apf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
     };
 
     this.$updateClearMessage = function(msg, className) {
@@ -446,7 +446,7 @@ jpf.MultiselectCache = function(){
 
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
-            jpf.xmldb.setNodeValue(empty, msg || "");
+            apf.xmldb.setNodeValue(empty, msg || "");
     }
 
     this.$removeClearMessage = function(){

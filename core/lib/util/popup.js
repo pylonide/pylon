@@ -24,7 +24,7 @@
 /**
  * @private
  */
-jpf.popup = {
+apf.popup = {
     cache      : {},
     focusFix   : {"INPUT":1,"TEXTAREA":1,"SELECT":1},
     
@@ -39,15 +39,15 @@ jpf.popup = {
         };
         content.style.position = "absolute";
         //if(content.parentNode) content.parentNode.removeChild(content);
-        //if(style) jpf.importCssString(this.popup.document, style);
+        //if(style) apf.importCssString(this.popup.document, style);
         
         content.onmousedown  = function(e) {
             if (!e) e = event;
 
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug 
-              && !jpf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                jpf.window.$focusfix();
+            if (apf.hasFocusBug 
+              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
+                apf.window.$focusfix();
             }
             //#endif
             
@@ -66,14 +66,14 @@ jpf.popup = {
         //consider using iframe
         this.popup = {};
         
-        jpf.addEventListener("hotkey", function(e){
+        apf.addEventListener("hotkey", function(e){
             if (e.keyCode == "27" || e.altKey) 
-                jpf.popup.forceHide();
+                apf.popup.forceHide();
         });
     },
     
     show : function(cacheId, options){
-        options = jpf.extend({
+        options = apf.extend({
             x            : 0,
             y            : 0,
             animate      : false,
@@ -103,11 +103,11 @@ jpf.popup = {
             o.content.style.display = "";
 
         if (options.ref) {
-            var pos    = jpf.getAbsolutePosition(options.ref, 
+            var pos    = apf.getAbsolutePosition(options.ref, 
                             o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
                 top    = (options.y || 0) + pos[1],
-                    //+ (jpf.isSafari ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
-                p      = jpf.getOverflowParent(o.content);
+                    //+ (apf.isSafari ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
+                p      = apf.getOverflowParent(o.content);
         
             if (options.width || o.width)
                 popup.style.width = ((options.width || o.width) - 3) + "px";
@@ -115,7 +115,7 @@ jpf.popup = {
             moveUp = options.autoCorrect && (top
                 + (options.height || o.height || o.content.offsetHeight))
                 > (p == document.documentElement
-                  ? (jpf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
+                  ? (apf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
                   : p.offsetHeight + p.scrollTop);
 
             popup.style.top = (moveUp 
@@ -127,21 +127,21 @@ jpf.popup = {
         // #ifdef __WITH_CSS
         // set a className that specifies the direction, to help skins with
         // specific styling options.
-        jpf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
+        apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
         // #endif
         
         if (options.animate) {
             if (options.animate == "fade") {
-                jpf.tween.single(popup, {
+                apf.tween.single(popup, {
                     type  : 'fade',
                     from  : 0,
                     to    : 1,
-                    anim  : jpf.tween.NORMAL,
-                    steps : jpf.isIE ? 5 : 10
+                    anim  : apf.tween.NORMAL,
+                    steps : apf.isIE ? 5 : 10
                 });
             }
             else {
-                var iVal, steps = jpf.isIE8 ? 5 : 7, i = 0;
+                var iVal, steps = apf.isIE8 ? 5 : 7, i = 0;
                 
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
@@ -171,7 +171,7 @@ jpf.popup = {
         }
 
         setTimeout(function(){
-            jpf.popup.last = cacheId;
+            apf.popup.last = cacheId;
         });
 
         if (options.draggable) {
@@ -189,7 +189,7 @@ jpf.popup = {
                 o.content.style.display = "none";
 
             if (o.options.onclose) {
-                o.options.onclose(jpf.extend(o.options, {htmlNode: o.content}));
+                o.options.onclose(apf.extend(o.options, {htmlNode: o.content}));
                 o.options.onclose = false;
             }
         }
@@ -204,7 +204,7 @@ jpf.popup = {
     isDragging   : false,
 
     makeDraggable: function(options) {
-        if (!jpf.Interactive || this.cache[options.id].draggable) 
+        if (!apf.Interactive || this.cache[options.id].draggable) 
             return;
 
         var oHtml = this.cache[options.id].content;
@@ -228,16 +228,16 @@ jpf.popup = {
             if (!e) e = event;
             
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug
-              && !jpf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                jpf.window.$focusfix();
+            if (apf.hasFocusBug
+              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
+                apf.window.$focusfix();
             }
             //#endif
             
             (e || event).cancelBubble = true;
         }
 
-        jpf.implement.call(o, jpf.Interactive);
+        apf.implement.call(o, apf.Interactive);
 
         o.$propHandlers["draggable"].call(o, true);
         o.$propHandlers["resizable"].call(o, true);
@@ -246,10 +246,10 @@ jpf.popup = {
     forceHide : function(){
         if (this.last 
             //#ifdef __WITH_PLANE
-            && !jpf.plane.current
+            && !apf.plane.current
             //#endif
             && this.isShowing(this.last)) {
-            var o = jpf.lookup(this.last);
+            var o = apf.lookup(this.last);
             if (!o)
                 this.last = null;
                 
@@ -262,7 +262,7 @@ jpf.popup = {
         for (var cacheId in this.cache) {
             if (this.cache[cacheId]) {
                 this.cache[cacheId].content.onmousedown = null;
-                jpf.removeNode(this.cache[cacheId].content);
+                apf.removeNode(this.cache[cacheId].content);
                 this.cache[cacheId].content = null;
                 this.cache[cacheId] = null;
             }

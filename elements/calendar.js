@@ -65,17 +65,17 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
  *
  */
-jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     /**** Properties and Attributes ****/
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
@@ -160,7 +160,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //#ifdef __DEBUG
         if (!date) {
-            throw new Error(jpf.formErrorString(this, "Parsing date",
+            throw new Error(apf.formErrorString(this, "Parsing date",
                 "Invalid date: " + value));
         }
         //#endif
@@ -281,40 +281,40 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
     this.$getMargin = function(oHtml) {
-        if (jpf.isIE) {
+        if (apf.isIE) {
             return [
-                (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0)
-                + (parseInt(jpf.getStyle(oHtml, "marginLeft")) || 0),
-                (parseInt(jpf.getStyle(oHtml, "marginTop")) || 0)
-                + (parseInt(jpf.getStyle(oHtml, "marginBottom")) || 0)
+                (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
+                + (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0),
+                (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
+                + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
             ];
         }
         else {
             return [
-                parseInt(jpf.getStyle(oHtml, "margin-right") || 0)
-                + parseInt(jpf.getStyle(oHtml, "margin-left") || 0),
-                parseInt(jpf.getStyle(oHtml, "margin-top") || 0)
-                + parseInt(jpf.getStyle(oHtml, "margin-bottom") || 0)
+                parseInt(apf.getStyle(oHtml, "margin-right") || 0)
+                + parseInt(apf.getStyle(oHtml, "margin-left") || 0),
+                parseInt(apf.getStyle(oHtml, "margin-top") || 0)
+                + parseInt(apf.getStyle(oHtml, "margin-bottom") || 0)
             ];
         }
     };
     
     this.$getFontSize = function(oHtml) {
-        return jpf.isIE
-            ? parseInt(jpf.getStyle(oHtml, "fontSize"))
-            : parseInt(jpf.getStyle(oHtml, "font-size"));
+        return apf.isIE
+            ? parseInt(apf.getStyle(oHtml, "fontSize"))
+            : parseInt(apf.getStyle(oHtml, "font-size"));
     }
     
     this.$getPadding = function(oHtml) {
-        return jpf.isIE
-            ? [parseInt(jpf.getStyle(oHtml, "paddingLeft"))
-               + parseInt(jpf.getStyle(oHtml, "paddingRight")),
-              parseInt(jpf.getStyle(oHtml, "paddingTop"))
-               + parseInt(jpf.getStyle(oHtml, "paddingBottom"))]
-            : [parseInt(jpf.getStyle(oHtml, "padding-left"))
-               + parseInt(jpf.getStyle(oHtml, "padding-right")),
-              parseInt(jpf.getStyle(oHtml, "padding-top")) 
-               + parseInt(jpf.getStyle(oHtml, "padding-bottom"))];
+        return apf.isIE
+            ? [parseInt(apf.getStyle(oHtml, "paddingLeft"))
+               + parseInt(apf.getStyle(oHtml, "paddingRight")),
+              parseInt(apf.getStyle(oHtml, "paddingTop"))
+               + parseInt(apf.getStyle(oHtml, "paddingBottom"))]
+            : [parseInt(apf.getStyle(oHtml, "padding-left"))
+               + parseInt(apf.getStyle(oHtml, "padding-right")),
+              parseInt(apf.getStyle(oHtml, "padding-top")) 
+               + parseInt(apf.getStyle(oHtml, "padding-bottom"))];
     }
 
     this.redraw = function(month, year) {
@@ -348,7 +348,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         var nextMonthDays = 1;
         /* Calculations - end */
 
-        var ctDiff = jpf.getDiff(this.oExt);
+        var ctDiff = apf.getDiff(this.oExt);
         _width = (this.width || this.oExt.offsetWidth) - ctDiff[0];
 
         /* Navigation buttons */
@@ -376,7 +376,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         var cWidthf, pl;
         for (var i = 0, z = 0, y = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") > -1) {
-                var rDiff = jpf.getDiff(rows[i]);
+                var rDiff = apf.getDiff(rows[i]);
                 var rDiff2 = this.$getMargin(rows[i]);
                 var rWidth = _width - rDiff[0] - rDiff2[0];
 
@@ -386,7 +386,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     if ((cells[j].className || "").indexOf("cell") > -1) {
 
                         if (!inited)  {
-                            var cDiff = jpf.getDiff(cells[j]);
+                            var cDiff = apf.getDiff(cells[j]);
                             var cDiff2 = this.$getMargin(cells[j]);
     
                             cWidthf = Math.floor(rWidth / 8)
@@ -593,13 +593,13 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                         oCell.setAttribute("onmouseover",
                             "if (this.className.indexOf('disabled') > -1 "
                             + "|| this.className.indexOf('active') > -1) "
-                            + "return; jpf.lookup(" + this.uniqueId 
+                            + "return; apf.lookup(" + this.uniqueId 
                             + ").$setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmouseout", 
-                            "var o = jpf.lookup(" + this.uniqueId 
+                            "var o = apf.lookup(" + this.uniqueId 
                             + ").$setStyleClass(this, '', ['hover']);");
                         oCell.setAttribute("onmousedown", 
-                            "var o = jpf.lookup(" + this.uniqueId + ");"
+                            "var o = apf.lookup(" + this.uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
                             + "o.selectDay(this.innerHTML, 'prev');}"
                             + " else if (this.className.indexOf('next') > -1) {"
@@ -620,7 +620,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
                     if (buttons[i] !== "status")
-                        btn.setAttribute("onmousedown", 'jpf.lookup('
+                        btn.setAttribute("onmousedown", 'apf.lookup('
                                          + this.uniqueId + ').'
                                          + buttons[i] + '()');
                 }
@@ -664,21 +664,21 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     
     this.$destroy = function() {
-        jpf.popup.removeContent(this.uniqueId);
-        jpf.removeNode(this.oExt);
+        apf.popup.removeContent(this.uniqueId);
+        apf.removeNode(this.oExt);
         this.oCalendar = null;
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
     //#ifdef __WITH_VALIDATION
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

@@ -45,9 +45,9 @@
  *
  * @default_private
  */
-jpf.namespace("offline.detector", {
+apf.namespace("offline.detector", {
     //#ifndef __PACKED
-    detectUrl : jpf.basePath + "core/lib/offline/network_check.txt",
+    detectUrl : apf.basePath + "core/lib/offline/network_check.txt",
     /* #else
     detectUrl : "network_check.txt",
     #endif */
@@ -60,11 +60,11 @@ jpf.namespace("offline.detector", {
                 this.detectUrl = jml.getAttribute("detect-url");
             /* #ifdef __PACKAGED
             else
-                this.detectUrl = (jpf.appsettings.resourcePath || jpf.basePath)
+                this.detectUrl = (apf.appsettings.resourcePath || apf.basePath)
                     + "resources/network_check.txt";
             #endif */
 
-            this.detection = jpf.isTrue(jml.getAttribute("detection"))
+            this.detection = apf.isTrue(jml.getAttribute("detection"))
                 ? "auto"
                 : jml.getAttribute("detection") || "auto";
 
@@ -73,16 +73,16 @@ jpf.namespace("offline.detector", {
         }
 
         if ("error|auto".indexOf(this.detection) > -1) {
-            jpf.addEventListener("error", function(e){
+            apf.addEventListener("error", function(e){
                 //Timeout detected.. Network is probably gone
-                if (e.state == jpf.TIMEOUT) {
+                if (e.state == apf.TIMEOUT) {
                     //Let's try to go offline and return false to cancel the error
-                    return !jpf.offline.goOffline();//callback //@todo callback???
+                    return !apf.offline.goOffline();//callback //@todo callback???
                 }
             });
         }
 
-        this.oHttp = new jpf.http();
+        this.oHttp = new apf.http();
         this.oHttp.timeout = this.interval;
 
         //Check if we have connection right now
@@ -93,13 +93,13 @@ jpf.namespace("offline.detector", {
     },
 
     isSiteAvailable : function(callback){
-        this.oHttp.get(jpf.getNoCacheUrl(this.detectUrl),
+        this.oHttp.get(apf.getNoCacheUrl(this.detectUrl),
             function(data, state, extra){
-                if(state != jpf.SUCCESS || !window.navigator.onLine){
-                    jpf.offline.goOffline(callback); //retry here??
+                if(state != apf.SUCCESS || !window.navigator.onLine){
+                    apf.offline.goOffline(callback); //retry here??
                 }
                 else{
-                    jpf.offline.goOnline(callback);
+                    apf.offline.goOnline(callback);
                 }
             }, {
                 ignoreOffline  : true,
@@ -114,7 +114,7 @@ jpf.namespace("offline.detector", {
         clearInterval(this.timer);
 
         //#ifdef __DEBUG
-        jpf.console.info("Automatic detection of network state is activated");
+        apf.console.info("Automatic detection of network state is activated");
         //#endif
 
         var _self = this;
@@ -130,7 +130,7 @@ jpf.namespace("offline.detector", {
         clearInterval(this.timer);
 
         //#ifdef __DEBUG
-        jpf.console.info("Detection of network state is deactivated");
+        apf.console.info("Detection of network state is deactivated");
         //#endif
     }
 });

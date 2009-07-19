@@ -28,7 +28,7 @@
  * json in return. This protocol was originally designed to make use of the 
  * native unserializer methods on both sides of the line.
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="jphp">
@@ -55,18 +55,18 @@
  *
  * @addenum rpc[@protocol]:jphp
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @inherits jpf.rpc
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @inherits apf.rpc
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @default_private
  */
-jpf.jphp = function(){
+apf.jphp = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "multicall";
@@ -75,12 +75,12 @@ jpf.jphp = function(){
     this.namedArguments   = false;
     
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
-        jpf.makeClass(this);
-        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
+        apf.makeClass(this);
+        this.implement(apf.BaseComm, apf.http, apf.rpc);
     }
     
     // Serialize Objects
@@ -150,7 +150,7 @@ jpf.jphp = function(){
             throw new Error("Cannot Parse functions");
         }
         else 
-            if (jpf.isNot(args)) 
+            if (apf.isNot(args)) 
                 return serialize["boolean"](false);
         
         return serialize[args.dataType || "object"](args);

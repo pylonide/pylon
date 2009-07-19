@@ -27,13 +27,13 @@
  * native XMLHttpRequest object isn't available. It fall backs on an iframe for
  * it's communication
  */
-jpf.USEIFRAME = false;
+apf.USEIFRAME = false;
 function runTpIframe(){
     function XMLHttpRequest(){
-        this.uniqueId = jpf.all.push(this);
+        this.uniqueId = apf.all.push(this);
         var _self     = this;
         
-        if (jpf.USEIFRAME) {
+        if (apf.USEIFRAME) {
             this.iframe = document.body.appendChild(document.createElement("iframe"));
             //this.iframe.style.display = "none";
             this.iframe.style.width  = "400px";
@@ -62,7 +62,7 @@ function runTpIframe(){
         
         this.send = function(){
             this.done = false;
-            if (jpf.USEIFRAME) 
+            if (apf.USEIFRAME) 
                 this.iframe.src = this.url;
             else 
                 this.xmlDocument.load(this.url);
@@ -73,9 +73,9 @@ function runTpIframe(){
             this.url      = url;
             this.async    = async;
             
-            if (jpf.USEIFRAME) {
+            if (apf.USEIFRAME) {
                 if (!async) 
-                    throw new Error(jpf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
+                    throw new Error(apf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
                 this.iframe.onload = stateChangeHandlerIframe;
                 //onreadystatechange
                 //onerror
@@ -87,7 +87,7 @@ function runTpIframe(){
         }
         
         this.abort = function(){
-            if (jpf.USEIFRAME) {
+            if (apf.USEIFRAME) {
                 this.iframe.onreadystatechange = null;
                 this.iframe.src = "about:blank";
                 _self.done = false;
@@ -127,7 +127,7 @@ function runTpIframe(){
             strXml     = strXml.replace(/^- /gm, "");
             
             try {
-                this.responseXML = jpf.getXmlDom(strXml);
+                this.responseXML = apf.getXmlDom(strXml);
                 this.responseXML.setProperty("SelectionLanguage", "XPath");
                 this.responseXML.loadXML(strXml);
             }
@@ -152,11 +152,11 @@ function runTpIframe(){
         if (message) 
             xmlParser.loadXML(message);
         if (!no_error) 
-            jpf.xmlParseError(xmlParser);
+            apf.xmlParseError(xmlParser);
         
         return xmlParser;
     }
 }
 
 // #endif
-jpf.Init.run('XmlDatabase');
+apf.Init.run('XmlDatabase');

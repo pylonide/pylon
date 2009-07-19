@@ -26,9 +26,9 @@
  *
  * @param {mixed} obj the object to investigate
  */
-jpf.dump=
-jpf.vardump = function(obj, depth, norecur, stack){
-    if (jpf.isChrome || jpf.isSafari) //@todo RIK please fix this issue.
+apf.dump=
+apf.vardump = function(obj, depth, norecur, stack){
+    if (apf.isChrome || apf.isSafari) //@todo RIK please fix this issue.
         return "";
     
     if (!obj) return obj + "";
@@ -54,7 +54,7 @@ jpf.vardump = function(obj, depth, norecur, stack){
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
                     (norecur && depth > 0 ? "{/*"+typeof(obj[i])+"*/}" :
-                    jpf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
+                    apf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -82,7 +82,7 @@ jpf.vardump = function(obj, depth, norecur, stack){
                     if(str.length>1)str.push(",\n");
                     str.push( "\t".repeat(depth+1), propname, ": ",
                       (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
-                        jpf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
+                        apf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
                 } catch(e) {
                     str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
                 }
@@ -114,8 +114,8 @@ String.prototype.s = function(){
  *
  * @param {mixed} obj the object to investigate
  */
-jpf.alert_r = function(obj, recur){
-    alert(jpf.vardump(obj, null, !recur));
+apf.alert_r = function(obj, recur){
+    alert(apf.vardump(obj, null, !recur));
 }
 
 /**
@@ -124,7 +124,7 @@ jpf.alert_r = function(obj, recur){
  * @param {Boolean} nostart whether the profiler should start measuring at creation.
  * @constructor
  */
-jpf.ProfilerClass = function(nostart){
+apf.ProfilerClass = function(nostart){
     this.totalTime = 0;
 
     /**
@@ -155,7 +155,7 @@ jpf.ProfilerClass = function(nostart){
      */
     this.addPoint = function(msg){
         this.end();
-        jpf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
+        apf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
         this.start(true);
     }
 
@@ -163,6 +163,6 @@ jpf.ProfilerClass = function(nostart){
         this.start();
 };
 
-jpf.Latometer      = new jpf.ProfilerClass(true);//backward compatibility
+apf.Latometer      = new apf.ProfilerClass(true);//backward compatibility
 
 // #endif

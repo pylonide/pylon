@@ -51,16 +51,16 @@ var __ALIGNMENT__ = 1 << 12;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @default_private
  */
-jpf.Alignment = function(){
+apf.Alignment = function(){
     this.$regbase = this.$regbase | __ALIGNMENT__;
 
-    var l = jpf.layout;
+    var l = apf.layout;
 
     if (typeof this.dock == "undefined")
         this.dock = false;
@@ -109,12 +109,12 @@ jpf.Alignment = function(){
             && !this.parentNode.pData;
 
         var layout = l.get(this.pHtmlNode, buildParent
-            ? jpf.getBox(this.parentNode.margin || this.pHtmlNode.getAttribute("margin") || "")
+            ? apf.getBox(this.parentNode.margin || this.pHtmlNode.getAttribute("margin") || "")
             : null);
 
         if (buildParent) {
             this.parentNode.pData = l.parseXml(
-                this.parentNode.$jml || jpf.getXml("<vbox />"),
+                this.parentNode.$jml || apf.getXml("<vbox />"),
                 layout, "vbox", true);
 
             layout.root = this.parentNode.pData;
@@ -130,7 +130,7 @@ jpf.Alignment = function(){
             if (this.aData.hidden || this.$jml.getAttribute("visible") == "false")
                 this.aData.prehide(true);
 
-            if (!jpf.isParsing || jpf.parsingFinalPass) //buildParent &&
+            if (!apf.isParsing || apf.parsingFinalPass) //buildParent &&
                 this.purgeAlignment();
         }
         else

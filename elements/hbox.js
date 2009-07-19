@@ -42,18 +42,18 @@
  *  </j:hbox>
  * </code>
  * Remarks:
- * The layouting engine of Javeline PlatForm lets you store layouts and set them
+ * The layouting engine of Ajax.org Platform lets you store layouts and set them
  * dynamically. It's very easy to make a layout manager this way. For more 
  * information see {@link object.layout}
  * @addnode elements
  * @constructor
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.hbox = 
-jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.hbox = 
+apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -79,7 +79,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             return;
         
         if (!jmlNode.hasFeature(__ALIGNMENT__)) {
-            jmlNode.implement(jpf.Alignment);
+            jmlNode.implement(apf.Alignment);
             if (jmlNode.hasFeature(__ANCHORING__))
                 jmlNode.disableAnchoring();
         }
@@ -118,39 +118,39 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             var x = this.$jml;
             
             this.oInt = 
-            this.oExt = false && jpf.isParsing && jpf.xmldb.isOnlyChild(x)
+            this.oExt = false && apf.isParsing && apf.xmldb.isOnlyChild(x)
                 ? this.pHtmlNode 
                 : this.pHtmlNode.appendChild(document.createElement("div"));
            
-            if ("absolute|relative".indexOf(jpf.getStyle(this.oInt, "position")) == -1)
+            if ("absolute|relative".indexOf(apf.getStyle(this.oInt, "position")) == -1)
                 this.oInt.style.position = "relative";
             this.oInt.style.overflow = "hidden";
             
-            this.implement(jpf.Anchoring); /** @inherits jpf.Anchoring */
+            this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
             this.enableAnchoring();
         }
     }
     
     this.$loadJml = function(x){
-        var l = jpf.layout.get(this.oInt || this.pHtmlNode, jpf.getBox(this.margin || ""));
-        var aData = jpf.layout.parseXml(x, l, null, true);
+        var l = apf.layout.get(this.oInt || this.pHtmlNode, apf.getBox(this.margin || ""));
+        var aData = apf.layout.parseXml(x, l, null, true);
         
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
             
-            jpf.JmlParser.parseChildren(x, this.oInt, this);
+            apf.JmlParser.parseChildren(x, this.oInt, this);
             
-            if (this.pData.children.length && !jpf.isParsing) 
-                jpf.layout.compileAlignment(this.pData);
-            //if(jpf.JmlParser.loaded) 
-            //jpf.layout.activateRules(this.oInt);
+            if (this.pData.children.length && !apf.isParsing) 
+                apf.layout.compileAlignment(this.pData);
+            //if(apf.JmlParser.loaded) 
+            //apf.layout.activateRules(this.oInt);
             
             //#ifdef __WITH_PROPERTY_WATCH
             if (!this.oInt.offsetHeight) {
                 function propChange(name, old, value){
-                    if (jpf.isTrue(value) && _self.oExt.offsetHeight) {
-                        jpf.layout.forceResize(_self.oInt);
+                    if (apf.isTrue(value) && _self.oExt.offsetHeight) {
+                        apf.layout.forceResize(_self.oInt);
                         
                         var p = _self;
                         while (p) {
@@ -180,7 +180,7 @@ jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
             this.aData.stackId = pData.children.push(this.aData) - 1;
             this.aData.parent  = pData;
             
-            jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
+            apf.JmlParser.parseChildren(x, this.pHtmlNode, this);
         }
     };
 });

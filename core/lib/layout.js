@@ -76,11 +76,11 @@
  *    model          = "mdlLayouts"
  *    allowdeselect  = "false"
  *    onafterselect  = "
- *      if(!this.selected || jpf.layout.isLoadedXml(this.selected))
+ *      if(!this.selected || apf.layout.isLoadedXml(this.selected))
  *          return;
  *
- *      jpf.layout.saveXml();
- *      jpf.layout.loadXml(this.selected);
+ *      apf.layout.saveXml();
+ *      apf.layout.loadXml(this.selected);
  *    "
  *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
  *      <j:bindings>
@@ -98,11 +98,11 @@
  *      if (!lstLayouts.selected)
  *          return;
  *
- *      var newLayout = jpf.layout.getXml(document.body);
+ *      var newLayout = apf.layout.getXml(document.body);
  *      newLayout.setAttribute("name", "New");
- *      jpf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
+ *      apf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
  *      lstLayouts.select(newLayout, null, null, null, null, true);
- *      jpf.layout.loadXml(newLayout);
+ *      apf.layout.loadXml(newLayout);
  *      lstLayouts.startRename();
  *    ">
  *      Add Layout
@@ -112,16 +112,16 @@
  * @default_private
  * @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
  */
-jpf.layout = {
+apf.layout = {
     // #ifdef __WITH_ALIGNMENT
     layouts : {},
 
     addParent : function(oHtml, pMargin){
         if (!oHtml.getAttribute("id"))
-            jpf.setUniqueHtmlId(oHtml);
+            apf.setUniqueHtmlId(oHtml);
 
         return this.layouts[oHtml.getAttribute("id")] = {
-            layout   : new jpf.layoutParser(oHtml, pMargin),
+            layout   : new apf.layoutParser(oHtml, pMargin),
             controls : []
         };
     },
@@ -141,11 +141,11 @@ jpf.layout = {
             var splitter = this.freesplitters.pop();
         }
         else {
-            var splitter = new jpf.splitter();//this.parentNode
-            var o = jpf.findHost(layout.parentNode) || jpf.JmlParser;
+            var splitter = new apf.splitter();//this.parentNode
+            var o = apf.findHost(layout.parentNode) || apf.JmlParser;
             //splitter.parentNode = o;
             //o.childNodes.push(splitter); //@todo hack
-            splitter.skinset = jpf.xmldb.getInheritedAttribute(o.$jml, "skinset"); //@todo use skinset here. Has to be set in presentation
+            splitter.skinset = apf.xmldb.getInheritedAttribute(o.$jml, "skinset"); //@todo use skinset here. Has to be set in presentation
             splitter.$loadSkin();
             splitter.$draw();
         }
@@ -189,7 +189,7 @@ jpf.layout = {
 
         //#ifdef __DEBUG
         if (!jmlNode) {
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Loading Alignment from XML",
                 "Could not find JML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
@@ -206,7 +206,7 @@ jpf.layout = {
      * Loads a layout using a data instruction.
      * Example:
      * <code>
-     *  jpf.layout.loadFrom("mdlLayout:layout[1]");
+     *  apf.layout.loadFrom("mdlLayout:layout[1]");
      * </code>
      * Remarks:
      * The jml elements referenced in the layout definition should exist when
@@ -214,13 +214,13 @@ jpf.layout = {
      * @param {String} instruction the {@link term.datainstruction data instruction} specifying where to load the data from.
      */
     loadFrom : function(instruction){
-        jpf.setModel(instruction, {
+        apf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) return;
 
                 //#ifdef __DEBUG
                 if (!xmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null,
+                    throw new Error(apf.formatErrorString(0, null,
                         "Loading default layout",
                         "Could not find default layout using processing \
                          instruction: '" + instruction + "'"));
@@ -229,13 +229,13 @@ jpf.layout = {
                 }
                 //#endif
 
-                jpf.layout.loadXml(xmlNode);
+                apf.layout.loadXml(xmlNode);
                 this.isLoaded = true;
             },
 
             setModel: function(model, xpath){
                 if (typeof model == "string")
-                    model = jpf.nameserver.get("model", model);
+                    model = apf.nameserver.get("model", model);
                 model.register(this, xpath);
             }
         });
@@ -257,7 +257,7 @@ jpf.layout = {
 
         //#ifdef __DEBUG
         if(!jmlNode) {
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Loading Alignment from XML",
                 "Could not find JML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
@@ -265,7 +265,7 @@ jpf.layout = {
         //#endif
 
         var pNode   = jmlNode.oExt.parentNode;
-        var layout  = this.get(pNode, jpf.getBox(xmlNode.getAttribute("margin") || ""));
+        var layout  = this.get(pNode, apf.getBox(xmlNode.getAttribute("margin") || ""));
         var pId     = this.getHtmlId(pNode);
 
         this.metadata = [];
@@ -278,7 +278,7 @@ jpf.layout = {
         }
 
         this.compile(pNode);
-        if (jpf.JmlParser.inited)
+        if (apf.JmlParser.inited)
             this.activateRules(pNode);
 
         this.loadedXml[pId] = xmlNode;
@@ -305,7 +305,7 @@ jpf.layout = {
 
             //#ifdef __DEBUG
             toString    : function(){
-                var me = jpf.vardump(this, null, false);
+                var me = apf.vardump(this, null, false);
                 for (var i = 0; i < this.children.length; i++) {
                     me += "\n{Child " + i + "\n===========\n"
                           + this.children[i].toString() + "}";
@@ -316,7 +316,7 @@ jpf.layout = {
             //#endif
 
             copy : function(){
-                var copy = jpf.extend({}, this);
+                var copy = apf.extend({}, this);
                 //#ifdef __DEBUG
                 copy.toString = this.toString;
                 //#endif
@@ -341,7 +341,7 @@ jpf.layout = {
             },
 
             setFloat : function(){
-                var diff = jpf.getDiff(this.oHtml);
+                var diff = apf.getDiff(this.oHtml);
 
                 this.oHtml.style.width = (this.size[0]-diff[0]) + "px";
                 if (this.state < 0)
@@ -351,7 +351,7 @@ jpf.layout = {
                 this.hidden = 3;
 
                 if (this.hid) {
-                    var jmlNode = jpf.lookup(this.hid);
+                    var jmlNode = apf.lookup(this.hid);
                     if (jmlNode.syncAlignment)
                         jmlNode.syncAlignment(this);
                 }
@@ -390,7 +390,7 @@ jpf.layout = {
                 if (this.hidden == 3) {
                     this.hidden = true;
                     if (this.hid)
-                        jpf.lookup(this.hid).visible = false;
+                        apf.lookup(this.hid).visible = false;
                     if (this.oHtml)
                         this.oHtml.style.display = "none";
                     return;
@@ -416,7 +416,7 @@ jpf.layout = {
                     nodes = this.parent[sets.pop()];
                     for (i = 0, l = nodes.length; i < l; i++) {
                         child = nodes[i];
-                        if (child != this && !child.hidden) { // || jpf.layout.dlist.contains(child)
+                        if (child != this && !child.hidden) { // || apf.layout.dlist.contains(child)
                             c = 1;
                             break;
                         }
@@ -428,12 +428,12 @@ jpf.layout = {
                 if (adminOnly)
                     return this.hide(true);
                 
-                if (jpf.layout.dlist.contains(this)) {
-                    jpf.layout.dlist.remove(this);
+                if (apf.layout.dlist.contains(this)) {
+                    apf.layout.dlist.remove(this);
                     return false;
                 }
                 else
-                    jpf.layout.dlist.pushUnique(this);
+                    apf.layout.dlist.pushUnique(this);
             },
             preshow : function(adminOnly){
                 if (!this.hidden)
@@ -445,15 +445,15 @@ jpf.layout = {
                     return this.show(true);
 
                 //Check if parent is shown
-                if (this.parent.hidden) // || jpf.layout.dlist.contains(this.parent) @todo please make hidden a 4 state property
+                if (this.parent.hidden) // || apf.layout.dlist.contains(this.parent) @todo please make hidden a 4 state property
                     this.parent.preshow();
 
-                if (jpf.layout.dlist.contains(this)) {
-                    jpf.layout.dlist.remove(this);
+                if (apf.layout.dlist.contains(this)) {
+                    apf.layout.dlist.remove(this);
                     return false;
                 }
                 else
-                    jpf.layout.dlist.pushUnique(this);
+                    apf.layout.dlist.pushUnique(this);
             },
 
             hide : function(adminOnly){
@@ -471,7 +471,7 @@ jpf.layout = {
 
                 if (this.hidden != 3) {
                     if (this.hid)
-                        jpf.lookup(this.hid).visible = false;
+                        apf.lookup(this.hid).visible = false;
                     if (this.oHtml)
                         this.oHtml.style.display = "none";
                 }
@@ -481,14 +481,14 @@ jpf.layout = {
                 //Check if position is still available
                 var nodes = this.parent.children;
                 if (this.hidepos.prev && this.hidepos.prev.parent == this.parent
-                  && !this.hidepos.prev.hidden && !jpf.layout.dlist.contains(this.hidepos.prev)) { //@todo please make hidden a 4 state property
+                  && !this.hidepos.prev.hidden && !apf.layout.dlist.contains(this.hidepos.prev)) { //@todo please make hidden a 4 state property
                     if (nodes.length < this.hidepos.prev.stackId+ 1 )
                         nodes.push(this);
                     else
                         nodes.insertIndex(this, this.hidepos.prev.stackId + 1);
                 }
                 else if (this.hidepos.next && this.hidepos.next.parent == this.parent
-                  && !this.hidepos.next.hidden && !jpf.layout.dlist.contains(this.hidepos.next)) { //@todo please make hidden a 4 state property
+                  && !this.hidepos.next.hidden && !apf.layout.dlist.contains(this.hidepos.next)) { //@todo please make hidden a 4 state property
                     if (this.hidepos.next.stackId == 0)
                         nodes.unshift(this);
                     else if (nodes.length < this.hidepos.next.stackId - 1)
@@ -519,7 +519,7 @@ jpf.layout = {
                 if (!adminOnly) {
                     if (this.hidden != 3) {
                         if (this.hid)
-                            jpf.lookup(this.hid).visible = true;
+                            apf.lookup(this.hid).visible = true;
                         if (this.oHtml)
                             this.oHtml.style.display = "block";
                     }
@@ -536,7 +536,7 @@ jpf.layout = {
 
                 if (this.hidden || p.hiddenChildren.contains(this)) {
                     p.hiddenChildren.remove(this);
-                    jpf.layout.dlist.remove(this);
+                    apf.layout.dlist.remove(this);
                 }
                 else {
                     var nodes = p.children;
@@ -596,14 +596,14 @@ jpf.layout = {
     parseXml : function(x, layout, jmlNode, norecur){
         var aData = this.getData(typeof jmlNode == "string"
             ? jmlNode
-            : x[jpf.TAGNAME], layout.layout);
+            : x[apf.TAGNAME], layout.layout);
 
         if (aData.node) {
             if (!jmlNode) {
                 jmlNode = self[x.getAttribute("name")];
                 //#ifdef __DEBUG
                 if (!jmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null,
+                    throw new Error(apf.formatErrorString(0, null,
                         "Parsing Alignment from XML",
                         "Could not find JML node" + x.getAttribute("name"), x));
                 }
@@ -617,7 +617,7 @@ jpf.layout = {
             jmlNode.aData = aData;
 
             if (!jmlNode.hasFeature(__ALIGNMENT__)) {
-                jmlNode.implement(jpf.Alignment);
+                jmlNode.implement(apf.Alignment);
                 if (jmlNode.hasFeature(__ANCHORING__))
                     jmlNode.disableAnchoring();
             }
@@ -633,7 +633,7 @@ jpf.layout = {
                 aData.minheight = jmlNode.minheight;*/
 
             if (!this.getHtmlId(aData.oHtml))
-                jpf.setUniqueHtmlId(aData.oHtml);
+                apf.setUniqueHtmlId(aData.oHtml);
             aData.id = this.getHtmlId(aData.oHtml);
             if (aData.oHtml.style)
                 aData.oHtml.style.position = "absolute";
@@ -657,9 +657,9 @@ jpf.layout = {
             aData.splitter = x.getAttribute("splitter")
                 || (x.getAttribute("edge") == "splitter" ? 4 : false);
         if (x.getAttribute("width"))
-            aData.fwidth = String(jpf.parseExpression(x.getAttribute("width")));
+            aData.fwidth = String(apf.parseExpression(x.getAttribute("width")));
         if (x.getAttribute("height"))
-            aData.fheight = String(jpf.parseExpression(x.getAttribute("height")));
+            aData.fheight = String(apf.parseExpression(x.getAttribute("height")));
         //@todo calculate inner minheight en minwidth
         /*if (x.getAttribute("minwidth"))
             aData.minwidth = x.getAttribute("minwidth");*/
@@ -672,7 +672,7 @@ jpf.layout = {
         if (x.getAttribute("hidden"))
             aData.hidden = (x.getAttribute("hidden") == 3)
                 ? x.getAttribute("hidden")
-                : jpf.isTrue(x.getAttribute("hidden"));
+                : apf.isTrue(x.getAttribute("hidden"));
         else if (x.getAttribute("visible") == "false")
             aData.hidden = true;
         if (x.getAttribute("state"))
@@ -715,13 +715,13 @@ jpf.layout = {
 
                 if (a.hidden) {
                     if (a.hid) {
-                        var j = jpf.lookup(a.hid);
+                        var j = apf.lookup(a.hid);
                         if (a.hidden === true && j.visible) {
                             j.visible = false;
                             a.oHtml.style.display = "none";
                         }
                         if (a.hidden == 3) {
-                            var diff = jpf.getDiff(a.oHtml);
+                            var diff = apf.getDiff(a.oHtml);
                             a.oHtml.style.left   = a.position[0] + "px";
                             a.oHtml.style.top    = a.position[1] + "px";
                             a.oHtml.style.width  = (a.size[0] - diff[0]) + "px";
@@ -738,7 +738,7 @@ jpf.layout = {
                 }
                 else {
                     if (a.hid) {
-                        var j = jpf.lookup(a.hid);
+                        var j = apf.lookup(a.hid);
                         if (!j.visible) {
                             j.visible = true;
                             a.oHtml.style.display = "block";
@@ -766,11 +766,11 @@ jpf.layout = {
      * @returns {XMLElement} the xml representation of the layout.
      */
     getXml : function(pNode){
-        var l = jpf.layout.get(pNode);
+        var l = apf.layout.get(pNode);
         var xmlNode = l.root.xml
             ? l.root.xml.ownerDocument.createElement("layout")
-            : jpf.xmldb.getXml("<layout />");
-        jpf.layout.parseToXml(l.root, xmlNode);
+            : apf.xmldb.getXml("<layout />");
+        apf.layout.parseToXml(l.root, xmlNode);
         return xmlNode;
     },
 
@@ -985,7 +985,7 @@ jpf.layout = {
 
             var l = this.layouts[aData.pHtml.getAttribute("id")];
             if (l)
-                jpf.layout.clearSplitters(l.layout);
+                apf.layout.clearSplitters(l.layout);
 
             return;
         }
@@ -1073,8 +1073,8 @@ jpf.layout = {
 
             //create hbox
             if (!hbox) {
-                var l = jpf.layout.get(pData.pHtml);
-                hbox = jpf.layout.parseXml(jpf.xmldb.getXml("<hbox />"), l, null, true);
+                var l = apf.layout.get(pData.pHtml);
+                hbox = apf.layout.parseXml(apf.xmldb.getXml("<hbox />"), l, null, true);
                 hbox.parent = pData;
                 if (p > -1) {
                     for (var i = s.length - 1; i > p; i--) {
@@ -1100,8 +1100,8 @@ jpf.layout = {
             n = hbox.children;
             //create col
             if (!col) {
-                var l = jpf.layout.get(pData.pHtml);
-                col = jpf.layout.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
+                var l = apf.layout.get(pData.pHtml);
+                col = apf.layout.parseXml(apf.xmldb.getXml("<vbox />"), l, null, true);
                 col.parent = hbox;
                 col.template = align;
 
@@ -1138,7 +1138,7 @@ jpf.layout = {
 
                         //create middle layer if none is specified
                         if (!found) {
-                            ncol = jpf.layout.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
+                            ncol = apf.layout.parseXml(apf.xmldb.getXml("<vbox />"), l, null, true);
                             ncol.parent = hbox;
                             ncol.template = "middle";
 
@@ -1213,7 +1213,7 @@ jpf.layout = {
         this.qlist[oHtml.getAttribute("id")] = [oHtml, compile, [obj]];
 
         if(!this.timer)
-            this.timer = setTimeout("jpf.layout.processQueue()");
+            this.timer = setTimeout("apf.layout.processQueue()");
     },
 
     processQueue : function(){
@@ -1233,7 +1233,7 @@ jpf.layout = {
             qItem = this.qlist[id];
 
             if (qItem[1])
-                jpf.layout.compileAlignment(qItem[1]);
+                apf.layout.compileAlignment(qItem[1]);
 
             list = qItem[2];
             for (i = 0, l = list.length; i < l; i++) {
@@ -1241,11 +1241,11 @@ jpf.layout = {
                     list[i].$updateLayout();
             }
 
-            jpf.layout.activateRules(qItem[0]);
+            apf.layout.activateRules(qItem[0]);
         }
 
-        if (jpf.hasSingleRszEvent)
-            jpf.layout.forceResize();
+        if (apf.hasSingleRszEvent)
+            apf.layout.forceResize();
 
         this.qlist = {};
         this.dlist = [];
@@ -1257,7 +1257,7 @@ jpf.layout = {
     onresize  : {},
 
     getHtmlId : function(oHtml){
-        //if(jpf.hasSingleRszEvent) return 1;
+        //if(apf.hasSingleRszEvent) return 1;
         //else
         return oHtml.getAttribute ? oHtml.getAttribute("id") : 1;
     },
@@ -1272,7 +1272,7 @@ jpf.layout = {
      */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
-            jpf.setUniqueHtmlId(oHtml);
+            apf.setUniqueHtmlId(oHtml);
         if (!this.rules[this.getHtmlId(oHtml)])
             this.rules[this.getHtmlId(oHtml)] = {};
 
@@ -1315,7 +1315,7 @@ jpf.layout = {
         if (!prop)
             delete this.rules[htmlId]
 
-        if (jpf.hasSingleRszEvent) {
+        if (apf.hasSingleRszEvent) {
             if (this.onresize[htmlId])
                 this.onresize[htmlId] = null;
             else {
@@ -1340,7 +1340,7 @@ jpf.layout = {
      * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
      */
     activateRules : function(oHtml, no_exec){
-        if (!oHtml) { //!jpf.hasSingleRszEvent &&
+        if (!oHtml) { //!apf.hasSingleRszEvent &&
             var prop, obj;
             for(prop in this.rules) {
                 obj = document.getElementById(prop);
@@ -1349,13 +1349,13 @@ jpf.layout = {
                 this.activateRules(obj);
             }
 
-             if (jpf.hasSingleRszEvent && window.onresize)
+             if (apf.hasSingleRszEvent && window.onresize)
                 window.onresize();
             return;
         }
 
         var rsz, id, rule, rules, strRules = [];
-        if (!jpf.hasSingleRszEvent) {
+        if (!apf.hasSingleRszEvent) {
             rules = this.rules[this.getHtmlId(oHtml)];
             if (!rules){
                 oHtml.onresize = null;
@@ -1368,8 +1368,8 @@ jpf.layout = {
                 strRules.push(rules[id]);
             }
 
-            //jpf.console.info(strRules.join("\n"));
-            rsz = jpf.needsCssPx
+            //apf.console.info(strRules.join("\n"));
+            rsz = apf.needsCssPx
                 ? new Function(strRules.join("\n"))
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
 
@@ -1410,7 +1410,7 @@ jpf.layout = {
                 f();
 
             if (!window.onresize) {
-                /*var f = jpf.layout.onresize;
+                /*var f = apf.layout.onresize;
                 window.onresize = function(){
                     var s = [];
                     for (var name in f)
@@ -1438,7 +1438,7 @@ jpf.layout = {
                 }
                 
                 window.onresize = function(){
-                    rsz(jpf.layout.onresize);
+                    rsz(apf.layout.onresize);
                 }
             }
         }
@@ -1449,11 +1449,11 @@ jpf.layout = {
      * @param {HTMLElement} oHtml  the element for which the rules are executed.
      */
     forceResize : function(oHtml){
-        if (jpf.hasSingleRszEvent)
+        if (apf.hasSingleRszEvent)
             return window.onresize && window.onresize();
 
         /* @todo this should be done recursive, old way for now
-        jpf.hasSingleRszEvent
+        apf.hasSingleRszEvent
             ? this.onresize[this.getHtmlId(oHtml)]
             :
         */
@@ -1471,7 +1471,7 @@ jpf.layout = {
      * @param {Function}    func   the resize code that is used temporarily for resize of the html element.
      */
     pause  : function(oHtml, replaceFunc){
-        if (jpf.hasSingleRszEvent) {
+        if (apf.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             this.paused[htmlId] = this.onresize[htmlId] || true;
 
@@ -1503,7 +1503,7 @@ jpf.layout = {
         if (!this.paused[this.getHtmlId(oHtml)])
             return;
 
-        if (jpf.hasSingleRszEvent) {
+        if (apf.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             var oldFunc = this.paused[htmlId];
             if (typeof oldFunc == "function") {
@@ -1539,28 +1539,28 @@ jpf.layout = {
 /**
  * @private
  */
-jpf.getWindowWidth = function(){
-    return jpf.isIE ? document.documentElement.offsetWidth - (jpf.isIE8 ? 4 : 0) : window.innerWidth;
+apf.getWindowWidth = function(){
+    return apf.isIE ? document.documentElement.offsetWidth - (apf.isIE8 ? 4 : 0) : window.innerWidth;
 }
 /**
  * @private
  */
-jpf.getWindowHeight = function(){
-    return jpf.isIE ? document.documentElement.offsetHeight - (jpf.isIE8 ? 4 : 0) : window.innerHeight;
+apf.getWindowHeight = function(){
+    return apf.isIE ? document.documentElement.offsetHeight - (apf.isIE8 ? 4 : 0) : window.innerHeight;
 }
 
 /**
  * @constructor
  * @private
  */
-jpf.layoutParser = function(parentNode, pMargin){
+apf.layoutParser = function(parentNode, pMargin){
     pMargin  = (pMargin && pMargin.length == 4) ? pMargin : [0, 0, 0, 0];
     this.pMargin = pMargin;
     this.RULES   = [];
 
     this.parentNode = parentNode;
     if (!this.parentNode.getAttribute("id"))
-        jpf.setUniqueHtmlId(this.parentNode);
+        apf.setUniqueHtmlId(this.parentNode);
 
     var knownVars        = {};
     var minWidth         = 0;
@@ -1578,7 +1578,7 @@ jpf.layoutParser = function(parentNode, pMargin){
     };
 
     this.compile = function(root, noapply){
-        this.addRule("var v = jpf.layout.vars");
+        this.addRule("var v = apf.layout.vars");
 
         this.globalSplitter = root.splitter;
         this.globalEdge     = root.edgeMargin;
@@ -1590,7 +1590,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         this.parserules(root);
         
         if (this.createSplitters) {
-            jpf.layout.clearSplitters(this);
+            apf.layout.clearSplitters(this);
             this.parsesplitters(root);
         }
 
@@ -1599,7 +1599,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
             .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}");
 
-        if (!jpf.hasHtmlIdsInJs) //@todo speed?
+        if (!apf.hasHtmlIdsInJs) //@todo speed?
             str = str.replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
 
         //optimization
@@ -1609,7 +1609,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         this.lastRoot = root;
 
         if (!noapply)
-            jpf.layout.setRules(this.parentNode, "layout", str, true);
+            apf.layout.setRules(this.parentNode, "layout", str, true);
         else
             return str;
 
@@ -1740,16 +1740,16 @@ jpf.layoutParser = function(parentNode, pMargin){
             if (!node.parent) {
                 var hordiff = 0, verdiff = 0;
                 if (this.parentNode.tagName.toLowerCase() != "body") {
-                    var diff    = jpf.getDiff(this.parentNode);
+                    var diff    = apf.getDiff(this.parentNode);
                     verdiff = diff[0];
                     hordiff = diff[1];
                 }
 
                 var strParentNodeWidth  = (this.parentNode.tagName.toLowerCase() == "body"
-                    ? "jpf.getWindowWidth()"
+                    ? "apf.getWindowWidth()"
                     : "document.getElementById('" + this.parentNode.id + "').offsetWidth");
                 var strParentNodeHeight = (this.parentNode.tagName.toLowerCase() == "body"
-                    ? "jpf.getWindowHeight()"
+                    ? "apf.getWindowHeight()"
                     : "document.getElementById('" + this.parentNode.id + "').offsetHeight");
                 node.calcwidth  = "Math.max(" + minWidth + ", " + strParentNodeWidth
                     + " - " + (pMargin[1]) + " - " + pMargin[3] + " - " + hordiff + ")";
@@ -1769,7 +1769,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             this.addRule("v.innerspace_" + oItem.id + " = " + oItem.innerspace);
             this.addRule("v.restspace_" + oItem.id + " = " + oItem.restspace);
 
-            var aData = jpf.layout.metadata[oItem.id];
+            var aData = apf.layout.metadata[oItem.id];
             aData.calcData = oItem;
             oItem.original = aData;
 
@@ -1792,13 +1792,13 @@ jpf.layoutParser = function(parentNode, pMargin){
             var vleft = [oItem.id, ".style.left = "];
 
             if (oItem.hid) {
-                var aData = jpf.lookup(oItem.hid).aData;
+                var aData = apf.lookup(oItem.hid).aData;
                 aData.calcData = oItem;
                 oItem.original = aData;
             }
 
             var oEl     = oItem.oHtml;//document.getElementById(oItem.id);
-            var diff    = jpf.getDiff(oEl);
+            var diff    = apf.getDiff(oEl);
             var verdiff = diff[1];
             var hordiff = diff[0];
 
@@ -1890,7 +1890,7 @@ jpf.layoutParser = function(parentNode, pMargin){
     this.parsesplitters = function(oItem){
         //&& oItem.stackId != oItem.parent.children.length - 1
         if (oItem.parent && oItem.splitter > 0) {
-            jpf.layout.getSplitter(this).init(oItem.splitter, oItem.hid, oItem);
+            apf.layout.getSplitter(this).init(oItem.splitter, oItem.hid, oItem);
         }
 
         if (!oItem.node) {

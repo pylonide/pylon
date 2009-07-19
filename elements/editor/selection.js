@@ -22,12 +22,12 @@
 // #ifdef __JEDITOR || __INC_ALL
 
 /**
- * @class jpf.editor.selection
+ * @class apf.editor.selection
  * @constructor
- * @extends jpf.editor
- * @author Mike de Boer <mike@javeline.com>
+ * @extends apf.editor
+ * @author Mike de Boer  (mike AT javeline DOT com)
  */
-jpf.editor.selection = function(editor) {
+apf.editor.selection = function(editor) {
     /*
      * Initialize the Editor.selection class.
      *
@@ -55,12 +55,12 @@ jpf.editor.selection = function(editor) {
      * Set or move the current selection to the cached one.
      * At the moment, this function is very IE specific and is used to make sure
      * that there's a correct selection object available at all times.
-     * @see jpf.editor.selection.cache
+     * @see apf.editor.selection.cache
      * 
      * @type {Range}
      */
     this.set = function() {
-        if (!jpf.isIE || !this.current) return;
+        if (!apf.isIE || !this.current) return;
 
         try {
             this.editor.$visualFocus();
@@ -81,7 +81,7 @@ jpf.editor.selection = function(editor) {
      * @type {void}
      */
     this.cache = function() {
-        if (!jpf.isIE) return this;
+        if (!apf.isIE) return this;
         var oSel = _self.editor.oDoc.selection;
         _self.current      = oSel.createRange();
         _self.current.type = oSel.type;
@@ -123,7 +123,7 @@ jpf.editor.selection = function(editor) {
         // This can occur when the editor is placed in a hidden container
         // element on Gecko. Or on IE when there was an exception
         if (!range)
-            range = jpf.isIE
+            range = apf.isIE
                 ? oDoc.body.createTextRange()
                 : oDoc.createRange();
 
@@ -138,7 +138,7 @@ jpf.editor.selection = function(editor) {
      * @type {void}
      */
     this.setRange = function(range) {
-        if (!jpf.isIE) {
+        if (!apf.isIE) {
             var oSel = this.get();
 
             if (oSel) {
@@ -178,7 +178,7 @@ jpf.editor.selection = function(editor) {
         var oRoot = oDoc.body;
 
         // Handle IE
-        if (jpf.isIE) {
+        if (apf.isIE) {
             // Control selection
             if (range.item) {
                 oEl = range.item(0);
@@ -303,7 +303,7 @@ jpf.editor.selection = function(editor) {
         this.editor.oWin.scrollTo(bmark.scrollX, bmark.scrollY);
 
         // Handle explorer
-        if (jpf.isIE) {
+        if (apf.isIE) {
             // Handle simple
             if (range = bmark.range) {
                 try {
@@ -394,7 +394,7 @@ jpf.editor.selection = function(editor) {
                     oSel.addRange(range);
                 }
 
-                if (!jpf.isOpera)
+                if (!apf.isOpera)
                     this.editor.$visualFocus();
             }
             catch (ex) {}
@@ -539,7 +539,7 @@ jpf.editor.selection = function(editor) {
      */
     this.getType = function() {
         var oSel = this.get();
-        if (jpf.isIE) {
+        if (apf.isIE) {
             return oSel.type;
         }
         else {
@@ -568,7 +568,7 @@ jpf.editor.selection = function(editor) {
     this.getSelectedNode = function() {
         var range = this.getRange();
 
-        if (!jpf.isIE) {
+        if (!apf.isIE) {
             // Range maybe lost after the editor is made visible again
             if (!range)
                 return this.editor.oDoc;
@@ -580,7 +580,7 @@ jpf.editor.selection = function(editor) {
             if (!range.collapsed) {
                 // If the anchor node is an element instead of a text node then
                 // return this element
-                if (jpf.isSafari && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
+                if (apf.isSafari && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
                     return oSel.anchorNode.childNodes[oSel.anchorOffset];
 
                 if (range.startContainer == range.endContainer) {
@@ -609,7 +609,7 @@ jpf.editor.selection = function(editor) {
     this.getParentNode = function() {
         switch (this.getType()) {
             case "Control" :
-                if (jpf.isIE)
+                if (apf.isIE)
                     return this.getSelectedNode().parentElement;
                 else
                     return this.getSelectedNode().parentNode;
@@ -617,7 +617,7 @@ jpf.editor.selection = function(editor) {
                 return;
             default :
                 var oSel = this.get();
-                if (jpf.isIE) {
+                if (apf.isIE) {
                     return oSel.createRange().parentElement();
                 }
                 else {
@@ -641,7 +641,7 @@ jpf.editor.selection = function(editor) {
     this.selectNode = function(node) {
         //this.editor.setFocus();
         var oSel, range;
-        if (jpf.isIE) {
+        if (apf.isIE) {
             oSel = this.get();
             
             if (!node)
@@ -718,9 +718,9 @@ jpf.editor.selection = function(editor) {
      */
     this.hasAncestorNode = function(nodeTagName) {
         var oContainer, range = this.getRange();
-        if (this.getType() == "Control" || !jpf.isIE) {
+        if (this.getType() == "Control" || !apf.isIE) {
             oContainer = this.getSelectedNode();
-            if (!oContainer && !jpf.isIE) {
+            if (!oContainer && !apf.isIE) {
                 try {
                     oContainer = range.startContainer;
                 }
@@ -731,7 +731,7 @@ jpf.editor.selection = function(editor) {
             oContainer = range.parentElement();
         }
         while (oContainer) {
-            if (jpf.isIE)
+            if (apf.isIE)
                 if (oContainer.tagName == nodeTagName)
                     return true;
                 else if (oContainer.nodeType == 1
@@ -752,7 +752,7 @@ jpf.editor.selection = function(editor) {
     this.moveToAncestorNode = function(nodeTagName) {
         var oNode, i, range = this.getRange();
         nodeTagName = nodeTagName.toUpperCase();
-        if (jpf.isIE) {
+        if (apf.isIE) {
             if (this.getType() == "Control") {
                 for (i = 0; i < range.length; i++) {
                     if (range(i).parentNode) {
@@ -788,7 +788,7 @@ jpf.editor.selection = function(editor) {
      */
     this.remove = function() {
         var oSel = this.get(), i;
-        if (jpf.isIE) {
+        if (apf.isIE) {
             if (oSel.type.toLowerCase() != "none")
                 oSel.clear();
         }

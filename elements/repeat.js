@@ -46,7 +46,7 @@
  *  </j:repeat>
  *
  *  <j:button onclick="
- *      jpf.xmldb.removeNode(mdlExample.data.childNodes[1]);
+ *      apf.xmldb.removeNode(mdlExample.data.childNodes[1]);
  *  ">remove item</j:button>
  * </code>
  *
@@ -55,13 +55,13 @@
  * @allowchild {anyjml}
  * @addnode elements
  *
- * @inherits jpf.DataBinding
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable     = false; // This object can get the focus
     this.canHaveChildren = true;
 
@@ -82,14 +82,14 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     var nodes  = {}, items = [];
     this.addItem = function(xmlNode, beforeNode, nr){
-        var Lid = jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
+        var Lid = apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.oExt.insertBefore(document.createElement("div"), beforeNode || null);
         var oItem = nodes[Lid] = {
             childNodes: [],
             hasFeature: function(){
                 return 0
             },
-            dispatchEvent : jpf.K,
+            dispatchEvent : apf.K,
             oExt: htmlNode
         };
         
@@ -97,19 +97,19 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         var jmlNode = this.template.cloneNode(true);
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
         
-        if (jpf.isParsing)
-            jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
+        if (apf.isParsing)
+            apf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
         else {
-            jpf.JmlParser.parseMoreJml(jmlNode, htmlNode, oItem);
+            apf.JmlParser.parseMoreJml(jmlNode, htmlNode, oItem);
         }
         
-        if (jpf.isGecko) //firefox bug fix?
+        if (apf.isGecko) //firefox bug fix?
             items.push(jmlNode);
     };
     
     this.getRootData = function(jmlNode){
-        var id = jpf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
-        return jpf.getData(id);
+        var id = apf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
+        return apf.getData(id);
     }
     
     /**
@@ -122,7 +122,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         for (var i = children.length - 1; i >= 0; i--) {
             children[i].destroy(true);
         }
-        jpf.removeNode(oItem.oExt);
+        apf.removeNode(oItem.oExt);
         delete nodes[Lid];
     };
     
@@ -147,14 +147,14 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
         
         var children = XMLRoot.selectNodes(this.traverse);
         for (var i = 0; i < children.length; i++) {
             this.addItem(children[i], null, i);
         }
         
-        jpf.JmlParser.parseLastPass();
+        apf.JmlParser.parseLastPass();
     };
     
     /**
@@ -170,7 +170,7 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+        var Lid = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
             return;
         
@@ -178,8 +178,8 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
+            var isInThis = apf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -196,20 +196,20 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.parent, true);
+            var goesToThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.parent, true);
             if (!goesToThis) 
                 action = "remove";
         }
         
         if (action == "add") {
-            this.addItem(xmlNode, null, jpf.xmldb.getChildNumber(xmlNode));
+            this.addItem(xmlNode, null, apf.xmldb.getChildNumber(xmlNode));
         }
         else if (action == "remove") {
             this.removeItem(Lid);
         }
         /*else if (action.match(/add|insert/) && this.isTraverseNode(xmlNode)) {
             this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
-            jpf.JmlParser.parseLastPass();
+            apf.JmlParser.parseLastPass();
         }*/
         else if (action == "synchronize") {
         
@@ -229,13 +229,13 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (!this.name) {
             this.name = "repeat" + this.uniqueId;
-            jpf.setReference(this.name, this);
+            apf.setReference(this.name, this);
         }
     };
     
     this.$destroy = function(){};
 }).implement(
-    jpf.DataBinding
+    apf.DataBinding
 );
 
 // #endif

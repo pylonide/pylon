@@ -32,14 +32,14 @@ var __VIRTUALVIEWPORT__ = 1 << 19;
  * @baseclass
  * @private
  *
- * @author      Ruben Daniels & Mike de Boer
+ * @author      Ruben Daniels (ruben AT javeline DOT com) & Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.VirtualViewport = function(){
+apf.VirtualViewport = function(){
     this.$regbase = this.$regbase | __VIRTUALVIEWPORT__;
     
-    jpf.setStyleClass(this.oExt, "virtual");
+    apf.setStyleClass(this.oExt, "virtual");
     
     this.$deInitNode = function(xmlNode, htmlNode){
         /*  
@@ -59,7 +59,7 @@ jpf.VirtualViewport = function(){
         this.viewport.redraw();//very unoptimized
     };
     
-    this.emptyNode = jpf.xmldb.getXml("<empty />");
+    this.emptyNode = apf.xmldb.getXml("<empty />");
     this.$addEmpty = this.$add;
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //find new slot
@@ -97,7 +97,7 @@ jpf.VirtualViewport = function(){
         offset : 0,
         limit  : 15,
         length : 0,
-        sb     : new jpf.scrollbar(this.pHtmlNode),
+        sb     : new apf.scrollbar(this.pHtmlNode),
         cache  : null,
         
         inited : false,
@@ -120,14 +120,14 @@ jpf.VirtualViewport = function(){
             if (!nodes)
                 return;
             
-            var docId  = jpf.xmldb.getXmlDocId(_self.xmlRoot);
+            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot);
             var hNodes = _self.oInt.childNodes;
             for (var j = 0, i = 0; i < hNodes.length; i++) {
                 if (hNodes[i].nodeType != 1) continue;
                 
                 hNodes[i].style.display = j >= nodes.length ? "none" : "block"; //Will ruin tables & lists
                 
-                jpf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
+                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
                 j++;
             }
         },
@@ -192,7 +192,7 @@ jpf.VirtualViewport = function(){
             if (!nodes)
                 return;
             
-            var docId  = jpf.xmldb.getXmlDocId(_self.xmlRoot);
+            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot);
             var hNodes = _self.oInt.childNodes;
 
             //remove nodes from the beginning
@@ -204,7 +204,7 @@ jpf.VirtualViewport = function(){
                         j++;
                         xmlNode = nodes[xmlPos++];
                         //htmlNode.style.display = j >= nodes.length ? "none" : "block"
-                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                         _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                     }
                     
@@ -223,7 +223,7 @@ jpf.VirtualViewport = function(){
                         j++;
                         xmlNode = nodes[xmlPos++];
                         //htmlNode.style.display = j >= nodes.length ? "none" : "block"
-                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                         _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                     }
                     
@@ -237,7 +237,7 @@ jpf.VirtualViewport = function(){
                     htmlNode = hNodes[i];
                     if (htmlNode.nodeType == 1) {
                         xmlNode = nodes[j++];
-                        jpf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                         _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                     }
                 }
@@ -257,7 +257,7 @@ jpf.VirtualViewport = function(){
     };
     
     var timer;
-    this.viewport.sb.realtime = false;//!jpf.isIE;
+    this.viewport.sb.realtime = false;//!apf.isIE;
     this.viewport.sb.attach(this.oInt, this.viewport, function(timed, pos){
         var vp = _self.viewport;
         
@@ -320,7 +320,7 @@ jpf.VirtualViewport = function(){
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         //Reserve here a set of nodeConnect id's and add them to our initial marker
         //Init virtual dataset here
@@ -330,7 +330,7 @@ jpf.VirtualViewport = function(){
         
         //Initialize virtual dataset if load rule exists
         if (this.bindingRules["load"])
-            jpf.xmldb.createVirtualDataset(XMLRoot);
+            apf.xmldb.createVirtualDataset(XMLRoot);
         
         //Prepare viewport
         this.viewport.cache  = null;
@@ -362,7 +362,7 @@ jpf.VirtualViewport = function(){
         }
 
         if (this.$focussable)
-            jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
+            apf.window.hasFocus(this) ? this.$focus() : this.$blur();
     };
     
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
@@ -388,7 +388,7 @@ jpf.VirtualViewport = function(){
                 throw new Error("Could not find model");
             
             if (!rule.getAttribute("total")) {
-                throw new Error(jpf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
+                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
             }
             //#endif
 
@@ -406,13 +406,13 @@ jpf.VirtualViewport = function(){
                 function(xmlNode){
                     _self.setConnections(_self.xmlRoot);
                     
-                    var length = parseInt(jpf.getXmlValue(xmlNode, 
+                    var length = parseInt(apf.getXmlValue(xmlNode, 
                         rule.getAttribute("total")));
                     
                     if (_self.viewport.length != length) {
                         _self.viewport.length = length;
                         
-                        jpf.xmldb.createVirtualDataset(_self.xmlRoot, 
+                        apf.xmldb.createVirtualDataset(_self.xmlRoot, 
                             _self.viewport.length, _self.documentId);
                     }
                 });

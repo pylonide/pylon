@@ -3,10 +3,10 @@
  * Profiler class
  * @class Profiler
  * @version $Rev$
- * @author Mike de Boer (mike AT javeline.com)
+ * @author Mike de Boer (mike AT javeline DOT com)
  * @private
  */
-jpf.profiler = {
+apf.profiler = {
     stackTrace     : {},    //object - keepsafe for all profiled function during a cycle
     previousStack  : null,  //object - keeping hold of the stackTrace of the previous cycle
     isRunning      : false, //bool   - TRUE when the Profiler is running a cycle
@@ -111,7 +111,7 @@ jpf.profiler = {
     },
 
     /**
-     * Do as if jpf.profiler is loaded all over again with its default values,
+     * Do as if apf.profiler is loaded all over again with its default values,
      * except for rounding precision, the total number of runs (still valid
      * count) and the active sorting method.
      * After - memory safe - deinit, the call is passed to {@link core.profiler.method.init} with
@@ -157,7 +157,7 @@ jpf.profiler = {
         if (this.isRunning) {
             if (this.startBusy) {
                 if (sName) this.startQueue.push(sName);
-                this.startQueueTimer = setTimeout("jpf.profiler.registerStart()", 200);
+                this.startQueueTimer = setTimeout("apf.profiler.registerStart()", 200);
             }
             else {
                 this.startBusy = true;
@@ -201,7 +201,7 @@ jpf.profiler = {
                     this.endQueue.push([sName, arguments.callee.caller.caller
                         ? arguments.callee.caller.caller.nameSelf
                         : null]);
-                this.endQueueTimer = setTimeout("jpf.profiler.registerEnd()", 200);
+                this.endQueueTimer = setTimeout("apf.profiler.registerEnd()", 200);
             }
             else {
                 this.endBusy = true;
@@ -345,72 +345,72 @@ jpf.profiler = {
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_FUNCTIONNAME ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_FUNCTIONNAME ? active : ""),
                   '" rel="3" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="" width="110">Function</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_CALLS ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_CALLS ? active : ""),
                   '" rel="1" \
-                  onclick="jpf.debugwin.resortResult(this);"\
+                  onclick="apf.debugwin.resortResult(this);"\
                   title="Number of times function was called.">Calls</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_PERCENTAGE ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_PERCENTAGE ? active : ""),
                   '" rel="2" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Percentage of time spent on this function.">Percentage</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_OWNTIME ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_OWNTIME ? active : ""),
                   '" rel="8" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Time spent in function, excluding nested calls.">Own Time</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_TIME ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_TIME ? active : ""),
                   '" rel="4" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Time spent in function, including nested calls.">Time</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_AVERAGE ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_AVERAGE ? active : ""),
                   '" rel="5" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Average time, including function calls.">Avg</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_MINIMUM ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_MINIMUM ? active : ""),
                   '" rel="6" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Minimum time, including function calls.">Min</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
                   border-bottom: 1px solid #9c9c9c;\
                   padding: 0; margin: 0;',
-                  (this.sortMethod == jpf.profiler.SORT_BY_MAXIMUM ? active : ""),
+                  (this.sortMethod == apf.profiler.SORT_BY_MAXIMUM ? active : ""),
                   '" rel="7" \
-                  onclick="jpf.debugwin.resortResult(this);" \
+                  onclick="apf.debugwin.resortResult(this);" \
                   title="Maximum time, including function calls.">Max</th>\
             </tr>');
         
@@ -472,35 +472,35 @@ jpf.profiler = {
             stack.perc = 100 - Math.round((Math.abs(stack.time - stackTrace.totalDur) / stackTrace.totalDur) * 100);
             
             switch (this.sortMethod) {
-                case jpf.profiler.SORT_BY_CALLS :
+                case apf.profiler.SORT_BY_CALLS :
                     aSorted.push([i, (stack.executions.length - 1)]);
                     break;
                 default:
-                case jpf.profiler.SORT_BY_PERCENTAGE :
+                case apf.profiler.SORT_BY_PERCENTAGE :
                     aSorted.push([i, stack.perc]);
                     break;
-                case jpf.profiler.SORT_BY_FUNCTIONNAME :
+                case apf.profiler.SORT_BY_FUNCTIONNAME :
                     aSorted.push([i, stack.fullName.toLowerCase()]);
                     break;
-                case jpf.profiler.SORT_BY_TIME :
+                case apf.profiler.SORT_BY_TIME :
                     aSorted.push([i, stack.time]);
                     break;
-                case jpf.profiler.SORT_BY_AVERAGE :
+                case apf.profiler.SORT_BY_AVERAGE :
                     aSorted.push([i, stack.avg]);
                     break;
-                case jpf.profiler.SORT_BY_MINIMUM :
+                case apf.profiler.SORT_BY_MINIMUM :
                     aSorted.push([i, stack.min]);
                     break;
-                case jpf.profiler.SORT_BY_MAXIMUM :
+                case apf.profiler.SORT_BY_MAXIMUM :
                     aSorted.push([i, stack.max]);
                     break;
-                case jpf.profiler.SORT_BY_OWNTIME :
+                case apf.profiler.SORT_BY_OWNTIME :
                     aSorted.push([i, (stack.time - stack.internalExec)]);
                     break;
             }
         }
         
-        return aSorted.sort((this.sortMethod == jpf.profiler.SORT_BY_FUNCTIONNAME)
+        return aSorted.sort((this.sortMethod == apf.profiler.SORT_BY_FUNCTIONNAME)
             ? this.sortingHelperAsc
             : this.sortingHelperDesc);
     },
@@ -567,17 +567,17 @@ jpf.profiler = {
     }
 };
 
-jpf.profiler.SORT_BY_CALLS        = 1;
-jpf.profiler.SORT_BY_PERCENTAGE   = 2;
-jpf.profiler.SORT_BY_FUNCTIONNAME = 3;
-jpf.profiler.SORT_BY_TIME         = 4;
-jpf.profiler.SORT_BY_AVERAGE      = 5;
-jpf.profiler.SORT_BY_MINIMUM      = 6;
-jpf.profiler.SORT_BY_MAXIMUM      = 7;
-jpf.profiler.SORT_BY_OWNTIME      = 8;
+apf.profiler.SORT_BY_CALLS        = 1;
+apf.profiler.SORT_BY_PERCENTAGE   = 2;
+apf.profiler.SORT_BY_FUNCTIONNAME = 3;
+apf.profiler.SORT_BY_TIME         = 4;
+apf.profiler.SORT_BY_AVERAGE      = 5;
+apf.profiler.SORT_BY_MINIMUM      = 6;
+apf.profiler.SORT_BY_MAXIMUM      = 7;
+apf.profiler.SORT_BY_OWNTIME      = 8;
 
-jpf.profiler.BLACKLIST = {
-    'jpf.profiler' : 1
+apf.profiler.BLACKLIST = {
+    'apf.profiler' : 1
 };
 
 /**
@@ -587,9 +587,9 @@ jpf.profiler.BLACKLIST = {
  */
 var Profiler_functionTemplate = function() {
     return function() {
-        jpf.profiler.registerStart(arguments.callee.nameSelf);
-        var ret = jpf.profiler.pointers['pointer_to_' + arguments.callee.nameSelf].apply(this, arguments);
-        jpf.profiler.registerEnd(arguments.callee.nameSelf);
+        apf.profiler.registerStart(arguments.callee.nameSelf);
+        var ret = apf.profiler.pointers['pointer_to_' + arguments.callee.nameSelf].apply(this, arguments);
+        apf.profiler.registerEnd(arguments.callee.nameSelf);
         return ret;
     };
 };

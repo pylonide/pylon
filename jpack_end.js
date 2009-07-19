@@ -1,11 +1,11 @@
-jpf.Init.addConditional(function(){
-    jpf.dispatchEvent("domready");
+apf.Init.addConditional(function(){
+    apf.dispatchEvent("domready");
 }, null, ["body", "class"]);
 
 /*if(document.body)
-    jpf.Init.run('body');
+    apf.Init.run('body');
 else*/
-    jpf.addDomLoadEvent(function(){jpf.Init.run('body');});
+    apf.addDomLoadEvent(function(){apf.Init.run('body');});
 
 //Start
-jpf.start();
+apf.start();

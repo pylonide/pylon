@@ -59,10 +59,10 @@
  * @alias upload
  * @addnode elements
  *
- * @inherits jpf.DataBinding
- * @inherits jpf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Presentation
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
@@ -86,7 +86,7 @@
  * @todo get server side information to update the progressbar.
  */
 
-jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.upload = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable = false;
     var _self = this;
 
@@ -230,8 +230,8 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
         this.setProperty("uploading", true);
 
         //@todo ass possibility for real progress indication
-        this.timer = setInterval('jpf.lookup(' + this.uniqueId + ').$updateProgress()', 800);
-        this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').$timeout()', this.timeout);
+        this.timer = setInterval('apf.lookup(' + this.uniqueId + ').$updateProgress()', 800);
+        this.timeout_timer = setTimeout('apf.lookup(' + this.uniqueId + ').$timeout()', this.timeout);
         this.form.submit();
     };
 
@@ -243,7 +243,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$done = function(data){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);
-        window.setTimeout('jpf.lookup(' + this.uniqueId + ').$clearProgress()', 300);
+        window.setTimeout('apf.lookup(' + this.uniqueId + ').$clearProgress()', 300);
 
         //if (value)
         //    this.setValue(value);
@@ -310,9 +310,9 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Event handling ****/
 
     this.$initForm = function(){
-        if (jpf.isIE) {
+        if (apf.isIE) {
             this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("form"),
+            this.form = apf.xmldb.htmlImport(this.$getLayoutNode("form"),
                 this.oFrame.contentWindow.document.body);
         }
 
@@ -323,7 +323,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             .setAttribute("value", this.uniqueId);
         this.inpFile = this.$getLayoutNode("form", "inp_file", this.form);
 
-        if (!jpf.isIE) {
+        if (!apf.isIE) {
             //var jmlNode = this;
             this.inpFile.setAttribute("size", "0");
             this.inpFile.onchange = function(){
@@ -332,13 +332,13 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        if (jpf.debug == 2) {
+        if (apf.debug == 2) {
             this.oFrame.style.visibility = "visible";
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
         }
 
-        if (jpf.isIE) return;
+        if (apf.isIE) return;
         
         setTimeout(function() {
             var oNode = _self.rel ? self[_self.rel] : null;
@@ -376,18 +376,18 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 .setAttribute("name", "upload" + this.uniqueId);
         });
 
-        if (!jpf.isIE)
-            this.form = jpf.xmldb.htmlImport(
+        if (!apf.isIE)
+            this.form = apf.xmldb.htmlImport(
                 this.$getLayoutNode("form"), this.oExt);
 
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
-        jpf.AbstractEvent.addListener(this.oFrame, "load", function(){
+        apf.AbstractEvent.addListener(this.oFrame, "load", function(){
             if (!_self.uploading)
                 return;
 
             var data = "";
             try {
-                data = jpf.html_entity_decode(_self.oFrame.contentWindow.document.body.innerHTML.replace(/<PRE>|<\/PRE>/g, ""));
+                data = apf.html_entity_decode(_self.oFrame.contentWindow.document.body.innerHTML.replace(/<PRE>|<\/PRE>/g, ""));
             }
             catch(e){}
 
@@ -402,7 +402,7 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.$done(data);
         });
 
-        jpf.AbstractEvent.addListener(this.oFrame, "error", function(){
+        apf.AbstractEvent.addListener(this.oFrame, "error", function(){
             if (!_self.uploading)
                 return;
 
@@ -428,8 +428,8 @@ jpf.upload = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     // #endif
-    jpf.Presentation
+    apf.Presentation
 );
 // #endif

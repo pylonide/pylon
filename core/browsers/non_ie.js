@@ -20,7 +20,7 @@
  */
 
 // #ifdef __SUPPORT_SAFARI || __SUPPORT_GECKO || __SUPPORT_SAFARI
-jpf.runNonIe = function (){
+apf.runNonIe = function (){
     //#ifdef __SUPPORT_IE_API
 
     DocumentFragment.prototype.getElementById = function(id){
@@ -34,7 +34,7 @@ jpf.runNonIe = function (){
             return (new XMLSerializer()).serializeToString(this);
         });
         XMLDocument.prototype.__defineSetter__("xml", function(){
-            throw new Error(jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
+            throw new Error(apf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
         });
         
         //Node.xml
@@ -79,13 +79,13 @@ jpf.runNonIe = function (){
         if (!HTMLElement.prototype.insertAdjacentHTML) {
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
-                r.setStartBefore(jpf.isSafari ? document.body : (self.document ? document.body : this));
+                r.setStartBefore(apf.isSafari ? document.body : (self.document ? document.body : this));
                 var parsedHTML = r.createContextualFragment(htmlStr);
                 this.insertAdjacentElement(where, parsedHTML);
             };
         }
 
-        if (jpf.isSafari || jpf.isChrome)
+        if (apf.isSafari || apf.isChrome)
             HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
     
         if (!HTMLElement.prototype.insertAdjacentText) {
@@ -160,13 +160,13 @@ jpf.runNonIe = function (){
     
     //XMLDocument.loadXML();
     XMLDocument.prototype.loadXML = function(strXML){
-        jpf.xmldb.setReadyState(this, 1);
+        apf.xmldb.setReadyState(this, 1);
         var sOldXML = this.xml || this.serialize();
         var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
-        jpf.xmldb.setReadyState(this, 2);
+        apf.xmldb.setReadyState(this, 2);
         this.$copyDOM(oDoc);
-        jpf.xmldb.setReadyState(this, 3);
-        jpf.xmldb.loadHandler(this);
+        apf.xmldb.setReadyState(this, 3);
+        apf.xmldb.loadHandler(this);
         return sOldXML;
     };
     
@@ -186,7 +186,7 @@ jpf.runNonIe = function (){
         var oDoc = document.implementation.createDocument("", "", null);
         oDoc.$copyDOM(this);
         this.parseError = 0;
-        jpf.xmldb.setReadyState(this, 1);
+        apf.xmldb.setReadyState(this, 1);
     
         try {
             if (this.async == false && ASYNCNOTSUPPORTED) {
@@ -194,9 +194,9 @@ jpf.runNonIe = function (){
                 tmp.open("GET", sURI, false);
                 tmp.overrideMimeType("text/xml");
                 tmp.send(null);
-                jpf.xmldb.setReadyState(this, 2);
+                apf.xmldb.setReadyState(this, 2);
                 this.$copyDOM(tmp.responseXML);
-                jpf.xmldb.setReadyState(this, 3);
+                apf.xmldb.setReadyState(this, 3);
             } else
                 this.$load(sURI);
         }
@@ -204,7 +204,7 @@ jpf.runNonIe = function (){
             this.parseError = -1;
         }
         finally {
-            jpf.xmldb.loadHandler(this);
+            apf.xmldb.loadHandler(this);
         }
     
         return oDoc;
@@ -229,7 +229,7 @@ jpf.runNonIe = function (){
             
             if (xsltProcessor.reset) {
                 // new nsIXSLTProcessor is available
-                xslDoc = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+                xslDoc = apf.getXmlDom(xslDoc.xml || xslDoc.serialize());
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
                 oResult.$copyDOM(newFragment);
@@ -241,13 +241,13 @@ jpf.runNonIe = function (){
         }
         catch(e) {
             if (xslDoc && oResult)
-                throw new Error(jpf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
+                throw new Error(apf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
             else if (!xslDoc)
-                throw new Error(jpf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
+                throw new Error(apf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
             else if (!oResult)
-                throw new Error(jpf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
+                throw new Error(apf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
             else if (xsltProcessor == null)
-                throw new Error(jpf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
+                throw new Error(apf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
             else
                 throw e;
         }
@@ -255,14 +255,14 @@ jpf.runNonIe = function (){
     
     //Element.transformNode
     Element.prototype.transformNode = function(xslDoc){
-        return jpf.getXmlDom(this.xml || this.serialize())
+        return apf.getXmlDom(this.xml || this.serialize())
             .transformNode(xslDoc);
     };
     
     //Document.transformNode
     Document.prototype.transformNode = function(xslDoc){
         var xsltProcessor = new XSLTProcessor();
-        xslDoc        = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+        xslDoc        = apf.getXmlDom(xslDoc.xml || xslDoc.serialize());
         xsltProcessor.importStylesheet(xslDoc);
         var newFragment   = xsltProcessor.transformToFragment(this,
             document.implementation.createDocument("", "", null));
@@ -274,7 +274,7 @@ jpf.runNonIe = function (){
             str = serializer.serializeToString(out);
         }
         catch(e){
-            throw new Error("---- Javeline Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
+            throw new Error("---- APF Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
         }
         
         return str;*/
@@ -288,7 +288,7 @@ jpf.runNonIe = function (){
      * @param {String}      prop  the property to read
      * @returns {String}
      */
-    jpf.getStyle = function(el, prop) {
+    apf.getStyle = function(el, prop) {
         return window.getComputedStyle(el, '').getPropertyValue(prop);
     };
     
@@ -299,26 +299,26 @@ jpf.runNonIe = function (){
     /* ******** XML Compatibility ************************************************
         Extensions to the xmldb
     ****************************************************************************/
-    jpf.getHttpReq = function(){
-        if (jpf.teleport.availHTTP.length)
-            return jpf.teleport.availHTTP.pop();
+    apf.getHttpReq = function(){
+        if (apf.teleport.availHTTP.length)
+            return apf.teleport.availHTTP.pop();
         return new XMLHttpRequest();
     };
 
-    jpf.getXmlDom = function(message, noError){
+    apf.getXmlDom = function(message, noError){
         var xmlParser;
         if (message) {
             xmlParser = new DOMParser();
             xmlParser = xmlParser.parseFromString(message, "text/xml");
 
             //#ifdef __WITH_XMLDATABASE
-            if (xmlParser.documentElement.tagName == "parsererror" && jpf.xmldb
-              && jpf.isJSON(message)) {
+            if (xmlParser.documentElement.tagName == "parsererror" && apf.xmldb
+              && apf.isJSON(message)) {
                 try {
-                    xmlParser = jpf.xmldb.fromJson(message, noError);
+                    xmlParser = apf.xmldb.fromJson(message, noError);
                 }
                 catch(e) {
-                    throw new Error(jpf.formatErrorString(1051, null,
+                    throw new Error(apf.formatErrorString(1051, null,
                         "JSON to XML conversion error occurred.",
                         "\nSource Text : " + message.replace(/\t/gi, " ")));
                 }
@@ -335,7 +335,7 @@ jpf.runNonIe = function (){
         return xmlParser;
     };
     
-    jpf.xmlParseError = function(xml){
+    apf.xmlParseError = function(xml){
         if (xml.documentElement.tagName == "parsererror") {
             var str     = xml.documentElement.firstChild.nodeValue.split("\n");
             var linenr  = str[2].match(/\w+ (\d+)/)[1];
@@ -343,7 +343,7 @@ jpf.runNonIe = function (){
             
             var srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
             
-            throw new Error(jpf.formatErrorString(1050, null, 
+            throw new Error(apf.formatErrorString(1050, null, 
                 "XML Parse Error on line " +  linenr, message + 
                 "\nSource Text : " + srcText.replace(/\t/gi, " ")));
         }
@@ -352,8 +352,8 @@ jpf.runNonIe = function (){
     };
     
     //#ifdef __WITH_XMLDATABASE
-    if (jpf.XmlDatabase) {
-        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
+    if (apf.XmlDatabase) {
+        apf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
             if (!htmlNode)
                 alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
             
@@ -379,12 +379,12 @@ jpf.runNonIe = function (){
                 //|| (xmlNode.nodeType == 1 ? xmlNode.xml || xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
                 //.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             
-            var strHTML = jpf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
+            var strHTML = apf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
             var pNode = (beforeNode || htmlNode);
             if (pNode.nodeType == 11){
                 var id = xmlNode.getAttribute("id");
                 if (!id)
-                    throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
@@ -407,26 +407,26 @@ jpf.runNonIe = function (){
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         };
         
-        jpf.XmlDatabase.prototype.setReadyState = function(oDoc, iReadyState) {
+        apf.XmlDatabase.prototype.setReadyState = function(oDoc, iReadyState) {
             oDoc.readyState = iReadyState;
             if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
                 oDoc.onreadystatechange();
         };
         
-        jpf.XmlDatabase.prototype.loadHandler = function(oDoc){
+        apf.XmlDatabase.prototype.loadHandler = function(oDoc){
             if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
                 oDoc.parseError = -1;
             
-            jpf.xmldb.setReadyState(oDoc, 4);
+            apf.xmldb.setReadyState(oDoc, 4);
         };
         
         //Initialize xmldb
-        jpf.xmldb = new jpf.XmlDatabase();
+        apf.xmldb = new apf.XmlDatabase();
     }
     //#endif
     
     //Fix XML Data-Island Support Problem with Form Tag
-    jpf.Init.add(function(){
+    apf.Init.add(function(){
         var i, nodes = document.getElementsByTagName("form");
         for (i = 0; i < nodes.length; i++)
             nodes[i].removeNode();
@@ -443,7 +443,7 @@ jpf.runNonIe = function (){
     /*window.onerror = function(message, filename, linenr){
         if(++ERROR_COUNT > MAXMSG) return;
         filename = filename ? filename.match(/\/([^\/]*)$/)[1] : "[Mozilla Library]";
-        new Error("---- Javeline Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
+        new Error("---- APF Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
         return false;
     }*/
     
@@ -597,12 +597,12 @@ jpf.runNonIe = function (){
         }
         
         function getElementPosY(myObj){
-            return myObj.offsetTop + parseInt(jpf.getStyle(myObj, "border-top-width"))
+            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "border-top-width"))
                 + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
         }
         
         function getElementPosX(myObj){
-            return myObj.offsetLeft + parseInt(jpf.getStyle(myObj, "border-left-width"))
+            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "border-left-width"))
                 + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
         }
         
@@ -619,50 +619,50 @@ jpf.runNonIe = function (){
     
     //#endif
 
-    jpf.getHorBorders = function(oHtml){
+    apf.getHorBorders = function(oHtml){
         return Math.max(0, 
-              (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
+              (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
     };
     
-    jpf.getVerBorders = function(oHtml){
+    apf.getVerBorders = function(oHtml){
         return Math.max(0, 
-              (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
+              (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
     };
 
-    jpf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
+    apf.getWidthDiff = function(oHtml){
+        return Math.max(0, (parseInt(apf.getStyle(oHtml, "padding-left")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "padding-right")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
     };
     
-    jpf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-top")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "padding-bottom")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
+    apf.getHeightDiff = function(oHtml){
+        return Math.max(0, (parseInt(apf.getStyle(oHtml, "padding-top")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "padding-bottom")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
     };
     
-    jpf.getDiff = function(oHtml){
-        return [Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-left"))
-            + parseInt(jpf.getStyle(oHtml, "padding-right"))
-            + parseInt(jpf.getStyle(oHtml, "border-left-width"))
-            + parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0),
-            Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-top"))
-            + parseInt(jpf.getStyle(oHtml, "padding-bottom"))
-            + parseInt(jpf.getStyle(oHtml, "border-top-width"))
-            + parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0)];
+    apf.getDiff = function(oHtml){
+        return [Math.max(0, parseInt(apf.getStyle(oHtml, "padding-left"))
+            + parseInt(apf.getStyle(oHtml, "padding-right"))
+            + parseInt(apf.getStyle(oHtml, "border-left-width"))
+            + parseInt(apf.getStyle(oHtml, "border-right-width")) || 0),
+            Math.max(0, parseInt(apf.getStyle(oHtml, "padding-top"))
+            + parseInt(apf.getStyle(oHtml, "padding-bottom"))
+            + parseInt(apf.getStyle(oHtml, "border-top-width"))
+            + parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0)];
     };
     
-    jpf.getMargin = function(oHtml) {
-        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "margin-left")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "margin-right")) || 0)),
-            Math.max(0, (parseInt(jpf.getStyle(oHtml, "margin-top")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "margin-bottom")) || 0))]
+    apf.getMargin = function(oHtml) {
+        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-left")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "margin-right")) || 0)),
+            Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-top")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "margin-bottom")) || 0))]
     };
     
-    jpf.Init.run('xmldb');
+    apf.Init.run('xmldb');
 }
 //#endif

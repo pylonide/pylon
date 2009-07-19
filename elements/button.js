@@ -31,17 +31,17 @@
  * @define button, submit, trigger, reset
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
- * @inherits jpf.BaseButton
+ * @inherits apf.Presentation
+ * @inherits apf.BaseButton
  */
-jpf.submit  =
-jpf.trigger =
-jpf.reset   =
-jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.submit  =
+apf.trigger =
+apf.reset   =
+apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     var useExtraDiv;
     var _self = this;
 
@@ -92,7 +92,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
         if (!this.oIcon)
-            return jpf.console.warn("No icon defined in the Button skin", "button");
+            return apf.console.warn("No icon defined in the Button skin", "button");
         /* #else
         if (!this.oIcon) return;
         #endif */
@@ -102,7 +102,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
 
-        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
+        apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     this.$propHandlers["value"] = function(value){
@@ -163,7 +163,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         e.defaultButtonSet = true;
 
         if (useExtraDiv)
-            _self.oExt.appendChild(jpf.button.$extradiv);
+            _self.oExt.appendChild(apf.button.$extradiv);
 
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
 
@@ -173,8 +173,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 
     function removeDefault(e){
-        if (useExtraDiv && jpf.button.$extradiv.parentNode == _self.oExt)
-            _self.oExt.removeChild(jpf.button.$extradiv);
+        if (useExtraDiv && apf.button.$extradiv.parentNode == _self.oExt)
+            _self.oExt.removeChild(apf.button.$extradiv);
 
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
 
@@ -186,7 +186,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     function btnKeyDown(e){
         var ml;
 
-        var f = jpf.window.focussed;
+        var f = apf.window.focussed;
         if (f) {
             if (f.hasFeature(__MULTISELECT__))
                 return;
@@ -213,7 +213,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         return;
         var key = e.keyCode;
 
-        var next, nr = jpf.xmldb.getChildNumber(this);
+        var next, nr = apf.xmldb.getChildNumber(this);
         if (key == 37) { //left
             next = nr == 0
                 ? this.parentNode.childNodes.length - 1
@@ -238,7 +238,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //#ifdef __DEBUG
         if (!menu) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Showing submenu",
                 "Could not find submenu '" + this.submenu + "'"));
         }
@@ -252,15 +252,15 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.parentNode.hasMoved)
                 this.value = false;
 
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix();
+            if (apf.hasFocusBug)
+                apf.window.$focusfix();
 
             return false;
         }
 
         this.parentNode.menuIsPressed = this;
 
-        var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        var pos = apf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
         menu.display(pos[0],
             pos[1] + this.oExt.offsetHeight, false, this,
             null, null, this.oExt.offsetWidth - 2);
@@ -289,19 +289,19 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //#ifdef __DEBUG
         if (!menu) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Showing submenu",
                 "Could not find submenu '" + this.submenu + "'"));
         }
         //#endif
 
-        var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        var pos = apf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
 
         menu.display(pos[0],
             pos[1] + this.oExt.offsetHeight, true, this,
             null, null, this.oExt.offsetWidth - 2);
 
-        //jpf.window.$focus(this);
+        //apf.window.$focus(this);
         this.$focus();
 
         this.parentNode.hasMoved = true;
@@ -372,8 +372,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$enable = function(){
         if (this["default"]) {
             setDefault({});
-            if (jpf.window.focussed)
-                jpf.window.focussed.focus(true);
+            if (apf.window.focussed)
+                apf.window.focussed.focus(true);
         }
         if (this.state && this.value) {
             this.$setState("Down", {});
@@ -484,7 +484,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             skinName = this.parentNode.skinName.split(":")[0] + ":" + skinName;
             if (this.skinName != skinName)
                 this.$loadSkin(skinName);
-            this.$focussable = jpf.KEYBOARD;
+            this.$focussable = apf.KEYBOARD;
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
@@ -497,9 +497,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oIcon    = this.$getLayoutNode("main", "icon", this.oExt);
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
 
-        useExtraDiv = jpf.isTrue(this.$getOption("main", "extradiv"));
-        if (!jpf.button.$extradiv && useExtraDiv) {
-            (jpf.button.$extradiv = document.createElement("div"))
+        useExtraDiv = apf.isTrue(this.$getOption("main", "extradiv"));
+        if (!apf.button.$extradiv && useExtraDiv) {
+            (apf.button.$extradiv = document.createElement("div"))
                 .className = "extradiv"
         }
 
@@ -523,7 +523,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.$blur();
 
         //if (this.$focussable !== true && this.hasFocus())
-            //jpf.window.$focusLast(this.$focusParent);
+            //apf.window.$focusLast(this.$focusParent);
     }
     //#endif
 
@@ -534,7 +534,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$propHandlers["caption"].call(this, "");
 
         if (!inited) {
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
             inited = true;
         }
     };
@@ -550,7 +550,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         //#-endif
 
         setTimeout(function(){
-            (jpf.button.actions[action] || jpf.K).call(_self);
+            (apf.button.actions[action] || apf.K).call(_self);
         });
     });
     //#endif
@@ -580,7 +580,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.submission) {
             var submission = self[this.submission];
             if (!submission)
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Submission",
                     "Could not find submission to execute action on '"
                     + this.submission + "'", this.$jml));
@@ -593,7 +593,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             if (this.target) {
                 //#ifdef __DEBUG
                 if (!self[this.target])
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Clicking on Button",
                         "Could not find target to execute action on '"
                         + this.target + "' with action '"
@@ -616,7 +616,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                     target = this.getModel();
                     //#ifdef __DEBUG
                     if (!target)
-                        throw new Error(jpf.formatErrorString(0, this,
+                        throw new Error(apf.formatErrorString(0, this,
                             "Clicking on Button",
                             "Could not find target to for action '"
                             + this.action + "'", this.$jml));
@@ -626,7 +626,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //#ifdef __DEBUG
         if (!target[this.action])
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Clicking on Button",
                 "Could not find action on target.", this.$jml));
         //#endif
@@ -638,10 +638,10 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     //this.form.registerButton(this.action, this);
 
     #endif*/
-}).implement(jpf.Presentation, jpf.BaseButton);
+}).implement(apf.Presentation, apf.BaseButton);
 
 //#ifdef __ENABLE_BUTTON_ACTIONS
-jpf.button.actions = {
+apf.button.actions = {
     // #ifdef __WITH_ACTIONTRACKER
     "undo" : function(action){
         var tracker;
@@ -656,11 +656,11 @@ jpf.button.actions = {
                 at = (node = node.parentNode).$at;
         }
 
-        (tracker || jpf.window.$at)[action || "undo"]();
+        (tracker || apf.window.$at)[action || "undo"]();
     },
 
     "redo" : function(){
-        jpf.button.actions.undo.call(this, "redo");
+        apf.button.actions.undo.call(this, "redo");
     },
     //#endif
 
@@ -670,7 +670,7 @@ jpf.button.actions = {
             self[this.target].remove()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to remove wasn't found or specified:'"
+            apf.console.warn("Target to remove wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -680,7 +680,7 @@ jpf.button.actions = {
             self[this.target].add()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to add wasn't found or specified:'"
+            apf.console.warn("Target to add wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -690,7 +690,7 @@ jpf.button.actions = {
             self[this.target].startRename()
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to rename wasn't found or specified:'"
+            apf.console.warn("Target to rename wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -702,7 +702,7 @@ jpf.button.actions = {
             ? self[this.target]
             : this.parentNode;
 
-        var vg = parent.$validgroup || new jpf.ValidationGroup();
+        var vg = parent.$validgroup || new apf.ValidationGroup();
         if (!vg.childNodes.length)
             vg.childNodes = parent.childNodes.slice();
 
@@ -733,7 +733,7 @@ jpf.button.actions = {
 
         if (!vars.username || !vars.password) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Clicking the login button",
                 "Could not find the username or password box"));
             //#endif
@@ -741,11 +741,11 @@ jpf.button.actions = {
             return;
         }
 
-        jpf.auth.login(vars.username, vars.password);
+        apf.auth.login(vars.username, vars.password);
     },
 
     "logout" : function(){
-        jpf.auth.logout();
+        apf.auth.logout();
     },
     //#endif
 
@@ -763,7 +763,7 @@ jpf.button.actions = {
             if (!parent.$validgroup) {
                 parent.$validgroup = parent.validgroup
                     ? self[parent.validgroup]
-                    : new jpf.ValidationGroup();
+                    : new apf.ValidationGroup();
             }
 
             vg = parent.$validgroup;
@@ -789,7 +789,7 @@ jpf.button.actions = {
 
             if (!model) {
                 //#ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Finding a model to submit",
                     "Could not find a model to submit."));
                 //#endif
@@ -810,7 +810,7 @@ jpf.button.actions = {
     },
 
     "reset" : function(){
-        jpf.button.actions["submit"].call(this, true);
+        apf.button.actions["submit"].call(this, true);
     },
     //#endif
 
@@ -891,7 +891,7 @@ jpf.button.actions = {
             parent.close();
         //#ifdef __DEBUG
         else
-            jpf.console.warn("Target to close wasn't found or specified:'"
+            apf.console.warn("Target to close wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     }

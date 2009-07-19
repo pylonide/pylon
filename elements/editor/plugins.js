@@ -25,10 +25,10 @@
  * @class Plugins
  * @constructor
  * @extends editor
- * @namespace jpf
- * @author Mike de Boer <mike@javeline.com>
+ * @namespace apf
+ * @author Mike de Boer  (mike AT javeline DOT com)
  */
-jpf.editor.plugins = function(coll, editor) {
+apf.editor.plugins = function(coll, editor) {
     // the collections that are simple lookup tables so we don't need to use
     // for-loops to do plugin lookups...
     this.coll      = {};
@@ -42,12 +42,12 @@ jpf.editor.plugins = function(coll, editor) {
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
-     * @type  {jpf.editor.plugin}
+     * @type  {apf.editor.plugin}
      */
     this.add = function(sPlugin) {
-        if (!jpf.editor.plugin[sPlugin]) return null;
+        if (!apf.editor.plugin[sPlugin]) return null;
         // yay, plugin does exist, so we can instantiate it for the editor
-        var plugin = new jpf.editor.plugin[sPlugin](sPlugin);
+        var plugin = new apf.editor.plugin[sPlugin](sPlugin);
         // add it to main plugin collection
         this.coll[plugin.name] = plugin;
 
@@ -110,7 +110,7 @@ jpf.editor.plugins = function(coll, editor) {
         if (!o) return false;
 
         var res = false;
-        if (jpf.isArray(this.active)) {
+        if (apf.isArray(this.active)) {
             for (i = this.active.length - 1; i >= 0 && !res; i--)
                 res = (this.active[i] === o);
         }
@@ -123,7 +123,7 @@ jpf.editor.plugins = function(coll, editor) {
      * API; Get a plugin object
      *
      * @param {String} name
-     * @type  {jpf.editor.plugin}
+     * @type  {apf.editor.plugin}
      */
     this.get = function(name) {
         if (arguments.length == 1)
@@ -249,7 +249,7 @@ jpf.editor.plugins = function(coll, editor) {
      *
      * @param {Array}  coll   Collection of plugins that should be searched for and loaded
      * @param {Editor} editor
-     * @type  {jpf.editor.plugins}
+     * @type  {apf.editor.plugins}
      */
     this.editor = editor;
     if (coll && coll.length) {
@@ -258,22 +258,22 @@ jpf.editor.plugins = function(coll, editor) {
     }
 };
 
-jpf.editor.TOOLBARITEM   = "toolbaritem";
-jpf.editor.TOOLBARBUTTON = "toolbarbutton";
-jpf.editor.TOOLBARPANEL  = "toolbarpanel";
-jpf.editor.TEXTMACRO     = "textmacro";
-jpf.editor.CMDMACRO      = "commandmacro";
+apf.editor.TOOLBARITEM   = "toolbaritem";
+apf.editor.TOOLBARBUTTON = "toolbarbutton";
+apf.editor.TOOLBARPANEL  = "toolbarpanel";
+apf.editor.TEXTMACRO     = "textmacro";
+apf.editor.CMDMACRO      = "commandmacro";
 
 /**
  * @class Plugin
  * @constructor
  * @extends editor
- * @namespace jpf
- * @author Mike de Boer <mike@javeline.com>
+ * @namespace apf
+ * @author Mike de Boer  (mike AT javeline DOT com)
  *
  * Example plugin:
  * <code language=javascript>
- * jpf.editor.plugin('sample', function() {
+ * apf.editor.plugin('sample', function() {
  *     this.name    = "SamplePluginName";
  *     this.type    = "PluginType";
  *     this.subType = "PluginSubType";
@@ -287,9 +287,9 @@ jpf.editor.CMDMACRO      = "commandmacro";
  * });
  * </code>
  */
-jpf.editor.plugin = function(sName, fExec) {
-    jpf.editor.plugin[sName] = function() {
-        this.uniqueId = jpf.all.push(this) - 1;
+apf.editor.plugin = function(sName, fExec) {
+    apf.editor.plugin[sName] = function() {
+        this.uniqueId = apf.all.push(this) - 1;
 
         /**
          * Appends a new JML element - in its string representation - to an
@@ -303,29 +303,29 @@ jpf.editor.plugin = function(sName, fExec) {
         this.appendJmlNode = function(sNode, oParent) {
             if (!sNode) return null;
 
-            var jml = jpf.getXml("<tempnode>" + sNode + "</tempnode>");
-            return jpf.JmlParser.parseMoreJml(jml, oParent, this.editor, true);
+            var jml = apf.getXml("<tempnode>" + sNode + "</tempnode>");
+            return apf.JmlParser.parseMoreJml(jml, oParent, this.editor, true);
         };
 
         this.dispatchEvent = function() {
             var _self = this;
             window.setTimeout(function() {
-                if (_self.type == jpf.editor.CONTEXTPANEL
-                  && _self.queryState(_self.editor) == jpf.editor.ON)
+                if (_self.type == apf.editor.CONTEXTPANEL
+                  && _self.queryState(_self.editor) == apf.editor.ON)
                     return;
-                _self.state = jpf.editor.OFF;
+                _self.state = apf.editor.OFF;
                 if (_self.editor)
                     _self.editor.notify(_self.name, _self.state);
                 //@todo: add animation?
-                jpf.popup.hide();
-                jpf.popup.last = null;
+                apf.popup.hide();
+                apf.popup.last = null;
             });
 
             return false;
         };
 
         this.$destroy = function() {
-            jpf.popup.forceHide(); // @todo should we keep this, or does jpf.Popup destroy itself? what if we removeNode() the editor?
+            apf.popup.forceHide(); // @todo should we keep this, or does apf.Popup destroy itself? what if we removeNode() the editor?
             this.buttonNode = this.editor = null;
             delete this.buttonNode;
             delete this.editor;

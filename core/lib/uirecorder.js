@@ -2,7 +2,7 @@
  * Provides a way to record user actions, store them and play them back.
  * @experimental
  */
-jpf.uirecorder = {
+apf.uirecorder = {
     actionStack : [],
     playStack   : [],
     isPlaying   : false,
@@ -10,186 +10,186 @@ jpf.uirecorder = {
     inited      : false,
 
     init : function() {
-        if (jpf.uirecorder.inited)
+        if (apf.uirecorder.inited)
             return;
 
-        jpf.uirecorder.inited = true;
+        apf.uirecorder.inited = true;
 
         /* Support for various events listed in dEvents array */
         /*for (var i = 0, l = dEvents.length; i < l; i++) {
             document.documentElement[dEvents[i]] = function(e) {
-                if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                     return;
 
                 e = e || event;
                 
-                jpf.uirecorder.actionStack.push([new Date().getTime(), dEvents[i],
-                    e.srcElement || e.target, jpf.extend({}, e)]);
+                apf.uirecorder.actionStack.push([new Date().getTime(), dEvents[i],
+                    e.srcElement || e.target, apf.extend({}, e)]);
             }
         }*/
        
         /* Form events support */
         document.documentElement.onselect = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onselect",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onselect",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onchange = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onchange",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onchange",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onsubmit = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onsubmit",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onsubmit",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onreset = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onreset",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onreset",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
        
         /* User interface events support */
         document.documentElement.onfocus = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onfocus",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onfocus",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         document.documentElement.onblur = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onblur",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onblur",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         /* Mouse events support */
         document.documentElement.onclick = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... onclick - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onclick",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onclick - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onclick",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.ondblclick = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... ondblclick - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "ondblclick",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... ondblclick - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "ondblclick",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmousedown = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... onmousedown - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousedown",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onmousedown - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onmousedown",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmouseup = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... onmouseup - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseup",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onmouseup - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseup",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmousemove = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
             
             e = e || event;
-//jpf.console.info("recording... onmousemove - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmousemove",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onmousemove - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onmousemove",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmouseover = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... onmouseover - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseover",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onmouseover - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseover",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmouseout = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//jpf.console.info("recording... onmouseout - "+e.clientX+" "+e.clientY);
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onmouseout",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+//apf.console.info("recording... onmouseout - "+e.clientX+" "+e.clientY);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseout",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         /* Keyboard events support for all browsers */
         document.documentElement.onkeyup = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeyup",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeyup",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onkeydown = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeydown",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeydown",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onkeypress = function(e) {
-            if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+            if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
             
-            jpf.uirecorder.actionStack.push([new Date().getTime(), "onkeypress",
-                e.srcElement || e.target, jpf.extend({}, e)]);
+            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeypress",
+                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
@@ -197,28 +197,28 @@ jpf.uirecorder = {
 
         /* ============== Mutation Events ============== */
         /* Support for Mutation Events in FF */
-        /*if(jpf.isGecko) {
+        /*if(apf.isGecko) {
             for (var i = 0, l = mEvents.length; i < l; i++) {
                 document.addEventListener(mEvents[i], function(e) {
-                    if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                    if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                         return;
 
                     e = e || event;
 
-                    jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, jpf.extend({}, e)]);
+                    apf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, apf.extend({}, e)]);
                 }, false);
             }
         }*/
         /* Support for Mutation events in IE */
-        /*else if(jpf.isIE) {
+        /*else if(apf.isIE) {
             for (var i = 0, l = mEvents.length; i < l; i++) {
                 document.attachEvent(mEvents[i], function(e) {
-                    if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                    if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                         return;
     
                     e = e || event;
     
-                    jpf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, jpf.extend({}, e)]);
+                    apf.uirecorder.actionStack.push([new Date().getTime(), mEvents[i], e.srcElement || e.target, apf.extend({}, e)]);
                 });
             }
         }*/
@@ -227,7 +227,7 @@ jpf.uirecorder = {
         if(document.addEventListener) {
             /* FF */
             document.addEventListener("DOMMouseScroll", function(e) {
-                if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                     return;
     
                 e = e || event;
@@ -236,33 +236,33 @@ jpf.uirecorder = {
                 /*var el = e.srcElement || e.target;
     
                 while (el != document.body && el.scrollHeight == el.offsetHeight) {
-                    jpf.console.info("Searching..."+el.id+" "+el.scrollHeight+" "+parseInt(el.style.height));
+                    apf.console.info("Searching..."+el.id+" "+el.scrollHeight+" "+parseInt(el.style.height));
                     el = el.parentNode || el.parentElement;
                 }
 
-                jpf.console.info("scroll"+el.scrollTop);*/
+                apf.console.info("scroll"+el.scrollTop);*/
 
-                jpf.uirecorder.actionStack.push([
+                apf.uirecorder.actionStack.push([
                     new Date().getTime(),
                     "DOMMouseScroll",
                     e.target,
-                    jpf.extend({}, jpf.uirecorder.createMouseWheelEvent(e))
+                    apf.extend({}, apf.uirecorder.createMouseWheelEvent(e))
                 ]);
             }, false);
         }
         else {
             /* IE */
             document.onmousewheel = function(e) {
-                if (jpf.uirecorder.isPlaying || !jpf.uirecorder.isRecording)
+                if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                     return;
 
                 e = e || event;
 
-                jpf.uirecorder.actionStack.push([
+                apf.uirecorder.actionStack.push([
                     new Date().getTime(),
                     "onmousewheel",
                     e.srcElement,
-                    jpf.extend({}, jpf.uirecorder.createMouseWheelEvent(e))
+                    apf.extend({}, apf.uirecorder.createMouseWheelEvent(e))
                 ]);
             };
         }
@@ -277,14 +277,14 @@ jpf.uirecorder = {
         var delta = null;
         if (e.wheelDelta) {
             delta = e.wheelDelta / 120;
-            if (jpf.isOpera)
+            if (apf.isOpera)
                 delta *= -1;
         }
         else if (e.detail)
             delta = -e.detail / 3;
 
         return {
-            type : jpf.isGecko ? "DOMMouseScroll" : (jpf.isIE ? "mousewheel" : "DOMMouseScroll"),
+            type : apf.isGecko ? "DOMMouseScroll" : (apf.isIE ? "mousewheel" : "DOMMouseScroll"),
             delta : delta
         }
     },
@@ -293,19 +293,19 @@ jpf.uirecorder = {
      * Initiate user interface recorder and start recording
      */
     record : function() {
-        jpf.uirecorder.isRecording = true;
-        jpf.uirecorder.init();
+        apf.uirecorder.isRecording = true;
+        apf.uirecorder.init();
     },
     
     /**
      * Stop recording and start playing
      */
     play : function() {
-        jpf.uirecorder.isRecording = false;
-        jpf.uirecorder.isPlaying   = true;
-        jpf.uirecorder.playStack   = jpf.uirecorder.actionStack.slice(0);
+        apf.uirecorder.isRecording = false;
+        apf.uirecorder.isPlaying   = true;
+        apf.uirecorder.playStack   = apf.uirecorder.actionStack.slice(0);
 
-        if (jpf.uirecorder.playStack.length)
+        if (apf.uirecorder.playStack.length)
             playFrame();
     },
 
@@ -313,33 +313,33 @@ jpf.uirecorder = {
      * Stop recording and playing
      */
     stop : function() {
-        jpf.uirecorder.isRecording = false;
-        jpf.uirecorder.isPlaying   = false;
+        apf.uirecorder.isRecording = false;
+        apf.uirecorder.isPlaying   = false;
     },
     
     /**
      * Stop recording and playing, clear list of recorded actions
      */
     reset : function() {
-        jpf.uirecorder.isRecording = false;
-        jpf.uirecorder.isPlaying   = false;
-        jpf.uirecorder.playStack   = [];
-        jpf.uirecorder.actionStack = [];
+        apf.uirecorder.isRecording = false;
+        apf.uirecorder.isPlaying   = false;
+        apf.uirecorder.playStack   = [];
+        apf.uirecorder.actionStack = [];
     }
 };
 
 var timeout;
 function playFrame() {
-    var frame = jpf.uirecorder.playStack.shift();
+    var frame = apf.uirecorder.playStack.shift();
 
-    if(!frame || !jpf.uirecorder.isPlaying)
+    if(!frame || !apf.uirecorder.isPlaying)
         return;
 
     var lastTime = frame[0];
     var simulate = false;
     var src = frame[3], e;
 
-    if (jpf.isIE) {
+    if (apf.isIE) {
         e = document.createEventObject();
         
         for (prop in frame[3]) {
@@ -356,7 +356,7 @@ function playFrame() {
                 fireScroll(frame);
                 break;
             default:
-                //jpf.console.info("playing... "+src.type+" - "+src.clientX+" "+src.clientY);
+                //apf.console.info("playing... "+src.type+" - "+src.clientX+" "+src.clientY);
                 frame[2].fireEvent(frame[1], e);
                 break;
         }
@@ -377,8 +377,8 @@ function playFrame() {
                     src.shiftKey, src.metaKey, src.button, src.relatedTarget
                 );
                 /* Little workaround - that values are important for drag&drop (dragdrop.js) */
-                jpf.event.layerX = src.layerX
-                jpf.event.layerY = src.layerY
+                apf.event.layerX = src.layerX
+                apf.event.layerY = src.layerY
                 break;
             case "keyup":
             case "keydown":
@@ -417,7 +417,7 @@ function playFrame() {
                 simulate = true;
                 break;
             default:
-                jpf.console.info("default: " + src.type);
+                apf.console.info("default: " + src.type);
                 simulate = true;
                 break;
         }
@@ -427,13 +427,13 @@ function playFrame() {
         }
     }
 
-    if (jpf.uirecorder.playStack.length && jpf.uirecorder.isPlaying) {
+    if (apf.uirecorder.playStack.length && apf.uirecorder.isPlaying) {
         timeout = setTimeout(function() {
             playFrame();
-        }, jpf.uirecorder.playStack[0][0] - lastTime);
+        }, apf.uirecorder.playStack[0][0] - lastTime);
     }
     else {
-        jpf.uirecorder.stop();
+        apf.uirecorder.stop();
         clearInterval(timeout);
     }
 };
@@ -448,11 +448,11 @@ function fireScroll(frame) {
     // FF - 39
     // IE - el.offsetHeight / ~(6,7 - 6,8)
     // Chrome - 120
-    el.scrollTop = el.scrollTop - (jpf.isGecko
+    el.scrollTop = el.scrollTop - (apf.isGecko
         ? 39
-        : (jpf.isChrome
+        : (apf.isChrome
             ? 120
-            : (jpf.isIE
+            : (apf.isIE
                 ? Math.round(el.offsetHeight / 6.73)
                 : 20))) * frame[3].delta;
 }

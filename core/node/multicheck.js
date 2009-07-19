@@ -28,13 +28,13 @@ var __MULTICHECK__ = 1 << 22;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       3.0
  *
  * @todo type detection, errors (see functions in multiselect)
  */
-jpf.MultiCheck = function(){
+apf.MultiCheck = function(){
     var checkedList  = [];
     var _self        = this;
 
@@ -79,7 +79,7 @@ jpf.MultiCheck = function(){
                     }
                 }
                 
-                jpf.setStyleClass(jpf.xmldb.getHtmlNode(pNode, this), 
+                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
                     all ? "checked"
                         : "partial", ["partial", "checked"]);
                 
@@ -91,7 +91,7 @@ jpf.MultiCheck = function(){
         }
         //#endif
 
-        this.$setStyleClass(jpf.xmldb.getHtmlNode(xmlNode, this), "checked", ["partial"]);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), "checked", ["partial"]);
         
         this.dispatchEvent("aftercheck", {
             list        : checkedList,
@@ -133,7 +133,7 @@ jpf.MultiCheck = function(){
                         break;
                 }
                 
-                jpf.setStyleClass(jpf.xmldb.getHtmlNode(pNode, this), 
+                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
                     none ? ""
                          : "partial", ["partial", "checked"]);
                 
@@ -145,7 +145,7 @@ jpf.MultiCheck = function(){
         }
         //#endif
         
-        this.$setStyleClass(jpf.xmldb.getHtmlNode(xmlNode, this), "", ["checked", "partial"]);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), "", ["checked", "partial"]);
         
         this.dispatchEvent("afteruncheck", {
             list        : checkedList,
@@ -156,11 +156,11 @@ jpf.MultiCheck = function(){
     this.checkToggle = function(xmlNode){
         if (xmlNode.style) {
             var htmlNode = xmlNode;
-            var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
+            var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
                 id = (htmlNode = htmlNode.parentNode)
-                    .getAttribute(jpf.xmldb.htmlIdTag);
-            xmlNode = jpf.xmldb.getNode(htmlNode)
+                    .getAttribute(apf.xmldb.htmlIdTag);
+            xmlNode = apf.xmldb.getNode(htmlNode)
         }
 
         if (checkedList.indexOf(xmlNode) > -1)
@@ -187,14 +187,14 @@ jpf.MultiCheck = function(){
             for (var i = xmlNodeList.length - 1; i >= 0; i--) {
                 checkedList.remove(xmlNodeList[i]);
                 this.$setStyleClass(
-                    jpf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
             }
         }
         else {
             for (var i = xmlNodeList.length - 1; i >= 0; i--) {
                 checkedList.push(xmlNodeList[i]);
                 this.$setStyleClass(
-                    jpf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
             }
         }
         
@@ -206,14 +206,14 @@ jpf.MultiCheck = function(){
                     if (forceChange) {
                         if (uncheck) {
                             checkedList.remove(xmlNode);
-                            _self.$setStyleClass(jpf.xmldb.getHtmlNode(xmlNode, _self), 
+                            _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                                 "", ["checked"]);
                             return 0;
                         }
                         else {
                             checkedList.push(xmlNode);
                             _self.$setStyleClass(
-                                jpf.xmldb.getHtmlNode(xmlNode, _self), "checked");
+                                apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
                             return 1;
                         }
                     }
@@ -244,12 +244,12 @@ jpf.MultiCheck = function(){
                 
                 if (all) {
                     checkedList.push(xmlNode);
-                    jpf.setStyleClass(jpf.xmldb.getHtmlNode(xmlNode, _self), 
+                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                         "checked", ["partial"]);
                 }
                 else {
                     checkedList.remove(xmlNode);
-                    jpf.setStyleClass(jpf.xmldb.getHtmlNode(xmlNode, _self), 
+                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                         partial ? "partial" : "", ["partial", "checked"]);
                 }
                 
@@ -274,7 +274,7 @@ jpf.MultiCheck = function(){
         
         for (var i = checkedList.length - 1; i >= 0; i--) {
             this.$setStyleClass(
-                jpf.xmldb.getHtmlNode(checkedList[i], this), "", ["checked"]);
+                apf.xmldb.getHtmlNode(checkedList[i], this), "", ["checked"]);
         }
         
         checkedList.length = 0;
@@ -294,9 +294,9 @@ jpf.MultiCheck = function(){
         if (xmldoc) {
             r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : jpf.getXmlDom().createDocumentFragment();
+                : apf.getXmlDom().createDocumentFragment();
             for (i = 0; i < checkedList.length; i++)
-                jpf.xmldb.clearConnections(r.appendChild(
+                apf.xmldb.clearConnections(r.appendChild(
                     checkedList[i].cloneNode(true)));
         }
         else

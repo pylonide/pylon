@@ -21,7 +21,7 @@
 
 // #ifdef __JVIDEO || __INC_ALL
 
-jpf.video.TypeQTCompat = (function(){
+apf.video.TypeQTCompat = (function(){
     var gTagAttrs           = null;
     var gQTBehaviorID       = "qt_event_source";
     var gQTEventsEnabled    = true;
@@ -33,7 +33,7 @@ jpf.video.TypeQTCompat = (function(){
      * @type {String}
      */
     function _QTGenerateBehavior(){
-        return jpf.isIE
+        return apf.isIE
             ? '<object id="' + gQTBehaviorID
               + '" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598" \
               codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=7,3,0,0"></object>'
@@ -72,7 +72,7 @@ jpf.video.TypeQTCompat = (function(){
     function _QTShouldInsertBehavior(){
         var shouldDo = false;
 
-        if (gQTEventsEnabled && jpf.isIE && !_QTPageHasBehaviorObject())
+        if (gQTEventsEnabled && apf.isIE && !_QTPageHasBehaviorObject())
             shouldDo = true;
 
         return shouldDo;
@@ -217,7 +217,7 @@ jpf.video.TypeQTCompat = (function(){
 
             if (("postdomevents" == attrName) && (attrValue.toLowerCase() != "false")) {
                 gQTEventsEnabled = true;
-                if (jpf.isIE)
+                if (apf.isIE)
                     gTagAttrs["obj#style"] = "behavior:url(#" + gQTBehaviorID + ")";
             }
         }
@@ -401,7 +401,7 @@ jpf.video.TypeQTCompat = (function(){
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeQT = function(oVideo, node, options) {
+apf.video.TypeQT = function(oVideo, node, options) {
     this.oVideo      = oVideo;
     this.name        = "QT_" + this.oVideo.uniqueId;
     this.htmlElement = node;
@@ -423,7 +423,7 @@ jpf.video.TypeQT = function(oVideo, node, options) {
     this.videoPath   = options.src;
 
     this.player = null;
-    jpf.extend(this, jpf.video.TypeInterface);
+    apf.extend(this, apf.video.TypeInterface);
 
     this.setOptions(options);
     var _self = this;
@@ -432,12 +432,12 @@ jpf.video.TypeQT = function(oVideo, node, options) {
     }, 1);
 }
 
-jpf.video.TypeQT.isSupported = function() {
+apf.video.TypeQT.isSupported = function() {
     // QuickTime 7.2.1 is the least we'd expect, no?
-    return jpf.video.TypeQTCompat.isAvailable();
+    return apf.video.TypeQTCompat.isAvailable();
 }
 
-jpf.video.TypeQT.prototype = {
+apf.video.TypeQT.prototype = {
     /**
      * Play a Quicktime movie. Does a call to the embedded QT object to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
@@ -459,7 +459,7 @@ jpf.video.TypeQT.prototype = {
         if (this.player) {
             try {
                 this.player.Play();
-                if (jpf.isIE)
+                if (apf.isIE)
                     this.handleEvent({type: "qt_play"});
             }
             catch(e) {
@@ -478,7 +478,7 @@ jpf.video.TypeQT.prototype = {
         if (this.player) {
             try {
                 this.player.Stop();
-                if (jpf.isIE)
+                if (apf.isIE)
                     this.handleEvent({type: "qt_pause"});
             }
             catch(e) {
@@ -556,9 +556,9 @@ jpf.video.TypeQT.prototype = {
             this.player = null;
         }
 
-        this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
+        this.htmlElement.innerHTML = apf.video.TypeQTCompat.generateOBJECTText(
                 this.videoPath, "100%", "100%", "",
-                "autoplay",            jpf.isIE ? "false" : this.autoPlay.toString(), //Not unloading of plugin, bad bad bad hack by Ruben
+                "autoplay",            apf.isIE ? "false" : this.autoPlay.toString(), //Not unloading of plugin, bad bad bad hack by Ruben
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",
                 "showlogo",            "true",
@@ -608,7 +608,7 @@ jpf.video.TypeQT.prototype = {
             nodeEvents[hook](pfx + evt, exec, false);
         });
 
-        if (jpf.isIE && this.autoPlay)
+        if (apf.isIE && this.autoPlay)
             this.handleEvent({type: "qt_play"});
 
         return this;
@@ -657,8 +657,8 @@ jpf.video.TypeQT.prototype = {
             //    break;
             case "qt_load":
             case "qt_canplaythrough":
-                this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
-                if (this.autoPlay && jpf.isIE) //Not unloading of plugin, bad bad bad hack by Ruben
+                this.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
+                if (this.autoPlay && apf.isIE) //Not unloading of plugin, bad bad bad hack by Ruben
                     this.player.Play();
                 break;
         }

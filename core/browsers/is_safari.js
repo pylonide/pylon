@@ -24,9 +24,9 @@
  * Compatibility layer for Webkit based browsers.
  * @private
  */
-jpf.runSafari = function(){
+apf.runSafari = function(){
     //#ifdef __SUPPORT_SAFARI2
-    if (!jpf.isChrome) {
+    if (!apf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
         lookupSafariCall = [];
         window.setTimeout = function(call, time){
@@ -36,7 +36,7 @@ jpf.runSafari = function(){
                 + (lookupSafariCall.push(call) - 1) + "]()", time);
         }
         
-        if (jpf.isSafariOld) {
+        if (apf.isSafariOld) {
             HTMLHtmlElement = document.createElement("html").constructor;
             Node            = HTMLElement = {};
             HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
@@ -59,49 +59,49 @@ jpf.runSafari = function(){
     
     //#ifdef __PARSER_XPATH
     
-    if (jpf.isSafariOld || jpf.isSafari || jpf.isChrome) {
+    if (apf.isSafariOld || apf.isSafari || apf.isChrome) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){
-            return jpf.XPath.selectNodes(sExpr, contextNode || this);
+            return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
         
         //Element.selectNodes
         Element.prototype.selectNodes = function(sExpr, contextNode){
-            return jpf.XPath.selectNodes(sExpr, contextNode || this);
+            return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
         
         //XMLDocument.selectSingleNode
         HTMLDocument.prototype.selectSingleNode =
         XMLDocument.prototype.selectSingleNode  = function(sExpr, contextNode){
-            return jpf.XPath.selectNodes(sExpr, contextNode || this)[0];
+            return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
         //Element.selectSingleNode
         Element.prototype.selectSingleNode = function(sExpr, contextNode){
-            return jpf.XPath.selectNodes(sExpr, contextNode || this)[0];
+            return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
-        jpf.importClass(jpf.runXpath, true, self);
-        jpf.importClass(jpf.runXslt, true, self);
+        apf.importClass(apf.runXpath, true, self);
+        apf.importClass(apf.runXslt, true, self);
     }
 
     // #endif
     
-    if (jpf.runNonIe)
-        jpf.runNonIe();
-    //jpf.importClass(jpf.runNonIe, true, self);
+    if (apf.runNonIe)
+        apf.runNonIe();
+    //apf.importClass(apf.runNonIe, true, self);
 };
 
 // #ifdef __SUPPORT_IPHONE
 
-jpf.runIphone = function() {
-    if (!jpf.isIphone) return;
+apf.runIphone = function() {
+    if (!apf.isIphone) return;
 
-    jpf.makeClass(this);
+    apf.makeClass(this);
 
     // #ifdef __WITH_CSS
-    jpf.importCssString(document,
+    apf.importCssString(document,
        'html, body {\
             margin: 0;\
             font-family: Helvetica;\
@@ -124,11 +124,11 @@ jpf.runIphone = function() {
     // #endif
     
     var head = document.getElementsByTagName("head")[0];
-    if (jpf.appsettings.iphoneIcon) {
+    if (apf.appsettings.iphoneIcon) {
         var link = document.createElement("link");
         link.setAttribute("rel", "apple-touch-icon" 
-            + (jpf.appsettings.iphoneIconIsGlossy ? "" : "-precomposed"));
-        link.setAttribute("href", "jpf.appsettings.iphoneIcon");
+            + (apf.appsettings.iphoneIconIsGlossy ? "" : "-precomposed"));
+        link.setAttribute("href", "apf.appsettings.iphoneIcon");
         head.appendChild(link);
     }
 
@@ -139,17 +139,17 @@ jpf.runIphone = function() {
         head.appendChild(meta);
     }
 
-    if (jpf.appsettings.iphoneFixedViewport) {
+    if (apf.appsettings.iphoneFixedViewport) {
         appendMeta("viewport",
             "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;");
     }
 
-    if (jpf.appsettings.iphoneFullScreen) {
+    if (apf.appsettings.iphoneFullScreen) {
         appendMeta("apple-mobile-web-app-capable", "yes");
 
-        if (jpf.appsettings.iphoneStatusBar)
+        if (apf.appsettings.iphoneStatusBar)
             appendMeta("apple-mobile-web-app-status-bar-style",
-                "jpf.appsettings.iphoneStatusBar");
+                "apf.appsettings.iphoneStatusBar");
     }
 
     var hasOrientationEvent = false,
@@ -158,7 +158,7 @@ jpf.runIphone = function() {
         landscapeVal        = "landscape",
         checkTimer          = null;
 
-    jpf.addDomLoadEvent(function() {
+    apf.addDomLoadEvent(function() {
         setTimeout(checkOrientAndLocation, 0);
         checkTimer = setInterval(checkOrientAndLocation, 300);
     });
@@ -214,13 +214,13 @@ jpf.runIphone = function() {
     ["gesturestart", "gesturechange", "gestureend",
      "orientationchange"].forEach(function(type) {
         document["on" + type] = function(evt) {
-            if (jpf.dispatchEvent)
-                jpf.dispatchEvent(type, evt);
+            if (apf.dispatchEvent)
+                apf.dispatchEvent(type, evt);
         };
     });
 
     
-    jpf.iphone = {
+    apf.iphone = {
         titleNode : null,
 
         linkEvents: function(el) {
@@ -275,17 +275,17 @@ jpf.runIphone = function() {
             levelTwoChar : "-",
 
             go: function(where, noanim) {
-                var i, p, _self = jpf.iphone.nav;
+                var i, p, _self = apf.iphone.nav;
                 _self.update();
 
                 if (!(p = _self.panels[where.page])) return;
 
                 scrollTo(0, 1);
-                jpf.dispatchEvent("pagechange", where);
+                apf.dispatchEvent("pagechange", where);
 
                 var sTitle = p.$jml.getAttribute("title");
-                if (jpf.iphone.titleNode && sTitle)
-                    jpf.iphone.titleNode.innerHTML = sTitle;
+                if (apf.iphone.titleNode && sTitle)
+                    apf.iphone.titleNode.innerHTML = sTitle;
 
                 if (noanim) {
                     for (i in _self.panels)
@@ -298,13 +298,13 @@ jpf.runIphone = function() {
                             continue;
                         var panel = _self.panels[i];
                         panel.setProperty("zindex", 0);
-                        jpf.tween.single(panel.oExt, {
+                        apf.tween.single(panel.oExt, {
                             steps   : 5,
                             interval: 10,
                             from    : panel.oExt.offsetLeft,
                             to      : (where.index < 0) ? 1000 : -1000,
                             type    : "left",
-                            anim    : jpf.tween.EASEOUT,
+                            anim    : apf.tween.EASEOUT,
                             onfinish: function() {
                                 panel.setProperty("visible", false);
                             }
@@ -317,14 +317,14 @@ jpf.runIphone = function() {
                             ? -(el.offsetWidth) - pad
                             : window.innerWidth + el.offsetLeft + pad;
                     p.setProperty("visible", true);
-                    p.setProperty("zindex",  jpf.all.length + 1);
-                    jpf.tween.single(el, {
+                    p.setProperty("zindex",  apf.all.length + 1);
+                    apf.tween.single(el, {
                         steps   : 5,
                         interval: 10,
                         from    : iFrom,
                         to      : 0,
                         type    : "left",
-                        anim    : jpf.tween.EASEIN
+                        anim    : apf.tween.EASEIN
                     });
                 }
             },
@@ -341,19 +341,19 @@ jpf.runIphone = function() {
         }
     };
     setTimeout(function() {
-        jpf.addEventListener("hashchange", jpf.iphone.nav.go);
+        apf.addEventListener("hashchange", apf.iphone.nav.go);
         if (location.href.match(/#(.*)$/))
-    		jpf.history.init(decodeURI(RegExp.$1));
-        else if (jpf._GET.page)
-            jpf.history.init(jpf._GET.page);
+    		apf.history.init(decodeURI(RegExp.$1));
+        else if (apf._GET.page)
+            apf.history.init(apf._GET.page);
         else
-            jpf.history.init();
+            apf.history.init();
     });
 
     // make sure that document event link to mouse events already. Since the
     // document object on top of the event bubble chain, it will probably also
     // be hooked by other JPF elements.
-    jpf.iphone.linkEvents(document);
+    apf.iphone.linkEvents(document);
 };
 
 // #endif

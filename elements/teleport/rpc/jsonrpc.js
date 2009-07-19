@@ -24,9 +24,9 @@
 
 /**
  * Implementation of the JSON-RPC protocol as a module for the RPC
- * plugin of jpf.teleport. 
+ * plugin of apf.teleport. 
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="jsonrpc">
@@ -60,18 +60,18 @@
  *
  * @addenum rpc[@protocol]:jsonrpc
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @inherits jpf.rpc
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @inherits apf.rpc
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @default_private
  */
-jpf.jsonrpc = function(){
+apf.jsonrpc = function(){
     this.supportMulticall = false;
     this.multicall        = false;
     
@@ -81,13 +81,13 @@ jpf.jsonrpc = function(){
     this.namedArguments   = false;
     
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
     
     
     // Stand Alone
     if (!this.uniqueId) {
-        jpf.makeClass(this);
-        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
+        apf.makeClass(this);
+        this.implement(apf.BaseComm, apf.http, apf.rpc);
     }
     
     this.getSingleCall = function(name, args, obj){
@@ -104,7 +104,7 @@ jpf.jsonrpc = function(){
         
         //Construct the XML-RPC message
         var message = '{"method":"' + functionName + '","params":'
-            + jpf.serialize(args) + ',"id":' + this.id + '}';
+            + apf.serialize(args) + ',"id":' + this.id + '}';
         return message;
     }
     

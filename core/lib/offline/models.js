@@ -35,7 +35,7 @@
  *
  * @default_private
  */
-jpf.namespace("offline.models", {
+apf.namespace("offline.models", {
     enabled   : false,
     timer     : null,
     models    : {},
@@ -43,14 +43,14 @@ jpf.namespace("offline.models", {
     realtime  : true,
 
     init      : function(jml){
-        this.namespace = jpf.appsettings.name + ".jpf.offline.models";
+        this.namespace = apf.appsettings.name + ".apf.offline.models";
 
         if (jml.nodeType && jml.getAttribute("realtime"))
-            this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
+            this.realtime = !apf.isFalse(jml.getAttribute("realtime"));
 
         if (!this.realtime) {
-            jpf.addEventListener("exit", function(){
-                jpf.offline.models.search();
+            apf.addEventListener("exit", function(){
+                apf.offline.models.search();
             });
         }
 
@@ -78,14 +78,14 @@ jpf.namespace("offline.models", {
     },
 
     clear : function(){
-        jpf.offline.storage.clear(this.namespace);
+        apf.offline.storage.clear(this.namespace);
     },
 
     removeModel : function(model){
         var name = model.name || model.uniqueId + ".model";
 
         //Remove recorded data of this model
-        jpf.offline.storage.remove(name, this.namespace);
+        apf.offline.storage.remove(name, this.namespace);
 
         //Remove the model from the init queue
         this.initQueue.remove(model);
@@ -95,7 +95,7 @@ jpf.namespace("offline.models", {
         var name = model.name || model.uniqueId + ".model";
 
         //#ifdef __DEBUG
-        jpf.console.info("Updating model '" + name + "'");
+        apf.console.info("Updating model '" + name + "'");
         //#endif
 
         /*
@@ -103,27 +103,27 @@ jpf.namespace("offline.models", {
             data. At load/exit these could be purged.
         */
 
-        var docId = model.data.getAttribute(jpf.xmldb.xmlDocTag);
-        model.data.setAttribute(jpf.xmldb.xmlDocTag + "_length",
-            jpf.xmldb.nodeCount[docId]);
+        var docId = model.data.getAttribute(apf.xmldb.xmlDocTag);
+        model.data.setAttribute(apf.xmldb.xmlDocTag + "_length",
+            apf.xmldb.nodeCount[docId]);
 
-        jpf.offline.storage.put(name, model.data.xml || model.data.serialize(), this.namespace);
+        apf.offline.storage.put(name, model.data.xml || model.data.serialize(), this.namespace);
     },
 
     loadModel : function(model){
         var name = model.name || model.uniqueId + ".model";
 
-        var data = jpf.offline.storage.get(name, this.namespace);
+        var data = apf.offline.storage.get(name, this.namespace);
         if (!data) return false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Loading model '" + name + "' from local storage");
+        apf.console.info("Loading model '" + name + "' from local storage");
         //#endif
 
-        var xmlNode = jpf.getXmlDom(data).documentElement;
-        var docId   = xmlNode.getAttribute(jpf.xmldb.xmlDocTag);
-        jpf.xmldb.nodeCount[docId]
-            = parseInt(xmlNode.getAttribute(jpf.xmldb.xmlDocTag + "_length"));
+        var xmlNode = apf.getXmlDom(data).documentElement;
+        var docId   = xmlNode.getAttribute(apf.xmldb.xmlDocTag);
+        apf.xmldb.nodeCount[docId]
+            = parseInt(xmlNode.getAttribute(apf.xmldb.xmlDocTag + "_length"));
 
         model.load(xmlNode);
         return true;
@@ -132,7 +132,7 @@ jpf.namespace("offline.models", {
     search : function(){
         //Save all the models
 
-        var done = {}, models = jpf.nameserver.getAll("model");
+        var done = {}, models = apf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++) {
             if (done[models[i].uniqueId])
                 continue;

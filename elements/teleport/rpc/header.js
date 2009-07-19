@@ -26,7 +26,7 @@
  * Implementation of an RPC protocol which encodes the variable information in 
  * the HTTP headers of the request.
  * Example:
- * Javeline Markup Language
+ * Ajax.org Markup Language
  * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="header">
@@ -60,18 +60,18 @@
  *
  * @addenum rpc[@protocol]:header
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @inherits jpf.rpc
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @inherits apf.rpc
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @default_private
  */
-jpf.header = function(){
+apf.header = function(){
     this.supportMulticall = false;
     this.method = "GET";
     this.vartype = "header";
@@ -79,12 +79,12 @@ jpf.header = function(){
     this.namedArguments = true;
     
     // Register Communication Module
-    jpf.teleport.register(this);
+    apf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
-        jpf.makeClass(this);
-        this.implement(jpf.BaseComm, jpf.http, jpf.rpc);
+        apf.makeClass(this);
+        this.implement(apf.BaseComm, apf.http, apf.rpc);
     }
     
     this.unserialize = function(str){
@@ -98,7 +98,7 @@ jpf.header = function(){
                 continue;
             
             // #ifdef __DEBUG
-            jpf.console.info("<strong>" + args[i][0] + ":</strong> " + args[i][1] + "<br />", "teleport");
+            apf.console.info("<strong>" + args[i][0] + ":</strong> " + args[i][1] + "<br />", "teleport");
             // #endif
             
             http.setRequestHeader(args[i][0], args[i][1]);

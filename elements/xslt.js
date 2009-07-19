@@ -29,13 +29,13 @@
  * @allowchild [cdata]
  * @addnode elements:jslt
  *
- * @inherits jpf.DataBinding
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.xslt = apf.component(apf.NODE_VISIBLE, function(){
     this.$hasStateMessages = true;
     
     // INIT
@@ -54,13 +54,13 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$propHandlers["value"] = function(code){
         if (this.createJml) {
             if (typeof code == "string") 
-                code = jpf.xmldb.getXml(code);
+                code = apf.xmldb.getXml(code);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
             // of the this.$jml xml. 
-            jpf.JmlParser.parseChildren(code, this.oInt, this);
-            if (jpf.JmlParser.inited) 
-                jpf.JmlParser.parseLastPass();
+            apf.JmlParser.parseChildren(code, this.oInt, this);
+            if (apf.JmlParser.inited) 
+                apf.JmlParser.parseLastPass();
         }
         else {
             this.oInt.innerHTML = code;
@@ -78,7 +78,7 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        this.createJml = jpf.isTrue(x.getAttribute("jml"));
+        this.createJml = apf.isTrue(x.getAttribute("jml"));
         
         //Events
         var a, i, attr = x.attributes;
@@ -98,15 +98,15 @@ jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
                 <bindings><value select='" + bind + "'>\
                 </value></bindings></smartbinding>";
             
-            var xmlNode = jpf.xmldb.getXml(strBind);
+            var xmlNode = apf.xmldb.getXml(strBind);
             var pNode = xmlNode.firstChild.firstChild;//.firstChild.firstChild
             for (var i = nodes.length - 1; i >= 0; i--)
                 pNode.appendChild(nodes[i]);
             
-            jpf.JmlParser.addToSbStack(this.uniqueId, new jpf.smartbinding(null, xmlNode));
+            apf.JmlParser.addToSbStack(this.uniqueId, new apf.smartbinding(null, xmlNode));
         }
     };
 }).implement(
-    jpf.DataBinding
+    apf.DataBinding
 );
 // #endif

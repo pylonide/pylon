@@ -40,7 +40,7 @@ var __MEDIA__ = 1 << 20;
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.Media = function(){
+apf.Media = function(){
     this.$regbase = this.$regbase | __MEDIA__;
 
     this.muted = false;
@@ -64,9 +64,9 @@ jpf.Media = function(){
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
-        if (value == jpf.Media.HAVE_NOTHING) {
+        if (value == apf.Media.HAVE_NOTHING) {
             // #ifdef __DEBUG
-            jpf.console.error("Unable to open medium with URL '" + this.src
+            apf.console.error("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
             // #endif
@@ -80,11 +80,11 @@ jpf.Media = function(){
               }) === false)
                 throw oError;
         }
-        else if (value == jpf.Media.HAVE_CURRENT_DATA)
+        else if (value == apf.Media.HAVE_CURRENT_DATA)
             this.dispatchEvent("havecurrentdata");
-        else if (value == jpf.Media.HAVE_FUTURE_DATA)
+        else if (value == apf.Media.HAVE_FUTURE_DATA)
             this.dispatchEvent("havefuturedata");
-        else if (value == jpf.Media.HAVE_ENOUGH_DATA) {
+        else if (value == apf.Media.HAVE_ENOUGH_DATA) {
             this.dispatchEvent("haveenoughdata");
             this.setProperty('ready', true);
         }
@@ -177,7 +177,7 @@ jpf.Media = function(){
     this.$propHandlers["paused"] = function(value){
         if (!this.player) return;
 
-        this.paused = jpf.isTrue(value);
+        this.paused = apf.isTrue(value);
         if (this.paused)
             this.player.pause();
         else
@@ -204,21 +204,21 @@ jpf.Media = function(){
     this.$propHandlers["src"] = function(value){
         if (loadTimer || !value) return; //@todo for mike: please check if this is the best behaviour for setting an empty value
 
-        var oUrl = new jpf.url(value);
+        var oUrl = new apf.url(value);
         this.src = oUrl.uri;
 
         // #ifdef __DEBUG
         if (!oUrl.isSameLocation())
-            jpf.console.warn("Media player: the medium with URL '" + this.src + "' \
+            apf.console.warn("Media player: the medium with URL '" + this.src + "' \
                 does not have the same origin as your web application. This can \
                 cause the medium to not load and/ or play.", "media");
         if (oUrl.protocol == "file")
-            jpf.console.warn("Media player: the medium with URL '" + this.src + "' \
+            apf.console.warn("Media player: the medium with URL '" + this.src + "' \
                 will be loaded through the 'file://' protocol. This can \
                 cause the medium to not load and/ or play.", "media");
         // #endif
 
-        if (this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
+        if (this.src != this.currentSrc && this.networkState !== apf.Media.LOADING) {
             var type = this.$guessType(this.src);
             if (type == this.type) {
                 reset.call(this);
@@ -248,7 +248,7 @@ jpf.Media = function(){
 
     this.$domHandlers["remove"].push(function(doOnlyAdmin){
         // #ifdef __DEBUG
-        jpf.console.log('Media: removing node...');
+        apf.console.log('Media: removing node...');
         // #endif
         reset.call(this);
     });
@@ -258,7 +258,7 @@ jpf.Media = function(){
             return;
 
         // #ifdef __DEBUG
-        jpf.console.log('Media: reparenting - ' + beforeNode + ', ' + pNode);
+        apf.console.log('Media: reparenting - ' + beforeNode + ', ' + pNode);
         // #endif
 
         this.$draw();
@@ -266,8 +266,8 @@ jpf.Media = function(){
     });
 
     function reset() {
-        this.setProperty('networkState',  jpf.Media.NETWORK_EMPTY);
-        //this.setProperty('readyState',   jpf.Media.HAVE_NOTHING);
+        this.setProperty('networkState',  apf.Media.NETWORK_EMPTY);
+        //this.setProperty('readyState',   apf.Media.HAVE_NOTHING);
         this.setProperty('ready',         false);
         //this.setProperty('buffered',      {start: 0, end: 0, length: 0});
         //this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
@@ -291,7 +291,7 @@ jpf.Media = function(){
 
     function reload(bNoReset) {
         // #ifdef __DEBUG
-        jpf.console.log('Media: reloading medium with mimetype ', this.type);
+        apf.console.log('Media: reloading medium with mimetype ', this.type);
         // #endif
 
         window.clearTimeout(loadTimer);
@@ -315,12 +315,12 @@ jpf.Media = function(){
 
     // error state
     this.MediaError = function(sMsg) {
-        return new Error(jpf.formatErrorString(0, this, "Media", sMsg));
+        return new Error(apf.formatErrorString(0, this, "Media", sMsg));
     };
 
     // network state
     this.src = this.currentSrc = null;
-    this.networkState       = jpf.Media.NETWORK_EMPTY; //default state
+    this.networkState       = apf.Media.NETWORK_EMPTY; //default state
     this.bufferingRate      = 0;
     this.bufferingThrottled = false;
     this.buffered           = {start: 0, end: 0, length: 0}; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
@@ -333,7 +333,7 @@ jpf.Media = function(){
     };
 
     // ready state
-    this.readyState = jpf.Media.HAVE_NOTHING;
+    this.readyState = apf.Media.HAVE_NOTHING;
     this.seeking    = false;
 
     // playback state
@@ -399,7 +399,7 @@ jpf.Media = function(){
      * @type  {String}
      */
     this.getCounter = function(iMillis, sFormat, bReverse) {
-        // for String.pad, 'jpf.PAD_LEFT' is implicit
+        // for String.pad, 'apf.PAD_LEFT' is implicit
         if (bReverse)
             iMillis = iMillis - this.duration;
         var iSeconds = Math.round(Math.abs(iMillis / 1000)),
@@ -443,7 +443,7 @@ jpf.Media = function(){
     this.setSource = function(jml) {
         jml = jml || this.$jml;
         // first get the 'Not supported' placeholder...
-        var aNodes = $xmlns(jml, "nomedia", jpf.ns.jml);
+        var aNodes = $xmlns(jml, "nomedia", apf.ns.jml);
         if (!aNodes.length) {
             this.notSupported = (jml.firstChild && jml.firstChild.nodeType == 3)
                 ? jml.firstChild.nodeValue
@@ -453,7 +453,7 @@ jpf.Media = function(){
             this.notSupported = aNodes[0].innerHTML;
 
         if (!this.src) { // no direct src-attribute set
-            var src, type, oSources = $xmlns(jml, "source", jpf.ns.jml);
+            var src, type, oSources = $xmlns(jml, "source", apf.ns.jml);
             // iterate through all the <source> tags from left to right
             for (var i = 0, j = oSources.length; i < j; i++) {
                 src  = oSources[i].getAttribute("src");
@@ -480,17 +480,17 @@ jpf.Media = function(){
 };
 
 // network state (.networkState)
-jpf.Media.NETWORK_EMPTY   = 0;
-jpf.Media.NETWORK_IDLE    = 1;
-jpf.Media.NETWORK_LOADING = 2;
-jpf.Media.NETWORK_LOADED  = 3;
+apf.Media.NETWORK_EMPTY   = 0;
+apf.Media.NETWORK_IDLE    = 1;
+apf.Media.NETWORK_LOADING = 2;
+apf.Media.NETWORK_LOADED  = 3;
 
 // ready state (.readyState)
-jpf.Media.HAVE_NOTHING      = 0;
-jpf.Media.HAVE_METADATA     = 1;
-jpf.Media.HAVE_SOME_DATA    = 2; //wtf??
-jpf.Media.HAVE_CURRENT_DATA = 3;
-jpf.Media.HAVE_FUTURE_DATA  = 4;
-jpf.Media.HAVE_ENOUGH_DATA  = 5;
+apf.Media.HAVE_NOTHING      = 0;
+apf.Media.HAVE_METADATA     = 1;
+apf.Media.HAVE_SOME_DATA    = 2; //wtf??
+apf.Media.HAVE_CURRENT_DATA = 3;
+apf.Media.HAVE_FUTURE_DATA  = 4;
+apf.Media.HAVE_ENOUGH_DATA  = 5;
 
 // #endif

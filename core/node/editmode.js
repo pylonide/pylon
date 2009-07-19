@@ -79,11 +79,11 @@ var __MULTILANG__ = 1 << 16;
  *   </j:window>
  *
  *   <j:button icon="us.gif"
- *     onclick="jpf.language.loadFrom('mdlLang:english');">
+ *     onclick="apf.language.loadFrom('mdlLang:english');">
  *        English
  *   </j:button>
  *   <j:button icon="fr.gif"
- *     onclick="jpf.language.loadFrom('mdlLang:french');">
+ *     onclick="apf.language.loadFrom('mdlLang:french');">
  *        French
  *   </j:button>
  * </code>
@@ -91,7 +91,7 @@ var __MULTILANG__ = 1 << 16;
  * @default_private
  * @todo get appsettings to understand language
  */
-jpf.language = {
+apf.language = {
     /**
      * Boolean specifying whether read strings are tried to match themselves if no key
      * was gives.
@@ -117,7 +117,7 @@ jpf.language = {
      */
     loadXml   : function(xmlNode, prefix){
         if (typeof xmlNode == "string")
-            xmlNode = jpf.getXmlDom(xmlNode).documentElement;
+            xmlNode = apf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
         this.$processMarked();
         this.loaded = true;
@@ -128,14 +128,14 @@ jpf.language = {
      * @param {String} instruction  the {@link term.datainstruction data instruction} to load the symbol xml from.
      */
     loadFrom  : function(instruction) {
-        jpf.setModel(instruction, {
+        apf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) 
                     return;
 
                 //#ifdef __DEBUG
                 if (!xmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null,
+                    throw new Error(apf.formatErrorString(0, null,
                         "Loading language",
                         "Could not find language symbols using processing \
                          instruction: '" + instruction + "'"));
@@ -144,13 +144,13 @@ jpf.language = {
                 }
                 //#endif
 
-                jpf.language.loadXml(xmlNode);
+                apf.language.loadXml(xmlNode);
                 this.isLoaded = true;
             },
 
             setModel: function(model, xpath){
                 if (typeof model == "string")
-                    model = jpf.nameserver.get("model", model);
+                    model = apf.nameserver.get("model", model);
                 model.register(this, xpath);
             }
         });
@@ -180,7 +180,7 @@ jpf.language = {
         var ar, id, jmlNode, nodes;
         for (id in this.$marked) {
             ar      = id.split(":");
-            jmlNode = jpf.all[ar[0]];
+            jmlNode = apf.all[ar[0]];
             
             if (jmlNode.cacheID == ar[1]) {
                 if (jmlNode.hasFeature(__MULTISELECT__)) {
@@ -194,7 +194,7 @@ jpf.language = {
                     
                     for (var i = 0; i < nodes.length; i++) {
                         jmlNode.$updateNode(nodes[i], 
-                          jpf.xmldb.findHtmlNode(nodes[i], jmlNode));
+                          apf.xmldb.findHtmlNode(nodes[i], jmlNode));
                     }
                 }
                 else {
@@ -399,10 +399,10 @@ EditServer = {
             ? xmldb.selectSingleNode(data.config[data.counter][1], data.jmlNode)
             : xmldb.getTextNode(data.jmlNode);
         if (!xmlNode)
-            xmlNode = jpf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
+            xmlNode = apf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
         var key = xmlNode.nodeValue;
         if (!key.match(/^\$.*\$$/)) {
-            var key = jpf.language.addWord(data.htmlNode.innerHTML, null, data);
+            var key = apf.language.addWord(data.htmlNode.innerHTML, null, data);
             xmlNode.nodeValue = "$" + key + "$";
         }
         data.key = key;
@@ -465,13 +465,13 @@ EditServer = {
         }
 
         if (!isCancel) {
-            var word = jpf.xmldb.getTextNode(this.edit).nodeValue;
-            jpf.language.addWord(word, data.key);
+            var word = apf.xmldb.getTextNode(this.edit).nodeValue;
+            apf.language.addWord(word, data.key);
             if (this.onupdateword)
                 this.onupdateword(word, data.key);
         }
         else {
-            this.edit.firstChild.nodeValue = jpf.language.getWord(data.key);
+            this.edit.firstChild.nodeValue = apf.language.getWord(data.key);
         }
 
         var r = document.selection.createRange();

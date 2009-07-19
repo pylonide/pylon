@@ -23,7 +23,7 @@
 /**
  * @private
  */
-jpf.plane = {
+apf.plane = {
     init : function(){
         if (!this.plane) {
             this.plane                  = document.createElement("DIV");
@@ -53,13 +53,13 @@ jpf.plane = {
         }
         
         var pWidth = (plane.parentNode == document.body
-            ? (jpf.isIE 
+            ? (apf.isIE 
                 ? plane.offsetParent.offsetWidth 
                 : window.innerWidth)
             : plane.parentNode.offsetWidth);
 
         var pHeight = (plane.parentNode == document.body
-            ? (jpf.isIE 
+            ? (apf.isIE 
                 ? plane.offsetParent.offsetHeight
                 : window.innerHeight)
             : plane.parentNode.offsetHeight);
@@ -67,14 +67,14 @@ jpf.plane = {
         if (copyCursor) {
             if (this.lastCursor === null)
                 this.lastCursor = document.body.style.cursor;
-            document.body.style.cursor = jpf.getStyle(o, "cursor");
+            document.body.style.cursor = apf.getStyle(o, "cursor");
         }
         
         this.plane.style.display = "block";
         //this.plane.style.left    = p.scrollLeft;
         //this.plane.style.top     = p.scrollTop;
         
-        var diff = jpf.getDiff(plane.parentNode);
+        var diff = apf.getDiff(plane.parentNode);
         this.plane.style.width  = (pWidth - diff[0]) + "px";
         this.plane.style.height = (pHeight - diff[1]) + "px";
 
@@ -97,7 +97,7 @@ jpf.plane = {
     hide : function(){
         var isChild =
             //#ifdef __WITH_XMLDATABASE
-            jpf.xmldb.isChildOf(this.plane, document.activeElement);
+            apf.xmldb.isChildOf(this.plane, document.activeElement);
             /* #else
             this.isChildOf(this.plane, document.activeElement);
             #endif */
@@ -114,9 +114,9 @@ jpf.plane = {
         this.plane.style.display  = "none";
         
         if (isChild) {
-            if (!jpf.isIE)
+            if (!apf.isIE)
                 document.activeElement.focus();
-            jpf.window.focussed.$focus();
+            apf.window.focussed.$focus();
         }
         
         this.current = null;

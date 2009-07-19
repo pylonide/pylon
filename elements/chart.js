@@ -37,7 +37,7 @@
  * @since       0.4
  */
 
-jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.chart = apf.component(apf.NODE_VISIBLE, function(){
 
      //var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};    
     var _self    = this;
@@ -79,10 +79,10 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 			doinit = false;
 			doresize = false;
             this.$copyPos();
-			jpf.draw.initRoot(this);
+			apf.draw.initRoot(this);
 		}else if (doresize){
             this.$copyPos();
-            jpf.draw.resizeRoot(this);
+            apf.draw.resizeRoot(this);
 		}
         for(var n, i = 0;i<this.childNodes.length;i++){
             if((n=this.childNodes[i]).$drawAxis){
@@ -128,9 +128,9 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
         this.oInt = oInt;
 
-        jpf.draw.initDriver();
+        apf.draw.initDriver();
 
-        jpf.JmlParser.parseChildren(x, this.oExt, this);
+        apf.JmlParser.parseChildren(x, this.oExt, this);
        
         var ox, oy, lx, ly, bt, stack = [], interact = false;
         var iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
@@ -143,7 +143,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if(!bt)return;
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
             //interact = true;
-            var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
+            var pos = apf.getAbsolutePosition(_self.oExt,document.documentElement);
                 lx = e.clientX-pos[0] + document.documentElement.scrollLeft, 
                 ly = e.clientY-pos[1] + document.documentElement.scrollTop;
             ox = lx , oy = ly;
@@ -179,7 +179,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 			if(doinit)return;
             if (!e) e = event;
             bt = 0;
-            var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
+            var pos = apf.getAbsolutePosition(_self.oExt,document.documentElement);
             var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
                 y = e.clientY - pos[1] + document.documentElement.scrollTop;
             for(var i = stack.length-1;i>=0;i--)
@@ -191,7 +191,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 			if(doinit)return;
             //if (!interact) return;
             if (!e) e = event;
-            var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
+            var pos = apf.getAbsolutePosition(_self.oExt,document.documentElement);
             var dx = (-lx + (lx=e.clientX-pos[0] + document.documentElement.scrollLeft)),
                 dy = (-ly + (ly=e.clientY-pos[1] + document.documentElement.scrollTop));
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
@@ -219,7 +219,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
                 (e.detail ? -e.detail / 3 : 0);
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
             if(d){
-                var pos = jpf.getAbsolutePosition(_self.oExt,document.documentElement);
+                var pos = apf.getAbsolutePosition(_self.oExt,document.documentElement);
                 // lets find if we are over a graph
                 var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
                     y = e.clientY - pos[1] + document.documentElement.scrollTop;
@@ -234,13 +234,13 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if(e.preventDefault) e.preventDefault();
             e.returnValue = false;
         }
-        if (!jpf.supportVML && this.oExt.addEventListener){
+        if (!apf.supportVML && this.oExt.addEventListener){
             this.oExt.addEventListener('DOMMouseScroll', wheelEvent, false);
         }
         this.oExt.onmousewheel = wheelEvent;
 
         //#ifdef __WITH_LAYOUT
-        jpf.layout.setRules(this.oExt, "resize", "var o = jpf.all[" + this.uniqueId + "];\
+        apf.layout.setRules(this.oExt, "resize", "var o = apf.all[" + this.uniqueId + "];\
             if (o) o.$resize()", true);
         //#endif
         
@@ -253,7 +253,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$destroy = function() {
         //#ifdef __WITH_LAYOUT
-        jpf.layout.removeRule(this.oExt, "resize");
+        apf.layout.removeRule(this.oExt, "resize");
         //#endif
         
         this.oExt.onmousedown   = 
@@ -266,10 +266,10 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         window.clearTimeout(timer);
         window.clearInterval(animTimer);
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
      
-jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.axis = apf.component(apf.NODE_HIDDEN, function(){
     this.$supportedProperties = [
         "left","top","width","height","mode",
         "zoom","zoomx", "zoomy","movex", "movey",  
@@ -530,12 +530,12 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
 		if(doinit){
             doinit = false;
             this.$parentChart.$copyPos(this);
-			jpf.draw.initLayer(this, this.$parentChart);
+			apf.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentChart.$copyPos(this);
             if(_style)this.$parentChart.$copyPos(subpos, _style.margin);
- 			jpf.draw.resizeLayer(this, this.$parentChart);
+ 			apf.draw.resizeLayer(this, this.$parentChart);
 		}
 		
         // check if we need to recompile
@@ -547,12 +547,12 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
             
             // go and reparse style
             if(!_style) _style = 
-                jpf.draw.parseStyle( jpf.chart_draw['_'+mode], this.style, err );
+                apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style, err );
             
             if(_style)this.$parentChart.$copyPos(subpos, _style.margin);
             else this.$parentChart.$copyPos(subpos);
             // recompile drawing code
-            this.$drawCode  = jpf.chart_draw[mode]( this, _style );
+            this.$drawCode  = apf.chart_draw[mode]( this, _style );
             
         }
         if(this.$drawCode){
@@ -571,14 +571,14 @@ jpf.axis = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$loadJml = function(x, obj){
         this.$parentChart = this.parentNode;
 
-        jpf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
+        apf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
 
         this.$redraw();
      }
 });
 
 
-jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.graph = apf.component(apf.NODE_VISIBLE, function(){
     //this.$supportedProperties = ["type","series","formula"];
     this.$focussable = false;
 
@@ -640,7 +640,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             //alert(formula);
             var mdl = this.getModel();
             if(!mdl.v_yval){
-                var f = new Function('length','v_yval',jpf.draw.baseMacro(
+                var f = new Function('length','v_yval',apf.draw.baseMacro(
                         ["for(v = 0;v<length;v++){",
                             "v_yval[v] = ",[formula],";",
                         "}"]));
@@ -744,7 +744,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     this.$propHandlers["formula"] = function(value){
-        this.pformula = jpf.draw.parseJSS(value);
+        this.pformula = apf.draw.parseJSS(value);
         // set source type
         this.$datamode = 'math';
         this.docompile = true;
@@ -780,11 +780,11 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
 		if(doinit){
             doinit = false;
             this.$parentAxis.$copySubPos(this);
-			jpf.draw.initLayer(this, this.$parentChart);
+			apf.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentAxis.$copySubPos(this);
- 			jpf.draw.resizeLayer(this, this.$parentChart);
+ 			apf.draw.resizeLayer(this, this.$parentChart);
 		}
 	    
 		if(docompile){
@@ -796,7 +796,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
 			var mode = this.mode+this.$parentAxis.mode;
             // go and reparse style
            if(!_style)_style = 
-                    jpf.draw.parseStyle( jpf.chart_draw['_'+mode], this.style, err );
+                    apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style, err );
             if(_style.graph && _style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
                     if(t=c[i]){
@@ -805,8 +805,8 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
             //alert(this.$datatype);
-			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
-			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
+			this.$datatype = apf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+			this.$drawCode  = apf.chart_draw[mode]( this, this.$datatype, _style );
             // we'll also have to compile the balloon and knob code.
         }
 	
@@ -821,11 +821,11 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$drawBalloons = function(v, doresize){
         if(doinit){
             doinit = false;
-			jpf.draw.initLayer(this, this.$parentChart);
+			apf.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentAxis.$copySubPos(this);
- 			jpf.draw.resizeLayer(this, this.$parentChart);
+ 			apf.draw.resizeLayer(this, this.$parentChart);
 		}
 	    
 		if(docompile){
@@ -837,7 +837,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
 			var mode = this.mode+this.$parentAxis.mode;
             // go and reparse style
            if(!_style)_style = 
-                    jpf.draw.parseStyle( jpf.chart_draw['_'+mode], this.style, err );
+                    apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style, err );
             if(_style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
                     if(t=c[i]){
@@ -846,10 +846,10 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
             //alert(this.$datatype);
-			this.$datatype = jpf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
-			this.$drawCode  = jpf.chart_draw[mode]( this, this.$datatype, _style );
+			this.$datatype = apf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+			this.$drawCode  = apf.chart_draw[mode]( this, this.$datatype, _style );
             // lets get some ballooons.
-            //this.$balloonCode = jpf.chart_draw[
+            //this.$balloonCode = apf.chart_draw[
             // we'll also have to compile the balloon and knob code.
         }
 	
@@ -894,7 +894,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         if(o!=(l=this.lastOver)){
-            var sb = jpf.draw.stateBit;
+            var sb = apf.draw.stateBit;
             // we should remove the over-state from the last
             if(l>=0){
                 switchState(l, sb.hoverout, sb.hoverin );
@@ -925,7 +925,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         var v_yval = this.v_yval  = [];
         var v_xval = this.v_xval  = [];
@@ -959,7 +959,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             // x / y value array
             var n,p,v,k,length,t = (new Date()).getTime()*0.001;
             if (!this.bindingRules.y){
-                jpf.console.warn("No y binding rule found for graph "
+                apf.console.warn("No y binding rule found for graph "
                                  + this.name + " [" + this.tagName + "]");
             }
             else {
@@ -968,7 +968,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
                 for (v = 0, length = v_nodes.length; v < length; v++) {
                     n = v_nodes[v];
                     //caching
-                    //v_cacheid[jpf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
+                    //v_cacheid[apf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
                 
                     this.v_time[v] = t;
                     v_yval[v] = parseFloat(this.applyRuleSetOnNode("y", n));
@@ -1037,14 +1037,14 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
             var v_caption = this.v_caption  = []; // mouseover title
             var v_state = this.v_state = []; // class
         
-            //cacheid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+            //cacheid = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
             // this.info = [];
             // this.ylabel = {};hoeveel 
             var v_nodes = this.v_nodes  = this.getTraverseNodes(this.xmlRoot);
             // x / y value array
             var n,p,v,k,length,t = (new Date()).getTime()*0.001;
             if (!this.bindingRules.y){
-                jpf.console.warn("No y binding rule found for graph "
+                apf.console.warn("No y binding rule found for graph "
                                  + this.name + " [" + this.tagName + "]");
             }
             else {
@@ -1053,7 +1053,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
                 for (v = 0, length = v_nodes.length; v < length; v++) {
                     n = v_nodes[v];
                     //caching
-                    //v_cacheid[jpf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
+                    //v_cacheid[apf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
                 
                     this.v_time[v] = t;
                     v_yval[v] = parseFloat(this.applyRuleSetOnNode("y", n));
@@ -1070,7 +1070,7 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$sourcetype = 'seriesX';
             }
             //if (this.focussable)
-                //jpf.window.focussed == this ? this.$focus() : this.$blur();
+                //apf.window.focussed == this ? this.$focus() : this.$blur();
 
             //#ifdef __WITH_PROPERTY_BINDING
             if (length != this.length)
@@ -1085,11 +1085,11 @@ jpf.graph = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$parentAxis = this.parentNode;
         this.$parentChart = this.$parentAxis.parentNode;
         
-        jpf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
+        apf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
     }
 }).implement(
-    jpf.MultiSelect,
-    jpf.DataBinding
+    apf.MultiSelect,
+    apf.DataBinding
 );
 // #endif
  

@@ -27,13 +27,13 @@
  * @constructor
  * @todo use a struct instead of lots of local variables, and stop using eval
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  *
  * @private
  */
-jpf.Sort = function(xmlNode){
+apf.Sort = function(xmlNode){
     var settings = {};
     //order, xpath, type, method, getNodes, dateFormat, dateReplace, sort_dateFmtStr, getValue;
     
@@ -45,7 +45,7 @@ jpf.Sort = function(xmlNode){
         settings.xpath       = xmlNode.getAttribute("sort");
         settings.getNodes    = self[xmlNode.getAttribute("nodes-method")];
         settings.getValue    = function(item){
-            return jpf.getXmlValue(item, settings.xpath);
+            return apf.getXmlValue(item, settings.xpath);
         }
 
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
@@ -58,7 +58,7 @@ jpf.Sort = function(xmlNode){
             
             //#ifdef __DEBUG
             if (!settings.method) {
-                throw new Error(jpf.formatErrorString(0, null, 
+                throw new Error(apf.formatErrorString(0, null, 
                     "Sorting nodes",
                     "Invalid or missing sort function name provided '" 
                     + xmlNode.getAttribute("sort-method") + "'", xmlNode));
@@ -89,7 +89,7 @@ jpf.Sort = function(xmlNode){
     this.set = function(struct, clear){
         if (clear) settings = {};
         
-        jpf.extend(settings, struct);
+        apf.extend(settings, struct);
 
         if (struct.order && !settings.ascending)
             settings.ascending = struct.order.indexOf("desc") == -1;
@@ -105,13 +105,13 @@ jpf.Sort = function(xmlNode){
         
         if (!settings.getValue) {
             settings.getValue = function(item){
-                return jpf.getXmlValue(item, settings.xpath);
+                return apf.getXmlValue(item, settings.xpath);
             }
         }
     };
     
     this.get = function(){
-        return jpf.extend({}, settings);
+        return apf.extend({}, settings);
     };
     
     //use this function in __xmlUpdate [this function isnt done yet]

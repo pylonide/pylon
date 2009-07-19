@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_DIRECTIONS || __INC_ALL
 
-jpf.editor.directionPlugin = function(sName) {
+apf.editor.directionPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this baby
@@ -39,7 +39,7 @@ jpf.editor.directionPlugin = function(sName) {
     };
 };
 
-jpf.editor.plugin('ltr', jpf.editor.directionPlugin);
-jpf.editor.plugin('rtl', jpf.editor.directionPlugin);
+apf.editor.plugin('ltr', apf.editor.directionPlugin);
+apf.editor.plugin('rtl', apf.editor.directionPlugin);
 
 // #endif

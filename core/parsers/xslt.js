@@ -20,16 +20,16 @@
  */
 
 // #ifdef __SUPPORT_SAFARI
-jpf.runXslt = function(){
+apf.runXslt = function(){
     /**
      * @constructor
      * @parser
      */
-    jpf.XSLTProcessor = function(){
+    apf.XSLTProcessor = function(){
         this.templates = {};
         this.p = {
             "value-of": function(context, xslNode, childStack, result){
-                var xmlNode = jpf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
+                var xmlNode = apf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
                 if (!xmlNode)
                     value = "";
                 else {
@@ -43,21 +43,21 @@ jpf.runXslt = function(){
             },
 
             "copy-of": function(context, xslNode, childStack, result){
-                var xmlNode = jpf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
+                var xmlNode = apf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
                 if (xmlNode)
-                    result.appendChild(jpf.canImportNode
+                    result.appendChild(apf.canImportNode
                         ? result.ownerDocument.importNode(xmlNode, true)
                         : xmlNode.cloneNode(true));
             },
 
             "if": function(context, xslNode, childStack, result){
-                if (jpf.XPath.selectNodes(xslNode.getAttribute("test"), context)[0]) {// + "[0]"
+                if (apf.XPath.selectNodes(xslNode.getAttribute("test"), context)[0]) {// + "[0]"
                     this.parseChildren(context, xslNode, childStack, result);
                 }
             },
 
             "for-each": function(context, xslNode, childStack, result){
-                var nodes = jpf.XPath.selectNodes(xslNode.getAttribute("select"), context);
+                var nodes = apf.XPath.selectNodes(xslNode.getAttribute("select"), context);
                 for (var i = 0; i < nodes.length; i++) {
                     this.parseChildren(nodes[i], xslNode, childStack, result);
                 }
@@ -69,9 +69,9 @@ jpf.runXslt = function(){
                     if (!nodes[i].tagName)
                         continue;
 
-                    if (nodes[i][jpf.TAGNAME]  == "otherwise"
-                      || nodes[i][jpf.TAGNAME] == "when"
-                      && jpf.XPath.selectNodes(nodes[i].getAttribute("test"), context)[0])
+                    if (nodes[i][apf.TAGNAME]  == "otherwise"
+                      || nodes[i][apf.TAGNAME] == "when"
+                      && apf.XPath.selectNodes(nodes[i].getAttribute("test"), context)[0])
                         return this.parseChildren(context, nodes[i], childStack[i][2], result);
                 }
             },
@@ -168,7 +168,7 @@ jpf.runXslt = function(){
             "import": function(context, xslNode, childStack, result){
                 var file = xslNode.getAttribute("href");
                 if (!this.cache[file]) {
-                    var data = jpf.oHttp.get(file);
+                    var data = apf.oHttp.get(file);
                     this.cache[file] = data;
                 }
 
@@ -182,14 +182,14 @@ jpf.runXslt = function(){
             "otherwise": function(){},
 
             "copy-clone": function(context, xslNode, childStack, result){
-                result = result.appendChild(jpf.canImportNode ? result.ownerDocument.importNode(xslNode, false) : xslNode.cloneNode(false));
+                result = result.appendChild(apf.canImportNode ? result.ownerDocument.importNode(xslNode, false) : xslNode.cloneNode(false));
                 if (result.nodeType == 1) {
                     for (var i = 0; i < result.attributes.length; i++) {
                         var blah = result.attributes[i].nodeValue; //stupid Safari shit
-                        if (!jpf.isSafariOld && result.attributes[i].nodeName.match(/^xmlns/))
+                        if (!apf.isSafariOld && result.attributes[i].nodeName.match(/^xmlns/))
                             continue;
                         result.attributes[i].nodeValue = result.attributes[i].nodeValue.replace(/\{([^\}]+)\}/g, function(m, xpath){
-                            var xmlNode = jpf.XPath.selectNodes(xpath, context)[0];
+                            var xmlNode = apf.XPath.selectNodes(xpath, context)[0];
 
                             if (!xmlNode) {
                                 value = "";
@@ -226,18 +226,18 @@ jpf.runXslt = function(){
                 if (nodes[i].nodeType != 1 && nodes[i].nodeType != 3 && nodes[i].nodeType != 4)
                     continue;
 
-                if (nodes[i][jpf.TAGNAME] == "template") {
+                if (nodes[i][apf.TAGNAME] == "template") {
                     this.templates[nodes[i].getAttribute("match") || nodes[i].getAttribute("name")] = [nodes[i], this.compile(nodes[i])];
                 }
                 else {
-                    if (nodes[i][jpf.TAGNAME] == "stylesheet") {
+                    if (nodes[i][apf.TAGNAME] == "stylesheet") {
                         this.compile(nodes[i])
                     }
                     else {
                         if (nodes[i].prefix == "xsl") {
-                            var func = this.p[nodes[i][jpf.TAGNAME]];
+                            var func = this.p[nodes[i][apf.TAGNAME]];
                             if (!func)
-                                alert("xsl:" + nodes[i][jpf.TAGNAME] + " is not supported at this time on this platform");
+                                alert("xsl:" + nodes[i][apf.TAGNAME] + " is not supported at this time on this platform");
                             else
                                 stack.push([func, nodes[i], this.compile(nodes[i])]);
                         }
@@ -264,14 +264,14 @@ jpf.runXslt = function(){
             this.xmlDoc = newDoc.nodeType != 9 ? newDoc.ownerDocument : newDoc;//new DOMParser().parseFromString("<xsltresult></xsltresult>", "text/xml");//
             var docfrag = this.xmlDoc.createDocumentFragment();
 
-            if (!jpf.isSafariOld && doc.nodeType == 9)
+            if (!apf.isSafariOld && doc.nodeType == 9)
                 doc = doc.documentElement;
             var result = this.parseChildren(doc, this.xslDoc, this.xslStack, docfrag);
             return docfrag;
         };
     };
 
-    self.XSLTProcessor = jpf.XSLTProcessor;
+    self.XSLTProcessor = apf.XSLTProcessor;
 
 }
 

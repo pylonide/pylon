@@ -77,14 +77,14 @@
  * @allowchild {anyxhtml}
  * @addnode elements
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["container","@invalidmsg"]]};
     // #endif
@@ -102,10 +102,10 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             host.oExt;
 
         document.body.appendChild(this.oExt);
-        var pos = jpf.getAbsolutePosition(refHtml, document.body);
+        var pos = apf.getAbsolutePosition(refHtml, document.body);
 
         if (document != refHtml.ownerDocument) {
-            var pos2 = jpf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
+            var pos2 = apf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
             pos[0] += pos2[0];
             pos[1] += pos2[1];
         }
@@ -116,7 +116,7 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.oExt.style.top  = y + "px"
         
         this.show();
-        jpf.popup.show(this.uniqueId, {
+        apf.popup.show(this.uniqueId, {
             x            : x,
             y            : y,
             animate      : false,
@@ -157,8 +157,8 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oClose.onclick = function(){
                 _self.hide();
 
-                if (jpf.window.focussed)
-                    jpf.window.focussed.focus(true, {mouse:true});
+                if (apf.window.focussed)
+                    apf.window.focussed.focus(true, {mouse:true});
             };
         }
         
@@ -166,18 +166,18 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
             (e || event).cancelBubble = true;
             
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix();
+            if (apf.hasFocusBug)
+                apf.window.$focusfix();
             //#endif
         }
 
         this.hide();
         
-        jpf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
+        apf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
     
     this.$loadJml = function(x){
-        jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+        apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
     };
     
     this.$destroy = function(){
@@ -186,9 +186,9 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.oExt.onmousedown = null;
         
-        jpf.popup.removeContent(this.uniqueId);
+        apf.popup.removeContent(this.uniqueId);
     }
 }).implement(
-    jpf.Presentation
+    apf.Presentation
 );
 // #endif

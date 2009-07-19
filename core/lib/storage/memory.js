@@ -28,7 +28,7 @@
  * features that depend on a storage mechanism to be available.
  * @default_private
  */
-jpf.namespace("storage.modules.memory", {
+apf.namespace("storage.modules.memory", {
     initialized: true,
     store      : {},
     
@@ -45,7 +45,7 @@ jpf.namespace("storage.modules.memory", {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -55,13 +55,13 @@ jpf.namespace("storage.modules.memory", {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
         
         // serialize the value;
-        value = jpf.serialize(value);
+        value = apf.serialize(value);
         
         // store the value    
         if (!this.store[namespace])
@@ -79,7 +79,7 @@ jpf.namespace("storage.modules.memory", {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -89,7 +89,7 @@ jpf.namespace("storage.modules.memory", {
 		
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -97,7 +97,7 @@ jpf.namespace("storage.modules.memory", {
         if (!this.store[namespace] || !this.store[namespace][key])
             return null;
           
-        return jpf.unserialize(this.store[namespace][key]);
+        return apf.unserialize(this.store[namespace][key]);
     },
     
     /**
@@ -124,7 +124,7 @@ jpf.namespace("storage.modules.memory", {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -145,7 +145,7 @@ jpf.namespace("storage.modules.memory", {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -164,7 +164,7 @@ jpf.namespace("storage.modules.memory", {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -184,7 +184,7 @@ jpf.namespace("storage.modules.memory", {
         if (this.isValidKeyArray(keys) === false
           || ! values instanceof Array
           || keys.length != values.length) {
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], \
                                     values = [" + values + "]"));
@@ -196,7 +196,7 @@ jpf.namespace("storage.modules.memory", {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -207,7 +207,7 @@ jpf.namespace("storage.modules.memory", {
         
         // try to store the value    
         for (var i = 0; i < keys.length; i++) {
-            this.store[namespace][keys[i]] = jpf.serialize(values[i]);
+            this.store[namespace][keys[i]] = apf.serialize(values[i]);
         }
         
         return true;
@@ -222,7 +222,7 @@ jpf.namespace("storage.modules.memory", {
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -232,7 +232,7 @@ jpf.namespace("storage.modules.memory", {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -243,7 +243,7 @@ jpf.namespace("storage.modules.memory", {
         var results = [];
         for (var i = 0; i < keys.length; i++){
             if (this.store[namespace][keys[i]])
-                results.push(jpf.unserialize(this.store[namespace][keys[i]]));
+                results.push(apf.unserialize(this.store[namespace][keys[i]]));
         }
         
         return results;
@@ -257,7 +257,7 @@ jpf.namespace("storage.modules.memory", {
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -267,7 +267,7 @@ jpf.namespace("storage.modules.memory", {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

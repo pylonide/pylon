@@ -21,25 +21,25 @@
 
 // #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-jpf.editor.plugin('visualaid', function(){
+apf.editor.plugin('visualaid', function(){
     this.name        = 'visualaid';
     this.icon        = 'visualaid';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+v';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         var state = this.queryState(editor);
-        editor.oDoc.body.className = (state == jpf.editor.ON) ? "" : "visualAid";
+        editor.oDoc.body.className = (state == apf.editor.ON) ? "" : "visualAid";
         editor.notify(this.name);
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        this.state = jpf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
+        this.state = apf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
         return this.state;
     };
 });

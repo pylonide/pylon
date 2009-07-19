@@ -20,7 +20,7 @@
  */
 // #ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_VML
-jpf.namespace("draw.vml",{
+apf.namespace("draw.vml",{
    //----------------------------------------------------------------------
     
     // initialization
@@ -29,8 +29,8 @@ jpf.namespace("draw.vml",{
      
     initRoot : function(r){
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
-        if(!jpf.isIE8 || jpf.isIE7Simulation){
-            jpf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
+        if(!apf.isIE8 || apf.isIE7Simulation){
+            apf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
             r.oInt.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                             background:url(images/spacer.gif);width:"+
@@ -159,7 +159,7 @@ jpf.namespace("draw.vml",{
                 p.push("_styles[",i,"]={",
                        "_domnode:_n=l._vmlgroup.childNodes[",j,"]");
                 if(style.$stylelist){
-                    p.push(",",jpf.draw.serializeStyleState(style))
+                    p.push(",",apf.draw.serializeStyleState(style))
                 }
                 if(style.isshape){
                     s.push(this.$finalizeShape(style));

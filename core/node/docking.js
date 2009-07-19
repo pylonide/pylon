@@ -28,13 +28,13 @@ var __DOCKING__ = 1 << 18;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  *
  * @see baseclass.alignment
  */
-jpf.Docking = function(){
+apf.Docking = function(){
     this.$regbase = this.$regbase | __DOCKING__;
     
     /**
@@ -43,17 +43,17 @@ jpf.Docking = function(){
     this.startDocking = function(e){
         //#ifdef __DEBUG
         if (!this.aData) 
-            return jpf.console.warn("Docking start without alignment set on this element");
+            return apf.console.warn("Docking start without alignment set on this element");
         //#endif
 
-        jpf.DockServer.start(this.aData, this, e);
+        apf.DockServer.start(this.aData, this, e);
     };
 };
 
 /**
  * @private
  */
-jpf.DockServer = {
+apf.DockServer = {
     edge: 30,
     inited: false,
     
@@ -62,7 +62,7 @@ jpf.DockServer = {
             return;
         this.inited = true;
         
-        jpf.dragmode.defineMode("dockobject", this);
+        apf.dragmode.defineMode("dockobject", this);
         
         if (!this.nextPositionMarker) {
             this.nextPositionMarker = document.body.appendChild(document.createElement("div"));
@@ -71,13 +71,13 @@ jpf.DockServer = {
             this.nextPositionMarker.style.zIndex   = 10000;
             this.nextPositionMarker.style.filter   = "progid:DXImageTransform.Microsoft.Alpha(opacity=50);"
             this.nextPositionMarker.style.opacity  = 0.5;
-            jpf.setUniqueHtmlId(this.nextPositionMarker);
+            apf.setUniqueHtmlId(this.nextPositionMarker);
         }
     },
     
     start: function(oItem, jmlNode, e){
         if (!this.inited) 
-            jpf.DockServer.init();
+            apf.DockServer.init();
         
         this.dragdata = {
             item: oItem,
@@ -86,14 +86,14 @@ jpf.DockServer = {
             y: e.offsetY || e.layerY
         }
         
-        jpf.dragmode.setMode("dockobject");
+        apf.dragmode.setMode("dockobject");
 
         // #ifdef __WITH_PLANE
-        jpf.plane.show(this.nextPositionMarker);
+        apf.plane.show(this.nextPositionMarker);
         // #endif
 
-        var pos  = jpf.getAbsolutePosition(oItem.oHtml);
-        var diff = jpf.getDiff(this.nextPositionMarker);
+        var pos  = apf.getAbsolutePosition(oItem.oHtml);
+        var diff = apf.getDiff(this.nextPositionMarker);
 
         this.nextPositionMarker.style.left    = pos[0] + "px";
         this.nextPositionMarker.style.top     = pos[1] + "px";
@@ -101,7 +101,7 @@ jpf.DockServer = {
         this.nextPositionMarker.style.height  = (oItem.oHtml.offsetHeight - diff[1]) + "px";
         this.nextPositionMarker.style.display = "block";
         
-        jpf.layout.pause(oItem.oHtml.parentNode);
+        apf.layout.pause(oItem.oHtml.parentNode);
     },
     
     floatElement: function(e){
@@ -113,11 +113,11 @@ jpf.DockServer = {
             this.dragdata.jmlNode.purgeAlignment();
         }
         else 
-            jpf.layout.play(this.dragdata.item.oHtml.parentNode);
+            apf.layout.play(this.dragdata.item.oHtml.parentNode);
     },
     
     setPosition: function(e){
-        var diff = jpf.getDiff(this.nextPositionMarker);
+        var diff = apf.getDiff(this.nextPositionMarker);
         
         this.nextPositionMarker.style.left   = (e.clientX - this.dragdata.x) + "px";
         this.nextPositionMarker.style.top    = (e.clientY - this.dragdata.y) + "px";
@@ -127,28 +127,28 @@ jpf.DockServer = {
             : this.dragdata.item.fheight) - diff[1]) + "px";
         
         document.body.style.cursor = "default";
-        //jpf.setStyleClass(document.body, "", ["same", "south", "east", "north", "west"]);
+        //apf.setStyleClass(document.body, "", ["same", "south", "east", "north", "west"]);
     },
     
     onmousemove: function(e){
         if (!e) 
             e = event;
-        if (jpf.isIE && e.button < 1) 
+        if (apf.isIE && e.button < 1) 
             return false;
         
         // #ifdef __WITH_PLANE
-        jpf.plane.hide();
+        apf.plane.hide();
         // #endif
 
-        jpf.DockServer.nextPositionMarker.style.top = "10000px";
-        //jpf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
+        apf.DockServer.nextPositionMarker.style.top = "10000px";
+        //apf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
         
         var el = document.elementFromPoint(e.clientX
             + document.documentElement.scrollLeft,
             e.clientY + document.documentElement.scrollTop);
 
         // #ifdef __WITH_PLANE
-        jpf.plane.show(jpf.DockServer.nextPositionMarker);
+        apf.plane.show(apf.DockServer.nextPositionMarker);
         // #endif
 
         var o = el;
@@ -158,27 +158,27 @@ jpf.DockServer = {
         var htmlNode = jmlNode.oExt;
         if (!jmlNode.aData || !jmlNode.dock) {
             document.body.style.cursor = "";
-            jpf.setStyleClass(document.body, "same",
+            apf.setStyleClass(document.body, "same",
                 ["south", "east", "north", "west"]);
-            return jpf.DockServer.setPosition(e);
+            return apf.DockServer.setPosition(e);
         }
         
-        if (jpf.DockServer.dragdata.item == jmlNode.aData && jmlNode.aData.hidden == 3) 
-            return jpf.DockServer.setPosition(e);
+        if (apf.DockServer.dragdata.item == jmlNode.aData && jmlNode.aData.hidden == 3) 
+            return apf.DockServer.setPosition(e);
         
         var calcData = jmlNode.aData.calcData;
         
-        var pos = jpf.getAbsolutePosition(htmlNode);
+        var pos = apf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
         var t   = e.clientY - pos[1];
         
-        var diff    = jpf.getDiff(jpf.DockServer.nextPositionMarker);
+        var diff    = apf.getDiff(apf.DockServer.nextPositionMarker);
         var verdiff = diff[1];
         var hordiff = diff[0];
         
         var region;
-        var vEdge = Math.min(jpf.DockServer.edge, htmlNode.offsetHeight / 2);
-        var hEdge = Math.min(jpf.DockServer.edge, htmlNode.offsetWidth  / 2);
+        var vEdge = Math.min(apf.DockServer.edge, htmlNode.offsetHeight / 2);
+        var hEdge = Math.min(apf.DockServer.edge, htmlNode.offsetWidth  / 2);
         
         var r = htmlNode.offsetWidth - l;
         var b = htmlNode.offsetHeight - t;
@@ -202,13 +202,13 @@ jpf.DockServer = {
                 region = "north";
         }
         
-        if (jpf.DockServer.dragdata.item == jmlNode.aData) 
+        if (apf.DockServer.dragdata.item == jmlNode.aData) 
             region = "same";
         
         if (!region) 
-            return jpf.DockServer.setPosition(e);
+            return apf.DockServer.setPosition(e);
         
-        var nextPositionMarker = jpf.DockServer.nextPositionMarker;
+        var nextPositionMarker = apf.DockServer.nextPositionMarker;
         if (region == "west") {
             nextPositionMarker.style.left   = pos[0] + "px";
             nextPositionMarker.style.top    = pos[1] + "px";
@@ -241,23 +241,23 @@ jpf.DockServer = {
         }
         
         document.body.style.cursor = "";
-        jpf.setStyleClass(document.body, region,
+        apf.setStyleClass(document.body, region,
             ["same", "south", "east", "north", "west"]);
     },
     
     onmouseup: function(e){
         if (!e) 
             e = event;
-        if (jpf.isIE && e.button < 1) 
+        if (apf.isIE && e.button < 1) 
             return false;
         
         // #ifdef __WITH_PLANE
-        jpf.plane.hide();
+        apf.plane.hide();
         // #endif
 
-        jpf.dragmode.clear();
-        jpf.DockServer.nextPositionMarker.style.display = "none";
-        //jpf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
+        apf.dragmode.clear();
+        apf.DockServer.nextPositionMarker.style.display = "none";
+        //apf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
         document.body.className = "";
         
         var el = document.elementFromPoint(e.clientX
@@ -271,25 +271,25 @@ jpf.DockServer = {
         var aData    = jmlNode.aData;
         
         if (!jmlNode.aData || !jmlNode.dock
-          || jpf.DockServer.dragdata.item == jmlNode.aData
+          || apf.DockServer.dragdata.item == jmlNode.aData
           && jmlNode.aData.hidden == 3) {
-            //jpf.layout.play(htmlNode.parentNode);
-            return jpf.DockServer.floatElement(e);
+            //apf.layout.play(htmlNode.parentNode);
+            return apf.DockServer.floatElement(e);
         }
-        if (jpf.DockServer.dragdata.item == jmlNode.aData) 
-            return jpf.layout.play(htmlNode.parentNode);
+        if (apf.DockServer.dragdata.item == jmlNode.aData) 
+            return apf.layout.play(htmlNode.parentNode);
         
-        var pos = jpf.getAbsolutePosition(htmlNode);
+        var pos = apf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
         var t   = e.clientY - pos[1];
         
-        var diff    = jpf.getDiff(jpf.DockServer.nextPositionMarker);
+        var diff    = apf.getDiff(apf.DockServer.nextPositionMarker);
         var verdiff = diff[1];
         var hordiff = diff[0];
         
         var region;
-        var vEdge = Math.min(jpf.DockServer.edge, htmlNode.offsetHeight / 2);
-        var hEdge = Math.min(jpf.DockServer.edge, htmlNode.offsetWidth  / 2);
+        var vEdge = Math.min(apf.DockServer.edge, htmlNode.offsetHeight / 2);
+        var hEdge = Math.min(apf.DockServer.edge, htmlNode.offsetWidth  / 2);
         
         var r = htmlNode.offsetWidth - l;
         var b = htmlNode.offsetHeight - t;
@@ -314,20 +314,20 @@ jpf.DockServer = {
         }
         
         if (!region) 
-            return jpf.DockServer.floatElement(e);
+            return apf.DockServer.floatElement(e);
         
         var pHtmlNode = htmlNode.parentNode;
-        l             = jpf.layout.layouts[pHtmlNode.getAttribute("id")];
+        l             = apf.layout.layouts[pHtmlNode.getAttribute("id")];
         if (!l) 
             return false;
         
         var root = l.root;//.copy();
         var current = aData;
         
-        if (jpf.DockServer.dragdata.item.hidden == 3) 
-            jpf.DockServer.dragdata.item.unfloat();
+        if (apf.DockServer.dragdata.item.hidden == 3) 
+            apf.DockServer.dragdata.item.unfloat();
         
-        var newItem = jpf.DockServer.dragdata.item;
+        var newItem = apf.DockServer.dragdata.item;
         var pItem = newItem.parent;
         if (pItem.children.length == 2) {
             var fixItem     = pItem.children[(newItem.stackId == 0) ? 1 : 0];
@@ -350,11 +350,11 @@ jpf.DockServer = {
         
         var type   = (region == "l" || region == "r") ? "hbox" : "vbox";
         var parent = current.parent;
-        var newBox = jpf.layout.getData(type, l.layout);
+        var newBox = apf.layout.getData(type, l.layout);
 
         newBox.splitter   = current.splitter;
         newBox.edgeMargin = current.edgeMargin;
-        newBox.id         = jpf.layout.metadata.push(newBox) - 1;
+        newBox.id         = apf.layout.metadata.push(newBox) - 1;
         newBox.parent     = parent;
         parent.children[current.stackId] = newBox;
         newBox.stackId    = current.stackId;
@@ -376,7 +376,7 @@ jpf.DockServer = {
         var root = root.copy();
         l.layout.compile(root);
         l.layout.reset();
-        jpf.layout.activateRules(l.layout.parentNode);
+        apf.layout.activateRules(l.layout.parentNode);
     }
 };
 

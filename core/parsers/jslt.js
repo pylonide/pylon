@@ -36,7 +36,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.JsltImplementation = function(){
+apf.JsltImplementation = function(){
     //@todo compile this one please!
     var bigRegExp = /([\w_\.]+)|(\s*,\s*)|(\s*;\s*)|((?:\s*)[\$\@\#\%\^\&\*\?\!](?:\s*))|(\s*[\+\-\<\>\|\=]+\s*)|(\s*\:\s*)|(\\[\\\{\}\[\]\"\'\/])|(\[)|(\])|(\s*\(\s*)|(\s*\)\s*)|(\s*\{\s*)|(\s*\}\s*)|(\')|(\")|(\/)|(\s+)/g;
 
@@ -72,7 +72,7 @@ jpf.JsltImplementation = function(){
                 var t = n.selectNodes(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting node for 'copy' JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -99,7 +99,7 @@ jpf.JsltImplementation = function(){
                 var t = n.selectNodes(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting node for 'xml' JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -126,7 +126,7 @@ jpf.JsltImplementation = function(){
                 n = n.selectSingleNode(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting node in JSLT",
                     "unexpected character in xpath '" + p + "' \n" + e.message + "'"));
             }
@@ -151,7 +151,7 @@ jpf.JsltImplementation = function(){
     }
     
     function jdbg(a){
-        jpf.console.info(a)
+        apf.console.info(a)
     }
     
     function jnod(n, p){
@@ -164,7 +164,7 @@ jpf.JsltImplementation = function(){
                 n = n.selectSingleNode(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting node in JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -185,7 +185,7 @@ jpf.JsltImplementation = function(){
                 n = n.selectNodes(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting nodes in JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -206,7 +206,7 @@ jpf.JsltImplementation = function(){
                 n = n.selectSingleNode(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting a node to check if it 'exists' in JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -225,7 +225,7 @@ jpf.JsltImplementation = function(){
                 n = n.selectSingleNode(p);
             // #ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting a node to check if is 'empty' JSLT ",
                     "unxpected character in xpath \n" + e.message + "'"));
             }
@@ -248,7 +248,7 @@ jpf.JsltImplementation = function(){
             var t = n.selectNodes(p);
         // #ifdef __DEBUG
         } catch(e) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Selecting nodes for 'count' JSLT ",
                 "unxpected character in xpath \n" + e.message + "'"));
         }
@@ -299,7 +299,7 @@ jpf.JsltImplementation = function(){
             var t = n.selectNodes(p);
         // #ifdef __DEBUG
         } catch(e) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Selecting nodes for 'values' JSLT ",
                 "unxpected character in xpath \n" + e.message + "'"));
         }
@@ -332,7 +332,7 @@ jpf.JsltImplementation = function(){
             var t = n.selectNodes(p);
         // #ifdef __DEBUG
         } catch(e) {
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Selecting nodes in 'foreach' JSLT ",
                 "unxpected character in xpath \n" + e.message + "'"));
         }
@@ -569,8 +569,8 @@ jpf.JsltImplementation = function(){
                 eval("var f = function(n){" + str + "};");
             // #ifdef __DEBUG
             } catch(e) {
-                //jpf.console.info(jpf.formatJS(str));
-                throw new Error(jpf.formatErrorString(0, this,
+                //apf.console.info(apf.formatJS(str));
+                throw new Error(apf.formatErrorString(0, this,
                     "Selecting node in JSLT",
                     "Could not parse Precompiled JSLT with: \n" + e.message + "'"));
             }
@@ -978,7 +978,7 @@ jpf.JsltImplementation = function(){
         catch (e) {
             //var treedump=[];
             //dump_tree(tree,treedump,'');	
-            //jpf.console.info(jpf.formatJS(strJS));
+            //apf.console.info(apf.formatJS(strJS));
             throw new Error("Could not parse JSLT with: " + e.message /*+ "\n" + treedump.join('')*/);
         }
         
@@ -998,12 +998,12 @@ jpf.JsltImplementation = function(){
         var jsltFunc, cacheId, jsltStr, doTest;
         
         //Type detection xmlNode
-        xmlNode = jpf.xmldb.getBindXmlNode(xmlNode);
+        xmlNode = apf.xmldb.getBindXmlNode(xmlNode);
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {
             // #ifdef __DEBUG
-            doTest = jpf.isTrue(jsltNode.getAttribute("test"));
+            doTest = apf.isTrue(jsltNode.getAttribute("test"));
             // #endif
             
             //check the jslt node for cache setting
@@ -1058,7 +1058,7 @@ jpf.JsltImplementation = function(){
             // #ifdef __DEBUG
             var str = jsltFunc[0](xmlNode);
             if (doTest) 
-                jpf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
+                apf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
             return str;
             /* #else
              return jsltFunc[0](xmlNode);
@@ -1066,12 +1066,12 @@ jpf.JsltImplementation = function(){
         /* #ifndef __DEBUG
         }
         catch (e) {
-            jpf.console.info(jpf.formatJS(jsltFunc[1]));
-            throw new Error(jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
+            apf.console.info(apf.formatJS(jsltFunc[1]));
+            throw new Error(apf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
         #endif */
     };
 };
-jpf.JsltInstance = new jpf.JsltImplementation();
+apf.JsltInstance = new apf.JsltImplementation();
 
 //#endif

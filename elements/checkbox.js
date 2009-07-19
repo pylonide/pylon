@@ -36,15 +36,15 @@
  * @define checkbox
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits jpf.Presentation
- * @inherits jpf.BaseButton
- * @inherits jpf.Validation
- * @inherits jpf.XForms
- * @inherits jpf.DataBinding
+ * @inherits apf.Presentation
+ * @inherits apf.BaseButton
+ * @inherits apf.Validation
+ * @inherits apf.XForms
+ * @inherits apf.DataBinding
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -63,7 +63,7 @@
  *  <j:checkbox ref="@answer" />
  * </code>
  */
-jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["label","text()"]]};
     // #endif
@@ -111,7 +111,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
      * the meaning of the checked state of this element is.
      */
     this.$propHandlers["label"] = function(value){
-        jpf.xmldb.setNodeValue(
+        apf.xmldb.setNodeValue(
             this.$getLayoutNode("main", "label", this.oExt), value);
     };
 
@@ -186,7 +186,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         this.dispatchEvent(strEvent, e);
 
         /*if (state == "Down")
-            jpf.cancelBubble(e, this);
+            apf.cancelBubble(e, this);
         else
             e.cancelBubble = true;*/
     };
@@ -228,16 +228,16 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     //#endif
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
     // #ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     // #endif
-    jpf.Presentation,
-    jpf.BaseButton
+    apf.Presentation,
+    apf.BaseButton
 );
 
 // #endif

@@ -21,7 +21,7 @@
 
 // #ifdef __PARSER_JML
 /**
- * The parser of the Javeline Markup Language. Besides jml this parser takes care
+ * The parser of the Ajax.org Markup Language. Besides jml this parser takes care
  * of distributing parsing tasks to other parsers like the native html parser and
  * the xsd parser.
  * @parser
@@ -35,7 +35,7 @@
  * @attribute {String} src the location of the jml file to include in this application.
  * @addnode global, anyjml
  */
-jpf.JmlParser = {
+apf.JmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
     // #endif
@@ -45,20 +45,20 @@ jpf.JmlParser = {
 
     parse : function(x){
         // #ifdef __DEBUG
-        jpf.console.info("Start parsing main application");
+        apf.console.info("Start parsing main application");
         // #endif
         // #ifdef __DEBUG
-        jpf.Latometer.start();
+        apf.Latometer.start();
         // #endif
         this.$jml = x;
 
-        jpf.isParsing = true;
+        apf.isParsing = true;
 
         // #ifdef __DEBUG
         //Check for children in Jml node
         if (!x.childNodes.length)
-            throw new Error(jpf.formatErrorString(1014, null,
-                "jpf.JmlParser",
+            throw new Error(apf.formatErrorString(1014, null,
+                "apf.JmlParser",
                 "JML Parser got Markup without any children"));
         // #endif
 
@@ -66,23 +66,23 @@ jpf.JmlParser = {
         /**
          * The window object of the application representing the browser window.
          */
-        jpf.window          = new jpf.WindowImplementation();
+        apf.window          = new apf.WindowImplementation();
         
         /**
          * The DOM document element for this application.
          */
-        jpf.document        = new jpf.DocumentImplementation();
-        jpf.window.document = jpf.document;
+        apf.document        = new apf.DocumentImplementation();
+        apf.window.document = apf.document;
         //#ifdef __WITH_ACTIONTRACKER
-        jpf.window.$at      = new jpf.actiontracker();
-        jpf.window.$at.name = "default";
-        jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+        apf.window.$at      = new apf.actiontracker();
+        apf.window.$at.name = "default";
+        apf.nameserver.register("actiontracker", "default", apf.window.$at);
         //#endif
 
         //First pass parsing of all JML documents
-        for (var docs = [x], i = 0; i < jpf.includeStack.length; i++) {
-            if (jpf.includeStack[i].nodeType)
-                docs.push(jpf.includeStack[i]);
+        for (var docs = [x], i = 0; i < apf.includeStack.length; i++) {
+            if (apf.includeStack[i].nodeType)
+                docs.push(apf.includeStack[i]);
         }
 
         this.docs = docs;
@@ -97,27 +97,27 @@ jpf.JmlParser = {
         this.parseFirstPass(this.docs);
 
         //Main parsing pass
-        jpf.JmlParser.parseChildren(this.$jml, document.body, jpf.document.documentElement);//, this);
+        apf.JmlParser.parseChildren(this.$jml, document.body, apf.document.documentElement);//, this);
 
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
-        if (jpf.appsettings.layout)
-            jpf.layout.loadFrom(jpf.appsettings.layout);
+        if (apf.appsettings.layout)
+            apf.layout.loadFrom(apf.appsettings.layout);
         // #endif
 
         //Last pass parsing
-        if (jpf.appsettings.initdelay)
-            setTimeout('jpf.JmlParser.parseLastPass();', 1);
+        if (apf.appsettings.initdelay)
+            setTimeout('apf.JmlParser.parseLastPass();', 1);
         else 
-            jpf.JmlParser.parseLastPass();
+            apf.JmlParser.parseLastPass();
 
         //Set init flag for subparsers
         this.inited = true;
 
         // #ifdef __DEBUG
-        jpf.Latometer.end();
-        jpf.Latometer.addPoint("Total load time");
-        jpf.Latometer.start(true);
+        apf.Latometer.end();
+        apf.Latometer.addPoint("Total load time");
+        apf.Latometer.start(true);
         // #endif
     },
 
@@ -128,7 +128,7 @@ jpf.JmlParser = {
 
     parseFirstPass: function(xmlDocs){
         // #ifdef __DEBUG
-        jpf.console.info("Parse First Pass");
+        apf.console.info("Parse First Pass");
         // #endif
 
         //@todo fix inline skin parsing collision
@@ -146,25 +146,25 @@ jpf.JmlParser = {
     preLoadRef : function(xmlNode, sel, parseLocalModel){
         /*BUG: IE document handling bugs
         - removed to see what this does
-        if (jpf.isIE) {
+        if (apf.isIE) {
             if (xmlNode.style) return;
         }*/
 
-        var prefix = jpf.findPrefix(xmlNode, jpf.ns.jml);
+        var prefix = apf.findPrefix(xmlNode, apf.ns.jml);
         if (prefix) prefix += ":";
-        var nodes  = jpf.xmldb.selectNodes(".//" + prefix + sel.join("|.//"
+        var nodes  = apf.xmldb.selectNodes(".//" + prefix + sel.join("|.//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
         var i, o, name, tagName, x, l;
         for (i = 0, l = nodes.length; i < l; i++) {
             x = nodes[i];
 
-            var tagName = x[jpf.TAGNAME];
+            var tagName = x[apf.TAGNAME];
 
             //Process Node
             if (this.handler[tagName]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Processing [preload] " + tagName + " node");
+                apf.console.info("Processing [preload] " + tagName + " node");
                 //#endif
 
                 o = this.handler[tagName](x);
@@ -172,11 +172,11 @@ jpf.JmlParser = {
 
                 //Add this component to the nameserver
                 if (o && name)
-                    jpf.nameserver.register(tagName, name, o);
+                    apf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeFunc)
-                    o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
+                    o = new apf.JmlDom(tagName, null, apf.NODE_HIDDEN, x, o);
                 /* #else
                 if (o && o.nodeFunc)
                 #endif */
@@ -184,7 +184,7 @@ jpf.JmlParser = {
                     o.$jmlLoaded = true;
 
                     if (name)
-                        jpf.setReference(name, o);
+                        apf.setReference(name, o);
                 }
 
                 x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
@@ -196,16 +196,16 @@ jpf.JmlParser = {
     },
 
     parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf, beforeNode){
-        var parsing = jpf.isParsing;
-        jpf.isParsing = true;
+        var parsing = apf.isParsing;
+        apf.isParsing = true;
 
-        if (!jpf.window) {
-            jpf.window          = new jpf.WindowImplementation();
-            jpf.document        = new jpf.DocumentImplementation();
+        if (!apf.window) {
+            apf.window          = new apf.WindowImplementation();
+            apf.document        = new apf.DocumentImplementation();
             // #ifdef __WITH_ACTIONTRACKER
-            jpf.window.document = jpf.document;
-            jpf.window.$at      = new jpf.actiontracker();
-            jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+            apf.window.document = apf.document;
+            apf.window.$at      = new apf.actiontracker();
+            apf.nameserver.register("actiontracker", "default", apf.window.$at);
             //#endif
         }
         
@@ -213,7 +213,7 @@ jpf.JmlParser = {
             this.$jml = x;
 
         if (!jmlParent)
-            jmlParent = jpf.document.documentElement;
+            jmlParent = apf.document.documentElement;
 
         this.parseFirstPass([x]);
 
@@ -224,12 +224,12 @@ jpf.JmlParser = {
 
             //#ifdef __WITH_ALIGNMENT
             if (jmlParent && jmlParent.pData)
-                jpf.layout.compileAlignment(jmlParent.pData);
+                apf.layout.compileAlignment(jmlParent.pData);
             //#endif
 
             //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
             if (jmlParent.pData || jmlParent.tagName == "grid")
-                jpf.layout.activateRules(pNode.oInt || document.body);
+                apf.layout.activateRules(pNode.oInt || document.body);
             //#endif
         }
         else {
@@ -246,11 +246,11 @@ jpf.JmlParser = {
         }
 
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        jpf.layout.activateRules();//@todo maybe use processQueue
+        apf.layout.activateRules();//@todo maybe use processQueue
         //#endif
 
         this.parseLastPass();
-        jpf.isParsing = parsing;
+        apf.isParsing = parsing;
     },
 
     reWhitespaces : /[\t\n\r ]+/g,
@@ -258,18 +258,18 @@ jpf.JmlParser = {
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
         if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length
-          && jmlParent != jpf.document.documentElement)
+          && jmlParent != apf.document.documentElement)
             return pHtmlNode;
 
         // #ifdef __DEBUG
-        if (!jpf.Latometer.isStarted) jpf.Latometer.start();
+        if (!apf.Latometer.isStarted) apf.Latometer.start();
         // #endif
 
         // Check for delayed rendering flag
         if (jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
           && jmlParent.$shouldDelay(x)) {
             // #ifdef __DEBUG
-            jpf.console.info("Delaying rendering of children");
+            apf.console.info("Delaying rendering of children");
             // #endif
 
             return pHtmlNode;
@@ -277,7 +277,7 @@ jpf.JmlParser = {
         if (jmlParent)
             jmlParent.$rendered = true;
 
-        if (x.namespaceURI == jpf.ns.jml || x.tagUrn == jpf.ns.jml)
+        if (x.namespaceURI == apf.ns.jml || x.tagUrn == apf.ns.jml)
             this.lastNsPrefix = x.prefix || x.scopeName;
 
         //Loop through Nodes
@@ -289,11 +289,11 @@ jpf.JmlParser = {
             if (q.nodeType != 1) {
                 if (!pHtmlNode) continue;
 
-                if (jpf.hasTextNodeWhiteSpaceBug && !q.nodeValue.trim())
+                if (apf.hasTextNodeWhiteSpaceBug && !q.nodeValue.trim())
                     continue;
 
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
-                    if (jpf.hasTextNodeWhiteSpaceBug) {
+                    if (apf.hasTextNodeWhiteSpaceBug) {
                         pHtmlNode.appendChild(pHtmlNode.ownerDocument
                           .createTextNode(q.nodeValue.replace(this.reWhitespaces, " ")));
                     }
@@ -310,17 +310,17 @@ jpf.JmlParser = {
                 //#ifdef __WITH_LANG_SUPPORT
                 var nodeValue = q.nodeValue.replace(/^\$(.*)\$$/, "$1");
                 if (RegExp.$1)
-                    jpf.language.addElement(nodeValue, {htmlNode : pHtmlNode});
+                    apf.language.addElement(nodeValue, {htmlNode : pHtmlNode});
                 //#endif
                 
                 continue;
             }
 
             //Parse node using namespace handler
-            if (!this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml])
+            if (!this.nsHandler[q.namespaceURI || q.tagUrn || apf.ns.xhtml])
                 continue; //ignore tag
 
-            this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml].call(
+            this.nsHandler[q.namespaceURI || q.tagUrn || apf.ns.xhtml].call(
                 this, q, pHtmlNode, jmlParent, noImpliedParent);
         }
 
@@ -328,13 +328,13 @@ jpf.JmlParser = {
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
             if (jmlParent && jmlParent.pData)
-                jpf.layout.compileAlignment(jmlParent.pData);
-                //jpf.layout.compile(pHtmlNode);
+                apf.layout.compileAlignment(jmlParent.pData);
+                //apf.layout.compile(pHtmlNode);
             // #endif
 
             // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-            if (!jpf.hasSingleRszEvent)
-                jpf.layout.activateRules(pHtmlNode);
+            if (!apf.hasSingleRszEvent)
+                apf.layout.activateRules(pHtmlNode);
             // #endif
         }
 
@@ -349,21 +349,21 @@ jpf.JmlParser = {
      * @private
      */
     nsHandler : {
-        //Javeline PlatForm
-        "http://www.javeline.com/2005/jml" : function(x, pHtmlNode, jmlParent, noImpliedParent){
-            var tagName = x[jpf.TAGNAME];
+        //Ajax.org Platform
+        "http://ajax.org/2005/aml" : function(x, pHtmlNode, jmlParent, noImpliedParent){
+            var tagName = x[apf.TAGNAME];
 
             // #ifdef __WITH_INCLUDES
             // Includes
             if (tagName == "include") {
                 // #ifdef __DEBUG
-                jpf.console.info("Switching to include context");
+                apf.console.info("Switching to include context");
                 // #endif
 
-                var xmlNode = jpf.includeStack[x.getAttribute("iid")];
+                var xmlNode = apf.includeStack[x.getAttribute("iid")];
                 //#ifdef __DEBUG
                 if (!xmlNode)
-                    return jpf.console.warn("No include file found");
+                    return apf.console.warn("No include file found");
                 // #endif
 
                 this.parseChildren(xmlNode, pHtmlNode, jmlParent, null, true);
@@ -398,7 +398,7 @@ jpf.JmlParser = {
                 }
 
                 // #ifdef __DEBUG
-                jpf.console.info("Processing '" + tagName + "' node");
+                apf.console.info("Processing '" + tagName + "' node");
                 // #endif
 
                 o = this.handler[tagName](x, (noImpliedParent
@@ -409,11 +409,11 @@ jpf.JmlParser = {
 
                 //Add this component to the nameserver
                 if (o && name)
-                    jpf.nameserver.register(tagName, name, o);
+                    apf.nameserver.register(tagName, name, o);
 
                 //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeFunc)
-                    o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
+                    o = new apf.JmlDom(tagName, jmlParent, apf.NODE_HIDDEN, x, o);
                 else //if(noImpliedParent)
                     o.$setParent(jmlParent);
                 /* #else
@@ -423,7 +423,7 @@ jpf.JmlParser = {
                     o.$jmlLoaded = true;
 
                     if (name)
-                        jpf.setReference(name, o);
+                        apf.setReference(name, o);
                 }
             }
 
@@ -453,7 +453,7 @@ jpf.JmlParser = {
                         }
 
                         //Create element using this function
-                        var oLabel = this.nsHandler[jpf.ns.jml].call(this, x,
+                        var oLabel = this.nsHandler[apf.ns.jml].call(this, x,
                             jmlParent.oExt.parentNode, jmlParent.parentNode);
 
                         //Set Dom stuff
@@ -480,19 +480,19 @@ jpf.JmlParser = {
             //JML Components
             else if (pHtmlNode) {
                 // #ifdef __DEBUG
-                if (!jpf[tagName] || typeof jpf[tagName] != "function")
-                    throw new Error(jpf.formatErrorString(1017, null,
+                if (!apf[tagName] || typeof apf[tagName] != "function")
+                    throw new Error(apf.formatErrorString(1017, null,
                         "Initialization",
                         "Could not find Class Definition '" + tagName + "'.", x));
                 // #endif
 
-                if (!jpf[tagName])
+                if (!apf[tagName])
                     throw new Error("Could not find class " + tagName);
 
                 var objName = tagName;
 
                 //Check if Class is loaded in current Window
-                //if(!self[tagName]) main.window.jpf.importClass(main.window[tagName], false, window);
+                //if(!self[tagName]) main.window.apf.importClass(main.window[tagName], false, window);
 
                 //#ifdef __WITH_XFORMS
                 if (tagName == "select1" && x.getAttribute("appearance") == "minimal") {
@@ -501,16 +501,16 @@ jpf.JmlParser = {
                 //#endif
                 // #ifdef __WITH_HTML5
                 if (tagName == "input") {
-                    objName = jpf.HTML5INPUT[objName = x.getAttribute("type")]
+                    objName = apf.HTML5INPUT[objName = x.getAttribute("type")]
                         || objName || "textbox";
                 }
                 //#endif
 
                 //Create Object en Reference
-                var o = new jpf[objName](pHtmlNode, tagName, x);
+                var o = new apf[objName](pHtmlNode, tagName, x);
 
                 if (x.getAttribute("id"))
-                    jpf.setReference(x.getAttribute("id"), o);
+                    apf.setReference(x.getAttribute("id"), o);
 
                 //Process JML
                 if (o.loadJml)
@@ -525,7 +525,7 @@ jpf.JmlParser = {
         //#ifdef __WITH_XSD
         //XML Schema Definition
         ,"http://www.w3.org/2001/XMLSchema" : function(x, pHtmlNode, jmlParent, noImpliedParent){
-            var type = jpf.XSDParser.parse(x);
+            var type = apf.XSDParser.parse(x);
             if (type && jmlParent)
                 jmlParent.setProperty("datatype", type);
         }
@@ -537,14 +537,14 @@ jpf.JmlParser = {
             var tagName = x.tagName;
             var parseWhole = tagName.match(/table|object|embed/i) ? true : false;
 
-            if (!parseWhole && jpf.hasTextNodeWhiteSpaceBug && tagName == "pre") {
+            if (!parseWhole && apf.hasTextNodeWhiteSpaceBug && tagName == "pre") {
                 pHtmlNode.insertAdjacentHTML("beforeend", x.xml);
                 return pHtmlNode.lastChild;
             }
 
             //#ifdef __DEBUG
             if (!pHtmlNode) {
-                throw new Error(jpf.formatErrorString(0, jmlParent,
+                throw new Error(apf.formatErrorString(0, jmlParent,
                     "Parsing html elements",
                     "Unexpected HTML found", x));
             }
@@ -559,37 +559,37 @@ jpf.JmlParser = {
                 if (x.getAttribute("value"))
                     o.setAttribute("value", x.getAttribute("value"));
             }
-            else if (jpf.isIE) {
+            else if (apf.isIE) {
                 var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x.cloneNode(false))
-                    : jpf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
+                    : apf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
             }
-            else if (jpf.isSafari) { //SAFARI importing cloned node kills safari.. temp workaround in place
+            else if (apf.isSafari) { //SAFARI importing cloned node kills safari.. temp workaround in place
                 //o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x));//.cloneNode(false)
                 var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x)
-                    : jpf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
+                    : apf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
             }
             else {
                 var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x.cloneNode(false))
-                    : jpf.xmldb.htmlImport(x.cloneNode(false), pHtmlNode);
+                    : apf.xmldb.htmlImport(x.cloneNode(false), pHtmlNode);
                 //o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x.cloneNode(false), false));
             }
 
             //Check attributes for j:left etc and j:repeat-nodeset
-            var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jml) || "";
+            var prefix = this.lastNsPrefix || apf.findPrefix(x.parentNode, apf.ns.jml) || "";
             if (prefix && !x.style) {
-                if (!jpf.supportNamespaces)
+                if (!apf.supportNamespaces)
                     x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-                        + prefix + "='" + jpf.ns.jml + "'");
+                        + prefix + "='" + apf.ns.jml + "'");
                 prefix += ":";
             }
 
             //#ifdef __WITH_XFORMS || __WITH_HTML_POSITIONING
             var done = {}, aNodes = !x.style && x.selectNodes("@" + prefix + "*") || [];
             for (var i = 0; i < aNodes.length; i++) {
-                tagName = aNodes[i][jpf.TAGNAME];
+                tagName = aNodes[i][apf.TAGNAME];
 
                 //#ifdef __WITH_HTML_POSITIONING
                 //@todo rewrite this, and optimize html loading
@@ -597,7 +597,7 @@ jpf.JmlParser = {
                     if (done["position"]) continue;
                     done["position"] = true;
                     //Create positioning object - remove attributes when done
-                    var html = new jpf.HtmlWrapper(pHtmlNode, o, prefix);
+                    var html = new apf.HtmlWrapper(pHtmlNode, o, prefix);
 
                     if (x.getAttribute(prefix + "align")
                       || x.getAttribute(prefix + "align-position")) {
@@ -641,17 +641,17 @@ jpf.JmlParser = {
             }
              //#endif
 
-            if ((jpf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName.toUpperCase() != "IFRAME")
+            if ((apf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName.toUpperCase() != "IFRAME")
                 this.parseChildren(x, o, jmlParent);
             else {
                 //#ifdef __DEBUG
-                jpf.console.warn("Not parsing children of table, \
-                    ignoring all Javeline Platform Elements.");
+                apf.console.warn("Not parsing children of table, \
+                    ignoring all Ajax.org Platform Elements.");
                 //#endif
             }
 
             // #ifdef __WITH_EDITMODE || __WITH_LANG_SUPPORT
-            if (jpf.xmldb.getTextNode(x)) {
+            if (apf.xmldb.getTextNode(x)) {
                 var data = {
                     jmlNode  : x,
                     htmlNode : o
@@ -661,7 +661,7 @@ jpf.JmlParser = {
                 EditServer.register(data);
                 #endif */
                 // #ifdef __WITH_LANG_SUPPORT
-                jpf.language.addElement(jpf.xmldb.getTextNode(x)
+                apf.language.addElement(apf.xmldb.getTextNode(x)
                     .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
                 // #endif
             }
@@ -704,8 +704,8 @@ jpf.JmlParser = {
 
     invalidJml : function(jml, message){
         //#ifdef __DEBUG
-        jpf.console.warn((message || "Invalid JML syntax. The j:"
-                        + jml[jpf.TAGNAME] + " node should not be placed under \
+        apf.console.warn((message || "Invalid JML syntax. The j:"
+                        + jml[apf.TAGNAME] + " node should not be placed under \
                          it's current parent:") + "\n"
                         + (jml.xml || jml.serialize));
         //#endif
@@ -732,20 +732,20 @@ jpf.JmlParser = {
          */
         "script" : function(q){
             if (q.getAttribute("src")) {
-                if (jpf.isOpera) {
+                if (apf.isOpera) {
                     setTimeout(function(){
-                        jpf.window.loadCodeFile(jpf.hostPath
+                        apf.window.loadCodeFile(apf.hostPath
                             + q.getAttribute("src"));
                     }, 1000);
                 }
                 else {
-                    jpf.window.loadCodeFile(jpf.getAbsolutePath(jpf.hostPath,
+                    apf.window.loadCodeFile(apf.getAbsolutePath(apf.hostPath,
                         q.getAttribute("src")));
                 }
             }
             else if (q.firstChild) {
                 var scode = q.firstChild.nodeValue;
-                jpf.exec(scode);
+                apf.exec(scode);
             }
         },
 
@@ -775,14 +775,14 @@ jpf.JmlParser = {
          * @see element.state
          */
         "state-group" : function(q, jmlParent){
-            var name = q.getAttribute("name") || "stategroup" + jpf.all.length;
-            var pState = jpf.StateServer.addGroup(name, null, jmlParent);
+            var name = q.getAttribute("name") || "stategroup" + apf.all.length;
+            var pState = apf.StateServer.addGroup(name, null, jmlParent);
 
             var nodes = q.childNodes, attr = q.attributes, al = attr.length;
             for (var j, i = 0, l = nodes.length; i < l; i++){
                 var node = nodes[i];
 
-                if (node.nodeType != 1 || node[jpf.TAGNAME] != "state")
+                if (node.nodeType != 1 || node[apf.TAGNAME] != "state")
                     continue;
 
                 for (j = 0; j < al; j++) {
@@ -793,7 +793,7 @@ jpf.JmlParser = {
                 node.setAttribute("group", name);
 
                 //Create Object en Reference and load JML
-                new jpf.state(jmlParent ? jmlParent.pHtmlNode : document.body, "state", node)
+                new apf.state(jmlParent ? jmlParent.pHtmlNode : document.body, "state", node)
                     .loadJml(node, pState);
             }
 
@@ -831,13 +831,13 @@ jpf.JmlParser = {
 
             //#ifdef __DEBUG
             if (!name) {
-                throw new Error(jpf.formatErrorString(0, null,
+                throw new Error(apf.formatErrorString(0, null,
                     "Creating icon map",
                     "Could not create iconmap. Missing id attribute", q));
             }
             //#endif
 
-            return jpf.skins.addIconMap({
+            return apf.skins.addIconMap({
                 name   : name,
                 src    : q.getAttribute("src"),
                 type   : q.getAttribute("type"),
@@ -856,12 +856,12 @@ jpf.JmlParser = {
          */
         "window" : function(q, jmlParent, pHtmlNode){
             //Create Object en Reference
-            var o = new jpf.modalwindow(pHtmlNode, "window", q);
+            var o = new apf.modalwindow(pHtmlNode, "window", q);
 
             //Process JML
             o.loadJml(q, jmlParent);
 
-            //jpf.windowManager.addForm(q); //@todo rearchitect this
+            //apf.windowManager.addForm(q); //@todo rearchitect this
 
             return o;
         },
@@ -873,7 +873,7 @@ jpf.JmlParser = {
          * @addnode global, anyjml
          */
         "style" : function(q){
-            jpf.importCssString(document, q.firstChild.nodeValue);
+            apf.importCssString(document, q.firstChild.nodeValue);
         },
 
         /**
@@ -891,10 +891,10 @@ jpf.JmlParser = {
         "presentation" : function(q){
             var name = "skin" + Math.round(Math.random() * 100000);
             q.parentNode.setAttribute("skin", name);
-            jpf.skins.skins[name] = {name:name,templates:{}}
-            var t    = q.parentNode[jpf.TAGNAME];
+            apf.skins.skins[name] = {name:name,templates:{}}
+            var t    = q.parentNode[apf.TAGNAME];
             var skin = q.ownerDocument.createElement("skin"); skin.appendChild(q);
-            jpf.skins.skins[name].templates[t] = skin;
+            apf.skins.skins[name].templates[t] = skin;
         },
 
         /**
@@ -916,18 +916,18 @@ jpf.JmlParser = {
             if (jmlParent) {
                 var name = "skin" + Math.round(Math.random() * 100000);
                 q.parentNode.setAttribute("skin", name);
-                jpf.skins.skins[name] = {name: name, templates: {}};
-                jpf.skins.skins[name].templates[q.parentNode[jpf.TAGNAME]] = q;
+                apf.skins.skins[name] = {name: name, templates: {}};
+                apf.skins.skins[name].templates[q.parentNode[apf.TAGNAME]] = q;
             }
             else if (q.childNodes.length) {
-                jpf.skins.Init(q);
+                apf.skins.Init(q);
             }
             else {
                 var path = q.getAttribute("src")
-                    ? jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("src"))
-                    : jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("name")) + "/index.xml";
+                    ? apf.getAbsolutePath(apf.hostPath, q.getAttribute("src"))
+                    : apf.getAbsolutePath(apf.hostPath, q.getAttribute("name")) + "/index.xml";
 
-                jpf.loadJmlInclude(q, true, path);
+                apf.loadJmlInclude(q, true, path);
             }
         },
         //#endif
@@ -935,13 +935,13 @@ jpf.JmlParser = {
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
 
         "model" : function(q, jmlParent){
-            var model = new jpf.model().loadJml(q, jmlParent);
+            var model = new apf.model().loadJml(q, jmlParent);
 
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + jmlParent.uniqueId;
                 jmlParent.$jml.setAttribute("model", modelId);
                 model.register(jmlParent);
-                jpf.nameserver.register("model", modelId, model);
+                apf.nameserver.register("model", modelId, model);
             }
 
             return model;
@@ -949,42 +949,42 @@ jpf.JmlParser = {
 
         //#ifdef __WITH_SMARTBINDINGS
         "smartbinding" : function(q, jmlParent){
-            var bc = new jpf.smartbinding(q.getAttribute("id"), q, jmlParent);
+            var bc = new apf.smartbinding(q.getAttribute("id"), q, jmlParent);
 
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                jpf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
+                apf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
 
             return bc;
         },
 
         "ref" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return jpf.JmlParser.invalidJml(q);
+                return apf.JmlParser.invalidJml(q);
 
-            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addBindRule(q, jmlParent);
         }, //not referencable
 
         "bindings" : function(q, jmlParent){
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                    .addBindings(jpf.getRules(q), q);
+                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+                    .addBindings(apf.getRules(q), q);
 
             return q;
         },
 
         "action" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return jpf.JmlParser.invalidJml(q);
+                return apf.JmlParser.invalidJml(q);
 
-            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addActionRule(q, jmlParent);
         }, //not referencable
 
         "actions" : function(q, jmlParent){
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                    .addActions(jpf.getRules(q), q);
+                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+                    .addActions(apf.getRules(q), q);
             }
 
             return q;
@@ -995,7 +995,7 @@ jpf.JmlParser = {
 
         // #ifdef __WITH_ACTIONTRACKER
         "actiontracker" : function(q, jmlParent){
-            var at = new jpf.actiontracker(jmlParent);
+            var at = new apf.actiontracker(jmlParent);
             at.loadJml(q);
 
             if (jmlParent) {
@@ -1028,7 +1028,7 @@ jpf.JmlParser = {
          */
         "contextmenu" : function(q, jmlParent){
             if (!jmlParent)
-                return jpf.JmlParser.invalidJml(q); //not supported
+                return apf.JmlParser.invalidJml(q); //not supported
 
             if (!jmlParent.contextmenus)
                 jmlParent.contextmenus = [];
@@ -1040,25 +1040,25 @@ jpf.JmlParser = {
         // #ifdef __WITH_DRAGDROP
         "allow-drag" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return jpf.JmlParser.invalidJml(q);
+                return apf.JmlParser.invalidJml(q);
 
-            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDragRule(q, jmlParent);
         },  //not referencable
 
         "allow-drop" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return jpf.JmlParser.invalidJml(q);
+                return apf.JmlParser.invalidJml(q);
 
-            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDropRule(q, jmlParent);
         },  //not referencable
 
         "dragdrop" : function(q, jmlParent){
-            var rules = jpf.getRules(q);
+            var rules = apf.getRules(q);
 
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addDragDrop(rules, q);
             }
 
@@ -1069,25 +1069,25 @@ jpf.JmlParser = {
         // #ifdef __WITH_TELEPORT
         "teleport" : function(q, jmlParent){
             //Initialize Communication Component
-            return jpf.teleport.loadJml(q, jmlParent);
+            return apf.teleport.loadJml(q, jmlParent);
         },
         // #endif
 
         // #ifdef __WITH_RSB
         "remote" : function(q, jmlParent){
             //Remote Smart Bindings
-            return new jpf.remote(q.getAttribute("id"), q, jmlParent);
+            return new apf.remote(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
 
         "appsettings" : function(q, jmlParent){
-            return jpf.appsettings.loadJml(q, jmlParent);
+            return apf.appsettings.loadJml(q, jmlParent);
         }
 
         //#ifdef __DESKRUN
         , "deskrun" : function(q){
-            if (!jpf.isDeskrun) return;
-            jpf.window.loadJml(q); //@todo rearchitect this
+            if (!apf.isDeskrun) return;
+            apf.window.loadJml(q); //@todo rearchitect this
         }
         //#endif
 
@@ -1111,13 +1111,13 @@ jpf.JmlParser = {
 
     // #ifdef __WITH_SMARTBINDINGS
     getSmartBinding : function(id){
-        return jpf.nameserver.get("smartbinding", id);
+        return apf.nameserver.get("smartbinding", id);
     },
     // #endif
 
     // #ifdef __WITH_ACTIONTRACKER
     getActionTracker : function(id){
-        var at = jpf.nameserver.get("actiontracker", id);
+        var at = apf.nameserver.get("actiontracker", id);
         if (at)
             return at;
         if (self[id])
@@ -1147,15 +1147,15 @@ jpf.JmlParser = {
         #endif */
 
         //#ifdef __DEBUG
-        jpf.console.info("Parse final pass");
+        apf.console.info("Parse final pass");
         //#endif
 
         //#ifdef __WITH_OFFLINE //@todo remove this
-        //if (!jpf.appsettings.offline)
-        //   jpf.offline.init();
+        //if (!apf.appsettings.offline)
+        //   apf.offline.init();
         //#endif
 
-        jpf.parsingFinalPass = true;
+        apf.parsingFinalPass = true;
 
         /*
             All these component dependant things might
@@ -1175,7 +1175,7 @@ jpf.JmlParser = {
                     continue;
 
                 //Retrieve Jml Node
-                var jNode = jpf.lookup(uniqueId);
+                var jNode = apf.lookup(uniqueId);
 
                 //Set Main smartbinding
                 if (sbInit[uniqueId][0]) {
@@ -1194,7 +1194,7 @@ jpf.JmlParser = {
         //Initialize property bindings
         var s = this.stateStack;
         for (var i = 0; i < s.length; i++) {
-            //if (s[i].name == "visible" && !/^\{.*\}$/.test(s[i].value)) //!jpf.dynPropMatch.test(pValue)
+            //if (s[i].name == "visible" && !/^\{.*\}$/.test(s[i].value)) //!apf.dynPropMatch.test(pValue)
                 //continue; //@todo check that this code can be removed...
             //#ifdef __WITH_PROPERTY_BINDING
             s[i].node.setDynamicProperty(s[i].name, s[i].value);
@@ -1219,61 +1219,61 @@ jpf.JmlParser = {
                 if (jmlNode.connect)
                     jmlNode.connect(modelInit[i][0], null, data[2], data[1] || "select");
                 else
-                    jmlNode.setModel(new jpf.model().loadFrom(data.join(":")));
+                    jmlNode.setModel(new apf.model().loadFrom(data.join(":")));
             }
         }
         this.modelInit = [];
         //#endif
 
         //Call the onload event
-        //if (!jpf.loaded) {
-            var initalLoad = jpf.loaded;
-            jpf.loaded = true;
-            jpf.dispatchEvent("load", {
+        //if (!apf.loaded) {
+            var initalLoad = apf.loaded;
+            apf.loaded = true;
+            apf.dispatchEvent("load", {
                 initialLoad : initalLoad
             });
         //}
 
         //#ifdef __WITH_XFORMS
-        var models = jpf.nameserver.getAll("model");
+        var models = apf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-ready");
         //#endif
 
         // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        jpf.layout.processQueue();
-        jpf.layout.activateRules();
+        apf.layout.processQueue();
+        apf.layout.activateRules();
         //#endif
 
         if (!this.loaded) {
             //#ifdef __DESKRUN
-            if (jpf.isDeskrun)
-                jpf.window.deskrun.Show();
+            if (apf.isDeskrun)
+                apf.window.deskrun.Show();
             //#endif
 
             //#ifdef __WITH_FOCUS
             //Set the default selected element
-            if (!jpf.window.focussed)
-                jpf.window.focusDefault();
+            if (!apf.window.focussed)
+                apf.window.focusDefault();
             //#endif
 
             this.loaded = true;
-            jpf.dispatchEvent("done");
+            apf.dispatchEvent("done");
         }
 
         //END OF ENTIRE APPLICATION STARTUP
 
         //#ifdef __DEBUG
-        jpf.console.info("Initialization finished");
+        apf.console.info("Initialization finished");
         //#endif
 
         //#ifdef __DEBUG
-        jpf.Latometer.end();
-        jpf.Latometer.addPoint("Total time for final pass");
+        apf.Latometer.end();
+        apf.Latometer.addPoint("Total time for final pass");
         //#endif
 
-        jpf.isParsing = false;
-        jpf.parsingFinalPass = false;
+        apf.isParsing = false;
+        apf.parsingFinalPass = false;
     }
 
     // #ifdef __WITH_DATABINDING || __WITH_XFORMS || __WITH_SMARTBINDINGS
@@ -1293,14 +1293,14 @@ jpf.JmlParser = {
 
             return this.sbInit[uniqueId]
                 && (this.sbInit[uniqueId][nr]
-                    || (this.sbInit[uniqueId][nr] = new jpf.smartbinding()))
-                || ((this.sbInit[uniqueId] = [])[nr] = new jpf.smartbinding());
+                    || (this.sbInit[uniqueId][nr] = new apf.smartbinding()))
+                || ((this.sbInit[uniqueId] = [])[nr] = new apf.smartbinding());
         }
 
         return !this.sbInit[uniqueId]
-            && (this.sbInit[uniqueId] = [new jpf.smartbinding()])[0]
+            && (this.sbInit[uniqueId] = [new apf.smartbinding()])[0]
             || this.sbInit[uniqueId][0]
-            || (this.sbInit[uniqueId][0] = new jpf.smartbinding());
+            || (this.sbInit[uniqueId][0] = new apf.smartbinding());
     },
 
     stackHasBindings : function(uniqueId){
@@ -1325,7 +1325,7 @@ jpf.JmlParser = {
 /**
  * @define input
  * Remarks:
- * Javeline PlatForm supports the input types specified by the WHATWG html5 spec.
+ * Ajax.org Platform supports the input types specified by the WHATWG html5 spec.
  * @attribute {String} type the type of input element.
  *   Possible values:
  *   email      provides a way to enter an email address.
@@ -1349,7 +1349,7 @@ jpf.JmlParser = {
 /**
  * @private
  */
-jpf.HTML5INPUT = {
+apf.HTML5INPUT = {
     "email"    : "textbox",
     "url"      : "textbox",
     "password" : "textbox",
@@ -1370,4 +1370,4 @@ jpf.HTML5INPUT = {
 
 //#endif
 
-jpf.Init.run('jpf.JmlParser');
+apf.Init.run('apf.JmlParser');

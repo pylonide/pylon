@@ -22,10 +22,10 @@
 // #ifdef __WITH_STORAGE
 /**
  * Stores javascript structures based on a name and a namespace. This object
- * is used by {@link element.offline jpf offline support} as well as the 
+ * is used by {@link element.offline apf offline support} as well as the 
  * {@link core.registry registry} and the {@link teleport.http http object} for 
  * caching. All but the memory storage provider, provide persistent storage. 
- * This means the data is kept between browser sessions. This allows jpf to
+ * This means the data is kept between browser sessions. This allows apf to
  * have inter-session communication. For instance offline support uses it to
  * store data that could not be send to the server. When the application does 
  * go online (and this could be several sessions later), the data is send to the
@@ -39,7 +39,7 @@
  *
  * @default_private
  */
-jpf.storage = {
+apf.storage = {
     modules : {},
 
     /**
@@ -59,11 +59,11 @@ jpf.storage = {
         var provider = this.getProvider(name);
 
         //Install the provider
-        jpf.storage = jpf.extend(provider, this);
-        jpf.storage.init = null;
+        apf.storage = apf.extend(provider, this);
+        apf.storage.init = null;
         
         //#ifdef __DEBUG
-        jpf.console.info("Installed storage provider '" + name + "'");
+        apf.console.info("Installed storage provider '" + name + "'");
         //#endif
         
         return provider;
@@ -82,11 +82,11 @@ jpf.storage = {
      *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
      */
     getProvider : function(name){
-        var provider = jpf.storage.modules[name];
+        var provider = apf.storage.modules[name];
 
         if(!provider || typeof provider != "object") {
             //#ifdef __DEBUG
-            jpf.console.warn("Could not find storage provider '" + name + "'");
+            apf.console.warn("Could not find storage provider '" + name + "'");
             //#endif
             
             return false;
@@ -94,7 +94,7 @@ jpf.storage = {
         
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
-            jpf.console.warn(
+            apf.console.warn(
                 "Storage provider '" + name + "' is not available");
             //#endif
             
@@ -104,7 +104,7 @@ jpf.storage = {
         if(!provider.initialized 
           && (!provider.init || provider.init() === false)) {
             //#ifdef __DEBUG
-            jpf.console.warn(
+            apf.console.warn(
                 "Could not install storage provider '" + name + "");
             //#endif
             
@@ -112,7 +112,7 @@ jpf.storage = {
         }
         
         provider.name = name;
-        jpf.extend(provider, this.base);
+        apf.extend(provider, this.base);
 
         return provider;
     },

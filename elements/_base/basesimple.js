@@ -28,17 +28,17 @@
  * @constructor
  * @baseclass
  *
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.BaseSimple = function(){
-    this.implement(jpf.Presentation);
+apf.BaseSimple = function(){
+    this.implement(apf.Presentation);
     // #ifdef __WITH_DATABINDING
-    this.implement(jpf.DataBinding);
+    this.implement(apf.DataBinding);
     // #endif
     
     this.getValue = function(){
@@ -94,7 +94,7 @@ jpf.BaseSimple = function(){
     
     this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
-    this.implement(jpf.DragDrop); /** @inherits jpf.DragDrop */
+    this.implement(apf.DragDrop); /** @inherits apf.DragDrop */
     // #endif
 }
 

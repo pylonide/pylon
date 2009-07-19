@@ -40,14 +40,14 @@
  * @allowchild {elements}, {anyjml}
  * @addnode elements:frame
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.9
  *
- * @inherits jpf.Presentation
+ * @inherits apf.Presentation
  */
-jpf.fieldset = 
-jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.fieldset = 
+apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -95,13 +95,13 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         this.oInt = this.oInt 
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
-            : jpf.JmlParser.parseChildren(this.$jml, oInt, this);
+            ? apf.JmlParser.replaceNode(oInt, this.oInt) 
+            : apf.JmlParser.parseChildren(this.$jml, oInt, this);
     };
     
     this.$loadJml = function(x){
         // not implement now.
     };
-}).implement(jpf.Presentation);
+}).implement(apf.Presentation);
 
 // #endif

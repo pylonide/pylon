@@ -30,12 +30,12 @@
  * @define template
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.template = apf.component(apf.NODE_HIDDEN, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -43,7 +43,7 @@ jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
     
     this.render = function(pHtmlNode, forceNewInstance){
         if (!instances.length || forceNewInstance) {
-            //var p = jpf.document.createDocumentFragment();
+            //var p = apf.document.createDocumentFragment();
             //p.oExt = p.oInt = pHtmlNode;
             instances.push(this.childNodes = []);
         }
@@ -56,7 +56,7 @@ jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
             return nodes;
         }
         
-        jpf.JmlParser.parseMoreJml(this.$jml, pHtmlNode, this, true);
+        apf.JmlParser.parseMoreJml(this.$jml, pHtmlNode, this, true);
         
         return this.childNodes;
     }
@@ -75,7 +75,7 @@ jpf.template = jpf.component(jpf.NODE_HIDDEN, function(){
     //this.$draw = function(pHtmlNode){};
     this.$loadJml = function(x){
         if (this.autoinit) {
-            jpf.JmlParser.parseChildren(this.$jml, document.body, this);
+            apf.JmlParser.parseChildren(this.$jml, document.body, this);
             this.detach();
             
             instances.push(this.childNodes);

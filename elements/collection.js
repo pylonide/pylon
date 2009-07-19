@@ -31,19 +31,19 @@
  * @define collection
  * @addnode elements
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.collection = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.collection = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
     this.$draw = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
-        jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+        apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
     };
     
     this.$loadJml = function(x){};

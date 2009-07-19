@@ -96,18 +96,18 @@
  * @allowchild {smartbinding}
  * @addnode elements
  *
- * @inherits jpf.BaseList
- * @inherits jpf.Rename
- * @inherits jpf.DragDrop
+ * @inherits apf.BaseList
+ * @inherits apf.Rename
+ * @inherits apf.DragDrop
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.thumbnail = 
-jpf.select    = 
-jpf.select1   = 
-jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.thumbnail = 
+apf.select    = 
+apf.select1   = 
+apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     var _self = this;
     
     // #ifdef __WITH_RENAME
@@ -135,7 +135,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**
      * @attribute {String} appearance the type of select this element is. 
-     * This is an xforms property and only available if jpf is compiled 
+     * This is an xforms property and only available if apf is compiled 
      * with __WITH_XFORMS set to 1.
      *   Possible values:
      *   full     depending on the tagName this element is either a list of radio options or of checked options.
@@ -311,7 +311,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.$hasLayoutNode("dragindicator")) 
             return;
 
-        this.oDrag = jpf.xmldb.htmlImport(
+        this.oDrag = apf.xmldb.htmlImport(
             this.$getLayoutNode("dragindicator"), document.body);
 
         this.oDrag.style.zIndex   = 1000000;
@@ -324,11 +324,11 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!el) return null;
 
         while(el && el.nodeType == 1 
-          && !el.getAttribute(jpf.xmldb.htmlIdTag)) {
+          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
             el = el.parentNode;
         }
 
-        return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
+        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
             ? el 
             : null;
     };
@@ -398,7 +398,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
-        if (jpf.hasCssUpdateScrollbarBug && !this.mode)
+        if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         this.oExt.onclick = function(e){
@@ -421,16 +421,16 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$destroy = function(){
         this.oExt.onclick = null;
-        jpf.removeNode(this.oDrag);
+        apf.removeNode(this.oDrag);
         this.oDrag = null;
     };
 }).implement(
     // #ifdef __WITH_RENAME
-    jpf.Rename,
+    apf.Rename,
     // #endif
     // #ifdef __WITH_DRAGDROP
-    jpf.DragDrop, 
+    apf.DragDrop, 
     // #endif
-    jpf.BaseList
+    apf.BaseList
 );
 // #endif

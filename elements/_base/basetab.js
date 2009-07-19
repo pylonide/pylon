@@ -28,7 +28,7 @@
  * @constructor
  * @baseclass
  * @allowchild page
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  * 
@@ -37,22 +37,22 @@
  *   object:
  *   {Mixed}    previous     the name or number of the current page.
  *   {Number}   previousId   the number of the current page.
- *   {jpf.page} previousPage the current page.
+ *   {apf.page} previousPage the current page.
  *   {Mixed}    next         the name or number of the page the will become active.
  *   {Number}   nextId       the number of the page the will become active.
- *   {jpf.page} nextpage     the page the will become active.
+ *   {apf.page} nextpage     the page the will become active.
  * @event afterswitch   Fires after this element has switched to another page.
  *   object:
  *   {Mixed}    previous     the name or number of the previous page.
  *   {Number}   previousId   the number of the previous page.
- *   {jpf.page} previousPage the previous page.
+ *   {apf.page} previousPage the previous page.
  *   {Mixed}    next         the name or number of the current page.
  *   {Number}   nextId       the number of the the current page.
- *   {jpf.page} nextpage     the the current page.   
+ *   {apf.page} nextpage     the the current page.   
  */
-jpf.BaseTab = function(){
+apf.BaseTab = function(){
     this.isPaged         = true;
-    this.$focussable     = jpf.KEYBOARD;
+    this.$focussable     = apf.KEYBOARD;
     this.canHaveChildren = true;
     this.length          = 0;
 
@@ -127,7 +127,7 @@ jpf.BaseTab = function(){
 
         if (!page) {
             //#ifdef __DEBUG
-            jpf.console.warn("Setting tab page which doesn't exist, \
+            apf.console.warn("Setting tab page which doesn't exist, \
                               referenced by name: '" + next + "'");
             //#endif
 
@@ -136,7 +136,7 @@ jpf.BaseTab = function(){
 
         if (page.parentNode != this) {
             //#ifdef __DEBUG
-            jpf.console.warn("Setting active page on page component which \
+            apf.console.warn("Setting active page on page component which \
                               isn't a child of this tab component. Cancelling.");
             //#endif
 
@@ -145,7 +145,7 @@ jpf.BaseTab = function(){
         
         if (!page.visible || page.disabled) {
             //#ifdef __DEBUG
-            jpf.console.warn("Setting active page on page component which \
+            apf.console.warn("Setting active page on page component which \
                               is not visible or disabled. Cancelling.");
             //#endif
 
@@ -238,7 +238,7 @@ jpf.BaseTab = function(){
      * @return {Page} the found page element.
      */
     this.getPage = function(nameOrId){
-        return jpf.isNot(nameOrId) && this.$activepage || this.$findPage(nameOrId);
+        return apf.isNot(nameOrId) && this.$activepage || this.$findPage(nameOrId);
     };
 
     /**
@@ -248,7 +248,7 @@ jpf.BaseTab = function(){
      * @return {page} the created page element.
      */
     this.add = function(caption, name){
-        var page = jpf.document.createElement("page");
+        var page = apf.document.createElement("page");
         if (name)
             page.setAttribute("id", name);
         page.setAttribute("caption", caption);
@@ -359,7 +359,7 @@ jpf.BaseTab = function(){
 
         if (typeof bOn == "undefined") {
             var scrollerWidth = this.oScroller.offsetWidth
-                || parseInt(jpf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
+                || parseInt(apf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
             bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.oExt.offsetWidth);
             iBtns = SCROLL_BOTH;
         }
@@ -452,7 +452,7 @@ jpf.BaseTab = function(){
         if (typeof dir == "undefined")
             dir = SCROLL_LEFT;
 
-        //jpf.tween.clearQueue(this.oButtons, true);
+        //apf.tween.clearQueue(this.oButtons, true);
         var iCurrentLeft = this.oButtons.offsetLeft,
             size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size;
 
@@ -463,22 +463,22 @@ jpf.BaseTab = function(){
             setButtonState(SCROLL_RIGHT, SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
                 this.setScrollerState(false, SCROLL_LEFT);
-                return jpf.tween.single(this.oButtons, {
+                return apf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft + 12,
                     type    : "left",
-                    anim    : jpf.tween.EASEOUT,
+                    anim    : apf.tween.EASEOUT,
                     onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode) {
-                        jpf.tween.single(oNode, {
+                        apf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
                             interval: SCROLLANIM.interval,
                             from    : iCurrentLeft + 12,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN,
+                            anim    : apf.tween.EASEIN,
                             onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
@@ -499,14 +499,14 @@ jpf.BaseTab = function(){
             this.setScrollerState(true, SCROLL_RIGHT);
 
             //start animated scroll to the left
-            jpf.tween.single(this.oButtons, {
+            apf.tween.single(this.oButtons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : jpf.tween.NORMAL,
+                anim    : apf.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -523,22 +523,22 @@ jpf.BaseTab = function(){
             setButtonState(SCROLL_LEFT,  SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
                 _self.setScrollerState(false, SCROLL_RIGHT);
-                return jpf.tween.single(this.oButtons, {
+                return apf.tween.single(this.oButtons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft - 24,
                     type    : "left",
-                    anim    : jpf.tween.EASEOUT,
+                    anim    : apf.tween.EASEOUT,
                     onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode, options) {
-                        jpf.tween.single(oNode, {
+                        apf.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
                             interval: SCROLLANIM.interval,
                             from    : iCurrentLeft - 24,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : jpf.tween.EASEIN,
+                            anim    : apf.tween.EASEIN,
                             onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
@@ -556,14 +556,14 @@ jpf.BaseTab = function(){
             if (iTargetLeft < iBoundary)
                 iTargetLeft = iBoundary;
             //start animated scroll to the right
-            jpf.tween.single(this.oButtons, {
+            apf.tween.single(this.oButtons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : jpf.tween.NORMAL,
+                anim    : apf.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -620,15 +620,15 @@ jpf.BaseTab = function(){
             this.setScrollerState(true);
             setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
             setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
-            jpf.tween.clearQueue(this.oButtons, true);
+            apf.tween.clearQueue(this.oButtons, true);
 
-            jpf.tween.single(this.oButtons, {
+            apf.tween.single(this.oButtons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : jpf.tween.NORMAL,
+                anim    : apf.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -792,7 +792,7 @@ jpf.BaseTab = function(){
 
     /**** Init ****/
 
-    this.implement(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.implement(apf.Presentation); /** @inherits apf.Presentation */
 
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
@@ -833,7 +833,7 @@ jpf.BaseTab = function(){
             };
 
             // #ifdef __WITH_MOUSESCROLL
-            /*jpf.addEventListener("mousescroll", function(e) {
+            /*apf.addEventListener("mousescroll", function(e) {
                 var found = (e.target == _self.oButtons);
                 while (!found && e.target != document.body) {
                     e.target = e.target.offsetParent;
@@ -846,8 +846,8 @@ jpf.BaseTab = function(){
             });*/
             //#endif
 
-            this.oLeftScroll  = jpf.getNode(this.oScroller, [0]);
-            this.oRightScroll = jpf.getNode(this.oScroller, [1]);
+            this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
+            this.oRightScroll = apf.getNode(this.oScroller, [1]);
             
             ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
                 var dir    = sBtn == "oLeftScroll" ? SCROLL_LEFT  : SCROLL_RIGHT,
@@ -862,7 +862,7 @@ jpf.BaseTab = function(){
                     e = e || event;
                     _self.scroll(e, dir);
                     startTimer(e, dir);
-                    if (!jpf.isSafariOld)
+                    if (!apf.isSafariOld)
                         this.onmouseout();
                 };
                 _self[sBtn].onmouseover = function() {
@@ -890,13 +890,13 @@ jpf.BaseTab = function(){
             });
         }
         
-        jpf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
-            "jpf.all[" + this.uniqueId + "].correctScrollState()");
+        apf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
+            "apf.all[" + this.uniqueId + "].correctScrollState()");
         // #endif
 
         //Skin changing support
         if (this.oInt) {
-            //jpf.JmlParser.replaceNode(oPages, this.oPages);
+            //apf.JmlParser.replaceNode(oPages, this.oPages);
             this.oInt = this.oPages;
             page      = true;
 
@@ -926,9 +926,9 @@ jpf.BaseTab = function(){
                 node = nodes[i];
                 if (node.nodeType != 1) continue;
 
-                var tagName = node[jpf.TAGNAME];
+                var tagName = node[apf.TAGNAME];
                 if ("page|case".indexOf(tagName) > -1) {
-                    page = new jpf.page(this.oPages, tagName).loadJml(node, this);
+                    page = new apf.page(this.oPages, tagName).loadJml(node, this);
 
                     //Set first page marker
                     if (!f) page.$first(f = page);
@@ -945,7 +945,7 @@ jpf.BaseTab = function(){
                 }
                 //#ifdef __DEBUG
                 else {
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Parsing children of tab component",
                         "Unknown component found as child of tab", node));
                 }
@@ -966,7 +966,7 @@ jpf.BaseTab = function(){
                 this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
-            jpf.JmlParser.parseChildren(this.$jml, this.oExt, this);
+            apf.JmlParser.parseChildren(this.$jml, this.oExt, this);
             this.isPages = false;
         }
 
@@ -986,7 +986,7 @@ jpf.BaseTab = function(){
         if (bSkinChange || !this.oScroller)
             return;
         // #ifdef __ENABLE_TABSCROLL
-        jpf.layout.removeRule(this.oExt, this.uniqueId + "_tabscroller");
+        apf.layout.removeRule(this.oExt, this.uniqueId + "_tabscroller");
         
         [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
             oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
@@ -1004,13 +1004,13 @@ jpf.BaseTab = function(){
  * @allowchild  {elements}, {anyjml}
  * @addnode elements
  *
- * @inherits jpf.DelayedRender
+ * @inherits apf.DelayedRender
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
+apf.page = apf.component(apf.NODE_HIDDEN, function(){
     this.visible         = true;
     this.canHaveChildren = true;
     this.$focussable     = false;
@@ -1084,7 +1084,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             .$getLayoutNode("button", "icon", this.oButton);
 
         if (node && node.nodeType == 1)
-            jpf.skins.setIcon(node, value, this.parentNode.iconPath);
+            apf.skins.setIcon(node, value, this.parentNode.iconPath);
     };
 
     this.$propHandlers["visible"] = function(value){
@@ -1139,7 +1139,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
      */
     this.$propHandlers["fake"] = function(value){
         if (this.oExt) {
-            jpf.removeNode(this.oExt);
+            apf.removeNode(this.oExt);
             this.oInt = this.oExt = null;
         }
     };
@@ -1253,8 +1253,8 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
                 ? this.relPage.oExt
                 : this.oExt, "curpage");
 
-            if (jpf.layout)
-                jpf.layout.forceResize(this.fake ? this.relPage.oInt : this.oInt);
+            if (apf.layout)
+                apf.layout.forceResize(this.fake ? this.relPage.oInt : this.oInt);
         }
 
         this.$active = true;
@@ -1264,7 +1264,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         // #endif
         
         if (!this.fake) {
-            if (jpf.isIE) {
+            if (apf.isIE) {
                 var cls = this.oExt.className;
                 this.oExt.className = "rnd" + Math.random();
                 this.oExt.className = cls;
@@ -1301,18 +1301,18 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$getNewContext("button");
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
-                'var page = jpf.lookup(' + this.uniqueId + ');\
+                'var page = apf.lookup(' + this.uniqueId + ');\
                  page.parentNode.set(page);\
                  page.canHaveChildren = 2;');
-            elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
-                + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
+            elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
+                + this.parentNode.uniqueId + ');if(apf.lookup(' + this.uniqueId
                 + ') != o.$activepage) o.$setStyleClass(this, "over");');
-            elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
+            elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
                 + this.parentNode.uniqueId + ');\
                   o.$setStyleClass(this, "", ["over"]);\
-                  var page = jpf.lookup(' + this.uniqueId + ');\
+                  var page = apf.lookup(' + this.uniqueId + ');\
                   page.canHaveChildren = true;');
-            this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
+            this.oButton = apf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
@@ -1339,12 +1339,12 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             var oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
             oInt.setAttribute("id", this.oInt.getAttribute("id"));
-            this.oInt = jpf.JmlParser.replaceNode(oInt, this.oInt);
+            this.oInt = apf.JmlParser.replaceNode(oInt, this.oInt);
         }
         else {
             this.oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
-            jpf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
+            apf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
         }
     };
 
@@ -1356,7 +1356,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     };
 }).implement(
     // #ifdef __WITH_DELAYEDRENDER
-    jpf.DelayedRender
+    apf.DelayedRender
     // #endif
 );
 

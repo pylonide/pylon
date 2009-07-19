@@ -98,15 +98,15 @@
  * @since       1.0
  * @constructor
  *
- * @inherits jpf.Class
- * @inherits jpf.BaseComm
- * @inherits jpf.http
- * @namespace jpf
+ * @inherits apf.Class
+ * @inherits apf.BaseComm
+ * @inherits apf.http
+ * @namespace apf
  *
  * @default_private
  */
 
-jpf.webdav = function(){
+apf.webdav = function(){
     this.server  = null;
     this.timeout = 10000;
     this.useHTTP = true;
@@ -134,9 +134,9 @@ jpf.webdav = function(){
     };
 
     if (!this.uniqueId) {
-        jpf.makeClass(this);
+        apf.makeClass(this);
 
-        this.implement(jpf.BaseComm, jpf.http);
+        this.implement(apf.BaseComm, apf.http);
     }
 
     /*
@@ -212,7 +212,7 @@ jpf.webdav = function(){
         }
         return this.get(this.server + sPath || "",
             function(data, state, extra) {
-                if (state != jpf.SUCCESS) {
+                if (state != apf.SUCCESS) {
                     var oError;
 
                     oError = WebDAVError("Url: " + extra.url + "\nInfo: " + extra.message);
@@ -232,10 +232,10 @@ jpf.webdav = function(){
                   && sResponse.indexOf('<?xml version=') == 0) {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
-                            ? jpf.xmlParseError(extra.http.responseXML)
-                            : jpf.getXmlDom(extra.http.responseText);
+                            ? apf.xmlParseError(extra.http.responseXML)
+                            : apf.getXmlDom(extra.http.responseText);
 
-                        if (!jpf.supportNamespaces)
+                        if (!apf.supportNamespaces)
                             data.setProperty("SelectionLanguage", "XPath");
 
                         extra.data = data.documentElement;
@@ -278,12 +278,12 @@ jpf.webdav = function(){
 
         var cb = getVar('auth-callback');
         if (cb) {
-            cb(null, jpf.ERROR, extra);
+            cb(null, apf.ERROR, extra);
             unregister('auth-callback');
         }
 
         // #ifdef __DEBUG
-        jpf.console.error(extra.message + ' (username: ' + extra.username
+        apf.console.error(extra.message + ' (username: ' + extra.username
                           + ', server: ' + extra.server + ')', 'webdav');
         // #endif
 
@@ -310,12 +310,12 @@ jpf.webdav = function(){
 
         var cb = getVar('auth-callback');
         if (cb) {
-            cb(null, jpf.ERROR, extra);
+            cb(null, apf.ERROR, extra);
             unregister('auth-callback');
         }
 
         // #ifdef __DEBUG
-        jpf.console.error(extra.message + ' (username: ' + extra.username
+        apf.console.error(extra.message + ' (username: ' + extra.username
                           + ', server: ' + extra.server + ')', 'webdav');
         // #endif
 
@@ -330,7 +330,7 @@ jpf.webdav = function(){
      * @private
      */
     function WebDAVError(sMsg) {
-        return new Error(jpf.formatErrorString(0, _self,
+        return new Error(apf.formatErrorString(0, _self,
                          "WebDAV Communication error", sMsg));
     }
 
@@ -344,7 +344,7 @@ jpf.webdav = function(){
      */
     function onAuth(callback) {
         var oDoc, authRequired = false;
-        if (jpf.isIE) {
+        if (apf.isIE) {
             try {
                 oDoc = new ActiveXObject("Msxml2.DOMDocument");
             }
@@ -358,7 +358,7 @@ jpf.webdav = function(){
         }
 
         try {
-            if (jpf.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
+            if (apf.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
                 oDoc.async = false;
                 oDoc.load(_self.server + _self.rootPath);
             }
@@ -368,7 +368,7 @@ jpf.webdav = function(){
         }
 
         if (authRequired)
-            jpf.auth.authRequired(callback);
+            apf.auth.authRequired(callback);
         else {
             register("authenticated", true);
             if (callback && callback.method)
@@ -392,7 +392,7 @@ jpf.webdav = function(){
 
         this.doRequest(function(data, state, extra) {
             if (extra.http.status == 401)
-                return jpf.auth.authRequired();
+                return apf.auth.authRequired();
             register("authenticated", true);
             var cb = getVar("auth-callback");
             if (cb) {
@@ -430,7 +430,7 @@ jpf.webdav = function(){
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 403) { //Forbidden
                 var oError = WebDAVError("Unable to read file. Server says: "
-                             + jpf.webdav.STATUS_CODES["403"]);
+                             + apf.webdav.STATUS_CODES["403"]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -482,7 +482,7 @@ jpf.webdav = function(){
               || iStatus == 415 || iStatus == 507) {
                 var oError = WebDAVError("Unable to create directory '" + sPath
                              + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -526,13 +526,13 @@ jpf.webdav = function(){
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
                 var oError = WebDAVError("Unable to write to file. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
                   }) === false)
                     throw oError;
-                callback.call(_self, data, jpf.ERROR, extra);
+                callback.call(_self, data, apf.ERROR, extra);
             }
             else {
                 _self.getProperties(sPath, 0, callback);
@@ -577,7 +577,7 @@ jpf.webdav = function(){
               || iStatus == 507) {
                 var oError = WebDAVError("Unable to copy file '" + sFrom 
                              + "' to '" + sTo + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -626,7 +626,7 @@ jpf.webdav = function(){
               || iStatus == 423 || iStatus == 424 || iStatus == 502) {
                 var oError = WebDAVError("Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -659,7 +659,7 @@ jpf.webdav = function(){
             if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError("Unable to remove file '" + sPath
                              + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -773,7 +773,7 @@ jpf.webdav = function(){
             unregisterLock(extra.url.replace(_self.server, ''));
             var oError = WebDAVError("Unable to apply lock to '" + sPath
                          + "'. Server says: "
-                         + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                         + apf.webdav.STATUS_CODES[String(iStatus)]);
             if (this.dispatchEvent("error", {
                 error   : oError,
                 bubbles : true
@@ -896,7 +896,7 @@ jpf.webdav = function(){
         
         this.doRequest(function(data, state, extra) {
             // #ifdef __DEBUG
-            jpf.console.dir(data);
+            apf.console.dir(data);
             // #endif
         }, sPath, buildPropertiesBlock(oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
@@ -1073,11 +1073,11 @@ jpf.webdav = function(){
      */
     this.load = function(x){
         this.server  = x.getAttribute('url');
-        var i, url   = new jpf.url(this.server);
+        var i, url   = new apf.url(this.server);
 
         // do some extra startup/ syntax error checking
         if (!url.host || !url.protocol)
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "WebDAV initialization error",
                 "Invalid WebDAV server url provided."));
 
@@ -1085,7 +1085,7 @@ jpf.webdav = function(){
         this.rootPath   = url.path;
         this.server     = this.server.replace(new RegExp(this.rootPath + "$"), "");
         this.tagName    = "webdav";
-        this.showHidden = jpf.isTrue(x.getAttribute("show-hidden")
+        this.showHidden = apf.isTrue(x.getAttribute("show-hidden")
             || x.getAttribute("showhidden"))
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
@@ -1100,7 +1100,7 @@ jpf.webdav = function(){
     };
 };
 
-jpf.webdav.STATUS_CODES = {
+apf.webdav.STATUS_CODES = {
     '100': 'Continue',
     '101': 'Switching Protocols',
     '102': 'Processing',
@@ -1175,7 +1175,7 @@ jpf.webdav.STATUS_CODES = {
  * @param {Function} callback
  * @type  {void}
  */
-jpf.datainstr.webdav = function(xmlContext, options, callback){
+apf.datainstr.webdav = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(
         options.instrData.join(":"), xmlContext, options.args, options);
 
@@ -1187,7 +1187,7 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
 
     var oWebDAV, name = parsed.name.split(".");
     if (name.length == 1) {
-        var modules = jpf.teleport.modules;
+        var modules = apf.teleport.modules;
         for (var i = 0; i < modules.length; i++) {
             if (modules[i].obj.tagName == "webdav") {
                 oWebDAV = modules[i].obj;
@@ -1201,7 +1201,7 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
 
     //#ifdef __DEBUG
     if (!oWebDAV) {
-        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+        throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
             name.length
                 ? "Could not find WebDAV object by name '" + name[0] + "' in \
                    data instruction '" + options.instruction + "'"
@@ -1275,7 +1275,7 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
             break;
         default:
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+            throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
                 "Invalid WebDAV data instruction '" + options.instruction + "'"));
             //#endif
             break;

@@ -25,7 +25,7 @@
  * The animation library that is used for the animations inside elements
  * @default_private
  */
-jpf.tween = {
+apf.tween = {
     //Animation Modules
     left: function(oHtml, value){
         oHtml.style.left = value + "px";
@@ -52,19 +52,19 @@ jpf.tween = {
     },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + "px";
-        if (jpf.hasSingleResizeEvent)
+        if (apf.hasSingleResizeEvent)
             window.onresize();
     },
     mwidth: function(oHtml, value, info) {
-        var diff = jpf.getDiff(oHtml);
+        var diff = apf.getDiff(oHtml);
         oHtml.style.width = value + "px";
-        oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(jpf.getStyle(oHtml,
+        oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(apf.getStyle(oHtml,
             "borderLeftWidth")) || diff[0]/2) + (info.margin || 0)) + "px";
     },
     mheight: function(oHtml, value, info) {
-        var diff = jpf.getDiff(oHtml);
+        var diff = apf.getDiff(oHtml);
         oHtml.style.height = value + "px";
-        oHtml.style.marginTop = (-1 * value / 2 - (parseInt(jpf.getStyle(oHtml,
+        oHtml.style.marginTop = (-1 * value / 2 - (parseInt(apf.getStyle(oHtml,
             "borderTopWidth")) || diff[1]/2) + (info.margin || 0)) + "px";
     },
     scrollwidth: function(oHtml, value){
@@ -81,7 +81,7 @@ jpf.tween = {
         }
     },
     scrollheight: function(oHtml, value, info){
-        var diff = jpf.getHeightDiff(oHtml),
+        var diff = apf.getHeightDiff(oHtml),
             oInt = info.oInt || oHtml;
         oHtml.style.height = value + "px";
         oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff;
@@ -96,9 +96,9 @@ jpf.tween = {
         oHtml.style.marginLeft = (-1 * value) + "px";
     },
     fade: function(oHtml, value){
-        if (jpf.hasStyleFilters)
+        if (apf.hasStyleFilters)
             oHtml.style.filter  = "alpha(opacity=" + parseInt(value * 100) + ")";
-        //else if(false && jpf.isGecko) oHtml.style.MozOpacity = value-0.000001;
+        //else if(false && apf.isGecko) oHtml.style.MozOpacity = value-0.000001;
         else
             oHtml.style.opacity = value;
     },
@@ -109,7 +109,7 @@ jpf.tween = {
         oHtml.style.color = value;
     },
     htmlcss : function(oHtml, value, obj){
-        if (jpf.hasStyleFilters && obj.type == "filter")
+        if (apf.hasStyleFilters && obj.type == "filter")
             oHtml.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
         else
             oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
@@ -146,7 +146,7 @@ jpf.tween = {
 
     setQueue : function(oHtml, stepFunction){
         if (!oHtml.getAttribute("id"))
-            jpf.setUniqueHtmlId(oHtml);
+            apf.setUniqueHtmlId(oHtml);
 
         if (!this.queue[oHtml.getAttribute("id")])
             this.queue[oHtml.getAttribute("id")] = [];
@@ -227,9 +227,9 @@ jpf.tween = {
         }
 
         var stepParts = [
-            jpf.tween.$calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
-            jpf.tween.$calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
-            jpf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
+            apf.tween.$calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
+            apf.tween.$calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
+            apf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
         ];
 
         for (steps = [], i = 0; i < stepParts[0].length; i++) {
@@ -246,23 +246,23 @@ jpf.tween = {
      * start to an end value.
      * Example:
      * <code>
-     * jpf.tween.single(myDiv, {
+     * apf.tween.single(myDiv, {
      *     type : "left",
      *     from : 10,
      *     to   : 100,
-     *     anim : jpf.tween.EASEIN
+     *     anim : apf.tween.EASEIN
      * });
      * </code>
      * Example:
      * Multiple animations can be run after eachother
      * by calling this function multiple times.
      * <code>
-     *  jpf.tween.single(myDiv, options).single(myDiv2, options2);
+     *  apf.tween.single(myDiv, options).single(myDiv2, options2);
      * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {Object}   info  the animation settings.
      *   Properties:
-     *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to jpf.tween with the name of the property modifier. Default there are several handlers available.
+     *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to apf.tween with the name of the property modifier. Default there are several handlers available.
      *      Possible values:
      *      left            Sets the left position
      *      right           Sets the right position
@@ -293,38 +293,38 @@ jpf.tween = {
      *     {Boolean} stop       whether the animation should stop.
      */
     single : function(oHtml, info){
-        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
+        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
             info.oInt = oHtml.oInt;
             oHtml = oHtml.oExt;
         }
 
-        if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
+        if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
 
-        var useCSSAnim = (jpf.supportCSSAnim && jpf.tween.CSSPROPS[info.type]);
-        info.method = useCSSAnim ? info.type : jpf.tween[info.type];
+        var useCSSAnim = (apf.supportCSSAnim && apf.tween.CSSPROPS[info.type]);
+        info.method = useCSSAnim ? info.type : apf.tween[info.type];
 
         //#ifdef __DEBUG
         if (!info.method)
-            throw new Error(jpf.formatErrorString(0, this,
+            throw new Error(apf.formatErrorString(0, this,
                 "Single Value Tween",
                 "Could not find method for tweening operation '"
                 + info.type + "'"));
         //#endif
 
         if (useCSSAnim) {
-            var type = jpf.tween.CSSPROPS[info.type];
+            var type = apf.tween.CSSPROPS[info.type];
             if (type === false)
                 return this;
             info.type = type || info.type;
-            oHtml.style[info.type] = info.from + (jpf.tween.needsPix[info.type] ? "px" : "");
+            oHtml.style[info.type] = info.from + (apf.tween.needsPix[info.type] ? "px" : "");
             setTimeout(function() {
-                oHtml.style[info.type]       = info.to + (jpf.tween.needsPix[info.type] ? "px" : "");
+                oHtml.style[info.type]       = info.to + (apf.tween.needsPix[info.type] ? "px" : "");
                 oHtml.style.webkitTransition = info.type + " " + ((info.steps
                     * info.interval) / 1000) + "s "
-                    + jpf.tween.CSSTIMING[info.anim || 0];
+                    + apf.tween.CSSTIMING[info.anim || 0];
                 var f = function() {
                     if (info.onfinish)
                         info.onfinish(oHtml, info.userdata);
@@ -337,8 +337,8 @@ jpf.tween = {
         }
 
         var steps = info.color
-            ? jpf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
-            : jpf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps);
+            ? apf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
+            : apf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps);
 
         var _self = this;
         var stepFunction = function(step){
@@ -346,7 +346,7 @@ jpf.tween = {
             if (info.control && info.control.stop) {
                 info.control.stop = false;
 
-                jpf.tween.clearQueue(oHtml);
+                apf.tween.clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
                 return;
@@ -373,7 +373,7 @@ jpf.tween = {
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
-                jpf.tween.nextQueue(oHtml);
+                apf.tween.nextQueue(oHtml);
             }
         };
 
@@ -388,8 +388,8 @@ jpf.tween = {
      * Example:
      * Animating both the left and width at the same time.
      * <code>
-     *  jpf.tween.multi(myDiv, {
-     *      anim   : jpf.tween.EASEIN
+     *  apf.tween.multi(myDiv, {
+     *      anim   : apf.tween.EASEIN
      *      tweens : [{
      *          type : "left",
      *          from : 10,
@@ -406,7 +406,7 @@ jpf.tween = {
      * Multiple animations can be run after eachother
      * by calling this function multiple times.
      * <code>
-     *  jpf.tween.multi(myDiv, options).multi(myDiv2, options2);
+     *  apf.tween.multi(myDiv, options).multi(myDiv2, options2);
      * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {Object} info the settings of the animation.
@@ -423,17 +423,17 @@ jpf.tween = {
      *   {Array}    [tweens]    a collection of simple objects specifying the single value animations that are to be executed simultaneously. (for the properties of these single tweens see the single tween method).
      */
     multi : function(oHtml, info){
-        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
+        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
             info.oInt = oHtml.oInt;
             oHtml = oHtml.oExt;
         }
 
-        var useCSSAnim  = jpf.supportCSSAnim,
+        var useCSSAnim  = apf.supportCSSAnim,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
-            cssAnim     = jpf.tween.CSSTIMING[info.anim || 0];
+            cssAnim     = apf.tween.CSSTIMING[info.anim || 0];
 
         for (var steps = [], stepsTo = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
@@ -443,36 +443,36 @@ jpf.tween = {
                 data.oHtml = data.oHtml.oExt;
             }
 
-            useCSSAnim = (jpf.supportCSSAnim && jpf.tween.CSSPROPS[data.type]);
+            useCSSAnim = (apf.supportCSSAnim && apf.tween.CSSPROPS[data.type]);
 
             data.method = useCSSAnim
                 ? data.type
-                : jpf.tween[data.type] || jpf.tween.htmlcss;
+                : apf.tween[data.type] || apf.tween.htmlcss;
 
             //#ifdef __DEBUG
             if (!data.method)
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Multi Value Tween",
                     "Could not find method for tweening operation '"
                     + data.type + "'"));
             //#endif
 
             if (useCSSAnim) {
-                var type = jpf.tween.CSSPROPS[data.type];
+                var type = apf.tween.CSSPROPS[data.type];
                 data.type = type || data.type;
 
                 oHtml.style[data.type] = data.from
-                    + (jpf.tween.needsPix[data.type] ? "px" : "");
+                    + (apf.tween.needsPix[data.type] ? "px" : "");
                 stepsTo.push([data.type, data.to
-                    + (jpf.tween.needsPix[data.type] ? "px" : "")]);
+                    + (apf.tween.needsPix[data.type] ? "px" : "")]);
                 steps.push(data.type + " " + cssDuration + "s " + cssAnim + " 0");
 
                 hasCSSAnims = true;
             }
             else {
                 steps.push(data.color
-                    ? jpf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
-                    : jpf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
+                    ? apf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
+                    : apf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
             }
         }
 
@@ -501,7 +501,7 @@ jpf.tween = {
             _self.current = info;
             if (info.control && info.control.stop) {
                 info.control.stop = false;
-                jpf.tween.clearQueue(oHtml);
+                apf.tween.clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
                 return;
@@ -526,7 +526,7 @@ jpf.tween = {
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
-                jpf.tween.nextQueue(oHtml);
+                apf.tween.nextQueue(oHtml);
             }
         };
 
@@ -541,7 +541,7 @@ jpf.tween = {
      * Multiple animations can be run after eachother by calling this function
      * multiple times.
      * <code>
-     *  jpf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
+     *  apf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
      * </code>
      * @param {Element}  oHtml the object to animate.
      * @param {String} className the classname that defines the css properties to be set or removed.
@@ -564,14 +564,14 @@ jpf.tween = {
             oHtml = oHtml.oExt;
 
         if (remove)
-            jpf.setStyleClass(oHtml, "", [className]);
+            apf.setStyleClass(oHtml, "", [className]);
 
         var callback = info.onfinish;
         info.onfinish = function(){
             if (remove)
-                jpf.setStyleClass(oHtml, "", [className]);
+                apf.setStyleClass(oHtml, "", [className]);
             else
-                jpf.setStyleClass(oHtml, className);
+                apf.setStyleClass(oHtml, className);
 
             //Reset CSS values
             for (var i = 0; i < info.tweens.length; i++){
@@ -587,7 +587,7 @@ jpf.tween = {
 
         var result, newvalue, curvalue, j, isColor, style, rules, i;
         for (i = 0; i < document.styleSheets.length; i++) {
-            rules = document.styleSheets[i][jpf.styleSheetRules];
+            rules = document.styleSheets[i][apf.styleSheetRules];
             for (j = 0; j < rules.length; j++) {
                 var rule = rules[j];
 
@@ -603,7 +603,7 @@ jpf.tween = {
                             continue;
                         newvalue = RegExp.$1;
 
-                        result   = (jpf.getStyleRecur(oHtml, style) || "")
+                        result   = (apf.getStyleRecur(oHtml, style) || "")
                             .match(/opacity\=([\d\.]+)/);
                         curvalue = result ? RegExp.$1 : 100;
                         isColor  = false;
@@ -616,7 +616,7 @@ jpf.tween = {
                     else {
                         newvalue = remove && oHtml.style[style] || rule.style[style];
                         if (remove) oHtml.style[style] = "";
-                        curvalue = jpf.getStyleRecur(oHtml, style);
+                        curvalue = apf.getStyleRecur(oHtml, style);
                         isColor = style.match(/color/i) ? true : false;
                     }
 
@@ -629,14 +629,14 @@ jpf.tween = {
                                     ? curvalue
                                     : newvalue),
                         color   : isColor,
-                        needsPx : jpf.tween.needsPix[style.toLowerCase()] || false
+                        needsPx : apf.tween.needsPix[style.toLowerCase()] || false
                     });
                 }
             }
         }
 
         if (remove)
-            jpf.setStyleClass(oHtml, className);
+            apf.setStyleClass(oHtml, className);
 
         return this.multi(oHtml, info);
     },

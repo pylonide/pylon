@@ -175,7 +175,7 @@
  *
  * Processors:
  * There are several ways to convert the data retrieved from the xml data into
- * the needed string or boolean. The following example uses {@link core.jpf.object.jsltImplementation jslt}
+ * the needed string or boolean. The following example uses {@link core.apf.object.jsltImplementation jslt}
  * to determine the icon by the extension of the filename:
  * <code>
  *  <j:bindings>
@@ -462,7 +462,7 @@
  * slider changes. A tree element has several actions - among others: 'add',
  * 'remove', 'move', 'copy' and 'rename'. 
  * 
- * Smartbindings enable many other features in a Javeline PlatForm
+ * Smartbindings enable many other features in a Ajax.org Platform
  * application. Actions done by the user can be undone by calling 
  * {@link element.actiontracker.method.undo} of the element. The 
  * Remote Smartbinding element can send changes on data to other clients.
@@ -529,15 +529,15 @@
  * @addnode smartbinding, global
  *
  * @constructor
- * @jpfclass
+ * @apfclass
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  *
  * @default_private
  */
-jpf.smartbinding = function(name, xmlNode, parentNode){
+apf.smartbinding = function(name, xmlNode, parentNode){
     this.xmlbindings = null;
     this.xmlactions  = null;
     this.xmldragdrop = null;
@@ -549,13 +549,13 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.$modelXpath = {};
     this.name        = name;
     var _self        = this;
-    //this.uniqueId    = jpf.all.push(this) - 1;
+    //this.uniqueId    = apf.all.push(this) - 1;
     
     //#ifdef __WITH_JMLDOM_FULL
     this.tagName    = "smartbinding";
-    this.nodeFunc   = jpf.NODE_HIDDEN;
+    this.nodeFunc   = apf.NODE_HIDDEN;
     this.parentNode = parentNode;
-    jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+    apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
     //#endif
 
     var parts        = {
@@ -565,7 +565,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     };
     
     //#ifdef __DEBUG
-    jpf.console.info(name
+    apf.console.info(name
         ? "Creating SmartBinding [" + name + "]"
         : "Creating implicitly assigned SmartBinding");
     //#endif
@@ -592,7 +592,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
 
             //#ifdef __DEBUG
             if (!jmlNode[parts[part]]) {
-                throw new Error(jpf.formatErrorString(1035, jmlNode, 
+                throw new Error(apf.formatErrorString(1035, jmlNode, 
                     "initializing smartBinding", 
                     "Could not find handler for '" + part + "'."));
             }
@@ -629,7 +629,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
             
             //#ifdef __DEBUG
             if (!jmlNode["un" + parts[part]]) {
-                throw new Error(jpf.formatErrorString(1035, jmlNode, 
+                throw new Error(apf.formatErrorString(1035, jmlNode, 
                     "deinitializing smartBinding", 
                     "Could not find handler for '" + part + "'."));
             }
@@ -706,7 +706,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.addBindRule = function(xmlNode, jmlParent){
-        var str = xmlNode[jpf.TAGNAME] == "ref"
+        var str = xmlNode[apf.TAGNAME] == "ref"
             ? jmlParent ? jmlParent.mainBind : "value"
             : xmlNode.tagName;
         if (!this.bindings)
@@ -721,14 +721,14 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.addBindings = function(rules){
-        this.bindings    = rules;//jpf.getRules(xmlNode);
+        this.bindings    = rules;//apf.getRules(xmlNode);
         this.xmlbindings = xmlNode;
         
-        if (!jpf.isParsing) {
+        if (!apf.isParsing) {
             //@todo, dynamically update part
         }
         
-        //if (!jpf.isParsing)
+        //if (!apf.isParsing)
             //this.markForUpdate(null, "bindings");
     };
     
@@ -736,7 +736,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.addActionRule = function(xmlNode){
-        var str = xmlNode[jpf.TAGNAME] == "action" ? "Change" : xmlNode.tagName;
+        var str = xmlNode[apf.TAGNAME] == "action" ? "Change" : xmlNode.tagName;
         if (!this.actions)
             this.actions = {};
         if (!this.actions[str])
@@ -749,10 +749,10 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.addActions = function(rules, xmlNode){
-        this.actions    = rules;//jpf.getRules(xmlNode);
+        this.actions    = rules;//apf.getRules(xmlNode);
         this.xmlactions = xmlNode;
         
-        //if (!jpf.isParsing)
+        //if (!apf.isParsing)
             //this.markForUpdate(null, "actions");
     };
     
@@ -763,20 +763,20 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.addDragRule = function(xmlNode){
         if (!this.dragdrop)
             this.dragdrop = {};
-        if (!this.dragdrop[xmlNode[jpf.TAGNAME]])
-            this.dragdrop[xmlNode[jpf.TAGNAME]] = [xmlNode];
+        if (!this.dragdrop[xmlNode[apf.TAGNAME]])
+            this.dragdrop[xmlNode[apf.TAGNAME]] = [xmlNode];
         else
-            this.dragdrop[xmlNode[jpf.TAGNAME]].push(xmlNode);
+            this.dragdrop[xmlNode[apf.TAGNAME]].push(xmlNode);
     };
     
     /**
      * @private
      */
     this.addDragDrop = function(rules, xmlNode){
-        this.dragdrop    = rules;//jpf.getRules(xmlNode);
+        this.dragdrop    = rules;//apf.getRules(xmlNode);
         this.xmldragdrop = xmlNode;
         
-        //if (!jpf.isParsing)
+        //if (!apf.isParsing)
             //this.markForUpdate(null, "dragdrop");
     };
     
@@ -785,9 +785,9 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      */
     this.setModel = function(model, xpath){
         if (typeof model == "string")
-            model = jpf.nameserver.get("model", model);
+            model = apf.nameserver.get("model", model);
         
-        this.model          = jpf.nameserver.register("model", this.name, model);
+        this.model          = apf.nameserver.register("model", this.name, model);
         this.modelBaseXpath = xpath;
         
         var jmlNode;
@@ -810,7 +810,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.load = function(xmlNode){
-        this.setModel(new jpf.model().load(xmlNode));
+        this.setModel(new apf.model().load(xmlNode));
     };
     
     /**
@@ -929,33 +929,33 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
                 continue;
             
             //#ifdef __DEBUG
-            if (!jpf.nameserver.get(name, attr[i].nodeValue))
-                throw new Error(jpf.formatErrorString(1036, this, 
+            if (!apf.nameserver.get(name, attr[i].nodeValue))
+                throw new Error(apf.formatErrorString(1036, this, 
                     "Connecting " + name, 
                     "Could not find " + name + " by name '" 
                     + attr[i].nodeValue + "'"));
             //#endif
             
-            var cNode = jpf.nameserver.get(name, attr[i].nodeValue);
-            this[known[name]](jpf.getRules(cNode), cNode);
+            var cNode = apf.nameserver.get(name, attr[i].nodeValue);
+            this[known[name]](apf.getRules(cNode), cNode);
         }
 
         var data_node, nodes = xmlNode.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) continue;
     
-            switch (nodes[i][jpf.TAGNAME]) {
+            switch (nodes[i][apf.TAGNAME]) {
                 case "model":
                     data_node = nodes[i];
                     break;
                 case "bindings":
-                    this.addBindings(jpf.getRules(nodes[i]), nodes[i]);
+                    this.addBindings(apf.getRules(nodes[i]), nodes[i]);
                     break;
                 case "actions":
-                    this.addActions(jpf.getRules(nodes[i]), nodes[i]);
+                    this.addActions(apf.getRules(nodes[i]), nodes[i]);
                     break;
                 case "dragdrop":
-                    this.addDragDrop(jpf.getRules(nodes[i]), nodes[i]);
+                    this.addDragDrop(apf.getRules(nodes[i]), nodes[i]);
                     break;
                 case "ref":
                     this.addBindRule(nodes[i]);
@@ -964,7 +964,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
                     this.addActionRule(nodes[i]);
                     break;
                 default:
-                    throw new Error(jpf.formatErrorString(1039, this, 
+                    throw new Error(apf.formatErrorString(1039, this, 
                         "setSmartBinding Method", 
                         "Could not find handler for '" 
                         + nodes[i].tagName + "' node."));
@@ -974,9 +974,9 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         
         //Set Model
         if (data_node)
-            this.setModel(new jpf.model().loadJml(data_node));
+            this.setModel(new apf.model().loadJml(data_node));
         else if (xmlNode.getAttribute("model"))
-            jpf.setModel(xmlNode.getAttribute("model"), this);
+            apf.setModel(xmlNode.getAttribute("model"), this);
     };
     
     if (xmlNode)

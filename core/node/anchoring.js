@@ -48,18 +48,18 @@ var __ANCHORING__ = 1 << 13;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.3
  */
-jpf.Anchoring = function(){
+apf.Anchoring = function(){
     this.$regbase = this.$regbase | __ANCHORING__;
     this.$anchors = [];
 
     var VERTICAL   = 1;
     var HORIZONTAL = 2;
 
-    var l = jpf.layout, inited = false, updateQueue = 0,
+    var l = apf.layout, inited = false, updateQueue = 0,
         hordiff, verdiff, rule_v = "", rule_h = "", rule_header,
         id, inited, parsed, disabled;
 
@@ -133,7 +133,7 @@ jpf.Anchoring = function(){
         this.$propHandlers["anchors"]  = function(value){
             this.$anchors = value.splitSafe("(?:, *| )");
 
-            if (!updateQueue && jpf.loaded)
+            if (!updateQueue && apf.loaded)
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | HORIZONTAL | VERTICAL;
         };
@@ -141,7 +141,7 @@ jpf.Anchoring = function(){
         this.$propHandlers["left"]  =
         this.$propHandlers["width"] =
         this.$propHandlers["right"] = function(value){
-            if (!updateQueue && (!jpf.isParsing || jpf.parsingFinalPass))
+            if (!updateQueue && (!apf.isParsing || apf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | HORIZONTAL;
         };
@@ -149,7 +149,7 @@ jpf.Anchoring = function(){
         this.$propHandlers["top"]    =
         this.$propHandlers["height"] =
         this.$propHandlers["bottom"] = function(value){
-            if (!updateQueue && (!jpf.isParsing || jpf.parsingFinalPass))
+            if (!updateQueue && (!apf.isParsing || apf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | VERTICAL;
         };
@@ -230,19 +230,19 @@ jpf.Anchoring = function(){
 
     function getRuleHeader(){
         return "try{\
-            var oHtml = " + (jpf.hasHtmlIdsInJs
+            var oHtml = " + (apf.hasHtmlIdsInJs
                 ? this.oExt.getAttribute("id")
                 : "document.getElementById('"
                     + this.oExt.getAttribute("id") + "')") + ";\
             \
             var pWidth = " + (this.pHtmlNode == this.pHtmlDoc.body
-                ? (jpf.isIE
+                ? (apf.isIE
                     ? "document.documentElement.offsetWidth"
                     : "window.innerWidth")
                 : "oHtml.parentNode.offsetWidth") + ";\
             \
             var pHeight = " + (this.pHtmlNode == this.pHtmlDoc.body
-                ? (jpf.isIE
+                ? (apf.isIE
                     ? "document.documentElement.offsetHeight"
                     : "window.innerHeight")
                 : "oHtml.parentNode.offsetHeight") + ";\
@@ -254,15 +254,15 @@ jpf.Anchoring = function(){
      * @macro
      */
     function setPercentage(expr, value){
-        return String(expr).replace(jpf.percentageMatch, "((" + value + " * $1)/100)");
+        return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");
     }
 
     this.$updateLayout = function(){
         if (!parsed) {
             if (!this.oExt.getAttribute("id"))
-                jpf.setUniqueHtmlId(this.oExt);
+                apf.setUniqueHtmlId(this.oExt);
 
-            var diff    = jpf.getDiff(this.oExt);
+            var diff    = apf.getDiff(this.oExt);
             hordiff     = diff[0];
             verdiff     = diff[1];
             rule_header = getRuleHeader.call(this);
@@ -276,7 +276,7 @@ jpf.Anchoring = function(){
         }
 
         if (this.left || this.top || this.right || this.bottom || this.$anchors.length) {
-            //if ("absolute|fixed".indexOf(jpf.getStyle(this.oExt, "position")) == -1)
+            //if ("absolute|fixed".indexOf(apf.getStyle(this.oExt, "position")) == -1)
                 this.oExt.style.position = "absolute";
         }
 

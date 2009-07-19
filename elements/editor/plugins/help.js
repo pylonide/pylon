@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-jpf.editor.plugin('help', function(){
+apf.editor.plugin('help', function(){
     this.name        = 'help';
     this.icon        = 'help';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+h';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this plugin

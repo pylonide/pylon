@@ -53,8 +53,8 @@
  *
  * @return {Video} Returns a new video
  * @type {Video}
- * @inherits jpf.Presentation
- * @inherits jpf.Media
+ * @inherits apf.Presentation
+ * @inherits apf.Media
  * @constructor
  * @allowchild text, source, nomedia
  * @addnode elements:video
@@ -65,7 +65,7 @@
  * @since       1.0
  */
 
-jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
+apf.video = apf.component(apf.NODE_VISIBLE, function(){
     this.$booleanProperties["fullscreen"] = true;
 
     var oldStyle = null; //will hold old style of the media elements' parentNode on fullscreen
@@ -85,8 +85,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                     height   : this.parentNode.getHeight(),
                     top      : this.parentNode.getTop(),
                     left     : this.parentNode.getLeft(),
-                    position : jpf.getStyle(oParent, 'position'),
-                    zIndex   : jpf.getStyle(oParent, 'z-index'),
+                    position : apf.getStyle(oParent, 'position'),
+                    zIndex   : apf.getStyle(oParent, 'z-index'),
                     resizable: this.parentNode.resizable,
                     nodes    : []
                 }
@@ -95,9 +95,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                     while (oParent.parentNode != document.body) {
                         var node = oParent.parentNode;
                         i = oldStyle.nodes.push({
-                            pos:  jpf.getSyle(node, 'position') || "",
-                            top:  jpf.getSyle(node, 'top')  || node.offsetTop + "px",
-                            left: jpf.getSyle(node, 'left') || node.offsetLeft + "px",
+                            pos:  apf.getSyle(node, 'position') || "",
+                            top:  apf.getSyle(node, 'top')  || node.offsetTop + "px",
+                            left: apf.getSyle(node, 'left') || node.offsetLeft + "px",
                             node: node
                         }) - 1;
                         node.style.position = "absolute";
@@ -106,7 +106,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                         /*window.console.log('still reparenting!');
                         window.console.dir(oParent.parentNode);
                         placeHolder = document.createElement('div');
-                        placeHolder.setAttribute('id', '__jpf_video_placeholder__');
+                        placeHolder.setAttribute('id', '__apf_video_placeholder__');
                         placeHolder.style.display = "none";
                         oParent.parentNode.insertBefore(placeHolder, oParent);
 
@@ -162,7 +162,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
 
             var _self = this;
             window.setTimeout(function() {
-                jpf.layout.forceResize(_self.parentNode.oExt);
+                apf.layout.forceResize(_self.parentNode.oExt);
             }, 100)
         }
     };
@@ -204,7 +204,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', jpf.Media.NETWORK_LOADING);
+                this.setProperty('networkState', apf.Media.NETWORK_LOADING);
                 this.player.load(this.src);
             }
         }
@@ -278,9 +278,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         // mpeg video is better to be played by native players
         if (ext == "mpg" || ext == "mpeg" || ext == "mpe")
-            type = jpf.isMac ? "video/quicktime" : "video/wmv";
+            type = apf.isMac ? "video/quicktime" : "video/wmv";
         // default to VLC on *NIX machines
-        if (!jpf.isWin && !jpf.isMac && type == "video/wmv")
+        if (!apf.isWin && !apf.isMac && type == "video/wmv")
             type = "video/vlc";
 
         return type;
@@ -316,15 +316,15 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                 playerType = "TypeVlc";
 
             if (playerType == "TypeWmp") {
-                if (!jpf.isIE && typeof jpf.video.TypeVlc != "undefined"
-                  && jpf.video.TypeVlc.isSupported())
+                if (!apf.isIE && typeof apf.video.TypeVlc != "undefined"
+                  && apf.video.TypeVlc.isSupported())
                     playerType = "TypeVlc";
-                else if (jpf.isMac)
+                else if (apf.isMac)
                     playerType = "TypeQT";
             }
 
-            if (playerType && jpf.video[playerType] &&
-              jpf.video[playerType].isSupported()) {
+            if (playerType && apf.video[playerType] &&
+              apf.video[playerType].isSupported()) {
                 this.$lastMimeType = i;
                 return playerType;
             }
@@ -341,7 +341,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$isSupported = function(sType) {
         sType = sType || this.playerType;
-        return (jpf.video[sType] && jpf.video[sType].isSupported());
+        return (apf.video[sType] && apf.video[sType].isSupported());
     };
 
     /**
@@ -350,7 +350,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new jpf.video[this.playerType](this, this.oExt, {
+        this.player = new apf.video[this.playerType](this, this.oExt, {
             src         : this.src.splitSafe(",")[this.$lastMimeType] || this.src,
             width       : this.width,
             height      : this.height,
@@ -402,7 +402,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$errorHook = function(e) {
-        jpf.console.error(e.error);
+        apf.console.error(e.error);
     };
 
     /**
@@ -418,7 +418,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         this.setProperty('totalBytes', e.totalBytes);
         var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
         if (iDiff <= 20)
-            this.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
+            this.setProperty('readyState', apf.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -432,9 +432,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
         if (e.state == "loading")
-            this.setProperty('networkState', this.networkState = jpf.Media.NETWORK_LOADING);
+            this.setProperty('networkState', this.networkState = apf.Media.NETWORK_LOADING);
         else if (e.state == "connectionError")
-            this.$propHandlers["readyState"].call(this, this.networkState = jpf.Media.HAVE_NOTHING);
+            this.$propHandlers["readyState"].call(this, this.networkState = apf.Media.HAVE_NOTHING);
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
                 this.$readyHook({type: 'ready'});
@@ -489,8 +489,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', jpf.Media.NETWORK_LOADED);
-        this.setProperty('readyState',   jpf.Media.HAVE_FUTURE_DATA);
+        this.setProperty('networkState', apf.Media.NETWORK_LOADED);
+        this.setProperty('readyState',   apf.Media.HAVE_FUTURE_DATA);
         this.setProperty('duration', this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -506,7 +506,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$metadataHook = function(e) {
-        this.oVideo.setProperty('readyState', jpf.Media.HAVE_METADATA);
+        this.oVideo.setProperty('readyState', apf.Media.HAVE_METADATA);
     };
 
     /**
@@ -546,7 +546,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
         else
-            jpf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function(bRuntime) {
@@ -560,13 +560,13 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
-    jpf.Presentation,
-    jpf.Media
+    apf.Presentation,
+    apf.Media
 );
 
-jpf.video.TypeInterface = {
+apf.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls",
         "autoPlay", "totalTime", "mimeType"],
 
@@ -600,12 +600,12 @@ jpf.video.TypeInterface = {
 
         if (typeof id == "object")
             return id;
-        if (jpf.isIE)
+        if (apf.isIE)
             return window[id];
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
-                elem = jpf.lookup(id);
+                elem = apf.lookup(id);
             return elem;
         }
     }

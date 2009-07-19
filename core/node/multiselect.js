@@ -71,11 +71,11 @@ var __MULTISELECT__ = 1 << 8;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.5
  *
- * @inherits jpf.MultiselectBinding
+ * @inherits apf.MultiselectBinding
  *
  * @binding select Determines whether the {@link term.traversenode traverse node} can be selected.
  * Example:
@@ -108,7 +108,7 @@ var __MULTISELECT__ = 1 << 8;
  *  </j:dropdown>
  * </code>
  */
-jpf.MultiSelect = function(){
+apf.MultiSelect = function(){
     var noEvent;
     var selSmartbinding;
     var valueList    = [];
@@ -235,7 +235,7 @@ jpf.MultiSelect = function(){
         //#ifdef __DEBUG
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.xmlRoot)) {
-            throw new Error(jpf.formatErrorString(0,
+            throw new Error(apf.formatErrorString(0,
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
                  component. This is not allowed."));
@@ -296,7 +296,7 @@ jpf.MultiSelect = function(){
      * adds it. After selecting the new node the user is offered a rename input
      * box.
      * <code>
-     *  var xmlNode = jpf.xmldb.copy(myList.selected);
+     *  var xmlNode = apf.xmldb.copy(myList.selected);
      *  xmlNode.setAttribute("name", "New product");
      *  myList.add(xmlNode);
      *  myList.select(xmlNode);
@@ -353,7 +353,7 @@ jpf.MultiSelect = function(){
                 node = this.getNodeFromRule("add", xmlNode, true);
             else if (typeof xmlNode == "string") {
                 if (xmlNode.trim().charAt(0) == "<") {
-                    xmlNode = jpf.getXml(xmlNode);
+                    xmlNode = apf.getXml(xmlNode);
                     node = this.getNodeFromRule("add", xmlNode, true);
                 }
                 else {
@@ -375,21 +375,21 @@ jpf.MultiSelect = function(){
             node = null;
 
         //#ifdef __WITH_OFFLINE
-        var bHasOffline = (typeof jpf.offline != "undefined");
-        if (bHasOffline && !jpf.offline.canTransact())
+        var bHasOffline = (typeof apf.offline != "undefined");
+        if (bHasOffline && !apf.offline.canTransact())
             return false;
 
-        if (bHasOffline && !jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
+        if (bHasOffline && !apf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
             return false;
         //#endif
         
         var refNode  = this.isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
         var jmlNode  = this; //PROCINSTR
         var callback = function(addXmlNode, state, extra){
-            if (state != jpf.SUCCESS) {
+            if (state != apf.SUCCESS) {
                 var oError;
 
-                oError = new Error(jpf.formatErrorString(1032, jmlNode,
+                oError = new Error(apf.formatErrorString(1032, jmlNode,
                     "Loading xml data",
                     "Could not add data for control " + jmlNode.name
                     + "[" + jmlNode.tagName + "] \nUrl: " + extra.url
@@ -402,9 +402,9 @@ jpf.MultiSelect = function(){
             }
 
             if (typeof addXmlNode != "object")
-                addXmlNode = jpf.getXmlDom(addXmlNode).documentElement;
-            if (addXmlNode.getAttribute(jpf.xmldb.xmlIdTag))
-                addXmlNode.setAttribute(jpf.xmldb.xmlIdTag, "");
+                addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
+            if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
+                addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
 
             var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
                 ? jmlNode.selected
@@ -424,7 +424,7 @@ jpf.MultiSelect = function(){
             if (!pNode)
                 pNode = jmlNode.xmlRoot;
 
-            if (jpf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument)
+            if (apf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument)
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
 
             if (jmlNode.executeAction("appendChild",
@@ -436,11 +436,11 @@ jpf.MultiSelect = function(){
         }
 
         if (xmlNode)
-            return callback(xmlNode, jpf.SUCCESS);
+            return callback(xmlNode, apf.SUCCESS);
         else {
             //#ifdef __DEBUG
             if (!node) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Executing add action",
                     "Missing add action defined in action rules. Unable to \
                      perform action."));
@@ -448,16 +448,16 @@ jpf.MultiSelect = function(){
             //#endif
 
             if (node.getAttribute("get"))
-                return jpf.getData(node.getAttribute("get"), refNode, null, callback)
+                return apf.getData(node.getAttribute("get"), refNode, null, callback)
             else if (node.firstChild) {
-                var node = jpf.getNode(node, [0]);
-                if (jpf.supportNamespaces && node.namespaceURI == jpf.ns.xhtml) {
-                    node = jpf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                var node = apf.getNode(node, [0]);
+                if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
+                    node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
                     //@todo import here for webkit?
                 }
                 else node = node.cloneNode(true);
                 
-                return callback(node, jpf.SUCCESS);
+                return callback(node, apf.SUCCESS);
             }
         }
 
@@ -511,7 +511,7 @@ jpf.MultiSelect = function(){
 
             // #ifdef __DEBUG
             if (!this.caption && !this.bindingRules[this.mainBind] && !this.bindingRules["caption"]) {
-                /*jpf.console.warn("Trying to get value for " 
+                /*apf.console.warn("Trying to get value for " 
                     + this.tagName + (this.name ? " [" + this.name + "]" : "") 
                     + ". No value rule has been defined. There is no way \
                        to determine the value of the selected item.");
@@ -520,7 +520,7 @@ jpf.MultiSelect = function(){
                 if (noError)
                     return false;
                 
-                throw new Error(jpf.formatErrorString(1074, this,
+                throw new Error(apf.formatErrorString(1074, this,
                     "Retrieving the value of this component.",
                     "No value rule has been defined. There is no way \
                      to determine the value of the selected item."));
@@ -549,7 +549,7 @@ jpf.MultiSelect = function(){
      */
     this.$setMultiBind = function(smartbinding, part){
         if (!selSmartbinding)
-            selSmartbinding = new jpf.MultiLevelBinding(this);
+            selSmartbinding = new apf.MultiLevelBinding(this);
 
         selSmartbinding.setSmartBinding(smartbinding, part);
 
@@ -576,7 +576,7 @@ jpf.MultiSelect = function(){
      */
     this.$getMultiBind = function(){
         return (selSmartbinding
-            || (selSmartbinding = new jpf.MultiLevelBinding(this)));
+            || (selSmartbinding = new apf.MultiLevelBinding(this)));
     };
     // #endif
     // #endif
@@ -651,7 +651,7 @@ jpf.MultiSelect = function(){
         /* **** Type Detection *****/
         if (!xmlNode) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(1075, this,
+            throw new Error(apf.formatErrorString(1075, this,
                 "Making a selection",
                 "No selection was specified"))
             //#endif
@@ -661,7 +661,7 @@ jpf.MultiSelect = function(){
 
         if (typeof xmlNode != "object") {
             var str = xmlNode;
-            xmlNode = jpf.xmldb.getNodeById(xmlNode);
+            xmlNode = apf.xmldb.getNodeById(xmlNode);
 
             //Select based on the value of the xml node
             if (!xmlNode) {
@@ -676,16 +676,16 @@ jpf.MultiSelect = function(){
         if (!xmlNode.style)
             htmlNode = this.caching
                 ? this.getNodeFromCache(xmlNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(xmlNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
         else {
-            var id = (htmlNode = xmlNode).getAttribute(jpf.xmldb.htmlIdTag);
+            var id = (htmlNode = xmlNode).getAttribute(apf.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
                 id = (htmlNode = htmlNode.parentNode).getAttribute(
-                    jpf.xmldb.htmlIdTag);
+                    apf.xmldb.htmlIdTag);
 
-            xmlNode = jpf.xmldb.getNodeById(id, this.xmlRoot);
+            xmlNode = apf.xmldb.getNodeById(id, this.xmlRoot);
         }
 
         if(this.dispatchEvent('beforeselect', {
@@ -857,9 +857,9 @@ jpf.MultiSelect = function(){
         if (this.selected) {
             htmlNode = this.caching
                 ? this.getNodeFromCache(this.selected.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.selected.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
             this.$deselect(htmlNode);
         }
 
@@ -870,9 +870,9 @@ jpf.MultiSelect = function(){
             for (var i = valueList.length - 1; i >= 0; i--) {
                 htmlNode = this.caching
                     ? this.getNodeFromCache(valueList[i].getAttribute(
-                        jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
+                        apf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                     : document.getElementById(valueList[i].getAttribute(
-                        jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                        apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
                 this.$deselect(htmlNode);
             }
             //for(var i=selectedList.length-1;i>=0;i--) this.$deselect(selectedList[i]);
@@ -883,9 +883,9 @@ jpf.MultiSelect = function(){
         if (this.indicator) {
             htmlNode = this.caching
                 ? this.getNodeFromCache(this.indicator.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.indicator.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
 
             this.$selected  =
             this.$indicator = this.$indicate(htmlNode);
@@ -928,19 +928,19 @@ jpf.MultiSelect = function(){
 
             //Type Detection
             if (typeof xmlNode != "object")
-                xmlNode = jpf.xmldb.getNodeById(xmlNode);
+                xmlNode = apf.xmldb.getNodeById(xmlNode);
             if (!xmlNode.style)
                 htmlNode = this.$findNode(null, xmlNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
             else {
                 htmlNode = xmlNode;
-                xmlNode  = jpf.xmldb.getNodeById(htmlNode.getAttribute(
-                    jpf.xmldb.htmlIdTag));
+                xmlNode  = apf.xmldb.getNodeById(htmlNode.getAttribute(
+                    apf.xmldb.htmlIdTag));
             }
 
             if (!xmlNode) {
                 // #ifdef __DEBUG
-                jpf.console.warn("Component : " + this.name + " ["
+                apf.console.warn("Component : " + this.name + " ["
                     + this.tagName + "]\nMessage : xmlNode whilst selecting a list of xmlNodes could not be found. Ignoring.")
                 // #endif
                 continue;
@@ -994,20 +994,20 @@ jpf.MultiSelect = function(){
         /* **** Type Detection *****/
         var htmlNode;
         if (typeof xmlNode != "object")
-            xmlNode = jpf.xmldb.getNodeById(xmlNode);
+            xmlNode = apf.xmldb.getNodeById(xmlNode);
         if (!xmlNode.style)
             htmlNode = this.caching
                 ? this.getNodeFromCache(xmlNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(xmlNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
         else {
-            var id = (htmlNode = xmlNode).getAttribute(jpf.xmldb.htmlIdTag);
+            var id = (htmlNode = xmlNode).getAttribute(apf.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
                 id = (htmlNode = htmlNode.parentNode).getAttribute(
-                    jpf.xmldb.htmlIdTag);
+                    apf.xmldb.htmlIdTag);
 
-            xmlNode = jpf.xmldb.getNodeById(id);
+            xmlNode = apf.xmldb.getNodeById(id);
         }
 
         if (this.$indicator)
@@ -1047,7 +1047,7 @@ jpf.MultiSelect = function(){
             this.select(xmlNode);
         }
         else {
-            var id = jpf.xmldb.getID(xmlNode, this);
+            var id = apf.xmldb.getID(xmlNode, this);
 
             this.$deselect(this.$tempsel || this.$selected);
             this.$deindicate(this.$tempsel || this.$indicator);
@@ -1102,9 +1102,9 @@ jpf.MultiSelect = function(){
         if (xmldoc) {
             r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : jpf.getXmlDom().createDocumentFragment();
+                : apf.getXmlDom().createDocumentFragment();
             for (i = 0; i < valueList.length; i++)
-                jpf.xmldb.clearConnections(r.appendChild(
+                apf.xmldb.clearConnections(r.appendChild(
                     valueList[i].cloneNode(true)));
         }
         else
@@ -1189,14 +1189,14 @@ jpf.MultiSelect = function(){
         if (valueList.length > 1) {
             //Fix selection if needed
             for (var lst = [], i = 0, l = valueList.length; i < l; i++) {
-                if (jpf.xmldb.isChildOf(this.xmlRoot, valueList[i]))
+                if (apf.xmldb.isChildOf(this.xmlRoot, valueList[i]))
                     lst.push(valueList[i]);
             }
 
             if (lst.length > 1) {
                 this.selectList(lst);
                 if(this.indicator
-                  && !jpf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
+                  && !apf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
                     this.setIndicator(nextNode || this.selected);
                 }
                 return;
@@ -1209,11 +1209,11 @@ jpf.MultiSelect = function(){
 
         if (!nextNode) {
             if (this.selected
-              && !jpf.xmldb.isChildOf(this.xmlRoot, this.selected)) {
+              && !apf.xmldb.isChildOf(this.xmlRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
             else if(this.selected && this.indicator
-              && !jpf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
+              && !apf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
                 this.setIndicator(this.selected);
             }
             else if (!this.selected){
@@ -1283,12 +1283,12 @@ jpf.MultiSelect = function(){
         // #ifdef __DEBUG
         if (!this.caption && !this.bindingRules["caption"]
           && !this.bindingRules[this.mainBind] && !this.caption)
-            throw new Error(jpf.formatErrorString(1074, this,
+            throw new Error(apf.formatErrorString(1074, this,
                 "Setting the value of this component",
                 "Could not find default value bind rule for this control."))
         // #endif
 
-        if (jpf.isNot(value))
+        if (apf.isNot(value))
             return this.clearSelection(null, noEvent);
 
         if (!this.xmlRoot)
@@ -1311,7 +1311,7 @@ jpf.MultiSelect = function(){
 
                 var srcElement = e.srcElement || e.target;
                 if (_self.allowdeselect && (srcElement == this
-                  || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
+                  || srcElement.getAttribute(apf.xmldb.htmlIdTag)))
                     _self.clearSelection(); //hacky
             }
         }
@@ -1322,7 +1322,7 @@ jpf.MultiSelect = function(){
 
     this.$propHandlers["ctrlselect"] = function(value){
         if (value != "enter")
-            this.ctrlselect = jpf.isTrue(value);
+            this.ctrlselect = apf.isTrue(value);
     }
 
     function fAutoselect(){this.selectAll();}
@@ -1370,12 +1370,12 @@ jpf.MultiSelect = function(){
         //#endif
 
         //#ifdef __WITH_OFFLINE_STATE
-        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
-          && jpf.offline.state.realtime) {  //@todo please optimize
+        if (typeof apf.offline != "undefined" && apf.offline.state.enabled
+          && apf.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < valueList.length; i++)
-                sel.push(jpf.remote.xmlToXpath(valueList[i], null, true));
+                sel.push(apf.remote.xmlToXpath(valueList[i], null, true));
 
-            jpf.offline.state.set(this, "selection", sel);
+            apf.offline.state.set(this, "selection", sel);
             fSelState.call(this);
         }
         //#endif
@@ -1384,14 +1384,14 @@ jpf.MultiSelect = function(){
 
     //#ifdef __WITH_OFFLINE_STATE
     function fSelState(){
-        if (typeof jpf.offline != "undefined" && jpf.offline.state.enabled
-          && jpf.offline.state.realtime) {
-            jpf.offline.state.set(this, "selstate",
+        if (typeof apf.offline != "undefined" && apf.offline.state.enabled
+          && apf.offline.state.realtime) {
+            apf.offline.state.set(this, "selstate",
                 [this.indicator
-                    ? jpf.remote.xmlToXpath(this.indicator, null, true)
+                    ? apf.remote.xmlToXpath(this.indicator, null, true)
                     : "",
                  this.selected
-                    ? jpf.remote.xmlToXpath(this.selected, null, true)
+                    ? apf.remote.xmlToXpath(this.selected, null, true)
                     : ""]);
         }
     }
@@ -1403,7 +1403,7 @@ jpf.MultiSelect = function(){
 /**
  * @private
  */
-jpf.MultiSelectServer = {
+apf.MultiSelectServer = {
     /**
      * @private
      */
@@ -1414,7 +1414,7 @@ jpf.MultiSelectServer = {
      */
     register : function(xmlId, xmlNode, selList, jNode){
         if (!this.uniqueId)
-            this.uniqueId = jpf.all.push(this) - 1;
+            this.uniqueId = apf.all.push(this) - 1;
 
         this.objects[xmlId] = {
             xml   : xmlNode,
@@ -1426,18 +1426,18 @@ jpf.MultiSelectServer = {
     $xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
         if (action != "attribute") return;
 
-        var data = this.objects[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)];
+        var data = this.objects[xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
         if (!data) return;
 
         var nodes = xmlNode.attributes;
 
         for (var j = 0; j < data.list.length; j++) {
             //data[j].setAttribute(UndoObj.name, xmlNode.getAttribute(UndoObj.name));
-            jpf.xmldb.setAttribute(data.list[j], UndoObj.name,
+            apf.xmldb.setAttribute(data.list[j], UndoObj.name,
                 xmlNode.getAttribute(UndoObj.name));
         }
 
-        //jpf.xmldb.synchronize();
+        //apf.xmldb.synchronize();
     }
 };
 

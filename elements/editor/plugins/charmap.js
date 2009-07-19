@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-jpf.editor.plugin('charmap', function() {
+apf.editor.plugin('charmap', function() {
     this.name        = 'charmap';
     this.icon        = 'charmap';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.colspan     = 20;
 
     var panelBody;
@@ -43,12 +43,12 @@ jpf.editor.plugin('charmap', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 469 : 466, 199);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 469 : 466, 199);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -88,12 +88,12 @@ jpf.editor.plugin('charmap', function() {
               "&rArr;","&hArr;","&diams;","&asymp;"];
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
+        e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sCode = e.target.getAttribute('rel');
         if (sCode) {
-            jpf.popup.forceHide();
+            apf.popup.forceHide();
             //this.storeSelection();
             this.editor.insertHTML(sCode, true);
             var _self = this;
@@ -114,7 +114,7 @@ jpf.editor.plugin('charmap', function() {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
-                chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="jpf.lookup(',
+                chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="apf.lookup(',
                 this.uniqueId, ').submit(event);">\
                 <span>', chars[i],'</span>\
                 </a>');

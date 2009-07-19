@@ -49,10 +49,10 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
- * @namespace jpf
+ * @namespace apf
  */
 
-jpf.flow = {
+apf.flow = {
     isMoved            : false,
     objCanvases        : {},
     connectionsTemp    : null,
@@ -62,7 +62,7 @@ jpf.flow = {
     fsSize : 15,
 
     init : function() {
-        //jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
+        //apf.flow.connectionsManager = new apf.flow.connectionsManager;
 
         document.body.onmousedown = function(e) {
             e = (e || event);
@@ -73,12 +73,12 @@ jpf.flow = {
 
             if (target.tagName == 'HTML')
                 return;
-            while (target != document.body && !jpf.flow.findBlock(target.id)) {
+            while (target != document.body && !apf.flow.findBlock(target.id)) {
                 target = target.parentNode || target.parentElement;
             }
             /* Looking for Block element - End*/
 
-            var objBlock = jpf.flow.isBlock(target);
+            var objBlock = apf.flow.isBlock(target);
 
             if (!objBlock)
                 return;
@@ -108,7 +108,7 @@ jpf.flow = {
                 target.style.top  = (t + dy) + "px";
 
                 objBlock.onMove();
-                jpf.flow.onblockmove();
+                apf.flow.onblockmove();
 
                 return false;
             }
@@ -116,8 +116,8 @@ jpf.flow = {
             document.body.onmouseup = function(e) {
                 document.body.onmousemove = null;
 
-                if(jpf.flow.onaftermove && isDraged) {
-                    jpf.flow.onaftermove(dy, dx);
+                if(apf.flow.onaftermove && isDraged) {
+                    apf.flow.onaftermove(dy, dx);
                     isDraged = false;
                 }
             }
@@ -131,9 +131,9 @@ jpf.flow = {
  * @param {HTMLElement}   htmlElement    the html representation of a workarea
  * @constructor
  */
-jpf.flow.canvas = function(htmlElement) {
+apf.flow.canvas = function(htmlElement) {
     if (!htmlElement.getAttribute("id")) {
-        jpf.setUniqueHtmlId(htmlElement);
+        apf.setUniqueHtmlId(htmlElement);
     }
 
     this.id             = htmlElement.getAttribute("id");
@@ -150,7 +150,7 @@ jpf.flow.canvas = function(htmlElement) {
     this.disableremove  = false;
 
     this.initCanvas = function() {
-        jpf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
+        apf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
     };
 
     this.removeConnector = function(id) {
@@ -278,7 +278,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {String}       caption      description placed under block element
  * @constructor
  */
-jpf.flow.block = function(htmlElement, objCanvas, other) {
+apf.flow.block = function(htmlElement, objCanvas, other) {
     this.canvas        = objCanvas;
     this.htmlElement   = htmlElement;
     this.id            = htmlElement.getAttribute("id");
@@ -330,7 +330,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
 
         if (!this.other.type) {
-            jpf.setStyleClass(this.htmlElement, "empty");
+            apf.setStyleClass(this.htmlElement, "empty");
             this.image.style.display = "none";
         }
         else {
@@ -363,18 +363,18 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         for (var id in inp) {
             var input = this.htmlOutputs[id]
                 ? this.htmlOutputs[id]
-                : new jpf.flow.input(this, id);
+                : new apf.flow.input(this, id);
 
             if (!this.htmlOutputs[id])
                 this.htmlOutputs[id] = input;
             var pos = this.updateInputPos(inp[id]);
 
             var _x = pos[0] - (pos[2] == "left" || pos[2] == "right"
-                ? Math.ceil(parseInt(jpf.getStyle(input.htmlElement, "width"))/2)
-                : Math.ceil(jpf.flow.sSize/2));
+                ? Math.ceil(parseInt(apf.getStyle(input.htmlElement, "width"))/2)
+                : Math.ceil(apf.flow.sSize/2));
             var _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom"
-                ? Math.ceil(parseInt(jpf.getStyle(input.htmlElement, "height"))/2)
-                : Math.ceil(jpf.flow.sSize/2));
+                ? Math.ceil(parseInt(apf.getStyle(input.htmlElement, "height"))/2)
+                : Math.ceil(apf.flow.sSize/2));
 
             input.lastUpdate = pos;
             input.moveTo(_x, _y);
@@ -407,9 +407,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             this.outputsVisibility(!lock);
 
             if (lock)
-                jpf.setStyleClass(this.htmlElement, "locked");
+                apf.setStyleClass(this.htmlElement, "locked");
             else
-                jpf.setStyleClass(this.htmlElement, "", ["locked"]);
+                apf.setStyleClass(this.htmlElement, "", ["locked"]);
         }
     };
 
@@ -673,7 +673,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             fv = o.flipv, fh = o.fliph, r = o.rotation;
         var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
                          "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
-        var sSize = jpf.flow.sSize, hSize = Math.floor(jpf.flow.sSize/2);
+        var sSize = apf.flow.sSize, hSize = Math.floor(apf.flow.sSize/2);
 
         /* Changing input floating */
         ior = ior == "auto"
@@ -716,10 +716,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             _y = fv ? (ior == "left" || ior == "right" ? _y - 1 : _y) : _y
 
             _x = ior == "top" || ior == "bottom"
-                ? _x - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome ? 1 : 0)
+                ? _x - (sSize/2) + (apf.isIE || apf.isOpera || apf.isChrome ? 1 : 0)
                 : _x;
             _y = ior == "left" || ior == "right"
-                ? _y - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome ? 1 : 0)
+                ? _y - (sSize/2) + (apf.isIE || apf.isOpera || apf.isChrome ? 1 : 0)
                 : _y;
         }
         else {
@@ -760,7 +760,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
     this.htmlElement.onmouseup = function(e) {
         if (!_self.other.type && _self.canvas.mode == "connection-add") {
-            jpf.flow.connectionsManager.addBlock(_self, 0);
+            apf.flow.connectionsManager.addBlock(_self, 0);
         }
     }
 };
@@ -773,7 +773,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
  * @param {Number}   number     unique input number for block element
  * @constructor
  */
-jpf.flow.input = function(objBlock, number) {
+apf.flow.input = function(objBlock, number) {
     this.objBlock    = objBlock;
     this.htmlElement = objBlock.htmlElement.appendChild(document.createElement("div"));
     this.number      = number;
@@ -781,7 +781,7 @@ jpf.flow.input = function(objBlock, number) {
 
     var _self = this;
 
-    jpf.setStyleClass(this.htmlElement, "input");
+    apf.setStyleClass(this.htmlElement, "input");
 
     /**
      * Hides inpiut
@@ -813,7 +813,7 @@ jpf.flow.input = function(objBlock, number) {
     this.htmlElement.onmousedown = function(e) {
         e              = (e || event);
         e.cancelBubble = true;
-        jpf.flow.isMoved = true;
+        apf.flow.isMoved = true;
 
         var pn         = _self.htmlElement.parentNode,
             canvas     = _self.objBlock.canvas,
@@ -823,9 +823,9 @@ jpf.flow.input = function(objBlock, number) {
             e.preventDefault();
         }
 
-        vMB = new jpf.flow.virtualMouseBlock(canvas, e);
+        vMB = new apf.flow.virtualMouseBlock(canvas, e);
 
-        var con = jpf.flow.findConnector(_self.objBlock, _self.number);
+        var con = apf.flow.findConnector(_self.objBlock, _self.number);
         if (con) {
             var source = con.source
                 ? con.connector.objDestination
@@ -844,19 +844,19 @@ jpf.flow.input = function(objBlock, number) {
                 destination.other.inputList[destinationInput])[2];
 
             _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
-            jpf.flow.removeConnector(con.connector.htmlElement);
+            apf.flow.removeConnector(con.connector.htmlElement);
 
-            connection = new jpf.flow.addConnector(canvas , source, vMB, {
+            connection = new apf.flow.addConnector(canvas , source, vMB, {
                 output : sourceInput, input : 1
             });
-            jpf.flow.connectionsManager.addBlock(source, sourceInput);
+            apf.flow.connectionsManager.addBlock(source, sourceInput);
             canvas.setMode("connection-change");
         }
         else {
-            connection = new jpf.flow.addConnector(canvas, _self.objBlock, vMB, {
+            connection = new apf.flow.addConnector(canvas, _self.objBlock, vMB, {
                 output : _self.number
             });
-            jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+            apf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
             canvas.setMode("connection-add");
         }
         connection.newConnector.virtualSegment = true;
@@ -873,17 +873,17 @@ jpf.flow.input = function(objBlock, number) {
             e = (e || event);
             var t = e.target || e.srcElement;
             document.body.onmousemove = null;
-            jpf.flow.isMoved = false;
+            apf.flow.isMoved = false;
 
             if (t && canvas.mode == "connection-change") {
                 if ((t.className || "").indexOf("input") == -1) {
-                    jpf.flow.connectionsManager.addBlock(destination, destinationInput);
+                    apf.flow.connectionsManager.addBlock(destination, destinationInput);
                 }
             }
-            jpf.flow.connectionsManager.clear();
+            apf.flow.connectionsManager.clear();
 
             if (connection) {
-                jpf.flow.removeConnector(connection.newConnector.htmlElement);
+                apf.flow.removeConnector(connection.newConnector.htmlElement);
             }
             if (vMB) {
                 vMB.destroy();
@@ -894,18 +894,18 @@ jpf.flow.input = function(objBlock, number) {
     };
 
     this.htmlElement.onmouseup = function(e) {
-        jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+        apf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
     };
 
     this.htmlElement.onmouseover = function(e) {
         var mode = _self.objBlock.canvas.mode;
         if (mode == "connection-add" || mode == "connection-change") {
-            jpf.setStyleClass(_self.htmlElement, "inputHover");
+            apf.setStyleClass(_self.htmlElement, "inputHover");
         }
     };
 
     this.htmlElement.onmouseout = function(e) {
-        jpf.setStyleClass(_self.htmlElement, "", ["inputHover"]);
+        apf.setStyleClass(_self.htmlElement, "", ["inputHover"]);
     };
 };
 
@@ -915,13 +915,13 @@ jpf.flow.input = function(objBlock, number) {
  * connection will be created.
  * @constructor
  */
-jpf.flow.connectionsManager = new (function() {
+apf.flow.connectionsManager = new (function() {
     this.addBlock = function(objBlock, inputNumber) {
         if (objBlock && (inputNumber || inputNumber == 0)) {
-            var s = jpf.flow.connectionsTemp;
+            var s = apf.flow.connectionsTemp;
 
             if (!s) {
-                jpf.flow.connectionsTemp = {
+                apf.flow.connectionsTemp = {
                     objBlock    : objBlock,
                     inputNumber : inputNumber
                 };
@@ -938,7 +938,7 @@ jpf.flow.connectionsManager = new (function() {
     };
 
     this.clear = function() {
-        jpf.flow.connectionsTemp = null;
+        apf.flow.connectionsTemp = null;
     };
 })();
 
@@ -949,7 +949,7 @@ jpf.flow.connectionsManager = new (function() {
  * @param {Object}   canvas   object representation of canvas element
  * @constructor
  */
-jpf.flow.virtualMouseBlock = function(canvas) {
+apf.flow.virtualMouseBlock = function(canvas) {
     var hook = [0, 0, "virtual"];
     this.canvas = canvas;
     this.htmlElement = document.createElement('div');
@@ -969,9 +969,9 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     this.other.inputList           = {};
     this.other.inputList[1]        = {x : hook[0], y : hook[1], position : hook[2]};
 
-    jpf.setStyleClass(this.htmlElement, "vMB");
+    apf.setStyleClass(this.htmlElement, "vMB");
 
-    var sPos = jpf.getAbsolutePosition(this.htmlElement.parentNode);
+    var sPos = apf.getAbsolutePosition(this.htmlElement.parentNode);
 
     this.onMove = function(e) {
         this.htmlElement.style.left = (e.clientX - sPos[0] + 2) 
@@ -1011,7 +1011,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  *     {XMLElement} xmlNode   xml representation of connection element
  * @constructor
  */
-jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
+apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     /**
      * Connection segments
      */
@@ -1053,8 +1053,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     this.htmlElement     = htmlElement;
     this.virtualSegment  = null;
 
-    var sSize            = jpf.flow.sSize; //Segment size
-    var fsSize           = jpf.flow.fsSize; //First segment size
+    var sSize            = apf.flow.sSize; //Segment size
+    var fsSize           = apf.flow.fsSize; //First segment size
     var hSize            = Math.floor(sSize/2);
 
     var sourceHtml       = this.objSource.htmlElement;
@@ -1064,7 +1064,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
     this.initConnector = function() {
         if (!htmlElement.getAttribute("id")) {
-            jpf.setUniqueHtmlId(htmlElement);
+            apf.setUniqueHtmlId(htmlElement);
         }
         objCanvas.htmlConnectors[htmlElement.getAttribute("id")] = this;
 
@@ -1180,44 +1180,44 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         switch (condition) {
             case "TR41":
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
                 break;
             case "TR44":
             case "TR14":
             case "TR11":
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 break;
             case "BR22":
             case "BR24":
             case "BR42":
             case "BR44":
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil(Math.abs(d[1] - s[1])), "bottom"]);
                 break;
             case "BR41":
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : Math.ceil((d[0] - s[0]) / 2), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : Math.ceil((d[0] - s[0]) / 2), "right"]);
                 break;
             case "BR48":
             case "BR28":
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "BR21":
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                 l = this.createSegment(l, [parseInt((d[0] - s[0]) / 2)+1, "right"]);
                 break;
             case "TL44":
             case "TL42":
             case "TL24":
             case "TL22":
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TR21":
             case "TR24":
@@ -1227,118 +1227,118 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "TR24":
             case "TR81":
             case "TR84":
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "BR18":
             case "BR88":
             case "BR81":
             case "BR11":
                 l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
                 break;
             case "BR14":
-                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BR84":
             case "BR82":
             case "BR12":
-                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
                 break;
             case "BL84":
             case "BL24":
             case "BL21":
-                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BL11":
             case "BL14":
             case "BL41":
             case "BL44":
             case "BL81":
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                 break;
             case "BL12":
             case "BL18":
             case "BL42":
             case "BL48":
-                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "BL88":
             case "BL82":
             case "BL28":
             case "BL22":
-                l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TL88":
             case "TL81":
             case "TL18":
             case "TL11":
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             case "TL41":
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.ceil((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.ceil((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TL48":
             case "TL28":
             case "TL21":
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TL12":
             case "TL14":
             case "TL82":
             case "TL84":
-                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [jpf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "TR12":
             case "TR18":
             case "TR42":
             case "TR48":
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                 l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
-                l = this.createSegment(l, [jpf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                 l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TR22":
             case "TR28":
             case "TR82":
             case "TR88":
-                l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
-                l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             default:
                 switch (position) {
                     case "ML":
-                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MM":
-                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                        l = this.createSegment(l, [jpf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
                         break;
                     case "TM":
-                        l = this.createSegment(l, [jpf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                        l = this.createSegment(l, [jpf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MR":
                         // This part is not checked, MR41 needs only "right"
                         // line, else need them both
-                        l = this.createSegment(l, [jpf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                        l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
                         if (condition.substring(2,4) == "41")
                             break;
                         l = this.createSegment(l, [Math.abs(d[1] - s[1]),
@@ -1353,17 +1353,17 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         }
 
         if (this.other.label) {
-           this.htmlLabel = jpf.flow.label(this);
+           this.htmlLabel = apf.flow.label(this);
         }
 
         if (this.other.type) {
             var _type = this.other.type.split("-");
 
             if (_type[0] !== "none") {
-                this.htmlStart = jpf.flow.connectorsEnds(this, "start", _type[0]);
+                this.htmlStart = apf.flow.connectorsEnds(this, "start", _type[0]);
             }
             if(_type[1] !== "none") {
-                this.htmlEnd = jpf.flow.connectorsEnds(this, "end", _type[1]);
+                this.htmlEnd = apf.flow.connectorsEnds(this, "end", _type[1]);
             }
         }
     };
@@ -1378,8 +1378,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         if (!segment) {
             var segment = htmlElement.appendChild(document.createElement("div"));
 
-            jpf.setUniqueHtmlId(segment);
-            jpf.setStyleClass(segment, "segment");
+            apf.setUniqueHtmlId(segment);
+            apf.setStyleClass(segment, "segment");
 
             if (_self.selected)
                 _self.select("selected");
@@ -1387,7 +1387,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             var canvas = this.objSource.canvas;
             /* Segment events */
             segment.onmouseover = function(e) {
-                if (!jpf.flow.isMoved && ((canvas.mode == "connection-change"
+                if (!apf.flow.isMoved && ((canvas.mode == "connection-change"
                     && _self.selected) || canvas.mode == "connection-add")) {
                     _self.select("hover");
                 }
@@ -1472,7 +1472,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         for (var i = 0, l = segments.length; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i], "",
+                apf.setStyleClass(segments[i], "",
                     ["seg_" + segments[i].plane + "_" + type]);
             }
         }
@@ -1488,7 +1488,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         for (var i = 0, l = segments.length; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i],
+                apf.setStyleClass(segments[i],
                     "seg_" + segments[i].plane + "_" + type);
             }
         }
@@ -1500,27 +1500,27 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     this.selectInputs = function(type) {
         if (_self.other.output && _self.objSource.htmlOutputs[other.output]) {
             var output = _self.objSource.htmlOutputs[other.output].htmlElement;
-            jpf.setStyleClass(output, "input" + type);
+            apf.setStyleClass(output, "input" + type);
         }
         if (_self.other.input && _self.objDestination.htmlOutputs[other.input]) {
             var input = _self.objDestination.htmlOutputs[other.input].htmlElement;
-            jpf.setStyleClass(input, "input" + type);
+            apf.setStyleClass(input, "input" + type);
         }
     };
 
     this.deselectInputs = function(type) {
         if (_self.other.output && _self.objSource.htmlOutputs[_self.other.output]) {
             var output = _self.objSource.htmlOutputs[_self.other.output].htmlElement;
-            jpf.setStyleClass(output, "", ["input" + type]);
+            apf.setStyleClass(output, "", ["input" + type]);
         }
         if (_self.other.input && _self.objDestination.htmlOutputs[_self.other.input]) {
             var input = _self.objDestination.htmlOutputs[_self.other.input].htmlElement;
-            jpf.setStyleClass(input, "", ["input" + type]);
+            apf.setStyleClass(input, "", ["input" + type]);
         }
     };
 };
 
-jpf.flow.connectorsEnds = function(connector, place, type) {
+apf.flow.connectorsEnds = function(connector, place, type) {
     var conEnd = place == "start" ? connector.htmlStart : connector.htmlEnd;
     var segment = connector.htmlSegments[place == "start" ? 0 : 1];
 
@@ -1539,7 +1539,7 @@ jpf.flow.connectorsEnds = function(connector, place, type) {
     return htmlElement;
 }
 
-jpf.flow.label = function(connector, number) {
+apf.flow.label = function(connector, number) {
     var number = number || Math.ceil(connector.htmlSegments.length/2);
     var segment = connector.htmlSegments[number];
     var l = parseInt(segment[0].style.left);
@@ -1550,7 +1550,7 @@ jpf.flow.label = function(connector, number) {
     }
     else {
         var htmlElement = connector.htmlElement.appendChild(document.createElement("span"));
-        jpf.setStyleClass(htmlElement, "label");
+        apf.setStyleClass(htmlElement, "label");
     }
 
     l += segment[1] == "top" || segment[1] == "bottom"
@@ -1577,8 +1577,8 @@ jpf.flow.label = function(connector, number) {
  * @param {String}   blockId   html representation of block element id
  * @return {Object}   object representation of block element
  */
-jpf.flow.findBlock = function(blockId) {
-    var c = jpf.flow.objCanvases;
+apf.flow.findBlock = function(blockId) {
+    var c = apf.flow.objCanvases;
 
     for (var id in c) {
         if (c[id].htmlBlocks[blockId]) {
@@ -1593,8 +1593,8 @@ jpf.flow.findBlock = function(blockId) {
  * @param {HTMLElement}   htmlNode   html representation of block element
  * @return {Object}   object representation of block element
  */
-jpf.flow.isBlock = function(htmlNode) {
-    var c = jpf.flow.objCanvases;
+apf.flow.isBlock = function(htmlNode) {
+    var c = apf.flow.objCanvases;
 
     for (var id in c) {
         var block = c[id].htmlBlocks[htmlNode.getAttribute("id")];
@@ -1610,9 +1610,9 @@ jpf.flow.isBlock = function(htmlNode) {
  * @param {HTMLElement}   htmlNode   html representation of canvas element
  * @return {Object}   object representation of canvas element
  */
-jpf.flow.isCanvas = function(htmlNode) {
+apf.flow.isCanvas = function(htmlNode) {
     if (htmlNode) {
-        return jpf.flow.objCanvases[htmlNode.id];
+        return apf.flow.objCanvases[htmlNode.id];
     }
 };
 
@@ -1634,8 +1634,8 @@ jpf.flow.isCanvas = function(htmlNode) {
  *         true    when objBlock is a source block
  *         false   when objBlock isn't a source block
  */
-jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
-    var c = jpf.flow.objCanvases;
+apf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
+    var c = apf.flow.objCanvases;
     var connectors;
 
     for (var id in c) {
@@ -1676,8 +1676,8 @@ jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
  * @param {HTMLElement}   htmlNode   html representation of connector element
  * @return {Object}   object representation of connector element
  */
-jpf.flow.isConnector = function(htmlNode) {
-    var c = jpf.flow.objCanvases;
+apf.flow.isConnector = function(htmlNode) {
+    var c = apf.flow.objCanvases;
     for (var id in c) {
         if (c[id].htmlConnectors[htmlNode.id])
             return c[id].htmlConnectors[htmlNode.id];
@@ -1690,11 +1690,11 @@ jpf.flow.isConnector = function(htmlNode) {
  * @param {HTMLElement}   htmlNode   html representation of canvas element
  * @return {Object}    newCanvas     object representation of canvas element
  */
-jpf.flow.getCanvas = function(htmlNode) {
-    var newCanvas = jpf.flow.isCanvas(htmlNode);
+apf.flow.getCanvas = function(htmlNode) {
+    var newCanvas = apf.flow.isCanvas(htmlNode);
 
     if (!newCanvas) {
-        newCanvas = new jpf.flow.canvas(htmlNode);
+        newCanvas = new apf.flow.canvas(htmlNode);
         newCanvas.initCanvas();
     }
     return newCanvas;
@@ -1706,8 +1706,8 @@ jpf.flow.getCanvas = function(htmlNode) {
  * @param {HTMLElement}   htmlNode   html representation of canvas element
  *
  */
-jpf.flow.removeCanvas = function(htmlNode) {
-    var canvas = jpf.flow.isCanvas(htmlNode);
+apf.flow.removeCanvas = function(htmlNode) {
+    var canvas = apf.flow.isCanvas(htmlNode);
     canvas.destroy();
 };
 
@@ -1757,12 +1757,12 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *    {String}       caption      description placed under block element
  * @return {Object}   object representation of block element
  */
-jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
-    if (!jpf.flow.isBlock(htmlElement)) {
+apf.flow.addBlock = function(htmlElement, objCanvas, other) {
+    if (!apf.flow.isBlock(htmlElement)) {
         if (!htmlElement.getAttribute("id")) {
-            jpf.setUniqueHtmlId(htmlElement);
+            apf.setUniqueHtmlId(htmlElement);
         }
-        var newBlock = new jpf.flow.block(htmlElement, objCanvas, other);
+        var newBlock = new apf.flow.block(htmlElement, objCanvas, other);
         newBlock.initBlock();
         return newBlock;
     }
@@ -1774,8 +1774,8 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
  * @param {HTMLElement}   htmlElement   html representation of block element
  *
  */
-jpf.flow.removeBlock = function(htmlElement) {
-    var block = jpf.flow.isBlock(htmlElement);
+apf.flow.removeBlock = function(htmlElement) {
+    var block = apf.flow.isBlock(htmlElement);
     block.destroy();
 };
 
@@ -1791,9 +1791,9 @@ jpf.flow.removeBlock = function(htmlElement) {
  *     {Number}     input     destination block input number
  *     {XMLElement} xmlNode   xml representation of connection element
  */
-jpf.flow.addConnector = function(c, s, d, o) {
+apf.flow.addConnector = function(c, s, d, o) {
     var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
-    this.newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
+    this.newConnector = new apf.flow.connector(htmlElement, c, s, d, o);
     this.newConnector.initConnector();
 };
 
@@ -1802,8 +1802,8 @@ jpf.flow.addConnector = function(c, s, d, o) {
  *
  * @param {HTMLElement}   htmlElement   html representation of connector element
  */
-jpf.flow.removeConnector = function(htmlElement) {
-    var connector = jpf.flow.isConnector(htmlElement);
+apf.flow.removeConnector = function(htmlElement) {
+    var connector = apf.flow.isConnector(htmlElement);
     if (connector) {
         connector.destroy();
     }

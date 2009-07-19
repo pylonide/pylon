@@ -24,9 +24,9 @@
  * Compatibility layer for Gecko based browsers.
  * @private
  */
-jpf.runGecko = function(){
-    if (jpf.runNonIe)
-        jpf.runNonIe();
+apf.runGecko = function(){
+    if (apf.runNonIe)
+        apf.runNonIe();
 
     /* ***************************************************************************
      XSLT
@@ -69,8 +69,8 @@ jpf.runGecko = function(){
      ****************************************************************************/
     function Error(nr, msg){
         // #ifdef __DEBUG
-        if (!jpf.debugwin.useDebugger) 
-            jpf.debugwin.errorHandler(msg, "", 0);
+        if (!apf.debugwin.useDebugger) 
+            apf.debugwin.errorHandler(msg, "", 0);
         // #endif
         
         this.message = msg;

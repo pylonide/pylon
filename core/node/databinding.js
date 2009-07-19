@@ -47,10 +47,10 @@ var __DATABINDING__ = 1 << 1;
  *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *   {Number}         state     the state of the call
  *     Possible values:
- *     jpf.SUCCESS  the request was successfull
- *     jpf.TIMEOUT  the request has timed out.
- *     jpf.ERROR    an error has occurred while making the request.
- *     jpf.OFFLINE  the request was made while the application was offline.
+ *     apf.SUCCESS  the request was successfull
+ *     apf.TIMEOUT  the request has timed out.
+ *     apf.ERROR    an error has occurred while making the request.
+ *     apf.OFFLINE  the request was made while the application was offline.
  *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
@@ -60,12 +60,12 @@ var __DATABINDING__ = 1 << 1;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  * @default_private
  */
-jpf.DataBinding = function(){
+apf.DataBinding = function(){
     var loadqueue;
     var cXmlOnLoad = [];
     var cXmlSelect = [];
@@ -79,7 +79,7 @@ jpf.DataBinding = function(){
 
     /**
      * Gets the xpath statement from the primary bind rule. Each databound
-     * element which does not implement jpf.MultiSelect has a primary bind rule.
+     * element which does not implement apf.MultiSelect has a primary bind rule.
      * This method gets the xpath statement in the select attribute of this rule.
      *
      * @return  {String}  the xpath statement
@@ -128,7 +128,7 @@ jpf.DataBinding = function(){
      *  lstRev.query('revision/text()', 'indicator');
      */
     this.queryValue = function(xpath, type){
-        return jpf.getXmlValue(this[type || 'xmlRoot'], xpath );
+        return apf.getXmlValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
@@ -142,7 +142,7 @@ jpf.DataBinding = function(){
      * @return {String} value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
-        return jpf.getXmlValues(this[type || 'xmlRoot'], xpath );
+        return apf.getXmlValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
@@ -180,7 +180,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the binding rules from the j:bindings element
      *
-     * @param {Array}   rules     the rules array created using {@link core.jpf.method.getrules}
+     * @param {Array}   rules     the rules array created using {@link core.apf.method.getrules}
      * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
      * @see  element.smartbinding
      * @private
@@ -191,7 +191,7 @@ jpf.DataBinding = function(){
         this.bindingRules = rules;
 
         //#ifdef __DEBUG
-        jpf.console.info("Initializing Bindings for " + this.tagName + "[" + (this.name || '') + "]");
+        apf.console.info("Initializing Bindings for " + this.tagName + "[" + (this.name || '') + "]");
         //#endif
 
         if (this.$loaddatabinding)
@@ -241,7 +241,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the action rules from the j:actions element
      *
-     * @param {Array}       rules     the rules array created using {@link core.jpf.method.getrules}
+     * @param {Array}       rules     the rules array created using {@link core.apf.method.getrules}
      * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
      * @see  element.smartbinding
      * @private
@@ -252,7 +252,7 @@ jpf.DataBinding = function(){
         this.actionRules = rules;
 
         //#ifdef __DEBUG
-        jpf.console.info("Initializing Actions for " + this.tagName
+        apf.console.info("Initializing Actions for " + this.tagName
             + "[" + (this.name || '') + "]");
         //#endif
     };
@@ -264,18 +264,18 @@ jpf.DataBinding = function(){
      * @see  element.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
-        if (!jpf.JmlDom)
-            return jpf.window.$at;
+        if (!apf.JmlDom)
+            return apf.window.$at;
 
         var pNode = this, tracker = ignoreMe ? null : this.$at;
         if (!tracker && this.connectId)
             tracker = self[this.connectId].$at;
 
-        //jpf.xmldb.getInheritedAttribute(this.$jml, "actiontracker");
+        //apf.xmldb.getInheritedAttribute(this.$jml, "actiontracker");
         while (!tracker) {
-            //if(!pNode.parentNode) throw new Error(jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
+            //if(!pNode.parentNode) throw new Error(apf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
-                return jpf.window.$at;
+                return apf.window.$at;
 
             tracker = (pNode = pNode.parentNode).$at;
         }
@@ -296,7 +296,7 @@ jpf.DataBinding = function(){
         if (this.$at) {
             // #ifdef __DEBUG
             if (this.$at.undolength)
-                jpf.console.warn("Component : "
+                apf.console.warn("Component : "
                     + this.name + " [" + this.tagName + "]\n\
                     Message : ActionTracker still has undo stack filled with "
                     + this.$at.undolength + " items.");
@@ -315,7 +315,7 @@ jpf.DataBinding = function(){
      * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock} 
      * is a mechanism for enforcing limits on access to a resource in a 
      * multi-user environment. Locks are one way of enforcing concurrency 
-     * control policies. Javeline Platform (jpf) has support for locking in 
+     * control policies. Ajax.org Platform (apf) has support for locking in 
      * combination with {@link term.action action rules}. There are two 
      * types of locks; pessimistic and optimistic locks. Descriptions below is
      * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
@@ -337,7 +337,7 @@ jpf.DataBinding = function(){
      * update failures due to high volumes of update requests from multiple 
      * concurrent users - it can be frustrating for users.
      *
-     * For optimistic locking jpf can run as if there would be no locking. 
+     * For optimistic locking apf can run as if there would be no locking. 
      * Changed data is send to the server and is either successfully saved or
      * not. When the action isn't changed and the server returns an error code
      * the {@link element.actiontracker actiontracker} <strong>automatically 
@@ -403,14 +403,14 @@ jpf.DataBinding = function(){
             return false;
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true, true)
-        if (!actionRule && jpf.appsettings.autoDisableActions && this.actionRules) {
+        if (!actionRule && apf.appsettings.autoDisableActions && this.actionRules) {
             //#ifdef __DEBUG
             if (!xmlContext) {
-                jpf.console.warn("Tried starting new action but no xml \
+                apf.console.warn("Tried starting new action but no xml \
                     context was specified.");
             }
             else {
-                jpf.console.warn("Tried starting new action but no '" + name 
+                apf.console.warn("Tried starting new action but no '" + name 
                     + "' action rule was found.");
             }
             //#endif
@@ -418,9 +418,9 @@ jpf.DataBinding = function(){
             return false;
         }
 
-        var bHasOffline = typeof jpf.offline != "undefined";
+        var bHasOffline = typeof apf.offline != "undefined";
         //#ifdef __WITH_OFFLINE
-        if (bHasOffline && !jpf.offline.canTransact())
+        if (bHasOffline && !apf.offline.canTransact())
             return false;
         //#endif
 
@@ -434,7 +434,7 @@ jpf.DataBinding = function(){
         //Requesting a lock, whilst we still have one open
         if (lock[name] && !lock[name].stopped) {
             //#ifdef __DEBUG
-            jpf.console.warn("Starting new action whilst previous \
+            apf.console.warn("Starting new action whilst previous \
                 action wasn't terminated:" + name);
             //#endif
 
@@ -443,10 +443,10 @@ jpf.DataBinding = function(){
 
         //Check if we should attain a lock (when offline, we just pretend to get it)
         var lockInstruction = actionRule ? actionRule.getAttribute("lock") : null;
-        if ((bHasOffline && (!jpf.offline.enabled || !jpf.offline.onLine)) && lockInstruction) {
+        if ((bHasOffline && (!apf.offline.enabled || !apf.offline.onLine)) && lockInstruction) {
             var curLock = lock[name] = {
-                start      : bHasOffline && !jpf.offline.onLine
-                                ? jpf.offline.offlineTime
+                start      : bHasOffline && !apf.offline.onLine
+                                ? apf.offline.offlineTime
                                 : new Date().getTime(),
                 stopped    : false,
                 xmlContext : xmlContext,
@@ -455,15 +455,15 @@ jpf.DataBinding = function(){
             };
 
             //Execute pessimistic locking request
-            jpf.saveData(lockInstruction, xmlContext, {
+            apf.saveData(lockInstruction, xmlContext, {
                     unlock : false
                 }, function(data, state, extra){
 
-                if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
                     return extra.tpModule.retry(extra.id);
 
-                if (state == jpf.SUCCESS) {
-                    _self.dispatchEvent("locksuccess", jpf.extend({
+                if (state == apf.SUCCESS) {
+                    _self.dispatchEvent("locksuccess", apf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
@@ -480,7 +480,7 @@ jpf.DataBinding = function(){
                     if (curLock.stopped) //If the action has terminated we just let it go
                         return; //Do we want to take away the event from the developer??
 
-                    _self.dispatchEvent("lockfailed", jpf.extend({
+                    _self.dispatchEvent("lockfailed", apf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
@@ -500,11 +500,11 @@ jpf.DataBinding = function(){
     //#ifdef __WITH_RSB
     // @todo think about if this is only for rsb
     this.addEventListener("xmlupdate", function(e){
-        if (jpf.xmldb.disableRSB != 2)
+        if (apf.xmldb.disableRSB != 2)
             return;
 
         for (var name in actions) {
-            if (jpf.xmldb.isChildOf(actions[name], e.xmlNode, true)) {
+            if (apf.xmldb.isChildOf(actions[name], e.xmlNode, true)) {
                 //this.$stopAction(name, true);
                 actions[name].rollback.call(this, actions[name].xmlContext);
             }
@@ -524,19 +524,19 @@ jpf.DataBinding = function(){
             //The resource needs to unlock when the action is cancelled
             if (isCancelled && curLock.retrieved) {
                 //Execute unlocking request
-                jpf.saveData(curLock.instr, curLock.xmlContext, {
+                apf.saveData(curLock.instr, curLock.xmlContext, {
                         unlock     : true
                     },
                     function(data, state, extra){
-                        if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                        if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
                             return extra.tpModule.retry(extra.id);
 
                         //Do we care if an unlock failed/succeeded?
                         _self.dispatchEvent(
-                            (state == jpf.SUCCESS
+                            (state == apf.SUCCESS
                                 ? "unlocksuccess"
                                 : "unlockfailed"),
-                            jpf.extend({
+                            apf.extend({
                                 state   : extra.http.status,
                                 bubbles : true
                             }, extra));
@@ -578,18 +578,18 @@ jpf.DataBinding = function(){
         if (this.disabled) return; //hack
 
         //#ifdef __DEBUG
-        jpf.console.info("Executing action '" + action + "' for " + this.name
+        apf.console.info("Executing action '" + action + "' for " + this.name
                          + " [" + (this.tagName || "") + "]");
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if(typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
+        if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
         //Get Rules from Array
         var rules = this.actionRules && this.actionRules[action];
-        if (!this.actionRules || !jpf.appsettings.autoDisableActions 
+        if (!this.actionRules || !apf.appsettings.autoDisableActions 
           || !rules && action.match(/change|select/))
             rules = [];
 
@@ -617,7 +617,7 @@ jpf.DataBinding = function(){
                     }
                 }
 
-                var ev = new jpf.Event("before" + action.toLowerCase(), {
+                var ev = new apf.Event("before" + action.toLowerCase(), {
                     action        : atAction,
                     args          : args,
                     xmlActionNode : rules[i],
@@ -672,7 +672,7 @@ jpf.DataBinding = function(){
         var shouldLoad = false, atAction, node = selInfo[1];
 
         if (node) {
-            if (jpf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
+            if (apf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
 
             atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
@@ -739,7 +739,7 @@ jpf.DataBinding = function(){
      * element. For elements inheriting from MultiSelect data is pushed
      * when a selection occurs.
      * Example:
-     * This is how it's achieved using the javeline markup language.
+     * This is how it's achieved using the Ajax.org Markup Language.
      * <code>
      *  <j:list id="lstExample" />
      *  <j:text model="#lstExample:select" />
@@ -775,7 +775,7 @@ jpf.DataBinding = function(){
         if (dataOnly) {
             // #ifdef __DEBUG
             if (!xpath && !this.selected) {
-                throw new Error(jpf.formatErrorString(1056, null, 
+                throw new Error(apf.formatErrorString(1056, null, 
                     "Connecting", 
                     "Illegal XPATH statement specified: '" + xpath + "'"));
             }
@@ -787,7 +787,7 @@ jpf.DataBinding = function(){
                 return o.load(xpath ? this.xmlRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.xmlRoot)
         }
 
-        //jpf.debug Message
+        //apf.debug Message
         //alert(this.tagName + ":" + o.tagName + " - " + type + "["+dataOnly+"]");
 
         //User action - Select || Choice
@@ -944,7 +944,7 @@ jpf.DataBinding = function(){
         if (!rules && !def && !this.$dcache[this.uniqueId + "." + setname]
           && typeof this[setname] != "string") {
             this.$dcache[this.uniqueId + "." + setname] = true;
-            jpf.console.info("Could not find a binding rule for '" + setname
+            apf.console.info("Could not find a binding rule for '" + setname
                              + "' (" + this.tagName
                              + " [" + (this.name || "") + "])")
         }
@@ -954,7 +954,7 @@ jpf.DataBinding = function(){
             // #ifdef __WITH_INLINE_DATABINDING
             if (setname == "value") setname = "valuerule";
             returnValue = typeof this[setname] == "string" && setname != "value"
-                    && jpf.getXmlValue(cnode, this[setname])
+                    && apf.getXmlValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
             /* #else
             returnValue = def && cnode.selectSingleNode(def) || false;
@@ -963,10 +963,10 @@ jpf.DataBinding = function(){
             //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
             if (typeof returnValue == "string") {
-                var keys = jpf.language.getBinding(this, this.cacheID);
+                var keys = apf.language.getBinding(this, this.cacheID);
                 returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
                     keys[m1] = true;
-                    return jpf.language.getWord(m1);
+                    return apf.language.getWord(m1);
                 });
             }
             //#endif
@@ -977,7 +977,7 @@ jpf.DataBinding = function(){
         var node = null, sel, i, o, v, rule;
         for (i = 0; i < rules.length; i++) {
             rule = rules[i];
-            sel  = jpf.parseExpression(rule.getAttribute("select")) || ".";
+            sel  = apf.parseExpression(rule.getAttribute("select")) || ".";
             o    = cnode.selectSingleNode(sel);
             
             if (o) {
@@ -995,35 +995,35 @@ jpf.DataBinding = function(){
 
                     //Check Cache
                     if (v = rule.getAttribute("cacheId")) {
-                        xsltNode = jpf.nameserver.get("xslt", v);
+                        xsltNode = apf.nameserver.get("xslt", v);
                     }
                     else {
                         //Find Xslt Node
-                        var prefix = jpf.findPrefix(rule, jpf.ns.xslt);
+                        var prefix = apf.findPrefix(rule, apf.ns.xslt);
                         var xsltNode;
 
                         if (rule.getElementsByTagNameNS) {
-                            xsltNode = rule.getElementsByTagNameNS(jpf.ns.xslt, "*")[0];
+                            xsltNode = rule.getElementsByTagNameNS(apf.ns.xslt, "*")[0];
                         }
                         else {
-                            var prefix = jpf.findPrefix(rule, jpf.ns.xslt, true);
+                            var prefix = apf.findPrefix(rule, apf.ns.xslt, true);
                             if (prefix) {
-                                if (!jpf.supportNamespaces)
+                                if (!apf.supportNamespaces)
                                     rule.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-                                        + prefix + "='" + jpf.ns.xslt + "'");
+                                        + prefix + "='" + apf.ns.xslt + "'");
                                 xsltNode = rule.selectSingleNode(".//" + prefix + ":*");
                             }
                         }
 
                         if (xsltNode) {
-                            if (xsltNode[jpf.TAGNAME] != "stylesheet") {
+                            if (xsltNode[apf.TAGNAME] != "stylesheet") {
                                 //Add it
-                                var baseXslt = jpf.nameserver.get("base", "xslt");
+                                var baseXslt = apf.nameserver.get("base", "xslt");
                                 if (!baseXslt) {
-                                    baseXslt = jpf.getXmlDom(
+                                    baseXslt = apf.getXmlDom(
                                         '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:template match="node()"></xsl:template></xsl:stylesheet>')
                                         .documentElement;
-                                    jpf.nameserver.register("base", "xslt", xsltNode);
+                                    apf.nameserver.register("base", "xslt", xsltNode);
                                 }
 
                                 var xsltNode = baseXslt.cloneNode(true);
@@ -1032,7 +1032,7 @@ jpf.DataBinding = function(){
 
                                 //Set cache Item
                                 rule.setAttribute("cacheId",
-                                    jpf.nameserver.add("xslt", xsltNode));
+                                    apf.nameserver.add("xslt", xsltNode));
                             }
                         }
                     }
@@ -1046,14 +1046,14 @@ jpf.DataBinding = function(){
                     }
                     //JSLT
                     else {
-                        var x = jpf.JsltInstance.apply(rule, o);
+                        var x = apf.JsltInstance.apply(rule, o);
 
                         //#ifdef __DEBUG
                         var d = document.createElement("div");
                         var t = window.onerror;
                         window.onerror = function(){
                             window.onerror = t;
-                            throw new Error(jpf.formatErrorString(0, this, "JSLT transform", "HTML Error:"+x,rule));
+                            throw new Error(apf.formatErrorString(0, this, "JSLT transform", "HTML Error:"+x,rule));
                         }
                         d.innerHTML    = x;
                         d.innerHTML    = '';
@@ -1067,7 +1067,7 @@ jpf.DataBinding = function(){
                             eval(v);
                         }
                         catch(e) {
-                            jpf.console.warn("Method not available (yet): '" + v + "'");
+                            apf.console.warn("Method not available (yet): '" + v + "'");
                             return false;
                         }
                     }
@@ -1083,7 +1083,7 @@ jpf.DataBinding = function(){
                 else if(v = rule.getAttribute("method")){
                     if(!self[v]){
                         // #ifdef __DEBUG
-                        jpf.console.warn("Method not available (yet): '" + v + "'");
+                        apf.console.warn("Method not available (yet): '" + v + "'");
                         // #endif
 
                         return false;
@@ -1149,10 +1149,10 @@ jpf.DataBinding = function(){
         if (returnValue) {
             //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
-            var keys = jpf.language.getBinding(this, this.cacheID);
+            var keys = apf.language.getBinding(this, this.cacheID);
             returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
                 keys[m1] = true;
-                return jpf.language.getWord(m1);
+                return apf.language.getWord(m1);
             });
             //#endif
             
@@ -1162,7 +1162,7 @@ jpf.DataBinding = function(){
         // #ifdef __DEBUG
         if (!this.$dcache[this.uniqueId + "." + setname]) {
             this.$dcache[this.uniqueId + "." + setname] = true;
-            jpf.console.warn("Could not find a SmartBindings rule for property \
+            apf.console.warn("Could not find a SmartBindings rule for property \
                               '" + setname + "' which matches any data for \
                               component " + this.name + " [" + this.tagName + "].")
         }
@@ -1237,7 +1237,7 @@ jpf.DataBinding = function(){
             this.$model.unregister(this);
         
         if (typeof model == "string")
-            model = jpf.nameserver.get("model", model);
+            model = apf.nameserver.get("model", model);
 
         this.$model = model;
         model.register(this, xpath);
@@ -1263,7 +1263,7 @@ jpf.DataBinding = function(){
             if (setname == "value") setname = "valuerule";
             if (!isAction && !getRule && typeof this[setname] == "string") {
                 return cnode.selectSingleNode(this[setname]) || (createNode
-                    ? jpf.xmldb.createNodeFromXpath(cnode, this[setname])
+                    ? apf.xmldb.createNodeFromXpath(cnode, this[setname])
                     : false);
             }
             //#endif
@@ -1275,7 +1275,7 @@ jpf.DataBinding = function(){
             if (!rules[i]) continue;
             //#endif
 
-            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
+            var sel = apf.parseExpression(rules[i].getAttribute("select")) || ".";
 
             if (!sel)
                 return getRule ? rules[i] : false;
@@ -1286,7 +1286,7 @@ jpf.DataBinding = function(){
                 return getRule ? rules[i] : o;
 
             if (createNode || rules[i].getAttribute("create") == "true") {
-                var o = jpf.xmldb.createNodeFromXpath(cnode, sel);
+                var o = apf.xmldb.createNodeFromXpath(cnode, sel);
                 return getRule ? rules[i] : o;
             }
         }
@@ -1316,7 +1316,7 @@ jpf.DataBinding = function(){
         }
 
         for (var first, i = 0; i < rules.length; i++) {
-            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
+            var sel = apf.parseExpression(rules[i].getAttribute("select")) || ".";
 
             if (!cnode) return [sel];
             if (i == 0)
@@ -1384,18 +1384,18 @@ jpf.DataBinding = function(){
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
-        if (jpf.popup.isShowing(this.uniqueId))
-            jpf.popup.forceHide(); //This should be put in a more general position
+        if (apf.popup.isShowing(this.uniqueId))
+            apf.popup.forceHide(); //This should be put in a more general position
         //#endif
 
         // If control hasn't loaded databinding yet, queue the call
         if ((!this.bindingRules && this.$jml
             && (!this.smartBinding && !this.traverse 
-            || jpf.JmlParser.stackHasBindings(this.uniqueId))) 
+            || apf.JmlParser.stackHasBindings(this.uniqueId))) 
             || (this.$canLoadData && !this.$canLoadData())) {
             //#ifdef __DEBUG
-            if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
-                jpf.console.warn("Could not load data yet in " + this.tagName
+            if (!apf.JmlParser.stackHasBindings(this.uniqueId)) {
+                apf.console.warn("Could not load data yet in " + this.tagName
                     + "[" + (this.name || "") + "]. The loaded data is queued \
                       until smartbinding rules are loaded or set manually.");
             }
@@ -1404,7 +1404,7 @@ jpf.DataBinding = function(){
         }
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
-            xmlRootNode = jpf.xmldb.getBindXmlNode(xmlRootNode);
+            xmlRootNode = apf.xmldb.getBindXmlNode(xmlRootNode);
 
         // If no xmlRootNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
@@ -1412,14 +1412,14 @@ jpf.DataBinding = function(){
 
         if (!xmlRootNode && (!cacheID || !this.isCached(cacheID))) {
             //#ifdef __DEBUG
-            jpf.console.warn("No xml root node was given to load in "
+            apf.console.warn("No xml root node was given to load in "
                 + this.tagName + "[" + (this.name || '') + "]. Clearing any \
                   loaded xml in this component");
             //#endif
 
             this.clear(noClearMsg, true);
 
-            if (jpf.appsettings.autoDisable && !this.createModel)
+            if (apf.appsettings.autoDisable && !this.createModel)
                 this.setProperty("disabled", true);
 
             this.setConnections();
@@ -1431,7 +1431,7 @@ jpf.DataBinding = function(){
 
         // Remove listen root if available (support for listening to non-available data)
         if (this.$listenRoot) {
-            jpf.xmldb.removeNodeListener(this.$listenRoot, this);
+            apf.xmldb.removeNodeListener(this.$listenRoot, this);
             this.$listenRoot = null;
         }
 
@@ -1440,7 +1440,7 @@ jpf.DataBinding = function(){
             return false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Loading XML data in "
+        apf.console.info("Loading XML data in "
             + this.tagName + "[" + (this.name || '') + "]");
         //#endif
 
@@ -1450,8 +1450,8 @@ jpf.DataBinding = function(){
 
         // retrieve the cacheId
         if (!cacheID) {
-            cacheID = xmlRootNode.getAttribute(jpf.xmldb.xmlIdTag) ||
-                jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlRootNode), xmlRootNode);
+            cacheID = xmlRootNode.getAttribute(apf.xmldb.xmlIdTag) ||
+                apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xmlRootNode), xmlRootNode);
         }
 
         // Retrieve cached version of document if available
@@ -1491,7 +1491,7 @@ jpf.DataBinding = function(){
             this.clear(true, true);
 
         //Set usefull vars
-        this.documentId = jpf.xmldb.getXmlDocId(xmlRootNode);
+        this.documentId = apf.xmldb.getXmlDocId(xmlRootNode);
         this.cacheID    = cacheID;
         this.xmlRoot    = xmlRootNode;
 
@@ -1546,8 +1546,8 @@ jpf.DataBinding = function(){
 
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
-            if (typeof jpf.offline != "undefined" && !jpf.offline.onLine) {
-                jpf.offline.transactions.actionNotAllowed();
+            if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
+                apf.offline.transactions.actionNotAllowed();
                 this.loadedWhenOffline = true;
     
                 //this.hasFeature(__MULTISELECT__)
@@ -1563,7 +1563,7 @@ jpf.DataBinding = function(){
             if (this.$setClearMessage)
                 this.$setClearMessage(this["loading-message"], "loading");
 
-            //||jpf.xmldb.findModel(xmlRootNode)
+            //||apf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
             if (!mdl)
@@ -1579,7 +1579,7 @@ jpf.DataBinding = function(){
                 }) === false
             ) {
                 this.clear(true);
-                if (jpf.appsettings.autoDisable)
+                if (apf.appsettings.autoDisable)
                     this.setProperty("disabled", true);
                 this.setConnections(null, "select"); //causes strange behaviour
             }
@@ -1637,7 +1637,7 @@ jpf.DataBinding = function(){
      */
     this.insert = function(XMLRoot, parentXMLElement, options){
         if (typeof XMLRoot != "object")
-            XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
+            XMLRoot = apf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLElement)
             parentXMLElement = this.xmlRoot;
 
@@ -1645,11 +1645,11 @@ jpf.DataBinding = function(){
             return false;
 
         //Integrate XMLTree with parentNode
-        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLElement,
-          jpf.extend(options, {copyAttributes: true}));
+        var newNode = apf.xmldb.integrate(XMLRoot, parentXMLElement,
+          apf.extend(options, {copyAttributes: true}));
 
         //Call __XMLUpdate on all listeners
-        jpf.xmldb.applyChanges("insert", parentXMLElement);
+        apf.xmldb.applyChanges("insert", parentXMLElement);
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
@@ -1671,14 +1671,14 @@ jpf.DataBinding = function(){
 
     // #ifdef __WITH_MULTISELECT
     this.implement(this.hasFeature(__MULTISELECT__)
-        ? jpf.MultiselectBinding
-        : jpf.StandardBinding);
+        ? apf.MultiselectBinding
+        : apf.StandardBinding);
     // #endif
 
     function findModel(x, isSelection) {
         return x.getAttribute((isSelection
             ? "ref"
-            : "") + "model") || jpf.xmldb.getInheritedAttribute(x, null,
+            : "") + "model") || apf.xmldb.getInheritedAttribute(x, null,
               function(xmlNode){
                 if (isSelection && x == xmlNode)
                     return false;
@@ -1697,7 +1697,7 @@ jpf.DataBinding = function(){
                 }
                 if (xmlNode.getAttribute("smartbinding")) {
                     var bclass = x.getAttribute("smartbinding").split(" ")[0];
-                    if (jpf.nameserver.get("model", bclass))
+                    if (apf.nameserver.get("model", bclass))
                         return bclass + ":select";
                 }
                 return false
@@ -1708,16 +1708,16 @@ jpf.DataBinding = function(){
     this.$addJmlLoader(function(x){
         //, this.ref && this.hasFeature(__MULTISELECT__)
         if (initModelId[0])
-            jpf.setModel(initModelId[0], this);
+            apf.setModel(initModelId[0], this);
         if (initModelId[1])
-            jpf.setModel(initModelId[1], this, true);
+            apf.setModel(initModelId[1], this, true);
 
         var hasModel = initModelId.length;
 
         //Set the model for normal smartbinding
         if ((!this.ref || this.hasFeature(__MULTISELECT__)) && !this.xmlRoot) {
-            var sb = jpf.JmlParser.sbInit[this.uniqueId]
-                && jpf.JmlParser.sbInit[this.uniqueId][0];
+            var sb = apf.JmlParser.sbInit[this.uniqueId]
+                && apf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
             if (this.traverse && (sb && !sb.model
@@ -1726,11 +1726,11 @@ jpf.DataBinding = function(){
                 initModelId = findModel(x);
 
                 if (initModelId) {
-                  //&& jpf.nameserver.get("model", initModelId) != this.$model) {
+                  //&& apf.nameserver.get("model", initModelId) != this.$model) {
                     if (!sb)
                         this.smartBinding = true; //@todo experimental for traverse="" attributes
 
-                    jpf.setModel(initModelId, this, 0);
+                    apf.setModel(initModelId, this, 0);
                 }
             }
         }
@@ -1750,7 +1750,7 @@ jpf.DataBinding = function(){
         if (!x.getAttribute("create-model"))
             this.$propHandlers["create-model"].call(this);
 
-        var hasInitSb = jpf.JmlParser.sbInit[this.uniqueId] ? true : false;
+        var hasInitSb = apf.JmlParser.sbInit[this.uniqueId] ? true : false;
         if ((!hasInitSb || !hasModel) && this.$setClearMessage
           && (!loadqueue && !this.xmlRoot && (this.hasFeature(__MULTISELECT__)
           || this.ref || hasInitSb)))
@@ -1808,10 +1808,10 @@ jpf.DataBinding = function(){
      */
     this.$propHandlers["empty-message"] = function(value){
         this["empty-message"] = value
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
+            || apf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
             || "No items";
 
-        if (!jpf.isParsing && this.$updateClearMessage) 
+        if (!apf.isParsing && this.$updateClearMessage) 
             this.$updateClearMessage(this["empty-message"], "empty");
     };
 
@@ -1846,10 +1846,10 @@ jpf.DataBinding = function(){
      */
     this.$propHandlers["loading-message"] = function(value){
         this["loading-message"] = value
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
+            || apf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
             || "Loading...";
 
-        if (!jpf.isParsing && this.$updateClearMessage)
+        if (!apf.isParsing && this.$updateClearMessage)
             this.$updateClearMessage(this["loading-message"], "loading");
     };
 
@@ -1862,10 +1862,10 @@ jpf.DataBinding = function(){
      */
     this.$propHandlers["offline-message"] = function(value){
         this["offline-message"] = value
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
+            || apf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
             || "You are currently offline...";
 
-        if (!jpf.isParsing && this.$updateClearMessage)
+        if (!apf.isParsing && this.$updateClearMessage)
             this.$updateClearMessage(this["offline-message"], "offline");
     };
 
@@ -1901,8 +1901,8 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["create-model"] = function(value){
-        this.createModel = !jpf.isFalse(
-            jpf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
+        this.createModel = !apf.isFalse(
+            apf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
             
         var mb;
         if (this.getMultibinding && (mb = this.getMultibinding()))
@@ -1985,11 +1985,11 @@ jpf.DataBinding = function(){
         var sb;
 
         if (value && typeof value == "string") {
-            sb = jpf.JmlParser.getSmartBinding(value);
+            sb = apf.JmlParser.getSmartBinding(value);
 
             //#ifdef __DEBUG
             if (!sb)
-                throw new Error(jpf.formatErrorString(1059, this,
+                throw new Error(apf.formatErrorString(1059, this,
                     "Attaching a smartbinding to " + this.tagName
                     + " [" + this.name + "]",
                     "Smartbinding '" + value + "' was not found."));
@@ -2001,14 +2001,14 @@ jpf.DataBinding = function(){
         if (this.smartBinding && this.smartBinding.deinitialize)
             this.smartBinding.deinitialize(this)
 
-        if (jpf.isParsing) {
+        if (apf.isParsing) {
             if (forceInit === true) {
                 this.smartBinding = sb.initialize(this);
                 this.$checkLoadQueue();
                 return this.smartBinding;
             }
 
-            return jpf.JmlParser.addToSbStack(this.uniqueId, sb);
+            return apf.JmlParser.addToSbStack(this.uniqueId, sb);
         }
 
         return (this.smartBinding = sb.markForUpdate(this));
@@ -2043,9 +2043,9 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["bindings"] = function(value){
-        var sb = this.smartBinding || (jpf.isParsing
-            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
+        var sb = this.smartBinding || (apf.isParsing
+            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -2054,14 +2054,14 @@ jpf.DataBinding = function(){
         }
 
         // #ifdef __DEBUG
-        if (!jpf.nameserver.get("bindings", value))
-            throw new Error(jpf.formatErrorString(1064, this,
+        if (!apf.nameserver.get("bindings", value))
+            throw new Error(apf.formatErrorString(1064, this,
                 "Connecting bindings",
                 "Could not find bindings by name '" + value + "'", this.$jml));
         // #endif
 
-        var xmlNode = jpf.nameserver.get("bindings", value);
-        sb.addBindings(jpf.getRules(xmlNode), xmlNode);
+        var xmlNode = apf.nameserver.get("bindings", value);
+        sb.addBindings(apf.getRules(xmlNode), xmlNode);
     };
 
     /**
@@ -2080,9 +2080,9 @@ jpf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["actions"] = function(value){
-        var sb = this.smartBinding || (jpf.isParsing
-            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
+        var sb = this.smartBinding || (apf.isParsing
+            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -2091,14 +2091,14 @@ jpf.DataBinding = function(){
         }
 
         // #ifdef __DEBUG
-        if (!jpf.nameserver.get("actions", value))
-            throw new Error(jpf.formatErrorString(1065, this,
+        if (!apf.nameserver.get("actions", value))
+            throw new Error(apf.formatErrorString(1065, this,
                 "Connecting bindings",
                 "Could not find actions by name '" + value + "'", this.$jml));
         // #endif
 
-        var xmlNode = jpf.nameserver.get("actions", value);
-        sb.addActions(jpf.getRules(xmlNode), xmlNode);
+        var xmlNode = apf.nameserver.get("actions", value);
+        sb.addActions(apf.getRules(xmlNode), xmlNode);
     };
 
     // #ifdef __WITH_INLINE_DATABINDING
@@ -2108,9 +2108,9 @@ jpf.DataBinding = function(){
             ? this.$getMultiBind()
             : this;
 
-        var sb = hasRefBinding && o.smartBinding || (jpf.isParsing
-            ? jpf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
-            : o.$propHandlers["smartbinding"].call(o, new jpf.smartbinding()))
+        var sb = hasRefBinding && o.smartBinding || (apf.isParsing
+            ? apf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
+            : o.$propHandlers["smartbinding"].call(o, new apf.smartbinding()))
 
         //We don't want to change a shared smartbinding
         if (!hasRefBinding) {
@@ -2122,7 +2122,7 @@ jpf.DataBinding = function(){
         //Get or create bind rule
         var bindRule = (o.bindingRules[o.mainBind] ||
             (o.bindingRules[o.mainBind]
-                = [jpf.getXml("<" + (o.mainBind || "value") + " />")]))[0];
+                = [apf.getXml("<" + (o.mainBind || "value") + " />")]))[0];
 
         //Check if the smartbinding has the rule (We assume all or nothing)
         ((sb.bindings || (sb.bindings = o.bindingRules))[o.mainBind])
@@ -2130,7 +2130,7 @@ jpf.DataBinding = function(){
 
         // Define model
         var model, modelId;
-        if (!jpf.isParsing)
+        if (!apf.isParsing)
             model = o.getModel();
 
         if (!model) {
@@ -2140,16 +2140,16 @@ jpf.DataBinding = function(){
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
 
             if (!modelId) {
-                if (jpf.globalModel) {
+                if (apf.globalModel) {
                     //#ifdef __DEBUG
-                    jpf.console.warn("Cannot find a model to connect to, will \
+                    apf.console.warn("Cannot find a model to connect to, will \
                                       try to use default model.");
                     //#endif
                     modelId = "@default";
                 }
                 //#ifdef __DEBUG
                 else
-                    throw new Error(jpf.formatErrorString(1062, this, "init",
+                    throw new Error(apf.formatErrorString(1062, this, "init",
                         "Could not find model to get data from", o.$jml));
                 //#endif
             }
@@ -2166,7 +2166,7 @@ jpf.DataBinding = function(){
 
         if (valuePath === null) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(1063, this,
+            throw new Error(apf.formatErrorString(1063, this,
                 "Setting @ref",
                 "Could not find xpath to determine XMLRoot: "
                 + strBindRef, o.$jml));
@@ -2201,7 +2201,7 @@ jpf.DataBinding = function(){
                 }           
             }
 
-            if (jpf.isParsing && initModelId)
+            if (apf.isParsing && initModelId)
                 initModelId[isSelection] = modelId
             else
                 setModelQueue(modelId, isSelection);
@@ -2228,7 +2228,7 @@ jpf.DataBinding = function(){
     function setModelQueue(modelId, isSelection){
         clearTimeout(timer[isSelection ? 1 : 0]);
         timer[isSelection ? 1 : 0] = setTimeout(function(){
-            jpf.setModel(modelId, _self, isSelection);
+            apf.setModel(modelId, _self, isSelection);
         });
     }
 
@@ -2349,7 +2349,7 @@ jpf.DataBinding = function(){
         
         if (typeof value == "object") {
             var modelId = "model" + value.uniqueId;
-            jpf.nameserver.register("model", modelId, value);
+            apf.nameserver.register("model", modelId, value);
             value = modelId;
         }
 
@@ -2357,7 +2357,7 @@ jpf.DataBinding = function(){
 
         if (!this.hasFeature(__MULTISELECT__)) {
             // #ifdef __WITH_INLINE_DATABINDING
-            if (jpf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
+            if (apf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
                 return; //Ref will take care of everything
 
             //We're changing the model, lets do it using the @ref way
@@ -2368,7 +2368,7 @@ jpf.DataBinding = function(){
             //#endif
         }
 
-        if (jpf.isParsing)
+        if (apf.isParsing)
             initModelId[0] = value;
         else
             setModelQueue(value, this.hasFeature(__MULTISELECT__));
@@ -2416,7 +2416,7 @@ jpf.DataBinding = function(){
         if (value != "virtual")
             return;
 
-        this.implement(jpf.VirtualViewport);
+        this.implement(apf.VirtualViewport);
     };
     //#endif
 };
@@ -2426,7 +2426,7 @@ jpf.DataBinding = function(){
  * @private
  * @baseclass
  */
-jpf.StandardBinding = function(){
+apf.StandardBinding = function(){
     if (!this.defaultValue) //@todo please use this in a sentence
         this.defaultValue = "";
 
@@ -2436,7 +2436,7 @@ jpf.StandardBinding = function(){
      */
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         //Set Properties
 
@@ -2481,7 +2481,7 @@ jpf.StandardBinding = function(){
                 //RLD: Disabled because sometimes indeed components do not 
                 //have a model when their xmlRoot is removed.
                 if (!model) {
-                    throw new Error(jpf.formatErrorString(0, this, 
+                    throw new Error(apf.formatErrorString(0, this, 
                         "Setting change notifier on component", 
                         "Component without a model is listening for changes", 
                         this.$jml));
@@ -2568,7 +2568,7 @@ jpf.StandardBinding = function(){
  * @allowchild  item, choices
  * @define  choices     Container for item nodes which receive presentation. 
  * This element is part of the XForms specification. It is not necesary for 
- * the javeline markup language.
+ * the Ajax.org Markup Language.
  * Example:
  * <code>
  *  <j:list>
@@ -2585,7 +2585,7 @@ jpf.StandardBinding = function(){
  * @baseclass
  * @default_private
  */
-jpf.MultiselectBinding = function(){
+apf.MultiselectBinding = function(){
     this.length = 0;
 
     /**
@@ -2665,7 +2665,7 @@ jpf.MultiselectBinding = function(){
         this.traverse = xmlNode.getAttribute("select");
 
         //#ifdef __WITH_SORTING
-        this.$sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
+        this.$sort = xmlNode.getAttribute("sort") ? new apf.Sort(xmlNode) : null;
         //#endif
     };
 
@@ -2688,7 +2688,7 @@ jpf.MultiselectBinding = function(){
      */
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
-            this.$sort = new jpf.Sort();
+            this.$sort = new apf.Sort();
  
         this.$sort.set(options, clear);
         this.clearAllCache();
@@ -2698,7 +2698,7 @@ jpf.MultiselectBinding = function(){
 
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
-            jpf.xmldb.clearVirtualDataset(this.xmlRoot);
+            apf.xmldb.clearVirtualDataset(this.xmlRoot);
             this.reload();
 
             return;
@@ -2707,15 +2707,15 @@ jpf.MultiselectBinding = function(){
 
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = _self.$sort.apply(
-                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
+                apf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
 
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch || _self.$withContainer){
-                    var htmlNode = jpf.xmldb.findHtmlNode(sNodes[i], _self);
+                    var htmlNode = apf.xmldb.findHtmlNode(sNodes[i], _self);
 
                     //#ifdef __DEBUG
                     if (!_self.$findContainer){
-                        throw new Error(jpf.formatErrorString(_self,
+                        throw new Error(apf.formatErrorString(_self,
                             "Sorting Nodes",
                             "This component does not \
                              implement _self.$findContainer"));
@@ -2725,13 +2725,13 @@ jpf.MultiselectBinding = function(){
                     var container = _self.$findContainer(htmlNode);
 
                     htmlParent.appendChild(htmlNode);
-                    if (!jpf.xmldb.isChildOf(htmlNode, container, true))
+                    if (!apf.xmldb.isChildOf(htmlNode, container, true))
                         htmlParent.appendChild(container);
 
                     sortNodes(sNodes[i], container);
                 }
                 else
-                    htmlParent.appendChild(jpf.xmldb.findHtmlNode(sNodes[i], _self));
+                    htmlParent.appendChild(apf.xmldb.findHtmlNode(sNodes[i], _self));
             }
         })(this.xmlRoot, this.oInt);
 
@@ -2773,7 +2773,7 @@ jpf.MultiselectBinding = function(){
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.$sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+            var nodes = apf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
                 .selectNodes(this.traverse));
             return this.$sort.apply(nodes);
         }
@@ -2792,7 +2792,7 @@ jpf.MultiselectBinding = function(){
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.$sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+            var nodes = apf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
                 .selectNodes(this.traverse));
             return this.$sort.apply(nodes)[0];
         }
@@ -2905,10 +2905,10 @@ jpf.MultiselectBinding = function(){
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
 
-        var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+        var x, id = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
         if (!id) {
             //return false;
-            xmlNode.setAttribute(jpf.xmldb.xmlIdTag, "temp");
+            xmlNode.setAttribute(apf.xmldb.xmlIdTag, "temp");
             id = "temp";
         }
 
@@ -2925,21 +2925,21 @@ jpf.MultiselectBinding = function(){
         //This is not 100% correct, but good enough for now
 
         //temp untill I fixed the XPath implementation
-        if (jpf.isSafari) {
+        if (apf.isSafari) {
             var y = this.traverse.split("\|");
             for (var i = 0; i < y.length; i++) {
                 x = xmlNode.selectSingleNode("ancestor::node()[("
-                    + y[i] + "/@" + jpf.xmldb.xmlIdTag + "='" + id + "')]");
+                    + y[i] + "/@" + apf.xmldb.xmlIdTag + "='" + id + "')]");
                 break;
             }
         } else {
             x = xmlNode.selectSingleNode("ancestor::node()[(("
-                + this.traverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
+                + this.traverse + ")/@" + apf.xmldb.xmlIdTag + ")='"
                 + id + "']");
         }
 
         if (id == "temp")
-            xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
+            xmlNode.removeAttribute(apf.xmldb.xmlIdTag);
         return x;
     };
 
@@ -2949,7 +2949,7 @@ jpf.MultiselectBinding = function(){
      */
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
@@ -2964,27 +2964,27 @@ jpf.MultiselectBinding = function(){
         //Select First Child
         if (this.selectable) {
             //#ifdef __WITH_OFFLINE_STATE
-            var sel, bHasOffline = (typeof jpf.offline != "undefined");
-            if (!this.firstLoad && bHasOffline && jpf.offline.state.enabled
-              && jpf.offline.state.realtime) {
-                sel = jpf.offline.state.get(this, "selection");
+            var sel, bHasOffline = (typeof apf.offline != "undefined");
+            if (!this.firstLoad && bHasOffline && apf.offline.state.enabled
+              && apf.offline.state.realtime) {
+                sel = apf.offline.state.get(this, "selection");
                 this.firstLoad = true;
             }
 
             if (sel) {
-                var selstate = jpf.offline.state.get(this, "selstate");
+                var selstate = apf.offline.state.get(this, "selstate");
 
                 if (sel.length == 0) {
                     this.clearSelection();
                 }
                 else {
                     for (var i = 0; i < sel.length; i++) {
-                        sel[i] = jpf.remote.xpathToXml(sel[i],
+                        sel[i] = apf.remote.xpathToXml(sel[i],
                             this.xmlRoot);
                     }
 
                     if (selstate[1]) {
-                        var selected = jpf.remote
+                        var selected = apf.remote
                             .xpathToXml(selstate[1], this.xmlRoot);
                     }
 
@@ -2992,7 +2992,7 @@ jpf.MultiselectBinding = function(){
                 }
 
                 if (selstate[0]) {
-                    this.setIndicator(jpf.remote
+                    this.setIndicator(apf.remote
                         .xpathToXml(selstate[0], this.xmlRoot));
                 }
             }
@@ -3027,7 +3027,7 @@ jpf.MultiselectBinding = function(){
         }
 
         if (this.focussable)
-            jpf.window.focussed == this ? this.$focus() : this.$blur();
+            apf.window.focussed == this ? this.$focus() : this.$blur();
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)
@@ -3091,9 +3091,9 @@ jpf.MultiselectBinding = function(){
               && startNode == xmlNode)
                 break; //@todo Might want to comment this out for adding nodes under a traversed node
 
-            if (xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
+            if (xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
                 var htmlNode = this.getNodeFromCache(
-                    xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
+                    xmlNode.getAttribute(apf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
 
                 if (htmlNode
@@ -3159,8 +3159,8 @@ jpf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
-            var isInThis  = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var isInThis  = apf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -3171,7 +3171,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var goesToThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -3192,7 +3192,7 @@ jpf.MultiselectBinding = function(){
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
 
-            if (this.oInt.firstChild && !jpf.xmldb.getNode(this.oInt.firstChild)) {
+            if (this.oInt.firstChild && !apf.xmldb.getNode(this.oInt.firstChild)) {
                 //Appearantly the content was cleared
                 this.oInt.innerHTML = "";
 
@@ -3211,7 +3211,7 @@ jpf.MultiselectBinding = function(){
 
             // #ifdef __DEBUG
             if (this.selectable && !this.xmlRoot.selectSingleNode(this.traverse))
-                jpf.console.warn("No traversable nodes were found for "
+                apf.console.warn("No traversable nodes were found for "
                                  + this.name + " [" + this.tagName + "]\n\
                                   Traverse Rule : " + this.traverse);
             // #endif
@@ -3227,19 +3227,19 @@ jpf.MultiselectBinding = function(){
             
             if (!parentHTMLNode && this.isTreeArch) {
                 parentHTMLNode = this.getNodeFromCache(
-                    pNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); 
+                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.uniqueId); 
             }
             
             //This should be moved into a function (used in setCache as well)
             if (!parentHTMLNode)
-                parentHTMLNode = this.getCacheItem(pNode.getAttribute(jpf.xmldb.xmlIdTag)
-                    || (pNode.getAttribute(jpf.xmldb.xmlDocTag)
-                         ? "doc" + pNode.getAttribute(jpf.xmldb.xmlDocTag)
+                parentHTMLNode = this.getCacheItem(pNode.getAttribute(apf.xmldb.xmlIdTag)
+                    || (pNode.getAttribute(apf.xmldb.xmlDocTag)
+                         ? "doc" + pNode.getAttribute(apf.xmldb.xmlDocTag)
                          : false));
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.isTreeArch 
-              && jpf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
+              && apf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt; //@todo I think this is wrong for non rendered sub tree nodes that get changed
@@ -3269,8 +3269,8 @@ jpf.MultiselectBinding = function(){
 
             //Transaction 'niceties'
             if (action == "replacechild" && this.hasFeature(__MULTISELECT__)
-              && this.selected && xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
-              == this.selected.getAttribute(jpf.xmldb.xmlIdTag)) {
+              && this.selected && xmlNode.getAttribute(apf.xmldb.xmlIdTag)
+              == this.selected.getAttribute(apf.xmldb.xmlIdTag)) {
                 this.selected = xmlNode;
             }
 
@@ -3287,7 +3287,7 @@ jpf.MultiselectBinding = function(){
 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Setting change notifier on component",
                         "Component without a model is listening for changes",
                         this.$jml));
@@ -3302,7 +3302,7 @@ jpf.MultiselectBinding = function(){
         if (this.isTreeArch && pNode && pNode.nodeType == 1) {
             do {
                 var htmlNode = this.getNodeFromCache(pNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
+                    apf.xmldb.xmlIdTag) + "|" + this.uniqueId);
 
                 if (htmlNode)
                     this.$updateNode(pNode, htmlNode);
@@ -3317,7 +3317,7 @@ jpf.MultiselectBinding = function(){
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && jpf.xmldb.isChildOf(xmlNode, this.selected, true)
+            if (action == "remove" && apf.xmldb.isChildOf(xmlNode, this.selected, true)
               || xmlNode == selectTimer.nextNode)
                 selectTimer.nextNode = this.getDefaultNext(xmlNode);
 
@@ -3344,7 +3344,7 @@ jpf.MultiselectBinding = function(){
             for (uniqueId in this.signalXmlUpdate) {
                 if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
 
-                var o = jpf.lookup(uniqueId);
+                var o = apf.lookup(uniqueId);
                 if (!this.selected) continue;
 
                 var xmlNode = this.selected.selectSingleNode(o.dataParent.xpath);
@@ -3370,7 +3370,7 @@ jpf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
         if (!this.traverse) {
-            throw new Error(jpf.formatErrorString(1060, this,
+            throw new Error(apf.formatErrorString(1060, this,
                 "adding Nodes for load",
                 "No traverse SmartBinding rule was specified. This rule is \
                  required for a " + this.tagName + " component.", this.$jml));
@@ -3389,12 +3389,12 @@ jpf.MultiselectBinding = function(){
             if (nodes[i].nodeType != 1) continue;
 
             if (checkChildren)
-                htmlNode = this.getNodeFromCache(nodes[i].getAttribute(jpf.xmldb.xmlIdTag)
+                htmlNode = this.getNodeFromCache(nodes[i].getAttribute(apf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
 
             if (!htmlNode) {
                 //Retrieve DataBind ID
-                var Lid = jpf.xmldb.nodeConnect(this.documentId, nodes[i], null, this);
+                var Lid = apf.xmldb.nodeConnect(this.documentId, nodes[i], null, this);
 
                 //Add Children
                 var beforeNode = isChild ? insertBefore : (lastNode ? lastNode.nextSibling : null);//(parent || this.oInt).firstChild);
@@ -3406,7 +3406,7 @@ jpf.MultiselectBinding = function(){
                 if (parentNode === false) {
                     //Tag all needed xmlNodes for future reference
                     for (var i = i; i < nodes.length; i++)
-                        jpf.xmldb.nodeConnect(this.documentId, nodes[i],
+                        apf.xmldb.nodeConnect(this.documentId, nodes[i],
                             null, this);
                     break;
                 }
@@ -3459,10 +3459,10 @@ jpf.MultiselectBinding = function(){
 
                 //missing is childnodes... will implement later when needed...
 
-                oEl.setAttribute(jpf.xmldb.xmlIdTag, this.uniqueId);
-                jpf.MultiSelectServer.register(oEl.getAttribute(jpf.xmldb.xmlIdTag),
+                oEl.setAttribute(apf.xmldb.xmlIdTag, this.uniqueId);
+                apf.MultiSelectServer.register(oEl.getAttribute(apf.xmldb.xmlIdTag),
                     oEl, e.list, this);
-                jpf.xmldb.addNodeListener(oEl, jpf.MultiSelectServer);
+                apf.xmldb.addNodeListener(oEl, apf.MultiSelectServer);
 
                 combinedvalue = oEl;
             }
@@ -3492,18 +3492,18 @@ jpf.MultiselectBinding = function(){
     });
 
     this.$loadInlineData = function(x){
-        if (!$xmlns(x, "item", jpf.ns.jml).length)
-            return jpf.JmlParser.parseChildren(x, null, this);
+        if (!$xmlns(x, "item", apf.ns.jml).length)
+            return apf.JmlParser.parseChildren(x, null, this);
 
         //#ifdef __WITH_XFORMS
-        var parent = $xmlns(x, "choices", jpf.ns.jml)[0] || x;
+        var parent = $xmlns(x, "choices", apf.ns.jml)[0] || x;
         /* #else
         var parent = x;
         #endif */
 
         //#ifdef __DEBUG
         if (x.getAttribute("model")) {
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(apf.formatErrorString(0, this, 
                 "Loading inline data",
                 "Found model attribute set. This will conflict with loading\
                 the inline data. Please remove it. If you would like to set\
@@ -3512,11 +3512,11 @@ jpf.MultiselectBinding = function(){
         }
         //#endif
 
-        var prefix = jpf.findPrefix(x, jpf.ns.jml);
+        var prefix = apf.findPrefix(x, apf.ns.jml);
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-                + prefix + "='" + jpf.ns.jpf + "'");
+                + prefix + "='" + apf.ns.apf + "'");
         }
     
         //@todo think about using setProperty for this, for consistency (at the price of speed)
@@ -3534,7 +3534,7 @@ jpf.MultiselectBinding = function(){
         if (!value)
             this[prop] = null;
 
-        if (this.xmlRoot && !timer && !jpf.isParsing) {
+        if (this.xmlRoot && !timer && !apf.isParsing) {
             timer = setTimeout(function(){
                 _self.reload();
                 timer = null;

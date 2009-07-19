@@ -75,15 +75,15 @@
  * @author      
  * @version     %I%, %G%
  * 
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  */
-jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
     this.max           = 64000;
     this.min           = -64000;
     this.focused       = false;
@@ -159,8 +159,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
-            jpf.sanitizeTextbox(this.oInput);
+        if (apf.hasFocusBug)
+            apf.sanitizeTextbox(this.oInput);
         //#endif
 
         this.focused = true;
@@ -223,7 +223,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
 
         //#ifdef __WITH_WINDOW_FOCUS
-        jpf.sanitizeTextbox(this.oInput);
+        apf.sanitizeTextbox(this.oInput);
         //#endif
 
         var timer, z = 0;
@@ -296,7 +296,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
             var value = (parseInt(_self.oInput.value) || 0) + 1;
 
-            jpf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
+            apf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
 
             clearInterval(timer);
             timer = setInterval(function() {
@@ -319,7 +319,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
             var value = (parseInt(_self.oInput.value) || 0) - 1;
 
-            jpf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
+            apf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
 
             clearInterval(timer);
             timer = setInterval(function() {
@@ -345,7 +345,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             if (value != _self.value) {
                 _self.change(value);
             }
-            jpf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
+            apf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
 
             if (!_self.focused) {
                _self.$blur(e);
@@ -364,7 +364,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             if (value != _self.value) {
                 _self.change(value);
             }
-            jpf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
+            apf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
 
             if (!_self.focused) {
                _self.$blur(e);
@@ -375,14 +375,14 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             if (_self.disabled)
                 return;
                 
-            jpf.setStyleClass(_self.oButtonMinus, "minusHover");
+            apf.setStyleClass(_self.oButtonMinus, "minusHover");
         };
 
         this.oButtonPlus.onmouseover  = function(e) {
             if (_self.disabled)
                 return;
                 
-            jpf.setStyleClass(_self.oButtonPlus, "plusHover");
+            apf.setStyleClass(_self.oButtonPlus, "plusHover");
         };
 
         this.oButtonPlus.onmouseup = function(e) {
@@ -392,7 +392,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             e = e || event;
             e.cancelBubble = true;
 
-            jpf.setStyleClass(_self.oButtonPlus, "plusHover", ["plusDown"]);
+            apf.setStyleClass(_self.oButtonPlus, "plusHover", ["plusDown"]);
 
             window.clearInterval(timer);
             z = 0;
@@ -419,7 +419,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             e = e || event;
             e.cancelBubble = true;
 
-            jpf.setStyleClass(_self.oButtonMinus, "minusHover", ["minusDown"]);
+            apf.setStyleClass(_self.oButtonMinus, "minusHover", ["minusDown"]);
 
             window.clearInterval(timer);
             z = 0;
@@ -449,7 +449,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$loadJml = function(x) {
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.JmlParser.parseChildren(this.$jml, null, this);
     };
 
     this.$destroy = function() {
@@ -469,15 +469,15 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
     //#ifdef __WITH_VALIDATION
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

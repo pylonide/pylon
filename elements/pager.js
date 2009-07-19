@@ -28,8 +28,8 @@
  * @attribute {String} previous   determines the caption of "go to previous page" button
  * @attribute {String} next       determines the caption of "go to next page" button
  * 
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
  * 
  * @author      
  * @version     %I%, %G% 
@@ -41,7 +41,7 @@
  * @binding total        Determines the number of pages.
  * 
  */
-jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.pager = apf.component(apf.NODE_VISIBLE, function() {
     this.previous   = "Previous";
     this.next       = "Next";
     this.range      = 5;
@@ -110,7 +110,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$loadJml = function(x) {
         var nodes = x.childNodes;
-        jpf.JmlParser.parseChildren(x, null, this);
+        apf.JmlParser.parseChildren(x, null, this);
     };
     
     this.$load = function(xmlRoot) {
@@ -133,7 +133,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$setStyleClass(btn, "previous");
             
             if (curpage != 1) {
-                btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
+                btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -153,7 +153,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = i;
-            btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(" + i + ")");
+            btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(" + i + ")");
             nodes.push(btn);
             
             if (i == curpage)
@@ -167,7 +167,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$setStyleClass(btn, "next");
             
             if (curpage != totalpages) {
-                btn.setAttribute("onclick", "jpf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
+                btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -176,7 +176,7 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
             nodes.push(btn);
         }
         
-        jpf.xmldb.htmlImport(nodes, this.oInt);
+        apf.xmldb.htmlImport(nodes, this.oInt);
     }
     
     var oEmpty;
@@ -192,6 +192,6 @@ jpf.pager = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
 }).implement(
-    jpf.Presentation, 
-    jpf.DataBinding
+    apf.Presentation, 
+    apf.DataBinding
 );

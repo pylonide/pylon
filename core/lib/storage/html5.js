@@ -27,7 +27,7 @@
  *        The WHAT WG storage API is documented at 
  *        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
  */
-jpf.namespace("storage.modules.html5", {
+apf.namespace("storage.modules.html5", {
     domain     : (location.hostname == "localhost")
                     ? "localhost.localdomain"
                     : location.hostname,
@@ -48,7 +48,7 @@ jpf.namespace("storage.modules.html5", {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
@@ -56,7 +56,7 @@ jpf.namespace("storage.modules.html5", {
         key = this.getFullKey(key, namespace);
         
         // serialize the value;
-        value = jpf.serialize(value);
+        value = apf.serialize(value);
         
         // try to store the value
         try {
@@ -66,7 +66,7 @@ jpf.namespace("storage.modules.html5", {
         catch(e) {
             // indicate we failed
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair",
+            throw new Error(apf.formatErrorString(0, null, "Setting name/value pair",
                 "Could not set name/value pair"));
         //#endif
         }
@@ -75,7 +75,7 @@ jpf.namespace("storage.modules.html5", {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
@@ -95,7 +95,7 @@ jpf.namespace("storage.modules.html5", {
         if (results == null || results == "")
             return null;
         
-        return jpf.unserialize(results);
+        return apf.unserialize(results);
     },
     
     getNamespaces: function(){
@@ -127,7 +127,7 @@ jpf.namespace("storage.modules.html5", {
 		    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting keys",
+            throw new Error(apf.formatErrorString(0, null, "Getting keys",
                 "Invalid namespace given: " + namespace));
         //#endif
         
@@ -160,7 +160,7 @@ jpf.namespace("storage.modules.html5", {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(apf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
         // create a regular expression to test the beginning
@@ -200,12 +200,12 @@ jpf.namespace("storage.modules.html5", {
     },
     
     showSettingsUI: function(){
-        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+        throw new Error(apf.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
     
     hideSettingsUI: function(){
-        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+        throw new Error(apf.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
     
@@ -215,7 +215,7 @@ jpf.namespace("storage.modules.html5", {
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Clearing storage",
+            throw new Error(apf.formatErrorString(0, null, "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
         

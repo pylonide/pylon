@@ -27,10 +27,10 @@
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
- * @namespace jpf
+ * @namespace apf
  * @private
  */
-jpf.flash = (function(){
+apf.flash = (function(){
     /**
      * Flash Player Version Detection, version 1.7
      * Detect Client Browser type
@@ -138,7 +138,7 @@ jpf.flash = (function(){
         // older WebTV supports Flash 2
         else if (sAgent.indexOf("webtv") != -1)
             flashVer = 2;
-        else if (jpf.isIE && !jpf.isOpera)
+        else if (apf.isIE && !apf.isOpera)
             flashVer = getControlVersion();
 
         return flashVer;
@@ -159,7 +159,7 @@ jpf.flash = (function(){
             return false;
         else if (versionStr != 0) {
             var aVersions;
-            if (jpf.isIE && !jpf.isOpera) {
+            if (apf.isIE && !apf.isOpera) {
                 // Given "WIN 2,0,0,11"
                 var aTemp = versionStr.split(" "); // ["WIN", "2,0,0,11"]
                 var sTemp = aTemp[1]; // "2,0,0,11"
@@ -200,7 +200,7 @@ jpf.flash = (function(){
         if (stdout == "undefined")
             stdout = false;
         var str = [];
-        if (jpf.isIE && !jpf.isOpera) {
+        if (apf.isIE && !apf.isOpera) {
             str.push('<object ');
             for (var i in objAttrs)
                 str.push(i, '="', objAttrs[i], '" ');
@@ -262,7 +262,7 @@ jpf.flash = (function(){
         var ret = AC_GetArgs(arguments,
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash"),
-            MMPlayerType  = (jpf.isIE == true) ? "ActiveX" : "PlugIn",
+            MMPlayerType  = (apf.isIE == true) ? "ActiveX" : "PlugIn",
             MMredirectURL = window.location;
         document.title    = document.title.slice(0, 47)
             + " - Flash Player Installation";
@@ -391,12 +391,12 @@ jpf.flash = (function(){
 
         if (typeof id == "object")
             return id;
-        if (jpf.isIE)
+        if (apf.isIE)
             return window[id];
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
-                elem = jpf.lookup(id);
+                elem = apf.lookup(id);
             return elem;
         }
     }
@@ -444,9 +444,9 @@ jpf.flash = (function(){
     function callMethod(id, methodName) {
         var player = hash[id];
         if (player == null)
-            throw new Error(jpf.formatErrorString(0, this, "Player with id: " + id + " not found"));
+            throw new Error(apf.formatErrorString(0, this, "Player with id: " + id + " not found"));
         if (player[methodName] == null)
-            throw new Error(jpf.formatErrorString(0, this, "Method " + methodName + " Not found"));
+            throw new Error(apf.formatErrorString(0, this, "Method " + methodName + " Not found"));
 
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];

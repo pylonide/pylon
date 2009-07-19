@@ -26,7 +26,7 @@
  * @param {String} strXml the xml to format.
  * @return {String} the formatted string.
  */
-jpf.formatXml = function(strXml){
+apf.formatXml = function(strXml){
     if (!strXml) return "";
     strXml = strXml.trim();
 
@@ -51,7 +51,7 @@ jpf.formatXml = function(strXml){
  * @param {String} strXml the xml to highlight.
  * @return {String} the highlighted string.
  */
-jpf.highlightXml = function(str){
+apf.highlightXml = function(str){
     return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
        .replace(/>/g, "_@B@_")
        .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
@@ -67,7 +67,7 @@ jpf.highlightXml = function(str){
  * @param {String} strCode the code to highlight.
  * @return {String} the highlighted string.
  */
-jpf.highlightCode = function(strCode){
+apf.highlightCode = function(strCode){
     return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
        .replace(/>/g, "_@B@_")
        .replace(/((?:\s|^)[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
@@ -96,7 +96,7 @@ jpf.highlightCode = function(strCode){
  * @param {String} strCode the code to highlight.
  * @return {String} the highlighted string.
  */
-jpf.highlightCode2 = function(strCode){
+apf.highlightCode2 = function(strCode){
   var comment=[],str=[];
   return strCode
         .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})   
@@ -120,7 +120,7 @@ jpf.highlightCode2 = function(strCode){
  * @param {String} strJs the javascript to format.
  * @return {String} the formatted string.
  */
-jpf.formatJS = function(strJs){
+apf.formatJS = function(strJs){
     var d = 0, r = 0;
     var comment=[],str=[];
     return strJs
@@ -150,7 +150,7 @@ jpf.formatJS = function(strJs){
  * Opens a window with the string in it
  * @param {String} str the html string displayed in the new window.
  */
-jpf.pasteWindow = function(str){
+apf.pasteWindow = function(str){
     var win = window.open("about:blank");
     win.document.write(str);
 };
@@ -160,7 +160,7 @@ jpf.pasteWindow = function(str){
 /**
  * @private
  */
-jpf.xmlEntityMap = {
+apf.xmlEntityMap = {
     'quot': '34', 'amp': '38', 'apos': '39', 'lt': '60', 'gt': '62',
     'nbsp': '160', 'iexcl': '161', 'cent': '162', 'pound': '163', 'curren': '164',
     'yen': '165', 'brvbar': '166', 'sect': '167', 'uml': '168', 'copy': '169',
@@ -218,7 +218,7 @@ jpf.xmlEntityMap = {
  * @param {String} str the html to be escaped.
  * @return {String} the escaped string.
  */
-jpf.htmlentities = function(str){
+apf.htmlentities = function(str){
     return str.escapeHTML();
 };
 
@@ -227,10 +227,10 @@ jpf.htmlentities = function(str){
  * @param {String} str the xml string to escape.
  * @return {String} the escaped string.
  */
-jpf.xmlentities = function(str) {
+apf.xmlentities = function(str) {
     return str.replace(/&([a-z]+);/gi, function(a, m) {
-        if (jpf.xmlEntityMap[m])
-            return '&#' + jpf.xmlEntityMap[m] + ';';
+        if (apf.xmlEntityMap[m])
+            return '&#' + apf.xmlEntityMap[m] + ';';
         return a;
     });
 };
@@ -240,7 +240,7 @@ jpf.xmlentities = function(str) {
  * @param {String} str the string to unescape.
  * @return {String} the unescaped string.
  */
-jpf.html_entity_decode = function(str){
+apf.html_entity_decode = function(str){
     return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
 };
@@ -252,7 +252,7 @@ jpf.html_entity_decode = function(str){
  * the value of an element (like a textbox).
  * @param {Number} charCode The ascii character code.
  */
-jpf.isCharacter = function(charCode){
+apf.isCharacter = function(charCode){
     return (charCode < 112 || charCode > 122)
       && (charCode == 32 || charCode > 42 || charCode == 8);
 }
@@ -265,10 +265,10 @@ jpf.isCharacter = function(charCode){
  * Generators: Good Ones Are Hard to Find', by Stephen K. Park and Keith W.
  * Miller, Communications of the ACM, 31(10):1192-1201, 1988.)
  * @author David N. Smith of IBM's T. J. Watson Research Center.
- * @author Mike de Boer (mdeboer AT javeline DOT com)
+ * @author Mike de Boer (mike AT javeline DOT com)
  * @class randomGenerator
  */
-jpf.randomGenerator = {
+apf.randomGenerator = {
     d: new Date(),
     seed: null,
     A: 48271,
@@ -320,7 +320,7 @@ jpf.randomGenerator = {
  * @param {String} url the url to add the timestamp to.
  * @return {String} the url with timestamp.
  */
-jpf.getNoCacheUrl = function(url){
+apf.getNoCacheUrl = function(url){
     return url
         + (url.indexOf("?") == -1 ? "?" : "&")
         + "nocache=" + new Date().getTime();
@@ -332,8 +332,8 @@ jpf.getNoCacheUrl = function(url){
  * @param {String} str the string to parse.
  * @return {String} the result of the parsing.
  */
-jpf.parseExpression = function(str){
-    if (!jpf.parseExpression.regexp.test(str))
+apf.parseExpression = function(str){
+    if (!apf.parseExpression.regexp.test(str))
         return str;
 
     //#ifdef __DEBUG
@@ -343,23 +343,23 @@ jpf.parseExpression = function(str){
     //#ifdef __DEBUG
     }
     catch(e) {
-        throw new Error(jpf.formatErrorString(0, null,
+        throw new Error(apf.formatErrorString(0, null,
             "Parsing Expression",
             "Invalid expression given '" + str + "'"));
     }
     //#endif
 };
-jpf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
+apf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
 
 /**
  * @private
  */
-jpf.formatNumber = function(num, prefix){
+apf.formatNumber = function(num, prefix){
     var nr = parseFloat(num);
     if (!nr) return num;
 
     var str = new String(Math.round(nr * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
-        return m1.pad(3, "0", jpf.PAD_RIGHT);
+        return m1.pad(3, "0", apf.PAD_RIGHT);
     });
     if (str.indexOf(".") == -1)
         str += ".00";
@@ -371,18 +371,18 @@ jpf.formatNumber = function(num, prefix){
 /**
  * @private
  */
-jpf.JSONSerialize = {
+apf.JSONSerialize = {
     object: function(o){
-        //XML support - NOTICE: Javeline PlatForm specific
+        //XML support - NOTICE: Ajax.org Platform specific
         if (o.nodeType && o.cloneNode)
-            return "jpf.xmldb.getXml("
-                + this.string(jpf.xmldb.serializeNode(o)) + ")";
+            return "apf.xmldb.getXml("
+                + this.string(apf.xmldb.serializeNode(o)) + ")";
 
         //Normal JS object support
         var str = [];
         for (var prop in o) {
             str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
-                + jpf.serialize(o[prop]));
+                + apf.serialize(o[prop]));
         }
 
         return "{" + str.join(", ") + "}";
@@ -420,7 +420,7 @@ jpf.JSONSerialize = {
 
     array: function(a){
         for (var q = [], i = 0; i < a.length; i++)
-            q.push(jpf.serialize(a[i]));
+            q.push(apf.serialize(a[i]));
 
         return "[" + q.join(", ") + "]";
     }
@@ -432,10 +432,10 @@ jpf.JSONSerialize = {
  * @return {String} the json string representation of the object.
  * @todo allow for XML serialization
  */
-jpf.serialize = function(args){
-    if (typeof args == "function" || jpf.isNot(args))
+apf.serialize = function(args){
+    if (typeof args == "function" || apf.isNot(args))
         return "null";
-    return jpf.JSONSerialize[args.dataType || "object"](args);
+    return apf.JSONSerialize[args.dataType || "object"](args);
 };
 
 /**
@@ -447,7 +447,7 @@ jpf.serialize = function(args){
  * @param {Boolean} secure  whether the json string should be checked to prevent malice.
  * @return {Object} the object created from the json string.
  */
-jpf.unserialize = function(str, secure){
+apf.unserialize = function(str, secure){
     if (!str) return str;
     if (secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/)
       .test(str.replace(/\\./g, '@').replace(/"(?:\\"|[^"])*"|'(?:\\'|[^'])*'/g, '')))
@@ -461,13 +461,13 @@ jpf.unserialize = function(str, secure){
  * @param {String} str  the javascript code to execute.
  * @return {String} the javascript code executed.
  */
-jpf.exec = function(str, win){
+apf.exec = function(str, win){
     if (!str)
         return str;
     if (!win)
         win = self;
 
-    if (jpf.hasExecScript) {
+    if (apf.hasExecScript) {
         win.execScript(str);
     }
     else {
@@ -488,7 +488,7 @@ jpf.exec = function(str, win){
 /**
  * Shorthand for an empty function.
  */
-jpf.K = function(){};
+apf.K = function(){};
 
 // #ifdef __WITH_ECMAEXT
 
@@ -498,7 +498,7 @@ jpf.K = function(){};
  * @param {mixed}   value The variable to check
  * @type  {Boolean}
  */
-jpf.isNumber = function(value){
+apf.isNumber = function(value){
     return parseFloat(value) == value;
 };
 
@@ -509,7 +509,7 @@ jpf.isNumber = function(value){
  * @param {mixed}   value The variable to check
  * @type  {Boolean}
  */
-jpf.isArray = function(value) {
+apf.isArray = function(value) {
     return Object.prototype.toString.call(value) === "[object Array]";
 };
 
@@ -520,7 +520,7 @@ jpf.isArray = function(value) {
  * @param {mixed}   value The variable to check
  * @type  {Boolean}
  */
-jpf.isJSON = (function() {
+apf.isJSON = (function() {
     var escapes  = /\\["\\\/bfnrtu]/g,
         values   = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
         brackets = /(?:^|:|,)(?:\s*\[)+/g,
@@ -711,7 +711,7 @@ if (!window["JSON"]) {
  *   '1'    The function returns true.
  * @return {Boolean} whether the string is considered to imply truth.
  */
-jpf.isTrue = function(c){
+apf.isTrue = function(c){
     return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
 };
 
@@ -726,7 +726,7 @@ jpf.isTrue = function(c){
  *   '0'     The function returns true.
  * @return {Boolean} whether the string is considered to imply untruth.
  */
-jpf.isFalse = function(c){
+apf.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
@@ -736,7 +736,7 @@ jpf.isFalse = function(c){
  * @param {mixed} value the variable to check
  * @return {Boolean} whether the variable is considered false.
  */
-jpf.isNot = function(c){
+apf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string
     return (!c && typeof c != "string" && c !== 0 || (typeof c == "number" && !isFinite(c)));
 };
@@ -746,7 +746,7 @@ jpf.isNot = function(c){
  * @param {String} url the url to retrieve from.
  * @return {String} the directory portion of a url.
  */
-jpf.getDirname = function(url){
+apf.getDirname = function(url){
     return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
 };
 
@@ -755,7 +755,7 @@ jpf.getDirname = function(url){
  * @param {String} url the url to retrieve from.
  * @return {String} the file portion of a url.
  */
-jpf.getFilename = function(url){
+apf.getFilename = function(url){
     return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
 };
 
@@ -765,7 +765,7 @@ jpf.getFilename = function(url){
  * @param {String} url  the url to transform.
  * @return {String} the absolute url.
  */
-jpf.getAbsolutePath = function(base, url){
+apf.getAbsolutePath = function(base, url){
     return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
 };
 
@@ -775,7 +775,7 @@ jpf.getAbsolutePath = function(base, url){
  * @param {String} url  the url to transform.
  * @return {String} the relative url.
  */
-jpf.removePathContext = function(base, url){
+apf.removePathContext = function(base, url){
     if (!url)  return "";
 
     if (url.indexOf(base) > -1)
@@ -788,11 +788,11 @@ jpf.removePathContext = function(base, url){
  * @private
  * @todo why is this done like this?
  */
-jpf.cancelBubble = function(e, o){
+apf.cancelBubble = function(e, o){
     e.cancelBubble = true;
     // #ifdef __WITH_FOCUS
     if (o.$focussable && !o.disabled)
-        jpf.window.$focus(o);
+        apf.window.$focus(o);
     // #endif
 };
 
@@ -806,7 +806,7 @@ jpf.cancelBubble = function(e, o){
  * @param {String}     xpath   the xpath query.
  * @return {String} the value of the query result or empty string.
  */
-jpf.getXmlValue = function (xmlNode, xpath){
+apf.getXmlValue = function (xmlNode, xpath){
     if (!xmlNode) return "";
     xmlNode = xmlNode.selectSingleNode(xpath);
     if (xmlNode && xmlNode.nodeType == 1)
@@ -820,7 +820,7 @@ jpf.getXmlValue = function (xmlNode, xpath){
  * @param {String}     xpath   the xpath query.
  * @return {Arary} list of values which are a result of the query.
  */
-jpf.getXmlValues = function(xmlNode, xpath){
+apf.getXmlValues = function(xmlNode, xpath){
     var out = [];
     if (!xmlNode) return out;
 
@@ -842,10 +842,10 @@ jpf.getXmlValues = function(xmlNode, xpath){
  * Attempt to fix memory leaks
  * @private
  */
-jpf.removeNode = function (element) {
+apf.removeNode = function (element) {
     if (!element) return;
 
-    if (!jpf.isIE || element.ownerDocument != document) {
+    if (!apf.isIE || element.ownerDocument != document) {
         if (element.parentNode)
             element.parentNode.removeChild(element);
         return;
@@ -868,16 +868,16 @@ jpf.removeNode = function (element) {
 /**
  * @private
  */
-jpf.getRules = function(node){
+apf.getRules = function(node){
     var rules = {};
 
     for (var w = node.firstChild; w; w = w.nextSibling){
         if (w.nodeType != 1)
             continue;
         else {
-            if (!rules[w[jpf.TAGNAME]])
-                rules[w[jpf.TAGNAME]] = [];
-            rules[w[jpf.TAGNAME]].push(w);
+            if (!rules[w[apf.TAGNAME]])
+                rules[w[apf.TAGNAME]] = [];
+            rules[w[apf.TAGNAME]].push(w);
         }
     }
 
@@ -888,7 +888,7 @@ jpf.getRules = function(node){
 /**
  * @private
  */
-jpf.getBox = function(value, base){
+apf.getBox = function(value, base){
     if (!base) base = 0;
 
     if (value == null || (!parseInt(value) && parseInt(value) != 0))
@@ -918,7 +918,7 @@ jpf.getBox = function(value, base){
 /**
  * @private
  */
-jpf.getNode = function(data, tree){
+apf.getNode = function(data, tree){
     var nc = 0;//nodeCount
     //node = 1
     if (data != null) {
@@ -946,7 +946,7 @@ jpf.getNode = function(data, tree){
  * @return {XMLElement} the first child element of the xml parent.
  * @throw error when no child element is found.
  */
-jpf.getFirstElement = function(xmlNode){
+apf.getFirstElement = function(xmlNode){
     // #ifdef __DEBUG
     try {
         xmlNode.firstChild.nodeType == 1
@@ -954,7 +954,7 @@ jpf.getFirstElement = function(xmlNode){
             : xmlNode.firstChild.nextSibling
     }
     catch (e) {
-        throw new Error(jpf.formatErrorString(1052, null,
+        throw new Error(apf.formatErrorString(1052, null,
             "Xml Selection",
             "Could not find element:\n"
             + (xmlNode ? xmlNode.xml : "null")));
@@ -972,7 +972,7 @@ jpf.getFirstElement = function(xmlNode){
  * @return {XMLElement} the last child element of the xml parent.
  * @throw error when no child element is found.
  */
-jpf.getLastElement = function(xmlNode){
+apf.getLastElement = function(xmlNode){
     // #ifdef __DEBUG
     try {
         xmlNode.lastChild.nodeType == 1
@@ -980,7 +980,7 @@ jpf.getLastElement = function(xmlNode){
             : xmlNode.lastChild.nextSibling
     }
     catch (e) {
-        throw new Error(jpf.formatErrorString(1053, null,
+        throw new Error(apf.formatErrorString(1053, null,
             "Xml Selection",
             "Could not find last element:\n"
             + (xmlNode ? xmlNode.xml : "null")));
@@ -997,8 +997,8 @@ jpf.getLastElement = function(xmlNode){
  * internet explorer.
  * @param {HTMLElement} oHtml the container in which the content receives the selection.
  */
-jpf.selectTextHtml = function(oHtml){
-    if (!jpf.hasMsRangeObject) return;// oHtml.focus();
+apf.selectTextHtml = function(oHtml){
+    if (!apf.hasMsRangeObject) return;// oHtml.focus();
 
     var r = document.selection.createRange();
     try {r.moveToElementText(oHtml);} catch(e){}

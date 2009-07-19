@@ -24,7 +24,7 @@
  * Compatibility layer for Opera browsers.
  * @private
  */
-jpf.runOpera = function (){
+apf.runOpera = function (){
     /*var setTimeoutOpera = window.setTimeout;
     var lookupOperaCall = [];
     window.setTimeout = function(call, time){
@@ -87,7 +87,7 @@ jpf.runOpera = function (){
         if (doc.selectNodes) 
             return doc.selectNodes(sExpr, this);
         else 
-            throw new Error(jpf.formatErrorString(1047, null, "XPath Selection", "Method selectNodes is only supported by XML Nodes"));
+            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", "Method selectNodes is only supported by XML Nodes"));
     };
     
     //XMLDocument.selectSingleNode
@@ -109,14 +109,14 @@ jpf.runOpera = function (){
         if (doc.selectSingleNode) 
             return doc.selectSingleNode(sExpr, this);
         else 
-            throw new Error(jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
     };
     
     //#endif
     
-    if (jpf.runNonIe)
-        jpf.runNonIe();
-        //jpf.importClass(jpf.runNonIe, true, self);
+    if (apf.runNonIe)
+        apf.runNonIe();
+        //apf.importClass(apf.runNonIe, true, self);
 }
 
 // #endif

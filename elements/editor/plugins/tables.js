@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-jpf.editor.plugin('table', function() {
+apf.editor.plugin('table', function() {
     this.name        = 'table';
     this.icon        = 'table';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+shift+t';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
         iCurrentX = 0,
@@ -46,7 +46,7 @@ jpf.editor.plugin('table', function() {
         if (!panelBody) {
             this.editor = editor;
             oDoc = editor.useIframe ? document : editor.oDoc;
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         else
             resetTableMorph();
@@ -59,7 +59,7 @@ jpf.editor.plugin('table', function() {
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
             panelBody.style.height = (oTableCont.offsetWidth + 20) + "px";
-            oTablePos = jpf.getAbsolutePosition(oTable);
+            oTablePos = apf.getAbsolutePosition(oTable);
         });
     };
 
@@ -68,7 +68,7 @@ jpf.editor.plugin('table', function() {
     };
 
     this.submit = function(oSize) {
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
 
@@ -76,13 +76,13 @@ jpf.editor.plugin('table', function() {
         for (i = 0, j = oSize[0]; i < j; i++) {
             aOut.push('<tr>');
             for (k = 0, l = oSize[1]; k < l; k++)
-                aOut.push('<td>', (jpf.isIE ? '' : '&nbsp;<br _jpf_placeholder="1" />'),'</td>');
+                aOut.push('<td>', (apf.isIE ? '' : '&nbsp;<br _apf_placeholder="1" />'),'</td>');
             aOut.push('</tr>')
         }
         aOut.push('</table>')
 
         //this.restoreSelection();
-        //if (jpf.isIE)
+        //if (apf.isIE)
         //this.editor.selection.set();
         this.editor.insertHTML(aOut.join(''), true);
         this.editor.selection.collapse(false);
@@ -94,10 +94,10 @@ jpf.editor.plugin('table', function() {
         bMorphing     = true;
         oMorphCurrent = e.client;
         iMorphXCount  = iMorphYCount = 0;
-        //jpf.plane.show(panelBody, true);
+        //apf.plane.show(panelBody, true);
         document.onmousemove = function(e) {
             if (!bMorphing) return;
-            e = new jpf.AbstractEvent(e || window.event);
+            e = new apf.AbstractEvent(e || window.event);
             // only morph the table when the mouse reaches beyond the table
             if (e.client.x > oTablePos[0] + oTable.offsetWidth
               || e.client.y > oTablePos[1] + oTable.offsetHeight)
@@ -106,7 +106,7 @@ jpf.editor.plugin('table', function() {
             return false;
         }
         document.onmouseup = function(e) {
-            e = new jpf.AbstractEvent(e || window.event);
+            e = new apf.AbstractEvent(e || window.event);
             mouseUp.call(_self, e);
             e.stop();
             return false;
@@ -120,7 +120,7 @@ jpf.editor.plugin('table', function() {
             bMorphing     = false;
             oMorphCurrent = document.onmousemove = document.onmouseup = null;
             iMorphXCount  = iMorphYCount = 0;
-            //jpf.plane.hide();
+            //apf.plane.hide();
         }
         mouseOver.call(this, e);
         if (iCurrentX > 0 && iCurrentY > 0)
@@ -180,7 +180,7 @@ jpf.editor.plugin('table', function() {
 
     function statusClick(e) {
         mouseOut.call(this, e);
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
     }
 
     this.createPanelBody = function() {
@@ -229,12 +229,12 @@ jpf.editor.plugin('table', function() {
     };
 });
 
-jpf.editor.plugin('tablewizard', function() {
+apf.editor.plugin('tablewizard', function() {
     this.name        = 'tablewizard';
     this.icon        = 'tablewizard';
-    this.type        = jpf.editor.CONTEXTPANEL;
+    this.type        = apf.editor.CONTEXTPANEL;
     this.hook        = 'context';
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.oTable      = null;
     this.oRow        = null;
     this.oCell       = null;
@@ -242,7 +242,7 @@ jpf.editor.plugin('tablewizard', function() {
     var activeNode, oDoc, _self = this;
 
     this.execute = function(editor, e) {
-        if (this.queryState(editor) != jpf.editor.ON)
+        if (this.queryState(editor) != apf.editor.ON)
             return;
         // get the active table, row and cell nodes:
         this.oTable = this.oRow = this.oCell = null;
@@ -257,16 +257,16 @@ jpf.editor.plugin('tablewizard', function() {
 
         if (!this.editor)
             this.editor = editor;
-        if (!jpf.editor.oMenu)
+        if (!apf.editor.oMenu)
             this.createContextMenu();
         if (!oDoc)
             oDoc = editor.useIframe ? document : editor.oDoc;
-        jpf.editor.oMenu.tablePlugin = this;
+        apf.editor.oMenu.tablePlugin = this;
 
-        var pos = jpf.getAbsolutePosition(editor.iframe);
+        var pos = apf.getAbsolutePosition(editor.iframe);
         if (!e.client)
-            e = new jpf.AbstractEvent(e);
-        jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1], true);
+            e = new apf.AbstractEvent(e);
+        apf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1], true);
 
         e.stop();
 
@@ -281,12 +281,12 @@ jpf.editor.plugin('tablewizard', function() {
             if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
               || oNode.tagName == "TR" || oNode.tagName == "TD") {
                 activeNode = oNode;
-                return jpf.editor.ON;
+                return apf.editor.ON;
             }
             oNode = oNode.parentNode;
         }
 
-        return jpf.editor.OFF;
+        return apf.editor.OFF;
     };
 
     function addRows(td_elm, tr_elm, rowspan) {
@@ -295,9 +295,9 @@ jpf.editor.plugin('tablewizard', function() {
         var trNext = nextElm(tr_elm, ["TR"]);
         for (var i = 1; i < rowspan && trNext; i++) {
             var newTD = oDoc.createElement("td");
-            if (!jpf.isIE)
+            if (!apf.isIE)
                 newTD.innerHTML = '<br mce_bogus="1"/>';
-            if (jpf.isIE)
+            if (apf.isIE)
                 trNext.insertBefore(newTD, trNext.cells(td_elm.cellIndex));
             else
                 trNext.insertBefore(newTD, trNext.cells[td_elm.cellIndex]);
@@ -370,7 +370,7 @@ jpf.editor.plugin('tablewizard', function() {
     this.createContextMenu = function(){
         var idMenu = "editor_" + this.uniqueId + "_menu";
         this.appendJmlNode('\
-            <j:menu xmlns:j="' + jpf.ns.jml + '" id="' + idMenu + '">\
+            <j:menu xmlns:j="' + apf.ns.jml + '" id="' + idMenu + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
                 <j:item value="deleterow">Delete row</j:item>\
@@ -386,7 +386,7 @@ jpf.editor.plugin('tablewizard', function() {
         // <j:divider />\
         // <j:item value="rowprops">Table row properties</j:item>\
         // <j:item value="colprops">Table column properties</j:item>\
-        var oMenu = jpf.editor.oMenu = self[idMenu];
+        var oMenu = apf.editor.oMenu = self[idMenu];
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
                 return;
@@ -453,8 +453,8 @@ jpf.editor.plugin('tablewizard', function() {
                         _self.oCol.colSpan = 1;
                         for (i = 1; i < colspan; i++) {
                             var newTD = oDoc.createElement("td");
-                            if (!jpf.isIE)
-                                newTD.innerHTML = '<br _jpf_placeholder="1"/>';
+                            if (!apf.isIE)
+                                newTD.innerHTML = '<br _apf_placeholder="1"/>';
 
                             _self.oRow.insertBefore(newTD, nextElm(_self.oCell, ['TD','TH']));
 
@@ -471,7 +471,7 @@ jpf.editor.plugin('tablewizard', function() {
                         grid = getTableGrid(_self.oTable),
                         oCellPos, aRows, aRowCells, aBrs, oTd, k;
 
-                    if (jpf.isIE || oSel.rangeCount == 1) {
+                    if (apf.isIE || oSel.rangeCount == 1) {
                         var numRows = 1;
                         var numCols = 1;
                         oCellPos = getCellPos(grid, _self.oCell);
@@ -499,7 +499,7 @@ jpf.editor.plugin('tablewizard', function() {
                             aBrs = oTd.getElementsByTagName('br');
                             if (aBrs.length > 1) {
                                 for (j = aBrs.length; j >= 1; j--) {
-                                    if (aBrs[j].getAttribute('_jpf_placeholder'))
+                                    if (aBrs[j].getAttribute('_apf_placeholder'))
                                         aBrs[j].parentNode.removeChild(aBrs[j]);
                                 }
                             }
@@ -616,7 +616,7 @@ jpf.editor.plugin('tablewizard', function() {
                         for (j = 0; j < rows[i].length; j++) {
                             var html = rows[i][j].innerHTML;
                             var chk = html.replace(/[ \t\r\n]/g, "");
-                            if (chk != "<br/>" && chk != '<br _jpf_placeholder="1"/>'
+                            if (chk != "<br/>" && chk != '<br _apf_placeholder="1"/>'
                               && (j + i > 0))
                                 _self.oCell.innerHTML += html;
 
@@ -648,7 +648,7 @@ jpf.editor.plugin('tablewizard', function() {
                     aBrs = _self.oCell.getElementsByTagName('br');
                     if (aBrs.length > 1) {
                         for (i = aBrs.length; i >= 1; i--) {
-                            if (aBrs[i] && aBrs[i].getAttribute('_jpf_placeholder'))
+                            if (aBrs[i] && aBrs[i].getAttribute('_apf_placeholder'))
                                 aBrs[i].parentNode.removeChild(aBrs[i]);
                         }
                     }

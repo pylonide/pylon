@@ -20,7 +20,7 @@
  */
 
 /**
- * Javeline Platform
+ * Ajax.org Platform
  *
  * @author    Ruben Daniels ruben@javeline.com
  * @version   2.0
@@ -77,10 +77,10 @@
  *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *   {Number}         state     the state of the call
  *     Possible values:
- *     jpf.SUCCESS  the request was successfull
- *     jpf.TIMEOUT  the request has timed out.
- *     jpf.ERROR    an error has occurred while making the request.
- *     jpf.OFFLINE  the request was made while the application was offline.
+ *     apf.SUCCESS  the request was successfull
+ *     apf.TIMEOUT  the request has timed out.
+ *     apf.ERROR    an error has occurred while making the request.
+ *     apf.OFFLINE  the request was made while the application was offline.
  *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
@@ -89,7 +89,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
-var jpf = {
+var apf = {
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
     /**
@@ -102,7 +102,7 @@ var jpf = {
     #endif */
 
     /**
-     * Boolean specifying whether jpf is ready for dom operations.
+     * Boolean specifying whether apf is ready for dom operations.
      * @type {Boolean}
      */
     READY          : false,
@@ -236,18 +236,18 @@ var jpf = {
     initialized   : false,
     
     /**
-     * Boolean specifying whether jpf tries to load a skin from skins.xml when no skin element is specified.
+     * Boolean specifying whether apf tries to load a skin from skins.xml when no skin element is specified.
      * @type {Boolean}
      */
     autoLoadSkin  : false,
     /**
-     * Namespace for all crypto libraries included with javeline platform.
+     * Namespace for all crypto libraries included with Ajax.org Platform.
      */
     crypto        : {}, //namespace
     _GET          : {},
     
     /**
-     * String specifying the basepath for loading jpf from seperate files.
+     * String specifying the basepath for loading apf from seperate files.
      * @type {String}
      */
     basePath      : "./",
@@ -258,8 +258,8 @@ var jpf = {
      * @private
      */
     ns : {
-        jpf    : "http://www.javeline.com/2005/jml",
-        jml    : "http://www.javeline.com/2005/jml",
+        apf    : "http://ajax.org/2005/aml",
+        jml    : "http://ajax.org/2005/aml",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",
@@ -358,9 +358,9 @@ var jpf = {
         
         //Mode detection
         if (this.isIE8 && document.documentMode == 7) {
-            jpf.isIE7 = true;
-            jpf.isIE8 = false;
-            jpf.isIE7Emulate = true;
+            apf.isIE7 = true;
+            apf.isIE8 = false;
+            apf.isIE7Emulate = true;
         }
         
         /**
@@ -415,57 +415,57 @@ var jpf = {
      */
     setCompatFlags : function(){
         //Set Compatibility
-        this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
-        this.supportVML                = jpf.isIE;
-        this.hasHtml5XDomain           = jpf.isGecko35;
-        this.supportCanvas             = !jpf.isIE;
-        this.supportSVG                = !jpf.isIE;
-        this.styleSheetRules           = jpf.isIE ? "rules" : "cssRules";
-        this.brokenHttpAbort           = jpf.isIE6;
-        this.canUseHtmlAsXml           = jpf.isIE;
-        this.supportNamespaces         = !jpf.isIE;
-        this.cannotSizeIframe          = jpf.isIE;
-        this.supportOverflowComponent  = jpf.isIE;
-        this.hasEventSrcElement        = jpf.isIE;
-        this.canHaveHtmlOverSelects    = !jpf.isIE6 && !jpf.isIE5;
-        this.hasInnerText              = jpf.isIE;
-        this.hasMsRangeObject          = jpf.isIE;
-        this.hasContentEditable        = jpf.isIE || jpf.isOpera;
-        this.descPropJs                = jpf.isIE;
-        this.hasClickFastBug           = jpf.isIE;
+        this.TAGNAME                   = apf.isIE ? "baseName" : "localName";
+        this.supportVML                = apf.isIE;
+        this.hasHtml5XDomain           = apf.isGecko35;
+        this.supportCanvas             = !apf.isIE;
+        this.supportSVG                = !apf.isIE;
+        this.styleSheetRules           = apf.isIE ? "rules" : "cssRules";
+        this.brokenHttpAbort           = apf.isIE6;
+        this.canUseHtmlAsXml           = apf.isIE;
+        this.supportNamespaces         = !apf.isIE;
+        this.cannotSizeIframe          = apf.isIE;
+        this.supportOverflowComponent  = apf.isIE;
+        this.hasEventSrcElement        = apf.isIE;
+        this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
+        this.hasInnerText              = apf.isIE;
+        this.hasMsRangeObject          = apf.isIE;
+        this.hasContentEditable        = apf.isIE || apf.isOpera;
+        this.descPropJs                = apf.isIE;
+        this.hasClickFastBug           = apf.isIE;
         this.hasExecScript             = window.execScript ? true : false;
-        this.canDisableKeyCodes        = jpf.isIE;
-        this.hasTextNodeWhiteSpaceBug  = jpf.isIE && !jpf.isIE8;
-        this.hasCssUpdateScrollbarBug  = jpf.isIE;
-        this.canUseInnerHtmlWithTables = !jpf.isIE;
-        this.hasSingleResizeEvent      = !jpf.isIE;
-        this.hasStyleFilters           = jpf.isIE;
-        this.supportOpacity            = !jpf.isIE;
-        this.supportPng24              = !jpf.isIE6 && !jpf.isIE5;
-        this.cantParseXmlDefinition    = jpf.isIE50;
-        this.hasDynamicItemList        = !jpf.isIE || jpf.isIE7;
-        this.canImportNode             = jpf.isIE;
-        this.hasSingleRszEvent         = !jpf.isIE;
-        this.hasXPathHtmlSupport       = !jpf.isIE;
-        this.hasFocusBug               = jpf.isIE;
-        this.hasReadyStateBug          = jpf.isIE50;
-        this.dateSeparator             = jpf.isIE ? "-" : "/";
-        this.canCreateStyleNode        = !jpf.isIE;
-        this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
-        this.hasHtmlIdsInJs            = jpf.isIE || jpf.isSafari;
-        this.needsCssPx                = !jpf.isIE;
-        this.hasCSSChildOfSelector     = !jpf.isIE || jpf.isIE8;
-        this.hasAutocompleteXulBug     = jpf.isGecko;
-        this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
+        this.canDisableKeyCodes        = apf.isIE;
+        this.hasTextNodeWhiteSpaceBug  = apf.isIE && !apf.isIE8;
+        this.hasCssUpdateScrollbarBug  = apf.isIE;
+        this.canUseInnerHtmlWithTables = !apf.isIE;
+        this.hasSingleResizeEvent      = !apf.isIE;
+        this.hasStyleFilters           = apf.isIE;
+        this.supportOpacity            = !apf.isIE;
+        this.supportPng24              = !apf.isIE6 && !apf.isIE5;
+        this.cantParseXmlDefinition    = apf.isIE50;
+        this.hasDynamicItemList        = !apf.isIE || apf.isIE7;
+        this.canImportNode             = apf.isIE;
+        this.hasSingleRszEvent         = !apf.isIE;
+        this.hasXPathHtmlSupport       = !apf.isIE;
+        this.hasFocusBug               = apf.isIE;
+        this.hasReadyStateBug          = apf.isIE50;
+        this.dateSeparator             = apf.isIE ? "-" : "/";
+        this.canCreateStyleNode        = !apf.isIE;
+        this.supportFixedPosition      = !apf.isIE || apf.isIE7;
+        this.hasHtmlIdsInJs            = apf.isIE || apf.isSafari;
+        this.needsCssPx                = !apf.isIE;
+        this.hasCSSChildOfSelector     = !apf.isIE || apf.isIE8;
+        this.hasAutocompleteXulBug     = apf.isGecko;
+        this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.supportCSSAnim            = jpf.isSafari && (jpf.safariRev > 525);//jpf.isIphone;
-        this.locale                    = (jpf.isIE
+        this.supportCSSAnim            = apf.isSafari && (apf.safariRev > 525);//apf.isIphone;
+        this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
 
         //Other settings
-        this.maxHttpRetries = jpf.isOpera ? 0 : 3;
+        this.maxHttpRetries = apf.isOpera ? 0 : 3;
 
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
@@ -478,12 +478,12 @@ var jpf = {
         //#endif
 
         //#ifdef __SUPPORT_GEARS
-        jpf.isGears      = !!jpf.initGears() || 0;
+        apf.isGears      = !!apf.initGears() || 0;
         //#endif
 
         //#ifdef __DEBUG
         //@todo why is this here?
-        if (jpf.isOpera) {
+        if (apf.isOpera) {
             window.console = {};
             ["log", "debug", "info", "warn", "error"].forEach(function(type) {
                 window.console[type] = function() {
@@ -521,7 +521,7 @@ var jpf = {
      * Restarts the application.
      */
     reboot : function(){
-        jpf.console.info("Restarting application...");
+        apf.console.info("Restarting application...");
 
         location.href = location.href;
     },
@@ -567,41 +567,41 @@ var jpf = {
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
 
         //#ifdef __DEBUG
-        jpf.console.info("Starting Javeline PlatForm Application...");
-        jpf.console.warn("This is a debug build of Javeline PlatForm; \
+        apf.console.info("Starting Ajax.org Platform Application...");
+        apf.console.warn("This is a debug build of Ajax.org Platform; \
                           beware that execution speed of this build is \
                           <strong>several times</strong> slower than a \
-                          release build of Javeline PlatForm.");
+                          release build of Ajax.org Platform.");
         //#endif
 
         //mozilla root detection
-        //try{ISROOT = !window.opener || !window.opener.jpf}catch(e){ISROOT = true}
+        //try{ISROOT = !window.opener || !window.opener.apf}catch(e){ISROOT = true}
 
         //Browser Specific Stuff
         this.browserDetect();
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
-        jpf.debugwin.init();
+        apf.debugwin.init();
         //#endif
 
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
-        if (this.isIE) jpf.runIE();
-            //this.importClass(jpf.runIE, true, self);
+        if (this.isIE) apf.runIE();
+            //this.importClass(apf.runIE, true, self);
         // #endif
         // #ifdef __SUPPORT_SAFARI
-        if (this.isSafari) jpf.runSafari();
-            //this.importClass(jpf.runSafari, true, self);
+        if (this.isSafari) apf.runSafari();
+            //this.importClass(apf.runSafari, true, self);
         // #endif
         // #ifdef __SUPPORT_OPERA
-        if (this.isOpera) jpf.runOpera();
-            //this.importClass(jpf.runOpera, true, self);
+        if (this.isOpera) apf.runOpera();
+            //this.importClass(apf.runOpera, true, self);
         // #endif
         // #ifdef __SUPPORT_GECKO
         if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
-            jpf.runGecko();
-            //this.importClass(jpf.runGecko, true, self);
+            apf.runGecko();
+            //this.importClass(apf.runGecko, true, self);
         // #endif
 
         //#ifdef __PARSE_GET_VARS
@@ -625,18 +625,18 @@ var jpf = {
         this.oHttp = new this.http();
 
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, jpf, ['body', 'xmldb']);
+        this.Init.addConditional(this.loadIncludes, apf, ['body', 'xmldb']);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
 
         //IE fix
         try {
-            if (jpf.isIE)
+            if (apf.isIE)
                 document.execCommand("BackgroundImageCache", false, true);
         }
         catch(e) {};
 
-        //try{jpf.root = !window.opener || !window.opener.jpf;}
-        //catch(e){jpf.root = false}
+        //try{apf.root = !window.opener || !window.opener.apf;}
+        //catch(e){apf.root = false}
         this.root = true;
     },
 
@@ -646,35 +646,35 @@ var jpf = {
      */
     startDependencies : function(){
         if (location.protocol != "file:") {
-            jpf.console.warn("You are serving multiple files from a (local)\
+            apf.console.warn("You are serving multiple files from a (local)\
                    webserver - please consider using the file:// protocol to \
                    load your files, because that will make your application \
                    load several times faster.\
                    On a webserver, we recommend using a release or debug build \
-                   of Javeline Platform.");
+                   of Ajax.org Platform.");
         }
 
-        jpf.console.info("Loading Dependencies...");
+        apf.console.info("Loading Dependencies...");
 
         var i;
         // Load Kernel Modules
         for (i = 0; i < this.KernelModules.length; i++)
-            jpf.include("core/" + this.KernelModules[i], true);
+            apf.include("core/" + this.KernelModules[i], true);
 
         // Load TelePort Modules
         for (i = 0; i < this.TelePortModules.length; i++)
-            jpf.include("elements/teleport/" + this.TelePortModules[i], true);
+            apf.include("elements/teleport/" + this.TelePortModules[i], true);
 
         // Load Elements
         for (i = 0; i < this.Elements.length; i++) {
             var c = this.Elements[i];
-            jpf.include("elements/" + c + ".js", true);
+            apf.include("elements/" + c + ".js", true);
         }
 
-        jpf.Init.interval = setInterval(
-            "if (jpf.checkLoadedDeps()) {\
-                clearInterval(jpf.Init.interval);\
-                jpf.start();\
+        apf.Init.interval = setInterval(
+            "if (apf.checkLoadedDeps()) {\
+                clearInterval(apf.Init.interval);\
+                apf.start();\
             }", 100);
     },
 
@@ -689,7 +689,7 @@ var jpf = {
      */
     namespace : function(name, oNamespace){
         try{
-            eval("jpf." + name + " = oNamespace");
+            eval("apf." + name + " = oNamespace");
             delete this.nsqueue[name];
 
             for (var ns in this.nsqueue) {
@@ -735,7 +735,7 @@ var jpf = {
         if (docEl) {
             for (var i=0; i<docEl.attributes.length; i++) {
                 if (docEl.attributes[i].nodeValue == xmlns)
-                    return docEl.attributes[i][jpf.TAGNAME]
+                    return docEl.attributes[i][apf.TAGNAME]
             }
         }
 
@@ -748,15 +748,15 @@ var jpf = {
      */
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(jpf.formatErrorString(1018, null,
+            throw new Error(apf.formatErrorString(1018, null,
                 "importing class",
                 "Could not load reference. Reference is null"));
 
-        //if (!jpf.hasExecScript)
+        //if (!apf.hasExecScript)
             //return ref();//.call(self);
 
         if (!strip)
-            return jpf.exec(ref.toString(), win);
+            return apf.exec(ref.toString(), win);
 
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
@@ -764,7 +764,7 @@ var jpf = {
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
 
-        return jpf.exec(q, win);
+        return apf.exec(q, win);
     },
 
     /**
@@ -772,7 +772,7 @@ var jpf = {
     * @return {String}    Returns a string representing the object.
     */
     toString : function(){
-        return "[Javeline (jpf)]";
+        return "[Ajax.org Platform (apf)]";
     },
 
     all : [],
@@ -786,7 +786,7 @@ var jpf = {
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
                     this.$jml));
@@ -800,14 +800,14 @@ var jpf = {
     },
 
     /**
-    * This method transforms an object into a jpf class based object.
+    * This method transforms an object into a apf class based object.
     * @param {Object} oBlank the object which will be transformed
     */
     makeClass : function(oBlank){
         if (oBlank.implement) return;
 
         oBlank.implement = this.implement;
-        oBlank.implement(jpf.Class);
+        oBlank.implement(apf.Class);
 
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
@@ -834,17 +834,17 @@ var jpf = {
 
     /**
      * @private
-     * @todo deprecate this in favor of jpf.component
+     * @todo deprecate this in favor of apf.component
      * @deprecated
      */
     register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
-        o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
+        o.nodeFunc = nodeFunc || apf.NODE_HIDDEN;
 
         o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
         o.$propHandlers = {}; //@todo fix this in each component
 
-        if (nodeFunc != jpf.NODE_HIDDEN) {
+        if (nodeFunc != apf.NODE_HIDDEN) {
             o.$booleanProperties = {
                 "visible"          : true,
                 "focussable"       : true,
@@ -867,12 +867,12 @@ var jpf = {
 
         if (!o.implement) {
             o.implement = this.implement;
-            o.implement(jpf.Class);
+            o.implement(apf.Class);
             o.uniqueId = this.all.push(o) - 1;
          }
 
         //#ifdef __DESKRUN
-        if(o.nodeFunc == jpf.NODE_MEDIAFLOW)
+        if(o.nodeFunc == apf.NODE_MEDIAFLOW)
             DeskRun.register(o);
         //#endif
     },
@@ -953,7 +953,7 @@ var jpf = {
          * @private
          */
         toggle : function(node, id){
-            var sPath = jpf.debugwin ? jpf.debugwin.resPath : jpf.basePath + "core/debug/resources/";
+            var sPath = apf.debugwin ? apf.debugwin.resPath : apf.basePath + "core/debug/resources/";
             if (node.style.display == "block") {
                 node.style.display = "none";
                 node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
@@ -985,7 +985,7 @@ var jpf = {
          *      {String} message the content of the message.
          */
         write : function(msg, type, subtype, data, forceWin, nodate){
-            //if (!jpf.debug) return;
+            //if (!apf.debug) return;
             if (!Number.prototype.toPrettyDigit) {
                 Number.prototype.toPrettyDigit = function() {
                     var n = this.toString();
@@ -1004,15 +1004,15 @@ var jpf = {
             msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = jpf.debugwin
-                ? (jpf.debugwin.resPath || "{imgpath}")
-                : jpf.basePath + "core/debug/resources/";
+            var sPath = apf.debugwin
+                ? (apf.debugwin.resPath || "{imgpath}")
+                : apf.basePath + "core/debug/resources/";
 
             if (data) {
                 msg += "<blockquote style='margin:2px 0 0 0;\
                         background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>\
                         <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
-                        onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, "
+                        onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
                         + (this.cache.push(data) - 1) + ")'>More information\
                         </strong><div style='display:none;background-color:#EEEEEE;\
                         padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>\
@@ -1035,13 +1035,13 @@ var jpf = {
             if (this.win && !this.win.closed)
                 this.showWindow(msg);
 
-            //if (jpf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
+            //if (apf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
             //    return;
 
             this.debugInfo.push(msg);
 
-            if (jpf.dispatchEvent)
-                jpf.dispatchEvent("debug", {message: msg});
+            if (apf.dispatchEvent)
+                apf.dispatchEvent("debug", {message: msg});
         },
         //#endif
 
@@ -1125,7 +1125,7 @@ var jpf = {
          * @param {mixed} obj the object for which the properties are displayed.
          */
         dir : function(obj){
-            this.info(jpf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
+            this.info(apf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
 
         //#ifdef __DEBUG
@@ -1150,9 +1150,9 @@ var jpf = {
             }
             else {
                 this.win.document.write((msg || this.debugInfo.join(""))
-                    .replace(/\{imgpath\}/g, jpf.debugwin
-                        ? jpf.debugwin.resPath
-                        : jpf.basePath + "core/debug/resources/"));
+                    .replace(/\{imgpath\}/g, apf.debugwin
+                        ? apf.debugwin.resPath
+                        : apf.basePath + "core/debug/resources/"));
             }
         }
 
@@ -1160,16 +1160,16 @@ var jpf = {
     },
 
     /**
-     * Formats a Javeline PlatForm error message.
+     * Formats a Ajax.org Platform error message.
      * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
      * @param {JMLElement}  control     the jml element that will throw the error.
      * @param {String}      process     the action that was being executed.
      * @param {String}      message     the actual error message.
-     * @param {XMLElement}  jmlContext  the xml relevant to the error. For instance a piece of javeline markup language xml.
+     * @param {XMLElement}  jmlContext  the xml relevant to the error. For instance a piece of Ajax.org Markup Language xml.
      */
     formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = ["---- Javeline Error ----"];
+        var str = ["---- APF Error ----"];
         if (jmlContext) {
             if (jmlContext.nodeType == 9)
                 jmlContext = jmlContext.documentElement;
@@ -1179,27 +1179,27 @@ var jpf = {
             if (!file && jmlContext.ownerDocument.documentElement.tagName == "html")
                 file = location.href;
             file = file
-                ? jpf.removePathContext(jpf.hostPath, file)
+                ? apf.removePathContext(apf.hostPath, file)
                 : "Unkown filename";
 
             //Get serialized version of context
             var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
-                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.com\/2005\/jml" \/\>/g, "")
+                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
 
             //Determine line number
             var diff, linenr = 0, w = jmlContext.previousSibling
                 || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
-            while(w && w[jpf.TAGNAME] != "body"){
+            while(w && w[apf.TAGNAME] != "body"){
                 diff = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
                 linenr += diff - 1;
                 w = w.previousSibling || w.parentNode
                     && w.parentNode.previousSibling;
             }
-            if (w && w[jpf.TAGNAME] != "body")
+            if (w && w[apf.TAGNAME] != "body")
                 linenr = "unknown";
             else if(jmlContext.ownerDocument.documentElement.tagName == "html")
-                linenr += jpf.lineBodyStart;
+                linenr += apf.lineBodyStart;
 
             //Grmbl line numbers are wrong when \n's in attribute space
 
@@ -1221,9 +1221,9 @@ var jpf = {
         if (jmlContext)
             str.push("\n===\n" + jmlStr);
         
-        return (jpf.lastErrorMessage = str.join("\n"));
+        return (apf.lastErrorMessage = str.join("\n"));
         /*#else
-        jpf.lastErrorMessage = message;
+        apf.lastErrorMessage = message;
         return message;
         #endif */
     },
@@ -1235,10 +1235,10 @@ var jpf = {
      * @param {String} sourceFile the url where the javascript is located.
      */
     include : function(sourceFile, doBase, type){
-        jpf.console.info("including js file: " + sourceFile);
+        apf.console.info("including js file: " + sourceFile);
 
-        var sSrc = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
-        if (jpf.isSafariOld || jpf.isSafari && !jpf.started) {
+        var sSrc = doBase ? (apf.basePath || "") + sourceFile : sourceFile;
+        if (apf.isSafariOld || apf.isSafari && !apf.started) {
             document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
         }
         else {
@@ -1246,7 +1246,7 @@ var jpf = {
             var elScript = document.createElement("script");
             //elScript.defer = true;
             if (type)
-                elScript.setAttribute("_jpf_type", type);
+                elScript.setAttribute("_apf_type", type);
             elScript.src   = sSrc;
             head.appendChild(elScript);
         }
@@ -1335,7 +1335,7 @@ var jpf = {
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
 
         //#ifdef __WITH_EXPLICIT_LOWERCASE
-        var xmlNode = jpf.getXmlDom(str, null, preserveWhiteSpace || jpf.debug);
+        var xmlNode = apf.getXmlDom(str, null, preserveWhiteSpace || apf.debug);
 
         // Case insensitive support
         var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
@@ -1345,8 +1345,8 @@ var jpf = {
         }
         /* #else
 
-        var xmlNode = jpf.getXmlDom(str);
-        if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
+        var xmlNode = apf.getXmlDom(str);
+        if (apf.xmlParseError) apf.xmlParseError(xmlNode);
 
         #endif */
 
@@ -1361,8 +1361,8 @@ var jpf = {
     //#endif
 
     /**
-     * Determines the way jpf tries to render this application. Set this value
-     * before jpf is starts parsing.
+     * Determines the way apf tries to render this application. Set this value
+     * before apf is starts parsing.
      *   Possible values:
      *   0    auto
      *   1    partial
@@ -1376,13 +1376,13 @@ var jpf = {
     //#ifdef __WITH_PARTIAL_JML_LOADING
     parsePartialJml : function(docElement){
         //#ifdef __DEBUG
-        jpf.console.warn("The jml namespace definition wasn't found \
+        apf.console.warn("The jml namespace definition wasn't found \
                           on the root node of this document. We're assuming \
                           you want to load a partial piece of jml embedded\
                           in this document. Starting to search for it now.");
         //#endif
 
-        if (jpf.isIE) {
+        if (apf.isIE) {
             var findJml = function(htmlNode){
                 //#ifdef __DEBUG
                 if (htmlNode.outerHTML.match(/\/>$/)) {
@@ -1410,7 +1410,7 @@ var jpf = {
                 } 
                 catch(e) {
                     //#ifdef __DEBUG
-                    throw new Error(jpf.formatErrorString(0, null,
+                    throw new Error(apf.formatErrorString(0, null,
                         "Parsing inline jml (without xmlns on root node)",
                         "Could not parse inline jml. This happens when the html\
                          is mangled too much by Internet Explorer. Either you\
@@ -1423,7 +1423,7 @@ var jpf = {
                 }
 
                 var p = prefix.toLowerCase();
-                var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                var xmlNode = apf.getJmlDocFromString("<div jid='"
                     + (id++) + "' " + strXmlns + ">"
                     + strXml + "</div>").documentElement;
 
@@ -1431,7 +1431,7 @@ var jpf = {
                     xmlNode.removeChild(xmlNode.lastChild);
                 }
 
-                jpf.AppNode.appendChild(xmlNode);
+                apf.AppNode.appendChild(xmlNode);
             }
         }
         else {
@@ -1440,7 +1440,7 @@ var jpf = {
                     .replace(/ _moz-userdefined=""/g, "");
 
                 var p = prefix.toLowerCase();
-                var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                var xmlNode = apf.getJmlDocFromString("<div jid='"
                     + (id++) + "' " + strXmlns + ">"
                     + strXml + "</div>").documentElement;
 
@@ -1448,28 +1448,28 @@ var jpf = {
                     xmlNode.removeChild(xmlNode.lastChild);
                 }
 
-                if (jpf.isSafari)
-                    xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+                if (apf.isSafari)
+                    xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
 
-                jpf.AppNode.appendChild(xmlNode);
+                apf.AppNode.appendChild(xmlNode);
             }
         }
 
         var strHtml = document.body.outerHTML;
-        var match = strHtml.match(/(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
+        var match = strHtml.match(/(\w+)\s*=\s*["']http:\/\/ajax\.org\/2005\/aml["']/);
         if (!match)
             return false;
 
         var strXmlns = "xmlns:" + match[0];
         var prefix = (RegExp.$1 || "").toUpperCase();
-        if (jpf.isOpera)
+        if (apf.isOpera)
             prefix = prefix.toLowerCase();
         if (!prefix)
             return false;
 
         prefix += ":";
 
-        jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
+        apf.AppNode = apf.getJmlDocFromString("<" + prefix.toLowerCase()
             + "application " + strXmlns + " />").documentElement;
 
         var temp, loop;
@@ -1481,7 +1481,7 @@ var jpf = {
             if (isPrefix) {
                 findJml(cnode = node);
 
-                if (jpf.isIE) {
+                if (apf.isIE) {
                     loop = node;
                     var count = 1, next = loop.nextSibling;
                     if (next) {
@@ -1535,16 +1535,15 @@ var jpf = {
                     //node = node.nextSibling;
                 }
 
-                if (jpf.jmlParts.length
-                  && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
-                    jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
+                if (apf.jmlParts.length
+                  && apf.jmlParts[apf.jmlParts.length-1][1] == cnode)
+                    apf.jmlParts[apf.jmlParts.length-1][1] = -1;
 
-                jpf.jmlParts.push([node.parentNode, jpf.isIE
+                apf.jmlParts.push([node.parentNode, apf.isIE
                     ? node.nextSibling : node.nextSibling]);
             }
             else if (node.tagName == "SCRIPT" && node.getAttribute("src")
-              && (node.getAttribute("src").indexOf("ajax.org") > -1
-              || node.getAttribute("src").indexOf("javeline.com") > -1)) {
+              && (node.getAttribute("src").indexOf("ajax.org") > -1)) {
                 var strXml = node.outerHTML
                     .replace(/&lt;/g, "<")
                     .replace(/&gt;/g, ">")
@@ -1560,16 +1559,16 @@ var jpf = {
                     .replace(/\\+(['"])/g, "$1");
 
                 if (strXml.trim()) {
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                    var xmlNode = apf.getJmlDocFromString("<div jid='"
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
 
-                    if (jpf.isSafari)
-                        xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+                    if (apf.isSafari)
+                        xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
 
-                    jpf.AppNode.appendChild(xmlNode);
+                    apf.AppNode.appendChild(xmlNode);
 
-                    jpf.jmlParts.push([node.parentNode, node.nextSibling]);
+                    apf.jmlParts.push([node.parentNode, node.nextSibling]);
                 }
             }
 
@@ -1612,23 +1611,23 @@ var jpf = {
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(jpf.ns.jml) == -1) {
+             .indexOf(apf.ns.jml) == -1) {
             this.parsePartialJml(docElement);
 
-            if (this.parseStrategy == 1 || jpf.jmlParts.length) {
+            if (this.parseStrategy == 1 || apf.jmlParts.length) {
                 //#ifdef __DEBUG
-                if (jpf.jmlParts.length)
-                    jpf.console.warn("Jml found, parsing...");
+                if (apf.jmlParts.length)
+                    apf.console.warn("Jml found, parsing...");
                 //#endif
 
-                jpf.isParsingPartial = true;
+                apf.isParsingPartial = true;
 
-                jpf.loadJmlIncludes(jpf.AppNode);
+                apf.loadJmlIncludes(apf.AppNode);
 
                 if (!self.ERROR_HAS_OCCURRED) {
-                    jpf.Init.interval = setInterval(function(){
-                        if (jpf.checkLoaded())
-                            jpf.initialize();
+                    apf.Init.interval = setInterval(function(){
+                        if (apf.checkLoaded())
+                            apf.initialize();
                     }, 20);
                 }
 
@@ -1636,7 +1635,7 @@ var jpf = {
             }
             else {
                 //#ifdef __DEBUG
-                jpf.console.warn("No jml found.");
+                apf.console.warn("No jml found.");
                 //#endif
                 isEmptyDocument = true;
             }
@@ -1647,9 +1646,9 @@ var jpf = {
         //@todo this strategy needs some updating
         if (this.parseStrategy == 11 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(jpf.ns.jml) == -1) {
+             .indexOf(apf.ns.jml) == -1) {
             //#ifdef __DEBUG
-            jpf.console.warn("The jml namespace definition wasn't found \
+            apf.console.warn("The jml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
                               you want to load a partial piece of jml embedded\
                               in this document. Starting to search for it now.");
@@ -1660,25 +1659,25 @@ var jpf = {
             while (node) {
                 if (node.nodeType == 8) {
                     str = node.nodeValue;
-                    if  (str.indexOf("[jpf]") == 0) {
+                    if  (str.indexOf("[apf]") == 0) {
                         str = str.substr(5);
 
                         //#ifdef __DEBUG
-                        jpf.console.info("Found a piece of jml. Assuming \
+                        apf.console.info("Found a piece of jml. Assuming \
                                           namespace prefix 'j'. Starting \
                                           parsing now.");
                         //#endif
 
-                        x = jpf.getXml("<j:applicaton xmlns:j='"
-                            + jpf.ns.jml + "'>" + str + "</j:applicaton>", true);
+                        x = apf.getXml("<j:applicaton xmlns:j='"
+                            + apf.ns.jml + "'>" + str + "</j:applicaton>", true);
 
-                        if (jpf.isIE) { //@todo generalize this
+                        if (apf.isIE) { //@todo generalize this
                             x.ownerDocument.setProperty("SelectionNamespaces",
-                                "xmlns:j='" + jpf.ns.jml + "'");
+                                "xmlns:j='" + apf.ns.jml + "'");
                         }
 
-                        jpf.loadJmlIncludes(x);
-                        jpf.jmlParts.push([x, node]);
+                        apf.loadJmlIncludes(x);
+                        apf.jmlParts.push([x, node]);
                     }
                 }
 
@@ -1697,12 +1696,12 @@ var jpf = {
             }
 
             if (!self.ERROR_HAS_OCCURRED
-              && (jpf.jmlParts.length || this.parseStrategy == 11)) {
-                jpf.isParsingPartial = true;
+              && (apf.jmlParts.length || this.parseStrategy == 11)) {
+                apf.isParsingPartial = true;
 
-                jpf.Init.interval = setInterval(function(){
-                    if (jpf.checkLoaded())
-                        jpf.initialize();
+                apf.Init.interval = setInterval(function(){
+                    if (apf.checkLoaded())
+                        apf.initialize();
                 }, 20);
 
                 return;
@@ -1716,10 +1715,10 @@ var jpf = {
         //Load jml without reloading the page, but also fully parse javascript
         //This requires there to be no self closing elements
         if (this.parseStrategy == 2) { //!this.parseStrategy
-            if (jpf.isIE) {
+            if (apf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jml + "'
+                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + apf.ns.jml + "'
                     .replace(/HTML>$/, "j:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }
@@ -1727,25 +1726,25 @@ var jpf = {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<script.*\/>/g, "") //@todo for debug only
                     .replace(/ _moz-userdefined=""/g, "")
-                    .replace(/^<HTM./, "<j:application xmlns='" + jpf.ns.xhtml + "'")
+                    .replace(/^<HTM./, "<j:application xmlns='" + apf.ns.xhtml + "'")
                     .replace(/HTML>$/, "j:application>")
             }
 
             try {
-                docElement = jpf.getJmlDocFromString(xmlStr);
+                docElement = apf.getJmlDocFromString(xmlStr);
 
                 //Clear Body
                 var nodes = document.body.childNodes;
                 for (var i=nodes.length-1; i>=0; i--)
                     nodes[i].parentNode.removeChild(nodes[i]);
 
-                /*jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
-                jpf.loadJmlIncludes(jpf.AppData);
+                /*apf.AppData = $xmlns(docElement, "body", apf.ns.xhtml)[0];
+                apf.loadJmlIncludes(apf.AppData);
 
                 if (!self.ERROR_HAS_OCCURRED) {
-                    jpf.Init.interval = setInterval(function(){
-                        if (jpf.checkLoaded())
-                            jpf.initialize();
+                    apf.Init.interval = setInterval(function(){
+                        if (apf.checkLoaded())
+                            apf.initialize();
                     }, 20);
                 }
 
@@ -1757,8 +1756,8 @@ var jpf = {
                     throw e; //Else we'll throw an error
             }
             //Maybe for IE8??
-            //else if (jpf.isIE)
-            //    jpf.TAGNAME = "tagName";
+            //else if (apf.isIE)
+            //    apf.TAGNAME = "tagName";
             
             isEmptyDocument = true;
         }
@@ -1766,9 +1765,9 @@ var jpf = {
         
         if (isEmptyDocument && document.documentElement.outerHTML
           .split(">", 1)[0]
-          .indexOf(jpf.ns.jml) == -1) {
+          .indexOf(apf.ns.jml) == -1) {
             //#ifdef __DEBUG
-            jpf.console.warn("The jml namespace declaration wasn't found. \
+            apf.console.warn("The jml namespace declaration wasn't found. \
                               No jml elements were found in the body. Exiting");
             //#endif
             return false;
@@ -1776,12 +1775,12 @@ var jpf = {
 
         //Load current HTML document as 'second DOM'
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
-            return jpf.oHttp.get((jpf.alternativeJml 
+            return apf.oHttp.get((apf.alternativeJml 
               || document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
-                    if (state != jpf.SUCCESS) {
-                        var oError = new Error(jpf.formatErrorString(0, null,
+                    if (state != apf.SUCCESS) {
+                        var oError = new Error(apf.formatErrorString(0, null,
                             "Loading XML application data", "Could not load \
                             XML from remote source: " + extra.message));
 
@@ -1792,14 +1791,14 @@ var jpf = {
                     }
 
                     //#ifdef __DEBUG
-                    jpf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
+                    apf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
                         .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     //#endif
 
-                    var xmlNode = jpf.getJmlDocFromString(xmlString);
+                    var xmlNode = apf.getJmlDocFromString(xmlString);
 
                     //Clear Body
-                    if (jpf.isIE)
+                    if (apf.isIE)
                         document.body.innerHTML ="";
                     else {
                         var nodes = document.body.childNodes;
@@ -1807,60 +1806,60 @@ var jpf = {
                             nodes[i].parentNode.removeChild(nodes[i]);
                     }
 
-                    return jpf.loadIncludes(xmlNode);
+                    return apf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
         
         //Parse the second DOM (add includes)
-        var prefix = jpf.findPrefix(docElement, jpf.ns.jml);
+        var prefix = apf.findPrefix(docElement, apf.ns.jml);
         //#ifdef __SUPPORT_SAFARI2
-        if (jpf.isSafariOld || true)
+        if (apf.isSafariOld || true)
             prefix = "j";
         //#endif
         
         //#ifdef __DEBUG
         if (!prefix)
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Parsing document",
-                "Unable to find Javeline PlatForm namespace definition. \
-                 (i.e. xmlns:j=\"" + jpf.ns.jml + "\")", docElement));
+                "Unable to find Ajax.org Platform namespace definition. \
+                 (i.e. xmlns:j=\"" + apf.ns.jml + "\")", docElement));
         //#endif
 
-        jpf.AppData = jpf.supportNamespaces
-            ? docElement.createElementNS(jpf.ns.jml, prefix + ":application")
+        apf.AppData = apf.supportNamespaces
+            ? docElement.createElementNS(apf.ns.jml, prefix + ":application")
             : docElement.createElement(prefix + ":application");
 
         var i, nodes;
         //Head support
-        var head = $xmlns(docElement, "head", jpf.ns.xhtml)[0];
+        var head = $xmlns(docElement, "head", apf.ns.xhtml)[0];
         if (head) {
             nodes = head.childNodes;
             for (i = nodes.length-1; i >= 0; i--)
-                if (nodes[i].namespaceURI && nodes[i].namespaceURI != jpf.ns.xhtml)
-                    jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
+                if (nodes[i].namespaceURI && nodes[i].namespaceURI != apf.ns.xhtml)
+                    apf.AppData.insertBefore(nodes[i], apf.AppData.firstChild);
         }
 
         //Body support
         var body = (docElement.body
             ? docElement.body
-            : $xmlns(docElement, "body", jpf.ns.xhtml)[0]);
+            : $xmlns(docElement, "body", apf.ns.xhtml)[0]);
         for (i = 0; i < body.attributes.length; i++)
-            jpf.AppData.setAttribute(body.attributes[i].nodeName,
+            apf.AppData.setAttribute(body.attributes[i].nodeName,
                 body.attributes[i].nodeValue);
 
         nodes = body.childNodes;
         for (i = nodes.length - 1; i >= 0; i--)
-            jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
-        docElement.documentElement.appendChild(jpf.AppData); //Firefox fix for selectNode insertion need...
+            apf.AppData.insertBefore(nodes[i], apf.AppData.firstChild);
+        docElement.documentElement.appendChild(apf.AppData); //Firefox fix for selectNode insertion need...
 
         /* 
-        jpf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", jpf.ns.xhtml)[0];
+        apf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", apf.ns.xhtml)[0];
         */
 
-        jpf.loadJmlIncludes(jpf.AppData);
+        apf.loadJmlIncludes(apf.AppData);
 
-        if ($xmlns(jpf.AppData, "loader", jpf.ns.jml).length) {
-            jpf.loadScreen = {
+        if ($xmlns(apf.AppData, "loader", apf.ns.jml).length) {
+            apf.loadScreen = {
                 show : function(){
                     this.oExt.style.display = "block";
                     //this.oExt.style.height = document.body.scrollHeight + "px";
@@ -1871,30 +1870,30 @@ var jpf = {
                 }
             }
 
-            if (jpf.isGecko || jpf.isSafari)
+            if (apf.isGecko || apf.isSafari)
                 document.body.innerHTML = "";
 
             //#ifdef __SUPPORT_SAFARI
-            if (jpf.isSafariOld) {
-                var q = jpf.getFirstElement(
-                    $xmlns(jpf.AppData, "loader", jpf.ns.jml)[0]).serialize();
+            if (apf.isSafariOld) {
+                var q = apf.getFirstElement(
+                    $xmlns(apf.AppData, "loader", apf.ns.jml)[0]).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
-                jpf.loadScreen.oExt = document.body.lastChild;
+                apf.loadScreen.oExt = document.body.lastChild;
             }
             else
             //#endif
             {
-                var htmlNode = jpf.getFirstElement(
-                    $xmlns(jpf.AppData, "loader", jpf.ns.jml)[0]);
+                var htmlNode = apf.getFirstElement(
+                    $xmlns(apf.AppData, "loader", apf.ns.jml)[0]);
 
-                //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
+                //if(apf.isSafari) apf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)
-                    jpf.loadScreen.oExt = document.body.appendChild(
+                    apf.loadScreen.oExt = document.body.appendChild(
                         htmlNode.cloneNode(true));
                 else {
                     document.body.insertAdjacentHTML("beforeend", htmlNode.xml
                         || htmlNode.serialize());
-                    jpf.loadScreen.oExt = document.body.lastChild;
+                    apf.loadScreen.oExt = document.body.lastChild;
                 }
             }
         }
@@ -1902,9 +1901,9 @@ var jpf = {
         document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
         if (!self.ERROR_HAS_OCCURRED) {
-            jpf.Init.interval = setInterval(function(){
-                if (jpf.checkLoaded())
-                    jpf.initialize()
+            apf.Init.interval = setInterval(function(){
+                if (apf.checkLoaded())
+                    apf.initialize()
             }, 20);
         }
     },
@@ -1918,7 +1917,7 @@ var jpf = {
 
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
         for (var found = false, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeValue == jpf.ns.jml) {
+            if (nodes[i].nodeValue == apf.ns.jml) {
                 found = true;
                 break;
             }
@@ -1926,9 +1925,9 @@ var jpf = {
 
         //#ifdef __DEBUG
         if (!found) {
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Checking for the jml namespace",
-                "The Javeline PlatForm xml namespace was not found in "
+                "The Ajax.org Platform xml namespace was not found in "
                 + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
                     : "")));
@@ -1946,43 +1945,43 @@ var jpf = {
 
         var i, nodes, path;
         // #ifdef __DEBUG
-        jpf.checkForJmlNamespace(xmlNode);
+        apf.checkForJmlNamespace(xmlNode);
         // #endif
 
-        var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
+        var basePath = apf.getDirname(xmlNode.getAttribute("filename")) || apf.hostPath;
 
-        nodes = $xmlns(xmlNode, "include", jpf.ns.jml);
+        nodes = $xmlns(xmlNode, "include", apf.ns.jml);
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
 
             for (i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src"))
-                    throw new Error(jpf.formatErrorString(0, null, 
+                    throw new Error(apf.formatErrorString(0, null, 
                         "Loading includes", 
                         "Could not load Include file " + nodes[i].xml 
                         + ":\nCould not find the src attribute."))
                 // #endif
 
-                path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
+                path = apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
 
-                jpf.loadJmlInclude(nodes[i], doSync, path);
+                apf.loadJmlInclude(nodes[i], doSync, path);
             }
         }
         else
             xmlNode.setAttribute("loading", "done");
 
-        nodes = $xmlns(xmlNode, "skin", jpf.ns.jml);
+        nodes = $xmlns(xmlNode, "skin", apf.ns.jml);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
               || nodes[i].childNodes.length)
                 continue;
 
             path = nodes[i].getAttribute("src")
-                ? jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
-                : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
+                ? apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
+                : apf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
 
-            jpf.loadJmlInclude(nodes[i], doSync, path, true);
+            apf.loadJmlInclude(nodes[i], doSync, path, true);
 
             //nodes[i].parentNode.removeChild(nodes[i]);
             nodes[i].setAttribute("j_preparsed", "9999")
@@ -1990,10 +1989,10 @@ var jpf = {
 
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy devs support
-        if (!nodes.length && !jpf.skins.skins["default"] && jpf.autoLoadSkin) {
-            jpf.console.warn("No skin file found, attempting to autoload the \
+        if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
+            apf.console.warn("No skin file found, attempting to autoload the \
                               default skin file: skins.xml");
-            jpf.loadJmlInclude(null, doSync, "skins.xml", true);
+            apf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
         //#endif
 
@@ -2009,13 +2008,13 @@ var jpf = {
         // #ifdef __WITH_INCLUDES
 
         //#ifdef __DEBUG
-        jpf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
+        apf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
         //#endif
 
-        this.oHttp.get(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
+        this.oHttp.get(path || apf.getAbsolutePath(apf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
-                 if (state != jpf.SUCCESS) {
-                    var oError = new Error(jpf.formatErrorString(1007,
+                 if (state != apf.SUCCESS) {
+                    var oError = new Error(apf.formatErrorString(1007,
                         null, "Loading Includes", "Could not load Include file '"
                         + (path || extra.userdata[0].getAttribute("src"))
                         + "'\nReason: " + extra.message, node));
@@ -2027,8 +2026,8 @@ var jpf = {
                     //Check if we are autoloading
                     if (!node) {
                         //Fail silently
-                        jpf.console.warn("Could not autload skin.");
-                        jpf.includeStack[extra.userdata[1]] = true;
+                        apf.console.warn("Could not autload skin.");
+                        apf.includeStack[extra.userdata[1]] = true;
                         return;
                     }
                     //#endif
@@ -2038,18 +2037,18 @@ var jpf = {
 
                 var xmlNode, isTeleport;
                 if (!isSkin) {
-                    xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
-                    var tagName = xmlNode[jpf.TAGNAME];
+                    xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
+                    var tagName = xmlNode[apf.TAGNAME];
 
                     if (tagName == "skin")
                         isSkin = true;
                     else if (tagName == "teleport")
                         isTeleport = true;
                     else if(tagName != "application") {
-                        throw new Error(jpf.formatErrorString(0, null,
+                        throw new Error(apf.formatErrorString(0, null,
                             "Loading Includes",
                             "Could not find handler to parse include file for '"
-                            + xmlNode[jpf.TAGNAME]
+                            + xmlNode[apf.TAGNAME]
                             + "' expected 'skin' or 'application'", node));
                     }
                 }
@@ -2057,50 +2056,50 @@ var jpf = {
                 if (isSkin) {
                     if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
                         //#ifdef __DEBUG
-                        jpf.console.warn("Found xhtml namespace as global \
+                        apf.console.warn("Found xhtml namespace as global \
                                           namespace of skin file. This is not \
                                           allowed. Please remove this before \
                                           use in production environments.")
                         //#endif
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-                        xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                        xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
                     }
                     else if (!xmlNode)
-                        xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                        xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
                     
                     if (!xmlNode) {
-                        throw new Error(jpf.formatErrorString(0, null,
+                        throw new Error(apf.formatErrorString(0, null,
                             "Loading skin",
                             "Could not parse skin. Maybe the file does not exist?", node));
                     }
                     
-                    jpf.skins.Init(xmlNode, node, path);
-                    jpf.includeStack[extra.userdata[1]] = true;
+                    apf.skins.Init(xmlNode, node, path);
+                    apf.includeStack[extra.userdata[1]] = true;
 
-                    if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
+                    if (apf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
                 }
                 else if (isTeleport) {
-                    jpf.teleport.loadJml(xmlNode);
-                    jpf.includeStack[extra.userdata[1]] = true;
+                    apf.teleport.loadJml(xmlNode);
+                    apf.includeStack[extra.userdata[1]] = true;
                 }
                 else {
-                    jpf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
+                    apf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
                     extra.userdata[0].setAttribute("iid", extra.userdata[1]);
                 }
 
                 xmlNode.setAttribute("filename", extra.url);
 
                 // #ifdef __DEBUG
-                jpf.console.info("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
+                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
 
-                jpf.loadJmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
+                apf.loadJmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
 
             }, {
                 async         : !doSync,
-                userdata      : [node, !jpf.isTrue(node.getAttribute("defer")) 
-                                 && jpf.includeStack.push(false) - 1],
+                userdata      : [node, !apf.isTrue(node.getAttribute("defer")) 
+                                 && apf.includeStack.push(false) - 1],
                 ignoreOffline : true
             });
 
@@ -2112,16 +2111,16 @@ var jpf = {
      * @private
      */
     checkLoaded : function(){
-        for (var i = 0; i < jpf.includeStack.length; i++) {
-            if (!jpf.includeStack[i]) {
-                jpf.console.info("Waiting for: [" + i + "] " + jpf.includeStack[i]);
+        for (var i = 0; i < apf.includeStack.length; i++) {
+            if (!apf.includeStack[i]) {
+                apf.console.info("Waiting for: [" + i + "] " + apf.includeStack[i]);
                 return false;
             }
         }
 
         if (!document.body) return false;
 
-        jpf.console.info("Dependencies loaded");
+        apf.console.info("Dependencies loaded");
 
         return true;
     },
@@ -2131,17 +2130,17 @@ var jpf = {
      * @private
      */
     checkLoadedDeps : function(){
-        jpf.console.info("Loading...");
+        apf.console.info("Loading...");
 
-        jpf.Init.addConditional(function(){
-            //jpf.dispatchEvent("domready");
+        apf.Init.addConditional(function(){
+            //apf.dispatchEvent("domready");
         }, null, ["body"]);
 
         var i;
         for (i = 0; i < this.Modules.length; i++) {
-            if (!jpf[this.Modules[i]]) {
+            if (!apf[this.Modules[i]]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for module " + this.Modules[i]);
+                apf.console.info("Waiting for module " + this.Modules[i]);
                 //#endif
                 return false;
             }
@@ -2149,9 +2148,9 @@ var jpf = {
 
         for (i = 0; i < this.TelePortModules.length; i++) {
             var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
-            if (!jpf[mod]) {
+            if (!apf[mod]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for TelePort module " + mod);
+                apf.console.info("Waiting for TelePort module " + mod);
                 //#endif
                 return false;
             }
@@ -2161,18 +2160,18 @@ var jpf = {
             if (this.Elements[i].match(/^_base|\//) || this.Elements[i] == "htmlwrapper")
                 continue;
 
-            if (!jpf[this.Elements[i]]) {
+            if (!apf[this.Elements[i]]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for component " + this.Elements[i]);
+                apf.console.info("Waiting for component " + this.Elements[i]);
                 //#endif
                 return false;
             }
         }
 
         for (i in this.nsqueue) {
-            if (this.nsqueue[i] && jpf.namespace(i, this.nsqueue[i])) {
+            if (this.nsqueue[i] && apf.namespace(i, this.nsqueue[i])) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for namespace to come in " + i);
+                apf.console.info("Waiting for namespace to come in " + i);
                 //#endif
                 return false;
             }
@@ -2181,7 +2180,7 @@ var jpf = {
         if (!document.body) return false;
 
         //#ifdef __DEBUG
-        jpf.console.info("Dependencies loaded");
+        apf.console.info("Dependencies loaded");
         //#endif
 
         return true;
@@ -2193,64 +2192,64 @@ var jpf = {
      */
     initialize : function(){
         // #ifdef __DESKRUN
-        if (jpf.initialized) return;
-        jpf.initialized = true;
+        if (apf.initialized) return;
+        apf.initialized = true;
         // #endif
 
-        jpf.console.info("Initializing...");
-        clearInterval(jpf.Init.interval);
+        apf.console.info("Initializing...");
+        clearInterval(apf.Init.interval);
 
         // Run Init
-        jpf.Init.run(); //Process load dependencies
+        apf.Init.run(); //Process load dependencies
         
         //#ifdef __WITH_DEFAULT_SKIN
-        jpf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><j:skin xmlns:j="http://www.javeline.com/2005/jml" xmlns="http://www.w3.org/1999/xhtml"><j:bar name="bar"><j:style><![CDATA[#jem.jpf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}#jem.jpf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.jpf_bar .jpf_counter {position: absolute;bottom: 5px;left: 40px;}#jem.jpf_bar .jpf_countdown {position: absolute;bottom: 5px;right: 142px;}#jem.jpf_bar .jpf_volume {position: absolute;bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.jpf_bar .jpf_volume span {margin: 0;padding: 0;width: 16px;height: 16px;}#jem.jpf_bar .jpf_fullscreen {position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;cursor: pointer;cursor: hand;}#jem.jpf_bar .jpf_fullscreen span {height:14px;width:14px;margin:3px auto 0 0;}]]></j:style><j:presentation><j:main container="." resize-corner="17"><div class="jpf_bar" id="jem"> </div></j:main></j:presentation></j:bar><j:label name="label"><j:style><![CDATA[#jem .jpf_label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .jpf_labelDisabled{color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .jpf_label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></j:style><j:presentation><j:main caption="." for="@for"><div class="jpf_label"> </div></j:main></j:presentation></j:label><j:slider name="slider"><j:style><![CDATA[#jem .jpf_slider {background: url("images/bar_right.png") no-repeat top right;height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .jpf_sliderDisabled {background-position: right -8px;}#jem .jpf_slider .jpf_left {background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .jpf_sliderDisabled .jpf_left {background-position: left -8px;}#jem .jpf_sliderDisabled .jpf_filledbar {background-position: 0 -8px;}#jem .jpf_slider .jpf_grabber {background: url("images/slider3.png") no-repeat top left;width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .jpf_sliderDisabled .jpf_grabber {background-position: left -8px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="jpf_slider"><div class="jpf_grabber"> </div><div class="jpf_left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:slider name="slider16"><j:style><![CDATA[#jem .jpf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .jpf_slider16Disabled {background-position: right -16px;}#jem .jpf_slider16 .jpf_left {background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;margin: 0;}#jem .jpf_slider16Disabled .jpf_left {background-position: left -16px;}#jem .jpf_slider16 .jpf_grabber {background: url("images/rslider16x.png") no-repeat top right;width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .jpf_slider16Disabled .jpf_grabber {background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .jpf_slider16 .jpf_sldprogress {background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]></j:style><j:presentation><j:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." direction="horizontal"><div class="jpf_slider16"><div class="jpf_grabber"> </div><div class="jpf_left"> </div></div></j:main><progress><span class="jpf_sldprogress"></span></progress><marker><u></u></marker></j:presentation></j:slider><j:button name="button"><j:style><![CDATA[#jem .jpf_button {color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .jpf_buttonOver {background-position: 0 -21px;}#jem .jpf_buttonDisabled {background-position: 0 -42px;}#jem .jpf_buttonDown {background-position: 0 0px;}#jem .jpf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]></j:style><j:presentation><j:main background="span" icon="span"><div class="jpf_button"><span></span></div></j:main></j:presentation></j:button><j:video name="video"><j:style><![CDATA[#jem .jpf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}#jem .jpf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></j:style><j:presentation><j:main container="."><div class="jpf_video"></div></j:main></j:presentation></j:video></j:skin>';
-        if (!jpf.skins.skins["default"] && jpf.skins.defaultSkin) {
+        apf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><j:skin xmlns:j="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml"><j:bar name="bar"><j:style><![CDATA[#jem.apf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}#jem.apf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.apf_bar .apf_counter {position: absolute;bottom: 5px;left: 40px;}#jem.apf_bar .apf_countdown {position: absolute;bottom: 5px;right: 142px;}#jem.apf_bar .apf_volume {position: absolute;bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_volume span {margin: 0;padding: 0;width: 16px;height: 16px;}#jem.apf_bar .apf_fullscreen {position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_fullscreen span {height:14px;width:14px;margin:3px auto 0 0;}]]></j:style><j:presentation><j:main container="." resize-corner="17"><div class="apf_bar" id="jem"> </div></j:main></j:presentation></j:bar><j:label name="label"><j:style><![CDATA[#jem .apf_label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .apf_labelDisabled{color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .apf_label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></j:style><j:presentation><j:main caption="." for="@for"><div class="apf_label"> </div></j:main></j:presentation></j:label><j:slider name="slider"><j:style><![CDATA[#jem .apf_slider {background: url("images/bar_right.png") no-repeat top right;height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .apf_sliderDisabled {background-position: right -8px;}#jem .apf_slider .apf_left {background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .apf_sliderDisabled .apf_left {background-position: left -8px;}#jem .apf_sliderDisabled .apf_filledbar {background-position: 0 -8px;}#jem .apf_slider .apf_grabber {background: url("images/slider3.png") no-repeat top left;width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_sliderDisabled .apf_grabber {background-position: left -8px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:slider name="slider16"><j:style><![CDATA[#jem .apf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .apf_slider16Disabled {background-position: right -16px;}#jem .apf_slider16 .apf_left {background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;margin: 0;}#jem .apf_slider16Disabled .apf_left {background-position: left -16px;}#jem .apf_slider16 .apf_grabber {background: url("images/rslider16x.png") no-repeat top right;width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_slider16Disabled .apf_grabber {background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .apf_slider16 .apf_sldprogress {background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]></j:style><j:presentation><j:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider16"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></j:main><progress><span class="apf_sldprogress"></span></progress><marker><u></u></marker></j:presentation></j:slider><j:button name="button"><j:style><![CDATA[#jem .apf_button {color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .apf_buttonOver {background-position: 0 -21px;}#jem .apf_buttonDisabled {background-position: 0 -42px;}#jem .apf_buttonDown {background-position: 0 0px;}#jem .apf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]></j:style><j:presentation><j:main background="span" icon="span"><div class="apf_button"><span></span></div></j:main></j:presentation></j:button><j:video name="video"><j:style><![CDATA[#jem .apf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}#jem .apf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></j:style><j:presentation><j:main container="."><div class="apf_video"></div></j:main></j:presentation></j:video></j:skin>';
+        if (!apf.skins.skins["default"] && apf.skins.defaultSkin) {
             //#ifdef __DEBUG
-            jpf.console.warn("No skin definition found. Using default skin.");
+            apf.console.warn("No skin definition found. Using default skin.");
             //#endif
 
-            //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-            var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
-            xmlNode.setAttribute("media-path", jpf.CDN + jpf.VERSION + "/images/")
-            xmlNode.setAttribute("icon-path", jpf.CDN + jpf.VERSION + "/icons/")
-            jpf.skins.Init(xmlNode);
+            //var xmlString = apf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
+            var xmlNode = apf.getJmlDocFromString(apf.skins.defaultSkin).documentElement; //@todo should get preprocessed
+            xmlNode.setAttribute("media-path", apf.CDN + apf.VERSION + "/images/")
+            xmlNode.setAttribute("icon-path", apf.CDN + apf.VERSION + "/icons/")
+            apf.skins.Init(xmlNode);
         }
         //#endif
 
         //#ifdef __WITH_PARTIAL_JML_LOADING
-        if (jpf.isParsingPartial) {
+        if (apf.isParsingPartial) {
             //Form jml parser
-            if (!jpf.window) {
-                jpf.window          = new jpf.WindowImplementation();
-                jpf.document        = new jpf.DocumentImplementation();
+            if (!apf.window) {
+                apf.window          = new apf.WindowImplementation();
+                apf.document        = new apf.DocumentImplementation();
                 // #ifdef __WITH_ACTIONTRACKER
-                jpf.window.document = jpf.document;
-                jpf.window.$at      = new jpf.actiontracker();
-                jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+                apf.window.document = apf.document;
+                apf.window.$at      = new apf.actiontracker();
+                apf.nameserver.register("actiontracker", "default", apf.window.$at);
                 //#endif
             }
 
-            jpf.appsettings.setDefaults();
-            jpf.hasSingleRszEvent = true;
+            apf.appsettings.setDefaults();
+            apf.hasSingleRszEvent = true;
 
             var pHtmlNode = document.body;
             var lastChild = pHtmlNode.lastChild;
-            jpf.JmlParser.parseMoreJml(jpf.AppNode, pHtmlNode, null,
+            apf.JmlParser.parseMoreJml(apf.AppNode, pHtmlNode, null,
                 true, false);
 
             var pNode, firstNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
             while (loop && lastChild != loop) {
-                info = jpf.jmlParts[loop.getAttribute("jid")];
+                info = apf.jmlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
                     pNode = info[0];
                     if ("P".indexOf(pNode.tagName) > -1) {
-                        lastBefore = pNode.parentNode.insertBefore(jpf.getNode(loop, [0]),
+                        lastBefore = pNode.parentNode.insertBefore(apf.getNode(loop, [0]),
                             pNode);
                     }
                     else {
-                        firstNode = jpf.getNode(loop, [0]);
+                        firstNode = apf.getNode(loop, [0]);
                         while(firstNode){
                             if (firstNode) {
                                 lastBefore = pNode.insertBefore(firstNode,
@@ -2259,7 +2258,7 @@ var jpf = {
                             else {
                                 lastBefore = typeof info[1] == "number" ? lastBefore : info[1];
                             }
-                            firstNode = jpf.getNode(loop, [0]);
+                            firstNode = apf.getNode(loop, [0]);
                         }
                     }
 
@@ -2269,18 +2268,18 @@ var jpf = {
             }
 
             // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
-            setTimeout("jpf.layout.forceResize();");
+            setTimeout("apf.layout.forceResize();");
             // #endif
         }
         else
         //#endif
         {
             // Start application
-            if (jpf.JmlParser && jpf.AppData)
-                jpf.JmlParser.parse(jpf.AppData);
+            if (apf.JmlParser && apf.AppData)
+                apf.JmlParser.parse(apf.AppData);
 
-            if (jpf.loadScreen && jpf.appsettings.autoHideLoading)
-                jpf.loadScreen.hide();
+            if (apf.loadScreen && apf.appsettings.autoHideLoading)
+                apf.loadScreen.hide();
         }
     },
 
@@ -2293,40 +2292,40 @@ var jpf = {
         if (!this.$bdetect)
             this.browserDetect();
 
-        if (jpf.load_done)
+        if (apf.load_done)
             return func();
 
         // create event function stack
-        //jpf.done = arguments.callee.done;
-        if (!jpf.load_init) {
-            jpf.load_init = function () {
-                if (jpf.load_done) return;
+        //apf.done = arguments.callee.done;
+        if (!apf.load_init) {
+            apf.load_init = function () {
+                if (apf.load_done) return;
                 // kill the timer
-                clearInterval(jpf.load_timer);
-                jpf.load_timer = null;
-                jpf.load_done  = true;
+                clearInterval(apf.load_timer);
+                apf.load_timer = null;
+                apf.load_done  = true;
                 // execute each function in the stack in the order they were added
-                var len = jpf.load_events.length;
+                var len = apf.load_events.length;
                 while (len--)
-                    (jpf.load_events.shift())();
+                    (apf.load_events.shift())();
             };
         }
 
-        if (func && !jpf.load_events[0]) {
+        if (func && !apf.load_events[0]) {
             // for Mozilla/Opera9.
             // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
-            if (document.addEventListener && !jpf.isOpera) {
+            if (document.addEventListener && !apf.isOpera) {
                 // We're using "window" and not "document" here, because it results
                 // in a memory leak, especially in FF 1.5:
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=241518
                 // See also:
                 // http://bitstructures.com/2007/11/javascript-method-callbacks
                 // http://www-128.ibm.com/developerworks/web/library/wa-memleak/
-                window.addEventListener("DOMContentLoaded", jpf.load_init, false);
+                window.addEventListener("DOMContentLoaded", apf.load_init, false);
             }
             // If IE is used and is not in a frame
-            else if (jpf.isIE && window == top) {
-                jpf.load_timer = setInterval(function() {
+            else if (apf.isIE && window == top) {
+                apf.load_timer = setInterval(function() {
                     try {
                         // If IE is used, use the trick by Diego Perini
                         // http://javascript.nwbox.com/IEContentLoaded/
@@ -2337,45 +2336,45 @@ var jpf = {
                         return;
                     }
                     // no exceptions anymore, so we can call the init!
-                    jpf.load_init();
+                    apf.load_init();
                 }, 10);
             }
-            else if (jpf.isOpera) {
+            else if (apf.isOpera) {
                 document.addEventListener( "DOMContentLoaded", function () {
-                    jpf.load_timer  = setInterval(function() {
+                    apf.load_timer  = setInterval(function() {
                         for (var i = 0; i < document.styleSheets.length; i++) {
                             if (document.styleSheets[i].disabled)
                                 return;
                         }
                         // all is fine, so we can call the init!
-                        jpf.load_init();
+                        apf.load_init();
                     }, 10);
                 }, false);
             }
-            else if (jpf.isSafari && !jpf.isIphone) {
+            else if (apf.isSafari && !apf.isIphone) {
                 var aSheets = documents.getElementsByTagName("link");
                 for (var i = aSheets.length; i >= 0; i++) {
                     if (!aSheets[i] || aSheets[i].getAttribute("rel") != "stylesheet")
                         aSheets.splice(i, 0);
                 }
                 var iSheets = aSheets.length;
-                jpf.load_timer  = setInterval(function() {
+                apf.load_timer  = setInterval(function() {
                     if (/loaded|complete/.test(document.readyState)
                       && document.styleSheets.length == iSheets)
-                        jpf.load_init(); // call the onload handler
+                        apf.load_init(); // call the onload handler
                 }, 10);
             }
             // for other browsers set the window.onload, but also execute the old window.onload
             else {
                 var old_onload = window.onload;
                 window.onload  = function () {
-                    jpf.load_init();
+                    apf.load_init();
                     if (old_onload)
                         old_onload();
                 };
             }
         }
-        jpf.load_events.push(func);
+        apf.load_events.push(func);
     },
 
     /* Destroy */
@@ -2385,13 +2384,13 @@ var jpf = {
      */
     destroy : function(exclude){
         //#ifdef __DEBUG
-        jpf.console.info("Initiating self destruct...");
+        apf.console.info("Initiating self destruct...");
         //#endif
 
         this.isDestroying = true;
 
         //#ifdef __WITH_XFORMS
-        var i, models = jpf.nameserver.getAll("model");
+        var i, models = apf.nameserver.getAll("model");
         for (i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-model-destruct");
         //#endif
@@ -2410,12 +2409,12 @@ var jpf = {
         this.$jmlDestroyers = undefined;
 
         // #ifdef __WITH_TELEPORT
-        jpf.teleport.destroy();
+        apf.teleport.destroy();
         // #endif
 
         //#ifdef __WITH_XMLDATABASE
-        if (jpf.xmldb)
-            jpf.xmldb.unbind(jpf.window);
+        if (apf.xmldb)
+            apf.xmldb.unbind(apf.window);
         //#endif
 
         this.isDestroying = false;
@@ -2427,9 +2426,9 @@ var jpf = {
  * this call yet.
  */
 var $xmlns = function(xmlNode, tag, xmlns, prefix){
-    if (!jpf.supportNamespaces) {
+    if (!apf.supportNamespaces) {
         if (!prefix)
-            prefix = jpf.findPrefix(xmlNode, xmlns);
+            prefix = apf.findPrefix(xmlNode, xmlns);
 
         if (xmlNode.style || xmlNode == document)
             return xmlNode.getElementsByTagName(tag)
@@ -2447,4 +2446,4 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
 }
 
 document.documentElement.className += " has_apf"; 
-jpf.Init.run('jpf');
+apf.Init.run('apf');

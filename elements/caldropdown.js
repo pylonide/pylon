@@ -34,10 +34,10 @@
  * @version     %I%, %G%
  * @since       1.0
  * 
- * @inherits jpf.Presentation
- * @inherits jpf.DataBinding
- * @inherits jpf.Validation
- * @inherits jpf.XForms
+ * @inherits apf.Presentation
+ * @inherits apf.DataBinding
+ * @inherits apf.Validation
+ * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -76,7 +76,7 @@
  * <j:caldropdown ref="@date" />
  * </code>
  */
-jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
+apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -133,7 +133,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["initial-message"] = function(value) {
         this.initialMsg = value
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
+            || apf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
     };
 
     /**
@@ -215,7 +215,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         //#ifdef __DEBUG
         if (!date || !date.getFullYear()) {
-            throw new Error(jpf.formErrorString(this, "Parsing date",
+            throw new Error(apf.formErrorString(this, "Parsing date",
                 "Invalid date: " + value));
         }
         //#endif
@@ -354,7 +354,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.isOpen = true;
 
         this.oSlider.style.display = "block";
-        this.oSlider.style[jpf.supportOverflowComponent
+        this.oSlider.style[apf.supportOverflowComponent
             ? "overflowY"
             : "overflow"] = "hidden";
 
@@ -369,11 +369,11 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             ? this.oExt.offsetWidth - 1
             : 0) + "px";
 
-        jpf.caldropdown.cache["oSlider"].host = this;
+        apf.caldropdown.cache["oSlider"].host = this;
 
         this.redraw(_month, _year);
 
-        jpf.popup.show(this.uniqueId, {
+        apf.popup.show(this.uniqueId, {
             x       : 0,
             y       : this.oExt.offsetHeight,
             animate : true,
@@ -381,7 +381,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             width   : this.oExt.offsetWidth + 1,
             height  : this.sliderHeight,
             callback: function(container) {
-                container.style[jpf.supportOverflowComponent
+                container.style[apf.supportOverflowComponent
                     ? "overflowY"
                     : "overflow"] = "hidden";
             }
@@ -397,12 +397,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = jpf.xmldb.findHtmlNode(this.selected, this);
+            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
             if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
 
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
-        jpf.popup.hide();
+        apf.popup.hide();
         return false;
     };
 
@@ -478,12 +478,12 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             // Set Caption bind
             var bc = this.$getMultiBind(), caption;
             if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.xmlRoot,
+                var xmlNode = apf.xmldb.createNodeFromXpath(bc.xmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
 
-                jpf.xmldb.setNodeValue(xmlNode,
+                apf.xmldb.setNodeValue(xmlNode,
                     this.applyRuleSetOnNode("caption", this.selected));
             }
         }
@@ -502,7 +502,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$focus = function(){
-        jpf.popup.forceHide();
+        apf.popup.forceHide();
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }
 
@@ -545,7 +545,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = year;
         var _width    = this.oExt.offsetWidth;
 
-        var temp      = Math.floor((_width - 36) / 8) * 8 + 32 - jpf.getDiff(this.oNavigation)[0];
+        var temp      = Math.floor((_width - 36) / 8) * 8 + 32 - apf.getDiff(this.oNavigation)[0];
 
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
@@ -637,8 +637,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (d_width - jpf.getDiff(rows[i])[0]) + "px";
-            if (!jpf.isGecko) {
+            rows[i].style.width = (d_width - apf.getDiff(rows[i])[0]) + "px";
+            if (!apf.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
 
@@ -799,10 +799,10 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         //Build Main Skin
         this.oExt      = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmouseover", 
-                'var o = jpf.lookup(' + this.uniqueId + ');\
+                'var o = apf.lookup(' + this.uniqueId + ');\
                  o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
             oExt.setAttribute("onmouseout", 
-                'var o = jpf.lookup('+ this.uniqueId + ');\
+                'var o = apf.lookup('+ this.uniqueId + ');\
                  if (o.isOpen) return;\
                  o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
 
@@ -810,13 +810,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown",
-                    'jpf.lookup(' + this.uniqueId + ').slideToggle(event);');
+                    'apf.lookup(' + this.uniqueId + ').slideToggle(event);');
             }
 
             //Label
             var oLabel  = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
-                oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
+                oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
@@ -829,17 +829,17 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
 
-        if (jpf.caldropdown.cache) {
-            var cal          = jpf.caldropdown.cache;
+        if (apf.caldropdown.cache) {
+            var cal          = apf.caldropdown.cache;
             this.oSlider     = cal["oSlider"];
             this.oNavigation = cal["oNavigation"];
             this.oDow        = cal["oDow"];
 
-            jpf.caldropdown.cache.refcount++;
+            apf.caldropdown.cache.refcount++;
 
             //Set up the popup
-            this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
-            jpf.skins.getCssString(this.skinName));
+            this.pHtmlDoc = apf.popup.setContent(this.uniqueId, this.oSlider,
+            apf.skins.getCssString(this.skinName));
         }
         else {
             this.oSlider = this.$getExternal("container", null, function(oExt1) {
@@ -854,14 +854,14 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                         var oCell = this.$getLayoutNode("cell");
                         if (j > 0) {
                             oCell.setAttribute("onmouseout",
-                                "jpf.setStyleClass(this, '', ['hover']);");
+                                "apf.setStyleClass(this, '', ['hover']);");
                             oCell.setAttribute("onmouseover",
                                 "if (this.className.indexOf('disabled') > -1 \
                                    || this.className.indexOf('active') > -1) \
                                      return;\
-                                 jpf.setStyleClass(this, 'hover');");
+                                 apf.setStyleClass(this, 'hover');");
                             oCell.setAttribute("onmousedown",
-                                "var o = jpf.findHost(this);\
+                                "var o = apf.findHost(this);\
                                  if (this.className.indexOf('prev') > -1) \
                                      o.selectDay(this.innerHTML, 'prev');\
                                  else if (this.className.indexOf('next') > -1) \
@@ -885,9 +885,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                         var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                         this.$setStyleClass(btn, buttons[i]);
                         if (buttons[i] !== "status") {
-                            btn.setAttribute("onmousedown", 'jpf.findHost(this).' + buttons[i] + '()');
-                            btn.setAttribute("onmouseover", 'jpf.setStyleClass(this, "hover");');
-                            btn.setAttribute("onmouseout",  'jpf.setStyleClass(this, "", ["hover"]);');
+                            btn.setAttribute("onmousedown", 'apf.findHost(this).' + buttons[i] + '()');
+                            btn.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
+                            btn.setAttribute("onmouseout",  'apf.setStyleClass(this, "", ["hover"]);');
                         }
                     }
                 }
@@ -908,8 +908,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         
 
         //Set up the popup
-        this.pHtmlDoc    = jpf.popup.setContent(this.uniqueId, this.oSlider,
-            jpf.skins.getCssString(this.skinName));
+        this.pHtmlDoc    = apf.popup.setContent(this.uniqueId, this.oSlider,
+            apf.skins.getCssString(this.skinName));
 
         document.body.appendChild(this.oSlider);
 
@@ -920,13 +920,13 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         /*if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml); caldropdown don't inherit that function */
 
-        if (!jpf.caldropdown.cache) {
-            jpf.caldropdown.cache = {
+        if (!apf.caldropdown.cache) {
+            apf.caldropdown.cache = {
                 "oSlider"     : this.oSlider,
                 "oNavigation" : this.oNavigation,
                 "oDow"        : this.oDow
             };
-            jpf.caldropdown.cache.refcount = 0;
+            apf.caldropdown.cache.refcount = 0;
         }
     };
 
@@ -960,30 +960,30 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$destroy = function() {
-        jpf.popup.removeContent(this.uniqueId);
-        jpf.removeNode(this.oSlider);
+        apf.popup.removeContent(this.uniqueId);
+        apf.removeNode(this.oSlider);
         this.oSlider = null;
 
-        if (jpf.caldropdown.cache && jpf.caldropdown.cache.refcount) {
-            if (jpf.caldropdown.cache.refcount == 0) {
-                jpf.caldropdown.cache = null;
+        if (apf.caldropdown.cache && apf.caldropdown.cache.refcount) {
+            if (apf.caldropdown.cache.refcount == 0) {
+                apf.caldropdown.cache = null;
             }
             else {
-                jpf.caldropdown.cache.refcount--;
+                apf.caldropdown.cache.refcount--;
             }
         }
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding,
+    apf.DataBinding,
     //#endif
     //#ifdef __WITH_VALIDATION
-    jpf.Validation,
+    apf.Validation,
     //#endif
     //#ifdef __WITH_XFORMS
-    jpf.XForms,
+    apf.XForms,
     //#endif
-    jpf.Presentation
+    apf.Presentation
 );
 
 // #endif

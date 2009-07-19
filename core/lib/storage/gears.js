@@ -24,8 +24,8 @@
 /**
  *  Storage provider that uses Google Gears to store data.
  */
-jpf.storage.modules.gears = 
-jpf.storage.modules["gears.sql"] = {
+apf.storage.modules.gears = 
+apf.storage.modules["gears.sql"] = {
     // instance methods and properties
     table_name  : "STORAGE",
     initialized : false,
@@ -34,8 +34,8 @@ jpf.storage.modules["gears.sql"] = {
     $db         : null,
     
     init: function(){
-        this.factory = jpf.nameserver.get("google", "gears");
-        this.database_name = jpf.appsettings.name + ".jpf.offline.gears";
+        this.factory = apf.nameserver.get("google", "gears");
+        this.database_name = apf.appsettings.name + ".apf.offline.gears";
 
         this.$db = this.factory.create('beta.database', '1.0');
         this.$db.open(this.database_name);
@@ -55,7 +55,7 @@ jpf.storage.modules["gears.sql"] = {
             this.initialized = true;
         }
         catch(e) {
-            jpf.console.warn(e.message);
+            apf.console.warn(e.message);
             return false;
         }
     },
@@ -67,7 +67,7 @@ jpf.storage.modules["gears.sql"] = {
     },
     
     destroy : function(){
-        //if (!jpf.isIE)
+        //if (!apf.isIE)
         this.$db.close();
     },
     
@@ -96,13 +96,13 @@ jpf.storage.modules["gears.sql"] = {
     
     isAvailable: function(){
         // is Google Gears available and defined?
-        return jpf.isGears;
+        return apf.isGears;
     },
 
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -112,12 +112,12 @@ jpf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        value = jpf.serialize(value);
+        value = apf.serialize(value);
         
         // try to store the value    
         try {
@@ -130,7 +130,7 @@ jpf.storage.modules["gears.sql"] = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Error setting name/value pair: " + e.message));
             //#endif
@@ -143,7 +143,7 @@ jpf.storage.modules["gears.sql"] = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -153,7 +153,7 @@ jpf.storage.modules["gears.sql"] = {
 		
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -167,7 +167,7 @@ jpf.storage.modules["gears.sql"] = {
         if (!results.length)
             return null;
 
-        return jpf.unserialize(results[0].value);
+        return apf.unserialize(results[0].value);
     },
     
     getNamespaces: function(){
@@ -189,7 +189,7 @@ jpf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Retrieving keys", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -211,7 +211,7 @@ jpf.storage.modules["gears.sql"] = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -227,7 +227,7 @@ jpf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -243,7 +243,7 @@ jpf.storage.modules["gears.sql"] = {
         if(this.isValidKeyArray(keys) === false
                         || ! values instanceof Array
                         || keys.length != values.length){
-            throw new Error(jpf.formatErrorString(0, null,
+            throw new Error(apf.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], \
                                     values = [" + values + "]"));
@@ -255,7 +255,7 @@ jpf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -268,7 +268,7 @@ jpf.storage.modules["gears.sql"] = {
             for(var i=0;i<keys.length;i++) {
                 // serialize the value;
                 // handle strings differently so they have better performance
-                var value = jpf.serialize(values[i]);
+                var value = apf.serialize(values[i]);
 
                 this.$sql.db.execute(stmt, [namespace, keys[i], value]);
             }
@@ -277,7 +277,7 @@ jpf.storage.modules["gears.sql"] = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Writing multiple name/value pair", 
                 "Error writing file: " + e.message));
             //#endif
@@ -290,7 +290,7 @@ jpf.storage.modules["gears.sql"] = {
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -300,7 +300,7 @@ jpf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -312,7 +312,7 @@ jpf.storage.modules["gears.sql"] = {
         for (var i = 0; i < keys.length; i++) {
             var result = this.$sql(stmt, [namespace, keys[i]]);
             results[i] = result.length
-                ? jpf.unserialize(result[0].value)
+                ? apf.unserialize(result[0].value)
                 : null;
         }
         
@@ -322,7 +322,7 @@ jpf.storage.modules["gears.sql"] = {
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -331,7 +331,7 @@ jpf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(apf.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

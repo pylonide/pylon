@@ -26,8 +26,8 @@
  * @define appsettings
  * @addnode global
  * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
- * @see core.jpf.object.debugwin
- * @see core.jpf.object.console
+ * @see core.apf.object.debugwin
+ * @see core.apf.object.console
  * @attribute {Boolean} debug-teleport          whether teleport messages are displayed in the log.
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
  * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
@@ -40,7 +40,7 @@
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
  * <code>
- *  jpf.loadscreen.hide();
+ *  apf.loadscreen.hide();
  * </code>
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
@@ -91,10 +91,10 @@
  * @allowchild auth, authentication, offline, printer, defaults
  * @todo describe defaults
  */
-jpf.appsettings = {
+apf.appsettings = {
     tagName            : "appsettings",
-    nodeType           : jpf.NODE_ELEMENT,
-    nodeFunc           : jpf.NODE_HIDDEN,
+    nodeType           : apf.NODE_ELEMENT,
+    nodeFunc           : apf.NODE_HIDDEN,
 
     //#ifdef __USE_TOSTRING
     toString : function(){
@@ -140,7 +140,7 @@ jpf.appsettings = {
 
     setDefaults : function(){
         //#ifdef __WITH_PARTIAL_JML_LOADING
-        if (jpf.isParsingPartial) {
+        if (apf.isParsingPartial) {
             this.disableRightClick  = false;
             this.allowSelect        = true;
             this.autoDisableActions = true;
@@ -169,7 +169,7 @@ jpf.appsettings = {
 
     setProperty : function(name, value){
         if (this.$booleanProperties[name])
-            value = jpf.isTrue(value);
+            value = apf.isTrue(value);
         
         //this[name] = value;
         //@todo I dont want to go through all the code again, maybe later
@@ -178,7 +178,7 @@ jpf.appsettings = {
         })] = this[name] = value;
         
         (this.$propHandlers && this.$propHandlers[name]
-          || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value);
+          || apf.JmlElement.propHandlers[name] || apf.K).call(this, value);
     },
     
     $supportedProperties : ["debug", "name", "baseurl", "resource-path", 
@@ -211,65 +211,65 @@ jpf.appsettings = {
     },
     $propHandlers : {
         "baseurl" : function(value){
-            this.baseurl = jpf.parseExpression(value);
+            this.baseurl = apf.parseExpression(value);
         },
         "resource-path" : function(value){
-            this.resourcePath = jpf.parseExpression(value || "")
+            this.resourcePath = apf.parseExpression(value || "")
               .replace(/resources\/?|\/$/g, '');
         },
         // #ifdef __WITH_IEPNGFIX
         "iepngfix" : function(value, x){
-            this.iePngFix           = (!jpf.supportPng24 
-                && (jpf.isTrue(value)
+            this.iePngFix           = (!apf.supportPng24 
+                && (apf.isTrue(value)
                 || x.getAttribute("iepngfix-elements")));
             
             if (this.iePngFix) {
                 // run after the init() has finished, otherwise the body of the 
                 // document will still be empty, thus no elements found.
                 setTimeout(function() {
-                    jpf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
+                    apf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
                 });
             }
         },
         // #endif
         //#ifdef __WITH_PRESENTATION
         "skinset" : function(value) {
-            if (!jpf.isParsing)
-                jpf.skins.changeSkinset(value);
+            if (!apf.isParsing)
+                apf.skins.changeSkinset(value);
         },
         //#endif
         //#ifdef __WITH_INTERACTIVE
         "outline" : function(value) {
             this.dragOutline    =
             this.resizeOutline  =
-            this.outline        = jpf.isTrue(jpf.parseExpression(value));
+            this.outline        = apf.isTrue(apf.parseExpression(value));
         },
         "drag-outline" : function(value){
             this.dragOutline    = value
-              ? jpf.isTrue(jpf.parseExpression(value))
+              ? apf.isTrue(apf.parseExpression(value))
               : false;
         },
         "resize-outline" : function(value){
             this.resizeOutline  = value
-              ? !jpf.isFalse(jpf.parseExpression(value))
+              ? !apf.isFalse(apf.parseExpression(value))
               : false;
         },
         //#endif
         //#ifdef __WITH_AUTH
         "login" : function(value, x) {
-            jpf.auth.init(x);
+            apf.auth.init(x);
         },
         //#endif
         "debug" : function(value){
             //#ifdef __DEBUG
             if (value) {
-                jpf.addEventListener("load", function(){
-                    setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                    jpf.removeEventListener("load", arguments.callee);
+                apf.addEventListener("load", function(){
+                    setTimeout("apf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    apf.removeEventListener("load", arguments.callee);
                 });
             }
             //#endif
-            jpf.debug = value;
+            apf.debug = value;
         }
     },
 
@@ -280,7 +280,7 @@ jpf.appsettings = {
             
             //#ifdef __WITH_JMLDOM_FULL
             this.parentNode = parentNode;
-            jpf.implement.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
+            apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
             //#endif
         }
         
@@ -292,7 +292,7 @@ jpf.appsettings = {
             //this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
             
             if (this.$booleanProperties[name])
-                value = jpf.isTrue(value);
+                value = apf.isTrue(value);
             
             //this[name] = value;
             //@todo I dont want to go through all the code again, maybe later
@@ -301,10 +301,10 @@ jpf.appsettings = {
             })] = this[name] = value;
             
             (this.$propHandlers && this.$propHandlers[name]
-              || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value, x);
+              || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, x);
         }
         
-        if (!jpf.loaded)
+        if (!apf.loaded)
             this.init();
 
         var oFor, attr, d, j, i, l, node, nodes = x.childNodes;
@@ -313,24 +313,24 @@ jpf.appsettings = {
             if (node.nodeType != 1)
                 continue;
 
-            var tagName = node[jpf.TAGNAME];
+            var tagName = node[apf.TAGNAME];
             switch(tagName){
                 //#ifdef __WITH_AUTH
                 case "auth":
                 case "authentication":
                     this.auth = node;
-                    jpf.auth.init(node);
+                    apf.auth.init(node);
                     break;
                 //#endif
                 //#ifdef __WITH_OFFLINE
                 case "offline":
                     this.offline = node;
-                    jpf.offline.init(node);
+                    apf.offline.init(node);
                     break;
                 //#endif
                 //#ifdef __WITH_PRINTER
                 case "printer":
-                    jpf.printer.init(node);
+                    apf.printer.init(node);
                     break;
                 //#endif
                 //#ifdef __WITH_APP_DEFAULTS
@@ -355,33 +355,33 @@ jpf.appsettings = {
             this.name = window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
         
         // #ifdef __SUPPORT_IPHONE
-        if (jpf.isIphone)
-            jpf.runIphone();
+        if (apf.isIphone)
+            apf.runIphone();
         // #endif
         
         //#ifdef __DESKRUN
-        if (jpf.isDeskrun && this.disableF5)
+        if (apf.isDeskrun && this.disableF5)
             shell.norefresh = true;
         //#endif
         
         //#ifdef __WITH_LANG_SUPPORT
         if (this.language)
-            setTimeout("jpf.language.loadFrom(jpf.appsettings.language);");
+            setTimeout("apf.language.loadFrom(apf.appsettings.language);");
         //#endif
 
         //#ifdef __WITH_STORAGE
         if (this.storage)
-            jpf.storage.init(this.storage);
+            apf.storage.init(this.storage);
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if (this.offline && typeof jpf.offline != "undefined")
-            jpf.offline.init(this.offline);
+        if (this.offline && typeof apf.offline != "undefined")
+            apf.offline.init(this.offline);
         //#endif
 
         //#ifdef __WITH_BACKBUTTON
-        jpf.addEventListener("done", function(){
-            jpf.history.init(jpf.appsettings.defaultPage, "page");
+        apf.addEventListener("done", function(){
+            apf.history.init(apf.appsettings.defaultPage, "page");
         });
         //#endif
     }
@@ -393,14 +393,14 @@ jpf.appsettings = {
 /**
  * @constructor
  */
-jpf.settings = function(){
-    jpf.register(this, "settings", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
+apf.settings = function(){
+    apf.register(this, "settings", apf.NODE_HIDDEN);/** @inherits apf.Class */
     var oSettings = this;
 
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    this.implement(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.implement(apf.DataBinding); /** @inherits apf.DataBinding */
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
@@ -422,11 +422,11 @@ jpf.settings = function(){
         if (!this.xmlRoot)
             return;
 
-        jpf.saveData(instruction, this.xmlRoot, null, function(data, state, extra){
-            if (state != jpf.SUCCESS) {
+        apf.saveData(instruction, this.xmlRoot, null, function(data, state, extra){
+            if (state != apf.SUCCESS) {
                 var oError;
 
-                oError = new Error(jpf.formatErrorString(0,
+                oError = new Error(apf.formatErrorString(0,
                     oSettings, "Saving settings",
                     "Error saving settings: " + extra.message));
 
@@ -441,12 +441,12 @@ jpf.settings = function(){
     };
 
     this.importSettings = function(instruction, def_instruction){
-        jpf.getData(instruction, null, null, function(xmlData, state, extra){
-            if (state != jpf.SUCCESS) {
+        apf.getData(instruction, null, null, function(xmlData, state, extra){
+            if (state != apf.SUCCESS) {
                 var oError;
 
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(0, oSettings,
+                oError = new Error(apf.formatErrorString(0, oSettings,
                     "Loading settings",
                     "Error loading settings: " + extra.message));
                 //#endif
@@ -466,13 +466,13 @@ jpf.settings = function(){
 
     var savePoint;
     this.savePoint = function(){
-        savePoint = jpf.xmldb.copyNode(this.xmlRoot);
+        savePoint = apf.xmldb.copyNode(this.xmlRoot);
     };
 
     //Databinding
     this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
     this.$load = function(XMLRoot){
-        jpf.xmldb.addNodeListener(XMLRoot, this);
+        apf.xmldb.addNodeListener(XMLRoot, this);
 
         for (var prop in settings) {
             this.setProperty(prop, null); //Maybe this should be !and-ed
@@ -512,7 +512,7 @@ jpf.settings = function(){
     this.reset = function(){
         if (!savePoint) return;
 
-        this.load(jpf.xmldb.copyNode(savePoint));
+        this.load(apf.xmldb.copyNode(savePoint));
     };
 
     //Properties
@@ -528,13 +528,13 @@ jpf.settings = function(){
             + valueNode || prop + "/" + valueNode;
 
         return create
-            ? jpf.xmldb.createNodeFromXpath(xmlNode, traverse)
-            : jpf.getXmlValue(this.xmlNode, traverse);
+            ? apf.xmldb.createNodeFromXpath(xmlNode, traverse)
+            : apf.getXmlValue(this.xmlNode, traverse);
     };
 
     this.$handlePropSet = function(prop, value, force){
         if (!force && this.xmlRoot)
-            return jpf.xmldb.setNodeValue(this.getSettingsNode(
+            return apf.xmldb.setNodeValue(this.getSettingsNode(
                 this.xmlRoot, prop, true), true);
 
         this[prop]     = value;
@@ -549,16 +549,16 @@ jpf.settings = function(){
         this.exportInstruction = x.getAttribute("set");
 
         this.$jml = x;
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.JmlParser.parseChildren(this.$jml, null, this);
 
         //Model handling in case no smartbinding is used
-        var modelId = jpf.xmldb.getInheritedAttribute(x, "model");
+        var modelId = apf.xmldb.getInheritedAttribute(x, "model");
 
-        for (var i = 0; i < jpf.JmlParser.modelInit.length; i++)
-            if (jpf.JmlParser.modelInit[i][0] == this)
+        for (var i = 0; i < apf.JmlParser.modelInit.length; i++)
+            if (apf.JmlParser.modelInit[i][0] == this)
                 return;
 
-        jpf.setModel(modelId, this);
+        apf.setModel(modelId, this);
     };
 
     //Destruction

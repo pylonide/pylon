@@ -25,7 +25,7 @@
  * @private
  * @constructor
  */
-jpf.modalwindow.widget = function(){
+apf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;
     var _self   = this;
     
@@ -45,9 +45,9 @@ jpf.modalwindow.widget = function(){
 
         htmlNode.parentNode.insertBefore(p, htmlNode);
         //p.style.width = (htmlNode.offsetWidth - 2) + "px";
-        p.style.height  = (htmlNode.offsetHeight - (jpf.isIE6 ? 0 : jpf.getHeightDiff(p))) + "px";
+        p.style.height  = (htmlNode.offsetHeight - (apf.isIE6 ? 0 : apf.getHeightDiff(p))) + "px";
 
-        var diff     = jpf.getDiff(htmlNode);
+        var diff     = apf.getDiff(htmlNode);
         var lastSize = [htmlNode.style.width, htmlNode.style.height];
         htmlNode.style.width = (htmlNode.offsetWidth - diff[0]) + "px";
         //htmlNode.style.height = (htmlNode.offsetHeight - diff[1]) + "px";
@@ -58,9 +58,9 @@ jpf.modalwindow.widget = function(){
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
         htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
-        jpf.tween.fade(htmlNode, 0.8);
+        apf.tween.fade(htmlNode, 0.8);
 
-        jpf.dragmode.mode = true; //simulate using dragmode
+        apf.dragmode.mode = true; //simulate using dragmode
 
         cData                = [htmlNode, p];
         document.onmousemove = _self.dragMove;
@@ -77,7 +77,7 @@ jpf.modalwindow.widget = function(){
 
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
-            jpf.tween.fade(htmlNode, 1);
+            apf.tween.fade(htmlNode, 1);
 
             //@todo please move this to datagrid internals
             var grids = _self.getElementsByTagName("datagrid");
@@ -85,7 +85,7 @@ jpf.modalwindow.widget = function(){
                 grids[i].updateWindowSize(true);
             }
 
-            jpf.dragmode.mode = null;
+            apf.dragmode.mode = null;
         };
 
         e.cancelBubble = true;
@@ -94,14 +94,14 @@ jpf.modalwindow.widget = function(){
 
     //Search for insert position
     function insertInColumn(el, ey){
-        var pos   = jpf.getAbsolutePosition(el);
+        var pos   = apf.getAbsolutePosition(el);
         var cy    = ey - pos[1];
         var nodes = el.childNodes;
 
         for (var th = 0, i = 0, l = nodes.length; i < l; i++) {
             var node = nodes[i];
             if (node.nodeType != 1
-              || jpf.getStyle(node, "position") == "absolute")
+              || apf.getStyle(node, "position") == "absolute")
                 continue;
 
             th = node.offsetTop + node.offsetHeight;
@@ -146,9 +146,9 @@ jpf.modalwindow.widget = function(){
     };
 
     this.$loadJml = function(x) {
-        jpf.WinServer.setTop(this);
+        apf.WinServer.setTop(this);
 
-        var diff = jpf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.oExt);
         hordiff  = diff[0];
         verdiff  = diff[1];
 
@@ -158,13 +158,13 @@ jpf.modalwindow.widget = function(){
         //Should be moved to an init function
         this.positionHolder = document.body.appendChild(document.createElement("div"));
 
-        var oConfig = $xmlns(this.$jml, "config", jpf.ns.jml)[0];
+        var oConfig = $xmlns(this.$jml, "config", apf.ns.jml)[0];
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(this.$jml, "body", jpf.ns.jml)[0];//jpf.xmldb.selectSingleNode("j:body", this.$jml);
+        var oBody = $xmlns(this.$jml, "body", apf.ns.jml)[0];//apf.xmldb.selectSingleNode("j:body", this.$jml);
         oBody.parentNode.removeChild(oBody);
 
-        jpf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.JmlParser.parseChildren(this.$jml, null, this);
 
         if (oConfig)
             this.$jml.appendChild(oConfig);
@@ -172,13 +172,13 @@ jpf.modalwindow.widget = function(){
 
         if (oSettings && oConfig) {
             this.oSettings = this.oSettings
-                ? jpf.JmlParser.replaceNode(oSettings, this.oSettings)
-                : jpf.JmlParser.parseChildren(oConfig, oSettings, this, true);
+                ? apf.JmlParser.replaceNode(oSettings, this.oSettings)
+                : apf.JmlParser.parseChildren(oConfig, oSettings, this, true);
         }
 
         this.oInt = this.oInt
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(oBody, oInt, this, true);
+            ? apf.JmlParser.replaceNode(oInt, this.oInt)
+            : apf.JmlParser.parseChildren(oBody, oInt, this, true);
 
         if (oBody.getAttribute("class"))
             this.$setStyleClass(this.oInt, oBody.getAttribute("class"))

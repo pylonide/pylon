@@ -25,7 +25,7 @@
  * @constructor
  * @private
  */
-jpf.textbox.masking = function(){
+apf.textbox.masking = function(){
     /*
         Special Masking Values:
         - PASSWORD
@@ -153,7 +153,7 @@ jpf.textbox.masking = function(){
         if (setCharacter(chr))
             setPosition(lastPos + 1);
 
-        if (jpf.isCharacter(e.keyCode) || stop)
+        if (apf.isCharacter(e.keyCode) || stop)
             return false;
     }, true);
     
@@ -166,7 +166,7 @@ jpf.textbox.masking = function(){
         this.$keyHandler = null; //temp solution
         masking = true;
         
-        this.oInt[jpf.isIphone ? "onclick" : "onmouseup"] = function(e){
+        this.oInt[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;
@@ -275,7 +275,7 @@ jpf.textbox.masking = function(){
         if (p < 0)
             p = 0;
 
-        if (jpf.hasMsRangeObject) {
+        if (apf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
             range.select();
@@ -311,14 +311,14 @@ jpf.textbox.masking = function(){
         chr = checkChar(chr, lastPos);
         if (chr == _FALSE_) return false;
 
-        if (jpf.hasMsRangeObject) {
+        if (apf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
             range.collapse();
             range.moveStart("character", pos[lastPos]);
             range.moveEnd("character", 1);
             range.text = chr;
-            if (jpf.window.focussed == this)
+            if (apf.window.focussed == this)
                 range.select();
         }
         else {
@@ -338,7 +338,7 @@ jpf.textbox.masking = function(){
     function deletePosition(p){
         if(pos[p] == null) return false;
         
-        if (jpf.hasMsRangeObject) {
+        if (apf.hasMsRangeObject) {
             var range = oExt.createTextRange();
             range.expand("textedit");
             range.collapse();
@@ -367,7 +367,7 @@ jpf.textbox.masking = function(){
         var i, j;
         
         try {
-            if (!jpf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
+            if (!apf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
                 setPosition(0); // is this always correct? practice will show...
             }
         }
@@ -403,7 +403,7 @@ jpf.textbox.masking = function(){
         for (i = 0, j = str.length; i < j; i++) {
             lastPos = i;
             setCharacter(str.substr(i, 1));
-            if (!jpf.hasMsRangeObject)
+            if (!apf.hasMsRangeObject)
                 setPosition(i + 1);
         }
         if (str.length)
@@ -413,7 +413,7 @@ jpf.textbox.masking = function(){
     function calcPosFromCursor(){
         var range, lt = 0;
 
-        if (!jpf.hasMsRangeObject) {
+        if (!apf.hasMsRangeObject) {
             lt = oExt.selectionStart;
         }
         else {

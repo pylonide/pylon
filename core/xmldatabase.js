@@ -27,15 +27,15 @@
  * provides utility functions for xml handling.
  *
  * @constructor
- * @jpfclass
+ * @apfclass
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  *
  * @default_private
  */
-jpf.XmlDatabase = function(){
+apf.XmlDatabase = function(){
     this.xmlDocTag    = "j_doc";
     this.xmlIdTag     = "j_id";
     this.xmlListenTag = "j_listen";
@@ -239,14 +239,14 @@ jpf.XmlDatabase = function(){
      * @private
      */
     this.getModel = function(name){
-        return jpf.nameserver.get("model", name);
+        return apf.nameserver.get("model", name);
     };
 
     /**
      * @private
      */
     this.setModel = function(model){
-        jpf.nameserver.register("model", model.data.ownerDocument
+        apf.nameserver.register("model", model.data.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag), model);
     };
 
@@ -267,7 +267,7 @@ jpf.XmlDatabase = function(){
      * @return {XMLNode} the created xml node.
      */
     this.getXml = function(strXml, noError, preserveWhiteSpace){
-        return jpf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
+        return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
     };
 
     /**
@@ -279,20 +279,20 @@ jpf.XmlDatabase = function(){
      * @return {XMLNode} the created xml document (NOT the root-node).
      */
     this.fromJson = function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && jpf.isJSON(strJson))
+        var o   = (typeof strJson == "string" && apf.isJSON(strJson))
           ? JSON.parse(strJson)//eval("(" + strJson + ")")
           : strJson,
             xml = [], i;
         for (i in o)
             xml.push(jsonToXml(o[i], i, ""));
-        return jpf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
+        return apf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
             + "</jsonroot>", noError, preserveWhiteSpace);
     };
 
     function jsonToXml(v, name) {
         var i, n, xml = [];
         name = name.replace(/[^a-zA-z0-9_-]+/g, "_");
-        if (jpf.isArray(v)) {
+        if (apf.isArray(v)) {
             for (i = 0, n = v.length; i < n; i++)
                 xml.push(jsonToXml(v[i], name));
         }
@@ -329,7 +329,7 @@ jpf.XmlDatabase = function(){
      */
     this.getXmlId = function(xmlNode){
         return xmlNode.getAttribute(this.xmlIdTag) ||
-          this.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode);
+          this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
     }
 
     this.nodeCount = {};
@@ -361,7 +361,7 @@ jpf.XmlDatabase = function(){
     this.addNodeListener = function(xmlNode, o){
         // #ifdef __DEBUG
         if (!o.$xmlUpdate)
-            throw new Error(jpf.formatErrorString(1040, null, 
+            throw new Error(apf.formatErrorString(1040, null, 
                 "Adding Node listener", 
                 "Cannot attach this listener because it doesn't support the \
                  correct interface (this.$xmlUpdate)."));
@@ -450,11 +450,11 @@ jpf.XmlDatabase = function(){
             for (i = nodes.length - 1; i >= 0; i--) {
                 var s = nodes[i].getAttribute(this.xmlListenTag).split(";");
                 for (j = s.length - 1; j >= 0; j--) {
-                    node = jpf.all[s[j]];
+                    node = apf.all[s[j]];
                     if (node.dataParent && node.dataParent.xpath)
                         node.dataParent.parent.signalXmlUpdate[node.uniqueId] = true;
                     else if (node.$model) {
-                        node.$listenRoot = jpf.xmldb.addNodeListener(parentNode, node);
+                        node.$listenRoot = apf.xmldb.addNodeListener(parentNode, node);
                         node.xmlRoot = null; //.load(null)
                     }
                 }
@@ -517,7 +517,7 @@ jpf.XmlDatabase = function(){
         else
         // #endif
         {
-            beforeNode = jpf.getNode(parentNode, [0]);
+            beforeNode = apf.getNode(parentNode, [0]);
             nodes      = XMLRoot.childNodes;
 
             if (parentNode.ownerDocument.importNode) {
@@ -582,11 +582,11 @@ jpf.XmlDatabase = function(){
             
             undoObj.extra.oldValue = options.forceNew
                 ? ""
-                : jpf.getXmlValue(xmlNode, xpath);
+                : apf.getXmlValue(xmlNode, xpath);
 
             undoObj.xmlNode        = xmlNode;
             if (xpath)
-                xmlNode = jpf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
+                xmlNode = apf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
 
             undoObj.extra.appliedNode = xmlNode;
         }
@@ -595,16 +595,16 @@ jpf.XmlDatabase = function(){
             if (!xmlNode.firstChild)
                 xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
 
-            xmlNode.firstChild.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
+            xmlNode.firstChild.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
 
             if (applyChanges)
-                jpf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
+                apf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
         }
         else {
-            xmlNode.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
+            xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
 
             if (applyChanges)
-                jpf.xmldb.applyChanges("synchronize", xmlNode.parentNode
+                apf.xmldb.applyChanges("synchronize", xmlNode.parentNode
                     || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                     undoObj);
         }
@@ -641,8 +641,8 @@ jpf.XmlDatabase = function(){
             xml = xml.parentNode;
         }
 
-        return !result && attr && jpf.appsettings
-            ? jpf.appsettings[attr]
+        return !result && attr && apf.appsettings
+            ? apf.appsettings[attr]
             : result;
     };
 
@@ -813,7 +813,7 @@ jpf.XmlDatabase = function(){
         if (undoObj)
             this.clearConnections(xmlNode);
 
-        if (jpf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (apf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         //Add xmlNode to parent pNode or one selected by xpath statement
@@ -871,13 +871,13 @@ jpf.XmlDatabase = function(){
         // #endif
 
         //Set new id if the node change document (for safari this should be fixed)
-        if (!jpf.isSafari
-          && jpf.xmldb.getXmlDocId(xmlNode) != jpf.xmldb.getXmlDocId(pNode)) {
+        if (!apf.isSafari
+          && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
             xmlNode.removeAttributeNode(xmlNode.getAttributeNode(this.xmlIdTag));
-            this.nodeConnect(jpf.xmldb.getXmlDocId(pNode), xmlNode);
+            this.nodeConnect(apf.xmldb.getXmlDocId(pNode), xmlNode);
         }
 
-        if (jpf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (apf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
@@ -955,10 +955,10 @@ jpf.XmlDatabase = function(){
     var notifyQueue = {}, notifyTimer;
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
         //#ifdef __WITH_OFFLINE
-        if (typeof jpf.offline != "undefined" && jpf.offline.models.enabled
-          && jpf.offline.models.realtime) {
-            var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
-            if (model) jpf.offline.models.markForUpdate(model);
+        if (typeof apf.offline != "undefined" && apf.offline.models.enabled
+          && apf.offline.models.realtime) {
+            var model = apf.nameserver.get("model", apf.xmldb.getXmlDocId(xmlNode));
+            if (model) apf.offline.models.markForUpdate(model);
         }
         //#endif
 
@@ -1007,7 +1007,7 @@ jpf.XmlDatabase = function(){
                     }
 
                     if (!this.delayUpdate && "|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
-                        jmlNode = jpf.lookup(uIds[i]);
+                        jmlNode = apf.lookup(uIds[i]);
                         if (jmlNode)
                             jmlNode.$xmlUpdate(action, xmlNode,
                                 loopNode, undoObj, oParent);
@@ -1027,13 +1027,13 @@ jpf.XmlDatabase = function(){
 
         if (undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
-            jpf.xmldb.notifyQueued();
+            apf.xmldb.notifyQueued();
         }
         else if (runTimer) {
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             //notifyTimer = setTimeout(function(){
-                jpf.xmldb.notifyQueued();
+                apf.xmldb.notifyQueued();
             //});
         }
     };
@@ -1050,7 +1050,7 @@ jpf.XmlDatabase = function(){
         
         for (var uId in notifyQueue) {
             var q = notifyQueue[uId];
-            jmlNode = jpf.lookup(uId);
+            jmlNode = apf.lookup(uId);
             if (!jmlNode || !q)
                 continue;
 
@@ -1060,7 +1060,7 @@ jpf.XmlDatabase = function(){
 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(this,
+                    throw new Error(apf.formatErrorString(this,
                         "Notifying Component of data change",
                         "Component without a model is listening for changes",
                         jmlNode.$jml));
@@ -1071,7 +1071,7 @@ jpf.XmlDatabase = function(){
                     ? model.data.selectSingleNode(xpath)
                     : model.data;
                 if (xmlRoot) {
-                    jpf.xmldb.removeNodeListener(jmlNode.$listenRoot, jmlNode);
+                    apf.xmldb.removeNodeListener(jmlNode.$listenRoot, jmlNode);
                     jmlNode.$listenRoot = null;
                     jmlNode.load(xmlRoot);
                 }
@@ -1097,11 +1097,11 @@ jpf.XmlDatabase = function(){
      */
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
-        var listen = xmlNode.getAttribute(jpf.xmldb.xmlListenTag);
+        var listen = xmlNode.getAttribute(apf.xmldb.xmlListenTag);
         if (listen) {
             listen = listen.split(";");
             for (var j = 0; j < listen.length; j++) {
-                jpf.lookup(listen[j]).$xmlUpdate("synchronize", xmlNode, xmlNode);
+                apf.lookup(listen[j]).$xmlUpdate("synchronize", xmlNode, xmlNode);
                 //load(xmlNode);
             }
         }
@@ -1118,13 +1118,13 @@ jpf.XmlDatabase = function(){
             return;
 
         var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
-        var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
+        var model = apf.nameserver.get("model", apf.xmldb.getXmlDocId(xmlNode));
         if (!model) {
-            if (!jpf.nameserver.getAll("remove").length)
+            if (!apf.nameserver.getAll("remove").length)
                 return;
 
             //#ifdef __DEBUG
-            jpf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");
+            apf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");
             //#endif
             return;
         }
@@ -1193,14 +1193,14 @@ jpf.XmlDatabase = function(){
     };
 
     /**
-     * Unbind all Javeline Elements from a certain Form
+     * Unbind all APF Elements from a certain Form
      * @private
      */
     this.unbind = function(frm){
-        //Loop through objects of all jpf
-        for (var lookup = {}, i = 0; i < frm.jpf.all.length; i++)
-            if (frm.jpf.all[i] && frm.jpf.all[i].unloadBindings)
-                lookup[frm.jpf.all[i].unloadBindings()] = true;
+        //Loop through objects of all apf
+        for (var lookup = {}, i = 0; i < frm.apf.all.length; i++)
+            if (frm.apf.all[i] && frm.apf.all[i].unloadBindings)
+                lookup[frm.apf.all[i].unloadBindings()] = true;
 
         //Remove Listen Nodes
         for (var k = 0; k < xmlDocLut.length; k++) {
@@ -1235,12 +1235,12 @@ jpf.XmlDatabase = function(){
      * @returns {Array} list of xml nodes found. The list can be empty.
      */
     this.selectNodes = function(sExpr, contextNode){
-        if (contextNode && (jpf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
+        if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
             return contextNode.selectNodes(sExpr); //IE55
         //if (contextNode.ownerDocument != document)
         //    return contextNode.selectNodes(sExpr);
 
-        return jpf.XPath.selectNodes(sExpr, contextNode)
+        return apf.XPath.selectNodes(sExpr, contextNode)
     };
 
     /**
@@ -1254,12 +1254,12 @@ jpf.XmlDatabase = function(){
      * @returns {XMLNode} the dom node found or null if none was found.
      */
     this.selectSingleNode = function(sExpr, contextNode){
-        if (contextNode && (jpf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
+        if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
             return contextNode.selectSingleNode(sExpr); //IE55
         //if (contextNode.ownerDocument != document)
         //    return contextNode.selectSingleNode(sExpr);
 
-        var nodeList = this.selectNodes(sExpr + (jpf.isIE ? "" : "[1]"),
+        var nodeList = this.selectNodes(sExpr + (apf.isIE ? "" : "[1]"),
             contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
@@ -1298,12 +1298,12 @@ jpf.XmlDatabase = function(){
             var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
             // #ifdef __DEBUG
             if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-                throw new Error(jpf.formatErrorString(1041, this, 
+                throw new Error(apf.formatErrorString(1041, this, 
                     "Select via xPath", 
                     "Could not use xPath to create xmlNode: " + xPath));
             }
             if (!isAddId && paths[i].match(/\/\//)) {
-                throw new Error(jpf.formatErrorString(1041, this, 
+                throw new Error(apf.formatErrorString(1041, this, 
                     "Select via xPath", 
                     "Could not use xPath to create xmlNode: " + xPath));
             }
@@ -1378,7 +1378,7 @@ jpf.XmlDatabase = function(){
             docEl.setAttribute(this.xmlDocTag, docId);
 
         if (model)
-            jpf.nameserver.register("model", docId, model);
+            apf.nameserver.register("model", docId, model);
 
         return xmlDocLut.length - 1;
     };
@@ -1388,7 +1388,7 @@ jpf.XmlDatabase = function(){
      */
     this.getBindXmlNode = function(xmlRootNode){
         if (typeof xmlRootNode != "object")
-            xmlRootNode = jpf.getXmlDom(xmlRootNode);
+            xmlRootNode = apf.getXmlDom(xmlRootNode);
         if (xmlRootNode.nodeType == 9)
             xmlRootNode = xmlRootNode.documentElement;
         if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
@@ -1432,7 +1432,7 @@ jpf.XmlDatabase = function(){
                     result[name] = this.json(sameNodes[j], result);
             }
 
-            return filled ? result : jpf.getXmlValue(xml, "text()");
+            return filled ? result : apf.getXmlValue(xml, "text()");
         },
 
         "cgivars": function(xml, basename){
@@ -1480,7 +1480,7 @@ jpf.XmlDatabase = function(){
             if (str.length)
                 return str.join("&");
 
-            value = jpf.getXmlValue(xml, "text()");
+            value = apf.getXmlValue(xml, "text()");
             if (basename && value)
                 return basename + "=" + escape(value);
         },
@@ -1499,7 +1499,7 @@ jpf.XmlDatabase = function(){
                 if (name == "revision")
                     continue;
 
-                var isOnlyChild = jpf.xmldb.isOnlyChild(node.firstChild, [3,4]);
+                var isOnlyChild = apf.xmldb.isOnlyChild(node.firstChild, [3,4]);
                 var count       = 0;
 
                 //array
@@ -1514,7 +1514,7 @@ jpf.XmlDatabase = function(){
                         if (value)
                             str.push(value);
                             
-                        if (jpf.xmldb.isOnlyChild(lnodes[j].firstChild, [3,4]))
+                        if (apf.xmldb.isOnlyChild(lnodes[j].firstChild, [3,4]))
                             str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
                                 + escape(lnodes[j].firstChild.nodeValue));
                         
@@ -1588,7 +1588,7 @@ jpf.XmlDatabase = function(){
      * @private
      */
     this.getAllNodesBefore = function(pNode, xpath, xmlNode, func){
-        var nodes = jpf.xmldb.selectNodes(xpath, pNode);
+        var nodes = apf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = nodes.length - 1; i >= 0; i--) {
             if (!found){
                 if(nodes[i] == xmlNode) found = true;
@@ -1606,7 +1606,7 @@ jpf.XmlDatabase = function(){
      * @private
      */
     this.getAllNodesAfter = function(pNode, xpath, xmlNode, func){
-        var nodes = jpf.xmldb.selectNodes(xpath, pNode);
+        var nodes = apf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = 0; i < nodes.length; i++) {
             if (!found){
                 if(nodes[i] == xmlNode) found = true;
@@ -1626,7 +1626,7 @@ jpf.XmlDatabase = function(){
         if (!xmlRoot && !jmlNode.xmlRoot)
             return;
 
-        var xmlNode = (jmlNode.nodeFunc == jpf.NODE_VISIBLE)
+        var xmlNode = (jmlNode.nodeFunc == apf.NODE_VISIBLE)
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
             : jmlNode.getNodeFromRule("value", jmlNode.xmlRoot);
 
@@ -1667,14 +1667,14 @@ jpf.XmlDatabase = function(){
  * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
  * @return {XMLNode} the created xml node.
  */
-jpf.getXml = function(){
-    return jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
+apf.getXml = function(){
+    return apf.xmldb.getXml.apply(apf.xmldb, arguments);
 };
 
-jpf.getXmlFromJson = function() {
-    return jpf.xmldb.fromJson.apply(jpf.xmldb, arguments);
+apf.getXmlFromJson = function() {
+    return apf.xmldb.fromJson.apply(apf.xmldb, arguments);
 };
 
-jpf.Init.run('XmlDatabase');
+apf.Init.run('XmlDatabase');
 
 //#endif

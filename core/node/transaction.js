@@ -100,11 +100,11 @@ var __TRANSACTION__ = 1 << 3;
  *
  * @event transactionconflict Fires when data in a transaction is being updated by an external process.
  *
- * @author      Ruben Daniels
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8.9
  */
-jpf.Transaction = function(){
+apf.Transaction = function(){
     this.$regbase = this.$regbase|__TRANSACTION__;
     var _self     = this;
 
@@ -149,7 +149,7 @@ jpf.Transaction = function(){
         }
         else {
             //#ifdef __DEBUG
-            jpf.console.info("Committing transaction on " + this.tagName + "[" + this.name + "]");
+            apf.console.info("Committing transaction on " + this.tagName + "[" + this.name + "]");
             //#endif
             
             this.$at.reset();//purge();
@@ -204,7 +204,7 @@ jpf.Transaction = function(){
             return;
         
         //#ifdef __DEBUG
-        jpf.console.info("Rolling back transaction on " + this.tagName + "[" + this.name + "]");
+        apf.console.info("Rolling back transaction on " + this.tagName + "[" + this.name + "]");
         //#endif
         
         if (this.$at) {
@@ -246,13 +246,13 @@ jpf.Transaction = function(){
      */
     this.begin = function(strAction, xmlNode, dataParent){
         if (inTransaction) {
-            /*throw new Error(jpf.formatErrorString(0, this, 
+            /*throw new Error(apf.formatErrorString(0, this, 
                 "Starting Transaction", 
                 "Cannot start a transaction without committing or rolling \
                  back previously started transaction.", this.oldRoot));*/
             
             //#ifdef __DEBUG
-            jpf.console.warn("Rolling back transaction, while starting a new one");
+            apf.console.warn("Rolling back transaction, while starting a new one");
             //#endif
             
             if (this.autoshow)
@@ -261,7 +261,7 @@ jpf.Transaction = function(){
         }
 
         //#ifdef __DEBUG
-        jpf.console.info("Beginning transaction on " + this.tagName + "[" + this.name + "]");
+        apf.console.info("Beginning transaction on " + this.tagName + "[" + this.name + "]");
         //#endif
 
         //Add should look at dataParent and take selection or xmlRoot
@@ -280,7 +280,7 @@ jpf.Transaction = function(){
         
         //#ifdef __DEBUG
         if (!lastAction) {
-            throw new Error(jpf.formatErrorString(0, this, 
+            throw new Error(apf.formatErrorString(0, this, 
                 "Starting Transaction", 
                 "Could not determine whether to add or update."));
         }
@@ -307,7 +307,7 @@ jpf.Transaction = function(){
          *   Setting replaceat="start" or replaceat="end"
          */
         if (!this.$at) {
-            this.$at = new jpf.actiontracker();
+            this.$at = new apf.actiontracker();
             var propListen = function(name, oldvalue, newvalue){
                 _self.setProperty(name, newvalue);
             };
@@ -320,7 +320,7 @@ jpf.Transaction = function(){
         originalNode    = this.xmlRoot;
 
         //#ifdef __WITH_OFFLINE
-        if (typeof jpf.offline != "undefined" && !jpf.offline.canTransact())
+        if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
@@ -328,7 +328,7 @@ jpf.Transaction = function(){
         function begin(){
             //#ifdef __DEBUG
             if (!transactionNode) {
-                throw new Error(jpf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this, 
                     "Starting transaction", 
                     "Missing transaction node. Cannot start transaction. \
                      This error is unrecoverable."));
@@ -368,7 +368,7 @@ jpf.Transaction = function(){
                     node = dataParent.getNodeFromRule("add", xmlNode, true);
                 else if (typeof xmlNode == "string") {
                     if (xmlNode.trim().charAt(0) == "<") {
-                        xmlNode = jpf.getXml(xmlNode);
+                        xmlNode = apf.getXml(xmlNode);
                         node = dataParent.getNodeFromRule("add", xmlNode, true);
                     }
                     else {
@@ -391,14 +391,14 @@ jpf.Transaction = function(){
             
             //#ifdef __DEBUG
             if (!node) { // || !node[0]
-                throw new Error(jpf.formatErrorString(0, this,
+                throw new Error(apf.formatErrorString(0, this,
                     "Starting transaction", 
                     "Missing add rule for transaction"));
             }
             //#endif
             
             //#ifdef __WITH_OFFLINE
-            if (typeof jpf.offline != "undefined" && !jpf.offline.onLine
+            if (typeof apf.offline != "undefined" && !apf.offline.onLine
               && !node.getAttribute("get"))
                 return false;
             //#endif
@@ -406,10 +406,10 @@ jpf.Transaction = function(){
             //Run the add code (copy from multiselect) but don't add until commit
             var refNode  = this.isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
             var callback = function(addXmlNode, state, extra){
-                if (state != jpf.SUCCESS) {
+                if (state != apf.SUCCESS) {
                     var oError;
     
-                    oError = new Error(jpf.formatErrorString(1032, dataParent,
+                    oError = new Error(apf.formatErrorString(1032, dataParent,
                         "Loading xml data",
                         "Could not add data for control " + dataParent.name
                         + "[" + dataParent.tagName + "] \nUrl: " + extra.url
@@ -422,9 +422,9 @@ jpf.Transaction = function(){
                 }
 
                 if (typeof addXmlNode != "object")
-                    addXmlNode = jpf.getXmlDom(addXmlNode).documentElement;
-                if (addXmlNode.getAttribute(jpf.xmldb.xmlIdTag))
-                    addXmlNode.setAttribute(jpf.xmldb.xmlIdTag, "");
+                    addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
+                if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
+                    addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
     
                 if (!dataParent.$startAction("add", addXmlNode, _self.rollback))
                     return false;
@@ -446,7 +446,7 @@ jpf.Transaction = function(){
                 if (!addParent)
                     addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
     
-                if (jpf.isSafari && addParent.ownerDocument != addXmlNode.ownerDocument)
+                if (apf.isSafari && addParent.ownerDocument != addXmlNode.ownerDocument)
                     addXmlNode = addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
     
                 transactionNode    = addXmlNode;
@@ -455,11 +455,11 @@ jpf.Transaction = function(){
             }
     
             if (xmlNode)
-                return callback(xmlNode, jpf.SUCCESS);
+                return callback(xmlNode, apf.SUCCESS);
             else {
                 //#ifdef __DEBUG
                 if (!node) {
-                    throw new Error(jpf.formatErrorString(0, this,
+                    throw new Error(apf.formatErrorString(0, this,
                         "Executing add action",
                         "Missing add action defined in action rules. Unable to \
                          perform action."));
@@ -467,16 +467,16 @@ jpf.Transaction = function(){
                 //#endif
     
                 if (node.getAttribute("get"))
-                    return jpf.getData(node.getAttribute("get"), refNode, null, callback)
+                    return apf.getData(node.getAttribute("get"), refNode, null, callback)
                 else if (node.firstChild) {
-                    var node = jpf.getNode(node, [0]);
-                    if (jpf.supportNamespaces && node.namespaceURI == jpf.ns.xhtml) {
-                        node = jpf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                    var node = apf.getNode(node, [0]);
+                    if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
+                        node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
                         //@todo import here for webkit?
                     }
                     else node = node.cloneNode(true);
                     
-                    return callback(node, jpf.SUCCESS);
+                    return callback(node, apf.SUCCESS);
                 }
             }
         }
@@ -551,7 +551,7 @@ jpf.Transaction = function(){
     
     //Init
     if (!this.$jml || !this.$jml.getAttribute("validgroup")) {
-        this.$validgroup = new jpf.ValidationGroup();
+        this.$validgroup = new apf.ValidationGroup();
         this.$validgroup.add(this);
     }
     

@@ -26,7 +26,7 @@
 /**
  * @private
  */
-jpf.dragmode = {
+apf.dragmode = {
     modes : {},
 
     removeMode : function(mode){
@@ -54,7 +54,7 @@ jpf.dragmode = {
     }
 };
 
-jpf.Init.run('jpf.dragmode');
+apf.Init.run('apf.dragmode');
 /*#else
-jpf.dragmode = {};
+apf.dragmode = {};
 #endif */

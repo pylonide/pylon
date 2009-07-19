@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-jpf.editor.plugin('fonts', function() {
+apf.editor.plugin('fonts', function() {
     this.name        = 'fonts';
     this.icon        = 'fonts';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
     this.colspan     = 1;
     this.fontNames   = {};
 
@@ -60,7 +60,7 @@ jpf.editor.plugin('fonts', function() {
 
     this.execute = function() {
         if (!panelBody) {
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
         this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -83,13 +83,13 @@ jpf.editor.plugin('fonts', function() {
     };
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
+        e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sFont = e.target.getAttribute('rel');
         if (sFont) {
-            jpf.popup.forceHide();
-            if (jpf.isIE) {
+            apf.popup.forceHide();
+            if (apf.isIE) {
                 this.editor.selection.set();
                 if (this.editor.selection.isCollapsed()) {
                     this.editor.$visualFocus();
@@ -99,7 +99,7 @@ jpf.editor.plugin('fonts', function() {
                 }
             }
             this.editor.executeCommand('FontName', sFont);
-            if (jpf.isIE)
+            if (apf.isIE)
                 this.editor.selection.collapse(false);
         }
     };
@@ -113,7 +113,7 @@ jpf.editor.plugin('fonts', function() {
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
                 this.fontNames[i], ';" rel="', i,
-                '" href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId,
+                '" href="javascript:;" onmouseup="apf.lookup(', this.uniqueId,
                 ').submit(event);">', i, '</a>');
         }
         panelBody.innerHTML = aHtml.join('');
@@ -128,14 +128,14 @@ jpf.editor.plugin('fonts', function() {
     };
 });
 
-jpf.editor.plugin('fontsize', function() {
+apf.editor.plugin('fontsize', function() {
     this.name        = 'fontsize';
     this.icon        = 'fontsize';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.type        = apf.editor.TOOLBARITEM;
+    this.subType     = apf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
+    this.state       = apf.editor.OFF;
 
     var panelBody;
 
@@ -171,7 +171,7 @@ jpf.editor.plugin('fontsize', function() {
                     this.fontSizes = node.nodeValue.splitSafe(",");
             }
 
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
@@ -191,13 +191,13 @@ jpf.editor.plugin('fontsize', function() {
     };
 
     this.submit = function(e) {
-        e = new jpf.AbstractEvent(e || window.event);
+        e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sSize = e.target.getAttribute('rel');
         if (sSize) {
-            jpf.popup.forceHide();
-            if (jpf.isIE) {
+            apf.popup.forceHide();
+            if (apf.isIE) {
                 this.editor.selection.set();
                 if (this.editor.selection.isCollapsed()) {
                     this.editor.$visualFocus();
@@ -207,7 +207,7 @@ jpf.editor.plugin('fontsize', function() {
                 }
             }
             this.editor.executeCommand('FontSize', sSize);
-            if (jpf.isIE)
+            if (apf.isIE)
                 this.editor.selection.collapse(false);
         }
         e.stop();
@@ -225,7 +225,7 @@ jpf.editor.plugin('fontsize', function() {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:',
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
-                '" href="javascript:;" onmouseup="jpf.lookup(', this.uniqueId,
+                '" href="javascript:;" onmouseup="apf.lookup(', this.uniqueId,
                 ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
         }
         panelBody.innerHTML = aHtml.join('');
