@@ -31,34 +31,34 @@
  * to '*'. This means they will span the entire width of all columns, no matter
  * how many columns there are.
  * <code>
- *  <j:window>
- *      <j:grid id="gridTest" 
+ *  <a:window>
+ *      <a:grid id="gridTest" 
  *        columns = "80, *"
  *        margin  = "10 10 10 10"
  *        padding = "5"
  *        bottom  = "35"
  *        top     = "0">
- *          <j:label>Name</j:label>
- *          <j:textbox />
- *          <j:label>Address</j:label>
- *          <j:textarea height="50" />
- *          <j:label>Country</j:label>
- *          <j:dropdown />
+ *          <a:label>Name</a:label>
+ *          <a:textbox />
+ *          <a:label>Address</a:label>
+ *          <a:textarea height="50" />
+ *          <a:label>Country</a:label>
+ *          <a:dropdown />
  *          
- *          <j:label span="*">Message</j:label>
- *          <j:textarea id="txtMessage" 
+ *          <a:label span="*">Message</a:label>
+ *          <a:textarea id="txtMessage" 
  *              height = "*" 
  *              span   = "*" />
- *      </j:grid>
+ *      </a:grid>
  *      
- *      <j:button 
+ *      <a:button 
  *          caption = "Two Columns"
  *          onclick = "gridTest.setAttribute('columns', '80, *');"/>
  *          
- *      <j:button 
+ *      <a:button 
  *          caption = "Four Columns"
  *          onclick = "gridTest.setAttribute('columns', '60, 120, 60, *');"/>
- *  </j:window>
+ *  </a:window>
  * </code>
  * Remarks:
  * This is one of three positioning methods.
@@ -99,13 +99,13 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
      * Example:
      * <code>
-     *  <j:grid columns="150, *, 20%" />
+     *  <a:grid columns="150, *, 20%" />
      * </code>
      * @attribute {String} padding      the space between each element. Defaults to 2.
      * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
      * Example:
      * <code>
-     *  <j:grid margin="10 10 40 10" />
+     *  <a:grid margin="10 10 40 10" />
      * </code>
      * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row. Defaults to 19.
      */

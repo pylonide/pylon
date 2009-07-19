@@ -29,29 +29,29 @@
  * automatically. 
  * Example:
  * <code>
- *  <j:errorbox>
+ *  <a:errorbox>
  *      Invalid e-mail address entered.
- *  </j:errorbox>
+ *  </a:errorbox>
  * </code>
  * Remarks:
  * In most cases the errorbox element is not created directly but implicitly
  * by a validationgroup. an element that goes into an error state will
  * show the errorbox.
  * <code>
- *  <j:bar validgroup="vgForm">
- *      <j:label>Phone number</j:label>
- *      <j:textbox id="txtPhone"
+ *  <a:bar validgroup="vgForm">
+ *      <a:label>Phone number</a:label>
+ *      <a:textbox id="txtPhone"
  *          required   = "true" 
  *          pattern    = "(\d{3}) \d{4} \d{4}" 
  *          invalidmsg = "Incorrect phone number entered" />
  *
- *      <j:label>Password</j:label>
- *      <j:textbox 
+ *      <a:label>Password</a:label>
+ *      <a:textbox 
  *          required   = "true" 
  *          mask       = "password"
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
- *  </j:bar>
+ *  </a:bar>
  * </code>
  *
  * To check if the element has valid information entered, leaving the textbox

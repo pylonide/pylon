@@ -28,7 +28,7 @@
  * Example:
  * Flowchart component:
  * <code>
- * <j:model id="modelName" save-original="true">
+ * <a:model id="modelName" save-original="true">
  *     <flowchart>
  *         <block
  *             id     = "b1"
@@ -52,36 +52,36 @@
  *             <connection ref="b1" output="3" input="3" />
  *         </block>
  *     </flowchart>
- * </j:model>
- * <j:flowchart id="WF" template="url:template.xml" model="modelName">
- *     <j:css default="red" />
- *     <j:bindings>
- *         <j:move select="self::node()[not(@move='0') and not(@lock='1')]" />
- *         <j:resize select="self::node()[@resize='1' and not(@lock='1')]" />
- *         <j:css select="self::node()[@lock='1']" default="locked"/>
- *         <j:left select="@left" />
- *         <j:top select="@top" />
- *         <j:id select="@id" />
- *         <j:width select="@width" />
- *         <j:height select="@height" />
- *         <j:flipv select="@flipv" />
- *         <j:fliph select="@fliph" />
- *         <j:rotation select="@rotation" />
- *         <j:lock select="@lock" />
- *         <j:type select="@type" />
- *         <j:type value="" />
- *         <j:zindex select="@zindex" />
- *         <j:image select="@src" />
- *         <j:traverse select="block" />
+ * </a:model>
+ * <a:flowchart id="WF" template="url:template.xml" model="modelName">
+ *     <a:css default="red" />
+ *     <a:bindings>
+ *         <a:move select="self::node()[not(@move='0') and not(@lock='1')]" />
+ *         <a:resize select="self::node()[@resize='1' and not(@lock='1')]" />
+ *         <a:css select="self::node()[@lock='1']" default="locked"/>
+ *         <a:left select="@left" />
+ *         <a:top select="@top" />
+ *         <a:id select="@id" />
+ *         <a:width select="@width" />
+ *         <a:height select="@height" />
+ *         <a:flipv select="@flipv" />
+ *         <a:fliph select="@fliph" />
+ *         <a:rotation select="@rotation" />
+ *         <a:lock select="@lock" />
+ *         <a:type select="@type" />
+ *         <a:type value="" />
+ *         <a:zindex select="@zindex" />
+ *         <a:image select="@src" />
+ *         <a:traverse select="block" />
  *
  *         <!-- Connection Binding Rules -->
- *         <j:connection select="connection" />
- *         <j:ref select="@ref" />
- *         <j:input select="@input" />
- *         <j:output select="@output" />
- *         <j:ttype select="@type" />
- *     </j:bindings>
- * </j:flowchart>
+ *         <a:connection select="connection" />
+ *         <a:ref select="@ref" />
+ *         <a:input select="@input" />
+ *         <a:output select="@output" />
+ *         <a:ttype select="@type" />
+ *     </a:bindings>
+ * </a:flowchart>
  * </code>
  *
  * @define flowchart
@@ -562,8 +562,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
     /**
      * Executes an actions based on the set names and the new values
      *
-     * @param {String}      atName     the name of action rule defined in j:actions for this element.
-     * @param {Object}      setNames   the names list of the binding rule defined in j:bindings for this element.
+     * @param {String}      atName     the name of action rule defined in actions for this element.
+     * @param {Object}      setNames   the names list of the binding rule defined in bindings for this element.
      * @type {String}
      * @param {XMLElement}  xmlNode    the xml representation of element to which rules are applied
      * @param {Object}      values     the new values list of the node

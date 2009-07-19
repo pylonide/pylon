@@ -30,7 +30,7 @@
  * @define include element that loads another aml files.
  * Example:
  * <code>
- *   <j:include src="bindings.aml" />
+ *   <a:include src="bindings.aml" />
  * </code>
  * @attribute {String} src the location of the aml file to include in this application.
  * @addnode global, anyaml
@@ -577,7 +577,7 @@ apf.AmlParser = {
                 //o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x.cloneNode(false), false));
             }
 
-            //Check attributes for j:left etc and j:repeat-nodeset
+            //Check attributes for a:left etc and a:repeat-nodeset
             var prefix = this.lastNsPrefix || apf.findPrefix(x.parentNode, apf.ns.aml) || "";
             if (prefix && !x.style) {
                 if (!apf.supportNamespaces)
@@ -704,7 +704,7 @@ apf.AmlParser = {
 
     invalidAml : function(aml, message){
         //#ifdef __DEBUG
-        apf.console.warn((message || "Invalid AML syntax. The j:"
+        apf.console.warn((message || "Invalid AML syntax. The a:"
                         + aml[apf.TAGNAME] + " node should not be placed under \
                          it's current parent:") + "\n"
                         + (aml.xml || aml.serialize));
@@ -717,15 +717,15 @@ apf.AmlParser = {
          * either from it's first child or from a file.
          * Example:
          * <code>
-         *  <j:script src="code.js" />
+         *  <a:script src="code.js" />
          * </code>
          * Example:
          * <code>
-         *  <j:script><![CDATA[
+         *  <a:script><![CDATA[
          *      for (var i = 0; i < 10; i++) {
          *          alert(i);
          *      }
-         *  ]]></j:script>
+         *  ]]></a:script>
          * </code>
          * @attribute {String} src the location of the script file.
          * @addnode global, anyaml
@@ -755,21 +755,21 @@ apf.AmlParser = {
          * provides a way to set a default state.
          * Example:
          * <code>
-         *  <j:state-group
+         *  <a:state-group
          *    loginMsg.visible  = "false"
          *    winLogin.disabled = "false">
-         *      <j:state id="stFail"
+         *      <a:state id="stFail"
          *          loginMsg.value   = "Username or password incorrect"
          *          loginMsg.visible = "true" />
-         *      <j:state id="stError"
+         *      <a:state id="stError"
          *          loginMsg.value   = "An error has occurred. Please check your network."
          *          loginMsg.visible = "true" />
-         *      <j:state id="stLoggingIn"
+         *      <a:state id="stLoggingIn"
          *          loginMsg.value    = "Please wait while logging in..."
          *          loginMsg.visible  = "true"
          *          winLogin.disabled = "true" />
-         *      <j:state id="stIdle" />
-         *  </j:state-group>
+         *      <a:state id="stIdle" />
+         *  </a:state-group>
          * </code>
          * @addnode elements
          * @see element.state
@@ -807,13 +807,13 @@ apf.AmlParser = {
          * single image containing many icons.
          * Example:
          * <code>
-         *  <j:iconmap id="tbicons" src="toolbar.icons.gif"
+         *  <a:iconmap id="tbicons" src="toolbar.icons.gif"
          *    type="horizontal" size="20" offset="2,2" />
          *
-         *  <j:menu id="mmain" skin="menu2005">
-         *      <j:item icon="tbicons:1">Copy</j:item>
-         *      <j:item icon="tbicons:2">Cut</j:item>
-         *  </j:menu>
+         *  <a:menu id="mmain" skin="menu2005">
+         *      <a:item icon="tbicons:1">Copy</a:item>
+         *      <a:item icon="tbicons:2">Cut</a:item>
+         *  </a:menu>
          * </code>
          * @attribute {String} src    the location of the image.
          * @attribute {String} type   the spatial distribution of the icons within the image.
@@ -901,7 +901,7 @@ apf.AmlParser = {
          * @define skin element specifying the skin of an application.
          * Example:
          * <code>
-         *  <j:skin src="perspex.xml"
+         *  <a:skin src="perspex.xml"
          *    name       = "perspex"
          *    media-path = "http://example.com/images"
          *    icon-path  = "http://icons.example.com" />
@@ -1018,10 +1018,10 @@ apf.AmlParser = {
          * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
          * shown.
          * <code>
-         *  <j:list>
-         *      <j:contextmenu menu="mnuRoot" select="root" />
-         *      <j:contextmenu menu="mnuItem" />
-         *  </j:list>
+         *  <a:list>
+         *      <a:contextmenu menu="mnuRoot" select="root" />
+         *      <a:contextmenu menu="mnuItem" />
+         *  </a:list>
          * </code>
          * @attribute {String} menu   the id of the menu element.
          * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
@@ -1096,11 +1096,11 @@ apf.AmlParser = {
          * application is loading.
          * Example:
          * <code>
-         *  <j:loader>
+         *  <a:loader>
          *      <div class="loader">
          *          Loading...
          *      </div>
-         *  </j:loader>
+         *  </a:loader>
          * </code>
          * @addnode global
          */

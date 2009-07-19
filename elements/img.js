@@ -28,22 +28,22 @@
  * This example shows a list with pictures. When one is selected its displayed
  * in the img element.
  * <code>
- *  <j:model id="mdlPictures"> 
+ *  <a:model id="mdlPictures"> 
  *      <pictures> 
  *          <picture title="Landscape" src="http://example.com/landscape.jpg" />
  *          <picture title="Animal" src="http://example.com/animal.jpg" />
  *          <picture title="River" src="http://example.com/river.jpg" />
  *      </pictures> 
- *  </j:model>
+ *  </a:model>
  *  
- *  <j:list id="lstPics" skin="thumbnail" height="200" width="400" 
+ *  <a:list id="lstPics" skin="thumbnail" height="200" width="400" 
  *      traverse = "picture" 
  *      name = "@title" 
  *      model = "mdlPictures" 
  *      image = "@src" 
  *  />
  *   
- *  <j:img ref="@src" model="#lstPics" width="400" />
+ *  <a:img ref="@src" model="#lstPics" width="400" />
  * </code>
  *
  * @constructor
@@ -64,16 +64,16 @@
  * Example:
  * Sets the image source based on data loaded into this component.
  * <code>
- *  <j:img>
- *      <j:bindings>
- *          <j:value select="@src" />
- *      </j:bindings>
- *  </j:img>
+ *  <a:img>
+ *      <a:bindings>
+ *          <a:value select="@src" />
+ *      </a:bindings>
+ *  </a:img>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:img ref="@src" />
+ *  <a:img ref="@src" />
  * </code>
  */
 

@@ -161,7 +161,7 @@ apf.modalwindow.widget = function(){
         var oConfig = $xmlns(this.$aml, "config", apf.ns.aml)[0];
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(this.$aml, "body", apf.ns.aml)[0];//apf.xmldb.selectSingleNode("j:body", this.$aml);
+        var oBody = $xmlns(this.$aml, "body", apf.ns.aml)[0];
         oBody.parentNode.removeChild(oBody);
 
         apf.AmlParser.parseChildren(this.$aml, null, this);

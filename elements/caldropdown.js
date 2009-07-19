@@ -57,23 +57,23 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- * <j:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></j:caldropdown>
+ * <a:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></a:caldropdown>
  * </code>
  * 
  * Example:
  * Sets the date based on data loaded into this component.
  * <code>
- * <j:caldropdown>
- *     <j:bindings>
- *         <j:value select="@date" />
- *     </j:bindings>
- * </j:caldropdown>
+ * <a:caldropdown>
+ *     <a:bindings>
+ *         <a:value select="@date" />
+ *     </a:bindings>
+ * </a:caldropdown>
  * </code>
  * 
  * Example:
  * A shorter way to write this is:
  * <code>
- * <j:caldropdown ref="@date" />
+ * <a:caldropdown ref="@date" />
  * </code>
  */
 apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {

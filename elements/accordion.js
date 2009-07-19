@@ -59,7 +59,7 @@
  * expanded on load.
  * 
  * <code>
- * <j:accordion
+ * <a:accordion
  *      width           = "400"
  *      height          = "200"
  *      left            = "200"
@@ -69,38 +69,38 @@
  *      startexpanded   = "false"
  *      skin            = "accordion_horizontal"
  *      >
- *     <j:panel title="Iron Maiden" expanded="true" icon="icon.png">
+ *     <a:panel title="Iron Maiden" expanded="true" icon="icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Piece Of Mind</li>
  *             <li>X Factor</li>
  *         </ul>
- *     </j:panel>
- *     <j:panel title="Megadeth" icon="images/accordion_icon.png">
+ *     </a:panel>
+ *     <a:panel title="Megadeth" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Youthanasia</li>
  *         </ul>
- *     </j:panel>
- *     <j:panel title="Judas Priest" expanded="true" icon="icon.png">
+ *     </a:panel>
+ *     <a:panel title="Judas Priest" expanded="true" icon="icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Painkiller</li>
  *         </ul>
- *     </j:panel>
- *     <j:panel title="Metallica" icon="images/accordion_icon.png">
+ *     </a:panel>
+ *     <a:panel title="Metallica" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Load</li>
  *         </ul>
- *     </j:panel>
- *     <j:panel title="Behemoth" icon="images/accordion_icon.png">
+ *     </a:panel>
+ *     <a:panel title="Behemoth" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Satanica</li>
  *         </ul>
- *     </j:panel>
- * </j:accordion>
+ *     </a:panel>
+ * </a:accordion>
  * </code>
  * 
  * Example:
@@ -108,7 +108,7 @@
  * at a time. Both panels conatins JPF components.
  * 
  * <code>
- * <j:accordion
+ * <a:accordion
  *     width           = "400"
  *     left            = "200"
  *     top             = "500"
@@ -119,25 +119,25 @@
  *     startexpanded   = "false"
  *     skin            = "accordion_vertical"
  *     >
- *     <j:panel title="Components" expanded="true" icon="icon.png">
- *         <j:label>Choose Your favourite component</j:label><br />
- *         <j:dropdown>
- *             <j:item>Bar</j:item>
- *             <j:item>Notifier</j:item>
- *             <j:item>Tree</j:item>
- *         </j:dropdown><br />
- *     </j:panel>
- *     <j:panel title="Blog" icon="images/accordion_icon.png">
- *         <j:label>Choose Your favourite blog</j:label><br />
- *         <j:radiobutton group="g1">overthinkings</j:radiobutton> 
- *         <j:radiobutton group="g1">Rik on code </j:radiobutton> 
- *         <j:radiobutton group="g1">Arnolds wor(l)ds</j:radiobutton>
- *         <j:radiobutton group="g1">MikedeBoer.nl </j:radiobutton>
- *         <j:radiobutton group="g1">All about Javascript </j:radiobutton>
- *         <j:radiobutton group="g1">observing the dos</j:radiobutton><br />
- *         <j:button>Vote</j:button><br />
- *     </j:panel>
- * </j:accordion>
+ *     <a:panel title="Components" expanded="true" icon="icon.png">
+ *         <a:label>Choose Your favourite component</a:label><br />
+ *         <a:dropdown>
+ *             <a:item>Bar</a:item>
+ *             <a:item>Notifier</a:item>
+ *             <a:item>Tree</a:item>
+ *         </a:dropdown><br />
+ *     </a:panel>
+ *     <a:panel title="Blog" icon="images/accordion_icon.png">
+ *         <a:label>Choose Your favourite blog</a:label><br />
+ *         <a:radiobutton group="g1">overthinkings</a:radiobutton> 
+ *         <a:radiobutton group="g1">Rik on code </a:radiobutton> 
+ *         <a:radiobutton group="g1">Arnolds wor(l)ds</a:radiobutton>
+ *         <a:radiobutton group="g1">MikedeBoer.nl </a:radiobutton>
+ *         <a:radiobutton group="g1">All about Javascript </a:radiobutton>
+ *         <a:radiobutton group="g1">observing the dos</a:radiobutton><br />
+ *         <a:button>Vote</a:button><br />
+ *     </a:panel>
+ * </a:accordion>
  * </code>
  *
  * @author      Lukasz Lipinski

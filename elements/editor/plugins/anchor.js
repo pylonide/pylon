@@ -95,10 +95,10 @@ apf.editor.plugin('anchor', function() {
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
         this.appendAmlNode(
-            '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
-             <j:button caption="Insert" \
+            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
+             <a:button caption="Insert" \
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
-             </j:bar></j:toolbar>',
+             </a:bar></a:toolbar>',
           document.getElementById(idButton));
         this.oName = document.getElementById(idName);
         //#ifdef __WITH_WINDOW_FOCUS

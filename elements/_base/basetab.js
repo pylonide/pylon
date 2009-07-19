@@ -81,23 +81,23 @@ apf.BaseTab = function(){
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
      * <code>
-     *  <j:dropdown id="ddMenu" value="0">
-     *      <j:item value="0">Home</j:item>
-     *      <j:item value="1">General</j:item>
-     *      <j:item value="2">Advanced</j:item>
-     *  </j:dropdown>
+     *  <a:dropdown id="ddMenu" value="0">
+     *      <a:item value="0">Home</a:item>
+     *      <a:item value="1">General</a:item>
+     *      <a:item value="2">Advanced</a:item>
+     *  </a:dropdown>
      *
-     *  <j:pages activepagenr="[ddMenu.value]">
-     *      <j:page>
+     *  <a:pages activepagenr="[ddMenu.value]">
+     *      <a:page>
      *          <h1>Home Page</h1>
-     *      </j:page>
-     *      <j:page>
+     *      </a:page>
+     *      <a:page>
      *          <h1>General Page</h1>
-     *      </j:page>
-     *      <j:page>
+     *      </a:page>
+     *      <a:page>
      *          <h1>Advanced Page</h1>
-     *      </j:page>
-     *  </j:pages>
+     *      </a:page>
+     *  </a:pages>
      * </code>
      */
     this.$propHandlers["activepagenr"] =
@@ -106,17 +106,17 @@ apf.BaseTab = function(){
      * @attribute {String} activepage the name of the active page.
      * Example:
      * <code>
-     *  <j:tab activepage="general">
-     *      <j:page id="home">
+     *  <a:tab activepage="general">
+     *      <a:page id="home">
      *          ...
-     *      </j:page>
-     *      <j:page id="advanced">
+     *      </a:page>
+     *      <a:page id="advanced">
      *          ...
-     *      </j:page>
-     *      <j:page id="general">
+     *      </a:page>
+     *      <a:page id="general">
      *          ...
-     *      </j:page>
-     *  </j:tab>
+     *      </a:page>
+     *  </a:tab>
      * </code>
      */
     this.$propHandlers["activepage"]   = function(next, noEvent){
@@ -580,7 +580,7 @@ apf.BaseTab = function(){
      * If a tabpage is outside of the users' view, this function scrolls that
      * tabpage into view smoothly.
      *
-     * @param {j:page} oPage The page to scroll into view
+     * @param {page} oPage The page to scroll into view
      * @type  {void}
      */
     this.scrollIntoView = function(oPage) {

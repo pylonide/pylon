@@ -45,16 +45,16 @@
  * Example:
  * Sets the color based on data loaded into this component.
  * <code>
- *  <j:palette>
- *      <j:bindings>
- *          <j:value select="@color" />
- *      </j:bindings>
- *  </j:palette>
+ *  <a:palette>
+ *      <a:bindings>
+ *          <a:value select="@color" />
+ *      </a:bindings>
+ *  </a:palette>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:palette ref="@color" />
+ *  <a:palette ref="@color" />
  * </code>
  */
 apf.palette = apf.component(apf.NODE_VISIBLE, function(){

@@ -219,20 +219,20 @@ apf.editor.searchPlugin = function(sName) {
         this.oCase   = document.getElementById(idCase);
         
         var aAml = [
-            '<j:toolbar xmlns:j="', apf.ns.aml, '"><j:bar>\
-             <j:button caption="Find next" \
+            '<a:toolbar xmlns:a="', apf.ns.aml, '"><a:bar>\
+             <a:button caption="Find next" \
                onclick="apf.lookup(', this.uniqueId, ').submit(event)" />'];
         if (this.name == "replace") {
             this.oReplace = document.getElementById(idReplace);
             aAml.push(
-                '<j:button caption="Replace" \
+                '<a:button caption="Replace" \
                   onclick="apf.lookup(', this.uniqueId, ').onDoReplClick(event)" \
                   id="', idReplBtn, '" />\
-                <j:button caption="Replace all" \
+                <a:button caption="Replace all" \
                   onclick="apf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
                   id="', idReplAllBtn, '" />');
         }
-        aAml.push('</j:bar></j:toolbar>');
+        aAml.push('</a:bar></a:toolbar>');
 
         this.appendAmlNode(aAml.join(""), document.getElementById(idBtns));
 

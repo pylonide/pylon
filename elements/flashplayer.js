@@ -40,16 +40,16 @@
  * Example:
  * Sets the flash source text based on data loaded into this component.
  * <code>
- *  <j:flashplayer>
- *      <j:bindings>
- *          <j:value select="@src" />
- *      </j:bindings>
- *  </j:flashplayer>
+ *  <a:flashplayer>
+ *      <a:bindings>
+ *          <a:value select="@src" />
+ *      </a:bindings>
+ *  </a:flashplayer>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:flashplayer ref="@src" />
+ *  <a:flashplayer ref="@src" />
  * </code>
  */
 apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){

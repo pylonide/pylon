@@ -203,29 +203,29 @@ apf.saveData = function(instruction, xmlContext, options, callback){
  * Several uses for a data instruction
  * <code>
  *  <!-- loading aml from an xml file -->
- *  <j:bar aml="url:moreaml.xml" />
+ *  <a:bar aml="url:moreaml.xml" />
  *
- *  <j:bindings>
+ *  <a:bindings>
  *    <!-- loads data using an remote procedure protocol -->
- *    <j:load   get = "rpc:comm.getData()" />
+ *    <a:load   get = "rpc:comm.getData()" />
  *
  *    <!-- inserts data using an remote procedure protocol -->
- *    <j:insert get = "rpc:comm.getSubData({@id})" />
- *  </j:bindings>
+ *    <a:insert get = "rpc:comm.getSubData({@id})" />
+ *  </a:bindings>
  *
- *  <j:actions>
+ *  <a:actions>
  *    <!-- notifies the server that a file is renamed -->
- *    <j:rename set = "url:update_file.jsp?id={@id}&name={@name}" />
+ *    <a:rename set = "url:update_file.jsp?id={@id}&name={@name}" />
  *
  *    <!-- adds a node by retrieving it's xml from the server. -->
- *    <j:add    get = "url:new_user.xml" />
- *  </j:actions>
+ *    <a:add    get = "url:new_user.xml" />
+ *  </a:actions>
  *
  *  <!-- creates a model which is loaded into a list -->
- *  <j:list model="webdav:getRoot()" />
+ *  <a:list model="webdav:getRoot()" />
  *
  *  <!-- loads data into a model and when submitted sends the altered data back -->
- *  <j:model load="url:load_contact.jsp" submission="save_contact.jsp" />
+ *  <a:model load="url:load_contact.jsp" submission="save_contact.jsp" />
  * </code>
  *
  * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data.
@@ -433,7 +433,7 @@ apf.setModel = function(instruction, amlNode, isSelection){
  * </code>
  * Aml
  * <code>
- *  <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
+ *  <a:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
  * </code>
  * @private
  */

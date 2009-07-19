@@ -88,38 +88,38 @@ apf.StateServer = {
  * Example:
  * This example shows a log in window and four state elements in a state-group.
  * <code>
- *  <j:window id="winLogin" title="Log in">
+ *  <a:window id="winLogin" title="Log in">
  *      ...
  *
- *      <j:text id="loginMsg" height="20" left="10" bottom="10" />
- *      <j:button>Log in</j:button>
- *  </j:window>
+ *      <a:text id="loginMsg" height="20" left="10" bottom="10" />
+ *      <a:button>Log in</a:button>
+ *  </a:window>
  *
- *  <j:state-group
+ *  <a:state-group
  *    loginMsg.visible  = "false"
  *    winLogin.disabled = "false">
- *      <j:state id="stFail"
+ *      <a:state id="stFail"
  *          loginMsg.value   = "Username or password incorrect"
  *          loginMsg.visible = "true" />
- *      <j:state id="stError"
+ *      <a:state id="stError"
  *          loginMsg.value   = "An error has occurred. Please check your network."
  *          loginMsg.visible = "true" />
- *      <j:state id="stLoggingIn"
+ *      <a:state id="stLoggingIn"
  *          loginMsg.value    = "Please wait while logging in..."
  *          loginMsg.visible  = "true"
  *          winLogin.disabled = "true" />
- *      <j:state id="stIdle" />
- *  </j:state-group>
+ *      <a:state id="stIdle" />
+ *  </a:state-group>
  * </code>
  * Example:
  * This example shows a label using property binding to get it's caption
  * based on the current state.
  * <code>
- *  <j:state group="stRole" id="stUser" caption="You are a user" active="true" />
- *  <j:state group="stRole" id="stAdmin" caption="You have super powers" />
+ *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
+ *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
  *
- *  <j:label value="{stRole.caption}" />
- *  <j:button onclick="stAdmin.activate()">Become admin</j:button>
+ *  <a:label value="{stRole.caption}" />
+ *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
  * </code>
  *
  * @event change Fires when the active property of this element changes.

@@ -33,13 +33,13 @@ var __ANCHORING__ = 1 << 13;
  * This example shows a bar that has 10% as a margin around it and contains a
  * frame that is displayed using different calculations and settings.
  * <code>
- *  <j:bar width="80%" height="80%" top="10%" left="10%">
- *      <j:frame title="Example"
+ *  <a:bar width="80%" height="80%" top="10%" left="10%">
+ *      <a:frame title="Example"
  *          left    = "50%+10"
  *          top     = "100"
  *          right   = "10%"
  *          bottom  = "Math.round(0.232*100)" />
- *  </j:bar>
+ *  </a:bar>
  * </code>
  * Remarks:
  * This is one of three positioning methods.
@@ -104,22 +104,22 @@ apf.Anchoring = function(){
      *
      * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar left="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar left="(20% + 10) * SOME_JS_VAR" />
      * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this element to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar right="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar right="(20% + 10) * SOME_JS_VAR" />
      * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar width="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar width="(20% + 10) * SOME_JS_VAR" />
      * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this element to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar top="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar top="(20% + 10) * SOME_JS_VAR" />
      * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this element to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar bottom="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar bottom="(20% + 10) * SOME_JS_VAR" />
      * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
-     * <j:bar height="(20% + 10) * SOME_JS_VAR" />
+     * <a:bar height="(20% + 10) * SOME_JS_VAR" />
      */
     this.enableAnchoring = function(){
         if (inited) //@todo add code to reenable anchoring rules (when showing)

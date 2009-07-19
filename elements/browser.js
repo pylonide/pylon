@@ -43,16 +43,16 @@
  * Example:
  * Sets the url based on data loaded into this component.
  * <code>
- *  <j:browser>
- *      <j:bindings>
- *          <j:value select="@url" />
- *      </j:bindings>
- *  </j:browser>
+ *  <a:browser>
+ *      <a:bindings>
+ *          <a:value select="@url" />
+ *      </a:bindings>
+ *  </a:browser>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:colorpicker ref="@url" />
+ *  <a:colorpicker ref="@url" />
  * </code>
  */
 apf.browser = apf.component(apf.NODE_VISIBLE, function(){

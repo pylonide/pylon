@@ -27,7 +27,7 @@
 
 /**
  * Element allowing special form functionality to a set of AML
- * elements. This element is an alias for j:xforms offering
+ * elements. This element is an alias for xforms offering
  * xform compatible strategies with relation to submitting the form's data.
  * This element also offers form paging, including validation across pages.
  * Buttons placed inside this element can contain an action
@@ -796,15 +796,15 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     /**
      * Submit this form
      * Example:
-     *  <j:submitform
+     *  <a:submitform
      *    [action="url" method="get|post|urlencoded-post" [ref="/"] ]
      *    [submit="<save_data>"]
      *    [submittype="json|xml|native"]
      *    [useelements="boolean"]
      *    [model="id"]
      *  >
-     *    <j:Button action="submit" [submission="@id"] [model=""] />
-     *  </j:submitform>
+     *    <a:Button action="submit" [submission="@id"] [model=""] />
+     *  </a:submitform>
      */
     this.submit = function(submissionId){
         if(!this.isValid()) return;

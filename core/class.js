@@ -33,8 +33,8 @@
  * Let me give you an example to make it a bit straightforward. This example 
  * sets the visibility of the slider based on the state of the checkbox.
  * <code>
- * <j:slider visible="{myCheckbox.value}" />
- * <j:checkbox id="myCheckbox">Toggle this</j:checkbox>
+ * <a:slider visible="{myCheckbox.value}" />
+ * <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
  * </code>
  *
  * Expressions:
@@ -52,14 +52,14 @@
  * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
  * sync with the state of the tab page.
  * <code>
- *  <j:tab activepage="[myDropdown.value]">
- *     <j:page caption="Page 1" />
+ *  <a:tab activepage="[myDropdown.value]">
+ *     <a:page caption="Page 1" />
  *     <!-- etc -->
- *  </j:tab>
- *  <j:dropdown id="myDropdown">
- *     <j:item value="0">Page 1</j:item>
+ *  </a:tab>
+ *  <a:dropdown id="myDropdown">
+ *     <a:item value="0">Page 1</a:item>
  *     <!-- etc -->
- *  </j:dropdown>
+ *  </a:dropdown>
  * </code>
  *
  * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
@@ -320,7 +320,7 @@ apf.Class = function(){
     /**
      * Sets a dynamic property from a string.
      * The string used for this function is the same as used in AML to set a dynamic property:
-     * <j:button visible="{rbTest.value == 'up'}" />
+     * <a:button visible="{rbTest.value == 'up'}" />
      *
      * @param  {String}  prop   the name of the property of this element to set using a dynamic rule.
      * @param  {String}  pValue the dynamic property binding rule.

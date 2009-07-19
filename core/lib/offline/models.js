@@ -27,7 +27,7 @@
  * offline element in AML.
  * Example:
  * <code>
- *  <j:offline realtime="true" />
+ *  <a:offline realtime="true" />
  * </code>
  *
  * @define offline

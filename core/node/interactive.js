@@ -28,7 +28,7 @@ var __INTERACTIVE__ = 1 << 21;
  * element draggable and resizable.
  * Example:
  * <code>
- *  <j:textarea draggable="true" resizable="true" />
+ *  <a:textarea draggable="true" resizable="true" />
  * </code>
  * 
  * @attribute {Boolean} draggable whether an element is draggable. The user will
@@ -36,7 +36,7 @@ var __INTERACTIVE__ = 1 << 21;
  * element.
  * Example:
  * <code>
- *  <j:bar draggable="true" />
+ *  <a:bar draggable="true" />
  * </code>
  * @attribute {Boolean} resizable whether an element is resizable. The user will able
  * to resize the element by grabbing one of the four edges of the element and 
@@ -46,7 +46,7 @@ var __INTERACTIVE__ = 1 << 21;
  * area can be configured in the skin of the element.
  * Example:
  * <code>
- *  <j:window resizable="true" />
+ *  <a:window resizable="true" />
  * </code>
  * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
  * @attribute {Number} minheight the minimum vertical size the element can get when resizing.

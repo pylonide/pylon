@@ -34,7 +34,7 @@
  * element in AML.
  * Example:
  * <code>
- *  <j:offline 
+ *  <a:offline 
  *      realtime  = "true" 
  *      set       = "url:store_session.jsp" 
  *      onrestore = "return confirm('Would you like to continue where you left of?')" />

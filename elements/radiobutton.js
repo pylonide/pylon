@@ -156,23 +156,23 @@ apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
  * <code>
- *  <j:frame title="Options">
- *      <j:radiobutton>Option 1</j:radiobutton>
- *      <j:radiobutton>Option 2</j:radiobutton>
- *      <j:radiobutton>Option 3</j:radiobutton>
- *      <j:radiobutton>Option 4</j:radiobutton>
- *  </j:frame>
+ *  <a:frame title="Options">
+ *      <a:radiobutton>Option 1</a:radiobutton>
+ *      <a:radiobutton>Option 2</a:radiobutton>
+ *      <a:radiobutton>Option 3</a:radiobutton>
+ *      <a:radiobutton>Option 4</a:radiobutton>
+ *  </a:frame>
  * </code>
  * Example:
  * This example shows radio buttons with an explicit group set:
  * <code>
- *  <j:label>Options</j:label>
- *  <j:radiobutton group="g1">Option 1</j:radiobutton>
- *  <j:radiobutton group="g1">Option 2</j:radiobutton>
+ *  <a:label>Options</a:label>
+ *  <a:radiobutton group="g1">Option 1</a:radiobutton>
+ *  <a:radiobutton group="g1">Option 2</a:radiobutton>
  *
- *  <j:label>Choices</j:label>
- *  <j:radiobutton group="g2">Choice 1</j:radiobutton>
- *  <j:radiobutton group="g2">Choice 2</j:radiobutton>
+ *  <a:label>Choices</a:label>
+ *  <a:radiobutton group="g2">Choice 1</a:radiobutton>
+ *  <a:radiobutton group="g2">Choice 2</a:radiobutton>
  * </code>
  *
  * @constructor
@@ -191,18 +191,18 @@ apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
  * Example:
  * Sets the selection based on data loaded into this component.
  * <code>
- *  <j:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</j:radiobutton>
- *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
+ *  <a:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</a:radiobutton>
+ *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  *
- *  <j:bindings id="bndExample">
- *      <j:value select="@value" />
- *  </j:bindings>
+ *  <a:bindings id="bndExample">
+ *      <a:value select="@value" />
+ *  </a:bindings>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:radiobutton group="g2" ref="@value" value="1">Choice 1</j:radiobutton>
- *  <j:radiobutton group="g2" value="2">Choice 2</j:radiobutton>
+ *  <a:radiobutton group="g2" ref="@value" value="1">Choice 1</a:radiobutton>
+ *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  * </code>
  *
  * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 

@@ -30,39 +30,39 @@
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
  * <code>
- * <j:spinner value="6" min="-99" max="199"></j:spinner>
+ * <a:spinner value="6" min="-99" max="199"></a:spinner>
  * </code>
  * 
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- * <j:spinner>
- *     <j:bindings>
- *         <j:value select="@value" />
- *     </j:bindings>
- * </j:spinner>
+ * <a:spinner>
+ *     <a:bindings>
+ *         <a:value select="@value" />
+ *     </a:bindings>
+ * </a:spinner>
  * </code>
  * 
  * Example:
  * A shorter way to write this is:
  * <code>
- * <j:spinner ref="@value" />
+ * <a:spinner ref="@value" />
  * </code>
  * 
  * Example:
  * Is showing usage of model in spinner connected with textbox
  * <code>
- * <j:model id="mdlTest">
+ * <a:model id="mdlTest">
  *     <overview page="1" pages="50" />
- * </j:model>
- * <j:spinner id="spinner" min="0" model="mdlTest">
- *     <j:bindings>
- *         <j:value select = "@page" />
- *         <j:max select   = "@pages" />
- *         <j:caption><![CDATA[{@page} of {@pages}, it's possible to add more text]]></j:caption>
- *     </j:bindings>
- * </j:spinner>
- * <j:textbox value="{spinner.caption}"></j:textbox>
+ * </a:model>
+ * <a:spinner id="spinner" min="0" model="mdlTest">
+ *     <a:bindings>
+ *         <a:value select = "@page" />
+ *         <a:max select   = "@pages" />
+ *         <a:caption><![CDATA[{@page} of {@pages}, it's possible to add more text]]></a:caption>
+ *     </a:bindings>
+ * </a:spinner>
+ * <a:textbox value="{spinner.caption}"></a:textbox>
  * </code>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000

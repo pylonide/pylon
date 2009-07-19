@@ -259,7 +259,7 @@ apf = {
         if (amlContext) {
             var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
-                .replace(/xmlns:j="[^"]*"\s*/g, "");
+                .replace(/xmlns:a="[^"]*"\s*/g, "");
             
             //Set file and line number
             str.push("aml file: [line: " + linenr + "] " + file);

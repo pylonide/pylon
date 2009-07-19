@@ -368,7 +368,7 @@ apf.VirtualViewport = function(){
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
     
     /**
-     * @example <j:load get="call:getCategory(start, length, ascending)" total="@total" />
+     * @example <a:load get="call:getCategory(start, length, ascending)" total="@total" />
      */
     this.$loadPartialData = function(marker, start, length){
         //We should have a queing system here, disabled the check for now
@@ -388,7 +388,7 @@ apf.VirtualViewport = function(){
                 throw new Error("Could not find model");
             
             if (!rule.getAttribute("total")) {
-                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
+                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"))                
             }
             //#endif
 

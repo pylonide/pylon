@@ -141,10 +141,10 @@ apf.editor.plugin('link', function(){
         //#endif
 
         this.appendAmlNode(
-            '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
-             <j:button caption="' + this.editor.translate('insert') + '" \
+            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
+             <a:button caption="' + this.editor.translate('insert') + '" \
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
-             </j:bar></j:toolbar>',
+             </a:bar></a:toolbar>',
           document.getElementById(idBtns))
 
         return panelBody;

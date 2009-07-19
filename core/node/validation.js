@@ -27,21 +27,21 @@ var __VALIDATION__ = 1 << 6;
  * All elements inheriting from this {@link term.baseclass baseclass} have validation support.
  * Example:
  * <code>
- *  <j:bar validgroup="vgExample">
- *      <j:label>Number</j:label>
- *      <j:textbox required="true" min="3" max="10" 
+ *  <a:bar validgroup="vgExample">
+ *      <a:label>Number</a:label>
+ *      <a:textbox required="true" min="3" max="10" 
  *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
- *      <j:label>Name</j:label>
- *      <j:textbox required="true" minlength="3" 
+ *      <a:label>Name</a:label>
+ *      <a:textbox required="true" minlength="3" 
  *        invalidmsg="Invalid Entry;Please enter your name" />
- *      <j:label>Message</j:label>
- *      <j:textarea required="true" 
+ *      <a:label>Message</a:label>
+ *      <a:textarea required="true" 
  *        invalidmsg="Invalid Message;Please enter a message!" />
  *
- *      <j:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *      <a:button onclick="if(vgExample.isValid()) alert('valid!')">
  *          Validate
- *      </j:button>
- *  </j:bar>
+ *      </a:button>
+ *  </a:bar>
  * </code>
  *
  * @event invalid    Fires when this component goes into an invalid state.
@@ -546,20 +546,20 @@ apf.Validation = function(){
  * is not valid shows the errorbox.
  * Example:
  * <code>
- *  <j:bar validgroup="vgForm">
- *      <j:label>Phone number</j:label>
- *      <j:textbox id="txtPhone"
+ *  <a:bar validgroup="vgForm">
+ *      <a:label>Phone number</a:label>
+ *      <a:textbox id="txtPhone"
  *          required   = "true"
  *          pattern    = "(\d{3}) \d{4} \d{4}"
  *          invalidmsg = "Incorrect phone number entered" />
  *
- *      <j:label>Password</j:label>
- *      <j:textbox
+ *      <a:label>Password</a:label>
+ *      <a:textbox
  *          required   = "true"
  *          mask       = "password"
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
- *  </j:bar>
+ *  </a:bar>
  * </code>
  *
  * To check if the element has valid information entered, leaving the textbox

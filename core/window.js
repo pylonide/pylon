@@ -1336,7 +1336,7 @@ apf.DocumentImplementation = function(){
     this.documentElement = {
         //#ifdef __USE_TOSTRING
         toString : function(){
-            return "[Document Element Node, <j:application />]";
+            return "[Document Element Node, <a:application />]";
         },
         //#endif
 

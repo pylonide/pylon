@@ -27,26 +27,26 @@
  * Example:
  * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
  * <code>
- *  <j:teleport>
- *      <j:rpc id="comm" protocol="cgi">
- *          <j:method
+ *  <a:teleport>
+ *      <a:rpc id="comm" protocol="cgi">
+ *          <a:method
  *            name    = "searchProduct"
  *            url     = "http://example.com/search.php"
  *            receive = "processSearch">
- *              <j:variable name="search" />
- *              <j:variable name="page" />
- *              <j:variable name="textbanner" value="1" />
- *          </j:method>
- *          <j:method
+ *              <a:variable name="search" />
+ *              <a:variable name="page" />
+ *              <a:variable name="textbanner" value="1" />
+ *          </a:method>
+ *          <a:method
  *            name = "loadProduct"
  *            url  = "http://example.com/show-product.php">
- *              <j:variable name="id" />
- *              <j:variable name="search_id" />
- *          </j:method>
- *      </j:rpc>
- *  </j:teleport>
+ *              <a:variable name="id" />
+ *              <a:variable name="search_id" />
+ *          </a:method>
+ *      </a:rpc>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
  *          alert(data)
@@ -54,33 +54,33 @@
  *
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
- *  </j:script>
+ *  </a:script>
  * </code>
  * Example:
  * Example of the {@link teleport.soap rpc module with the soap protocol}.
  * <code>
- *  <j:teleport>
- *      <j:rpc id="comm" 
+ *  <a:teleport>
+ *      <a:rpc id="comm" 
  *        protocol    = "soap" 
  *        url         = "http://example.com/show-product.php" 
  *        soap-prefix = "m" 
  *        soap-xmlns  = "http://example.com">
- *          <j:method 
+ *          <a:method 
  *            name    = "searchProduct" 
  *            receive = "processSearch">
- *              <j:variable name="search" />
- *              <j:variable name="page" />
- *              <j:variable name="textbanner" value="1" />
- *          </j:method>
- *          <j:method 
+ *              <a:variable name="search" />
+ *              <a:variable name="page" />
+ *              <a:variable name="textbanner" value="1" />
+ *          </a:method>
+ *          <a:method 
  *            name = "loadProduct">
- *              <j:variable name="id" />
- *              <j:variable name="search_id" />
- *          </j:method>
- *      </j:rpc>
- *  </j:teleport>
+ *              <a:variable name="id" />
+ *              <a:variable name="search_id" />
+ *          </a:method>
+ *      </a:rpc>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
  *          alert(data)
@@ -88,33 +88,33 @@
  *
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
- *  </j:script>
+ *  </a:script>
  * </code>
  * Example:
  * Writing to a file with a WebDAV connector
  * <code>
- *  <j:teleport>
- *      <j:webdav id="myWebDAV"
+ *  <a:teleport>
+ *      <a:webdav id="myWebDAV"
  *        url   = "http://my-webdav-server.com/dav_files/" />
- *  </j:teleport>
+ *  </a:teleport>
  *     
- *  <j:script>
+ *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
- *  </j:script>
+ *  </a:script>
  * </code>
  * Example:
  * XMPP connector with new message notification
  * <code>
- *  <j:teleport>
- *      <j:xmpp id="myXMPP"
+ *  <a:teleport>
+ *      <a:xmpp id="myXMPP"
  *        url           = "http://my-jabber-server.com:5280/http-bind"
  *        model         = "mdlRoster"
  *        connection    = "bosh"
  *        onreceivechat = "messageReceived(arguments[0].from)" />
- *  </j:teleport>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      // This function is called when a message has arrived
  *      function messageReceived(from){
  *          alert('Received message from ' + from);
@@ -123,7 +123,7 @@
  *      // Send a message to John
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
  *          apf.xmpp.MSG_CHAT);
- *  </j:script>
+ *  </a:script>
  * </code>
  * 
  * @define teleport

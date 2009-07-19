@@ -31,17 +31,17 @@
  * two methods which can be called. The return of the first method is handled
  * by a javascript function called processSearch.
  * <code>
- *  <j:teleport>
- *      <j:rpc id="comm" protocol="xmlrpc">
- *          <j:method
+ *  <a:teleport>
+ *      <a:rpc id="comm" protocol="xmlrpc">
+ *          <a:method
  *            name    = "searchProduct"
  *            receive = "processSearch" />
- *          <j:method
+ *          <a:method
  *            name = "loadProduct" />
- *      </j:rpc>
- *  </j:teleport>
+ *      </a:rpc>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
  *          alert(data)
@@ -49,7 +49,7 @@
  *
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * @define rpc
@@ -94,7 +94,7 @@ apf.rpc = function(){
         if (names.length && !this.namedArguments) {
             throw new Error(apf.formatErrorString(0, null,
                 "Parsing Teleport definition", 
-                "Found j:variable element, but this protocol does not support\
+                "Found variable element, but this protocol does not support\
                 name based arguments."));
         }
         //#endif
@@ -271,15 +271,15 @@ apf.rpc = function(){
      * @attribute {String}  name             the name of the method. This name will be available on the rpc object as a javascript method.
      * Example:
      * <code>
-     *  <j:teleport>
-     *      <j:rpc id="comm" protocol="xmlrpc">
-     *          <j:method name="save" />
-     *      </j:rpc>
-     *  </j:teleport>
+     *  <a:teleport>
+     *      <a:rpc id="comm" protocol="xmlrpc">
+     *          <a:method name="save" />
+     *      </a:rpc>
+     *  </a:teleport>
      *
-     *  <j:script>
+     *  <a:script>
      *      comm.save(data);
-     *  </j:script>
+     *  </a:script>
      * </code>
      * @attribute {String}  [url]            the location of the server that is recipient of the rpc message.
      * @attribute {String}  [callback]       the name of the method that handles the return of the call.

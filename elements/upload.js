@@ -32,17 +32,17 @@
  * asp script returns an xml string which is added to the list of images on a
  * successfull upload.
  * <code>
- *  <j:list id="lstImages" smartbinding="..." model="..." />
+ *  <a:list id="lstImages" smartbinding="..." model="..." />
  *
- *  <j:upload id="uplMain"
+ *  <a:upload id="uplMain"
  *    target    = "../api/UploadPicture.asp"
  *    ontimeout = "alert('It seems the server went away')"
  *    oncancel  = "alert('Could not upload logo')"
  *    onreceive = "lstImages.add(arguments[0])" />
  *
- *  <j:button caption="Browse file..." onclick="uplMain.browse()" 
+ *  <a:button caption="Browse file..." onclick="uplMain.browse()" 
  *    disabled="{uplMain.uploading}" />
- *  <j:button caption="{uplMain.uploading ? 'Cancel' : 'Send'}" 
+ *  <a:button caption="{uplMain.uploading ? 'Cancel' : 'Send'}" 
  *    disabled="{!uplMain.value}" onclick="
  *      if (uplMain.uploading)
  *          uplMain.cancel();
@@ -71,16 +71,16 @@
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- *  <j:upload>
- *      <j:bindings>
- *          <j:value select="@filename" />
- *      </j:bindings>
- *  </j:upload>
+ *  <a:upload>
+ *      <a:bindings>
+ *          <a:value select="@filename" />
+ *      </a:bindings>
+ *  </a:upload>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:upload ref="@filename" />
+ *  <a:upload ref="@filename" />
  * </code>
  *
  * @todo get server side information to update the progressbar.
@@ -104,8 +104,8 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
      * When the skin doesn't have a progressbar you can use property binding to
      * update a seperate or central progressbar.
      * <code>
-     *  <j:upload id="upExample" />
-     *  <j:progressbar value="{upExample.progress}" />
+     *  <a:upload id="upExample" />
+     *  <a:progressbar value="{upExample.progress}" />
      * </code>
      */
     this.$supportedProperties.push("value", "target", "progress", "uploading", "rel");

@@ -26,7 +26,7 @@
  * Creating a new element for JPF may now be as easy as:
  * Example:
  * <code language="javascript">
- * // create a new AML component: <j:foo />
+ * // create a new AML component: <a:foo />
  * apf.foo = apf.component(apf.NODE_VISIBLE, {
  *     // component body (method and property declaration)
  * }).implement(apf.barInterface);

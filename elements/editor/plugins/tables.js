@@ -370,22 +370,22 @@ apf.editor.plugin('tablewizard', function() {
     this.createContextMenu = function(){
         var idMenu = "editor_" + this.uniqueId + "_menu";
         this.appendAmlNode('\
-            <j:menu xmlns:j="' + apf.ns.aml + '" id="' + idMenu + '">\
-                <j:item value="rowbefore">Insert row before</j:item>\
-                <j:item value="rowbefore">Insert row after</j:item>\
-                <j:item value="deleterow">Delete row</j:item>\
-                <j:divider />\
-                <j:item value="colbefore">Insert column before</j:item>\
-                <j:item value="colafter">Insert column after</j:item>\
-                <j:item value="deletecol">Delete column</j:item>\
-                <j:divider />\
-                <j:item value="splitcells">Split merged table cells</j:item>\
-                <j:item value="mergecells">Merge table cells</j:item>\
-            </j:menu>', document.body);
+            <a:menu xmlns:a="' + apf.ns.aml + '" id="' + idMenu + '">\
+                <a:item value="rowbefore">Insert row before</a:item>\
+                <a:item value="rowbefore">Insert row after</a:item>\
+                <a:item value="deleterow">Delete row</a:item>\
+                <a:divider />\
+                <a:item value="colbefore">Insert column before</a:item>\
+                <a:item value="colafter">Insert column after</a:item>\
+                <a:item value="deletecol">Delete column</a:item>\
+                <a:divider />\
+                <a:item value="splitcells">Split merged table cells</a:item>\
+                <a:item value="mergecells">Merge table cells</a:item>\
+            </a:menu>', document.body);
         //nodes disabled:
-        // <j:divider />\
-        // <j:item value="rowprops">Table row properties</j:item>\
-        // <j:item value="colprops">Table column properties</j:item>\
+        // <a:divider />\
+        // <a:item value="rowprops">Table row properties</a:item>\
+        // <a:item value="colprops">Table column properties</a:item>\
         var oMenu = apf.editor.oMenu = self[idMenu];
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)

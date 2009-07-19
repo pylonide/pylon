@@ -31,13 +31,13 @@ var __DATABINDING__ = 1 << 1;
  * the representation will change the underlying data.
  * Example:
  * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:icon select="@icon" />
- *          <j:caption select="text()" />
- *          <j:traverse select="item" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list>
+ *      <a:bindings>
+ *          <a:icon select="@icon" />
+ *          <a:caption select="text()" />
+ *          <a:traverse select="item" />
+ *      </bindings>
+ *  </a:list>
  * </code>
  *
  * @event error             Fires when a communication error has occured while making a request for this element.
@@ -178,10 +178,10 @@ apf.DataBinding = function(){
     };
 	
     /**
-     * Loads the binding rules from the j:bindings element
+     * Loads the binding rules from the bindings element
      *
      * @param {Array}   rules     the rules array created using {@link core.apf.method.getrules}
-     * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
+     * @param {XMLElement} [xmlNode] the reference to the bindings xml element
      * @see  element.smartbinding
      * @private
      */
@@ -239,10 +239,10 @@ apf.DataBinding = function(){
     };
 
     /**
-     * Loads the action rules from the j:actions element
+     * Loads the action rules from the actions element
      *
      * @param {Array}       rules     the rules array created using {@link core.apf.method.getrules}
-     * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
+     * @param {XMLElement}  [xmlNode] the reference to the bindings element
      * @see  element.smartbinding
      * @private
      */
@@ -354,7 +354,7 @@ apf.DataBinding = function(){
      * that need it. The following example shows a lock request for a rename
      * action on a file browser tree.
      * <code>
-     *  <j:rename set="..." lock="rpc:comm.lockFile({@path}, unlock)" />
+     *  <a:rename set="..." lock="rpc:comm.lockFile({@path}, unlock)" />
      * </code>
      * The unlock variable is true when the lock needs to be released. This is
      * done when the action was cancelled after getting a lock. For instance
@@ -377,7 +377,7 @@ apf.DataBinding = function(){
      
     /**
      *  Start the specified action, does optional locking and can be offline aware
-     *  - or for optimistic locking it will record the timestamp (a setting <j:appsettings locking="optimistic")
+     *  - or for optimistic locking it will record the timestamp (a setting <a:appsettings locking="optimistic")
      *  - During offline work, optimistic locks will be handled by taking the timestamp of going offline
      *  - This method is always optional! The server should not expect locking to exist.
      *
@@ -566,7 +566,7 @@ apf.DataBinding = function(){
      *   setValueByXpath    sets the nodeValue of an xml node whiche is selected by an xpath statement. Arguments are [xmlNode, xpath, value]
      *   multicall          calls multiple of these actions. Arguments is an array of argument arrays for these actions each with a func property which is the name of the action.
      * @param {Array}       args          the arguments to the function specified in <code>atAction</code>.
-     * @param {String}      action        the name of the action rule defined in j:actions for this element.
+     * @param {String}      action        the name of the action rule defined in actions for this element.
      * @param {XMLElement}  xmlNode       the context for the action rules.
      * @param {Boolean}     [noevent]     whether or not to call events.
      * @param {XMLElement}  [contextNode] the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
@@ -661,8 +661,8 @@ apf.DataBinding = function(){
 
     /**
      * Executes an action based on the set name and the new value
-     * @param {String}      atName   the name of the action rule defined in j:actions for this element.
-     * @param {String}      setName  the name of the binding rule defined in j:bindings for this element.
+     * @param {String}      atName   the name of the action rule defined in actions for this element.
+     * @param {String}      setName  the name of the binding rule defined in bindings for this element.
      * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
      * @param {String}      value    the new value of the node
      * @private
@@ -741,8 +741,8 @@ apf.DataBinding = function(){
      * Example:
      * This is how it's achieved using the Ajax.org Markup Language.
      * <code>
-     *  <j:list id="lstExample" />
-     *  <j:text model="#lstExample:select" />
+     *  <a:list id="lstExample" />
+     *  <a:text model="#lstExample:select" />
      * </code>
      *
      * @param {AmlNode} oElement  AmlNode specifying the element which is connected to this element.
@@ -1348,20 +1348,20 @@ apf.DataBinding = function(){
      * data in to a presentation.
      * Example:
      * <code>
-     *  <j:list id="lstExample">
-     *      <j:bindings>
-     *          <j:caption select="text()" />
-     *          <j:icon select="@icon" />
-     *          <j:traverse select="image" />
-     *      </j:bindings>
-     *  </j:list>
+     *  <a:list id="lstExample">
+     *      <a:bindings>
+     *          <a:caption select="text()" />
+     *          <a:icon select="@icon" />
+     *          <a:traverse select="image" />
+     *      </bindings>
+     *  </a:list>
      *
-     *  <j:script>
+     *  <a:script>
      *      lstExample.load('<images>\
      *          <image icon="icoTest.gif">image 1</image>\
      *          <image icon="icoTest.gif">image 2</image>\
      *          <image icon="icoTest.gif">image 3</image>');
-     *  </j:script>
+     *  </a:script>
      * </code>
      *
      * @param {mixed}  [xmlRootNode]
@@ -1524,14 +1524,14 @@ apf.DataBinding = function(){
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
      * <code>
-     *  <j:list id="lstExample" smartbinding="..." />
+     *  <a:list id="lstExample" smartbinding="..." />
      *
-     *  <j:text model="#lstExample">
-     *      <j:bindings>
-     *          <j:load get="url:getMessage.php?id={@id}" />
-     *          <j:contents select="message/text()" />
-     *      </j:bindings>
-     *  </j:text>
+     *  <a:text model="#lstExample">
+     *      <a:bindings>
+     *          <a:load get="url:getMessage.php?id={@id}" />
+     *          <a:contents select="message/text()" />
+     *      </bindings>
+     *  </a:text>
      * </code>
      * @attribute {string} get the {@link term.datainstruction data instruction} that is used to load data into the xmlRoot of this component.
      */
@@ -1779,16 +1779,16 @@ apf.DataBinding = function(){
      * Example:
      * This example shows a tree which also renders the root element.
      * <code>
-     *  <j:tree render-root="true">
-     *      <j:model>
+     *  <a:tree render-root="true">
+     *      <a:model>
      *          <root name="My Computer">
      *              <drive letter="C">
      *                  <folder path="/Program Files" />
      *                  <folder path="/Desktop" />
      *              </drive>
      *          </root>
-     *      </j:model>
-     *  </j:tree>
+     *      </a:model>
+     *  </a:tree>
      * </code>
      */
     this.$booleanProperties["render-root"] = true;
@@ -1825,8 +1825,8 @@ apf.DataBinding = function(){
      * position of the progressbar should be updated by the script taking care
      * of loading the data.
      * <code>
-     *  <j:list loading-message="{'Loading ' + Math.round(progress1.value*100) + '%'}" />
-     *  <j:progressbar id="progress1" />
+     *  <a:list loading-message="{'Loading ' + Math.round(progress1.value*100) + '%'}" />
+     *  <a:progressbar id="progress1" />
      * </code>
      * Remarks:
      * Usually a static loading message is displayed for only 100 milliseconds
@@ -1836,12 +1836,12 @@ apf.DataBinding = function(){
      * changes, the list loads new data by extending the model. During the load
      * of this new data the loading message is displayed.
      * <code>
-     *  <j:list model="#trFolders">
-     *      <j:bindings>
+     *  <a:list model="#trFolders">
+     *      <a:bindings>
      *          ...
-     *          <j:load load="rpc:comm.getFiles({@path})" />
-     *      </j:bindings>
-     *  </j:list>
+     *          <a:load load="rpc:comm.getFiles({@path})" />
+     *      </bindings>
+     *  </a:list>
      * </code>
      */
     this.$propHandlers["loading-message"] = function(value){
@@ -1880,24 +1880,24 @@ apf.DataBinding = function(){
      * is created and under that a 'name' element with a textnode containing
      * the entered text.
      * <code>
-     *  <j:model id="mdlForm" submission="url:save_form.php" />
+     *  <a:model id="mdlForm" submission="url:save_form.php" />
      *
-     *  <j:bar>
-     *      <j:label>Name</j:label>
-     *      <j:textbox ref="name" required="true" />
+     *  <a:bar>
+     *      <a:label>Name</a:label>
+     *      <a:textbox ref="name" required="true" />
      *
-     *      <j:label>Address</j:label>
-     *      <j:textarea ref="address" />
+     *      <a:label>Address</a:label>
+     *      <a:textarea ref="address" />
      *
-     *      <j:label>Country</j:label>
-     *      <j:dropdown 
+     *      <a:label>Country</a:label>
+     *      <a:dropdown 
      *        ref      = "country" 
      *        model    = "url:countries.xml" 
      *        traverse = "country" 
      *        caption  = "@name" />
      *
-     *      <j:button action="submit">Submit</j:button>
-     *  </j:bar>
+     *      <a:button action="submit">Submit</a:button>
+     *  </a:bar>
      * </code>
      */
     this.$propHandlers["create-model"] = function(value){
@@ -1921,54 +1921,54 @@ apf.DataBinding = function(){
      * This example shows a fully specified smartbinding. Usually only parts
      * are used. This example shows a tree with files and folders.
      * <code>
-     *  <j:tree smartbinding="sbExample" />
+     *  <a:tree smartbinding="sbExample" />
      *
-     *  <j:smartbinding id="sbExample">
-     *      <j:bindings>
-     *          <j:caption  select = "@name"/>
-     *          <j:icon     select = "self::file"
+     *  <a:smartbinding id="sbExample">
+     *      <a:bindings>
+     *          <a:caption  select = "@name"/>
+     *          <a:icon     select = "self::file"
      *                      value  = "icoFile.gif" />
-     *          <j:icon     value  = "icoFolder.gif" />
-     *          <j:traverse select = "file|folder|root" />
-     *      </j:bindings>
-     *      <j:actions>
-     *          <j:remove set = "url:remove.php?path={@path}" />
-     *          <j:rename set = "url:move.php?from=oldValue&to={@path}" />
-     *      </j:actions>
-     *      <j:dragdrop>
-     *          <j:allow-drag select = "folder|file" />
-     *          <j:allow-drop select = "folder" 
+     *          <a:icon     value  = "icoFolder.gif" />
+     *          <a:traverse select = "file|folder|root" />
+     *      </bindings>
+     *      <a:actions>
+     *          <a:remove set = "url:remove.php?path={@path}" />
+     *          <a:rename set = "url:move.php?from=oldValue&to={@path}" />
+     *      </actions>
+     *      <a:dragdrop>
+     *          <a:allow-drag select = "folder|file" />
+     *          <a:allow-drop select = "folder" 
      *                        target = "root"
      *                        operation = "tree-append" />
-     *          <j:allow-drop select = "folder" 
+     *          <a:allow-drop select = "folder" 
      *                        target = "folder"
      *                        operation = "insert-before" />
-     *          <j:allow-drop select = "file"   
+     *          <a:allow-drop select = "file"   
      *                        target = "folder|root" 
      *                        soperation = "tree-append" />
-     *          <j:allow-drop select = "file"   
+     *          <a:allow-drop select = "file"   
      *                        target = "file"        
      *                        operation = "insert-before" />
-     *      </j:dragdrop>
-     *      <j:model load="url:get_listing.php" />
-     *  </j:smartbinding>
+     *      </a:dragdrop>
+     *      <a:model load="url:get_listing.php" />
+     *  </a:smartbinding>
      * </code>
      * Remarks:
      * The smartbinding parts can also be assigned to an element by adding them
      * directly as a child in aml.
      * <code>
-     *  <j:tree>
-     *      <j:bindings>
+     *  <a:tree>
+     *      <a:bindings>
      *          ...
-     *      </j:bindings>
-     *      <j:actions>
+     *      </bindings>
+     *      <a:actions>
      *          ...
-     *      </j:actions>
-     *      <j:dragdrop>
+     *      </actions>
+     *      <a:dragdrop>
      *          ...
-     *      </j:dragdrop>
-     *      <j:model />
-     *  </j:tree>
+     *      </a:dragdrop>
+     *      <a:model />
+     *  </a:tree>
      * </code>
      *
      * See:
@@ -2015,7 +2015,7 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} bindings the id of the j:bindings element which
+     * @attribute {String} bindings the id of the bindings element which
      * provides the binding rules for this element.
      * Example:
      * This example shows a set of binding rules that transform data into the
@@ -2023,13 +2023,13 @@ apf.DataBinding = function(){
      * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
      * <code>
-     *  <j:list bindings="bndExample" />
+     *  <a:list bindings="bndExample" />
      *
-     *  <j:bindings id="bndExample">
-     *      <j:caption>{text()} (#'mail[@read=0]')</j:caption>
-     *      <j:icon     select = "@icon" />
-     *      <j:traverse select = "account" sort="text()" />
-     *  </j:bindings>
+     *  <a:bindings id="bndExample">
+     *      <a:caption>{text()} (#'mail[@read=0]')</a:caption>
+     *      <a:icon     select = "@icon" />
+     *      <a:traverse select = "account" sort="text()" />
+     *  </bindings>
      * </code>
      * Remarks:
      * Bindings can also be assigned directly by putting the bindings tag as a
@@ -2039,7 +2039,7 @@ apf.DataBinding = function(){
      * short way by adding an attribute with the name of the rule to the
      * element itself:
      * <code>
-     *  <j:list caption="text()" icon="@icon" traverse="item" />
+     *  <a:list caption="text()" icon="@icon" traverse="item" />
      * </code>
      */
     this.$propHandlers["bindings"] = function(value){
@@ -2065,18 +2065,18 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} actions the id of the j:actions element which
+     * @attribute {String} actions the id of the actions element which
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
      * Example:
      * <code>
-     *  <j:tree actions="actExample" />
+     *  <a:tree actions="actExample" />
      *
-     *  <j:actions id="actExample">
-     *      <j:rename set="rpc:comm.update({@id}, {@name})" />
-     *      <j:remove set="rpc:comm.remove({@id})" />
-     *      <j:add get="rpc:comm.add({../@id})" />
-     *  </j:actions>
+     *  <a:actions id="actExample">
+     *      <a:rename set="rpc:comm.update({@id}, {@name})" />
+     *      <a:remove set="rpc:comm.remove({@id})" />
+     *      <a:add get="rpc:comm.add({../@id})" />
+     *  </actions>
      * </code>
      */
     this.$propHandlers["actions"] = function(value){
@@ -2237,33 +2237,33 @@ apf.DataBinding = function(){
      * datainstruction to load data.
      * Example:
      * <code>
-     *  <j:tree model="mdlExample" />
-     *  <j:model id="mdlExample" load="url:example.xml" />
+     *  <a:tree model="mdlExample" />
+     *  <a:model id="mdlExample" load="url:example.xml" />
      * </code>
      * Example:
      * <code>
-     *  <j:list model="url:friends.xml" />
+     *  <a:list model="url:friends.xml" />
      * </code>
      * Example:
      * <code>
-     *  <j:tree id="trContacts" model="rpc:comm.getContacts()" />
-     *  <j:text model="#trContacts" />
+     *  <a:tree id="trContacts" model="rpc:comm.getContacts()" />
+     *  <a:text model="#trContacts" />
      * </code>
      * Remarks:
      * This attribute is inherited from a parent when not set. You can use this
      * to tell sets of elements to use the same model.
      * <code>
-     *  <j:bar model="mdlForm">
-     *      <j:label>Name</j:label>
-     *      <j:textbox ref="name" />
+     *  <a:bar model="mdlForm">
+     *      <a:label>Name</a:label>
+     *      <a:textbox ref="name" />
      *
-     *      <j:label>Happiness</j:label>
-     *      <j:slider ref="happiness" min="0" max="10"/>
-     *  </j:bar>
+     *      <a:label>Happiness</a:label>
+     *      <a:slider ref="happiness" min="0" max="10"/>
+     *  </a:bar>
      *
-     *  <j:model id="mdlForm">
+     *  <a:model id="mdlForm">
      *      <data />
-     *  </j:model>
+     *  </a:model>
      * </code>
      * When no model is specified the default model is choosen. The default
      * model is the first model that is found without a name, or if all models
@@ -2280,56 +2280,56 @@ apf.DataBinding = function(){
      * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
      * <code>
-     *  <j:label>Name</j:label>
-     *  <j:textbox ref="name" model="mdlForm" />
+     *  <a:label>Name</a:label>
+     *  <a:textbox ref="name" model="mdlForm" />
      *
-     *  <j:label>Country</j:label>
-     *  <j:dropdown
+     *  <a:label>Country</a:label>
+     *  <a:dropdown
      *      ref          = "country"
      *      model        = "mdlCountries"
      *      select-model = "mdlForm"
      *      traverse     = "country"
      *      value        = "@value"
      *      caption      = "text()">
-     *  </j:dropdown>
+     *  </a:dropdown>
      *
-     *  <j:model id="mdlCountries">
+     *  <a:model id="mdlCountries">
      *      <countries>
      *          <country value="USA">USA</country>
      *          <country value="GB">Great Brittain</country>
      *          <country value="NL">The Netherlands</country>
      *          ...
      *      </countries>
-     *  </j:model>
+     *  </a:model>
      *
-     *  <j:model id="mdlForm">
+     *  <a:model id="mdlForm">
      *      <data>
      *          <name />
      *          <country />
      *      </data>
-     *  </j:model>
+     *  </a:model>
      * </code>
      * Remarks:
      * In most cases this attribute isn't used because the model is inherited
      * from a parent element. In a typical form this will happen as follows:
      * <code>
-     *  <j:bar model="mdlForm">
-     *      <j:label>Name</j:label>
-     *      <j:textbox ref="name" />
+     *  <a:bar model="mdlForm">
+     *      <a:label>Name</a:label>
+     *      <a:textbox ref="name" />
      *
-     *      <j:label>Country</j:label>
-     *      <j:dropdown
+     *      <a:label>Country</a:label>
+     *      <a:dropdown
      *          ref          = "country"
      *          model        = "url:countries.xml"
      *          traverse     = "country"
      *          value        = "@value"
      *          caption      = "text()">
-     *      </j:dropdown>
-     *  </j:bar>
+     *      </a:dropdown>
+     *  </a:bar>
      *
-     *  <j:model id="mdlForm">
+     *  <a:model id="mdlForm">
      *      <data />
-     *  </j:model>
+     *  </a:model>
      * </code>
      * @see baseclass.databinding.attribute.model
      */
@@ -2380,11 +2380,11 @@ apf.DataBinding = function(){
      * element to which this element is bound to.
      * Example:
      * <code>
-     *  <j:slider ref="@value" model="mdlExample" />
+     *  <a:slider ref="@value" model="mdlExample" />
      *
-     *  <j:model id="mdlExample">
+     *  <a:model id="mdlExample">
      *      <data value="0.3" />
-     *  </j:model>
+     *  </a:model>
      * </code>
      */
     var hasRefBinding;
@@ -2571,13 +2571,13 @@ apf.StandardBinding = function(){
  * the Ajax.org Markup Language.
  * Example:
  * <code>
- *  <j:list>
- *      <j:choices>
- *          <j:item>red</j:item>
- *          <j:item>blue</j:item>
- *          <j:item>green</j:item>
- *      </j:choices>
- *  </j:list>
+ *  <a:list>
+ *      <a:choices>
+ *          <a:item>red</a:item>
+ *          <a:item>blue</a:item>
+ *          <a:item>green</a:item>
+ *      </a:choices>
+ *  </a:list>
  * </code>
  * @allowchild  item
  *
@@ -2600,18 +2600,18 @@ apf.MultiselectBinding = function(){
      * This example contains a list that displays elements with the tagName
      * 'mail' that do not have a deleted attribute set to 1.
      * <code>
-     *  <j:list>
-     *      <j:bindings>
+     *  <a:list>
+     *      <a:bindings>
      *          ...
-     *          <j:traverse select="mail[not(@deleted='1')]" />
-     *      </j:bindings>
-     *  </j:list>
+     *          <a:traverse select="mail[not(@deleted='1')]" />
+     *      </bindings>
+     *  </a:list>
      * </code>
      * Example:
      * This example shows how to use the traverse rule to order files based
      * on their modified data.
      * <code>
-     *  <j:traverse
+     *  <a:traverse
      *      select      = "file"
      *      sort        = "@date"
      *      date-format = "DD-MM-YYYY"
@@ -2620,13 +2620,13 @@ apf.MultiselectBinding = function(){
      * Example:
      * This example shows how to do complex sorting using a javascript callback function.
      * <code>
-     *  <j:traverse select="file|folder" sort="@name" sort-method="compare" />
-     *  <j:script>
+     *  <a:traverse select="file|folder" sort="@name" sort-method="compare" />
+     *  <a:script>
      *      function compare(value, args, xmlNode) {
      *          //Sort all folders together and all files and then sort on alphabet.
      *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
      *      }
-     *  </j:script>
+     *  </a:script>
      * </code>
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
@@ -3550,22 +3550,22 @@ apf.MultiselectBinding = function(){
      * {@link baseclass.multiselectbinding.binding.traverse} for more information.
      * Example:
      * <code>
-     *  <j:label>Country</j:label>
-     *  <j:dropdown
+     *  <a:label>Country</a:label>
+     *  <a:dropdown
      *      model        = "mdlCountries"
      *      traverse     = "country"
      *      value        = "@value"
      *      caption      = "text()">
-     *  </j:dropdown>
+     *  </a:dropdown>
      *
-     *  <j:model id="mdlCountries">
+     *  <a:model id="mdlCountries">
      *      <countries>
      *          <country value="USA">USA</country>
      *          <country value="GB">Great Brittain</country>
      *          <country value="NL">The Netherlands</country>
      *          ...
      *      </countries>
-     *  </j:model>
+     *  </a:model>
      * </code>
      * @see  baseclass.multiselectbinding.binding.traverse
      */
@@ -3576,7 +3576,7 @@ apf.MultiselectBinding = function(){
      * which xml node the caption is retrieved.
      * Example:
      * <code>
-     *  <j:list caption="text()" traverse="item" />
+     *  <a:list caption="text()" traverse="item" />
      * </code>
      */
     this.$propHandlers["caption"]  =
@@ -3586,7 +3586,7 @@ apf.MultiselectBinding = function(){
      * which xml node the value is retrieved.
      * Example:
      * <code>
-     *  <j:list valuerule="@value" traverse="item" />
+     *  <a:list valuerule="@value" traverse="item" />
      * </code>
      * @see  baseclass.multiselect.binding.value
      */
@@ -3597,7 +3597,7 @@ apf.MultiselectBinding = function(){
      * which xml node the icon url is retrieved.
      * Example:
      * <code>
-     *  <j:list icon="@icon" traverse="item" />
+     *  <a:list icon="@icon" traverse="item" />
      * </code>
      */
     this.$propHandlers["icon"]     =
@@ -3607,7 +3607,7 @@ apf.MultiselectBinding = function(){
      * which xml node the tooltip text is retrieved.
      * Example:
      * <code>
-     *  <j:list tooltip="text()" traverse="item" />
+     *  <a:list tooltip="text()" traverse="item" />
      * </code>
      */
     this.$propHandlers["tooltip"]  =
@@ -3617,7 +3617,7 @@ apf.MultiselectBinding = function(){
      * this node is selectable.
      * Example:
      * <code>
-     *  <j:list select="self::node()[not(@disabled='1')]" traverse="item" />
+     *  <a:list select="self::node()[not(@disabled='1')]" traverse="item" />
      * </code>
      * @see  baseclass.multiselect.binding.select
      */

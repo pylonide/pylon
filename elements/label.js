@@ -30,15 +30,15 @@
  * example shows the label as a child of a form element. It is rendered outside
  * to the element.
  * <code>
- *  <j:textbox ref="address">
- *      <j:label>Address</j:label>
- *  </j:textbox>
+ *  <a:textbox ref="address">
+ *      <a:label>Address</a:label>
+ *  </a:textbox>
  * </code>
  * Example:
  * This example uses the for attribute to connect the label to the form element.
  * <code>
- *  <j:label for="txtAddress">Address</j:label>
- *  <j:textbox id="txtAddress" ref="address" />
+ *  <a:label for="txtAddress">Address</a:label>
+ *  <a:textbox id="txtAddress" ref="address" />
  * </code>
  *
  * @constructor
@@ -56,16 +56,16 @@
  * Example:
  * Sets the label text based on data loaded into this component.
  * <code>
- *  <j:label>
- *      <j:bindings>
- *          <j:value select="@text" />
- *      </j:bindings>
- *  </j:label>
+ *  <a:label>
+ *      <a:bindings>
+ *          <a:value select="@text" />
+ *      </a:bindings>
+ *  </a:label>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:label ref="@text" />
+ *  <a:label ref="@text" />
  * </code>
  */
 

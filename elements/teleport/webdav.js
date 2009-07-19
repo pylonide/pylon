@@ -32,15 +32,15 @@
  * Example:
  * Writing to a file with a WebDAV connector
  * <code>
- *  <j:teleport>
- *      <j:webdav id="myWebDAV"
+ *  <a:teleport>
+ *      <a:webdav id="myWebDAV"
  *        url   = "http://my-webdav-server.com/dav_files/" />
- *  </j:teleport>
+ *  </a:teleport>
  *     
- *  <j:script>
+ *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * Remarks:

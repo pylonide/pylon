@@ -38,7 +38,7 @@
  * @see term.action
  * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
- * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
+ * @attribute {Boolean} auto-hide-loading       whether the load screen defined by the loader element is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
  * <code>
  *  apf.loadscreen.hide();
  * </code>
@@ -98,7 +98,7 @@ apf.appsettings = {
 
     //#ifdef __USE_TOSTRING
     toString : function(){
-        return "[Element Node, <j:appsettings />]";
+        return "[Element Node, <a:appsettings />]";
     },
     //#endif
 

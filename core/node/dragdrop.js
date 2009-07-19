@@ -36,7 +36,7 @@ var __DRAGDROP__ = 1 << 5;
  * Example:
  * This is a simple example, enabling drag&drop for a list.
  * <code>
- *  <j:list
+ *  <a:list
  *      dragEnabled     = "true"
  *      dropEnabled     = "true"
  *      dragMoveEnabled = "true" />
@@ -47,33 +47,33 @@ var __DRAGDROP__ = 1 << 5;
  * {@link term.datainstruction data instruction} to tell communicat to the webdav
  * server when an item is copied or moved.
  * <code>
- *  <j:smartbinding>
- *      <j:bindings>
- *          <j:caption select="@filename" />
- *          <j:traverse select="file|folder" />
- *      </j:bindings>
- *      <j:actions>
- *          <j:move
+ *  <a:smartbinding>
+ *      <a:bindings>
+ *          <a:caption select="@filename" />
+ *          <a:traverse select="file|folder" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:move
  *              select = "self::folder"
  *              set    = "webdav:move({@path}, {../@path})" />
- *          <j:copy
+ *          <a:copy
  *              select = "self::file"
  *              set    = "webdav:copy({@path}, {../@path})" />
- *      </j:actions>
- *      <j:dragdrop>
- *          <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
- *          <j:allow-drop
+ *      </a:actions>
+ *      <a:dragdrop>
+ *          <a:allow-drag select = "person" copy-condition="event.ctrlKey" />
+ *          <a:allow-drop
  *              select         = "file"
  *              target         = "folder"
  *              action         = "tree-append"
  *              copy-condition = "event.ctrlKey" />
- *          <j:allow-drop
+ *          <a:allow-drop
  *              select         = "folder"
  *              target         = "folder"
  *              action         = "insert-before"
  *              copy-condition = "event.ctrlKey" />
- *      </j:dragdrop>
- *  </j:smartbinding>
+ *      </dragdrop>
+ *  </a:smartbinding>
  * </code>
  *
  * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
@@ -122,27 +122,27 @@ var __DRAGDROP__ = 1 << 5;
  * rule specifies which data nodes you can drag. Folders can be dragged but not
  * accounts. Mails can be dragged from the datagrid.
  * <code>
- *  <j:tree align="left" width="200">
- *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:traverse select="root|account|folder" />
- *      </j:bindings>
- *      <j:dragdrop>
- *          <j:allow-drag select = "folder" />
- *          <j:allow-drop select = "folder" 
+ *  <a:tree align="left" width="200">
+ *      <a:bindings>
+ *          <a:caption select="@name" />
+ *          <a:traverse select="root|account|folder" />
+ *      </a:bindings>
+ *      <a:dragdrop>
+ *          <a:allow-drag select = "folder" />
+ *          <a:allow-drop select = "folder" 
  *                        target = "folder|account" />
- *          <j:allow-drop select = "mail" 
+ *          <a:allow-drop select = "mail" 
  *                        target = "folder" />
- *      </j:dragdrop>
- *  </j:tree>
- *  <j:datagrid align="right">
- *      <j:bindings>
+ *      </dragdrop>
+ *  </a:tree>
+ *  <a:datagrid align="right">
+ *      <a:bindings>
  *          ...
- *      </j:bindings>
- *      <j:dragdrop>
- *          <j:allow-drag select="mail" />
- *      </j:dragdrop>
- *  </j:datagrid>
+ *      </a:bindings>
+ *      <a:dragdrop>
+ *          <a:allow-drag select="mail" />
+ *      </dragdrop>
+ *  </a:datagrid>
  * </code>
  *
  * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
@@ -156,27 +156,27 @@ var __DRAGDROP__ = 1 << 5;
  * rule specifies which data nodes can be dropped where. Folders can be dropped 
  * in folders and accounts. Mails can be dropped in folders.
  * <code>
- *  <j:tree align="left" width="200">
- *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:traverse select="root|account|folder" />
- *      </j:bindings>
- *      <j:dragdrop>
- *          <j:allow-drag select = "folder" />
- *          <j:allow-drop select = "folder" 
+ *  <a:tree align="left" width="200">
+ *      <a:bindings>
+ *          <a:caption select="@name" />
+ *          <a:traverse select="root|account|folder" />
+ *      </a:bindings>
+ *      <a:dragdrop>
+ *          <a:allow-drag select = "folder" />
+ *          <a:allow-drop select = "folder" 
  *                        target = "folder|account" />
- *          <j:allow-drop select = "mail" 
+ *          <a:allow-drop select = "mail" 
  *                        target = "folder" />
- *      </j:dragdrop>
- *  </j:tree>
- *  <j:datagrid align="right">
- *      <j:bindings>
+ *      </dragdrop>
+ *  </a:tree>
+ *  <a:datagrid align="right">
+ *      <a:bindings>
  *          ...
- *      </j:bindings>
- *      <j:dragdrop>
- *          <j:allow-drag select="mail" />
- *      </j:dragdrop>
- *  </j:datagrid>
+ *      </a:bindings>
+ *      <a:dragdrop>
+ *          <a:allow-drag select="mail" />
+ *      </dragdrop>
+ *  </a:datagrid>
  * </code>
  
  * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
@@ -429,10 +429,10 @@ apf.DragDrop = function(){
 
     var drag_inited;
     /**
-     * Loads the dragdrop rules from the j:dragdrop element
+     * Loads the dragdrop rules from the dragdrop element
      *
      * @param  {Array}      rules     the rules array created using {@link core.apf.method.getrules}
-     * @param  {XMLElement} [node] the reference to the j:dragdrop element
+     * @param  {XMLElement} [node] the reference to the dragdrop element
      * @see  SmartBinding
      * @private
      */
@@ -610,42 +610,42 @@ apf.DragDrop = function(){
      * @attribute  {Boolean}  dragEnabled       whether the element allows dragging of it's items.
      * Example:
      * <code>
-     *  <j:list dragEnabled="true">
-     *      <j:item>item 1</j:item>
-     *      <j:item>item 2</j:item>
-     *      <j:item>item 3</j:item>
-     *  </j:list>
+     *  <a:list dragEnabled="true">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
      * </code>
      * @attribute  {Boolean}  dragMoveEnabled   whether dragged items are moved or copied when holding the Ctrl key.
      * Example:
      * <code>
-     *  <j:list dragMoveEnabled="true">
-     *      <j:item>item 1</j:item>
-     *      <j:item>item 2</j:item>
-     *      <j:item>item 3</j:item>
-     *  </j:list>
+     *  <a:list dragMoveEnabled="true">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
      * </code>
      * @attribute  {Boolean}  dropEnabled       whether the element allows items to be dropped.
      * Example:
      * <code>
-     *  <j:list dropEnabled="true">
-     *      <j:item>item 1</j:item>
-     *      <j:item>item 2</j:item>
-     *      <j:item>item 3</j:item>
-     *  </j:list>
+     *  <a:list dropEnabled="true">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
      * </code>
-     * @attribute  {String}   dragdrop          the name of the j:dragdrop element for this element.
+     * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
      * <code>
-     *  <j:list dragdrop="bndDragdrop" />
+     *  <a:list dragdrop="bndDragdrop" />
      *
-     *  <j:dragdrop id="bndDragdrop">
-     *      <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
-     *      <j:allow-drop
+     *  <a:dragdrop id="bndDragdrop">
+     *      <a:allow-drag select = "person" copy-condition="event.ctrlKey" />
+     *      <a:allow-drop
      *          select         = "offer"
      *          target         = "person"
      *          action         = "tree-append"
      *          copy-condition = "event.ctrlKey" />
-     *  </j:dragdrop>
+     *  </dragdrop>
      * </code>
      */
     this.$propHandlers["dragenabled"]     =

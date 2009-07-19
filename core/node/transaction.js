@@ -49,50 +49,50 @@ var __TRANSACTION__ = 1 << 3;
  * 'lockfail' event the user can be notified of the reason. For more information 
  * see {@link term.locking}.
  * <code>
- *  <j:list id="lstItems" onafterchoose="winEdit.show()">
- *      <j:bindings>
- *          <j:caption select="name" />
- *          <j:icon value="icoItem.png" />
- *          <j:traverse select="item" />
- *      </j:bindings>
- *      <j:actions>
- *          <j:add set="url:save.php?xml={.}">
+ *  <a:list id="lstItems" onafterchoose="winEdit.show()">
+ *      <a:bindings>
+ *          <a:caption select="name" />
+ *          <a:icon value="icoItem.png" />
+ *          <a:traverse select="item" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:add set="url:save.php?xml={.}">
  *              <item name="New Item" />
- *          </j:add>
- *          <j:update 
+ *          </a:add>
+ *          <a:update 
  *              set="url:save.php?xml={.}" 
  *              lock="url:lock.php?id={@id}" />
- *      </j:actions>
- *      <j:model>
+ *      </a:actions>
+ *      <a:model>
  *          <items>
  *              <item name="test" subject="subject">
  *                  message
  *              </item>
  *          </items>
- *      </j:model>
- *  </j:list>
+ *      </a:model>
+ *  </a:list>
  *  
- *  <j:button onclick="winEdit.begin('add');">add new item</j:button>
+ *  <a:button onclick="winEdit.begin('add');">add new item</a:button>
  *  
- *  <j:window id="winEdit" 
+ *  <a:window id="winEdit" 
  *    transaction = "true"
  *    model       = "#lstItems"
  *    title       = "Edit this message">
- *      <j:label>Name</j:label>
- *      <j:textbox ref="@name" required="true" 
+ *      <a:label>Name</a:label>
+ *      <a:textbox ref="@name" required="true" 
  *        invalidmsg="Please enter your name" />
  *
- *      <j:label>Subject</j:label>
- *      <j:textbox ref="@subject" />
+ *      <a:label>Subject</a:label>
+ *      <a:textbox ref="@subject" />
  *
- *      <j:label>Message</j:label>
- *      <j:textarea ref="text()" min-length="100" />
+ *      <a:label>Message</a:label>
+ *      <a:textarea ref="text()" min-length="100" />
  *      
- *      <j:button action="ok" default="true">OK</j:button>
- *      <j:button action="cancel">Cancel</j:button>
- *      <j:button action="apply" 
- *        disabled="{!winEdit.undolength}">Apply</j:button>
- *  </j:window>
+ *      <a:button action="ok" default="true">OK</a:button>
+ *      <a:button action="cancel">Cancel</a:button>
+ *      <a:button action="apply" 
+ *        disabled="{!winEdit.undolength}">Apply</a:button>
+ *  </a:window>
  * </code>
  *
  * @constructor

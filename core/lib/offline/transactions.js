@@ -29,7 +29,7 @@
  * the offline element in AML.
  * Example:
  * <code>
- *  <j:offline ontransactioncancel="alert('You are currently offline')" />
+ *  <a:offline ontransactioncancel="alert('You are currently offline')" />
  * </code>
  *
  * @define offline
@@ -56,7 +56,7 @@ apf.namespace("offline.transactions", {
         
     /*
      * data GET requests aren't synced but disallowed, 
-     * such as j:load/j:insert bindings and model load=""
+     * such as load/insert bindings and model load=""
      * This function will sent the ontransactioncancel event which 
      * can be used to notify the user that we're offline.
      */

@@ -27,13 +27,13 @@
  * word-processors.
  * Example:
  * <code>
- *     <j:editor
+ *     <a:editor
  *         id="myEditor"
  *         left="100"
  *         width="50%"
  *         height="90%-10">
  *         Default value...
- *     </j:editor>
+ *     </a:editor>
  * </code>
  *
  * @constructor
@@ -53,16 +53,16 @@
  * Example:
  * Sets the text based on data loaded into this component.
  * <code>
- *  <j:editor>
- *      <j:bindings>
- *          <j:value select="body/text()" />
- *      </j:bindings>
- *  </j:editor>
+ *  <a:editor>
+ *      <a:bindings>
+ *          <a:value select="body/text()" />
+ *      </a:bindings>
+ *  </a:editor>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:colorpicker ref="body/text()" />
+ *  <a:colorpicker ref="body/text()" />
  * </code>
  */
 apf.editor = apf.component(apf.NODE_VISIBLE, function() {

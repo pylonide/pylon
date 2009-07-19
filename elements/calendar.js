@@ -29,7 +29,7 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- * <j:calendar
+ * <a:calendar
  *     top           = "200"
  *     left          = "400"
  *     output-format = "yyyy-mm-dd"
@@ -39,17 +39,17 @@
  * Example:
  * Sets the date based on data loaded into this component.
  * <code>
- *  <j:calendar>
- *      <j:bindings>
- *          <j:value select="@date" />
- *      </j:bindings>
- *  </j:calendar>
+ *  <a:calendar>
+ *      <a:bindings>
+ *          <a:value select="@date" />
+ *      </a:bindings>
+ *  </a:calendar>
  * </code>
  * 
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:calendar ref="@date" />
+ *  <a:calendar ref="@date" />
  * </code>
  * 
  * @constructor

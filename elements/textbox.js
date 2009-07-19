@@ -36,7 +36,7 @@
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- *  <j:textbox ref="@name" />
+ *  <a:textbox ref="@name" />
  * </code>
  *
  * @constructor
@@ -58,16 +58,16 @@
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- *  <j:textbox>
- *      <j:bindings>
- *          <j:value select="@name" />
- *      </j:bindings>
- *  </j:textbox>
+ *  <a:textbox>
+ *      <a:bindings>
+ *          <a:value select="@name" />
+ *      </a:bindings>
+ *  </a:textbox>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:textbox ref="@name" />
+ *  <a:textbox ref="@name" />
  * </code>
  *
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
@@ -155,27 +155,27 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
      * Example:
      * An american style phone number.
      * <code>
-     *  <j:textbox mask="(000)0000-0000;;_" />
+     *  <a:textbox mask="(000)0000-0000;;_" />
      * </code>
      * Example:
      * A dutch postal code
      * <code>
-     *  <j:textbox mask="0000 AA;;_" />
+     *  <a:textbox mask="0000 AA;;_" />
      * </code>
      * Example:
      * A date
      * <code>
-     *  <j:textbox mask="00-00-0000;;_" datatype="xsd:date" />
+     *  <a:textbox mask="00-00-0000;;_" datatype="xsd:date" />
      * </code>
      * Example:
      * A serial number
      * <code>
-     *  <j:textbox mask="'WCS74'0000-00000;1;_" />
+     *  <a:textbox mask="'WCS74'0000-00000;1;_" />
      * </code>
      * Example:
      * A MAC address
      * <code>
-     *  <j:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
+     *  <a:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
      * </code>
      */
     this.$propHandlers["mask"] = function(value){

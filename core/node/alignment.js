@@ -35,11 +35,11 @@ var __ALIGNMENT__ = 1 << 12;
  * Example:
  * An Outlook-like layout in AML
  * <code>
- * <j:toolbar   align = "top-1"          height = "40" />
- * <j:tree      align = "left-splitter"  width  = "20%" />
- * <j:datagrid  align = "right-splitter" height = "50%" />
- * <j:text      align = "right" />
- * <j:statusbar align = "bottom-2"       height = "20" />
+ * <a:toolbar   align = "top-1"          height = "40" />
+ * <a:tree      align = "left-splitter"  width  = "20%" />
+ * <a:datagrid  align = "right-splitter" height = "50%" />
+ * <a:text      align = "right" />
+ * <a:statusbar align = "bottom-2"       height = "20" />
  * </code>
  * Remarks:
  * This is one of three positioning methods.
@@ -186,7 +186,7 @@ apf.Alignment = function(){
          * @attribute  {String} align       the edge of the parent to which this element aligns. Possible values are a combination of: "left", "middle", "right", "top", "bottom" and "slider" and optionally a size.
          * Example:
          * <code>
-         *  <j:tree align="left-splitter-3" />
+         *  <a:tree align="left-splitter-3" />
          * </code>
          * @attribute  {String} lean        the position of element when it is ambiguous.
          *   Possible values:

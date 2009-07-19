@@ -25,12 +25,12 @@
  * Element that is able to play an audio file or remote stream
  * Example:
  * <code>
- *  <j:audio id="myAudio"
+ *  <a:audio id="myAudio"
  *   src      = "http://my-mediaserver.com/demo.mp3"
  *   autoplay = "true"
  *   volume   = "20">
  *    Audio Codec not supported.
- *  </j:audio>
+ *  </a:audio>
  * </code>
  * 
  * @return {Audio} Returns a new audio

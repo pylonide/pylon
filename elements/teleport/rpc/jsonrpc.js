@@ -28,24 +28,24 @@
  * Example:
  * Ajax.org Markup Language
  * <code>
- *  <j:teleport>
- *      <j:rpc id="comm" protocol="jsonrpc">
- *          <j:method 
+ *  <a:teleport>
+ *      <a:rpc id="comm" protocol="jsonrpc">
+ *          <a:method 
  *            name    = "searchProduct" 
  *            receive = "processSearch">
- *              <j:variable name="search" />
- *              <j:variable name="page" />
- *              <j:variable name="textbanner" value="1" />
- *          </j:method>
- *          <j:method 
+ *              <a:variable name="search" />
+ *              <a:variable name="page" />
+ *              <a:variable name="textbanner" value="1" />
+ *          </a:method>
+ *          <a:method 
  *            name = "loadProduct">
- *              <j:variable name="id" />
- *              <j:variable name="search_id" />
- *          </j:method>
- *      </j:rpc>
- *  </j:teleport>
+ *              <a:variable name="id" />
+ *              <a:variable name="search_id" />
+ *          </a:method>
+ *      </a:rpc>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
  *          alert(data)
@@ -53,7 +53,7 @@
  *
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * @constructor

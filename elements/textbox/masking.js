@@ -30,7 +30,7 @@ apf.textbox.masking = function(){
         Special Masking Values:
         - PASSWORD
         
-        <j:Textbox name="custref" mask="CS20999999" maskmsg="" validation="/CS200[3-5]\d{4}/" invalidmsg="" bind="custref/text()" />
+        <a:Textbox name="custref" mask="CS20999999" maskmsg="" validation="/CS200[3-5]\d{4}/" invalidmsg="" bind="custref/text()" />
     */
     
     var _FALSE_ = 9128748732;

@@ -32,61 +32,61 @@
  * Example:
  * A simple list with inline items.
  * <code>
- *  <j:list multiselect="false">
- *      <j:item>The Netherlands</j:item>
- *      <j:item>United States of America</j:item>
- *      <j:item>United Kingdom</j:item>
+ *  <a:list multiselect="false">
+ *      <a:item>The Netherlands</a:item>
+ *      <a:item>United States of America</a:item>
+ *      <a:item>United Kingdom</a:item>
  *      ...
- *  </j:list>
+ *  </a:list>
  * </code>
  * Example:
  * A databound list with items loaded from an xml file.
  * <code>
- *  <j:list model="url:users.xml" traverse="user" caption="@name" />
+ *  <a:list model="url:users.xml" traverse="user" caption="@name" />
  * </code>
  * Example:
- * A databound list using the j:bindings element
+ * A databound list using the bindings element
  * <code>
- *  <j:list model="url:users.xml">
- *      <j:bindings>
- *          <j:caption  select="@name" />
- *          <j:css      select="self::node()[@type='friend']" value="friend" />
- *          <j:traverse select="users" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list model="url:users.xml">
+ *      <a:bindings>
+ *          <a:caption  select="@name" />
+ *          <a:css      select="self::node()[@type='friend']" value="friend" />
+ *          <a:traverse select="users" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * Example:
  * A small product search application using a list to display results.
  * <code>
- *  <j:bar>
+ *  <a:bar>
  *      <h1>Search for a product</h1>
  *      
- *      <j:textbox id="txtSearch" selectfocus="true" />
- *      <j:button onclick="search()" default="true" />
- *  </j:bar>
+ *      <a:textbox id="txtSearch" selectfocus="true" />
+ *      <a:button onclick="search()" default="true" />
+ *  </a:bar>
  *  
- *  <j:model id="mdlSearch" />
+ *  <a:model id="mdlSearch" />
  *
- *  <j:list 
+ *  <a:list 
  *    model         = "mdlSearch"
  *    autoselect    = "false" 
  *    caching       = "false" 
  *    empty-message = "No products found">
- *      <j:bindings>
- *          <j:caption select="."><![CDATA[
+ *      <a:bindings>
+ *          <a:caption select="."><![CDATA[
  *              <h2>{title}</h2>
  *              <img src="{img}" />
  *              <p>{decs}</p>
- *          ]]></j:caption>
- *          <j:traverse select="product" />
- *      </j:bindings>
- *  </j:list>
+ *          ]]></a:caption>
+ *          <a:traverse select="product" />
+ *      </a:bindings>
+ *  </a:list>
  *
- *  <j:script>
+ *  <a:script>
  *      function search(){
  *          mdlSearch.loadFrom("url:search.php?keyword=" + txtSearch.getValue());
  *      }
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * @event click Fires when a user presses a mouse button while over this element.
@@ -198,23 +198,23 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
      * user can add a new option. A server script could remember the addition
      * and present it to all new users of the form.
      * <code>
-     *  <j:label>Which newspapers do you read?</j:label>
-     *  <j:list ref="krant" 
+     *  <a:label>Which newspapers do you read?</a:label>
+     *  <a:list ref="krant" 
      *    more  = "caption:Other newspaper" 
      *    model = "mdlSuggestions:question[@key='krant']">
-     *      <j:bindings>
-     *          <j:caption select="text()" />
-     *          <j:value select="text()" />
-     *          <j:traverse select="answer" />
-     *      </j:bindings>
-     *      <j:actions>
-     *          <j:rename select="self::node()[@custom='1']" />
-     *          <j:remove select="self::node()[@custom='1']" />
-     *          <j:add>
+     *      <a:bindings>
+     *          <a:caption select="text()" />
+     *          <a:value select="text()" />
+     *          <a:traverse select="answer" />
+     *      </a:bindings>
+     *      <a:actions>
+     *          <a:rename select="self::node()[@custom='1']" />
+     *          <a:remove select="self::node()[@custom='1']" />
+     *          <a:add>
      *              <answer custom="1" />
-     *          </j:add>
-     *      </j:actions>
-     *  </j:list>
+     *          </a:add>
+     *      </a:actions>
+     *  </a:list>
      * </code>
      */
     this.$propHandlers["more"] = function(value){

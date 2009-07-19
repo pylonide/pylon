@@ -90,10 +90,10 @@ apf.editor.plugin('image', function(){
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oUrl = document.getElementById(idUrl);
         this.appendAmlNode(
-            '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
-             <j:button caption="Insert"\
+            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
+             <a:button caption="Insert"\
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
-             </j:bar></j:toolbar>',
+             </a:bar></a:toolbar>',
           document.getElementById(idBtns));
 
         //#ifdef __WITH_WINDOW_FOCUS

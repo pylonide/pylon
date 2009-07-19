@@ -34,28 +34,28 @@
  * Example:
  * A tree with inline items.
  * <code>
- *  <j:tree id="tree" align="right">
- *      <j:item caption="root" icon="icoUsers.gif">
- *          <j:item icon="icoUsers.gif" caption="test">
- *              <j:item icon="icoUsers.gif" caption="test" />
- *              <j:item icon="icoUsers.gif" caption="test" />
- *              <j:item icon="icoUsers.gif" caption="test" />
- *          </j:item>
- *          <j:item icon="icoUsers.gif" caption="test" />
- *          <j:item icon="icoUsers.gif" caption="test" />
- *          <j:item icon="icoUsers.gif" caption="test" />
- *      </j:item>
- *  </j:tree>
+ *  <a:tree id="tree" align="right">
+ *      <a:item caption="root" icon="icoUsers.gif">
+ *          <a:item icon="icoUsers.gif" caption="test">
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *          </a:item>
+ *          <a:item icon="icoUsers.gif" caption="test" />
+ *          <a:item icon="icoUsers.gif" caption="test" />
+ *          <a:item icon="icoUsers.gif" caption="test" />
+ *      </a:item>
+ *  </a:tree>
  * </code>
  * Example:
  * <code>
- *  <j:tree model="url:items.xml">
- *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:icon select="@icon"/>
- *          <j:traverse select="file|folder" />
- *      </j:bindings>
- *  </j:tree>
+ *  <a:tree model="url:items.xml">
+ *      <a:bindings>
+ *          <a:caption select="@name" />
+ *          <a:icon select="@icon"/>
+ *          <a:traverse select="file|folder" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  *
  * @constructor
@@ -85,11 +85,11 @@
  * read the directory contents using webdav and insert it under the selected 
  * tree node.
  * <code>
- *  <j:bindings>
- *      <j:caption select="@caption" />
- *      <j:insert select="self::folder" get="webdav:readdir({@id})" />
- *      <j:traverse select="folder" />
- *  </j:bindings>
+ *  <a:bindings>
+ *      <a:caption select="@caption" />
+ *      <a:insert select="self::folder" get="webdav:readdir({@id})" />
+ *      <a:traverse select="folder" />
+ *  </a:bindings>
  * </code>
  * @attribute {String} get the {@link term.datainstruction data instruction} that is used to load the new data.
  * @binding caption  Determines the caption of a tree node.
@@ -98,15 +98,15 @@
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <j:tree>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:css select="message[@unread]" value="highlighUnread" />
- *          <j:icon select="@icon" />
- *          <j:icon select="self::folder" value="icoFolder.gif" />
- *          <j:traverse select="folder" />
- *      </j:bindings>
- *  </j:tree>
+ *  <a:tree>
+ *      <a:bindings>
+ *          <a:caption select="@caption" />
+ *          <a:css select="message[@unread]" value="highlighUnread" />
+ *          <a:icon select="@icon" />
+ *          <a:icon select="self::folder" value="icoFolder.gif" />
+ *          <a:traverse select="folder" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * @binding tooltip  Determines the tooltip of a tree node.
  * @binding empty    Determines the empty message of a node.
@@ -114,15 +114,15 @@
  * This example shows a gouped contact list, that displays a message under 
  * empty groups.
  * <code>
- *  <j:tree>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:icon select="self::contact" value="icoContact.png" />
- *          <j:icon select="self::group" value="icoFolder.png" />
- *          <j:empty select="self::group" value="Drag a contact to this group." />
- *          <j:traverse select="group|contact" />
- *      </j:bindings>
- *  </j:tree>
+ *  <a:tree>
+ *      <a:bindings>
+ *          <a:caption select="@caption" />
+ *          <a:icon select="self::contact" value="icoContact.png" />
+ *          <a:icon select="self::group" value="icoFolder.png" />
+ *          <a:empty select="self::group" value="Drag a contact to this group." />
+ *          <a:traverse select="group|contact" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  */
 apf.tree = apf.component(apf.NODE_VISIBLE, function(){

@@ -362,21 +362,21 @@ apf.skins = {
  *
  * A skin for an element is always build up out of a standard set of parts.
  * <code>
- *   <j:textbox name="textbox">
- *      <j:alias>
+ *   <a:textbox name="textbox">
+ *      <a:alias>
  *          ...
- *      </j:alias>
- *      <j:style><![CDATA[
+ *      </a:alias>
+ *      <a:style><![CDATA[
  *          ...
- *      ]]></j:style>
+ *      ]]></a:style>
  *  
- *      <j:presentation>
- *          <j:main>
+ *      <a:presentation>
+ *          <a:main>
  *              ...
- *          </j:main>
+ *          </a:main>
  *          ...
- *      </j:presentation>
- *   </j:textbox>
+ *      </a:presentation>
+ *   </a:textbox>
  * </code>
  * The alias contains a name that contains alternative names for the skin. The
  * style tags contain the css. The main tag contains the html elements that are
@@ -404,11 +404,11 @@ apf.Presentation = function(){
     /**
      * @attribute {string} skinset the skinset for
      * this element. If none is specified the skinset attribute
-     * of <j:appsettings /> is used. When not defined the default skinset
+     * of <a:appsettings /> is used. When not defined the default skinset
      * is accessed.
      * Example:
      * <code>
-     *  <j:list skinset="perspex" />
+     *  <a:list skinset="perspex" />
      * </code>
      */
     this.$propHandlers["skinset"] =
@@ -420,7 +420,7 @@ apf.Presentation = function(){
      * aml attributes, loaded data, focus and disabled state.
      * Example:
      * <code>
-     *  <j:list id="lstExample" skin="thumbnails" />
+     *  <a:list id="lstExample" skin="thumbnails" />
      * </code>
      * Example:
      * <code>

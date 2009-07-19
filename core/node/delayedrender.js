@@ -35,14 +35,14 @@ var __DELAYEDRENDER__ = 1 << 11
  * Example:
  * In this example the button isn't rendered until the advanced tab becomes active.
  * <code>
- *  <j:tab>
- *      <j:page caption="General">
+ *  <a:tab>
+ *      <a:page caption="General">
  *          ...
- *      </j:page>
- *      <j:page caption="Advanced" render="runtime">
- *          <j:button>OK</j:button>
- *      </j:page>
- *  </j:tab>
+ *      </a:page>
+ *      <a:page caption="Advanced" render="runtime">
+ *          <a:button>OK</a:button>
+ *      </a:page>
+ *  </a:tab>
  * </code>
  *
  * @event beforerender  Fires before elements are rendered. Use this event to display a loader.

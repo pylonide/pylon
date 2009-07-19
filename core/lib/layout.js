@@ -30,13 +30,13 @@
  * Example:
  * This example shows 5 windows which have a layout defined in layout.xml.
  * <code>
- *  <j:appsettings layout="url:layout.xml:layout[1]" />
+ *  <a:appsettings layout="url:layout.xml:layout[1]" />
  *
- *  <j:window title="Main Window" id="b1" />
- *  <j:window title="Tree Window" id="b2" />
- *  <j:window title="Window of Oppertunity" id="b3" />
- *  <j:window title="Small window" id="b4" />
- *  <j:window title="Some Window" id="b5" />
+ *  <a:window title="Main Window" id="b1" />
+ *  <a:window title="Tree Window" id="b2" />
+ *  <a:window title="Window of Oppertunity" id="b3" />
+ *  <a:window title="Small window" id="b4" />
+ *  <a:window title="Some Window" id="b5" />
  * </code>
  *
  * This is the layout file containing two layouts (layout.xml).
@@ -72,7 +72,7 @@
  *
  * By binding on the layout.xml you can easily create a layout manager.
  * <code>
- *  <j:list id="lstLayouts"
+ *  <a:list id="lstLayouts"
  *    model          = "mdlLayouts"
  *    allowdeselect  = "false"
  *    onafterselect  = "
@@ -83,17 +83,17 @@
  *      apf.layout.loadXml(this.selected);
  *    "
  *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
- *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:icon value="layout.png" />
- *          <j:traverse select="layout" />
- *      </j:bindings>
- *      <j:actions>
- *          <j:rename select="." />
- *          <j:remove select="." />
- *      </j:actions>
- *  </j:list>
- *  <j:button
+ *      <a:bindings>
+ *          <a:caption select="@name" />
+ *          <a:icon value="layout.png" />
+ *          <a:traverse select="layout" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:rename select="." />
+ *          <a:remove select="." />
+ *      </a:actions>
+ *  </a:list>
+ *  <a:button
  *    onclick = "
  *      if (!lstLayouts.selected)
  *          return;
@@ -106,7 +106,7 @@
  *      lstLayouts.startRename();
  *    ">
  *      Add Layout
- *  </j:button>
+ *  </a:button>
  * </code>
  *
  * @default_private

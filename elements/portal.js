@@ -29,31 +29,31 @@
  * be instantiated more than once.
  * Example:
  * <code>
- *  <j:portal columns="60%,40%">
- *      <j:bindings>
- *          <j:src select="@src" />
- *          <j:collapsed select="@collapsed" default="0" />
- *          <j:icon value="icoDocklet.png" />
- *          <j:column select="@column" />
- *          <j:caption select="@name" />
- *          <j:traverse select="docklet" />
- *      </j:bindings>
- *      <j:model>
+ *  <a:portal columns="60%,40%">
+ *      <a:bindings>
+ *          <a:src select="@src" />
+ *          <a:collapsed select="@collapsed" default="0" />
+ *          <a:icon value="icoDocklet.png" />
+ *          <a:column select="@column" />
+ *          <a:caption select="@name" />
+ *          <a:traverse select="docklet" />
+ *      </a:bindings>
+ *      <a:model>
  *          <docklets>
  *              <docklet name="Usage"    src="url:usage.xml"    column="0" />
  *              <docklet name="Billing"  src="url:history.xml"  column="0" />
  *              <docklet name="Orders"   src="url:orders.xml"   column="1" />
  *              <docklet name="Features" src="url:features.xml" column="1" />
  *          </docklets>
- *      </j:model>
- *  </j:portal>
+ *      </a:model>
+ *  </a:portal>
  * </code>
  * Remarks:
  * A docklet xml is a piece of aml that should be in the following form:
  * <code>
- *  <j:docklet xmlns:j="http://ajax.org/2005/aml" 
+ *  <a:docklet xmlns:a="http://ajax.org/2005/aml" 
  *    caption="Billing History" icon="icoBilling.gif" name="BillHistory">
- *      <j:script><![CDATA[
+ *      <a:script><![CDATA[
  *          function BillHistory(){
  *              //Create a Ajax.org Class
  *              apf.makeClass(this);
@@ -65,18 +65,18 @@
  *                  //Process xml settings
  *              }
  *          }
- *      ]]></j:script>
+ *      ]]></a:script>
  *
  *      <!-- the edit panel of the window -->
- *      <j:config>
+ *      <a:config>
  *          ...
- *      </j:config>
+ *      </a:config>
  *
  *      <!-- the body of the window -->
- *      <j:body>
+ *      <a:body>
  *          ...
- *      </j:body>
- *  </j:docklet>
+ *      </a:body>
+ *  </a:docklet>
  * </code>
  *
  * @constructor
@@ -132,9 +132,9 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
      * Defaults to "33%, 33%, 33%".
      * Example:
      * <code>
-     *  <j:portal columns="25%, 50%, 25%">
+     *  <a:portal columns="25%, 50%, 25%">
      *      ...
-     *  </j:portal>
+     *  </a:portal>
      * </code>
      *
      * @todo make this dynamic

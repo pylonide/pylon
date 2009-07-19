@@ -31,24 +31,24 @@
  * combinations. It will queue all requests that require authentication until
  * the application is logged in again and will then empty the queue.
  * Example:
- * This example sets up j:auth with two services that it can log into. 
+ * This example sets up apf.auth with two services that it can log into. 
  * <code>
- * <j:appsettings>
- *     <j:auth>
- *          <j:service name   = "my-backend"
+ * <a:appsettings>
+ *     <a:auth>
+ *          <a:service name   = "my-backend"
  *                     login  = "rpc:comm.login(username, password)"
  *                     logout = "rpc:comm.logout()" />
- *          <j:service name   = "my-jabber-server"
+ *          <a:service name   = "my-jabber-server"
  *                     login  = "xmpp:login(username, password, domain)"
  *                     logout = "xmpp:logout()" />
- *     </j:auth>
- * </j:appsettings>
+ *     </a:auth>
+ * </a:appsettings>
  * </code>
  * Example:
- * A login window with different states managed by j:auth
+ * A login window with different states managed by apf.auth
  * <code>
- *  <j:appsettings>
- *      <j:auth login  = "xmpp:login(username, password)"
+ *  <a:appsettings>
+ *      <a:auth login  = "xmpp:login(username, password)"
  *              logout = "xmpp:logout()"
  *              autostart     = "true"
  *              window        = "winLogin"
@@ -56,34 +56,34 @@
  *              error-state   = "stError"
  *              login-state   = "stIdle"
  *              waiting-state = "stLoggingIn" />
- *  </j:appsettings>
+ *  </a:appsettings>
  *
- *  <j:state-group
+ *  <a:state-group
  *    loginMsg.visible  = "false"
  *    winLogin.disabled = "false">
- *      <j:state id="stFail"
+ *      <a:state id="stFail"
  *          loginMsg.value   = "Username or password incorrect"
  *          loginMsg.visible = "true" />
- *      <j:state id="stError"
+ *      <a:state id="stError"
  *          loginMsg.value   = "An error has occurred. Please check your network."
  *          loginMsg.visible = "true" />
- *      <j:state id="stLoggingIn"
+ *      <a:state id="stLoggingIn"
  *          loginMsg.value    = "Please wait whilst logging in..."
  *          loginMsg.visible  = "true"
  *          winLogin.disabled = "true" />
- *      <j:state id="stIdle" />
- *  </j:state-group>
+ *      <a:state id="stIdle" />
+ *  </a:state-group>
  *
- *  <j:window id="winLogin">
- *      <j:label>Username</j:label>
- *      <j:textbox type="username" />
+ *  <a:window id="winLogin">
+ *      <a:label>Username</a:label>
+ *      <a:textbox type="username" />
  *
- *      <j:label>Password</j:label>
- *      <j:textbox type="password" />
+ *      <a:label>Password</a:label>
+ *      <a:textbox type="password" />
  *
- *      <j:text id="loginMsg" />
- *      <j:button action="login">Log in</j:button>
- *  </j:window>
+ *      <a:text id="loginMsg" />
+ *      <a:button action="login">Log in</a:button>
+ *  </a:window>
  * </code>
  *
  * @event beforelogin   Fires before the log in request is sent to the service
@@ -243,7 +243,7 @@ apf.auth = {
             if (!nodes[i].getAttribute("name")) {
                 throw new Error(apf.formatErrorString(0, this, "Parsing \
                     login settings", "Invalid format for the service tag, \
-                    missing name attribute: <j:service name='' />", nodes[i]));
+                    missing name attribute: <a:service name='' />", nodes[i]));
             }
             //#endif
 

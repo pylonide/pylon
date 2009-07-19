@@ -27,8 +27,8 @@
  * the bound data are sent back to the server (or other data source). 
  * Smartbindings are specifically designed to solve the problem of databinding
  * for Ajax applications that connect to remote (non-local) datasources.
- * A j:smartbinding element can contain three elements; {@link element.bindings j:bindings}, 
- * {@link element.actions j:actions} and {@link element.model j:model}.
+ * A smartbinding element can contain three elements; {@link element.bindings bindings}, 
+ * {@link element.actions actions} and {@link element.model model}.
  *
  * See also more information about {@link term.binding binding rules} and
  * {@link term.action action rules}.
@@ -38,22 +38,22 @@
  * model using a {@link term.datainstruction data instruction} as the following
  * example shows:
  * <code>
- *  <j:model load="url:get_person.php?id=10" />
+ *  <a:model load="url:get_person.php?id=10" />
  * </code>
  * An element can connect directly to a model in order to bind to data.
  * <code>
- *  <j:model id="mdlExample" />
- *  <j:tree model="mdlExample" />
+ *  <a:model id="mdlExample" />
+ *  <a:tree model="mdlExample" />
  * </code>
  *
  * The model can also be part of a smartbinding that is used by the element. 
  * A smartbinding can be used by multiple elements referenced by id:
  * <code>
- *  <j:smartbinding id="sbExample">
- *      <j:model />
+ *  <a:smartbinding id="sbExample">
+ *      <a:model />
  *      ...
- *  </j:smartbinding>
- *  <j:tree smartbinding="sbExample" />
+ *  </a:smartbinding>
+ *  <a:tree smartbinding="sbExample" />
  * </code>
  *
  * Bindings:
@@ -95,24 +95,24 @@
  * textbox has a {@link element.textbox.attribute.value value attribute}. This
  * attribute can be set like this:
  * <code>
- *  <j:textbox value="The text" />
+ *  <a:textbox value="The text" />
  * </code>
  * In many cases it's handy to bind the value of the textbox to data. Imagine
  * you are editing a contact's name in a textbox. In this case you would want to 
  * bind the value of the textbox to the xml data. The binding rule is configured
  * to determine this value based on the bound xml. Let's look at an example:
  * <code>
- *  <j:model id="mdlExample">
+ *  <a:model id="mdlExample">
  *      <contact>
  *          <name>Test</name>
  *      </contact>
- *  </j:model>
+ *  </a:model>
  *
- *  <j:textbox model="mdlExample">
- *      <j:bindings>
- *          <j:value select="name" />
- *      </j:bindings>
- *  </j:textbox>
+ *  <a:textbox model="mdlExample">
+ *      <a:bindings>
+ *          <a:value select="name" />
+ *      </a:bindings>
+ *  </a:textbox>
  * </code>
  * The textbox binds to the data of the model. The bind rule sets how the value
  * is retrieved from the bound data. In this case the value of the name node is
@@ -124,16 +124,16 @@
  * name as the name of the binding rule. In the next example, the visible
  * attribute of a textbox is based on the availability of a {@link term.datanode data node}:
  * <code>
- *  <j:textbox>
- *      <j:bindings>
- *          <j:visible select="name" value="true" />
- *      </j:bindings>
- *  </j:textbox>
+ *  <a:textbox>
+ *      <a:bindings>
+ *          <a:visible select="name" value="true" />
+ *      </a:bindings>
+ *  </a:textbox>
  * </code>
  * Each element has a primary bind rule that can be accessed in a short format.
  * This is usually the value bind rule. The short format works as follows:
  * <code>
- *  <j:textbox ref="name" model="mdlExample" />
+ *  <a:textbox ref="name" model="mdlExample" />
  * </code>
  *
  * Advanced:
@@ -149,14 +149,14 @@
  * In the next example a list is bound to some data representing a contact list.
  * Each contact's name is displayed as the caption of the item.
  * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:caption select="name" />
- *          <j:icon value="contact.png" />
- *          <j:tooltip select="company" />
- *          <j:traverse select="contact" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list>
+ *      <a:bindings>
+ *          <a:caption select="name" />
+ *          <a:icon value="contact.png" />
+ *          <a:tooltip select="company" />
+ *          <a:traverse select="contact" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * 
  * Fallbacks:
@@ -166,11 +166,11 @@
  * not specified, they each default to an icon representing their type. This would
  * be encoded like this:
  * <code>
- *  <j:bindings>
- *      <j:icon select="@icon" />
- *      <j:icon select="self::folder" value="folder.png" />
- *      <j:icon select="self::file" value="file.png" />
- *  </j:bindings>
+ *  <a:bindings>
+ *      <a:icon select="@icon" />
+ *      <a:icon select="self::folder" value="folder.png" />
+ *      <a:icon select="self::file" value="file.png" />
+ *  </a:bindings>
  * </code>
  *
  * Processors:
@@ -178,20 +178,20 @@
  * the needed string or boolean. The following example uses {@link core.apf.object.jsltImplementation jslt}
  * to determine the icon by the extension of the filename:
  * <code>
- *  <j:bindings>
- *      <j:icon select="."><![CDATA[
+ *  <a:bindings>
+ *      <a:icon select="."><![CDATA[
  *          [var ext = $'@filename'.split(".").pop();
  *           %ext == $'@filename' ? "unknown.png" : ext + ".png";]
- *      ]]></j:icon>
- *  </j:bindings>
+ *      ]]></a:icon>
+ *  </a:bindings>
  * </code>
  * Instead of jslt you can use xslt as well. Furthermore you can apply some
  * javascript to the result by calling a method. The following examples shows
  * a caption where a javascript method inserts smileys.
  * <code>
- *  <j:bindings>
- *      <j:caption select="body" method="insertSmileys" />
- *  </j:bindings>
+ *  <a:bindings>
+ *      <a:caption select="body" method="insertSmileys" />
+ *  </a:bindings>
  * </code>
  *
  * Extending:
@@ -203,14 +203,14 @@
  * a tree element that loads subnodes whenever a user expands a node. This can
  * be achieved in the following way:
  * <code>
- *  <j:tree>
- *      <j:bindings>
- *          <j:caption select = "@name" />
- *          <j:insert  select = "self::category[not(@leaf)]" 
+ *  <a:tree>
+ *      <a:bindings>
+ *          <a:caption select = "@name" />
+ *          <a:insert  select = "self::category[not(@leaf)]" 
  *                     get    = "url:get_categories.php?parent={@id}" />
- *          <j:traverse select="category" />
- *      </j:bindings>
- *  </j:tree>
+ *          <a:traverse select="category" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * For more information about how data can be loaded into aml elements please
  * check {@link term.datainstruction data instructions}.
@@ -229,18 +229,18 @@
  * action on a datagrid. A jsp script is called to process the change. This is
  * specified using a {@link term.datainstruction data instruction}.
  * <code>
- *  <j:datagrid>
- *      <j:actions>
- *          <j:remove select = "self::contact[not(@readonly)]"
+ *  <a:datagrid>
+ *      <a:actions>
+ *          <a:remove select = "self::contact[not(@readonly)]"
  *                    set    = "url:remove_contact.jsp?id={@dbid}" />
- *      </j:actions>
- *  </j:datagrid>
+ *      </a:actions>
+ *  </a:datagrid>
  * </code>
  *
  * Defaults:
  * The default behaviour for all components is to enable all actions when no
  * actions element has been assigned. This can be change by setting 
- * {@link element.appsettings.attribute.auto-disable-actions}. When a j:actions
+ * {@link element.appsettings.attribute.auto-disable-actions}. When a actions
  * element <i>is</i> assigned, all actions are disabled unless they are specified.
  * When the select attribute on an action is not set the action will always be
  * allowed. 
@@ -264,12 +264,12 @@
  * files and folders. Renaming a file and a folder might have different handlers. 
  * This would be encoded like this:
  * <code>
- *  <j:actions>
- *      <j:rename select = "self::file"   
+ *  <a:actions>
+ *      <a:rename select = "self::file"   
  *                set    = "url:rename_folder.php?path={@path}&name={@name}" />
- *      <j:rename select = "self::folder" 
+ *      <a:rename select = "self::folder" 
  *                set    = "url:rename_file.php?path={@path}&name={@name}" />
- *  </j:actions>
+ *  </a:actions>
  * </code>
  *
  * Undo:
@@ -282,20 +282,20 @@
  * to the server. In some cases the call to the server is not symmetric; the set
  * call cannot be used to revert. For these situations set the undo attribute.
  * <code>
- *  <j:actions>
- *      <j:remove set  = "url:remove.php?id={@id}"
+ *  <a:actions>
+ *      <a:remove set  = "url:remove.php?id={@id}"
  *                undo = "url:undo_remove.php?id={@id}" />
- *      </j:remove>
- *  </j:actions>
+ *      </a:remove>
+ *  </a:actions>
  * </code>
  * In the example above the server is required to support reverting remove. 
  * Another possibility is to add the item again as shown in this example:
  * <code>
- *  <j:actions>
- *      <j:remove set  = "url:remove.php?id={@id}"
+ *  <a:actions>
+ *      <a:remove set  = "url:remove.php?id={@id}"
  *                undo = "url:add.php?xml={.}" />
- *      </j:remove>
- *  </j:actions>
+ *      </a:remove>
+ *  </a:actions>
  * </code>
  *
  * Javascript:
@@ -314,28 +314,28 @@
  * 
  * The first is by calling the add method using javascript.
  * <code>
- *  <j:list id="myList">
- *      <j:actions>
- *          <j:add set="rpc:comm.addProduct({.})" />
- *      </j:actions>
- *  </j:list>
- *  <j:script>
+ *  <a:list id="myList">
+ *      <a:actions>
+ *          <a:add set="rpc:comm.addProduct({.})" />
+ *      </a:actions>
+ *  </a:list>
+ *  <a:script>
  *      myList.add('<product name="USB drive" type="storage" />');
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * The second by specifying the template as a child of the add action rule:
- *  <j:actions>
- *      <j:add set="rpc:comm.addProduct({.})">
+ *  <a:actions>
+ *      <a:add set="rpc:comm.addProduct({.})">
  *          <product name="USB drive" type="storage" />
- *      </j:add>
- *  </j:actions>
+ *      </a:add>
+ *  </a:actions>
  *
  * The third way gets the added node from the server.
  * <code>
- *  <j:actions>
- *      <j:add get="rpc:comm.createNewProduct()" />
- *  </j:actions>
+ *  <a:actions>
+ *      <a:add get="rpc:comm.createNewProduct()" />
+ *  </a:actions>
  * </code>
  *
  * Purging:
@@ -346,23 +346,23 @@
  * {@link element.actiontracker.method.purge purge method} to have the 
  * actiontracker send the calls.
  * <code>
- *  <j:actiontracker id="myAt" realtime="false" />
- *  <j:list actiontracker="myAt" />
- *  <j:button onclick="myAt.purge()">Save</j:button>
+ *  <a:actiontracker id="myAt" realtime="false" />
+ *  <a:list actiontracker="myAt" />
+ *  <a:button onclick="myAt.purge()">Save</a:button>
  * </code>
  * N.B. At a certain amount of changes this way will become inefficient and 
  * you'll want to send the state of your data to the server directly. You can
  * do that like this:
  * <code>
- *  <j:list id="myList">
- *      <j:actions>
- *          <j:rename />
- *          <j:remove />
- *      </j:actions>
- *  </j:list>
- *  <j:button onclick="myList.getModel().submit('url:save.php', myList.xmlRoot)">
+ *  <a:list id="myList">
+ *      <a:actions>
+ *          <a:rename />
+ *          <a:remove />
+ *      </a:actions>
+ *  </a:list>
+ *  <a:button onclick="myList.getModel().submit('url:save.php', myList.xmlRoot)">
  *      Save
- *  </j:button>
+ *  </a:button>
  * </code>
  * See also {@link element.model.method.submit}.
  * 
@@ -397,15 +397,15 @@
  * Example:
  * A simple example of a smartbinding transforming data into representation
  * <code>
- *  <j:smartbinding id="sbUsers">
- *      <j:bindings>
- *          <j:caption select="text()" />
- *          <j:icon value="icoUser.png" />
- *          <j:traverse select="user" />
- *      </j:bindings>
- *  </j:smartbinding>
+ *  <a:smartbinding id="sbUsers">
+ *      <a:bindings>
+ *          <a:caption select="text()" />
+ *          <a:icon value="icoUser.png" />
+ *          <a:traverse select="user" />
+ *      </a:bindings>
+ *  </a:smartbinding>
  * 
- *  <j:list smartbinding="sbUsers" />
+ *  <a:list smartbinding="sbUsers" />
  * </code>
  * Example:
  * This is an elaborate example showing how to create a filesystem tree with
@@ -415,32 +415,32 @@
  * is used. The drag and drop rules specify which elements can be dragged and
  * where they can be dropped.
  * <code>
- *  <j:smartbinding id="sbFilesystem" model="webdav:getRoot()">
- *      <j:bindings>
- *          <j:insert select="self::folder" get="webdav:readdir({@path})" />
- *          <j:traverse select="file|folder" sort="@name" sort-method="filesort" />
- *          <j:caption select="@name" />
- *          <j:icon select="self::folder" value="icoFolder.png" />
- *          <j:icon select="self::file" method="getIcon" />
- *      </j:bindings>
- *      <j:actions>
- *         <j:add type="folder" get="webdav:mkdir({@id}, 'New Folder')" />
- *         <j:add type="file" get="webdav:create({@id}, 'New File', '')" />
- *         <j:rename set="webdav:move(oldValue, {@name}, {@id})"/>
- *         <j:copy select="." set="webdav:copy({@id}, {../@id})"/>
- *         <j:move select="." set="webdav:move()"/>
- *         <j:remove select="." set="webdav:remove({@path})"/>
- *      </j:actions>
- *      <j:dragdrop>
- *          <j:allow-drag select="folder|file" /> 
- *          <j:allow-drop select="folder|file" target="folder" 
+ *  <a:smartbinding id="sbFilesystem" model="webdav:getRoot()">
+ *      <a:bindings>
+ *          <a:insert select="self::folder" get="webdav:readdir({@path})" />
+ *          <a:traverse select="file|folder" sort="@name" sort-method="filesort" />
+ *          <a:caption select="@name" />
+ *          <a:icon select="self::folder" value="icoFolder.png" />
+ *          <a:icon select="self::file" method="getIcon" />
+ *      </a:bindings>
+ *      <a:actions>
+ *         <a:add type="folder" get="webdav:mkdir({@id}, 'New Folder')" />
+ *         <a:add type="file" get="webdav:create({@id}, 'New File', '')" />
+ *         <a:rename set="webdav:move(oldValue, {@name}, {@id})"/>
+ *         <a:copy select="." set="webdav:copy({@id}, {../@id})"/>
+ *         <a:move select="." set="webdav:move()"/>
+ *         <a:remove select="." set="webdav:remove({@path})"/>
+ *      </a:actions>
+ *      <a:dragdrop>
+ *          <a:allow-drag select="folder|file" /> 
+ *          <a:allow-drop select="folder|file" target="folder" 
  *              operation="tree-append" copy-condition="event.ctrlKey" /> 
- *      </j:dragdrop>
- *  </j:smartbinding>
+ *      </a:dragdrop>
+ *  </a:smartbinding>
  *
- *  <j:tree model="mdlFilesystem" smartbinding="sbFilesystem" />
+ *  <a:tree model="mdlFilesystem" smartbinding="sbFilesystem" />
  *
- *  <j:script>
+ *  <a:script>
  *      function filesort(value, args, xmlNode) {
  *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
  *      }
@@ -453,7 +453,7 @@
  *              ? SupportedIcons[ext.toUpperCase()] + ".png" 
  *              : "unknown.png");
  *      }
- *  </j:script>
+ *  </a:script>
  * </code>
  * Remarks:
  * Each element has it's own set of binding rules it uses to render the data 
@@ -477,46 +477,46 @@
  * This example shows a smartbinding element which references to its children as
  * stand alone elements.
  * <code>
- *  <j:bindings id="bndExample">
+ *  <a:bindings id="bndExample">
  *      ...
- *  </j:bindings>
- *  <j:actions id="actExample">
+ *  </a:bindings>
+ *  <a:actions id="actExample">
  *      ...
- *  </j:actions>
- *  <j:dragdrop id="ddExample">
+ *  </a:actions>
+ *  <a:dragdrop id="ddExample">
  *      ...
- *  </j:dragdrop>
- *  <j:model id="mdlExample" />
+ *  </a:dragdrop>
+ *  <a:model id="mdlExample" />
  *
- *  <j:smartbinding id="sbExample"
+ *  <a:smartbinding id="sbExample"
  *    actions  = "actExample" 
  *    bindings = "bndExample" 
  *    dragdrop = "ddExample" 
  *    model    = "mdlExample" />
  *
- *  <j:list smartbinding="sbExample" />
- *  <j:tree binding="bndExample" action="actExample" model="url:example.php" />
+ *  <a:list smartbinding="sbExample" />
+ *  <a:tree binding="bndExample" action="actExample" model="url:example.php" />
  * </code>
  * Example:
  * This example shows the children of the smartbinding directly as a children of
  * the element that they apply to.
  * <code>
- *  <j:tree>
- *      <j:bindings>
+ *  <a:tree>
+ *      <a:bindings>
  *          ...
- *      </j:bindings>
- *      <j:actions>
+ *      </a:bindings>
+ *      <a:actions>
  *          ...
- *      </j:actions>
- *      <j:dragdrop>
+ *      </a:actions>
+ *      <a:dragdrop>
  *          ...
- *      </j:dragdrop>
- *  </j:tree>
+ *      </a:dragdrop>
+ *  </a:tree>
  * </code>
  * Example:
  * The shortest method to add binding rules to an element is as follows:
  * <code>
- *  <j:tree traverse="file|folder" caption="@name" icon="@icon" />
+ *  <a:tree traverse="file|folder" caption="@name" icon="@icon" />
  * </code>
  * @see baseclass.databinding
  * @see baseclass.databinding.attribute.smartbinding
@@ -821,7 +821,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * this smartbinding element
      * Example:
      * <code>
-     *  <j:smartbinding id="sbExample" bindings="bndExample" />
+     *  <a:smartbinding id="sbExample" bindings="bndExample" />
      * </code>
      * @see element.bindings
      * @see term.binding
@@ -832,7 +832,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * this smartbinding element
      * Example:
      * <code>
-     *  <j:smartbinding id="sbExample" bindings="actExample" />
+     *  <a:smartbinding id="sbExample" bindings="actExample" />
      * </code>
      * @see element.actions
      * @see term.action
@@ -843,7 +843,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * element
      * Example:
      * <code>
-     *  <j:smartbinding id="sbExample" dragdrop="ddExample" />
+     *  <a:smartbinding id="sbExample" dragdrop="ddExample" />
      * </code>
      * @see element.dragdrop
      * @see term.smartbinding
@@ -852,7 +852,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * the data for all elements connected to this smartbinding element.
      * Example:
      * <code>
-     *  <j:smartbinding id="sbExample" model="mdlExample" />
+     *  <a:smartbinding id="sbExample" model="mdlExample" />
      * </code>
      * @see element.model
      * @see term.smartbinding
@@ -861,13 +861,13 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * bound elements referencing this element.
      * Example:
      * <code>
-     *  <j:bindings id="bndFolders" >
-     *      <j:caption select="@name" />
-     *      <j:icon select="@icon" />
-     *      <j:traverse select="folder" sort="@name" />
-     *  </j:bindings>
+     *  <a:bindings id="bndFolders" >
+     *      <a:caption select="@name" />
+     *      <a:icon select="@icon" />
+     *      <a:traverse select="folder" sort="@name" />
+     *  </a:bindings>
      *
-     *  <j:tree bindings="bndFolders" />
+     *  <a:tree bindings="bndFolders" />
      * </code>
      * @see element.smartbinding
      * @allowchild {bindings}
@@ -876,15 +876,15 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * bound elements referencing this element.
      * Example:
      * <code>
-     *  <j:actions id="actPerson" >
-     *      <j:add set="rpc:comm.addPerson({.})">
+     *  <a:actions id="actPerson" >
+     *      <a:add set="rpc:comm.addPerson({.})">
      *          <person name="New person" />
-     *      </j:add
-     *      <j:rename set="rpc.comm.renamePerson({@id}, {@name})" />
-     *      <j:remove select="@new" set="rpc:comm.removePerson({@id})"/>
-     *  </j:actions>
+     *      </a:add
+     *      <a:rename set="rpc.comm.renamePerson({@id}, {@name})" />
+     *      <a:remove select="@new" set="rpc:comm.removePerson({@id})"/>
+     *  </a:actions>
      *
-     *  <j:tree actions="actPerson" />
+     *  <a:tree actions="actPerson" />
      * </code>
      * @allowchild {actions}
      * @addnode smartbinding, global
@@ -896,11 +896,11 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * dragged but not dropped within this element. Possible an other element
      * does allow receiving an office element.
      * <code>
-     *  <j:dragdrop>
-     *      <j:allow-drag select="person|office" /> 
-     *      <j:allow-drop select="person" target="office" 
+     *  <a:dragdrop>
+     *      <a:allow-drag select="person|office" /> 
+     *      <a:allow-drop select="person" target="office" 
      *          operation="tree-append" copy-condition="event.ctrlKey" /> 
-     *  </j:dragdrop>
+     *  </a:dragdrop>
      * </code>
      * @allowchild allow-drag, allow-drop
      * @addnode smartbinding, global

@@ -28,30 +28,30 @@
  * value attribute of the slider is set using property binding. The square
  * brackets imply a {@link term.propertybinding bidirectional binding}.
  * <code>
- *  <j:video id="player1"
+ *  <a:video id="player1"
  *    src      = "elements/video/demo_video.flv"
  *    autoplay = "true">
  *      Unsupported video codec.
- *  </j:video>
+ *  </a:video>
  *
- *  <j:button onclick="player1.play()">play</j:button>
- *  <j:button onclick="player1.pause()">pause</j:button>
+ *  <a:button onclick="player1.play()">play</a:button>
+ *  <a:button onclick="player1.pause()">pause</a:button>
  *
- *  <j:slider value="[player1.position]" />
+ *  <a:slider value="[player1.position]" />
  * </code>
  * Example:
  * This example shows two slider which lets the user indicate a value in a form.
  * <code>
- *  <j:label>How would you grade the opening hours of the helpdesk</j:label>
- *  <j:slider ref="hours_hd"
+ *  <a:label>How would you grade the opening hours of the helpdesk</a:label>
+ *  <a:slider ref="hours_hd"
  *    mask  = "no opinion|bad|below average|average|above average|good"
  *    min   = "0"
  *    max   = "5"
  *    step  = "1"
  *    slide = "snap" />
  *
- *  <j:label>How soon will you make your buying decision</j:label>
- *  <j:slider ref="decide_buy"
+ *  <a:label>How soon will you make your buying decision</a:label>
+ *  <a:slider ref="decide_buy"
  *    mask  = "undecided|1 week|1 month|6 months|1 year|never"
  *    min   = "0"
  *    max   = "5"
@@ -78,16 +78,16 @@
  * Example:
  * Sets the slider position based on data loaded into this component.
  * <code>
- *  <j:slider>
- *      <j:bindings>
- *          <j:value select="@value" />
- *      </j:bindings>
- *  </j:slider>
+ *  <a:slider>
+ *      <a:bindings>
+ *          <a:value select="@value" />
+ *      </a:bindings>
+ *  </a:slider>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:slider ref="@value" />
+ *  <a:slider ref="@value" />
  * </code>
  */
 apf.range  =
@@ -119,8 +119,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {Number}  step     specifying the step size of a discreet slider.
      * Example:
      * <code>
-     *  <j:label>How much money do you make annualy.</j:label>
-     *  <j:range ref="salary"
+     *  <a:label>How much money do you make annualy.</a:label>
+     *  <a:range ref="salary"
      *    min   = "0"
      *    max   = "50000"
      *    step  = "1000"
@@ -191,8 +191,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      * used as the caption of the slider when their connected value is picked.
      * Example:
      * <code>
-     *  <j:label>How big is your cat?</j:label>
-     *  <j:slider ref="decide_buy"
+     *  <a:label>How big is your cat?</a:label>
+     *  <a:slider ref="decide_buy"
      *    mask  = "don't know|20cm|25cm|30cm|35cm|&gt; 35cm"
      *    min   = "0"
      *    max   = "5"
@@ -214,13 +214,13 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      * the download of movies or other media.
      * Example:
      * <code>
-     *  <j:video id="player1"
+     *  <a:video id="player1"
      *    src      = "elements/video/demo_video.flv"
      *    autoplay = "true">
      *      Unsupported video codec.
-     *  </j:video>
+     *  </a:video>
      *
-     *  <j:slider value="[player1.position]" progress="{player1.progress}" />
+     *  <a:slider value="[player1.position]" progress="{player1.progress}" />
      * </code>
      */
     this.$propHandlers["progress"] = function(value){

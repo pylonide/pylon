@@ -28,15 +28,15 @@
  * application.
  * Example:
  * <code>
- *   <j:statusbar align="bottom">
- *      <j:panel>
+ *   <a:statusbar align="bottom">
+ *      <a:panel>
  *          Ajax.org Platform
- *      </j:panel>
- *      <j:progressbar value="{apf.offline.position}" />
- *      <j:panel>
+ *      </a:panel>
+ *      <a:progressbar value="{apf.offline.position}" />
+ *      <a:panel>
  *      
- *      </j:panel>
- *  </j:statusbar>
+ *      </a:panel>
+ *  </a:statusbar>
  * </code>
  *
  * @constructor

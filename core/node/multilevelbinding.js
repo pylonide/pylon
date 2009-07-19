@@ -30,24 +30,24 @@ var __MULTIBINDING__ = 1 << 7;
  * In this example the selection of the dropdown determines the value of the city
  * xml element in mdlForm. The dropdown is filled with information from mdlCities.
  * <code>
- *  <j:model id="mdlCities" load="url:cities.php" />
- *  <j:model id="mdlForm">
+ *  <a:model id="mdlCities" load="url:cities.php" />
+ *  <a:model id="mdlForm">
  *      <form>
  *          <name />
  *          <city />
  *      </form>
- *  </j:model>
+ *  </a:model>
  *
- *  <j:bar model="mdlForm">
- *      <j:textbox ref="name" />
- *      <j:dropdown ref="city" model="mdlCities">
- *          <j:bindings>
- *              <j:caption select="text()" />
- *              <j:value select="@code" />
- *              <j:traverse select="city" />
- *          </j:bindings>
- *      </j:dropdown>
- *  </j:bar>
+ *  <a:bar model="mdlForm">
+ *      <a:textbox ref="name" />
+ *      <a:dropdown ref="city" model="mdlCities">
+ *          <a:bindings>
+ *              <a:caption select="text()" />
+ *              <a:value select="@code" />
+ *              <a:traverse select="city" />
+ *          </a:bindings>
+ *      </a:dropdown>
+ *  </a:bar>
  * </code>
  *
  * @see element.dropdown

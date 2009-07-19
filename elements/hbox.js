@@ -26,20 +26,20 @@
  * @define hbox Container that stacks it's children horizontally.
  * Example:
  * <code>
- *  <j:hbox>
- *      <j:vbox>
- *          <j:bar caption="Some Window"/>
- *          <j:bar caption="Another Window"/>
- *          <j:hbox>
- *              <j:bar caption="Redmond Window"/>
- *              <j:vbox>
- *                  <j:bar caption="Ping Window"/>
- *                  <j:bar caption="YAW window"/>
- *              </j:vbox>
- *          </j:hbox>
- *      </j:vbox>
- *      <j:bar caption="Down Window"/>
- *  </j:hbox>
+ *  <a:hbox>
+ *      <a:vbox>
+ *          <a:bar caption="Some Window"/>
+ *          <a:bar caption="Another Window"/>
+ *          <a:hbox>
+ *              <a:bar caption="Redmond Window"/>
+ *              <a:vbox>
+ *                  <a:bar caption="Ping Window"/>
+ *                  <a:bar caption="YAW window"/>
+ *              </a:vbox>
+ *          </a:hbox>
+ *      </a:vbox>
+ *      <a:bar caption="Down Window"/>
+ *  </a:hbox>
  * </code>
  * Remarks:
  * The layouting engine of Ajax.org Platform lets you store layouts and set them

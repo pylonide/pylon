@@ -26,12 +26,12 @@
  * {@link core.jsltimplementation}.
  * Example:
  * <code>
- *  <j:jslt model="mdlChat"><![CDATA[
+ *  <a:jslt model="mdlChat"><![CDATA[
  *      [foreach('message'){]
  *          <strong>[%$'@from'.split("@")[0]] says:</strong> <br />
  *          {text()}<br />
  *      [}]
- *  ]]></j:jslt>
+ *  ]]></a:jslt>
  * </code>
  *
  * @constructor

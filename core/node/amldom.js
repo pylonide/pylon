@@ -39,9 +39,9 @@ var __WITH_AMLDOM__ = 1 << 14;
  * Example:
  * Ajax.org Markup Language
  * <code>
- *  <j:window id="winExample" title="Example">
- *      <j:button id="tstButton" />
- *  </j:window>
+ *  <a:window id="winExample" title="Example">
+ *      <a:button id="tstButton" />
+ *  </a:window>
  * </code>
  * Document Object Model in javascript
  * <code>
@@ -61,13 +61,13 @@ var __WITH_AMLDOM__ = 1 << 14;
  * </code>
  * That would be the same as having the following aml:
  * <code>
- *  <j:window id="winExample"
+ *  <a:window id="winExample"
  *    title = "Example"
  *    icon  = "icoFolder.gif"
  *    left  = "100">
- *      <j:label caption="Example" />
- *      <j:button id="tstButton" caption="Click me"/>
- *  </j:window>
+ *      <a:label caption="Example" />
+ *      <a:button id="tstButton" caption="Click me"/>
+ *  </a:window>
  * </code>
  * Remarks:
  * Because the W3C DOM is native to all modern browsers the internet is full

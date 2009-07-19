@@ -32,38 +32,38 @@
  * This example shows a small application which is editable by all clients that
  * have started it. Any change to the data is synchronized to all participants.
  * <code>
- *  <j:teleport>
- *      <j:xmpp id="myXMPP"
+ *  <a:teleport>
+ *      <a:xmpp id="myXMPP"
  *        url           = "http://ajax.org:5280/http-bind" 
  *        model         = "mdlRoster" 
  *        connection    = "bosh" 
- *  </j:teleport>
+ *  </a:teleport>
  *  
- *  <j:remote transport="myXMPP" id="rmtPersons">
- *      <j:person unique="@id" />
- *  </j:remote>
+ *  <a:remote transport="myXMPP" id="rmtPersons">
+ *      <a:person unique="@id" />
+ *  </a:remote>
  *  
- *  <j:model id="mdlPersons" remote="rmtPersons">
+ *  <a:model id="mdlPersons" remote="rmtPersons">
  *      <persons>
  *          <person id="1">mike</person>
  *          <person id="2">ruben</person>
  *      </persons>
- *  </j:model>
+ *  </a:model>
  *
- *  <j:list id="lstPersons" model="mdlPersons" width="200" height="100">
- *      <j:bindings>
- *          <j:traverse select="person" />
- *          <j:caption select="text()" />
- *          <j:icon value="icoUsers.gif" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list id="lstPersons" model="mdlPersons" width="200" height="100">
+ *      <a:bindings>
+ *          <a:traverse select="person" />
+ *          <a:caption select="text()" />
+ *          <a:icon value="icoUsers.gif" />
+ *      </a:bindings>
+ *  </a:list>
  *
- *  <j:button action="remove" target="lstPersons">Remove</j:button>
- *  <j:button action="rename" target="lstPersons">Rename</j:button>
+ *  <a:button action="remove" target="lstPersons">Remove</a:button>
+ *  <a:button action="rename" target="lstPersons">Rename</a:button>
  *  
- *  <j:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
+ *  <a:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
  *      Login
- *  </j:button>
+ *  </a:button>
  * </code>
  * Remarks:
  * Although locking is solved in smartbindings it is directly connected
@@ -109,7 +109,7 @@
  * This example shows a complex data set and a remote smartbinding that
  * specifies the uniqueness of all nodes concerned.
  * <code>
- *  <j:model id="mdlPersons" remote="rmtPersons">
+ *  <a:model id="mdlPersons" remote="rmtPersons">
  *      <universe>
  *          <galaxy name="milkyway">
  *              <planet id="ALS-3947">
@@ -122,14 +122,14 @@
  *              </planet>
  *          </galaxy>
  *      </universe>
- *  </j:model>
+ *  </a:model>
  *
- *  <j:remote transport="myXMPP" id="rmtPersons">
- *      <j:person unique="@number" />
- *      <j:unique select="self::galaxy" unique="@name" />
- *      <j:planet unique="@id" />
- *      <j:species unique="text()" />
- *  </j:remote>
+ *  <a:remote transport="myXMPP" id="rmtPersons">
+ *      <a:person unique="@number" />
+ *      <a:unique select="self::galaxy" unique="@name" />
+ *      <a:planet unique="@id" />
+ *      <a:species unique="text()" />
+ *  </a:remote>
  * </code>
  * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes} that share a similar uniqueness trait.
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific {@link term.datanode data node}.

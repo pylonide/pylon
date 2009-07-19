@@ -34,8 +34,8 @@
  * was never closed.
  * Example:
  * <code>
- *  <j:appsettings>
- *      <j:offline providers="gears"
+ *  <a:appsettings>
+ *      <a:offline providers="gears"
  *        resources     = "application|models|transactions|queue|state"
  *        rsb-timeout   = "10000"
  *        detect-url    = "network.txt"
@@ -43,7 +43,7 @@
  *        realtime      = "true"
  *        onrestore     = "return confirm('Continue your previous session?');"
  *        onlosechanges = "" />
- *  </j:appsettings>
+ *  </a:appsettings>
  * </code>
  *
  * @event losechanges   Fires before the offline state is removed.
@@ -66,12 +66,12 @@
  * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
  * Example:
  * <code>
- * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
- *    <j:Label>Synchronizing your changes</j:label>
- *    <j:progressbar value="{offline.progress}" />
- *    <j:button onclick="apf.offline.stopSync()">Cancel</j:button>
- *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
- * </j:modalwindow>
+ * <a:modalwindow title="Synchronizing" visible="{offline.syncing}">
+ *    <a:Label>Synchronizing your changes</a:label>
+ *    <a:progressbar value="{offline.progress}" />
+ *    <a:button onclick="apf.offline.stopSync()">Cancel</a:button>
+ *    <a:button onclick="this.parentNode.hide()">Hide Window</a:button>
+ * </a:modalwindow>
  * </code>
  * @attribute {Number}  position  the progress of the sync. 
  * @attribute {Number}  length    the total length of items to sync.

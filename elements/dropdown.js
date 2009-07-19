@@ -29,49 +29,49 @@
  * Example:
  * A simple dropdown with inline items.
  * <code>
- *  <j:dropdown>
- *      <j:item>The Netherlands</j:item>
- *      <j:item>United States of America</j:item>
- *      <j:item>United Kingdom</j:item>
+ *  <a:dropdown>
+ *      <a:item>The Netherlands</a:item>
+ *      <a:item>United States of America</a:item>
+ *      <a:item>United Kingdom</a:item>
  *      ...
- *  </j:dropdown>
+ *  </a:dropdown>
  * </code>
  * Example:
  * A databound dropdown with items loaded from an xml file.
  * <code>
- *  <j:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
+ *  <a:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
  * </code>
  * Example:
- * A databound dropdown using the j:bindings element
+ * A databound dropdown using the bindings element
  * <code>
- *  <j:dropdown model="url:friends.xml">
- *      <j:bindings>
- *          <j:caption  select="@name" />
- *          <j:css      select="self::node()[@type='best']" value="bestfriend" />
- *          <j:traverse select="friend" />
- *      </j:bindings>
- *  </j:dropdown>
+ *  <a:dropdown model="url:friends.xml">
+ *      <a:bindings>
+ *          <a:caption  select="@name" />
+ *          <a:css      select="self::node()[@type='best']" value="bestfriend" />
+ *          <a:traverse select="friend" />
+ *      </a:bindings>
+ *  </a:dropdown>
  * </code>
  * Example:
  * A small form.
  * <code>
- *  <j:model id="mdlForm" submission="url:save_form.asp" />
+ *  <a:model id="mdlForm" submission="url:save_form.asp" />
  *
- *  <j:bar model="mdlForm">
- *      <j:label>Name</j:label>
- *      <j:textbox ref="name" />
+ *  <a:bar model="mdlForm">
+ *      <a:label>Name</a:label>
+ *      <a:textbox ref="name" />
  *
- *      <j:label>City</j:label>
- *      <j:dropdown ref="city" model="url:cities.xml">
- *          <j:bindings>
- *              <j:caption select="text()" />
- *              <j:value select="@value" />
- *              <j:traverse select="city" />
- *          </j:bindings>
- *      </j:dropdown>
+ *      <a:label>City</a:label>
+ *      <a:dropdown ref="city" model="url:cities.xml">
+ *          <a:bindings>
+ *              <a:caption select="text()" />
+ *              <a:value select="@value" />
+ *              <a:traverse select="city" />
+ *          </a:bindings>
+ *      </a:dropdown>
  *
- *      <j:button default="true" action="submit">Submit</j:button>
- *  </j:bar>
+ *      <a:button default="true" action="submit">Submit</a:button>
+ *  </a:bar>
  * </code>
  *
  * @event slidedown Fires when the calendar slides open.

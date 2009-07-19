@@ -27,12 +27,12 @@
  * element is called a fieldset in html.
  * Example:
  * <code>
- *  <j:frame caption="Options">
- *      <j:radiobutton value="1">Option 1</j:radiobutton>
- *      <j:radiobutton value="2">Option 2</j:radiobutton>
- *      <j:radiobutton value="3">Option 3</j:radiobutton>
- *      <j:radiobutton value="4">Option 4</j:radiobutton>
- *  </j:frame>
+ *  <a:frame caption="Options">
+ *      <a:radiobutton value="1">Option 1</a:radiobutton>
+ *      <a:radiobutton value="2">Option 2</a:radiobutton>
+ *      <a:radiobutton value="3">Option 3</a:radiobutton>
+ *      <a:radiobutton value="4">Option 4</a:radiobutton>
+ *  </a:frame>
  * </code>
  *
  * @constructor

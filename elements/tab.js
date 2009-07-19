@@ -30,21 +30,21 @@
  * startup of the application or when the page is activated.
  * Example:
  * <code>
- *  <j:tab id="tab">
- *      <j:page caption="General">
- *          <j:checkbox>Example</j:checkbox>
- *          <j:button>Example</j:button>
- *      </j:page>
- *      <j:page caption="Advanced">
- *          <j:checkbox>Test checkbox</j:checkbox>
- *          <j:checkbox>Test checkbox</j:checkbox>
- *          <j:checkbox>Test checkbox</j:checkbox>
- *      </j:page>
- *      <j:page caption="Ajax.org">
- *          <j:checkbox>This ok?</j:checkbox>
- *          <j:checkbox>This better?</j:checkbox>
- *      </j:page>
- *  </j:tab>
+ *  <a:tab id="tab">
+ *      <a:page caption="General">
+ *          <a:checkbox>Example</a:checkbox>
+ *          <a:button>Example</a:button>
+ *      </a:page>
+ *      <a:page caption="Advanced">
+ *          <a:checkbox>Test checkbox</a:checkbox>
+ *          <a:checkbox>Test checkbox</a:checkbox>
+ *          <a:checkbox>Test checkbox</a:checkbox>
+ *      </a:page>
+ *      <a:page caption="Ajax.org">
+ *          <a:checkbox>This ok?</a:checkbox>
+ *          <a:checkbox>This better?</a:checkbox>
+ *      </a:page>
+ *  </a:tab>
  * </code>
  *
  * @constructor

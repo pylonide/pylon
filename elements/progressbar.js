@@ -31,7 +31,7 @@
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
  * <code>
- *  <j:progressbar
+ *  <a:progressbar
  *     value="{apf.offline.progress}"
  *     visible="{apf.offline.syncing}" />
  * </code>
@@ -52,16 +52,16 @@
  * Example:
  * Sets the progress position based on data loaded into this component.
  * <code>
- *  <j:progressbar>
- *      <j:bindings>
- *          <j:value select="@progress" />
- *      </j:bindings>
- *  </j:progressbar>
+ *  <a:progressbar>
+ *      <a:bindings>
+ *          <a:value select="@progress" />
+ *      </a:bindings>
+ *  </a:progressbar>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:progressbar ref="@progress" />
+ *  <a:progressbar ref="@progress" />
  * </code>
  */
 apf.progress    =

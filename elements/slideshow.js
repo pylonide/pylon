@@ -30,22 +30,22 @@
  * Slideshow component with 3 pictures. Each image has its own thumbnail 
  * and description. A new image is shown every 5 seconds.
  * <code>
- *  <j:model id="mdlImages" save-original="true" >
+ *  <a:model id="mdlImages" save-original="true" >
  *      <slideshow>
  *          <picture src="img1.jpg" thumb="thumb1.jpg" title="First Picture"></picture>
  *          <picture src="img2.jpg" thumb="thumb2.jpg" title="Second Picture"></picture>
  *          <picture src="img3.jpg" thumb="thumb3.jpg" title="Third Picture"></picture>
  *      </slideshow>
- *  </j:model>
+ *  </a:model>
  *  
- *  <j:slideshow title="number+text" delay="5" model="mdlImages">
- *      <j:bindings>
- *          <j:src   select="@src"></j:src>
- *          <j:title select="@title"></j:title>
- *          <j:thumb select="@thumb"></j:thumb>
- *          <j:traverse select="picture"></j:traverse>
- *      </j:bindings>
- *  </j:slideshow>
+ *  <a:slideshow title="number+text" delay="5" model="mdlImages">
+ *      <a:bindings>
+ *          <a:src   select="@src"></a:src>
+ *          <a:title select="@title"></a:title>
+ *          <a:thumb select="@thumb"></a:thumb>
+ *          <a:traverse select="picture"></a:traverse>
+ *      </a:bindings>
+ *  </a:slideshow>
  * </code>
  * 
  * @attribute {String} title          the description of the picture on the slide. Default is "number".

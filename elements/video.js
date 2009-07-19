@@ -26,7 +26,7 @@
  * Example:
  * Plays a video at 340x180
  * <code>
- *  <j:video id="myVideo"
+ *  <a:video id="myVideo"
  *   src      = ""
  *   controls = "false"
  *   autoplay = "true"
@@ -34,21 +34,21 @@
  *   width    = "340"
  *   height   = "180">
  *    Video Codec not supported.
- *  </j:video>
+ *  </a:video>
  * </code>
  * Example:
  * <code>
- *  <j:video id="myVideo2"
+ *  <a:video id="myVideo2"
  *   autoplay = "true"
  *   controls = "false"
  *   volume   = "90">
- *    <j:source src="http://my-mediaserver.com/demo_video.flv" />
- *    <j:source src="http://my-mediaserver.com/demo_video.mov" />
- *    <j:source src="http://my-mediaserver.com/demo_video.wmv" />
- *    <j:source src="http://my-mediaserver.com/video.wmv" type="video/silverlight" />
- *    <j:source src="http://my-mediaserver.com/demo_video.ogg" />
- *    <j:nomedia>Video Codec not supported.</j:nomedia>
- *  </j:video>
+ *    <a:source src="http://my-mediaserver.com/demo_video.flv" />
+ *    <a:source src="http://my-mediaserver.com/demo_video.mov" />
+ *    <a:source src="http://my-mediaserver.com/demo_video.wmv" />
+ *    <a:source src="http://my-mediaserver.com/video.wmv" type="video/silverlight" />
+ *    <a:source src="http://my-mediaserver.com/demo_video.ogg" />
+ *    <a:nomedia>Video Codec not supported.</a:nomedia>
+ *  </a:video>
  * </code>
  *
  * @return {Video} Returns a new video

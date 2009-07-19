@@ -29,22 +29,22 @@
  * {@link element.remove synchronization between multiple clients}.
  * Example:
  * <code>
- *  <j:model load="url:products.xml" />
+ *  <a:model load="url:products.xml" />
  * </code>
  * Example:
  * A small form where the bound data is submitted to a server using a model.
  * <code>
- *  <j:model id="mdlForm" submission="url:save_form.asp" />
+ *  <a:model id="mdlForm" submission="url:save_form.asp" />
  *
- *  <j:bar model="mdlForm">
- *      <j:label>Name</j:label>
- *      <j:textbox ref="name" />
- *      <j:label>Address</j:label>
- *      <j:textarea ref="address" />
+ *  <a:bar model="mdlForm">
+ *      <a:label>Name</a:label>
+ *      <a:textbox ref="name" />
+ *      <a:label>Address</a:label>
+ *      <a:textarea ref="address" />
  *      ...
  *
- *      <j:button default="true" action="submit">Submit</j:button>
- *  </j:bar>
+ *      <a:button default="true" action="submit">Submit</a:button>
+ *  </a:bar>
  * </code>
  *
  * @event beforeretrieve    Fires before a request is made to retrieve data.
@@ -673,7 +673,7 @@ apf.model = function(data, caching){
      * A connect proxy is set up like this:
      * Example:
      * <code>
-     *  <j:model connect="element_name" type="select" select="xpath" />
+     *  <a:model connect="element_name" type="select" select="xpath" />
      * </code>
      *
      * @param  {AMLElement} amlNode  the aml element to be registered.
@@ -1113,7 +1113,7 @@ apf.model = function(data, caching){
         if (submissions[instruction] || !instruction && defSubmission) {
             sub = submissions[instruction] || defSubmission;
 
-            //<j:submission id="" ref="/" bind="" action="url" method="post|get|urlencoded-post" set="" />
+            //<a:submission id="" ref="/" bind="" action="url" method="post|get|urlencoded-post" set="" />
             useComponents  = false;
             type           = sub.getAttribute("method")
                 .match(/^(?:urlencoded-post|get)$/) ? "native" : "xml";

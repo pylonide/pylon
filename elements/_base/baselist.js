@@ -54,28 +54,28 @@
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <j:thumbnail>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:image select="@thumbnail" />
- *          <j:image value="no_image.png" />
- *          <j:traverse select="images" />
- *      </j:bindings>
- *  </j:thumbnail>
+ *  <a:thumbnail>
+ *      <a:bindings>
+ *          <a:caption select="@caption" />
+ *          <a:image select="@thumbnail" />
+ *          <a:image value="no_image.png" />
+ *          <a:traverse select="images" />
+ *      </a:bindings>
+ *  </a:thumbnail>
  * </code>
  * @binding css      Determines a css class for a node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:css select="message[@unread]" value="highlighUnread" />
- *          <j:icon select="@icon" />
- *          <j:icon select="self::folder" value="icoFolder.gif" />
- *          <j:traverse select="folder" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list>
+ *      <a:bindings>
+ *          <a:caption select="@caption" />
+ *          <a:css select="message[@unread]" value="highlighUnread" />
+ *          <a:icon select="@icon" />
+ *          <a:icon select="self::folder" value="icoFolder.gif" />
+ *          <a:traverse select="folder" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * @binding tooltip  Determines the tooltip of a node.
  * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
@@ -105,7 +105,7 @@ apf.BaseList = function(){
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
      * <code>
-     *  <j:dropdown fill="1980-2050" />
+     *  <a:dropdown fill="1980-2050" />
      * </code>
      */
     this.$propHandlers["fill"] = function(value){
@@ -635,8 +635,8 @@ apf.BaseList = function(){
         var xmlNode;
         if (!this.actionRules || !this.actionRules["add"]) {
             if (this.traverse && !this.traverse.match(/[\/\[]/)) {
-                xmlNode = "<" + this.traverse + (this.traverse.match(/^j:/) 
-                    ? " xmlns:j='" + apf.ns.aml + "'" 
+                xmlNode = "<" + this.traverse + (this.traverse.match(/^a:/) 
+                    ? " xmlns:a='" + apf.ns.aml + "'" 
                     : "") + " custom='1' />";
             }
             else {

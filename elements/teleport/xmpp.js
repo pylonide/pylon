@@ -29,15 +29,15 @@
  * Example:
  * XMPP connector with new message notification
  * <code>
- *  <j:teleport>
- *      <j:xmpp id="myXMPP"
+ *  <a:teleport>
+ *      <a:xmpp id="myXMPP"
  *        url           = "http://my-jabber-server.com:5280/http-bind"
  *        model         = "mdlRoster"
  *        connection    = "bosh"
  *        onreceivechat = "messageReceived(arguments[0].from)" />
- *  </j:teleport>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      // This function is called when a message has arrived
  *      function messageReceived(from){
  *          alert('Received message from ' + from);
@@ -46,7 +46,7 @@
  *      // Send a message to John
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
  *          apf.xmpp.MSG_CHAT);
- *  </j:script>
+ *  </a:script>
  * </code>
  * Remarks:
  * Calls can be made to a server using a special {@link term.datainstruction data instruction}

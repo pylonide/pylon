@@ -219,7 +219,7 @@ apf.video.TypeFlv.prototype = {
     },
 
     /*setFullscreen: function(value) {
-        apf.console.info('j:video::flash - going fullscreen = ' + value);
+        apf.console.info('video::flash - going fullscreen = ' + value);
         return this.callMethod('setFullscreen', value);
     },*/
 

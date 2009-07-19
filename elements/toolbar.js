@@ -27,30 +27,30 @@
  * the user to choose from grouped buttons.
  * Example:
  * <code>
- *  <j:toolbar>
- *      <j:menubar>
- *          <j:button submenu="mnuFile">File</j:button>
- *          <j:button submenu="mnuEdit">Edit</j:button>
- *      </j:menubar>
- *      <j:bar>
- *          <j:button>Questions</j:button>
- *          <j:divider />
- *          <j:button icon="icoEmail.gif">e-mail</j:button>
- *          <j:button id="btnTest" 
+ *  <a:toolbar>
+ *      <a:menubar>
+ *          <a:button submenu="mnuFile">File</a:button>
+ *          <a:button submenu="mnuEdit">Edit</a:button>
+ *      </a:menubar>
+ *      <a:bar>
+ *          <a:button>Questions</a:button>
+ *          <a:divider />
+ *          <a:button icon="icoEmail.gif">e-mail</a:button>
+ *          <a:button id="btnTest" 
  *              icon    = "icoPhone.gif"
  *              caption = "Change Skin" />
- *          <j:divider />
- *          <j:progressbar value="apf.offline.position" />
- *      </j:bar>
- *  </j:toolbar>
+ *          <a:divider />
+ *          <a:progressbar value="apf.offline.position" />
+ *      </a:bar>
+ *  </a:toolbar>
  *
- *  <j:menu id="mnuFile">
+ *  <a:menu id="mnuFile">
  *      ...
- *  </j:menu>
+ *  </a:menu>
  *  
- *  <j:menu id="mnuEdit">
+ *  <a:menu id="mnuEdit">
  *      ...
- *  </j:menu>
+ *  </a:menu>
  * </code>
  *
  * @constructor
@@ -108,7 +108,7 @@ apf.toolbar = apf.component(apf.NODE_VISIBLE, function(){
                         if (amlNode.tagName != "button") {
                             throw new Error(apf.formatErrorStrin(0, this,
                                 "Appending a child",
-                                "A menubar can only contain j:button elements"));
+                                "A menubar can only contain button elements"));
                         }
                     });
                     //#endif

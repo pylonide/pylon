@@ -28,7 +28,7 @@
  * element in AML.
  * Example:
  * <code>
- *  <j:offline
+ *  <a:offline
  *      version-get  = "url:version.php"
  *      providers    = "gears|air"
  *      auto-install = "true" />

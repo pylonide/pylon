@@ -29,7 +29,7 @@
  * Simple example of some aml which is repeated. The button removes an item
  * from the model when pressed.
  * <code>
- *   <j:model id="mdlExample">
+ *   <a:model id="mdlExample">
  *      <data>
  *          <item>test1</item>
  *          <item>test2</item>
@@ -38,16 +38,16 @@
  *          <item>test5</item>
  *          <item>test6</item>
  *      </data>
- *  </j:model>
+ *  </a:model>
  *  
- *  <j:repeat id="rpExample" model="mdlExample" nodeset="item">
- *      <j:label ref="text()" />
- *      <j:button>ok</j:button>
- *  </j:repeat>
+ *  <a:repeat id="rpExample" model="mdlExample" nodeset="item">
+ *      <a:label ref="text()" />
+ *      <a:button>ok</a:button>
+ *  </a:repeat>
  *
- *  <j:button onclick="
+ *  <a:button onclick="
  *      apf.xmldb.removeNode(mdlExample.data.childNodes[1]);
- *  ">remove item</j:button>
+ *  ">remove item</a:button>
  * </code>
  *
  * @constructor

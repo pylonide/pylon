@@ -28,17 +28,17 @@
  * Example:
  * Ajax.org Markup Language
  * <code>
- *  <j:teleport>
- *      <j:rpc id="comm" protocol="xmlrpc">
- *          <j:method 
+ *  <a:teleport>
+ *      <a:rpc id="comm" protocol="xmlrpc">
+ *          <a:method 
  *            name    = "searchProduct" 
  *            receive = "processSearch" />
- *          <j:method 
+ *          <a:method 
  *            name = "loadProduct" />
- *      </j:rpc>
- *  </j:teleport>
+ *      </a:rpc>
+ *  </a:teleport>
  *
- *  <j:script>
+ *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
  *          alert(data)
@@ -46,7 +46,7 @@
  *
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
- *  </j:script>
+ *  </a:script>
  * </code>
  *
  * @constructor

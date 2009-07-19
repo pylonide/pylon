@@ -32,44 +32,44 @@
  * This example shows a datagrid width several columns mixing percentage and
  * fixed size columns.
  * <code>
- *  <j:datagrid model="mdlNews" options="move|size">
- *      <j:bindings>
- *          <j:column type="icon" width="16" value="newspaper.png" />
- *          <j:column caption="Date" select="publication/@date" width="70" />
- *            <j:column caption="Title" width="180" select="title" />
- *          <j:column caption="Subtitle" select="subtitle" width="100%" />
- *          <j:traverse select="news" />
- *      </j:bindings>
- *      <j:actions />
- *  </j:datagrid>
+ *  <a:datagrid model="mdlNews" options="move|size">
+ *      <a:bindings>
+ *          <a:column type="icon" width="16" value="newspaper.png" />
+ *          <a:column caption="Date" select="publication/@date" width="70" />
+ *            <a:column caption="Title" width="180" select="title" />
+ *          <a:column caption="Subtitle" select="subtitle" width="100%" />
+ *          <a:traverse select="news" />
+ *      </bindings>
+ *      <a:actions />
+ *  </datagrid>
  * </code>
  * Example:
  * This example shows a spreadsheet component. The spreadsheet component is an
  * alias for the datagrid. It has a different skin and different defaults.
  * <code>
- *  <j:spreadsheet>
- *      <j:bindings>
- *          <j:column caption="A" select="@field3" />
- *          <j:column caption="B" select="@field1" />
- *          <j:column caption="C" select="@field2" />
- *          <j:column caption="D" select="@field4" />
- *          <j:column caption="E" select="@field5" />
- *          <j:traverse select="record" />
- *      </j:bindings>
- *      <j:model>
+ *  <a:spreadsheet>
+ *      <a:bindings>
+ *          <a:column caption="A" select="@field3" />
+ *          <a:column caption="B" select="@field1" />
+ *          <a:column caption="C" select="@field2" />
+ *          <a:column caption="D" select="@field4" />
+ *          <a:column caption="E" select="@field5" />
+ *          <a:traverse select="record" />
+ *      </bindings>
+ *      <a:model>
  *          <records>
  *              <record field1="b" field2="b" field3="c" field4="d" field5="e" />
  *              <record field1="g" field2="b" field3="c" field4="d" field5="e" />
  *          </records>
- *      </j:model>
- *  </j:spreadsheet>
+ *      </model>
+ *  </spreadsheet>
  * </code>
  * Example:
  * This example shows a propedit (property editor) component. The propedit 
  * component is an alias for the datagrid. It has a different skin and different
  * defaults. See {@link element.datagrid.attribute.template the template attribute}.
  * <code>
- *  <j:propedit template="mdlTemplate" />
+ *  <a:propedit template="mdlTemplate" />
  * </code>
  *
  * @constructor
@@ -105,62 +105,62 @@
  *   {XMLElement} dataNode  the {@link term.datanode data node}.
  *   Example:
  *   <code>
- *      <j:propedit 
+ *      <a:propedit 
  *        lookupaml      = "tmpLookup"
  *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
  *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
  *        onmultiedit    = "loadMultiEdit(event, this)">
- *          <j:bindings>
- *              <j:template select="self::product" value="mdlProps:product" />
- *          </j:bindings>
- *      </j:propedit>
+ *          <a:bindings>
+ *              <a:template select="self::product" value="mdlProps:product" />
+ *          </bindings>
+ *      </propedit>
  *
- *      <j:template id="tmpLookup" autoinit="true">
- *          <j:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
+ *      <a:template id="tmpLookup" autoinit="true">
+ *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
  *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
  *            autoselect="false">
- *              <j:bindings>
- *                  <j:caption select="self::picture"><![CDATA[
+ *              <a:bindings>
+ *                  <a:caption select="self::picture"><![CDATA[
  *                      {name} | {description}
- *                  ]]></j:caption>
+ *                  ]]></caption>
  *                  <!-- use @descfield -->
- *                  <j:caption><![CDATA[[
+ *                  <a:caption><![CDATA[[
  *                      var field = n.parentNode.getAttribute("descfield");
  *                      %(value(field) || "[Geen Naam]");
- *                  ]]]></j:caption>
- *                  <j:icon select="self::product" value="package_green.png" />
- *                  <j:icon value="table.png" />
- *                  <j:traverse select="node()[local-name()]" />
- *              </j:bindings>
- *              <j:actions />
- *          </j:list>
+ *                  ]]]></caption>
+ *                  <a:icon select="self::product" value="package_green.png" />
+ *                  <a:icon value="table.png" />
+ *                  <a:traverse select="node()[local-name()]" />
+ *              </bindings>
+ *              <a:actions />
+ *          </list>
  *          
- *          <j:toolbar>
- *              <j:bar>
- *                  <j:button id="btnLkpPrev" disabled="true" 
- *                      onclick="...">&lt; Previous</j:button>
- *                  <j:spinner id="spnLookup" width="40" 
+ *          <a:toolbar>
+ *              <a:bar>
+ *                  <a:button id="btnLkpPrev" disabled="true" 
+ *                      onclick="...">&lt; Previous</button>
+ *                  <a:spinner id="spnLookup" width="40" 
  *                      min="1" max="1" onafterchange="..." />
- *                  <j:button id="btnLkpNext" disabled="true" 
- *                      onclick="...">Next &gt;</j:button>
- *              </j:bar>
- *          </j:toolbar>
- *      </j:template>
+ *                  <a:button id="btnLkpNext" disabled="true" 
+ *                      onclick="...">Next &gt;</button>
+ *              </bar>
+ *          </toolbar>
+ *      </template>
  *   </code>
  * @binding caption   Determines the caption of a node.
  * @binding css       Determines a css class for a node.
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:caption select="@caption" />
- *          <j:css select="message[@unread]" value="highlighUnread" />
- *          <j:icon select="@icon" />
- *          <j:icon select="self::folder" value="icoFolder.gif" />
- *          <j:traverse select="folder" />
- *      </j:bindings>
- *  </j:list>
+ *  <a:list>
+ *      <a:bindings>
+ *          <a:caption select="@caption" />
+ *          <a:css select="message[@unread]" value="highlighUnread" />
+ *          <a:icon select="@icon" />
+ *          <a:icon select="self::folder" value="icoFolder.gif" />
+ *          <a:traverse select="folder" />
+ *      </bindings>
+ *  </list>
  * </code>
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
  * @binding description Determines the text that is displayed under the expanded row.
@@ -195,10 +195,10 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     // #endif
 
     /**
-     * @attribute {Boolean} cellselect whether this element has selectable rows (false) or selected cells (true). Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
-     * @attribute {Boolean} celledit   whether this element has editable cells. This requires cellselect to be true. Default is false for j:datagrid and true for j:propedit and j:spreadsheet.
-     * @attribute {Boolean} namevalue  whether each row only contains a name and a value column. Default is false for j:datagrid and j:spreadsheet and true for j:propedit.
-     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for j:datagrid and true for j:spreadsheet and j:propedit.
+     * @attribute {Boolean} cellselect whether this element has selectable rows (false) or selected cells (true). Default is false for datagrid and true for propedit and spreadsheet.
+     * @attribute {Boolean} celledit   whether this element has editable cells. This requires cellselect to be true. Default is false for datagrid and true for propedit and spreadsheet.
+     * @attribute {Boolean} namevalue  whether each row only contains a name and a value column. Default is false for datagrid and spreadsheet and true for propedit.
+     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
      */
     this.$booleanProperties["cellselect"] = true;
     this.$booleanProperties["celledit"]   = true;
@@ -208,7 +208,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} template the {@link terms.datainstruction data instruction} 
      * to fetch a template definition of the layout for this component. A template
-     * consists of descriptions of columns (or rows for j:propedit) for which
+     * consists of descriptions of columns (or rows for propedit) for which
      * several settings are determined such as validation rules, edit component 
      * and selection rules.
      * Example:
@@ -916,9 +916,9 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             //@todo ask rik how this can be cached
             //@todo get xmlUpdate to be called only once per document update for propedit
             var xml = 
-              apf.getXml('<j:root xmlns:j="' + apf.ns.apf + '">\
-                <j:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></j:column>\
-                <j:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
+              apf.getXml('<a:root xmlns:a="' + apf.ns.apf + '">\
+                <a:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></column>\
+                <a:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
                     var dg = apf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
                     var type = $"@type";\
@@ -995,25 +995,25 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     else {\
                         %apf.getXmlValue(dg.xmlData, select);\
                     }\
-                ]]]></j:column>\
-                <j:traverse select="property|prop" />\
-                <j:required select="self::node()/@required" />\
-                <j:datatype select="@datatype" />\
-                <j:pattern><![CDATA[[\
+                ]]]></column>\
+                <a:traverse select="property|prop" />\
+                <a:required select="self::node()/@required" />\
+                <a:datatype select="@datatype" />\
+                <a:pattern><![CDATA[[\
                     var validate;\
                     if ((validate = $"@decimals"))\
                         %("/\\.\\d{" + validate + "}/");\
                     else if ((validate = $"@validate") && validate.chartAt(0) == "/")\
                         %("/" + validate.replace(/^\\/|\\/$/g, "") + "/");\
-                ]]]></j:pattern>\
-                <j:maxlength select="@maxlength" />\
-                <j:invalidmsg><![CDATA[[\
+                ]]]></pattern>\
+                <a:maxlength select="@maxlength" />\
+                <a:invalidmsg><![CDATA[[\
                      out = $"@invalidmsg" || "Invalid entry;Please correct your entry";\
-                ]]]></j:invalidmsg>\
-              </j:root>');
+                ]]]></invalidmsg>\
+              </root>');
               <!-- mask -->
             
-            //<j:select select="self::node()[not(@frozen)]" />\
+            //<a:select select="self::node()[not(@frozen)]" />\
             
             if (!this.$removePropItem) {
                 this.$removePropItem = function(value, xpath){
@@ -1385,7 +1385,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     var lastcell, lastcol = 0, lastrow;
     /**
      * Returns a column definition object based on the column number.
-     * @param {Number} hid the heading number; this number is based on the sequence of the j:column elements.
+     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
      */
     this.getColumn = function(nr){
         return headings[nr || lastcol || 0];
@@ -1833,7 +1833,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     var lastSorted;
     /**
      * Sorts a column.
-     * @param {Number} hid the heading number; this number is based on the sequence of the j:column elements.
+     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
      */
     this.sortColumn = function(hid){
         var h;
@@ -1867,7 +1867,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     
     /** 
      * Resizes a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
      * @param {Number} newsize  the new size of the column.
      * @todo optimize but bringing down the string concats
      */
@@ -1942,7 +1942,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 
     /**
      * Hides a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
      */
     this.hideColumn = function(nr){
         var h = headings[nr];
@@ -1954,7 +1954,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     
     /**
      * Shows a hidden column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the j:column elements. 
+     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
      */
     this.showColumn = function(nr){
         var h = headings[nr];
@@ -1966,7 +1966,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     
     /**
      * Moves a column to another position.
-     * @param {Number} fromHid the heading number of the column to move; this number is based on the sequence of the j:column elements.
+     * @param {Number} fromHid the heading number of the column to move; this number is based on the sequence of the column elements.
      * @param {Number} toHid   the position the column is moved to;
      */
     this.moveColumn = function(from, to){

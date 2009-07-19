@@ -27,33 +27,33 @@
  * why this element is often called a contextmenu.
  * Example:
  * <code>
- *  <j:iconmap id="tbicons" src="toolbar.icons.gif"
- *      type="horizontal" size="20" offset="2,2"></j:iconmap>
+ *  <a:iconmap id="tbicons" src="toolbar.icons.gif"
+ *      type="horizontal" size="20" offset="2,2"></a:iconmap>
  *
- *  <j:menu id="msub">
- *      <j:item icon="tbicons:12">test</j:item>
- *      <j:item icon="tbicons:14">test2</j:item>
- *  </j:menu>
+ *  <a:menu id="msub">
+ *      <a:item icon="tbicons:12">test</a:item>
+ *      <a:item icon="tbicons:14">test2</a:item>
+ *  </a:menu>
  *
- *  <j:menu id="mmain">
- *      <j:item icon="tbicons:1">table_wizard</j:item>
- *      <j:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</j:item>
- *      <j:divider></j:divider>
- *      <j:radio>item 1</j:radio>
- *      <j:radio>item 2</j:radio>
- *      <j:radio>item 3</j:radio>
- *      <j:radio>item 4</j:radio>
- *      <j:divider></j:divider>
- *      <j:check hotkey="Ctrl+T">item check 1</j:check>
- *      <j:check hotkey="F3">item check 2</j:check>
- *      <j:divider></j:divider>
- *      <j:item icon="tbicons:11" submenu="msub">table_wizard</j:item>
- *      <j:item icon="tbicons:10">table_wizard</j:item>
- *  </j:menu>
+ *  <a:menu id="mmain">
+ *      <a:item icon="tbicons:1">table_wizard</a:item>
+ *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
+ *      <a:divider></a:divider>
+ *      <a:radio>item 1</a:radio>
+ *      <a:radio>item 2</a:radio>
+ *      <a:radio>item 3</a:radio>
+ *      <a:radio>item 4</a:radio>
+ *      <a:divider></a:divider>
+ *      <a:check hotkey="Ctrl+T">item check 1</a:check>
+ *      <a:check hotkey="F3">item check 2</a:check>
+ *      <a:divider></a:divider>
+ *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
+ *      <a:item icon="tbicons:10">table_wizard</a:item>
+ *  </a:menu>
  *
- *  <j:window contextmenu="mmain">
+ *  <a:window contextmenu="mmain">
  *      ...
- *  </j:window>
+ *  </a:window>
  * </code>
  * @see baseclass.amlelement.event.contextmenu
  *
@@ -525,29 +525,29 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
  * Item of a menu displaying a clickable area.
  * Example:
  * <code>
- *  <j:iconmap id="tbicons" src="toolbar.icons.gif" 
+ *  <a:iconmap id="tbicons" src="toolbar.icons.gif" 
  *    type="horizontal" size="20" offset="2,2" />
  *
- *  <j:menu>
- *      <j:item icon="tbicons:1">example</j:item>
- *      <j:item icon="tbicons:2">example</j:item>
- *      <j:divider />
- *      <j:radio>item 1</j:radio>
- *      <j:radio>item 2</j:radio>
- *      <j:radio>item 3</j:radio>
- *      <j:radio>item 4</j:radio>
- *      <j:divider />
- *      <j:check>item check 1</j:check>
- *      <j:check>item check 2</j:check>
- *      <j:divider />
- *      <j:item icon="tbicons:11" submenu="msub">example</j:item>
- *      <j:item icon="tbicons:10">example</j:item>
- *  </j:menu>
+ *  <a:menu>
+ *      <a:item icon="tbicons:1">example</a:item>
+ *      <a:item icon="tbicons:2">example</a:item>
+ *      <a:divider />
+ *      <a:radio>item 1</a:radio>
+ *      <a:radio>item 2</a:radio>
+ *      <a:radio>item 3</a:radio>
+ *      <a:radio>item 4</a:radio>
+ *      <a:divider />
+ *      <a:check>item check 1</a:check>
+ *      <a:check>item check 2</a:check>
+ *      <a:divider />
+ *      <a:item icon="tbicons:11" submenu="msub">example</a:item>
+ *      <a:item icon="tbicons:10">example</a:item>
+ *  </a:menu>
  *
- *  <j:menu id="msub" skin="menu2005">
- *      <j:item icon="tbicons:12">test</j:item>
- *      <j:item icon="tbicons:14">test2</j:item>
- *  </j:menu>
+ *  <a:menu id="msub" skin="menu2005">
+ *      <a:item icon="tbicons:12">test</a:item>
+ *      <a:item icon="tbicons:14">test2</a:item>
+ *  </a:menu>
  * </code>
  * @define item, check, radio
  * @constructor
@@ -577,14 +577,14 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              * when the user hovers over this menu item.
              * Example:
              * <code>
-             *  <j:menu id="msub">
-             *      <j:item icon="tbicons:12">test</j:item>
-             *      <j:item icon="tbicons:14">test2</j:item>
-             *  </j:menu>
+             *  <a:menu id="msub">
+             *      <a:item icon="tbicons:12">test</a:item>
+             *      <a:item icon="tbicons:14">test2</a:item>
+             *  </a:menu>
              *
-             *  <j:menu id="mmain">
-             *      <j:item submenu="msub">Sub menu</j:item>
-             *  </j:menu>
+             *  <a:menu id="mmain">
+             *      <a:item submenu="msub">Sub menu</a:item>
+             *  </a:menu>
              * </code>
              */
             case "submenu":
@@ -602,25 +602,25 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              * Example:
              * This example shows a list
              * <code>
-             *  <j:list>
+             *  <a:list>
              *     [...]
              *
-             *     <j:contextmenu menu="mnuXY" select="computer" />
-             *     <j:contextmenu menu="mnuTest" />
-             *  </j:list>
+             *     <a:contextmenu menu="mnuXY" select="computer" />
+             *     <a:contextmenu menu="mnuTest" />
+             *  </a:list>
              *
-             *  <j:menu id="mnuTest">
-             *     <j:item select="person">Send an E-mail</j:Item>
-             *     <j:item select="phone">Call Number</j:Item>
-             *     <j:divider />
-             *     <j:item select="phone">Remove</j:Item>
-             *     <j:divider />
-             *     <j:item select="person|phone">View Pictures</j:Item>
-             *  </j:menu>
+             *  <a:menu id="mnuTest">
+             *     <a:item select="person">Send an E-mail</a:Item>
+             *     <a:item select="phone">Call Number</a:Item>
+             *     <a:divider />
+             *     <a:item select="phone">Remove</a:Item>
+             *     <a:divider />
+             *     <a:item select="person|phone">View Pictures</a:Item>
+             *  </a:menu>
              *
-             *  <j:menu id="mnuXY">
-             *     <j:item>Reboot</j:Item>
-             *  </j:menu>
+             *  <a:menu id="mnuXY">
+             *     <a:item>Reboot</a:Item>
+             *  </a:menu>
              * </code>
              */
             case "select":
@@ -633,12 +633,12 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              * to.
              * Example:
              * <code>
-             *  <j:menu>
-             *      <j:radio group="example">item 1</j:radio>
-             *      <j:radio group="example">item 2</j:radio>
-             *      <j:radio group="example">item 3</j:radio>
-             *      <j:radio group="example">item 4</j:radio>
-             *  </j:menu>
+             *  <a:menu>
+             *      <a:radio group="example">item 1</a:radio>
+             *      <a:radio group="example">item 2</a:radio>
+             *      <a:radio group="example">item 3</a:radio>
+             *      <a:radio group="example">item 4</a:radio>
+             *  </a:menu>
              * </code>
              */
             case "group":
@@ -651,7 +651,7 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              * space, a minus or plus sign as a seperator.
              * Example:
              * <code>
-             *      <j:item hotkey="Ctrl+Q">Quit</j:item>
+             *      <a:item hotkey="Ctrl+Q">Quit</a:item>
              * </code>
              */
             case "hotkey":

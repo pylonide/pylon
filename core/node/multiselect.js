@@ -33,12 +33,12 @@ var __MULTISELECT__ = 1 << 8;
  * In this example the person nodes that have the show attribute set to 1 are the 
  * traverse nodes of the list. This list will display three items.
  * <code>
- *  <j:list>
- *      <j:bindings>
- *          <j:caption select="@name" />
- *          <j:traverse select="person[@show='1']" />
- *      </j:bindings>
- *      <j:model>
+ *  <a:list>
+ *      <a:bindings>
+ *          <a:caption select="@name" />
+ *          <a:traverse select="person[@show='1']" />
+ *      </a:bindings>
+ *      <a:model>
  *          <data>
  *              <person name="test 5"/>
  *              <person show="1" name="test 3"/>
@@ -46,8 +46,8 @@ var __MULTISELECT__ = 1 << 8;
  *              <person show="1" name="test 2"/>
  *              <person show="1" name="test 1"/>
  *          </data>
- *      </j:model>
- *  </j:list>
+ *      </a:model>
+ *  </a:list>
  * </code>
  * Remarks:
  * A somewhat advanced topic is understanding how an element can use the 
@@ -82,30 +82,30 @@ var __MULTISELECT__ = 1 << 8;
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
  * <code>
- *  <j:tree>
- *      <j:bindings>
- *          <j:select select="self::node()[not(@disabled)]" />
- *      </j:bindings>
- *  </j:tree>
+ *  <a:tree>
+ *      <a:bindings>
+ *          <a:select select="self::node()[not(@disabled)]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * @binding value  Determines the way the value for the element is retrieved
  * from the selected node. The value property contains this value.
  * Example:
  * <code>
- *  <j:dropdown onafterchange="alert(this.value)">
- *      <j:bindings>
- *          <j:caption select="text()" />
- *          <j:value select="@value" />
- *          <j:traverse select="item" />
- *      </j:bindings>
- *      <j:model>
+ *  <a:dropdown onafterchange="alert(this.value)">
+ *      <a:bindings>
+ *          <a:caption select="text()" />
+ *          <a:value select="@value" />
+ *          <a:traverse select="item" />
+ *      </a:bindings>
+ *      <a:model>
  *          <items>
  *              <item value="#FF0000">red</item>
  *              <item value="#00FF00">green</item>
  *              <item value="#0000FF">blue</item>
  *          </items>
- *      </j:model>
- *  </j:dropdown>
+ *      </a:model>
+ *  </a:dropdown>
  * </code>
  */
 apf.MultiSelect = function(){
@@ -147,14 +147,14 @@ apf.MultiSelect = function(){
      * Example:
      * A simple list showing products. This list is used in all following examples.
      * <code>
-     *  <j:list id="myList">
-     *      <j:bindings>
-     *          <j:caption select="@name" />
-     *          <j:value select="@id" />
-     *          <j:icon>{@type}.png</j:icon>
-     *          <j:traverse select="product" />
-     *      </j:bindings>
-     *      <j:model>
+     *  <a:list id="myList">
+     *      <a:bindings>
+     *          <a:caption select="@name" />
+     *          <a:value select="@id" />
+     *          <a:icon>{@type}.png</a:icon>
+     *          <a:traverse select="product" />
+     *      </a:bindings>
+     *      <a:model>
      *          <products>
      *              <product name="Soundblaster" type="audio"    id="product10" />
      *              <product name="Teapot"       type="3d"       id="product13" />
@@ -162,8 +162,8 @@ apf.MultiSelect = function(){
      *              <product name="Keyboard"     type="input"    id="product17" />
      *              <product name="Diskdrive"    type="storage"  id="product20" />
      *          </products>
-     *      </j:model>
-     *  </j:list>
+     *      </a:model>
+     *  </a:list>
      * </code>
      * Example:
      * This example selects a product by it's value and then removes the
@@ -194,23 +194,23 @@ apf.MultiSelect = function(){
      * Another way to trigger this method is by using the action attribute on a
      * button.
      * <code>
-     *  <j:button action="remove" target="myList">Remove item</j:button>
+     *  <a:button action="remove" target="myList">Remove item</a:button>
      * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user removed an item.
      * <code>
-     *  <j:actions>
-     *      <j:remove set="url:remove_product.php?id={@id}" />
-     *  </j:actions>
+     *  <a:actions>
+     *      <a:remove set="url:remove_product.php?id={@id}" />
+     *  </a:actions>
      * </code>
      * For undo this action should be extended and the server should maintain a
      * copy of the deleted item.
      * <code>
-     *  <j:actions>
-     *      <j:remove set  = "url:remove_product.php?id={@id}"
+     *  <a:actions>
+     *      <a:remove set  = "url:remove_product.php?id={@id}"
      *                undo = "url:undo_remove_product.php?id={@id}" />
-     *      </j:remove>
-     *  </j:actions>
+     *      </a:remove>
+     *  </a:actions>
      * </code>
      * @action
      * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
@@ -267,14 +267,14 @@ apf.MultiSelect = function(){
      * Example:
      * A simple list showing products. This list is used in all following examples.
      * <code>
-     *  <j:list id="myList">
-     *      <j:bindings>
-     *          <j:caption select="@name" />
-     *          <j:value select="@id" />
-     *          <j:icon>{@type}.png</j:icon>
-     *          <j:traverse select="product" />
-     *      </j:bindings>
-     *      <j:model>
+     *  <a:list id="myList">
+     *      <a:bindings>
+     *          <a:caption select="@name" />
+     *          <a:value select="@id" />
+     *          <a:icon>{@type}.png</a:icon>
+     *          <a:traverse select="product" />
+     *      </a:bindings>
+     *      <a:model>
      *          <products>
      *              <product name="Soundblaster" type="audio"    id="product10" />
      *              <product name="Teapot"       type="3d"       id="product13" />
@@ -282,8 +282,8 @@ apf.MultiSelect = function(){
      *              <product name="Keyboard"     type="input"    id="product17" />
      *              <product name="Diskdrive"    type="storage"  id="product20" />
      *          </products>
-     *      </j:model>
-     *  </j:list>
+     *      </a:model>
+     *  </a:list>
      * </code>
      * Example:
      * This example adds a product to this element.
@@ -306,38 +306,38 @@ apf.MultiSelect = function(){
      * Another way to trigger this method is by using the action attribute on a
      * button.
      * <code>
-     *  <j:button action="add" target="myList">Add new product</j:button>
+     *  <a:button action="add" target="myList">Add new product</a:button>
      * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user added an item.
      * <code>
-     *  <j:actions>
-     *      <j:add set="rpc:comm.addProduct({.})" />
-     *  </j:actions>
+     *  <a:actions>
+     *      <a:add set="rpc:comm.addProduct({.})" />
+     *  </a:actions>
      * </code>
      * For undo this action should be extended as follows.
      * <code>
-     *  <j:actions>
-     *      <j:add set  = "url:add_product.php?xml={.}"
+     *  <a:actions>
+     *      <a:add set  = "url:add_product.php?xml={.}"
      *             undo = "url:remove_product.php?id={@id}" />
-     *      </j:add>
-     *  </j:actions>
+     *      </a:add>
+     *  </a:actions>
      * </code>
      * In some cases the server needs to create the new product before it's
      * added. This is done as follows.
      * <code>
-     *  <j:actions>
-     *      <j:add get="rpc:comm.createNewProduct()" />
-     *  </j:actions>
+     *  <a:actions>
+     *      <a:add get="rpc:comm.createNewProduct()" />
+     *  </a:actions>
      * </code>
      * Alternatively the template for the addition can be provided as a child of
      * the action rule.
      * <code>
-     *  <j:actions>
-     *      <j:add set="url:add_product.php?xml={.}">
+     *  <a:actions>
+     *      <a:add set="url:add_product.php?xml={.}">
      *          <product name="USB drive" type="storage" />
-     *      </j:add>
-     *  </j:actions>
+     *      </a:add>
+     *  </a:actions>
      * </code>
      * @action
      * @param  {XMLElement} [xmlNode]    the {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
@@ -1243,8 +1243,8 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for j:dropdown. 
-     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for j:Dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
+     * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for dropdown. 
+     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
      * @attribute {Boolean} [selectable]    whether the {@link term.datanode data nodes} of this element can be selected. Default is true.
      * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
      * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected {@link term.datanode data node}.

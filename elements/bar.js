@@ -87,7 +87,7 @@ apf.bar   = apf.component(apf.NODE_VISIBLE, function(){
             ? this.tagName 
             : "main");
 
-        //Draggable area support, mostly for j:toolbar
+        //Draggable area support, mostly for a:toolbar
         if (this.oDrag) //Remove if already exist (skin change)
             this.oDrag.parentNode.removeChild(this.oDrag);
         

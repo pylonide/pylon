@@ -37,7 +37,7 @@ var __MULTILANG__ = 1 << 16;
  * the language file. Two buttons provide a means to switch the language of the
  * application, using the language symbols from the model.
  * <code>
- *   <j:model id="mdlLang">
+ *   <a:model id="mdlLang">
  *       <groups>
  *           <!-- For French -->
  *           <french id="sub">
@@ -61,31 +61,31 @@ var __MULTILANG__ = 1 << 16;
  *               </group>
  *           </english>
  *       </groups>
- *   </j:model>
+ *   </a:model>
  *
- *   <j:appsettings language="mdlLang:english" />
+ *   <a:appsettings language="mdlLang:english" />
  *
- *   <j:window title="$sub.main.title$" width="400" height="300" visible="true">
- *       <j:tab anchors="10 10 10 10">
- *           <j:page caption="$sub.main.tab0$">
- *               <j:label>$sub.main.1$</j:label>
- *               <j:textbox />
- *               <j:button>$sub.main.2$</j:button>
- *           </j:page>
- *           <j:page caption="$sub.main.tab2$">
- *               <j:picture src="$sub.main.3$" />
- *           </j:page>
- *       </j:tab>
- *   </j:window>
+ *   <a:window title="$sub.main.title$" width="400" height="300" visible="true">
+ *       <a:tab anchors="10 10 10 10">
+ *           <a:page caption="$sub.main.tab0$">
+ *               <a:label>$sub.main.1$</a:label>
+ *               <a:textbox />
+ *               <a:button>$sub.main.2$</a:button>
+ *           </a:page>
+ *           <a:page caption="$sub.main.tab2$">
+ *               <a:picture src="$sub.main.3$" />
+ *           </a:page>
+ *       </a:tab>
+ *   </a:window>
  *
- *   <j:button icon="us.gif"
+ *   <a:button icon="us.gif"
  *     onclick="apf.language.loadFrom('mdlLang:english');">
  *        English
- *   </j:button>
- *   <j:button icon="fr.gif"
+ *   </a:button>
+ *   <a:button icon="fr.gif"
  *     onclick="apf.language.loadFrom('mdlLang:french');">
  *        French
- *   </j:button>
+ *   </a:button>
  * </code>
  *
  * @default_private

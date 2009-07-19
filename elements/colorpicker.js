@@ -46,16 +46,16 @@
  * Example:
  * Sets the color based on data loaded into this component.
  * <code>
- *  <j:colorpicker>
- *      <j:bindings>
- *          <j:value select="@color" />
- *      </j:bindings>
- *  </j:colorpicker>
+ *  <a:colorpicker>
+ *      <a:bindings>
+ *          <a:value select="@color" />
+ *      </a:bindings>
+ *  </a:colorpicker>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:colorpicker ref="@color" />
+ *  <a:colorpicker ref="@color" />
  * </code>
  */
 apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){

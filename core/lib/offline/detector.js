@@ -28,7 +28,7 @@
  * offline element in AML.
  * Example:
  * <code>
- *  <j:offline
+ *  <a:offline
  *      detect-url  = "netork.txt"
  *      detection   = "auto"
  *      interval    = "2000" />

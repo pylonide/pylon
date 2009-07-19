@@ -28,7 +28,7 @@
  * can be toggled by user interaction.
  * Example:
  * <code>
- * <j:checkbox values="full|empty">the glass is full</j:checkbox>
+ * <a:checkbox values="full|empty">the glass is full</a:checkbox>
  * </code>
  *
  * @constructor
@@ -51,16 +51,16 @@
  * Example:
  * Sets the value of the checkbox based on data loaded into this component.
  * <code>
- *  <j:checkbox>
- *      <j:bindings>
- *          <j:value select="@answer" />
- *      </j:bindings>
- *  </j:checkbox>
+ *  <a:checkbox>
+ *      <a:bindings>
+ *          <a:value select="@answer" />
+ *      </a:bindings>
+ *  </a:checkbox>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <j:checkbox ref="@answer" />
+ *  <a:checkbox ref="@answer" />
  * </code>
  */
 apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){

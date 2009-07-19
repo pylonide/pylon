@@ -659,10 +659,10 @@ apf.AmlElement = function(){
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = apf.getAmlDocFromString(data.indexOf("<j:application") > -1
+                    data = apf.getAmlDocFromString(data.indexOf("<a:application") > -1
                       ? data 
-                      : "<j:application xmlns:j='" + apf.ns.aml +"'>" 
-                          + data + "</j:application>", true).documentElement;
+                      : "<a:application xmlns:j='" + apf.ns.aml +"'>" 
+                          + data + "</a:application>", true).documentElement;
 
                 if (aml.ownerDocument.importNode) {
                     doc = aml.ownerDocument;
@@ -830,10 +830,10 @@ apf.AmlElement.propHandlers = {
      * this element using apf.document.getElementById.
      * Example:
      * <code>
-     *  <j:bar id="barExample" />
-     *  <j:script>
+     *  <a:bar id="barExample" />
+     *  <a:script>
      *      alert(barExample);
-     *  </j:script>
+     *  </a:script>
      * </code>
      */
     "id": function(value){
@@ -1104,10 +1104,10 @@ apf.AmlElement.propHandlers = {
      * shortcut.
      * Example:
      * <code>
-     *  <j:menu id="mnuExample" />
+     *  <a:menu id="mnuExample" />
      *
-     *  <j:list contextmenu="mnuExample" />
-     *  <j:bar contextmenu="mnuExample" />
+     *  <a:list contextmenu="mnuExample" />
+     *  <a:bar contextmenu="mnuExample" />
      * </code>
      */
     "contextmenu": function(value){
@@ -1136,12 +1136,12 @@ apf.AmlElement.propHandlers = {
      * textboxes which determine their actiontracker based on the one that
      * is defined on the bar.
      * <code>
-     *  <j:list actiontracker="newAT" />
+     *  <a:list actiontracker="newAT" />
      *
-     *  <j:bar actiontracker="someAT">
-     *      <j:textbox />
-     *      <j:textbox />
-     *  </j:bar>
+     *  <a:bar actiontracker="someAT">
+     *      <a:textbox />
+     *      <a:textbox />
+     *  </a:bar>
      * </code>
      */
     "actiontracker": function(value){
