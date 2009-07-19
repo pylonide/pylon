@@ -601,7 +601,7 @@ apf.AmlElement = function(){
                 oItem.destroy(true);
 
             if (oItem.oExt != this.oInt)
-                apf.removeNode(oItem.oExt);
+                apf.destroyHtmlNode(oItem.oExt);
         }
         
         var nodes = options.oIntAML.childNodes;

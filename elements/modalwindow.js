@@ -1144,7 +1144,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         if (this.oDrag) {
             this.oDrag.host = null;
             this.oDrag.onmousedown = null;
-            apf.removeNode(this.oDrag);
+            apf.destroyHtmlNode(this.oDrag);
             this.oDrag = null;
         }
 

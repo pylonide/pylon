@@ -1192,11 +1192,11 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         
         this.oInt.onscroll = null;
         
-        apf.removeNode(this.oDragHeading);
+        apf.destroyHtmlNode(this.oDragHeading);
         this.oDragHeading = null;
-        apf.removeNode(this.oSplitter);
+        apf.destroyHtmlNode(this.oSplitter);
         this.oSplitter = null;
-        apf.removeNode(this.oSplitterLeft);
+        apf.destroyHtmlNode(this.oSplitterLeft);
         this.oSplitterLeft = null;
         
         headParent.innerHTML = "";
@@ -2533,7 +2533,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         beforeNode ? beforeNode.getAttribute("hid") : null);
                 }
                 
-                apf.removeNode(copy);
+                apf.destroyHtmlNode(copy);
             };
 
             document.onmousemove = function(e){
@@ -2828,7 +2828,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             editors["dropdown_container"].onmousedown = null;
         }
         
-        apf.removeNode(this.oDrag);
+        apf.destroyHtmlNode(this.oDrag);
         this.oDrag = this.oExt.onclick = this.oInt.onresize = null;
         
         //#ifdef __WITH_LAYOUT

@@ -421,7 +421,7 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$destroy = function(){
         this.oExt.onclick = null;
-        apf.removeNode(this.oDrag);
+        apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
 }).implement(

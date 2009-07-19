@@ -1139,7 +1139,7 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
      */
     this.$propHandlers["fake"] = function(value){
         if (this.oExt) {
-            apf.removeNode(this.oExt);
+            apf.destroyHtmlNode(this.oExt);
             this.oInt = this.oExt = null;
         }
     };

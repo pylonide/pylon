@@ -802,7 +802,7 @@ apf.cancelBubble = function(e, o){
  * Attempt to fix memory leaks
  * @private
  */
-apf.removeNode = function (element) {
+apf.destroyHtmlNode = function (element) {
     if (!element) return;
 
     if (!apf.isIE || element.ownerDocument != document) {

@@ -122,7 +122,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
         for (var i = children.length - 1; i >= 0; i--) {
             children[i].destroy(true);
         }
-        apf.removeNode(oItem.oExt);
+        apf.destroyHtmlNode(oItem.oExt);
         delete nodes[Lid];
     };
     

@@ -51,6 +51,18 @@ var __DRAGDROP__ = 1 << 5;
  *      <a:bindings>
  *          <a:caption select="@filename" />
  *          <a:traverse select="file|folder" />
+ *
+ *          <a:drag select = "person" copy-condition="event.ctrlKey" />
+ *          <a:drop
+ *              select         = "file"
+ *              target         = "folder"
+ *              action         = "tree-append"
+ *              copy-condition = "event.ctrlKey" />
+ *          <a:drop
+ *              select         = "folder"
+ *              target         = "folder"
+ *              action         = "insert-before"
+ *              copy-condition = "event.ctrlKey" />
  *      </a:bindings>
  *      <a:actions>
  *          <a:move
@@ -60,19 +72,6 @@ var __DRAGDROP__ = 1 << 5;
  *              select = "self::file"
  *              set    = "webdav:copy({@path}, {../@path})" />
  *      </a:actions>
- *      <a:dragdrop>
- *          <a:allow-drag select = "person" copy-condition="event.ctrlKey" />
- *          <a:allow-drop
- *              select         = "file"
- *              target         = "folder"
- *              action         = "tree-append"
- *              copy-condition = "event.ctrlKey" />
- *          <a:allow-drop
- *              select         = "folder"
- *              target         = "folder"
- *              action         = "insert-before"
- *              copy-condition = "event.ctrlKey" />
- *      </dragdrop>
  *  </a:smartbinding>
  * </code>
  *
@@ -108,13 +107,13 @@ var __DRAGDROP__ = 1 << 5;
  *   {AMLElement}  host      the aml source element.
  *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
  *
- * @see element.allow-drag
- * @see element.allow-drop
+ * @see element.drag
+ * @see element.drop
  * @see element.dragdrop
  *
  * @define dragdrop
- * @allowchild allow-drop, allow-drag
- * @define allow-drag   Determines whether a {@link term.datanode data node} can 
+ * @allowchild drop, drag
+ * @define drag   Determines whether a {@link term.datanode data node} can 
  * be dragged from this element. 
  * Example:
  * This example shows a small mail application. The tree element displays a root
@@ -126,29 +125,25 @@ var __DRAGDROP__ = 1 << 5;
  *      <a:bindings>
  *          <a:caption select="@name" />
  *          <a:traverse select="root|account|folder" />
+ *
+ *          <a:drag select = "folder" />
+ *          <a:drop select = "folder" 
+ *                  target = "folder|account" />
+ *          <a:drop select = "mail" 
+ *                  target = "folder" />
  *      </a:bindings>
- *      <a:dragdrop>
- *          <a:allow-drag select = "folder" />
- *          <a:allow-drop select = "folder" 
- *                        target = "folder|account" />
- *          <a:allow-drop select = "mail" 
- *                        target = "folder" />
- *      </dragdrop>
  *  </a:tree>
  *  <a:datagrid align="right">
  *      <a:bindings>
- *          ...
+ *          <a:drag select="mail" />
  *      </a:bindings>
- *      <a:dragdrop>
- *          <a:allow-drag select="mail" />
- *      </dragdrop>
  *  </a:datagrid>
  * </code>
  *
  * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
  * @attribute {String} copy-condition  a javascript expression that determines whether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
  *
- * @define allow-drop   Determines whether a {@link term.datanode data node} can 
+ * @define drop   Determines whether a {@link term.datanode data node} can 
  * be dropped on a data node bound to this element. 
  * Example:
  * This example shows a small mail application. The tree element displays a root
@@ -160,22 +155,18 @@ var __DRAGDROP__ = 1 << 5;
  *      <a:bindings>
  *          <a:caption select="@name" />
  *          <a:traverse select="root|account|folder" />
- *      </a:bindings>
- *      <a:dragdrop>
- *          <a:allow-drag select = "folder" />
- *          <a:allow-drop select = "folder" 
+ *
+ *          <a:drag select = "folder" />
+ *          <a:drop select = "folder" 
  *                        target = "folder|account" />
- *          <a:allow-drop select = "mail" 
+ *          <a:drop select = "mail" 
  *                        target = "folder" />
- *      </dragdrop>
+ *      </a:bindings>
  *  </a:tree>
  *  <a:datagrid align="right">
  *      <a:bindings>
- *          ...
+ *          <a:drag select="mail" />
  *      </a:bindings>
- *      <a:dragdrop>
- *          <a:allow-drag select="mail" />
- *      </dragdrop>
  *  </a:datagrid>
  * </code>
  
@@ -243,7 +234,7 @@ apf.DragDrop = function(){
     /**
      * Determines whether the user is allowed to drag the passed 
      * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.allow-drag allow-drag} and {@link element.allow-drag allow-drag} 
+     * {@link element.drag drag} and {@link element.drag drag} 
      * rules. These elements determine when a data node can be dropped on 
      * another data node. For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
@@ -266,7 +257,7 @@ apf.DragDrop = function(){
         if (this.dragenabled || this.dragmoveenabled)
             return true;
 
-        var rules = (this.dragdropRules || {})["allow-drag"];
+        var rules = (this.bindingRules || {})["drag"];
         if (!rules || !rules.length)
             return false;
 
@@ -283,7 +274,7 @@ apf.DragDrop = function(){
     /**
      * Determines whether the user is allowed to dropped the passed 
      * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.allow-drag allow-drag} and {@link element.allow-drag allow-drag} 
+     * {@link element.drag drag} and {@link element.drag drag} 
      * rules. These elements determine when a data node can be dropped on 
      * another data node. For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
@@ -319,7 +310,7 @@ apf.DragDrop = function(){
                 return [tgt, null];
         }
 
-        var rules = (this.dragdropRules || {})["allow-drop"];
+        var rules = (this.bindingRules || {})["drop"];
 
         if (!rules || !rules.length)
             return false;
@@ -436,19 +427,11 @@ apf.DragDrop = function(){
      * @see  SmartBinding
      * @private
      */
-    this.loadDragDrop = function(rules, node){
+    this.enableDragDrop = function(){
         //#ifdef __DEBUG
         apf.console.info("Initializing Drag&Drop for " + this.tagName
             + "[" + (this.name || '') + "]");
         //#endif
-
-        if (rules) {
-            if (this.dragdropRules)
-                this.unloadDragDrop();
-
-            //Set Properties
-            this.dragdropRules = rules;
-        }
 
         //Set cursors
         //SHOULD come from skin
@@ -541,12 +524,7 @@ apf.DragDrop = function(){
         };
 
         this.oExt[apf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
-            //if (!e) e = event;
-            if (this.host.dragging != 1) return;//e.button != 1 ||
-            //if(Math.abs(apf.DragServer.coordinates.offsetX - (e.layerX ? e.layerX - apf.DragServer.coordinates.srcElement.offsetLeft : e.offsetX)) < 6 && Math.abs(apf.DragServer.coordinates.offsetY - (e.layerX ? e.layerY - apf.DragServer.coordinates.srcElement.offsetTop : e.offsetY)) < 6)
-                //return;
-
-            //apf.DragServer.start(this.host);
+            if (this.host.dragging != 1) return;
         };
 
         // #ifdef __SUPPORT_IPHONE
@@ -566,26 +544,17 @@ apf.DragDrop = function(){
             this.oExt.ondragstart = function(){ return false; };
         }
 
-        if(document.elementFromPointAdd)
+        if (document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);
 
-        if (this.$initDragDrop && (!rules || !drag_inited))
+        if (this.$initDragDrop && !drag_inited)
             this.$initDragDrop();
 
         drag_inited = true;
     };
     //this.addEventListener("skinchange", this.loadDragDrop);
-
-    /**
-     * Unloads the dragdrop rules from this element
-     *
-     * @see  SmartBinding
-     * @private
-     */
-    this.unloadDragDrop = function(){
-        this.xmlDragDrop = this.dragdropRules = this.icoAllowed 
-          = this.icoDenied = this.oExt.dragdrop = this.oExt.ondragmove
-          = this.oExt.ondragstart = null;
+    
+    this.disableDragDrop = function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone) {
             this.oExt.ontouchstart = this.oExt.ontouchmove
@@ -600,7 +569,7 @@ apf.DragDrop = function(){
 
         if (document.elementFromPointRemove)
             document.elementFromPointRemove(this.oExt);
-    };
+    }
 
     this.$booleanProperties["dragenabled"]     = true;
     this.$booleanProperties["dragmoveenabled"] = true;
@@ -636,16 +605,16 @@ apf.DragDrop = function(){
      * </code>
      * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
      * <code>
-     *  <a:list dragdrop="bndDragdrop" />
+     *  <a:list bindings="bndDragdrop" />
      *
-     *  <a:dragdrop id="bndDragdrop">
-     *      <a:allow-drag select = "person" copy-condition="event.ctrlKey" />
-     *      <a:allow-drop
+     *  <a:bindings id="bndDragdrop">
+     *      <a:drag select = "person" copy-condition="event.ctrlKey" />
+     *      <a:drop
      *          select         = "offer"
      *          target         = "person"
      *          action         = "tree-append"
      *          copy-condition = "event.ctrlKey" />
-     *  </dragdrop>
+     *  </bindings>
      * </code>
      */
     this.$propHandlers["dragenabled"]     =
@@ -678,7 +647,7 @@ apf.DragDrop = function(){
     };
 
     this.$amlDestroyers.push(function(){
-        this.unloadDragDrop();
+        this.disableDragDrop();
     });
 };
 

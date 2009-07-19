@@ -365,7 +365,7 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$destroy = function(){
         clearInterval(timer);
-        apf.removeNode(this.oDrag);
+        apf.destroyHtmlNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;
         this.oScroll.onscoll = null;

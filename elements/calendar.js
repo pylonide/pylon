@@ -665,7 +665,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     
     this.$destroy = function() {
         apf.popup.removeContent(this.uniqueId);
-        apf.removeNode(this.oExt);
+        apf.destroyHtmlNode(this.oExt);
         this.oCalendar = null;
     };
 }).implement(

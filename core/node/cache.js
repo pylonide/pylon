@@ -324,7 +324,7 @@ apf.Cache = function(){
         cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
 
         if (remove)
-            apf.removeNode(cache[id]);
+            apf.destroyHtmlNode(cache[id]);
 
         cache[id] = null;
     };

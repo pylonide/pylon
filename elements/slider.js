@@ -145,7 +145,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         var markers = this.oMarkers.childNodes;
         for (var i = markers.length - 1; i >= 0; i--) {
             if (markers[i].tagName == "u" && markers[i].nodeType == 1) //small hack
-                apf.removeNode(markers[i]);
+                apf.destroyHtmlNode(markers[i]);
         }
 
         if (!this.step && this.$aml)

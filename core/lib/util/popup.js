@@ -262,7 +262,7 @@ apf.popup = {
         for (var cacheId in this.cache) {
             if (this.cache[cacheId]) {
                 this.cache[cacheId].content.onmousedown = null;
-                apf.removeNode(this.cache[cacheId].content);
+                apf.destroyHtmlNode(this.cache[cacheId].content);
                 this.cache[cacheId].content = null;
                 this.cache[cacheId] = null;
             }

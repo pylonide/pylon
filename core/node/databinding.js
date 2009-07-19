@@ -196,6 +196,13 @@ apf.DataBinding = function(){
 
         if (this.$loaddatabinding)
             this.$loaddatabinding();
+         
+        //#ifdef __WITH_DRAGDROP   
+        if (this.hasFeature(__DRAGDROP__) && (this.bindingRules["drag"] 
+          || this.bindingRules["drop"])) {
+            this.enableDragDrop();
+        }
+        //#endif
 
         if (this.bindingRules["traverse"])
             this.parseTraverse(this.bindingRules["traverse"][0]);

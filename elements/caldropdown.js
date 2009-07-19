@@ -961,7 +961,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$destroy = function() {
         apf.popup.removeContent(this.uniqueId);
-        apf.removeNode(this.oSlider);
+        apf.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
 
         if (apf.caldropdown.cache && apf.caldropdown.cache.refcount) {

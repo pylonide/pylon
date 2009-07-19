@@ -236,7 +236,7 @@ apf.resize.square = function(posY, posX, objResize) {
     };
 
     this.destroy = function(){
-        apf.removeNode(this.htmlElement);
+        apf.destroyHtmlNode(this.htmlElement);
     };
 
     /* Events */

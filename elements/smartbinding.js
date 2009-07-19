@@ -560,8 +560,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
 
     var parts        = {
         bindings: 'loadBindings',
-        actions : 'loadActions',
-        dragdrop: 'loadDragDrop'
+        actions : 'loadActions'
     };
     
     //#ifdef __DEBUG
