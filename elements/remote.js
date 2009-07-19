@@ -271,8 +271,8 @@ apf.remote = function(name, xmlNode, parentNode){
                 break;
             case "appendChild":
                 var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                apf.xmldb.appendChild(xmlNode, //@todo check why there's clearConnections here
-                    apf.xmldb.clearConnections(q[2]), beforeNode, q[4], q[5]);
+                apf.xmldb.appendChild(xmlNode, //@todo check why there's cleanNode here
+                    apf.xmldb.cleanNode(q[2]), beforeNode, q[4], q[5]);
                 break;
             case "moveNode":
                 var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
@@ -336,7 +336,7 @@ apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
         if (!xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
             throw new Error(apf.formatErrorString(0, null, 
                 "Converting XML to Xpath", 
-                "Error xml node without j_id found whilst \
+                "Error xml node without a_id found whilst \
                  trying to use it.", xmlNode));
         }
         //#endif

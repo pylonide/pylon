@@ -135,7 +135,7 @@ apf.AmlParser = {
         //"presentation", 
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["teleport", "settings",
-                "skin[not(@j_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
+                "skin[not(@a_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
         //"style", 
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["model[@id]",
@@ -152,7 +152,7 @@ apf.AmlParser = {
 
         var prefix = apf.findPrefix(xmlNode, apf.ns.aml);
         if (prefix) prefix += ":";
-        var nodes  = apf.xmldb.selectNodes(".//" + prefix + sel.join("|.//"
+        var nodes  = apf.queryNodes(".//" + prefix + sel.join("|.//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
         var i, o, name, tagName, x, l;
@@ -187,7 +187,7 @@ apf.AmlParser = {
                         apf.setReference(name, o);
                 }
 
-                x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
+                x.setAttribute("a_preparsed", this.preparsed.push(o) - 1);
             }
             else if (x.parentNode) {
                x.parentNode.removeChild(x);
@@ -376,8 +376,8 @@ apf.AmlParser = {
                 var o, id, name;
 
                 //Deal with preparsed nodes
-                if (id = x.getAttribute("j_preparsed")) {
-                    x.removeAttribute("j_preparsed");
+                if (id = x.getAttribute("a_preparsed")) {
+                    x.removeAttribute("a_preparsed");
 
                     o = this.preparsed[id];
                     delete this.preparsed[id];
@@ -661,7 +661,7 @@ apf.AmlParser = {
                 EditServer.register(data);
                 #endif */
                 // #ifdef __WITH_LANG_SUPPORT
-                apf.language.addElement(apf.xmldb.getTextNode(x)
+                apf.language.addElement(apf.getTextNode(x)
                     .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
                 // #endif
             }

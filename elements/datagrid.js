@@ -386,9 +386,9 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     node = nodes[i];
                     rule = rules[i];
                     type = node.getAttribute("type");
-                    valueNode = this.xmlData.selectSingleNode(apf.getXmlValue(node, "@select|field/@select"));
+                    valueNode = this.xmlData.selectSingleNode(apf.queryValue(node, "@select|field/@select"));
                     value = valueNode && (!type || type == "text")
-                        ? valueNode.nodeType == 1 ? apf.getXmlValue(valueNode, '.') : valueNode.nodeValue
+                        ? valueNode.nodeType == 1 ? apf.queryValue(valueNode, '.') : valueNode.nodeValue
                         : "";
 
                     //#ifdef __WITH_HTML5
@@ -432,7 +432,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 return isValid;
             };
             
-            var vgroup = apf.xmldb.getInheritedAttribute(this.$aml, "validgroup");
+            var vgroup = apf.getInheritedAttribute(this.$aml, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
@@ -938,7 +938,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         }\
                     }\
                     else if (type == "dropdown") {\
-                        var v = apf.getXmlValue(dg.xmlData, select);\
+                        var v = apf.queryValue(dg.xmlData, select);\
                         %value("item[@value=\'" + v + "\']");\
                     }\
                     else if (type == "lookup" && $"@multiple" == "multiple"){\
@@ -977,23 +977,23 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         var vs = $"@descfield";\
                         if ($"@multiple" == "single")\
                             vs = "node()/" + vs;\
-                        %apf.getXmlValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
+                        %apf.queryValue(dg.xmlData, select + (vs ? "/" + vs : ""));\
                     }\
                     else if (type == "custom") {\
                         var sep = $"@separator" || "";\
                         var v, output = [];\
                         foreach("field"){\
-                            v = apf.getXmlValue(dg.xmlData, $"@select");\
+                            v = apf.queryValue(dg.xmlData, $"@select");\
                             if (v) output.push(v);\
                         }\
                         if ($"@mask")\
                             output.push($"@mask");\
                         else if (!output.length && select)\
-                            output.push(apf.getXmlValue(dg.xmlData, select));\
+                            output.push(apf.queryValue(dg.xmlData, select));\
                         %output.join(sep);\
                     }\
                     else {\
-                        %apf.getXmlValue(dg.xmlData, select);\
+                        %apf.queryValue(dg.xmlData, select);\
                     }\
                 ]]]></column>\
                 <a:traverse select="property|prop" />\
@@ -1233,7 +1233,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 var node = this.$getLayoutNode("cell", "caption",
                     oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"),
                     h.className)));
-                apf.xmldb.setNodeValue(node, "&nbsp;");
+                apf.setNodeValue(node, "&nbsp;");
                 (node.nodeType == 1 && node || node.parentNode)
                     .setAttribute("style", "background-image:url(" 
                         + apf.getAbsolutePath(this.iconPath, 
@@ -1241,7 +1241,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         + ")");
             }
             else {
-                apf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
+                apf.setNodeValue(this.$getLayoutNode("cell", "caption",
                     oRow.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))),
                     (this.applyRuleSetOnNode([h.xml], xmlNode) || "").trim() || ""); //@todo for IE but seems not a good idea
             }
@@ -1271,7 +1271,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             var desc = this.applyRuleSetOnNode("description", xmlNode);
             this.$getNewContext("container");
             var oDesc = this.$getLayoutNode("container");
-            apf.xmldb.setNodeValue(this.$getLayoutNode("container", "container",
+            apf.setNodeValue(this.$getLayoutNode("container", "container",
                 oDesc), desc);
             oDesc.setAttribute("class", (oDesc.getAttribute("class") || "")
                 + " row" + this.uniqueId);
@@ -1336,7 +1336,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             else {
                 node.innerHTML = (this.applyRuleSetOnNode([h.xml], xmlNode)
                     || "").trim() || ""; //@todo for IE but seems not a good idea
-                //apf.xmldb.setNodeValue(node, 
+                //apf.setNodeValue(node, 
                     //this.applyRuleSetOnNode([h.xml], xmlNode));
             }
         }
@@ -1396,7 +1396,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.selectCell = function(e, rowHtml, wasSelected) {
         var htmlNode = e.srcElement || e.target;
-        if (htmlNode == rowHtml || !apf.xmldb.isChildOf(rowHtml, htmlNode))
+        if (htmlNode == rowHtml || !apf.isChildOf(rowHtml, htmlNode))
             return; //this is probably not good
         
         while (htmlNode.parentNode != rowHtml)
@@ -1604,7 +1604,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 
         var oldNode = this.xmlData.selectSingleNode(select 
           + (multiple == "single" ? "/node()" : ""));
-        var newNode = apf.xmldb.copyNode(dataNode);
+        var newNode = apf.xmldb.getCleanCopy(dataNode);
 
         if (multiple != "multiple") {
             var tagName;
@@ -1615,7 +1615,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             select = s.join("/") || null;
             
             if (tagName && tagName != newNode.tagName) {
-                newNode = apf.xmldb.integrate(newNode, 
+                newNode = apf.mergeXml(newNode, 
                     newNode.ownerDocument.createElement(tagName));
             }
             
@@ -1711,7 +1711,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             });
         }
         
-        this.selected.setAttribute("j_lastsearch", value);
+        this.selected.setAttribute("a_lastsearch", value);
         
         this.dispatchEvent("afterlookup", {
             value    : value,
@@ -1730,7 +1730,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 if (type == "lookup") {
                     this.$autocomplete = true;
                     var isMultiple = this.selected.getAttribute("multiple") == "multiple";
-                    this.$lookup(this.selected.getAttribute("j_lastsearch") || "", isMultiple);
+                    this.$lookup(this.selected.getAttribute("a_lastsearch") || "", isMultiple);
                 }
                 else
                     return;
@@ -1760,7 +1760,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         if (this.namevalue) {
             /*
                 this.createModel
-                ? apf.xmldb.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
+                ? apf.createNodeFromXpath(this.xmlData, this.selected.getAttribute("select"))
                 : 
             */
             return this.xmlData.selectSingleNode(this.selected.getAttribute("select")) ||
@@ -1781,7 +1781,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             if (this.namevalue) {
                 var sel = cnode.getAttribute("select");
                 return [sel, this.createModel
-                    ? apf.xmldb.createNodeFromXpath(this.xmlData, sel)
+                    ? apf.createNodeFromXpath(this.xmlData, sel)
                     : this.xmlData.selectSingleNode(sel)];
             }
             
@@ -2063,7 +2063,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     var select = this.selected.getAttribute("select");
                     var values = [], n = this.xmlData.selectNodes(select);
                     for (var i = 0; i < n.length; i++) {
-                        values.push(n[i].nodeValue || apf.getXmlValue(n[i], "."));
+                        values.push(n[i].nodeValue || apf.queryValue(n[i], "."));
                     }
                     
                     for (var v, c, i = 0, l = s.length; i < l; i++) {
@@ -2218,7 +2218,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         }
         else if (!force && type == "children") {
             var select  = this.selected.getAttribute("select");
-            var xmlNode = apf.xmldb.createNodeFromXpath(this.xmlData, select);//newNodes
+            var xmlNode = apf.createNodeFromXpath(this.xmlData, select);//newNodes
             
             this.dispatchEvent("multiedit", {
                 xmlNode  : this.selected,
@@ -2418,7 +2418,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             if (!e) e = event;
             var target = e.srcElement || e.target;
             
-            if (target == this || !apf.xmldb.isChildOf(dragging, target, true)) 
+            if (target == this || !apf.isChildOf(dragging, target, true)) 
                 return;
             
             while (target.parentNode != this)
@@ -2680,8 +2680,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         node = nodes[i];
                         s = node.getAttribute("select");
                         //action == "insert" || action == "update"
-                        if (apf.xmldb.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true) ||
-                            apf.xmldb.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
+                        if (apf.isChildOf(xmlNode, _self.xmlData.selectSingleNode(s), true) ||
+                            apf.isChildOf(_self.xmlData.selectSingleNode(s), xmlNode, true)){
                             lstUpdate.pushUnique(node.tagName == "field"
                                 ? node.parentNode
                                 : node);

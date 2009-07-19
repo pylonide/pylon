@@ -94,7 +94,7 @@ apf.DelayedRender = function(){
         this.dispatchEvent("beforerender");
 
         if (typeof this.usedelay == "undefined")
-            this.usedelay = apf.isTrue(apf.xmldb.getInheritedAttribute(this.$aml,
+            this.usedelay = apf.isTrue(apf.getInheritedAttribute(this.$aml,
                 "use-render-delay"));
 
         if (this.usedelay || usedelay)

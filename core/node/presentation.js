@@ -256,7 +256,7 @@ apf.skins = {
     },
 
     getCssString : function(skinName){
-        return apf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
+        return apf.queryValue($xmlns(this.skins[skinName.split(":")[0]].xml,
             "style", apf.ns.aml)[0], "text()");
     },
 
@@ -608,7 +608,7 @@ apf.Presentation = function(){
      */
     this.$loadSkin = function(skinName){
         this.baseSkin = skinName || this.skinName || (this.skinset || this.$aml
-            && apf.xmldb.getInheritedAttribute(this.$aml, "skinset") 
+            && apf.getInheritedAttribute(this.$aml, "skinset") 
             || apf.appsettings.skinset)
             + ":" + (this.skin || this.$aml
             && this.$aml.getAttribute("skin") || this.tagName);
@@ -722,7 +722,7 @@ apf.Presentation = function(){
         }
 
         return (htmlNode
-            ? apf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode)
+            ? apf.queryNode(textNode.nodeValue, htmlNode)
             : apf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     };
 

@@ -134,7 +134,7 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = apf.isParsing && apf.xmldb.isOnlyChild(this.$aml)
+        this.oInt = this.oExt = apf.isParsing && apf.isOnlyChild(this.$aml)
             ? this.pHtmlNode 
             : this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.host = this;

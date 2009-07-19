@@ -108,7 +108,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.getRootData = function(amlNode){
-        var id = apf.xmldb.getInheritedAttribute(amlNode.$aml, "model");
+        var id = apf.getInheritedAttribute(amlNode.$aml, "model");
         return apf.getData(id);
     }
     
@@ -178,8 +178,8 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = apf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
+            var isInThis = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = apf.isChildOf(this.xmlRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -196,7 +196,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.parent, true);
+            var goesToThis = apf.isChildOf(this.xmlRoot, UndoObj.parent, true);
             if (!goesToThis) 
                 action = "remove";
         }

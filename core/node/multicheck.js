@@ -296,7 +296,7 @@ apf.MultiCheck = function(){
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
                 : apf.getXmlDom().createDocumentFragment();
             for (i = 0; i < checkedList.length; i++)
-                apf.xmldb.clearConnections(r.appendChild(
+                apf.xmldb.cleanNode(r.appendChild(
                     checkedList[i].cloneNode(true)));
         }
         else

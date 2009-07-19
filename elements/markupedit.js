@@ -116,7 +116,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         if (!xmlNode)
             xmlNode = this.indicator || this.selected;
 
-        if (!xmlNode || apf.getXmlValue(xmlNode, "text()") == value) 
+        if (!xmlNode || apf.queryValue(xmlNode, "text()") == value) 
             return;
         
         this.executeAction("setTextNode", [xmlNode, value], "setTextNode", xmlNode);
@@ -402,8 +402,8 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         _self.$getNewContext("attribute");
         var elName = _self.$getLayoutNode("attribute", "name");
         var elValue = _self.$getLayoutNode("attribute", "value");
-        apf.xmldb.setNodeValue(elName, name);
-        apf.xmldb.setNodeValue(elValue, (value.length > 50 ? "..." : value));
+        apf.setNodeValue(elName, name);
+        apf.setNodeValue(elValue, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elValue.setAttribute("title", value);
         
@@ -453,7 +453,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         _self.$getNewContext("textnode");
         var elTextNode = _self.$getLayoutNode("textnode", "text");
         var elTag = _self.$getLayoutNode("textnode", "tag");
-        apf.xmldb.setNodeValue(elTextNode, (value.length > 50 ? "..." : value));
+        apf.setNodeValue(elTextNode, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
         
@@ -469,7 +469,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         elTextNode.setAttribute("onselectstart", "event.cancelBubble = true;");
         elTextNode.setAttribute("ondblclick", "event.cancelBubble = true;");
         
-        apf.xmldb.setNodeValue(elTag, "&gt;");
+        apf.setNodeValue(elTag, "&gt;");
         
         if (pNode.style) {
             var htmlNode = apf.xmldb.htmlImport(
@@ -523,7 +523,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             //if(this.opencloseaction != "onmousedown") elSelect.setAttribute(this.opencloseaction || "ondblclick", strFunc2);
         }
         //if(event.button != 1) return; 
-        //apf.xmldb.isChildOf(o.$selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
+        //apf.isChildOf(o.$selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
         elSelect.setAttribute("onmousedown", "var o = apf.lookup(" + this.uniqueId + ");\
             apf.cancelBubble(event, o);\
             if (o.hasFocus()) \
@@ -536,7 +536,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         //elItem.setAttribute("contextmenu", 'alert(1);var o = apf.lookup(' + this.uniqueId + ');o.dispatchEvent("contextMenu", o.selected);');
         
         var elBegin = this.$getLayoutNode("item", "begintag");
-        apf.xmldb.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
+        apf.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
         
         //attributes
         var elAttributes = this.$getLayoutNode("item", "attributes");
@@ -545,7 +545,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             len = xmlNode.attributes.length();
         for (var i = 0; i < len; i++) {
             var attr = xmlNode.attributes.item(i);
-            if (attr.nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
+            if (attr.nodeName.match(/a_id|a_listen|a_doc|a_loaded/))
                 continue;
             
             addAttribute(elAttributes, attr.nodeName, 
@@ -559,14 +559,14 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
 
             if (xmlNode.childNodes.length) {
                 addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue, Lid);
-                apf.xmldb.setNodeValue(elBeginTail, "&lt;/" + xmlNode.tagName + "&gt;");
+                apf.setNodeValue(elBeginTail, "&lt;/" + xmlNode.tagName + "&gt;");
             }
             else
-                apf.xmldb.setNodeValue(elBeginTail, " /&gt;");
+                apf.setNodeValue(elBeginTail, " /&gt;");
         }
         else {
-            apf.xmldb.setNodeValue(elEnd, "&lt;/" + xmlNode.tagName + "&gt;");
-            apf.xmldb.setNodeValue(elBeginTail, "&gt;");
+            apf.setNodeValue(elEnd, "&lt;/" + xmlNode.tagName + "&gt;");
+            apf.setNodeValue(elBeginTail, "&gt;");
         }
         elBeginTail.parentNode.appendChild(elBeginTail);
         
@@ -636,7 +636,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             len = xmlNode.attributes.length;
         for (var i = 0; i < len; i++) {
             var attr = xmlNode.attributes.item(i);
-            if (attr.nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
+            if (attr.nodeName.match(/a_id|a_listen|a_doc|a_loaded/))
                 continue;
             aLookup[attr.nodeName] = attr.nodeValue;
         }
@@ -662,7 +662,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 }
                 else {
                     nodes[i].parentNode.removeChild(nodes[i]);//apf.removeChild here??
-                    apf.xmldb.setNodeValue(elBeginTail, " /&gt;");
+                    apf.setNodeValue(elBeginTail, " /&gt;");
                 }
                 
                 doneFirstChild = true;
@@ -702,7 +702,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         if (!doneFirstChild && xmlNode.childNodes.length == 1 
           && xmlNode.childNodes[0].nodeType == 3) {
             addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue);
-            apf.xmldb.setNodeValue(elBeginTail, "</" + xmlNode.tagName + ">");
+            apf.setNodeValue(elBeginTail, "</" + xmlNode.tagName + ">");
         }
         
         // #ifdef __WITH_CSS_BINDS
@@ -975,7 +975,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         if (!htmlParentNode && (xmlParentNode == this.xmlRoot 
           || xmlNode == this.xmlRoot)) {
             nodes.push(htmlNode);
-            if (!apf.xmldb.isChildOf(htmlNode, container, true))
+            if (!apf.isChildOf(htmlNode, container, true))
                 nodes.push(container);
             
             this.$setStyleClass(htmlNode,  "root");
@@ -1015,12 +1015,12 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 var q = apf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
                 animHighlight(this.$getLayoutNode("item", "select", q));
                 
-                if (!apf.xmldb.isChildOf(htmlNode, container, true)) 
+                if (!apf.isChildOf(htmlNode, container, true)) 
                     var container = apf.xmldb.htmlImport(container, htmlParentNode, beforeNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!apf.xmldb.isChildOf(htmlParentNode, container, true)) 
+                if (!apf.isChildOf(htmlParentNode, container, true)) 
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 

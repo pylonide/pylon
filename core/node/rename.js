@@ -180,8 +180,8 @@ apf.Rename = function(){
             ? ""
             : (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
                 ? unescape(decodeURI(xmlNode.nodeValue))
-                : (apf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
-                    ? apf.xmldb.getNodeValue(xmlNode)
+                : (apf.isOnlyChild(xmlNode.firstChild, [3,4])
+                    ? apf.queryValue(xmlNode)
                     : this.applyRuleSetOnNode("caption", renameSubject))) || "";
 
         this.oTxt.unselectable = "Off";

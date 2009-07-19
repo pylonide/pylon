@@ -466,7 +466,7 @@ apf.settings = function(){
 
     var savePoint;
     this.savePoint = function(){
-        savePoint = apf.xmldb.copyNode(this.xmlRoot);
+        savePoint = apf.xmldb.getCleanCopy(this.xmlRoot);
     };
 
     //Databinding
@@ -512,7 +512,7 @@ apf.settings = function(){
     this.reset = function(){
         if (!savePoint) return;
 
-        this.load(apf.xmldb.copyNode(savePoint));
+        this.load(apf.xmldb.getCleanCopy(savePoint));
     };
 
     //Properties
@@ -528,13 +528,13 @@ apf.settings = function(){
             + valueNode || prop + "/" + valueNode;
 
         return create
-            ? apf.xmldb.createNodeFromXpath(xmlNode, traverse)
-            : apf.getXmlValue(this.xmlNode, traverse);
+            ? apf.createNodeFromXpath(xmlNode, traverse)
+            : apf.queryValue(this.xmlNode, traverse);
     };
 
     this.$handlePropSet = function(prop, value, force){
         if (!force && this.xmlRoot)
-            return apf.xmldb.setNodeValue(this.getSettingsNode(
+            return apf.setNodeValue(this.getSettingsNode(
                 this.xmlRoot, prop, true), true);
 
         this[prop]     = value;
@@ -552,7 +552,7 @@ apf.settings = function(){
         apf.AmlParser.parseChildren(this.$aml, null, this);
 
         //Model handling in case no smartbinding is used
-        var modelId = apf.xmldb.getInheritedAttribute(x, "model");
+        var modelId = apf.getInheritedAttribute(x, "model");
 
         for (var i = 0; i < apf.AmlParser.modelInit.length; i++)
             if (apf.AmlParser.modelInit[i][0] == this)

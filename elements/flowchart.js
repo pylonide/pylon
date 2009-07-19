@@ -1216,7 +1216,7 @@ apf.console.info("FILL");
      * @param {XMLElement}   data   xml representation of template
      */
     this.loadTemplate = function(data) {
-        template = apf.xmldb.getBindXmlNode(data);
+        template = this.$getBindXmlNode(data);
         this.$checkLoadQueue();
     };
 

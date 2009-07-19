@@ -1072,7 +1072,7 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         
         oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
-        apf.xmldb.setNodeValue(oEmpty, msg || "");
+        apf.setNodeValue(oEmpty, msg || "");
 
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         oEmpty.style.display = "block";

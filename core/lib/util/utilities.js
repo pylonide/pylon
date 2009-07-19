@@ -376,7 +376,7 @@ apf.JSONSerialize = {
         //XML support - NOTICE: Ajax.org Platform specific
         if (o.nodeType && o.cloneNode)
             return "apf.xmldb.getXml("
-                + this.string(apf.xmldb.serializeNode(o)) + ")";
+                + this.string(apf.getXmlString(o)) + ")";
 
         //Normal JS object support
         var str = [];
@@ -797,46 +797,6 @@ apf.cancelBubble = function(e, o){
 };
 
 // #endif
-
-// #ifdef __WITH_XMLDATABASE
-
-/**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {String} the value of the query result or empty string.
- */
-apf.getXmlValue = function (xmlNode, xpath){
-    if (!xmlNode) return "";
-    xmlNode = xmlNode.selectSingleNode(xpath);
-    if (xmlNode && xmlNode.nodeType == 1)
-        xmlNode = xmlNode.firstChild;
-    return xmlNode ? xmlNode.nodeValue : "";
-};
-
-/**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {Arary} list of values which are a result of the query.
- */
-apf.getXmlValues = function(xmlNode, xpath){
-    var out = [];
-    if (!xmlNode) return out;
-
-    var nodes = xmlNode.selectNodes(xpath);
-    if (!nodes.length) return out;
-
-    for (var i = 0; i < nodes.length; i++) {
-        var n = nodes[i];
-        if (n.nodeType == 1)
-            n = n.firstChild;
-        out.push(n.nodeValue || "");
-    }
-    return out;
-};
-
-//#endif
 
 /**
  * Attempt to fix memory leaks

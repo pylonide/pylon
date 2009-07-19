@@ -63,7 +63,7 @@ apf.AmlElement = function(){
      * @return  {String}  a representation of this element
      */
     this.toString = function(){
-        return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName
+        return "[Element Node, <" + (this.prefix || "a") + ":" + this.tagName
             + " /> : " + (this.name || this.uniqueId || "") + "]";
     };
     //#endif
@@ -350,7 +350,7 @@ apf.AmlElement = function(){
         if (this.nodeFunc != apf.NODE_HIDDEN) {
             /* #ifdef __WITH_EDITMODE
             this.implement(apf.EditMode); // @inherits apf.EditMode
-            if(apf.xmldb.getInheritedAttribute(x, "editmode") == "true")
+            if(apf.getInheritedAttribute(x, "editmode") == "true")
                 this.enableEditing();
             #endif */
 
@@ -542,7 +542,7 @@ apf.AmlElement = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && !this.hasFeature(__MULTISELECT__) && this.xmlRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse) {
-            return apf.xmldb.setNodeValue(this.getNodeFromRule(
+            return apf.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.xmlRoot, null, null, true),
                 value, !this.$onlySetXml);
         }
@@ -550,7 +550,7 @@ apf.AmlElement = function(){
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.xmlRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
-            return apf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
+            return apf.setNodeValue(this.getNodeFromRule(this.mainBind,
                 this.xmlRoot, null, null, true), value, !this.$onlySetXml);
         #endif */
 
@@ -888,7 +888,7 @@ apf.AmlElement.propHandlers = {
                 this.$hide();
 
             if (apf.window.focussed == this || this.canHaveChildren
-              && apf.xmldb.isChildOf(this, apf.window.focussed, false)) {
+              && apf.isChildOf(this, apf.window.focussed, false)) {
                 if (apf.appsettings.allowBlur)
                     this.blur();
                 else

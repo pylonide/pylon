@@ -179,6 +179,7 @@ apf.KernelModules = [
     "lib/util/plane.js",
     "lib/util/popup.js",
     "lib/util/silverlight.js",
+    "lib/util/xml.js",
 
     "lib/tween.js",
     "lib/date.js",

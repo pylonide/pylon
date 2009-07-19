@@ -68,7 +68,7 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
             return;
         
         amlNode.$propHandlers["caption"] = function(value){
-            apf.xmldb.setNodeValue(
+            apf.setNodeValue(
                 this.$getLayoutNode("panel", "caption", this.oExt), value);
         }
         amlNode.$propHandlers["icon"] = function(value){

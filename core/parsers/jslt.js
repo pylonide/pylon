@@ -998,7 +998,7 @@ apf.JsltImplementation = function(){
         var jsltFunc, cacheId, jsltStr, doTest;
         
         //Type detection xmlNode
-        xmlNode = apf.xmldb.getBindXmlNode(xmlNode);
+        xmlNode = this.$getBindXmlNode(xmlNode);
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {

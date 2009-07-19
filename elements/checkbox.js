@@ -111,7 +111,7 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      * the meaning of the checked state of this element is.
      */
     this.$propHandlers["label"] = function(value){
-        apf.xmldb.setNodeValue(
+        apf.setNodeValue(
             this.$getLayoutNode("main", "label", this.oExt), value);
     };
 

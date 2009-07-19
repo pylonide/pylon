@@ -211,7 +211,7 @@ apf.BaseButton = function(pHtmlNode){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (this == tEl || apf.xmldb.isChildOf(this, tEl))
+            if (this == tEl || apf.isChildOf(this, tEl))
                 return;
 
             mouseOver    = false;

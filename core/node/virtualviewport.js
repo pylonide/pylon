@@ -272,7 +272,7 @@ apf.VirtualViewport = function(){
     })
     
     this.$isInViewport = function(xmlNode, struct){
-        var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
+        var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
         var start = marker ? marker.getAttribute("end") : 0;
         
         if(!struct && this.viewport.offset + this.viewport.limit < start + 1)
@@ -310,6 +310,30 @@ apf.VirtualViewport = function(){
         return this.getTraverseNodes(xmlNode)[0];
     };
     
+    /**
+     * @private
+     */
+    this.$clearVirtualDataset = function(parentNode){
+        var nodes = parentNode.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--)
+            parentNode.removeChild(nodes[i]);
+    };
+
+    /**
+     * @private
+     */
+    this.$createVirtualDataset = function(xmlNode, length, docId) {
+        var marker = xmlNode.selectSingleNode("a_marker") 
+          || xmlNode.appendChild(xmlNode.ownerDocument.createElement("a_marker"));
+        marker.setAttribute("start", "0");
+
+        if (length) {
+            marker.setAttribute("end",   length);
+            marker.setAttribute("reserved", ++this.nodeCount[docId]);
+            this.nodeCount[docId] += length;
+        }
+    };
+    
     var xmlUpdate = this.$xmlUpdate;
     this.$xmlUpdate = function(){
         this.viewport.cache = null;
@@ -330,7 +354,7 @@ apf.VirtualViewport = function(){
         
         //Initialize virtual dataset if load rule exists
         if (this.bindingRules["load"])
-            apf.xmldb.createVirtualDataset(XMLRoot);
+            this.$createVirtualDataset(XMLRoot);
         
         //Prepare viewport
         this.viewport.cache  = null;
@@ -406,13 +430,13 @@ apf.VirtualViewport = function(){
                 function(xmlNode){
                     _self.setConnections(_self.xmlRoot);
                     
-                    var length = parseInt(apf.getXmlValue(xmlNode, 
+                    var length = parseInt(apf.queryValue(xmlNode, 
                         rule.getAttribute("total")));
                     
                     if (_self.viewport.length != length) {
                         _self.viewport.length = length;
                         
-                        apf.xmldb.createVirtualDataset(_self.xmlRoot, 
+                        this.$createVirtualDataset(_self.xmlRoot, 
                             _self.viewport.length, _self.documentId);
                     }
                 });
@@ -494,7 +518,7 @@ apf.VirtualViewport = function(){
         
         //caching statement here
 
-        var markers = (xmlNode || this.xmlRoot).selectNodes("j_marker");
+        var markers = (xmlNode || this.xmlRoot).selectNodes("a_marker");
 
         //Special case for fully loaded virtual dataset
         if (!markers.length) {

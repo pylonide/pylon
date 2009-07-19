@@ -334,7 +334,7 @@ apf.XSDImplementation = function(){
 
     this.getValue = function(xmlNode){
         return xmlNode.nodeType == 1
-            ? apf.getXmlValue(xmlNode, "text()")
+            ? apf.queryValue(xmlNode, "text()")
             : xmlNode.nodeValue;
     };
 

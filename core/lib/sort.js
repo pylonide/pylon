@@ -45,7 +45,7 @@ apf.Sort = function(xmlNode){
         settings.xpath       = xmlNode.getAttribute("sort");
         settings.getNodes    = self[xmlNode.getAttribute("nodes-method")];
         settings.getValue    = function(item){
-            return apf.getXmlValue(item, settings.xpath);
+            return apf.queryValue(item, settings.xpath);
         }
 
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
@@ -105,7 +105,7 @@ apf.Sort = function(xmlNode){
         
         if (!settings.getValue) {
             settings.getValue = function(item){
-                return apf.getXmlValue(item, settings.xpath);
+                return apf.queryValue(item, settings.xpath);
             }
         }
     };

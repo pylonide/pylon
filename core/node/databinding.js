@@ -128,7 +128,7 @@ apf.DataBinding = function(){
      *  lstRev.query('revision/text()', 'indicator');
      */
     this.queryValue = function(xpath, type){
-        return apf.getXmlValue(this[type || 'xmlRoot'], xpath );
+        return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
@@ -142,7 +142,7 @@ apf.DataBinding = function(){
      * @return {String} value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
-        return apf.getXmlValues(this[type || 'xmlRoot'], xpath );
+        return apf.queryValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
@@ -271,7 +271,7 @@ apf.DataBinding = function(){
         if (!tracker && this.connectId)
             tracker = self[this.connectId].$at;
 
-        //apf.xmldb.getInheritedAttribute(this.$aml, "actiontracker");
+        //apf.getInheritedAttribute(this.$aml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(apf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
@@ -504,7 +504,7 @@ apf.DataBinding = function(){
             return;
 
         for (var name in actions) {
-            if (apf.xmldb.isChildOf(actions[name], e.xmlNode, true)) {
+            if (apf.isChildOf(actions[name], e.xmlNode, true)) {
                 //this.$stopAction(name, true);
                 actions[name].rollback.call(this, actions[name].xmlContext);
             }
@@ -672,7 +672,7 @@ apf.DataBinding = function(){
         var shouldLoad = false, atAction, node = selInfo[1];
 
         if (node) {
-            if (apf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
+            if (apf.queryValue(node) == value) return; // Do nothing if value is unchanged
 
             atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
@@ -954,7 +954,7 @@ apf.DataBinding = function(){
             // #ifdef __WITH_INLINE_DATABINDING
             if (setname == "value") setname = "valuerule";
             returnValue = typeof this[setname] == "string" && setname != "value"
-                    && apf.getXmlValue(cnode, this[setname])
+                    && apf.queryValue(cnode, this[setname])
                     || def && cnode.selectSingleNode(def) || false;
             /* #else
             returnValue = def && cnode.selectSingleNode(def) || false;
@@ -1263,7 +1263,7 @@ apf.DataBinding = function(){
             if (setname == "value") setname = "valuerule";
             if (!isAction && !getRule && typeof this[setname] == "string") {
                 return cnode.selectSingleNode(this[setname]) || (createNode
-                    ? apf.xmldb.createNodeFromXpath(cnode, this[setname])
+                    ? apf.createNodeFromXpath(cnode, this[setname])
                     : false);
             }
             //#endif
@@ -1286,7 +1286,7 @@ apf.DataBinding = function(){
                 return getRule ? rules[i] : o;
 
             if (createNode || rules[i].getAttribute("create") == "true") {
-                var o = apf.xmldb.createNodeFromXpath(cnode, sel);
+                var o = apf.createNodeFromXpath(cnode, sel);
                 return getRule ? rules[i] : o;
             }
         }
@@ -1404,7 +1404,7 @@ apf.DataBinding = function(){
         }
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
-            xmlRootNode = apf.xmldb.getBindXmlNode(xmlRootNode);
+            xmlRootNode = this.$getBindXmlNode(xmlRootNode);
 
         // If no xmlRootNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
@@ -1596,7 +1596,7 @@ apf.DataBinding = function(){
      */
     this.$setLoadStatus = function(xmlNode, state, remove){
         //remove old status if any
-        var ostatus = xmlNode.getAttribute("j_loaded");
+        var ostatus = xmlNode.getAttribute("a_loaded");
         ostatus = ostatus
             ? ostatus.replace(new RegExp("\\|\\w+\\:" + this.uniqueId + "\\|", "g"), "")
             : "";
@@ -1604,7 +1604,7 @@ apf.DataBinding = function(){
         if (!remove)
             ostatus += "|" + state + ":" + this.uniqueId + "|";
 
-        xmlNode.setAttribute("j_loaded", ostatus);
+        xmlNode.setAttribute("a_loaded", ostatus);
     };
 
     /**
@@ -1618,7 +1618,7 @@ apf.DataBinding = function(){
      * @private
      */
     this.$hasLoadStatus = function(xmlNode, state){
-        var ostatus = xmlNode.getAttribute("j_loaded");
+        var ostatus = xmlNode.getAttribute("a_loaded");
         if (!ostatus) return false;
 
         return (ostatus.indexOf((state || "") + ":" + this.uniqueId + "|") != -1)
@@ -1645,7 +1645,7 @@ apf.DataBinding = function(){
             return false;
 
         //Integrate XMLTree with parentNode
-        var newNode = apf.xmldb.integrate(XMLRoot, parentXMLElement,
+        var newNode = apf.mergeXml(XMLRoot, parentXMLElement,
           apf.extend(options, {copyAttributes: true}));
 
         //Call __XMLUpdate on all listeners
@@ -1668,6 +1668,24 @@ apf.DataBinding = function(){
         //this one shouldn't be called because they are listeners anyway...(else they will load twice)
         //if(this.selected) this.setConnections(this.selected, "select");
     };
+    
+    /**
+     * @private
+     */
+    this.$getBindXmlNode = function(xmlRootNode){
+        if (typeof xmlRootNode != "object")
+            xmlRootNode = apf.getXmlDom(xmlRootNode);
+        if (xmlRootNode.nodeType == 9)
+            xmlRootNode = xmlRootNode.documentElement;
+        if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
+            xmlRootNode = xmlRootNode.parentNode;
+        if (xmlRootNode.nodeType == 2)
+            xmlRootNode = xmlRootNode.ownerElement 
+                || xmlRootNode.parentNode 
+                || xmlRootNode.selectSingleNode("..");
+
+        return xmlRootNode;
+    };
 
     // #ifdef __WITH_MULTISELECT
     this.implement(this.hasFeature(__MULTISELECT__)
@@ -1678,7 +1696,7 @@ apf.DataBinding = function(){
     function findModel(x, isSelection) {
         return x.getAttribute((isSelection
             ? "ref"
-            : "") + "model") || apf.xmldb.getInheritedAttribute(x, null,
+            : "") + "model") || apf.getInheritedAttribute(x, null,
               function(xmlNode){
                 if (isSelection && x == xmlNode)
                     return false;
@@ -1808,7 +1826,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["empty-message"] = function(value){
         this["empty-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$aml, "empty-message")
+            || apf.getInheritedAttribute(this.$aml, "empty-message")
             || "No items";
 
         if (!apf.isParsing && this.$updateClearMessage) 
@@ -1846,7 +1864,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["loading-message"] = function(value){
         this["loading-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$aml, "loading-message")
+            || apf.getInheritedAttribute(this.$aml, "loading-message")
             || "Loading...";
 
         if (!apf.isParsing && this.$updateClearMessage)
@@ -1862,7 +1880,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["offline-message"] = function(value){
         this["offline-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$aml, "offline-message")
+            || apf.getInheritedAttribute(this.$aml, "offline-message")
             || "You are currently offline...";
 
         if (!apf.isParsing && this.$updateClearMessage)
@@ -1902,7 +1920,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !apf.isFalse(
-            apf.xmldb.getInheritedAttribute(this.$aml, "create-model"));
+            apf.getInheritedAttribute(this.$aml, "create-model"));
             
         var mb;
         if (this.getMultibinding && (mb = this.getMultibinding()))
@@ -2698,7 +2716,7 @@ apf.MultiselectBinding = function(){
 
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
-            apf.xmldb.clearVirtualDataset(this.xmlRoot);
+            this.$clearVirtualDataset(this.xmlRoot);
             this.reload();
 
             return;
@@ -2707,7 +2725,7 @@ apf.MultiselectBinding = function(){
 
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = _self.$sort.apply(
-                apf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
+                apf.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
 
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch || _self.$withContainer){
@@ -2725,7 +2743,7 @@ apf.MultiselectBinding = function(){
                     var container = _self.$findContainer(htmlNode);
 
                     htmlParent.appendChild(htmlNode);
-                    if (!apf.xmldb.isChildOf(htmlNode, container, true))
+                    if (!apf.isChildOf(htmlNode, container, true))
                         htmlParent.appendChild(container);
 
                     sortNodes(sNodes[i], container);
@@ -2773,7 +2791,7 @@ apf.MultiselectBinding = function(){
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.$sort) {
-            var nodes = apf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+            var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot)
                 .selectNodes(this.traverse));
             return this.$sort.apply(nodes);
         }
@@ -2792,7 +2810,7 @@ apf.MultiselectBinding = function(){
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.$sort) {
-            var nodes = apf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+            var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot)
                 .selectNodes(this.traverse));
             return this.$sort.apply(nodes)[0];
         }
@@ -3159,8 +3177,8 @@ apf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
-            var isInThis  = apf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var isInThis  = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = apf.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -3171,7 +3189,7 @@ apf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = apf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var goesToThis = apf.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -3239,7 +3257,7 @@ apf.MultiselectBinding = function(){
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.isTreeArch 
-              && apf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
+              && apf.isChildOf(this.xmlRoot, xmlNode)) {
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt; //@todo I think this is wrong for non rendered sub tree nodes that get changed
@@ -3317,7 +3335,7 @@ apf.MultiselectBinding = function(){
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && apf.xmldb.isChildOf(xmlNode, this.selected, true)
+            if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
               || xmlNode == selectTimer.nextNode)
                 selectTimer.nextNode = this.getDefaultNext(xmlNode);
 

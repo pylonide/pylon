@@ -40,7 +40,7 @@ Function.prototype.dataType = "function";
 
 /**
  * Converts a javascript object to a cgi string.
- * @see core.xmldatabase.method.convertXml
+ * @see core.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
     var vars = [];
@@ -83,7 +83,7 @@ apf.getCgiString = function(args, multicall, mcallname){
 
 /**
  * Converts a cgi string to a javascript object.
- * @see core.xmldatabase.method.convertXml
+ * @see core.convertXml
  */
 apf.fromCgiString = function(args) {
     if (!args)

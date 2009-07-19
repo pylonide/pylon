@@ -108,7 +108,7 @@ apf.textbox.autocomplete = function(){
                 //Get data from model
                 var nodes = self[autocomplete.nodeset[0]].data.selectNodes(autocomplete.nodeset[1]);
                 for(var value, suggestData = [], i = 0; i < nodes.length; i++) {
-                    value = apf.getXmlValue(nodes[i], autocomplete.value);
+                    value = apf.queryValue(nodes[i], autocomplete.value);
                     if (value)
                         suggestData.push(value.toLowerCase());
                 }
@@ -139,7 +139,7 @@ apf.textbox.autocomplete = function(){
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.$getNewContext("item")
             var oItem = this.$getLayoutNode("item");
-            apf.xmldb.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
+            apf.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
             oItem.setAttribute("onmouseout",  'this.className = ""');

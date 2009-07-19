@@ -170,7 +170,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
              * Returns a string representation of this object.
              */
             this.toString = function(){
-                return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName
+                return "[Element Node, <" + (this.prefix || "a") + ":" + this.tagName
                     + " /> : " + (this.name || this.uniqueId || "") + "]";
             };
             //#endif

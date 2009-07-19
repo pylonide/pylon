@@ -145,7 +145,7 @@ apf.layout = {
             var o = apf.findHost(layout.parentNode) || apf.AmlParser;
             //splitter.parentNode = o;
             //o.childNodes.push(splitter); //@todo hack
-            splitter.skinset = apf.xmldb.getInheritedAttribute(o.$aml, "skinset"); //@todo use skinset here. Has to be set in presentation
+            splitter.skinset = apf.getInheritedAttribute(o.$aml, "skinset"); //@todo use skinset here. Has to be set in presentation
             splitter.$loadSkin();
             splitter.$draw();
         }

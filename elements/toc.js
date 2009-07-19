@@ -170,7 +170,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
                 //continue;
             }
             else {
-                apf.xmldb.setNodeValue(oCaption, 
+                apf.setNodeValue(oCaption, 
                     pages[i].$aml.getAttribute("caption") || "");
             }
 

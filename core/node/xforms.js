@@ -174,7 +174,7 @@ apf.XForms = function(){
                     : getXmlValue(actionNode, "text()");
             
                 var dataNode = findXFormsData.call(this, actionNode);
-                apf.xmldb.setNodeValue(dataNode, value, true);
+                apf.setNodeValue(dataNode, value, true);
                 break;
             case "setindex":
                 break;

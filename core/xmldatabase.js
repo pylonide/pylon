@@ -36,9 +36,9 @@
  * @default_private
  */
 apf.XmlDatabase = function(){
-    this.xmlDocTag    = "j_doc";
-    this.xmlIdTag     = "j_id";
-    this.xmlListenTag = "j_listen";
+    this.xmlDocTag    = "a_doc";
+    this.xmlIdTag     = "a_id";
+    this.xmlListenTag = "a_listen";
     this.htmlIdTag    = "id";
 
     var xmlDocLut     = [];
@@ -112,55 +112,37 @@ apf.XmlDatabase = function(){
     };
 
     /**
-     * Determines whether a node is a child of another node.
-     *
-     * @param {DOMNode} pNode      the potential parent element.
-     * @param {DOMNode} childnode  the potential child node.
-     * @param {Boolean} [orItself] whether the method also returns true when pNode is the childnode.
-     * @return  {Number} the child position of the node. Or false if it's not a child.
+     * @private
      */
-    this.isChildOf = function(pNode, childnode, orItself){
-        if (!pNode || !childnode)
-            return false;
-        
-        if (childnode.nodeType == 2)
-            childnode = childnode.selectSingleNode("..");
-        
-        if (orItself && pNode == childnode)
-            return true;
-
-        var loopnode = childnode.parentNode;
-        while(loopnode){
-            if(loopnode == pNode)
-                return true;
-            loopnode = loopnode.parentNode;
+    this.getElement = function(parent, nr){
+        var nodes = parent.childNodes;
+        for (var j = 0, i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1)
+                continue;
+            if (j++ == nr)
+                return nodes[i];
         }
-
-        return false;
     };
+
+    /* @deprecated ?
+    this.setModel = function(model){
+        apf.nameserver.register("model", model.data.ownerDocument
+            .documentElement.getAttribute(this.xmlDocTag), model);
+    };
+
+    this.findModel = function(xmlNode){
+        return apf.nameserver.get("model", xmlNode.ownerDocument
+            .documentElement.getAttribute(this.xmlDocTag));
+    };*/
 
     /**
-     * Determines whether a node is it's parent's only child.
-     * @param {DOMNode} node     the potential only child.
-     * @param {Array}   nodeType list of the node types that this child can be.
-     * @returns {Boolean} whether the node is only child and optionally of one of the specified nodeTypes.
+     * @private
      */
-    this.isOnlyChild = function(node, nodeType){
-        if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
-            return false;
-
-        var i, l, cnode, nodes = node.parentNode.childNodes;
-        for (i = 0, l = nodes.length; i < l; i++) {
-            cnode = nodes[i];
-            if (cnode.nodeType == 1 && cnode != node)
-                return false;
-            if (cnode.nodeType == 3 && !cnode.nodeValue.trim())
-                return false;
-        }
-
-        return true;
-    };
-
+    this.getXmlId = function(xmlNode){
+        return xmlNode.getAttribute(this.xmlIdTag) ||
+          this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
+    }
+    
     this.getHtmlNode = function(xmlNode, oComp){
         if (xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
             return oComp.getNodeFromCache(xmlNode.getAttribute(this.xmlIdTag)
@@ -168,7 +150,7 @@ apf.XmlDatabase = function(){
         }
         return null;
     }
-
+    
     /**
      * Finds the html representation of an xml node for a certain element.
      *
@@ -184,14 +166,14 @@ apf.XmlDatabase = function(){
             }
             if (xmlNode == oComp.xmlRoot)
                 return null;
-
+    
             xmlNode = xmlNode.parentNode;
         }
         while (xmlNode && xmlNode.nodeType != 9)
-
+    
         return null;
     };
-
+    
     /**
      * Finds the {@link term.datanode data node} that is represented by the html node.
      *
@@ -201,7 +183,7 @@ apf.XmlDatabase = function(){
     this.findXmlNode = function(htmlNode){
         if (!htmlNode)
             return false;
-
+    
         while (htmlNode && htmlNode.nodeType == 1
           && htmlNode.tagName.toLowerCase() != "body"
           && !htmlNode.getAttribute("id")
@@ -210,54 +192,18 @@ apf.XmlDatabase = function(){
           && htmlNode.getAttribute(this.htmlIdTag).match(/^q/)) {
             if (htmlNode.host && htmlNode.host.oExt == htmlNode)
                 return htmlNode.host.xmlRoot;
-
+    
             htmlNode = htmlNode.parentNode;
         }
         if (!htmlNode || htmlNode.nodeType != 1)
             return false;
-
+    
         if (htmlNode.tagName.toLowerCase() == "body")
             return false;
-
+    
         return this.getNode(htmlNode);
     };
-
-    /**
-     * @private
-     */
-    this.getElement = function(parent, nr){
-        var nodes = parent.childNodes;
-        for (var j = 0, i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1)
-                continue;
-            if (j++ == nr)
-                return nodes[i];
-        }
-    };
-
-    /**
-     * @private
-     */
-    this.getModel = function(name){
-        return apf.nameserver.get("model", name);
-    };
-
-    /**
-     * @private
-     */
-    this.setModel = function(model){
-        apf.nameserver.register("model", model.data.ownerDocument
-            .documentElement.getAttribute(this.xmlDocTag), model);
-    };
-
-    /**
-     * @private
-     */
-    this.findModel = function(xmlNode){
-        return this.getModel(xmlNode.ownerDocument
-            .documentElement.getAttribute(this.xmlDocTag));
-    };
-
+    
     /**
      * Creates xml nodes from an xml string recursively.
      *
@@ -269,68 +215,6 @@ apf.XmlDatabase = function(){
     this.getXml = function(strXml, noError, preserveWhiteSpace){
         return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
     };
-
-    /**
-     * Creates xml nodes from an JSON string/ object recursively.
-     *
-     * @param {String}  strJson     the JSON definition.
-     * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
-     * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
-     * @return {XMLNode} the created xml document (NOT the root-node).
-     */
-    this.fromJson = function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && apf.isJSON(strJson))
-          ? JSON.parse(strJson)//eval("(" + strJson + ")")
-          : strJson,
-            xml = [], i;
-        for (i in o)
-            xml.push(jsonToXml(o[i], i, ""));
-        return apf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
-            + "</jsonroot>", noError, preserveWhiteSpace);
-    };
-
-    function jsonToXml(v, name) {
-        var i, n, xml = [];
-        name = name.replace(/[^a-zA-z0-9_-]+/g, "_");
-        if (apf.isArray(v)) {
-            for (i = 0, n = v.length; i < n; i++)
-                xml.push(jsonToXml(v[i], name));
-        }
-        else if (typeof v == "object") {
-            var hasChild = false;
-            xml.push("<", name);
-            for (i in v) {
-                if (i.charAt(0) == "@")
-                    xml.push(" ", i.substr(1), "=\"", v[i].toString(), "\"");
-                else
-                    hasChild = true;
-            }
-            xml.push(hasChild ? ">" : "/>");
-            if (hasChild) {
-                for (i in v) {
-                    if (i == "#text")
-                        xml.push(v[i]);
-                    else if (i == "#cdata")
-                        xml.push("<![CDATA[", v[i], "]]>");
-                    else if (i.charAt(0) != "@")
-                        xml.push(jsonToXml(v[i], i));
-                }
-                xml.push("</", name, ">");
-            }
-        }
-        else
-            xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
-
-        return xml.join("");
-    }
-
-    /**
-     * @private
-     */
-    this.getXmlId = function(xmlNode){
-        return xmlNode.getAttribute(this.xmlIdTag) ||
-          this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
-    }
 
     this.nodeCount = {};
     /**
@@ -398,254 +282,6 @@ apf.XmlDatabase = function(){
         return xmlNode;
     };
 
-    // #ifdef __WITH_VIRTUALVIEWPORT
-    //Does this need to be a seperate function??
-    /**
-     * @private
-     */
-    this.clearVirtualDataset = function(parentNode){
-        var nodes = parentNode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--)
-            parentNode.removeChild(nodes[i]);
-    };
-
-    /**
-     * @private
-     */
-    this.createVirtualDataset = function(xmlNode, length, docId) {
-        var marker = xmlNode.selectSingleNode("j_marker") || xmlNode.appendChild(xmlNode.ownerDocument.createElement("j_marker"));
-        marker.setAttribute("start", "0");
-
-        if (length) {
-            marker.setAttribute("end",   length);
-            marker.setAttribute("reserved", ++this.nodeCount[docId]);
-            this.nodeCount[docId] += length;
-        }
-    };
-    //#endif
-
-    /**
-     * Integrates nodes as children of a parent. Optionally attributes are
-     * copied as well.
-     *
-     * @param {XMLNode} xmlNode the data to integrate.
-     * @param {XMLNode} parent  the point of integration.
-     * @param {Object}  options
-     *   Properties:
-     *   {Boolean} [copyAttributes] whether the attributes of xmlNode are copied as well.
-     *   {Boolean} [clearContents]  whether the contents of parent is cleared.
-     *   {Boolean} [start]          This feature is used for the virtual viewport. More information will follow.
-     *   {Boolean} [length]         This feature is used for the virtual viewport. More information will follow.
-     *   {Boolean} [documentId]     This feature is used for the virtual viewport. More information will follow.
-     *   {Boolean} [marker]         This feature is used for the virtual viewport. More information will follow.
-     * @return  {XMLNode}  the created xml node
-     */
-    this.integrate = function(XMLRoot, parentNode, options){
-        if (typeof parentNode != "object")
-            parentNode = getElementById(parentNode);
-
-        if (options && options.clearContents) {
-            //Signal listening elements
-            var node, j, i, nodes = parentNode.selectNodes("descendant::node()[@" + this.xmlListenTag + "]");
-            for (i = nodes.length - 1; i >= 0; i--) {
-                var s = nodes[i].getAttribute(this.xmlListenTag).split(";");
-                for (j = s.length - 1; j >= 0; j--) {
-                    node = apf.all[s[j]];
-                    if (node.dataParent && node.dataParent.xpath)
-                        node.dataParent.parent.signalXmlUpdate[node.uniqueId] = true;
-                    else if (node.$model) {
-                        node.$listenRoot = apf.xmldb.addNodeListener(parentNode, node);
-                        node.xmlRoot = null; //.load(null)
-                    }
-                }
-            }
-            
-            //clean parent
-            var nodes = parentNode.childNodes;
-            for (var i = nodes.length - 1; i >= 0; i--)
-                parentNode.removeChild(nodes[i]);
-        }
-
-        // #ifdef __WITH_VIRTUALVIEWPORT
-        if (options && options.start) { //Assuming each node is in count
-            var reserved, beforeNode, nodes, doc, i, l, marker = options.marker;
-            if (!marker){
-                //optionally find marker
-            }
-
-            //This code assumes that the dataset fits inside this marker
-
-            //Start of marker
-            if (marker.getAttribute("start") - options.start == 0) {
-                marker.setAttribute("start", options.start + options.length);
-                reserved = parseInt(marker.getAttribute("reserved"));
-                marker.setAttribute("reserved", reserved + options.length);
-                beforeNode = marker;
-            }
-            //End of marker
-            else if (options.start + options.length == marker.getAttribute("end")) {
-                marker.setAttribute("end", options.start + options.length);
-                beforeNode = marker.nextSibling;
-                reserved = parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end")) - options.length;
-            }
-            //Middle of marker
-            else {
-                var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
-                m2.setAttribute("end", options.start - 1);
-                marker.setAttribute("start", options.start + options.length);
-                reserved = parseInt(marker.getAttribute("reserved"));
-                marker.setAttribute("reserved", reserved + options.length);
-                beforeNode = marker;
-            }
-
-            nodes = XMLRoot.childNodes;
-
-            if (parentNode.ownerDocument.importNode) {
-                doc = parentNode.ownerDocument;
-                for (i = 0, l = nodes.length; i < l; i++) {
-                    parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode)
-                      .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
-                }
-            }
-            else {
-                for (i = nodes.length - 1; i >= 0; i--) {
-                    parentNode.insertBefore(nodes[0], beforeNode)
-                      .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
-                }
-            }
-        }
-        else
-        // #endif
-        {
-            beforeNode = apf.getNode(parentNode, [0]);
-            nodes      = XMLRoot.childNodes;
-
-            if (parentNode.ownerDocument.importNode) {
-                doc = parentNode.ownerDocument;
-                for (i = 0, l = nodes.length; i < l; i++)
-                    parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode);
-            }
-            else
-                for (i = nodes.length - 1; i >= 0; i--)
-                    parentNode.insertBefore(nodes[0], beforeNode);
-        }
-
-        if (options && options.copyAttributes) {
-            var attr = XMLRoot.attributes;
-            for (i = 0; i < attr.length; i++)
-                if (attr[i].nodeName != this.xmlIdTag)
-                    parentNode.setAttribute(attr[i].nodeName, attr[i].nodeValue);
-        }
-
-        return parentNode;
-    };
-
-    /**
-     * @private
-     * @deprecated
-     * @description  Integrates current xmldb with parent xmldb
-     *
-     *    - assuming transparency of XMLDOM elements cross windows
-     *      with no performence loss.
-     */
-    this.synchronize = function(){
-        this.forkRoot.parentNode.replaceChild(this.root, this.forkRoot);
-        this.parent.applyChanges("synchronize", this.root);
-    };
-
-    /**
-     * Returns a copy of the passed {@link term.datanode data node}. Bound
-     * data nodes contain special attributes to track them. These attributes
-     * are removed from the copied node when using this method.
-     *
-     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
-     * @return {XMLElement} the copy of the {@link term.datanode data node}.
-     */
-    this.copyNode = function(xmlNode){
-        return this.clearConnections(xmlNode.cloneNode(true));
-    };
-
-    /**
-     * Sets the nodeValue of a dom node.
-     *
-     * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue. When an element node is passed the first text node is set.
-     * @param {String}     nodeValue     the value to set.
-     * @param {Boolean}    applyChanges  whether the changes are propagated to the databound elements.
-     * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
-     */
-    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
-        var undoObj, xpath, newNodes;
-        if (options) {
-            undoObj  = options.undoObj;
-            xpath    = options.xpath;
-            newNodes = options.newNodes;
-            
-            undoObj.extra.oldValue = options.forceNew
-                ? ""
-                : apf.getXmlValue(xmlNode, xpath);
-
-            undoObj.xmlNode        = xmlNode;
-            if (xpath)
-                xmlNode = apf.xmldb.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
-
-            undoObj.extra.appliedNode = xmlNode;
-        }
-        
-        if (xmlNode.nodeType == 1) {
-            if (!xmlNode.firstChild)
-                xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
-
-            xmlNode.firstChild.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
-
-            if (applyChanges)
-                apf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
-        }
-        else {
-            xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
-
-            if (applyChanges)
-                apf.xmldb.applyChanges("synchronize", xmlNode.parentNode
-                    || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
-                    undoObj);
-        }
-    };
-
-    /**
-     * Retrieves the node value of an {@link term.datanode data node}. When an element node is passed
-     * the value of the first text node is returned.
-     * @returns {String} the node value found.
-     */
-    this.getNodeValue = function(xmlNode){
-        if (!xmlNode)
-            return "";
-        return xmlNode.nodeType == 1
-            ? (!xmlNode.firstChild ? "" : xmlNode.firstChild.nodeValue)
-            : xmlNode.nodeValue;
-    };
-
-    /**
-     * Retrieves the attribute of an xml node or the first parent node that has
-     * that attribute set. If no attribute is set the value is looked for on
-     * the appsettings element.
-     *
-     * @param {XMLElement} xml    the xml node that is the starting point of the search.
-     * @param {String}     attr   the name of the attribute.
-     * @param {Function}   [func] callback that is run for every node that is searched.
-     * @return {String} the found value, or empty string if none was found.
-     */
-    this.getInheritedAttribute = function(xml, attr, func){
-        var result;
-
-        while (xml && xml.nodeType != 11 && xml.nodeType != 9
-          && !(result = attr && xml.getAttribute(attr) || func && func(xml))) {
-            xml = xml.parentNode;
-        }
-
-        return !result && attr && apf.appsettings
-            ? apf.appsettings[attr]
-            : result;
-    };
-
     /**
      * Sets the value of a text node. If the node doesn't exists it is created.
      * Changes are propagated to the databound elements listening for changes
@@ -656,7 +292,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]   the xpath statement which selects the text node.
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.setTextNode = function(pNode, value, xpath, undoObj){
+    this.setTextNode = 
+    apf.setTextNode  = function(pNode, value, xpath, undoObj){
         var tNode;
 
         if (xpath) {
@@ -696,10 +333,11 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]   the xpath statement to select the attribute.
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.setAttribute = function(xmlNode, name, value, xpath, undoObj){
-        //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
+    this.setAttribute = 
+    apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj){
         //Apply Changes
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
+        
         this.applyChanges("attribute", xmlNode, undoObj);
         // #ifdef __WITH_RSB
         this.applyRSB(["setAttribute", xmlNode, name, value, xpath], undoObj);
@@ -715,7 +353,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]   the xpath statement to select the attribute.
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.removeAttribute = function(xmlNode, name, xpath, undoObj){
+    this.removeAttribute = 
+    apf.removeAttribute  = function(xmlNode, name, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Action Tracker Support
@@ -739,7 +378,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]   the xpath statement to select the attribute.
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.replaceNode = function(oldNode, newNode, xpath, undoObj){
+    this.replaceNode = 
+    apf.replaceNode  = function(oldNode, newNode, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Apply Changes
@@ -773,7 +413,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]     the xpath statement to select the attribute.
      * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.addChildNode = function(pNode, tagName, attr, beforeNode, undoObj){
+    this.addChildNode = 
+    apf.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
         //Create New Node
         var xmlNode = pNode.insertBefore(pNode.ownerDocument
             .createElement(tagName), beforeNode);
@@ -806,12 +447,13 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]     the xpath statement to select the parent node.
      * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.appendChild = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
+    this.appendChild = 
+    apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
 
         if (undoObj)
-            this.clearConnections(xmlNode);
+            this.cleanNode(xmlNode);
 
         if (apf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
@@ -819,7 +461,7 @@ apf.XmlDatabase = function(){
         //Add xmlNode to parent pNode or one selected by xpath statement
         if (xpath) {
             var addedNodes = [];
-            var pNode = this.createNodeFromXpath(pNode, xpath, addedNodes);
+            var pNode = apf.createNodeFromXpath(pNode, xpath, addedNodes);
             if (addedNodes.length) {
                 pNode.appendChild(xmlNode);
                 while(addedNodes.length) {
@@ -855,7 +497,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]     the xpath statement to select the parent node.
      * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.moveNode = function(pNode, xmlNode, beforeNode, xpath, undoObj){
+    this.moveNode = 
+    apf.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
         //Action Tracker Support
         if (!undoObj)
             undoObj = {extra:{}};
@@ -892,7 +535,8 @@ apf.XmlDatabase = function(){
      * @param {String}     [xpath]     the xpath statement to select the parent node.
      * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.removeNode = function(xmlNode, xpath, undoObj){
+    this.removeNode = 
+    apf.removeNode  = function(xmlNode, xpath, undoObj){
         if (xpath)
             xmlNode = xmlNode.selectSingleNode(xpath);
 
@@ -921,7 +565,8 @@ apf.XmlDatabase = function(){
      * @param {Array}   xmlNodeList list of xml nodes to remove.
      * @param {UndoObj} [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.removeNodeList = function(xmlNodeList, undoObj){
+    this.removeNodeList = 
+    apf.removeNodeList  = function(xmlNodeList, undoObj){
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
@@ -1144,19 +789,7 @@ apf.XmlDatabase = function(){
     /**
      * @private
      */
-    this.copyConnections = function(fromNode, toNode){
-        //This should copy recursive
-        try {
-            toNode.setAttribute(this.xmlListenTag, fromNode.getAttribute(this.xmlListenTag));
-            toNode.setAttribute(this.xmlIdTag, fromNode.getAttribute(this.xmlIdTag));
-        }
-        catch (e) {}
-    };
-
-    /**
-     * @private
-     */
-    this.clearConnections = function(xmlNode){
+    this.cleanNode = function(xmlNode){
         try {
             var i, nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlListenTag + "]");
             for (i = nodes.length - 1; i >= 0; i--)
@@ -1167,29 +800,30 @@ apf.XmlDatabase = function(){
             nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlDocTag + "]");
             for (i = nodes.length - 1; i >= 0; i--)
                 nodes[i].removeAttribute(this.xmlDocTag);
-            nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_loaded]");
+            nodes = xmlNode.selectNodes("descendant-or-self::node()[@a_loaded]");
             for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].removeAttribute("j_loaded");
+                nodes[i].removeAttribute("a_loaded");
             // #ifdef __DEBUG
-            // var nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_selection]");
+            // var nodes = xmlNode.selectNodes("descendant-or-self::node()[@a_selection]");
             // for (var i = nodes.length - 1; i >= 0; i--)
-            //     nodes[i].removeAttributeNode(nodes[i].getAttributeNode("j_selection"));
+            //     nodes[i].removeAttributeNode(nodes[i].getAttributeNode("a_selection"));
             // #endif
         }
         catch (e) {}
 
         return xmlNode;
     };
-
+    
     /**
-     * Returns a string version of the {@link term.datanode data node}.
+     * Returns a copy of the passed {@link term.datanode data node}. Bound
+     * data nodes contain special attributes to track them. These attributes
+     * are removed from the copied node when using this method.
      *
-     * @param {XMLElement} xmlNode the {@link term.datanode data node} to serialize.
-     * @return {String} the serilized version of the {@link term.datanode data node}.
+     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
+     * @return {XMLElement} the copy of the {@link term.datanode data node}.
      */
-    this.serializeNode = function(xmlNode){
-        var xml = this.clearConnections(xmlNode.cloneNode(true));
-        return xml.xml || xml.serialize();
+    this.getCleanCopy = function(xmlNode){
+        return this.cleanNode(xmlNode.cloneNode(true));
     };
 
     /**
@@ -1226,145 +860,12 @@ apf.XmlDatabase = function(){
     };
 
     /**
-     * Executes an xpath expression on any dom node. This is especially useful
-     * for dom nodes that don't have a good native xpath processor such as html
-     * in some versions of internet explorer and xml in webkit.
-     *
-     * @param {String}  sExpr        the xpath expression.
-     * @param {DOMNode} contextNode  the xml node that is subject to the query.
-     * @returns {Array} list of xml nodes found. The list can be empty.
-     */
-    this.selectNodes = function(sExpr, contextNode){
-        if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
-            return contextNode.selectNodes(sExpr); //IE55
-        //if (contextNode.ownerDocument != document)
-        //    return contextNode.selectNodes(sExpr);
-
-        return apf.XPath.selectNodes(sExpr, contextNode)
-    };
-
-    /**
-     * Executes an xpath expression on any dom node. This is especially useful
-     * for dom nodes that don't have a good native xpath processor such as html
-     * in some versions of internet explorer and xml in webkit. This function
-     * Only returns the first node found.
-     *
-     * @param {String}  sExpr        the xpath expression.
-     * @param {DOMNode} contextNode  the dom node that is subject to the query.
-     * @returns {XMLNode} the dom node found or null if none was found.
-     */
-    this.selectSingleNode = function(sExpr, contextNode){
-        if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
-            return contextNode.selectSingleNode(sExpr); //IE55
-        //if (contextNode.ownerDocument != document)
-        //    return contextNode.selectSingleNode(sExpr);
-
-        var nodeList = this.selectNodes(sExpr + (apf.isIE ? "" : "[1]"),
-            contextNode ? contextNode : null);
-        return nodeList.length > 0 ? nodeList[0] : null;
-    };
-
-    /**** General XML Handling ****/
-
-    /**
-     * Creates an xml node based on an xpath statement.
-     *
-     * @param {DOMNode} contextNode  the dom node that is subject to the query.
-     * @param {String}  xPath        the xpath query.
-     * @param {Array}   [addedNodes] this array is filled with the nodes added.
-     * @param {Boolean} [forceNew]   whether a new node is always created.
-     * @return {DOMNode} the last element found.
-     * @todo generalize this to include attributes in if format []
-     */
-    this.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
-        var xmlNode, foundpath = "", paths = xPath.split("\|")[0].split("/");
-        if (!forceNew && (xmlNode = contextNode.selectSingleNode(xPath)))
-            return xmlNode;
-        
-        var len = paths.length -1;
-        if (forceNew) {
-            if (paths[len].trim().match(/^\@(.*)$|^text\(\)$/))
-                len--;
-        }
-        
-        for (var addedNode, isAdding = false, i = 0; i < len; i++) {
-            if (!isAdding && contextNode.selectSingleNode(foundpath
-              + (i != 0 ? "/" : "") + paths[i])) {
-                foundpath += (i != 0 ? "/" : "") + paths[i];// + "/";
-                continue;
-            }
-            
-            //Temp hack 
-            var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
-            // #ifdef __DEBUG
-            if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-                throw new Error(apf.formatErrorString(1041, this, 
-                    "Select via xPath", 
-                    "Could not use xPath to create xmlNode: " + xPath));
-            }
-            if (!isAddId && paths[i].match(/\/\//)) {
-                throw new Error(apf.formatErrorString(1041, this, 
-                    "Select via xPath", 
-                    "Could not use xPath to create xmlNode: " + xPath));
-            }
-            // #endif
-
-            if (isAddId)
-                paths[i] = isAddId[1];
-
-            isAdding = true;
-            addedNode = contextNode.selectSingleNode(foundpath || ".")
-                .appendChild(contextNode.ownerDocument.createElement(paths[i]));
-
-            if (isAddId) {
-                addedNode.setAttribute(isAddId[2], isAddId[3]);
-                foundpath += (foundpath ? "/" : "") + isAddId[0];// + "/";
-            }
-            else
-                foundpath += (foundpath ? "/" : "") + paths[i];// + "/";
-
-            if (addedNodes)
-                addedNodes.push(addedNode);
-        }
-
-        if (!foundpath)
-            foundpath = ".";
-
-        var newNode, lastpath = paths[len];
-        do {
-            if (lastpath.match(/^\@(.*)$/)) {
-                (newNode || contextNode.selectSingleNode(foundpath))
-                    .setAttributeNode(newNode = contextNode.ownerDocument.createAttribute(RegExp.$1));
-            }
-            else if (lastpath.trim() == "text()") {
-                newNode = (newNode || contextNode.selectSingleNode(foundpath))
-                    .appendChild(contextNode.ownerDocument.createTextNode(""));
-            }
-            else {
-                var hasId = lastpath.match(/(\w+)\[@([\w-]+)=(\w+)\]/);
-                if (hasId) lastpath = hasId[1];
-                newNode = (newNode || contextNode.selectSingleNode(foundpath))
-                    .appendChild(contextNode.ownerDocument.createElement(lastpath));
-                if (hasId)
-                    newNode.setAttribute(hasId[2], hasId[3]);
-                
-                if (addedNodes)
-                    addedNodes.push(newNode);
-            }
-            
-            foundpath += (foundpath ? "/" : "") + paths[len];
-        } while((lastpath = paths[++len]));
-
-        return newNode;
-    };
-
-    /**
      * @private
      * @todo xml doc leakage
      */
     this.getXmlDocId = function(xmlNode, model){
         var docEl = xmlNode.ownerDocument.documentElement;
-        if (!this.isChildOf(docEl, xmlNode))
+        if (!apf.isChildOf(docEl, xmlNode))
             docEl = xmlNode;
 
         var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag)
@@ -1382,297 +883,62 @@ apf.XmlDatabase = function(){
 
         return xmlDocLut.length - 1;
     };
-
+    
+    //#ifdef __WITH_JSON2XML
     /**
-     * @private
-     */
-    this.getBindXmlNode = function(xmlRootNode){
-        if (typeof xmlRootNode != "object")
-            xmlRootNode = apf.getXmlDom(xmlRootNode);
-        if (xmlRootNode.nodeType == 9)
-            xmlRootNode = xmlRootNode.documentElement;
-        if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
-            xmlRootNode = xmlRootNode.parentNode;
-        if (xmlRootNode.nodeType == 2)
-            xmlRootNode = xmlRootNode.ownerElement 
-                || xmlRootNode.parentNode 
-                || xmlRootNode.selectSingleNode("..");
-
-        return xmlRootNode;
-    };
-
-    /**
-     * @private
-     */
-    this.convertMethods = {
-        /**
-         * Gets a JSON object containing all the name/value pairs of the elements
-         * using this element as it's validation group.
-         *
-         * @return  {Object}  the created JSON object
-         */
-        "json": function(xml){
-            var result = {}, filled = false, nodes = xml.childNodes;
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1)
-                    continue;
-                var name = nodes[i].tagName;
-                filled = true;
-
-                //array
-                var sameNodes = xml.selectNodes(x);
-                if (sameNodes.length > 1) {
-                    var z = [];
-                    for (var j = 0; j < sameNodes.length; j++) {
-                        z.push(this.json(sameNodes[j], result));
-                    }
-                    result[name] = z;
-                }
-                else //single value
-                    result[name] = this.json(sameNodes[j], result);
-            }
-
-            return filled ? result : apf.getXmlValue(xml, "text()");
-        },
-
-        "cgivars": function(xml, basename){
-            if (!basename) 
-                basename = "";
-            
-            var str = [], value, nodes = xml.childNodes, done = {};
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1)
-                    continue;
-                var name = nodes[i].tagName;
-                if (done[name])
-                    continue;
-
-                //array
-                var sameNodes = xml.selectNodes(name);
-                if (sameNodes.length > 1) {
-                    done[name] = true;
-                    for (var j = 0; j < sameNodes.length; j++) {
-                        value = this.cgivars(sameNodes[j],
-                            basename + name + "[" + j + "]");
-                        if (value)
-                            str.push(value);
-                    }
-                }
-                else { //single value
-                    value = this.cgivars(nodes[i], basename + name);
-                    if (value)
-                        str.push(value);
-                }
-            }
-
-            var attr = xml.attributes;
-            for (i = 0; i < attr.length; i++) {
-                if (attr[i].nodeValue) {
-                    if (basename) 
-                        str.push(basename + "[" + attr[i].nodeName + "]="
-                            + escape(attr[i].nodeValue));
-                    else
-                        str.push(attr[i].nodeName + "="
-                            + escape(attr[i].nodeValue));
-                }
-            }
-
-            if (str.length)
-                return str.join("&");
-
-            value = apf.getXmlValue(xml, "text()");
-            if (basename && value)
-                return basename + "=" + escape(value);
-        },
-
-        "cgiobjects": function(xml, basename, isSub){
-            if (!basename)
-                basename = "";
-            
-            var str = [], value, nodes = xml.childNodes, done = {};
-            for (var i = 0; i < nodes.length; i++) {
-                var node = nodes[i];
-                if (node.nodeType != 1)
-                    continue;
-
-                var name = node.tagName; //@hack
-                if (name == "revision")
-                    continue;
-
-                var isOnlyChild = apf.xmldb.isOnlyChild(node.firstChild, [3,4]);
-                var count       = 0;
-
-                //array
-                if (!node.attributes.length && !isOnlyChild) {
-                    var lnodes = node.childNodes;
-                    for (var nm, j = 0, l = lnodes.length; j < l; j++) {
-                        if (lnodes[j].nodeType != 1)
-                            continue;
-                        
-                        nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + count++ + "]";
-                        value = this.cgiobjects(lnodes[j], nm, true);
-                        if (value)
-                            str.push(value);
-                            
-                        if (apf.xmldb.isOnlyChild(lnodes[j].firstChild, [3,4]))
-                            str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
-                                + escape(lnodes[j].firstChild.nodeValue));
-                        
-                        var a, attr = lnodes[j].attributes;
-                        for (k = 0; k < attr.length; k++) {
-                            if (!(a = attr[k]).nodeValue)
-                                continue;
-                            
-                            str.push(nm + "[" + a.nodeName + "]=" 
-                                + escape(a.nodeValue));
-                        }
-                    }
-                }
-                //single value
-                else {
-                    if (isOnlyChild)
-                        str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "=" 
-                            + escape(node.firstChild.nodeValue));
-                    
-                    var a, attr = node.attributes;
-                    for (j = 0; j < attr.length; j++) {
-                        if (!(a = attr[j]).nodeValue)
-                            continue;
-                        
-                        str.push(basename + (isSub ? "[" : "") + name + "_" + a.nodeName + (isSub ? "]" : "") + "=" 
-                            + escape(a.nodeValue));
-                    }
-                }
-            }
-            
-            if (!isSub && xml.getAttribute("id"))
-                str.push("id=" + escape(xml.getAttribute("id")));
-
-            if (str.length)
-                return str.join("&");
-        }
-    };
-
-    /**
-     * Converts xml to another format.
+     * Creates xml nodes from an JSON string/ object recursively.
      *
-     * @param {XMLElement} xml  the {@link term.datanode data node} to convert.
-     * @param {String}     to   the format to convert the xml to.
-     *   Possible values:
-     *   json       converts to a json string
-     *   cgivars    converts to cgi string.
-     *   cgiobjects converts to cgi objects
-     * @return {String} the result of the conversion.
+     * @param {String}  strJson     the JSON definition.
+     * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
+     * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
+     * @return {XMLNode} the created xml document (NOT the root-node).
      */
-    this.convertXml = function(xml, to){
-        return this.convertMethods[to](xml);
+    this.fromJson = function(strJson, noError, preserveWhiteSpace) {
+        var o   = (typeof strJson == "string" && apf.isJSON(strJson))
+          ? JSON.parse(strJson)//eval("(" + strJson + ")")
+          : strJson,
+            xml = [], i;
+        for (i in o)
+            xml.push(jsonToXml(o[i], i, ""));
+        return apf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
+            + "</jsonroot>", noError, preserveWhiteSpace);
     };
-
-    /**
-     * Returns the first text or cdata child of an {@link term.datanode data node}.
-     *
-     * @param {XMLElement} x the xml node to search.
-     * @return {XMLNode} the found xml node, or null.
-     */
-    this.getTextNode = function(x){
-        for (var i = 0; i < x.childNodes.length; i++) {
-            if (x.childNodes[i].nodeType == 3 || x.childNodes[i].nodeType == 4)
-                return x.childNodes[i];
+    
+    function jsonToXml(v, name) {
+        var i, n, xml = [];
+        name = name.replace(/[^a-zA-z0-9_-]+/g, "_");
+        if (apf.isArray(v)) {
+            for (i = 0, n = v.length; i < n; i++)
+                xml.push(jsonToXml(v[i], name));
         }
-        return false;
-    };
-
-    //#ifdef __NOTUSED
-
-    /**
-     * @private
-     */
-    this.getAllNodesBefore = function(pNode, xpath, xmlNode, func){
-        var nodes = apf.xmldb.selectNodes(xpath, pNode);
-        for (var found = false, result = [], i = nodes.length - 1; i >= 0; i--) {
-            if (!found){
-                if(nodes[i] == xmlNode) found = true;
-                continue;
+        else if (typeof v == "object") {
+            var hasChild = false;
+            xml.push("<", name);
+            for (i in v) {
+                if (i.charAt(0) == "@")
+                    xml.push(" ", i.substr(1), "=\"", v[i].toString(), "\"");
+                else
+                    hasChild = true;
             }
-
-            result.push(nodes[i]);
-            if (func)
-                func(nodes[i]);
-        }
-        return result;
-    };
-
-    /**
-     * @private
-     */
-    this.getAllNodesAfter = function(pNode, xpath, xmlNode, func){
-        var nodes = apf.xmldb.selectNodes(xpath, pNode);
-        for (var found = false, result = [], i = 0; i < nodes.length; i++) {
-            if (!found){
-                if(nodes[i] == xmlNode) found = true;
-                continue;
+            xml.push(hasChild ? ">" : "/>");
+            if (hasChild) {
+                for (i in v) {
+                    if (i == "#text")
+                        xml.push(v[i]);
+                    else if (i == "#cdata")
+                        xml.push("<![CDATA[", v[i], "]]>");
+                    else if (i.charAt(0) != "@")
+                        xml.push(jsonToXml(v[i], i));
+                }
+                xml.push("</", name, ">");
             }
-
-            result.push(nodes[i]);
-            if (func) func(nodes[i]);
         }
-        return result;
-    };
-
-    /**
-     * @private
-     */
-    this.clearBoundValue = function(amlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !amlNode.xmlRoot)
-            return;
-
-        var xmlNode = (amlNode.nodeFunc == apf.NODE_VISIBLE)
-            ? xmlRoot.selectSingleNode(amlNode.getAttribute("ref"))
-            : amlNode.getNodeFromRule("value", amlNode.xmlRoot);
-
-        if (xmlNode)
-            this.setNodeValue(xmlNode, "", applyChanges);
-    };
-
+        else
+            xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
+    
+        return xml.join("");
+    }
     //#endif
-
-    /**
-     * @private
-     */
-    this.getBoundValue = function(amlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !amlNode.xmlRoot)
-            return "";
-
-        var xmlNode = !amlNode.nodeFunc
-            ? xmlRoot.selectSingleNode(amlNode.getAttribute("ref"))
-            : amlNode.getNodeFromRule("value", amlNode.xmlRoot);
-
-        return xmlNode ? this.getNodeValue(xmlNode) : "";
-    };
-
-    /**
-     * @private
-     */
-    this.getArrayFromNodelist = function(nodelist){
-        for (var nodes = [], j = 0; j < nodelist.length; j++)
-            nodes.push(nodelist[j]);
-        return nodes;
-    };
-};
-
-/**
- * Creates xml nodes from an xml string recursively.
- *
- * @param {String}  strXml     the xml definition.
- * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
- * @return {XMLNode} the created xml node.
- */
-apf.getXml = function(){
-    return apf.xmldb.getXml.apply(apf.xmldb, arguments);
-};
-
-apf.getXmlFromJson = function() {
-    return apf.xmldb.fromJson.apply(apf.xmldb, arguments);
 };
 
 apf.Init.run('XmlDatabase');

@@ -342,7 +342,7 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
             var tEl = e.explicitOriginalTarget || e.toElement;
             if (isMouseOver)
                 return;
-            if (tEl == oNoti || apf.xmldb.isChildOf(oNoti, tEl)) {
+            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
                 apf.tween.css(oNoti, "notifier_hover", {
                     anim    : apf.tween.NORMAL,
                     steps   : 10,
@@ -362,8 +362,8 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
             if (!isMouseOver)
                 return;
 
-            if (apf.xmldb.isChildOf(tEl, oNoti) ||
-               (!apf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+            if (apf.isChildOf(tEl, oNoti) ||
+               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 isMouseOver = false;
                 hideWindow();
             }

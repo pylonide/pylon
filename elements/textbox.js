@@ -203,7 +203,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value
-            || apf.xmldb.getInheritedAttribute(this.$aml, "initial-message");
+            || apf.getInheritedAttribute(this.$aml, "initial-message");
 
         if (this.initialMsg) {
             //#ifdef __WITH_WINDOW_FOCUS
@@ -222,7 +222,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : apf.isTrue(apf.xmldb.getInheritedAttribute(this.$aml, "realtime")) || false;
+            : apf.isTrue(apf.getInheritedAttribute(this.$aml, "realtime")) || false;
     };
 
     /**
@@ -622,7 +622,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
 
-        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else if (!ac)
             apf.AmlParser.parseChildren(this.$aml, null, this);

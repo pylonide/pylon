@@ -234,7 +234,7 @@ apf.model = function(data, caching){
     this.toString = function(){
         if (!this.data) return "Model has no data.";
         
-        var xml = apf.xmldb.clearConnections(this.data.cloneNode(true));
+        var xml = apf.xmldb.cleanNode(this.data.cloneNode(true));
         return apf.formatXml(xml.xml || xml.serialize());
     };
 
@@ -245,7 +245,7 @@ apf.model = function(data, caching){
      */
     this.getXml = function(){
         return this.data
-            ? apf.xmldb.clearConnections(this.data.cloneNode(true))
+            ? apf.xmldb.cleanNode(this.data.cloneNode(true))
             : false;
     };
 
@@ -257,7 +257,7 @@ apf.model = function(data, caching){
      * @return  {XMLNode}  the changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
-        var node = apf.xmldb.createNodeFromXpath(this.data, xpath);
+        var node = apf.createNodeFromXpath(this.data, xpath);
         if (!node)
             return null;
 
@@ -272,7 +272,7 @@ apf.model = function(data, caching){
      * @return  {String}  value of the XMLNode
      */
     this.queryValue = function(xpath){
-        return apf.getXmlValue(this.data, xpath);
+        return apf.queryValue(this.data, xpath);
     };
 	
     /**
@@ -282,7 +282,7 @@ apf.model = function(data, caching){
      * @return  {String}  value of the XMLNode
      */	
     this.queryValues = function(xpath){
-        return apf.getXmlValue(this.data, xpath);
+        return apf.queryValue(this.data, xpath);
     };
 	
     /**
@@ -314,7 +314,7 @@ apf.model = function(data, caching){
         else {
             xmlNode = !model.nodeType //Check if a model was passed
                 ? model.getXml()
-                : apf.xmldb.copyNode(xmlNode);
+                : apf.xmldb.getCleanCopy(xmlNode);
         }
         
         if (!xmlNode) return;
@@ -446,7 +446,7 @@ apf.model = function(data, caching){
      * model. The reset() method returns the model to this point.
      */
     this.savePoint = function(){
-        this.copy = apf.xmldb.copyNode(this.data);
+        this.copy = apf.xmldb.getCleanCopy(this.data);
     };
 
 
@@ -883,7 +883,7 @@ apf.model = function(data, caching){
                 apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
             if (!nocopy && this.saveOriginal)
-                this.copy = apf.xmldb.copyNode(xmlNode);
+                this.copy = apf.xmldb.getCleanCopy(xmlNode);
         }
 
         this.data = xmlNode;
@@ -982,7 +982,7 @@ apf.model = function(data, caching){
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 
         //Integrate XMLTree with parentNode
-        var newNode = apf.xmldb.integrate(XMLRoot, parentXMLNode,
+        var newNode = apf.mergeXml(XMLRoot, parentXMLNode,
           apf.extend({copyAttributes: true}, options));
 
         //Call __XMLUpdate on all listeners
@@ -1221,14 +1221,15 @@ apf.model = function(data, caching){
         if (type == "array" || type == "xml") {
             var data = type == "array"
                 ? this.getJsonObject()
-                : apf.xmldb.serializeNode(xmlNode);
+                : apf.getXmlString(xmlNode);
 
             apf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
         else {
             var data = useComponents
                 ? this.getCgiString()
-                : apf.xmldb.convertXml(apf.xmldb.copyNode(xmlNode), type != "native" ? type : "cgivars");
+                : apf.convertXml(apf.xmldb.getCleanCopy(xmlNode), 
+                    type != "native" ? type : "cgivars");
 
             if (instruction.match(/^rpc\:/)) {
                 rpc = rpc.split(".");

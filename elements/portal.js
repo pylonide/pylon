@@ -193,7 +193,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var oEmpty = apf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
-            apf.xmldb.setNodeValue(empty, msg || "");
+            apf.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     };
@@ -237,7 +237,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
         //Load docklet
         docklet.$aml      = xmlNode;
-        docklet.skinset   = apf.xmldb.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+        docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
         xmlNode.setAttribute("skinset", docklet.skinset);
         docklet.skin      = "docklet";
         docklet.skinName  = null;

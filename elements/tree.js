@@ -533,7 +533,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
           && xmlParentNode == this.xmlRoot && !beforeNode) {
             this.nodes.push(htmlNode);
-            if (!apf.xmldb.isChildOf(htmlNode, container, true) && removeContainer)
+            if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
                 this.nodes.push(container);
             
             this.$setStyleClass(htmlNode,  "root");
@@ -565,13 +565,13 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 apf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                if (!apf.xmldb.isChildOf(htmlNode, container, true) && removeContainer) 
+                if (!apf.isChildOf(htmlNode, container, true) && removeContainer) 
                     var container = apf.xmldb.htmlImport(container, 
                         htmlParentNode, beforeNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!apf.xmldb.isChildOf(htmlParentNode, container, true) && removeContainer) 
+                if (!apf.isChildOf(htmlParentNode, container, true) && removeContainer) 
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 
@@ -741,7 +741,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
         
         var strMouseDown = 
             "if (!o.renaming && o.hasFocus() \
-               && apf.xmldb.isChildOf(o.$selected, this) && o.selected)\
+               && apf.isChildOf(o.$selected, this) && o.selected)\
                  this.dorename = true;\
              o.select(this, event.ctrlKey, event.shiftKey);\
              if (o.onmousedown)\
@@ -790,7 +790,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
 
         var elCaption = this.$getLayoutNode("item", "caption");
         if (elCaption) 
-            apf.xmldb.setNodeValue(elCaption,
+            apf.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
         
         var strTooltip = this.applyRuleSetOnNode("tooltip", xmlNode)

@@ -433,7 +433,7 @@ apf.MultiselectCache = function(){
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
 
         if (empty)
-            apf.xmldb.setNodeValue(empty, msg || "");
+            apf.setNodeValue(empty, msg || "");
 
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         apf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
@@ -446,7 +446,7 @@ apf.MultiselectCache = function(){
 
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
-            apf.xmldb.setNodeValue(empty, msg || "");
+            apf.setNodeValue(empty, msg || "");
     }
 
     this.$removeClearMessage = function(){

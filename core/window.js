@@ -317,7 +317,7 @@ apf.WindowImplementation = function(){
                     tray.PopupItemAdd("SEP", function(){});
                 }
                 else {
-                    tray.PopupItemAdd(apf.getXmlValue(nodes[i], "."),
+                    tray.PopupItemAdd(apf.queryValue(nodes[i], "."),
                         nodes[i].getAttribute("href")
                         ? new Function("window.open('" + nodes[i].getAttribute("href") + "')")
                         : new Function(nodes[i].getAttribute("onclick")));
@@ -983,7 +983,7 @@ apf.WindowImplementation = function(){
           ) && !ta[e.target.tagName]);
 
         if (canSelect && !amlNode.canHaveChildren 
-          || !apf.xmldb.isChildOf(amlNode.oInt, e.target))
+          || !apf.isChildOf(amlNode.oInt, e.target))
             canSelect = false;
         
         if (!canSelect)
@@ -1004,7 +1004,7 @@ apf.WindowImplementation = function(){
         if (canSelect) {
             var amlNode = apf.findHost(e.srcElement);
             if (!amlNode.canHaveChildren 
-              || !apf.xmldb.isChildOf(amlNode.oInt, e.srcElement))
+              || !apf.isChildOf(amlNode.oInt, e.srcElement))
                 canSelect = false;
         }
 

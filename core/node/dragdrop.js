@@ -315,7 +315,7 @@ apf.DragDrop = function(){
 
             tgt = target || target == this.xmlRoot && target || null;
 
-            if (data && tgt && !apf.xmldb.isChildOf(data, tgt, true))
+            if (data && tgt && !apf.isChildOf(data, tgt, true))
                 return [tgt, null];
         }
 
@@ -344,7 +344,7 @@ apf.DragDrop = function(){
                     apf.parseExpression(strTgt)
                     .split("|").join("|self::"));
 
-            if (data && tgt && !apf.xmldb.isChildOf(data, tgt, true))
+            if (data && tgt && !apf.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
         }
 

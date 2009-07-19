@@ -186,7 +186,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : apf.xmldb.getInheritedAttribute(this.$aml, "realtime") || false;
+            : apf.getInheritedAttribute(this.$aml, "realtime") || false;
     };
     
     this.$propHandlers["language"] = function(value){
@@ -1148,7 +1148,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {Boolean}
      */
     this.$isContentEditable = function(e){
-        return apf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
+        return apf.isChildOf(this.oDoc, e.srcElement, true);
     };
 
     /**
@@ -1573,7 +1573,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         // get the document style (CSS) from the skin:
         // see: apf.presentation.getCssString(), where the following statement
         // is derived from.
-        var sCss = apf.getXmlValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
+        var sCss = apf.queryValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
             "docstyle", apf.ns.aml)[0], "text()");
         if (!sCss) {
             sCss = "\
@@ -1684,7 +1684,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$loadAml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
-        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             apf.AmlParser.parseChildren(this.$aml, null, this);

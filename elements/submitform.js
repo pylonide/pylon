@@ -103,7 +103,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
             var message = this.getPage().$aml.getAttribute("loadmessage");
             if (message)
-                (apf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
+                (apf.queryNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
         }
     };
@@ -440,7 +440,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
                 if (nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)) { //Where does item come from??? || item == nodes[j].getAttribute("element")
                     var el    = self[nodes[j].getAttribute("element")];
                     var xpath = el.getMainBindXpath();
-                    var xNode = apf.xmldb.createNodeFromXpath(this.xmlRoot, xpath);
+                    var xNode = apf.createNodeFromXpath(this.xmlRoot, xpath);
                     var nType = xNode.nodeType;
                     (arr || arg)[nodes[j].getAttribute("argnr") || j] =
                         "xpath:" + xpath + (nType == 1 ? "/text()" : "");
@@ -448,7 +448,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
                 else
                     if(nodes[j].getAttribute("argtype") == "xpath") {
                         (arr || arg)[nodes[j].getAttribute("argnr") || j] =
-                            "xpath:" + nodes[j].getAttribute("select");//apf.getXmlValue(this.xmlRoot, );
+                            "xpath:" + nodes[j].getAttribute("select");//apf.queryValue(this.xmlRoot, );
                     }
             }
 
@@ -487,7 +487,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
                     forceActive = true;
                 else
                     if (nodes[i].getAttribute("ref") && this.xmlRoot
-                      && apf.xmldb.getNodeValue(this.xmlRoot
+                      && apf.queryValue(this.xmlRoot
                       .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
                         forceActive = true;
                         nodes[i].setAttribute("show", "true");
@@ -737,9 +737,9 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
-            var amlNode = self[element].$aml;//apf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$aml);
+            var amlNode = self[element].$aml;//apf.queryNode(".//node()[@id='" + element + "']", this.$aml);
 
-            if (amlNode && !apf.xmldb.getBoundValue(amlNode, this.xmlRoot)) {
+            if (amlNode && !apf.getBoundValue(amlNode, this.xmlRoot)) {
                 var fNextQNode = apf.xmldb
                     .selectSingleNode(".//node()[@checknext='true']", this.$aml);
                 if (!fNextQNode) return;

@@ -239,7 +239,7 @@ apf.namespace("datainstr.url", function(xmlContext, options, callback){
                 return o
                     ? (o.nodeType >= 2 && o.nodeType <= 4
                         ? o.nodeValue
-                        : o.xml || o.serialize()) //apf.xmldb.convertXml(o, "cgivars"))
+                        : o.xml || o.serialize())
                     : ""
             });
         }

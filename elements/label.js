@@ -129,7 +129,7 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.$loadAml = function(x){
-        if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+        if (apf.isOnlyChild(x.firstChild, [3,4]))
             this.setProperty("value", x.firstChild.nodeValue.trim());
         else
             apf.AmlParser.parseChildren(this.$aml, this.oInt, this);

@@ -399,7 +399,7 @@ EditServer = {
             ? xmldb.selectSingleNode(data.config[data.counter][1], data.amlNode)
             : xmldb.getTextNode(data.amlNode);
         if (!xmlNode)
-            xmlNode = apf.xmldb.createNodeFromXpath(data.amlNode, data.config[data.counter][1]);
+            xmlNode = apf.createNodeFromXpath(data.amlNode, data.config[data.counter][1]);
         var key = xmlNode.nodeValue;
         if (!key.match(/^\$.*\$$/)) {
             var key = apf.language.addWord(data.htmlNode.innerHTML, null, data);
@@ -465,7 +465,7 @@ EditServer = {
         }
 
         if (!isCancel) {
-            var word = apf.xmldb.getTextNode(this.edit).nodeValue;
+            var word = apf.getTextNode(this.edit).nodeValue;
             apf.language.addWord(word, data.key);
             if (this.onupdateword)
                 this.onupdateword(word, data.key);

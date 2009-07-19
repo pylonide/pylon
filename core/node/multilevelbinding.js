@@ -307,7 +307,7 @@ apf.MultiLevelBinding = function(amlNode){
     };
     
     this.getSelectionValue = function(xmlNode){
-        return apf.getXmlValue(xmlNode, "text()")
+        return apf.queryValue(xmlNode, "text()")
     };
     
     this.getSelectionNodeByValue = function(value, nodes){
@@ -326,13 +326,13 @@ apf.MultiLevelBinding = function(amlNode){
     
     this.createSelectionNode = function(xmlNode){
         if (this.mode == "copy") {
-            return apf.xmldb.clearConnections(xmlNode.cloneNode(true));
+            return apf.xmldb.cleanNode(xmlNode.cloneNode(true));
         }
         else if (this.xmlRoot) {
             var value   = amlNode.applyRuleSetOnNode(amlNode.mainBind, xmlNode);
             var selNode = this.xmlRoot.ownerDocument.createElement(amlNode.$aml.getAttribute("ref"));
-            apf.xmldb.createNodeFromXpath(selNode, this.xpath);
-            apf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
+            apf.createNodeFromXpath(selNode, this.xpath);
+            apf.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             
             return selNode;
         }
@@ -385,7 +385,7 @@ apf.MultiLevelBinding = function(amlNode){
                 //This seems cumbersome... check abstraction
                 xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                     mlNode.xmlRoot, null, null, true);
-                apf.xmldb.setNodeValue(xmlNode, "");
+                apf.setNodeValue(xmlNode, "");
                 if (this.$updateOtherBindings) 
                     this.$updateOtherBindings();
                 if (this.$showSelection) 
@@ -421,7 +421,7 @@ apf.MultiLevelBinding = function(amlNode){
                 //mlNode.change("");
                 
                 //This should be researched better....
-                apf.xmldb.setNodeValue(apf.xmldb.createNodeFromXpath(mlNode.xmlRoot,
+                apf.setNodeValue(apf.createNodeFromXpath(mlNode.xmlRoot,
                     mlNode.bindingRules[mlNode.mainBind][0].getAttribute("select")),
                     "", true);
             }

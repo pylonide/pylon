@@ -297,7 +297,7 @@ apf.rpc = function(){
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.url       = apf.parseExpression(x.getAttribute("url"));
         this.baseurl   = apf.parseExpression(
-                             apf.xmldb.getInheritedAttribute(
+                             apf.getInheritedAttribute(
                                 this.$aml, "baseurl")) || "";
         this.multicall = apf.isTrue(x.getAttribute("multicall"));
         if (x.getAttribute("type"))

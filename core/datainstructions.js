@@ -459,7 +459,7 @@ apf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                 return null;
             else if (o.nodeType >= 2 && o.nodeType <= 4)
                 return o.nodeValue;
-            else if (apf.xmldb.isOnlyChild(o.firstChild, [3, 4]))
+            else if (apf.isOnlyChild(o.firstChild, [3, 4]))
                 return o.firstChild.nodeValue;
             else
                 return o.xml || o.serialize();

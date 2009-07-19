@@ -134,7 +134,7 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value 
-            || apf.xmldb.getInheritedAttribute(this.$aml, "intial-message");
+            || apf.getInheritedAttribute(this.$aml, "intial-message");
     };
     
     /**** Public methods ****/
@@ -311,12 +311,12 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
             // Set Caption bind
             var bc = this.$getMultiBind(), caption;
             if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = apf.xmldb.createNodeFromXpath(bc.xmlRoot,
+                var xmlNode = apf.createNodeFromXpath(bc.xmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
     
-                apf.xmldb.setNodeValue(xmlNode,
+                apf.setNodeValue(xmlNode,
                     this.applyRuleSetOnNode("caption", this.selected));
             }
         }

@@ -118,7 +118,7 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
             var x = this.$aml;
             
             this.oInt = 
-            this.oExt = false && apf.isParsing && apf.xmldb.isOnlyChild(x)
+            this.oExt = false && apf.isParsing && apf.isOnlyChild(x)
                 ? this.pHtmlNode 
                 : this.pHtmlNode.appendChild(document.createElement("div"));
            

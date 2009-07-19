@@ -170,7 +170,7 @@ apf.editor.plugin('fontstyle', function() {
             }
             else if (o && (sel.isCollapsed() 
               || sel.getContent('text') == o.node.innerHTML)
-              && apf.xmldb.isChildOf(o.node, sel.getSelectedNode(), true)) {
+              && apf.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
                 apf.setStyleClass(o.node, sStyle, [o.cname]);
             }

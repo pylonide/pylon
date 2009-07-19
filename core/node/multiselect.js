@@ -1104,7 +1104,7 @@ apf.MultiSelect = function(){
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
                 : apf.getXmlDom().createDocumentFragment();
             for (i = 0; i < valueList.length; i++)
-                apf.xmldb.clearConnections(r.appendChild(
+                apf.xmldb.cleanNode(r.appendChild(
                     valueList[i].cloneNode(true)));
         }
         else
@@ -1189,14 +1189,14 @@ apf.MultiSelect = function(){
         if (valueList.length > 1) {
             //Fix selection if needed
             for (var lst = [], i = 0, l = valueList.length; i < l; i++) {
-                if (apf.xmldb.isChildOf(this.xmlRoot, valueList[i]))
+                if (apf.isChildOf(this.xmlRoot, valueList[i]))
                     lst.push(valueList[i]);
             }
 
             if (lst.length > 1) {
                 this.selectList(lst);
                 if(this.indicator
-                  && !apf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
+                  && !apf.isChildOf(this.xmlRoot, this.indicator)) {
                     this.setIndicator(nextNode || this.selected);
                 }
                 return;
@@ -1209,11 +1209,11 @@ apf.MultiSelect = function(){
 
         if (!nextNode) {
             if (this.selected
-              && !apf.xmldb.isChildOf(this.xmlRoot, this.selected)) {
+              && !apf.isChildOf(this.xmlRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
             else if(this.selected && this.indicator
-              && !apf.xmldb.isChildOf(this.xmlRoot, this.indicator)) {
+              && !apf.isChildOf(this.xmlRoot, this.indicator)) {
                 this.setIndicator(this.selected);
             }
             else if (!this.selected){

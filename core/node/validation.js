@@ -329,7 +329,7 @@ apf.Validation = function(){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         /* Temp disabled, because I don't understand it (RLD)
         this.addEventListener("beforechange", function(){
-            if (this.xmlRoot && apf.xmldb.getBoundValue(this) === this.getValue())
+            if (this.xmlRoot && apf.getBoundValue(this) === this.getValue())
                 return false;
         });*/
 
@@ -358,7 +358,7 @@ apf.Validation = function(){
 
         // validgroup
         if (!this.form && !x.getAttribute("validgroup")) {
-            var vgroup = apf.xmldb.getInheritedAttribute(x, "validgroup");
+            var vgroup = apf.getInheritedAttribute(x, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
@@ -641,7 +641,7 @@ apf.ValidationGroup = function(name){
         if (this.allowMultipleErrors || !errbox && !no_create) {
             errbox           = new apf.errorbox(null, "errorbox");
             errbox.pHtmlNode = o.oExt.parentNode;
-            errbox.skinset   = apf.xmldb.getInheritedAttribute(o.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            errbox.skinset   = apf.getInheritedAttribute(o.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             var cNode        = o.$aml.ownerDocument.createElement("errorbox");
             errbox.loadAml(cNode);
         }

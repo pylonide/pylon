@@ -1809,20 +1809,20 @@ var apf = {
                     return apf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
-        
+
         //Parse the second DOM (add includes)
         var prefix = apf.findPrefix(docElement, apf.ns.aml);
         //#ifdef __SUPPORT_SAFARI2
-        if (apf.isSafariOld || true)
-            prefix = "j";
+        if (apf.isSafariOld)
+            prefix = "a";
         //#endif
-        
+
         //#ifdef __DEBUG
         if (!prefix)
             throw new Error(apf.formatErrorString(0, null,
                 "Parsing document",
                 "Unable to find Ajax.org Platform namespace definition. \
-                 (i.e. xmlns:j=\"" + apf.ns.aml + "\")", docElement));
+                 (i.e. xmlns:a=\"" + apf.ns.aml + "\")", docElement));
         //#endif
 
         apf.AppData = apf.supportNamespaces
@@ -1984,7 +1984,7 @@ var apf = {
             apf.loadAmlInclude(nodes[i], doSync, path, true);
 
             //nodes[i].parentNode.removeChild(nodes[i]);
-            nodes[i].setAttribute("j_preparsed", "9999")
+            nodes[i].setAttribute("a_preparsed", "9999")
         }
 
         //#ifdef __WITH_SKIN_AUTOLOAD

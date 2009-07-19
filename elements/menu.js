@@ -656,7 +656,7 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              */
             case "hotkey":
                 if (this.oHotkey)
-                    apf.xmldb.setNodeValue(this.oHotkey, value);
+                    apf.setNodeValue(this.oHotkey, value);
 
                 if (lastHotkey)
                     apf.removeHotkey(lastHotkey);
@@ -699,7 +699,7 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
              * @attribute {String} caption the text displayed on the item.
              */
             case "caption":
-                apf.xmldb.setNodeValue(this.oCaption, value);
+                apf.setNodeValue(this.oCaption, value);
                 break;
             /**
              * @attribute {Boolean} checked whether the item is checked.
@@ -817,8 +817,8 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
 
     var timer;
     this.$out = function(e){
-        if (apf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
-          || apf.xmldb.isChildOf(this.oExt, e.srcElement || e.target))  //@todo test FF
+        if (apf.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || apf.isChildOf(this.oExt, e.srcElement || e.target))  //@todo test FF
             return;
 
         clearTimeout(timer);
@@ -840,8 +840,8 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
         apf.setStyleClass(this.oExt, "hover");
         this.parentNode.$selected = this;
 
-        if (!force && (apf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
-          || apf.xmldb.isChildOf(this.oExt, e.fromElement || e.target)))  //@todo test FF
+        if (!force && (apf.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || apf.isChildOf(this.oExt, e.fromElement || e.target)))  //@todo test FF
             return;
 
         var ps = this.parentNode.$showingSubMenu;

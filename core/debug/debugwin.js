@@ -649,31 +649,31 @@ apf.debugwin = {
                         overflow : hidden;\
                         width : auto;\
                     }\
-                ]]></j:style>\
+                ]]></a:style>\
                 <a:presentation>\
                     <a:main container="blockquote" startclosed="false">\
                         <div class="debugmarkup">\
                             <blockquote> </blockquote>\
                         </div>\
-                    </j:main>\
+                    </a:main>\
                     <a:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="i" select="dl" container="blockquote">\
                         <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span><i> </i></div>\
-                    </j:item>\
+                    </a:item>\
                     <a:attribute name="dt" value="dd">\
                         <dl class="attribute"><dt> </dt>="<dd> </dd>"</dl>\
-                    </j:attribute>\
+                    </a:attribute>\
                     <a:textnode text="strong" tag="u">\
                         <strong class="textnode"><u> </u><strong>-</strong></strong>\
-                    </j:textnode>\
+                    </a:textnode>\
                     <a:loading>\
                         <div class="loading"><span> </span><label>Loading...</label></div>\
-                    </j:loading>\
+                    </a:loading>\
                     <a:empty container=".">\
                         <div class="empty"></div>\
-                    </j:empty>\
-                </j:presentation>\
-            </j:markupedit>\
-        </j:skin>';
+                    </a:empty>\
+                </a:presentation>\
+            </a:markupedit>\
+        </a:skin>';
         apf.skins.Init(apf.xmldb.getXml(skinXml));
 
         document.documentElement.setAttribute("id", "override");
@@ -713,19 +713,19 @@ apf.debugwin = {
 
         //<button onclick='apf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = apf.xmldb.getXml("\
-            <a:parent xmlns:j='" + apf.ns.aml + "'>\
+            <a:parent xmlns:a='" + apf.ns.aml + "'>\
                 <a:markupedit skin='debugmarkup' skinset='debug' " + (first ? "model='" + first + "'" : "") + " id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
                     <a:bindings>\
                         <a:traverse select='node()[local-name(.)]' />\
-                    </j:bindings>\
-                    <a:actions><a:remove /><a:setAttributeValue /><a:renameAttribute /><a:setTextNode /></j:actions>\
-                </j:markupedit>\
-            </j:parent>\
+                    </a:bindings>\
+                    <a:actions><a:remove /><a:rename /><a:setAttributeValue /><a:renameAttribute /><a:setTextNode /></a:actions>\
+                </a:markupedit>\
+            </a:parent>\
         ");
 
         if (apf.isIE) {
             xml.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:j='" + apf.ns.aml + "'");
+                "xmlns:a='" + apf.ns.aml + "'");
         }
 
         //Reset loading state in case of an error during init

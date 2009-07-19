@@ -487,7 +487,7 @@ apf.Transaction = function(){
                 return false;
             
             transactionSubject = dataParent;
-            transactionNode    = originalNode.cloneNode(true);//xmldb.clearConnections(this.xmlRoot.cloneNode(true));
+            transactionNode    = originalNode.cloneNode(true);//xmldb.cleanNode(this.xmlRoot.cloneNode(true));
             //xmlNode.removeAttribute(xmldb.xmlIdTag);
             
             //@todo rename listening attributes

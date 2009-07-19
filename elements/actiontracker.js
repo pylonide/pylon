@@ -721,7 +721,7 @@ apf.UndoData = function(settings, at){
                 model we'll just record the xpath
             */
             if (xmlNode.nodeType == 2
-              || apf.xmldb.isChildOf(model.data, xmlNode, true)) {
+              || apf.isChildOf(model.data, xmlNode, true)) {
                 xmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
                 return {
                     xpath  : rsb.xmlToXpath(xmlNode, model.data, true),
@@ -1089,7 +1089,7 @@ apf.actiontracker.actions = {
             }
             else {
                 var newNodes = [];
-                apf.xmldb.setNodeValue(q[0], q[1], true, {
+                apf.setNodeValue(q[0], q[1], true, {
                     undoObj  : UndoObj,
                     xpath    : q[2],
                     newNodes : newNodes,
@@ -1106,7 +1106,7 @@ apf.actiontracker.actions = {
                 apf.xmldb.removeNode(UndoObj.extra.newNode);
             }
             else
-                apf.xmldb.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
+                apf.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
         }
     },
 

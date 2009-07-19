@@ -506,7 +506,7 @@ apf.BaseList = function(){
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.uniqueId
                 + ');if(!o.renaming && o.hasFocus() \
-                  && apf.xmldb.isChildOf(o.$selected, this, true) \
+                  && apf.isChildOf(o.$selected, this, true) \
                   && o.selected) this.dorename = true;\
                   if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
                       o.select(this, event.ctrlKey, event.shiftKey)');
@@ -556,7 +556,7 @@ apf.BaseList = function(){
         }
 
         if (elCaption) {
-            apf.xmldb.setNodeValue(elCaption,
+            apf.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
 
             //#ifdef __WITH_AML_BINDINGS
@@ -600,7 +600,7 @@ apf.BaseList = function(){
                 + ').startMore(this)');
 
             if (elCaption)
-                apf.xmldb.setNodeValue(elCaption,
+                apf.setNodeValue(elCaption,
                     this.more.match(/caption:(.*)(;|$)/i)[1]);
             nodes.push(Item);
         }
