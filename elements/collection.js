@@ -26,7 +26,7 @@
  * but only draws it's children. It doesn't have any representation itself.
  *
  * @constructor
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  *
  * @define collection
  * @addnode elements
@@ -43,10 +43,10 @@ apf.collection = apf.component(apf.NODE_VISIBLE, function(){
     this.$draw = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
-        apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+        apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
     };
     
-    this.$loadJml = function(x){};
+    this.$loadAml = function(x){};
 });
 
 // #endif

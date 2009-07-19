@@ -26,7 +26,7 @@
 // #define __WITH_VALIDATION 1
 
 /**
- * Element allowing special form functionality to a set of JML
+ * Element allowing special form functionality to a set of AML
  * elements. This element is an alias for j:xforms offering
  * xform compatible strategies with relation to submitting the form's data.
  * This element also offers form paging, including validation across pages.
@@ -38,7 +38,7 @@
  *
  * @constructor
  * @define submitform, xforms
- * @allowchild page, {elements}, {anyjml}
+ * @allowchild page, {elements}, {anyaml}
  * @addnode elements
  *
  * @inherits apf.DataBinding
@@ -101,7 +101,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         if (this.loadState) {
             this.loadState.style.display = "block";
 
-            var message = this.getPage().$jml.getAttribute("loadmessage");
+            var message = this.getPage().$aml.getAttribute("loadmessage");
             if (message)
                 (apf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
@@ -151,9 +151,9 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         nextpagenr = null;
 
-        /*var jmlNode = this;
+        /*var amlNode = this;
         setTimeout(function(){
-            jmlNode.dispatchEvent("afterswitch", jmlNode.activepagenr, nextpage);
+            amlNode.dispatchEvent("afterswitch", amlNode.activepagenr, nextpage);
         }, 1);*/
     };
 
@@ -250,8 +250,8 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             }
         }
 
-        if (objEl.$jml.getAttribute("dependson")) {
-            var o = self[objEl.$jml.getAttribute("dependson")];
+        if (objEl.$aml.getAttribute("dependson")) {
+            var o = self[objEl.$aml.getAttribute("dependson")];
             if (!this.depends[o.name])
                 this.depends[o.name] = [];
             this.depends[o.name].push(objEl);
@@ -267,14 +267,14 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             this.listsHeldBack[name] = null;
         }
 
-        if (this.nQuest && objEl.$jml.getAttribute("checknext") == "true") {
+        if (this.nQuest && objEl.$aml.getAttribute("checknext") == "true") {
             if (this.lastEl) {
                 this.lastEl.nextEl = objEl;
                 objEl.prevEl = this.lastEl;
             }
             this.lastEl = objEl;
 
-            if (objEl.prevEl && objEl.$jml.getAttribute("show") != "true"
+            if (objEl.prevEl && objEl.$aml.getAttribute("show") != "true"
               && !this.nextHeldBack[name] && !objHasValue(objEl))
                 objEl.setInactive(true);
             else if (this.condActiveCheck[objEl.name])
@@ -298,7 +298,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.hasActiveElement = function(objEl){
-        var nodes = objEl.$jml.getElementsByTagName("*");
+        var nodes = objEl.$aml.getElementsByTagName("*");
         for (var i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("id")) continue;
             var comp = this.elements[nodes[i].getAttribute("id")];
@@ -324,10 +324,10 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         if (action == "follow") return;
 
-        var jmlNode = this;
+        var amlNode = this;
         oBtn.onclick = function(){
-            jmlNode.showLoader(true);
-            setTimeout(function(){ jmlNode[action](); }, 10);
+            amlNode.showLoader(true);
+            setTimeout(function(){ amlNode[action](); }, 10);
         };
 
         /*
@@ -479,7 +479,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         var forceActive = false;
         if (objEl.onlyWhenActive) {
-            var nodes = objEl.$jml.getElementsByTagName("*");
+            var nodes = objEl.$aml.getElementsByTagName("*");
             for (var i = 0; i < nodes.length; i++) {
                 if (!nodes[i].getAttribute("id")) continue;
 
@@ -698,7 +698,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         //Clear all error states
         for (name in this.elements) {
             if (apf.isSafari && (!this.elements[name]
-              || !this.elements[name].$jmlLoaders))
+              || !this.elements[name].$amlLoaders))
                 continue;
 
             //Hack!!! maybe traverse
@@ -717,7 +717,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
                 var objEl = this.elements[name];
 
-                if (objEl.$jml.getAttribute("checknext") == "true") {
+                if (objEl.$aml.getAttribute("checknext") == "true") {
                     if (objHasValue(objEl)) {//oCheck.value ||
                         objEl.setActive();
                         if (this.condActiveCheck[name])
@@ -737,11 +737,11 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
-            var jmlNode = self[element].$jml;//apf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$jml);
+            var amlNode = self[element].$aml;//apf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$aml);
 
-            if (jmlNode && !apf.xmldb.getBoundValue(jmlNode, this.xmlRoot)) {
+            if (amlNode && !apf.xmldb.getBoundValue(amlNode, this.xmlRoot)) {
                 var fNextQNode = apf.xmldb
-                    .selectSingleNode(".//node()[@checknext='true']", this.$jml);
+                    .selectSingleNode(".//node()[@checknext='true']", this.$aml);
                 if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("afterchange");
             }
@@ -776,11 +776,11 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     /* *********
         INIT
     **********/
-    this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
+    this.implement(apf.AmlElement); /** @inherits apf.AmlElement */
 
-    this.addOther = function(tagName, oJml){
+    this.addOther = function(tagName, oAml){
         if (tagName == "loadstate") {
-            var htmlNode   = apf.getFirstElement(oJml);
+            var htmlNode   = apf.getFirstElement(oAml);
             this.loadState = apf.xmldb.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }
@@ -824,14 +824,14 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         this.$model = model;
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
-        this.action        = this.$jml.getAttribute("action");
-        this.ref           = this.$jml.getAttribute("ref");
-        this.type          = this.$jml.getAttribute("submittype") || "native";
-        this.method        = (this.$jml.getAttribute("method") || "get").toLowerCase();
-        this.useComponents = this.$jml.getAttribute("usecomponents") || true;
+        this.action        = this.$aml.getAttribute("action");
+        this.ref           = this.$aml.getAttribute("ref");
+        this.type          = this.$aml.getAttribute("submittype") || "native";
+        this.method        = (this.$aml.getAttribute("method") || "get").toLowerCase();
+        this.useComponents = this.$aml.getAttribute("usecomponents") || true;
 
         apf.setModel(x.getAttribute("model"), this);
 

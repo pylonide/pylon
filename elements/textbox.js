@@ -203,7 +203,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value
-            || apf.xmldb.getInheritedAttribute(this.$jml, "initial-message");
+            || apf.xmldb.getInheritedAttribute(this.$aml, "initial-message");
 
         if (this.initialMsg) {
             //#ifdef __WITH_WINDOW_FOCUS
@@ -222,7 +222,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : apf.isTrue(apf.xmldb.getInheritedAttribute(this.$jml, "realtime")) || false;
+            : apf.isTrue(apf.xmldb.getInheritedAttribute(this.$aml, "realtime")) || false;
     };
 
     /**
@@ -453,11 +453,11 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            var mask = this.$jml.getAttribute("mask");
+            var mask = this.$aml.getAttribute("mask");
             if ((typeof mask == "string" && mask.toLowerCase() == "password")
               || "secret|password".indexOf(this.tagName) > -1
-              || this.$jml.getAttribute("type") == "password") {
-                this.$jml.removeAttribute("mask");
+              || this.$aml.getAttribute("type") == "password") {
+                this.$aml.removeAttribute("mask");
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             //#ifdef __WITH_HTML5
@@ -606,9 +606,9 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         };
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         //Autocomplete
-        var ac = $xmlns(x, "autocomplete", apf.ns.jml)[0];
+        var ac = $xmlns(x, "autocomplete", apf.ns.aml)[0];
         if (ac) {
             this.implement(apf.textbox.autocomplete);
             this.initAutocomplete(ac);
@@ -625,7 +625,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else if (!ac)
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(){

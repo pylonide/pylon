@@ -247,8 +247,8 @@ apf.rpc = function(){
     };
 
     /**
-     * Loads jml definition
-     * @todo opt to rename this to .$loadJml()
+     * Loads aml definition
+     * @todo opt to rename this to .$loadAml()
      * @private
      *
      * @attribute {String}  url              the location of the server that is recipient of the rpc messages.
@@ -293,12 +293,12 @@ apf.rpc = function(){
      * @attribute {String}  [default]        the default value of the argument. If no value is specified when this function is called, the default value is used.
      */
     this.load = function(x){
-        this.$jml       = x;
+        this.$aml       = x;
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.url       = apf.parseExpression(x.getAttribute("url"));
         this.baseurl   = apf.parseExpression(
                              apf.xmldb.getInheritedAttribute(
-                                this.$jml, "baseurl")) || "";
+                                this.$aml, "baseurl")) || "";
         this.multicall = apf.isTrue(x.getAttribute("multicall"));
         if (x.getAttribute("type"))
             this.useXML    = x.getAttribute("type") == "XML";
@@ -331,7 +331,7 @@ apf.rpc = function(){
             //Add Method
             this.addMethod(q[i].getAttribute("name"),
                 q[i].getAttribute("receive") || x.getAttribute("receive"),
-                q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", apf.ns.jml);
+                q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", apf.ns.aml);
                 !apf.isFalse(q[i].getAttribute("async")),
                 apf.isTrue(q[i].getAttribute("caching")),
                 apf.isTrue(q[i].getAttribute("ignore-offline")),

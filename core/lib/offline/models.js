@@ -24,7 +24,7 @@
 /**
  * Object dealing with the storing the state of models for use offline. In
  * most cases the functionality of this object will be managed from within the
- * offline element in JML.
+ * offline element in AML.
  * Example:
  * <code>
  *  <j:offline realtime="true" />
@@ -42,11 +42,11 @@ apf.namespace("offline.models", {
     initQueue : [],
     realtime  : true,
 
-    init      : function(jml){
+    init      : function(aml){
         this.namespace = apf.appsettings.name + ".apf.offline.models";
 
-        if (jml.nodeType && jml.getAttribute("realtime"))
-            this.realtime = !apf.isFalse(jml.getAttribute("realtime"));
+        if (aml.nodeType && aml.getAttribute("realtime"))
+            this.realtime = !apf.isFalse(aml.getAttribute("realtime"));
 
         if (!this.realtime) {
             apf.addEventListener("exit", function(){

@@ -80,7 +80,7 @@ apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){
         //this.oInt = this.oExt = this.$getExternal();
         //this.oExt.onclick = function(){this.host.dispatchEvent("click");}
         
-        var src = this.$jml.getAttribute("src") || "";
+        var src = this.$aml.getAttribute("src") || "";
         document.body.insertAdjacentHTML("beforeend", 
             '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
               codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
@@ -105,8 +105,8 @@ apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){
         pHtmlNode.appendChild(this.oExt);
     };
     
-    this.$loadJml = function(x){
-        apf.JmlParser.parseChildren(x, null, this);
+    this.$loadAml = function(x){
+        apf.AmlParser.parseChildren(x, null, this);
     };
 }).implement(
     apf.BaseSimple

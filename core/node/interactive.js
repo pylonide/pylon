@@ -566,7 +566,7 @@ apf.Interactive = function(){
     oOutline.refCount++;
     //#endif
     
-    /*this.$jmlDestroyers.push(function(){
+    /*this.$amlDestroyers.push(function(){
         oOutline.refCount--;
         
         if (!oOutline.refCount) {

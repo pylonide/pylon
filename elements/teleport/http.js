@@ -703,11 +703,11 @@ apf.http = function(){
      *   apf.TIMEOUT  the request has timed out.
      *   apf.ERROR    an error has occurred while making the request.
      *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {JmlNode} [jmlNode]    the element receiving the error event.
+     * @param {AmlNode} [amlNode]    the element receiving the error event.
      * @param {Error}   [oError]     the error to be thrown when the request is not retried.
      * @param {Number}  [maxRetries] the number of retries that are done before the request times out. Default is 3.
      */
-    this.retryTimeout = function(extra, state, jmlNode, oError, maxRetries){
+    this.retryTimeout = function(extra, state, amlNode, oError, maxRetries){
         if (state == apf.TIMEOUT
           && extra.retries < (maxRetries || apf.maxHttpRetries))
             return extra.tpModule.retry(extra.id);
@@ -717,7 +717,7 @@ apf.http = function(){
                 ? "timeout"
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
 
-        if ((jmlNode || apf).dispatchEvent("error", apf.extend({
+        if ((amlNode || apf).dispatchEvent("error", apf.extend({
             error   : oError,
             state   : state,
             bubbles : true

@@ -25,7 +25,7 @@ var __MULTILANG__ = 1 << 16;
 // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
 
 /**
- * Adds multilingual support for jml applications. Reads language symbols from
+ * Adds multilingual support for aml applications. Reads language symbols from
  * an xml file and distributes them among elements containing text elements
  * or images. When EditMode is turned on, it can subtract all text elements
  * necesary for translation and export them in an xml file. This file can be
@@ -177,33 +177,33 @@ apf.language = {
     
     $marked : {},
     $processMarked : function(){
-        var ar, id, jmlNode, nodes;
+        var ar, id, amlNode, nodes;
         for (id in this.$marked) {
             ar      = id.split(":");
-            jmlNode = apf.all[ar[0]];
+            amlNode = apf.all[ar[0]];
             
-            if (jmlNode.cacheID == ar[1]) {
-                if (jmlNode.hasFeature(__MULTISELECT__)) {
-                    if (jmlNode.isTreeArch) {
-                        nodes = jmlNode.xmlRoot.selectNodes("//" 
-                          + jmlNode.traverse.split("|").join("|//"));
+            if (amlNode.cacheID == ar[1]) {
+                if (amlNode.hasFeature(__MULTISELECT__)) {
+                    if (amlNode.isTreeArch) {
+                        nodes = amlNode.xmlRoot.selectNodes("//" 
+                          + amlNode.traverse.split("|").join("|//"));
                     }
                     else {
-                        nodes = jmlNode.xmlRoot.selectNodes(jmlNode.traverse);
+                        nodes = amlNode.xmlRoot.selectNodes(amlNode.traverse);
                     }
                     
                     for (var i = 0; i < nodes.length; i++) {
-                        jmlNode.$updateNode(nodes[i], 
-                          apf.xmldb.findHtmlNode(nodes[i], jmlNode));
+                        amlNode.$updateNode(nodes[i], 
+                          apf.xmldb.findHtmlNode(nodes[i], amlNode));
                     }
                 }
                 else {
-                    jmlNode.reload();
+                    amlNode.reload();
                 }
             }
             else {
-                if (jmlNode.clearCacheItem) 
-                    jmlNode.clearCacheItem(ar[1]);
+                if (amlNode.clearCacheItem) 
+                    amlNode.clearCacheItem(ar[1]);
                 delete this.bindings[ar[0]][ar[1]];
             }
         }
@@ -240,7 +240,7 @@ apf.language = {
         for (var item, i = 0; i < els.length; i++) {
             item = els[i];
             if (item.prop) {
-                item.jmlNode.setProperty(item.prop, value, null, true);
+                item.amlNode.setProperty(item.prop, value, null, true);
             }
             else {
                 if (item.htmlNode.nodeType == 1)
@@ -331,9 +331,9 @@ apf.language = {
     },
     
     bindings : {},
-    getBinding : function(jmlNode, cacheId){
-        var data = this.bindings[jmlNode.uniqueId]
-            || (this.bindings[jmlNode.uniqueId] = {});
+    getBinding : function(amlNode, cacheId){
+        var data = this.bindings[amlNode.uniqueId]
+            || (this.bindings[amlNode.uniqueId] = {});
         
         return data[cacheId] || (data[cacheId] = {});
     },
@@ -396,10 +396,10 @@ EditServer = {
 
     register : function(data){
         var xmlNode = data.config
-            ? xmldb.selectSingleNode(data.config[data.counter][1], data.jmlNode)
-            : xmldb.getTextNode(data.jmlNode);
+            ? xmldb.selectSingleNode(data.config[data.counter][1], data.amlNode)
+            : xmldb.getTextNode(data.amlNode);
         if (!xmlNode)
-            xmlNode = apf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
+            xmlNode = apf.xmldb.createNodeFromXpath(data.amlNode, data.config[data.counter][1]);
         var key = xmlNode.nodeValue;
         if (!key.match(/^\$.*\$$/)) {
             var key = apf.language.addWord(data.htmlNode.innerHTML, null, data);
@@ -446,9 +446,9 @@ EditServer = {
         //r.select();
 
         this.edit.focus();
-        if (data.jmlObject) {
-            data.jmlObject.$KH       = data.jmlObject.keyHandler;
-            data.jmlObject.keyHandler = null;
+        if (data.amlObject) {
+            data.amlObject.$KH       = data.amlObject.keyHandler;
+            data.amlObject.keyHandler = null;
         }
     },
 
@@ -459,9 +459,9 @@ EditServer = {
 
         this.edit.contentEditable = false;
 
-        if (data.jmlObject) {
-            data.jmlObject.keyHandler = data.jmlObject.$KH;
-            data.jmlObject.$KH       = null;
+        if (data.amlObject) {
+            data.amlObject.keyHandler = data.amlObject.$KH;
+            data.amlObject.$KH       = null;
         }
 
         if (!isCancel) {
@@ -499,7 +499,7 @@ function EditMode(){
         this.editable = false;
     }
 
-    this.$makeEditable = function(type, htmlNode, jmlNode){
+    this.$makeEditable = function(type, htmlNode, amlNode){
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
             var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
@@ -513,8 +513,8 @@ function EditMode(){
                     : subNode.ownerElement || subNode.selectSinglesubNode(".."));
 
             var data = {
-                jmlNode  : jmlNode,
-                jmlObject: this,
+                amlNode  : amlNode,
+                amlObject: this,
                 htmlNode : subNode,
                 type     : type,
                 counter  : i,

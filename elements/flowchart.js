@@ -1165,12 +1165,12 @@ apf.console.info("FILL");
         this.x = null;*/
     }
 
-    this.$loadJml = function(x) {
-        if (this.$jml.childNodes.length)
-            this.$loadInlineData(this.$jml);
+    this.$loadAml = function(x) {
+        if (this.$aml.childNodes.length)
+            this.$loadInlineData(this.$aml);
 
         /* Loading template */
-        apf.getData(this.$jml.getAttribute("template"), null, null,
+        apf.getData(this.$aml.getAttribute("template"), null, null,
                     function(data, state, extra) {
             if (state == apf.SUCCESS) {
                 _self.loadTemplate(data);

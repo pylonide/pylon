@@ -52,7 +52,7 @@
  *   {String}  action           the action to be executed
  *   {Array}   args             the arguments for the action
  *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
- *   {JmlNode} [jmlNode]        the GUI element that triggered the action
+ *   {AmlNode} [amlNode]        the GUI element that triggered the action
  *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
  * @event actionfail Fires when an action fails to be sent to the server.
@@ -104,11 +104,11 @@ apf.actiontracker = function(parentNode){
     this.undolength = 0;
     this.redolength = 0;
 
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     this.tagName    = "actiontracker";
     if (parentNode)
         this.parentNode = parentNode;
-    this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
+    this.implement(apf.AmlDom); /** @inherits apf.AmlDom */
     //#endif
 
     /**
@@ -131,7 +131,7 @@ apf.actiontracker = function(parentNode){
                 break;
             //#ifdef __WITH_ALIAS
             case "alias":
-                apf.JmlElement.propHandlers.alias.call(this, value);
+                apf.AmlElement.propHandlers.alias.call(this, value);
             //#endif
             default:
                 this[prop] = value;
@@ -139,8 +139,8 @@ apf.actiontracker = function(parentNode){
     };
     
     
-    this.loadJml = function(x){
-        this.$jml = x;
+    this.loadAml = function(x){
+        this.$aml = x;
         
         //Events
         var value, a, i, attr = x.attributes;
@@ -188,7 +188,7 @@ apf.actiontracker = function(parentNode){
      *   {String}  action           the action to be executed
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
-     *   {JmlNode} [jmlNode]        the GUI element that triggered the action
+     *   {AmlNode} [amlNode]        the GUI element that triggered the action
      *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
      */
@@ -446,7 +446,7 @@ apf.actiontracker = function(parentNode){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
                     + extra.message));
                 
-                if ((extra.jmlNode || apf).dispatchEvent("error", apf.extend({
+                if ((extra.amlNode || apf).dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -644,8 +644,8 @@ apf.UndoData = function(settings, at){
         */
         this.selNode = this.selNode || (this.action == "removeNode"
             ? this.args[0]
-            : (this.jmlNode
-                ? this.jmlNode.selected
+            : (this.amlNode
+                ? this.amlNode.selected
                 : null));
     }
 
@@ -872,7 +872,7 @@ apf.UndoData = function(settings, at){
 
         apf.saveData(dataInstruction, null, options,
             function(data, state, extra){
-                extra.jmlNode = _self.jmlNode;
+                extra.amlNode = _self.amlNode;
                 return at.$receive(data, state, extra, _self, callback);
             }, {ignoreOffline: true});
     };

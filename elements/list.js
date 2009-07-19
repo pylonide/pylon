@@ -370,13 +370,13 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     /**** Init ****/
     
     this.$draw = function(){
-        this.appearance = this.$jml.getAttribute("appearance") || "compact";
-        var mode = this.$jml.getAttribute("mode");
+        this.appearance = this.$aml.getAttribute("appearance") || "compact";
+        var mode = this.$aml.getAttribute("mode");
 
         if (this.tagName == "select" && (this.appearance == "full" 
           || this.appearance == "minimal") || mode == "check") {
-            this.$jml.setAttribute("mode", "check");
-            if (!this.$jml.getAttribute("skin")) {
+            this.$aml.setAttribute("mode", "check");
+            if (!this.$aml.getAttribute("skin")) {
                 this.skinName = null;
                 this.skin = "checklist"
                 this.$loadSkin();
@@ -384,8 +384,8 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         }
         else if (this.tagName == "select1" && this.appearance == "full"
           || mode == "radio") {
-            this.$jml.setAttribute("mode", "radio");
-            if (!this.$jml.getAttribute("skin")) {
+            this.$aml.setAttribute("mode", "radio");
+            if (!this.$aml.getAttribute("skin")) {
                 this.skinName = null;
                 this.skin = "radiolist";
                 this.$loadSkin();
@@ -414,9 +414,9 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         this.behaviour = parseInt(this.$getOption("main", "behaviour")) || 1; 
     };
     
-    this.$loadJml = function(x){
-        if (this.$jml.childNodes.length) 
-            this.$loadInlineData(this.$jml);
+    this.$loadAml = function(x){
+        if (this.$aml.childNodes.length) 
+            this.$loadInlineData(this.$aml);
     };
     
     this.$destroy = function(){

@@ -19,13 +19,13 @@
  *
  */
 
-var __JMLNODE__    = 1 << 15;
+var __AMLNODE__    = 1 << 15;
 var __VALIDATION__ = 1 << 6;
 
-// #ifdef __WITH_JMLNODE
+// #ifdef __WITH_AMLNODE
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} are a jml component.
+ * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
  *
  * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
  *
@@ -55,7 +55,7 @@ var __VALIDATION__ = 1 << 6;
  *   {Number}  keyCode   which key was pressed. This is an ascii number.
  *   {Event}   htmlEvent the html event object that triggered this event from being called.
  */
-apf.JmlElement = function(){
+apf.AmlElement = function(){
     //#ifdef __USE_TOSTRING
     /**
      * Returns a string representation of this element.
@@ -68,7 +68,7 @@ apf.JmlElement = function(){
     };
     //#endif
 
-    this.$regbase = this.$regbase | __JMLNODE__;
+    this.$regbase = this.$regbase | __AMLNODE__;
     var _self     = this;
 
     /**** Convenience functions for gui nodes ****/
@@ -320,31 +320,31 @@ apf.JmlElement = function(){
         #endif */
     }
 
-    /**** Load JML ****/
+    /**** Load AML ****/
 
-    // #ifdef __WITH_JMLDOM
-    if (!this.hasFeature(__WITH_JMLDOM__))
-        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
+    // #ifdef __WITH_AMLDOM
+    if (!this.hasFeature(__WITH_AMLDOM__))
+        this.implement(apf.AmlDom); /** @inherits apf.AmlDom */
     // #endif
 
     /**
      * @private
      */
     this.$events = {};
-    this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
+    this.loadAml = function(x, pAmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
             apf.setReference(this.name, this);
 
         if (!x)
-            x = this.$jml;
+            x = this.$aml;
 
-        // #ifdef __WITH_JMLDOM
-        if (this.parentNode || pJmlNode)
-            this.$setParent(this.parentNode || pJmlNode);
+        // #ifdef __WITH_AMLDOM
+        if (this.parentNode || pAmlNode)
+            this.$setParent(this.parentNode || pAmlNode);
         // #endif
 
-        this.$jml = x;
+        this.$aml = x;
 
         //Drawing, Skinning, Positioning and Editing
         if (this.nodeFunc != apf.NODE_HIDDEN) {
@@ -441,14 +441,14 @@ apf.JmlElement = function(){
             //#ifdef __WITH_LANG_SUPPORT
             if (/^\$(.*)\$$/.test(value)) {
                 this.$isMultiLang[name] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
-                    jmlNode: this,
+                    amlNode: this,
                     prop : name
                 })];
             }else
             //#endif
             //#ifdef __WITH_PROPERTY_BINDING
             if (value && apf.dynPropMatch.test(value)) {
-                apf.JmlParser.stateStack.push({
+                apf.AmlParser.stateStack.push({
                     node  : this,
                     name  : name,
                     value : value
@@ -458,7 +458,7 @@ apf.JmlElement = function(){
             {
                 //#ifdef __WITH_PROPERTY_BINDING
                 if (name == "disabled") {
-                    apf.JmlParser.stateStack.push({
+                    apf.AmlParser.stateStack.push({
                         node  : this,
                         name  : name,
                         value : value
@@ -487,7 +487,7 @@ apf.JmlElement = function(){
 
                 this[name] = value;
                 (this.$propHandlers && this.$propHandlers[name]
-                  || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, name)
+                  || apf.AmlElement.propHandlers[name] || apf.K).call(this, value, name)
             }
         }
 
@@ -495,7 +495,7 @@ apf.JmlElement = function(){
         for (name in offlineLookup) {
             value = offlineLookup[name];
             (this.$propHandlers && this.$propHandlers[name]
-                  || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, name);
+                  || apf.AmlElement.propHandlers[name] || apf.K).call(this, value, name);
         }
         //#endif
         
@@ -511,7 +511,7 @@ apf.JmlElement = function(){
 
                     this[name] = value;
                     (this.$propHandlers && this.$propHandlers[name]
-                      || apf.JmlElement.propHandlers[name] || apf.K)
+                      || apf.AmlElement.propHandlers[name] || apf.K)
                         .call(this, value, name);
                 }
             }
@@ -522,18 +522,18 @@ apf.JmlElement = function(){
 
         //#ifdef __WITH_FOCUS
         if (this.$focussable && this.focussable === undefined)
-            apf.JmlElement.propHandlers.focussable.call(this);
+            apf.AmlElement.propHandlers.focussable.call(this);
         //#endif
 
-        // isSelfLoading is set when JML is being inserted
-        if (this.$loadJml && !this.$isSelfLoading)
-            this.$loadJml(x);
+        // isSelfLoading is set when AML is being inserted
+        if (this.$loadAml && !this.$isSelfLoading)
+            this.$loadAml(x);
 
-        //Process JML Handlers
-        for (i = this.$jmlLoaders.length - 1; i >= 0; i--)
-            this.$jmlLoaders[i].call(this, x);
+        //Process AML Handlers
+        for (i = this.$amlLoaders.length - 1; i >= 0; i--)
+            this.$amlLoaders[i].call(this, x);
 
-        this.$jmlLoaded = true;
+        this.$amlLoaded = true;
 
         return this;
     };
@@ -563,25 +563,25 @@ apf.JmlElement = function(){
             return;
 
         return (this.$propHandlers && this.$propHandlers[prop]
-            || apf.JmlElement.propHandlers[prop]
+            || apf.AmlElement.propHandlers[prop]
             || apf.K).call(this, value, force, prop);
     };
 
     /**
-     * Replaces the child jml elements with new jml.
-     * @param {mixed}       jmlDefNode  the jml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {HTMLElement} oInt        the html parent of the created jml elements.
-     * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
+     * Replaces the child aml elements with new aml.
+     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {HTMLElement} oInt        the html parent of the created aml elements.
+     * @param {AMLElement}  oIntAML     the aml parent of the created aml elements.
      */
-    this.replaceJml = function(jmlDefNode, options) {
+    this.replaceMarkup = function(amlDefNode, options) {
         //#ifdef __DEBUG
-        apf.console.info("Remove all jml from element");
+        apf.console.info("Remove all children from element");
         //#endif
 
         if (!options) options = {};
 
-        if (!options.oIntJML)
-            options.oIntJML = this.$jml;
+        if (!options.oIntAML)
+            options.oIntAML = this.$aml;
         if (!options.oInt)
             options.oInt = this.oInt;
         options.clear = true;
@@ -594,8 +594,8 @@ apf.JmlElement = function(){
                 if (nodes[k].destroy)
                     nodes[k].destroy(true);
 
-            if (oItem.$jml && oItem.$jml.parentNode)
-                oItem.$jml.parentNode.removeChild(oItem.$jml);*/
+            if (oItem.$aml && oItem.$aml.parentNode)
+                oItem.$aml.parentNode.removeChild(oItem.$aml);*/
 
             if (oItem.destroy)
                 oItem.destroy(true);
@@ -604,26 +604,26 @@ apf.JmlElement = function(){
                 apf.removeNode(oItem.oExt);
         }
         
-        var nodes = options.oIntJML.childNodes;
+        var nodes = options.oIntAML.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--)
-            options.oIntJML.removeChild(nodes[i]);
+            options.oIntAML.removeChild(nodes[i]);
         
         this.childNodes.length = 0;
         this.oInt.innerHTML = "<div class='loading'>loading...</div>";
 
-        //Do an insertJml
-        this.insertJml(jmlDefNode, options);
+        //Do an insertMarkup
+        this.insertMarkup(amlDefNode, options);
     };
 
     /**
-     * Inserts new jml into this element.
-     * @param {mixed}       jmlDefNode  the jml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {HTMLElement} oInt        the html parent of the created jml elements.
-     * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
+     * Inserts new aml into this element.
+     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {HTMLElement} oInt        the html parent of the created aml elements.
+     * @param {AMLElement}  oIntAML     the aml parent of the created aml elements.
      */
-    this.insertJml = function(jmlDefNode, options){
+    this.insertMarkup = function(amlDefNode, options){
         //#ifdef __DEBUG
-        apf.console.info("Loading sub jml from external source");
+        apf.console.info("Loading sub markup from external source");
         //#endif
 
         //#ifdef __WITH_OFFLINE
@@ -636,8 +636,8 @@ apf.JmlElement = function(){
                 var oError;
 
                 oError = new Error(apf.formatErrorString(1019, _self,
-                    "Loading extra jml from datasource",
-                    "Could not load JML from remote resource \n\n"
+                    "Loading extra aml from datasource",
+                    "Could not load AML from remote resource \n\n"
                     + extra.message));
 
                 if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
@@ -647,58 +647,58 @@ apf.JmlElement = function(){
             }
 
             //#ifdef __DEBUG
-            apf.console.info("Runtime inserting jml");
+            apf.console.info("Runtime inserting aml");
             //#endif
 
             if (options.clear)
                 options.oInt.innerHTML = "";
 
-            var jml = options.oIntJml || _self.$jml;
-            if (jml.insertAdjacentHTML)
-                jml.insertAdjacentHTML(jml.getAttribute("insert") || "beforeend",
+            var aml = options.oIntAml || _self.$aml;
+            if (aml.insertAdjacentHTML)
+                aml.insertAdjacentHTML(aml.getAttribute("insert") || "beforeend",
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = apf.getJmlDocFromString(data.indexOf("<j:application") > -1
+                    data = apf.getAmlDocFromString(data.indexOf("<j:application") > -1
                       ? data 
-                      : "<j:application xmlns:j='" + apf.ns.jml +"'>" 
+                      : "<j:application xmlns:j='" + apf.ns.aml +"'>" 
                           + data + "</j:application>", true).documentElement;
 
-                if (jml.ownerDocument.importNode) {
-                    doc = jml.ownerDocument;
+                if (aml.ownerDocument.importNode) {
+                    doc = aml.ownerDocument;
                     for (var i = data.childNodes.length - 1; i >= 0; i--)
-                        jml.insertBefore(doc.importNode(data.childNodes[i], true), jml.firstChild);
+                        aml.insertBefore(doc.importNode(data.childNodes[i], true), aml.firstChild);
                 }
                 else
                     for (var i = data.childNodes.length - 1; i >= 0; i--)
-                        jml.insertBefore(data.childNodes[i], jml.firstChild);
+                        aml.insertBefore(data.childNodes[i], aml.firstChild);
             }
 
-            apf.JmlParser.parseMoreJml(jml, options.oInt || _self.oInt, _self,
+            apf.AmlParser.parseMoreAml(aml, options.oInt || _self.oInt, _self,
                 (options.isHidden && (options.oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
             
             if (options.callback)
                 options.callback({
                     data    : data,
-                    jmlNode : this
+                    amlNode : this
                 })
         }
 
-        if (typeof jmlDefNode == "string") {
+        if (typeof amlDefNode == "string") {
             //Process Instruction
-            if (apf.datainstr[jmlDefNode.split(":")[0]]){
-                return apf.getData(jmlDefNode, null, {
+            if (apf.datainstr[amlDefNode.split(":")[0]]){
+                return apf.getData(amlDefNode, null, {
                     ignoreOffline : true
                 }, callback);
             }
-            //Jml string
+            //Aml string
             else
-                jmlDefNode = apf.getJmlDocFromString(jmlDefNode);
+                amlDefNode = apf.getAmlDocFromString(amlDefNode);
         }
 
         //Xml Node is assumed
-        return callback(jmlDefNode, apf.SUCCESS);
+        return callback(amlDefNode, apf.SUCCESS);
     };
 
     if (
@@ -720,7 +720,7 @@ apf.JmlElement = function(){
 
             // #ifdef __WITH_DATABINDING
             //Not databound
-            if ((!this.createModel || !this.$jml || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
+            if ((!this.createModel || !this.$aml || !this.$aml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
                 if (value === this.value 
                   || this.dispatchEvent("beforechange", {value : value}) === false)
@@ -767,7 +767,7 @@ apf.JmlElement = function(){
                         throw new Error(apf.formatErrorString(0, this,
                             "Showing contextmenu",
                             "Could not find contextmenu by name: '" + menuId + "'"),
-                            this.$jml);
+                            this.$aml);
                     }
                     // #endif
 
@@ -805,7 +805,7 @@ apf.JmlElement = function(){
                 throw new Error(apf.formatErrorString(0, this,
                     "Showing contextmenu",
                     "Could not find contextmenu by name: '" + menuId + "'",
-                    this.$jml));
+                    this.$aml));
             }
             // #endif
 
@@ -819,10 +819,10 @@ apf.JmlElement = function(){
 };
 
 /**
- * @for apf.jmlNode
+ * @for apf.amlNode
  * @private
  */
-apf.JmlElement.propHandlers = {
+apf.AmlElement.propHandlers = {
     /**
      * @attribute {String} id the identifier of this element. When set this
      * identifier is the name of the variable in javascript to access this
@@ -858,7 +858,7 @@ apf.JmlElement.propHandlers = {
 
         if (this.focussable) {
             apf.window.$addFocus(this, this.tabindex
-                || this.$jml.getAttribute("tabindex"));
+                || this.$aml.getAttribute("tabindex"));
         }
         else {
             apf.window.$removeFocus(this);
@@ -1151,7 +1151,7 @@ apf.JmlElement.propHandlers = {
             this.$at = value;
         else {
             this.$at = typeof value == "string" && self[value]
-              ? apf.JmlParser.getActionTracker(value)
+              ? apf.AmlParser.getActionTracker(value)
               : apf.setReference(value,
                   apf.nameserver.register("actiontracker",
                       value, new apf.actiontracker()));
@@ -1191,7 +1191,7 @@ apf.JmlElement.propHandlers = {
 
             if (this.actions)
                 this.$propHandlers["actions"].call(this, this.actions);
-            else if (!this.$jml.getAttribute("actions"))
+            else if (!this.$aml.getAttribute("actions"))
                 this.smartBinding = true;
         }
          
@@ -1200,14 +1200,14 @@ apf.JmlElement.propHandlers = {
     },
     //#endif
 
-    //Load subJML
+    //Load subAML
     /**
-     * @attribute {String} jml the {@link term.datainstruction data instruction} 
-     * that loads new jml as children of this element.
+     * @attribute {String} aml the {@link term.datainstruction data instruction} 
+     * that loads new aml as children of this element.
      */
-    "jml": function(value){
+    "aml": function(value){
         //Clear??
-        this.insertJml(value);
+        this.insertMarkup(value);
         this.$isSelfLoading = true;
     }
    
@@ -1261,8 +1261,8 @@ apf.JmlElement.propHandlers = {
                         this.active.disconnect(o, type);
                 },
                 
-                set : function(jmlNode){
-                    if (this.active == jmlNode)
+                set : function(amlNode){
+                    if (this.active == amlNode)
                         return;
                     
                     //Unset active one
@@ -1291,7 +1291,7 @@ apf.JmlElement.propHandlers = {
                         this.active.setProperty("alias", false);
                     }
                     
-                    this.active = jmlNode;
+                    this.active = amlNode;
                     //Set event listeners
                     for (var name in events) {
                         var ev = events[name];
@@ -1317,7 +1317,7 @@ apf.JmlElement.propHandlers = {
                     for (var i = 0, l = this.data.length; i < l; i++)
                         this.active.connect.apply(this.active, this.data[i]);
                     
-                    jmlNode.$alias = this;
+                    amlNode.$alias = this;
                 }
             });
             apf.makeClass(cg);

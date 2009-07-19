@@ -226,14 +226,14 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (this.autostart)
            this.start();
 
         if (this.autohide)
             this.hide();
         
-        apf.JmlParser.parseChildren(x, null, this);
+        apf.AmlParser.parseChildren(x, null, this);
     };
 }).implement(
     // #ifdef __WITH_DATABINDING

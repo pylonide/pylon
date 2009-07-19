@@ -28,24 +28,24 @@
  */
 apf.divider = apf.subnode(apf.NODE_HIDDEN, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
         
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
-            this.loadJml();
+            this.loadAml();
         }
     });
     
     /**
-     * @ref jmlNode#show
+     * @ref amlNode#show
      */
     this.show = function(){
         this.oExt.style.display = "block";
     }
     
     /**
-     * @ref jmlNode#hide
+     * @ref amlNode#hide
      */
     this.hide = function(){
         this.oExt.style.display = "none";
@@ -54,8 +54,8 @@ apf.divider = apf.subnode(apf.NODE_HIDDEN, function() {
     /**
      * @private
      */
-    this.loadJml = function(x, parentNode) {
-        this.$jml = x;
+    this.loadAml = function(x, parentNode) {
+        this.$aml = x;
         if (parentNode)
             this.$setParent(parentNode);
 

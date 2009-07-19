@@ -196,16 +196,16 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     /**** DOM Hooks ****/
     var insertChild;
     
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin) {
+    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin) {
         if (doOnlyAdmin)
             return;
     });
     
-    this.$domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent) {
-        if (jmlNode.tagName != "panel")
+    this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent) {
+        if (amlNode.tagName != "panel")
             return;
 
-        jmlNode.$propHandlers["icon"] = function(value) {
+        amlNode.$propHandlers["icon"] = function(value) {
             var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
             if (!oIcon) return;
 
@@ -468,8 +468,8 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
         this.$dir = this.$getOption("main", "direction") || "vertical";
     };
 
-    this.$loadJml = function(x) {
-        var node, panel, nodes = this.$jml.childNodes;
+    this.$loadAml = function(x) {
+        var node, panel, nodes = this.$aml.childNodes;
  
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
@@ -487,7 +487,7 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
 
                 panel.skinName = this.skinName;
                 insertChild.call(this, panel);
-                panel.loadJml(node, this);
+                panel.loadAml(node, this);
                 
                 var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
                 var oCaption = this.$getLayoutNode("panel", "caption", panel.oExt);

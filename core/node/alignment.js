@@ -33,7 +33,7 @@ var __ALIGNMENT__ = 1 << 12;
  * This layout manager could then allow the user to choose between several
  * layouts and save new ones.
  * Example:
- * An Outlook-like layout in JML
+ * An Outlook-like layout in AML
  * <code>
  * <j:toolbar   align = "top-1"          height = "40" />
  * <j:tree      align = "left-splitter"  width  = "20%" />
@@ -93,7 +93,7 @@ apf.Alignment = function(){
      * Turns the alignment features off.
      * @param  {Boolean} [purge] whether alignment is recalculated right after setting the property.
      */
-    //var lastPosition, jmlNode = this;
+    //var lastPosition, amlNode = this;
     this.disableAlignment = function(purge){
         if (!this.aData) return;
 
@@ -114,20 +114,20 @@ apf.Alignment = function(){
 
         if (buildParent) {
             this.parentNode.pData = l.parseXml(
-                this.parentNode.$jml || apf.getXml("<vbox />"),
+                this.parentNode.$aml || apf.getXml("<vbox />"),
                 layout, "vbox", true);
 
             layout.root = this.parentNode.pData;
         }
 
         if (!this.aData)
-            this.aData = l.parseXml(this.$jml, layout, this, true); //not recur?
+            this.aData = l.parseXml(this.$aml, layout, this, true); //not recur?
 
         //#ifdef __WITH_ALIGN_TEMPLATES
-        if (this.align || this.$jml.getAttribute("align")) {
+        if (this.align || this.$aml.getAttribute("align")) {
             l.addAlignNode(this, layout.root);
 
-            if (this.aData.hidden || this.$jml.getAttribute("visible") == "false")
+            if (this.aData.hidden || this.$aml.getAttribute("visible") == "false")
                 this.aData.prehide(true);
 
             if (!apf.isParsing || apf.parsingFinalPass) //buildParent &&
@@ -170,7 +170,7 @@ apf.Alignment = function(){
 
     //@todo support inserbefore for align templates
     function reparent(beforeNode, pNode, withinParent, oldParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
 
         if (!withinParent && this.aData) {
@@ -181,7 +181,7 @@ apf.Alignment = function(){
     }
 
     //@todo problem with determining when aData.parent | also with weight and minwidth
-    this.$addJmlLoader(function(){
+    this.$addAmlLoader(function(){
         /**
          * @attribute  {String} align       the edge of the parent to which this element aligns. Possible values are a combination of: "left", "middle", "right", "top", "bottom" and "slider" and optionally a size.
          * Example:
@@ -275,7 +275,7 @@ apf.Alignment = function(){
         };
     });
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         this.disableAlignment();
         this.aData = null;
     });

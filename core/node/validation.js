@@ -257,7 +257,7 @@ apf.Validation = function(){
         }
     };
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         if (this.$validgroup)
             this.$validgroup.remove(this);
     });
@@ -323,9 +323,9 @@ apf.Validation = function(){
      * @attribute  {Boolean}  notnull      whether the value is filled. Same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
      * @attribute  {String}   checkequal   the id of the element to check if it has the same value as this element.
      * @attribute  {String}   invalidmsg   the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
-     * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
+     * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
      */
-    this.$addJmlLoader(function(x){
+    this.$addAmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         /* Temp disabled, because I don't understand it (RLD)
         this.addEventListener("beforechange", function(){
@@ -336,7 +336,7 @@ apf.Validation = function(){
         // Submitform
         if (!this.form) {
             //Set Form
-            var y = this.$jml;
+            var y = this.$aml;
             do {
                 y = y.parentNode;
             }
@@ -502,7 +502,7 @@ apf.Validation = function(){
             if(rvCache[value] == -1) return true;
             rvCache[value] = -1;
             
-            var instr = this.$jml.getAttribute('valid-test').split("==");
+            var instr = this.$aml.getAttribute('valid-test').split("==");
             apf.getData(instr[0], this.xmlRoot, {
                value : this.getValue() 
             }, function(data, state, extra){
@@ -542,7 +542,7 @@ apf.Validation = function(){
 };
 
 /**
- * Object allowing for a set of JML elements to be validated, an element that 
+ * Object allowing for a set of AML elements to be validated, an element that 
  * is not valid shows the errorbox.
  * Example:
  * <code>
@@ -607,12 +607,12 @@ apf.ValidationGroup = function(name){
     this.childNodes = [];
     
     /**
-     * Adds a jml element to this validation group.
+     * Adds a aml element to this validation group.
      */
     this.add        = function(o){ this.childNodes.push(o); };
     
     /**
-     * Removes a jml element from this validation group.
+     * Removes a aml element from this validation group.
      */
     this.remove     = function(o){ this.childNodes.remove(o); };
 
@@ -633,7 +633,7 @@ apf.ValidationGroup = function(name){
     /**
      * Retrieves {@link element.errorbox} used for a specified element.
      *
-     * @param  {JmlNode}  o  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {AmlNode}  o  required  AmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
      * @return  {Errorbox}  the found or created Errorbox;
      */
@@ -641,9 +641,9 @@ apf.ValidationGroup = function(name){
         if (this.allowMultipleErrors || !errbox && !no_create) {
             errbox           = new apf.errorbox(null, "errorbox");
             errbox.pHtmlNode = o.oExt.parentNode;
-            errbox.skinset   = apf.xmldb.getInheritedAttribute(o.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
-            var cNode        = o.$jml.ownerDocument.createElement("errorbox");
-            errbox.loadJml(cNode);
+            errbox.skinset   = apf.xmldb.getInheritedAttribute(o.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            var cNode        = o.$aml.ownerDocument.createElement("errorbox");
+            errbox.loadAml(cNode);
         }
         return errbox;
     };
@@ -699,7 +699,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -714,7 +714,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -727,7 +727,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -748,7 +748,7 @@ apf.ValidationGroup = function(name){
                 throw new Error(apf.formatErrorString(0, this,
                     "Validating Page",
                     "Error in javascript validation string of page: '"
-                    + page.validation + "'", page.$jml));
+                    + page.validation + "'", page.$aml));
             }
             //#endif
         }

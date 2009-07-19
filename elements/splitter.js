@@ -31,7 +31,7 @@ apf.splitter = function(pHtmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    var jmlNode      = this;
+    var amlNode      = this;
     this.$focussable = true; // This object can get the focus
     
     /* ***********************
@@ -63,7 +63,7 @@ apf.splitter = function(pHtmlNode){
         
         this.oExt.offsetTop; //@weird somehow this will fix a problem in IE8
         
-        var jmlNode  = this.refNode;
+        var amlNode  = this.refNode;
         var htmlNode = this.refHtml;
 
         var v          = apf.layout.vars;
@@ -186,14 +186,14 @@ apf.splitter = function(pHtmlNode){
     };
     
     this.onmouseup = function(){
-        jmlNode.$setStyleClass(jmlNode.oExt, "", ["moving"]);
+        amlNode.$setStyleClass(amlNode.oExt, "", ["moving"]);
 
         // #ifdef __WITH_PLANE
         apf.plane.hide();
         // #endif
 
-        jmlNode.update();
-        jmlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+        amlNode.update();
+        amlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
         
         apf.dragmode.clear();
     };
@@ -201,18 +201,18 @@ apf.splitter = function(pHtmlNode){
     this.onmousemove = function(e){
         if(!e) e = event;
 
-        if (jmlNode.type == "vertical") {
+        if (amlNode.type == "vertical") {
             if (e.clientX >= 0) {
-                var pos = apf.getAbsolutePosition(jmlNode.oExt.offsetParent);
-                jmlNode.oExt.style.left = (Math.min(jmlNode.max,
-                    Math.max(jmlNode.min, (e.clientX - pos[0]) - jmlNode.tx))) + "px";
+                var pos = apf.getAbsolutePosition(amlNode.oExt.offsetParent);
+                amlNode.oExt.style.left = (Math.min(amlNode.max,
+                    Math.max(amlNode.min, (e.clientX - pos[0]) - amlNode.tx))) + "px";
             }
         }
         else {
             if (e.clientY >= 0) {
-                var pos = apf.getAbsolutePosition(jmlNode.oExt.offsetParent);
-                jmlNode.oExt.style.top = (Math.min(jmlNode.max,
-                    Math.max(jmlNode.min, (e.clientY - pos[1]) - jmlNode.ty))) + "px";
+                var pos = apf.getAbsolutePosition(amlNode.oExt.offsetParent);
+                amlNode.oExt.style.top = (Math.min(amlNode.max,
+                    Math.max(amlNode.min, (e.clientY - pos[1]) - amlNode.ty))) + "px";
             }
         }
         
@@ -223,7 +223,7 @@ apf.splitter = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    //this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
+    //this.implement(apf.AmlElement); /** @inherits apf.AmlElement */
     
     var lastinit, sizeArr, verdiff, hordiff;
     this.init = function(size, refNode, oItem){
@@ -426,11 +426,11 @@ apf.splitter = function(pHtmlNode){
                 e = event;
             
             var pos = apf.getAbsolutePosition(this);
-            if (jmlNode.type == "vertical")
-                jmlNode.tx = e.clientX - pos[0];
+            if (amlNode.type == "vertical")
+                amlNode.tx = e.clientX - pos[0];
             else
-                jmlNode.ty = e.clientY - pos[1];
-            jmlNode.startPos = jmlNode.type == "vertical" 
+                amlNode.ty = e.clientY - pos[1];
+            amlNode.startPos = amlNode.type == "vertical" 
                 ? this.offsetLeft 
                 : this.offsetTop;
             
@@ -441,16 +441,16 @@ apf.splitter = function(pHtmlNode){
             apf.plane.show(this);
             // #endif
 
-            jmlNode.$setStyleClass(this, "moving");
+            amlNode.$setStyleClass(this, "moving");
             
-            jmlNode.$setStyleClass(document.body,
-                jmlNode.type == "vertical" ? "w-resize" : "n-resize",
-                [jmlNode.type == "vertical" ? "n-resize" : "w-resize"]);
-            apf.dragmode.setMode("splitter" + jmlNode.uniqueId);
+            amlNode.$setStyleClass(document.body,
+                amlNode.type == "vertical" ? "w-resize" : "n-resize",
+                [amlNode.type == "vertical" ? "n-resize" : "w-resize"]);
+            apf.dragmode.setMode("splitter" + amlNode.uniqueId);
         }
     };
         
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (x.getAttribute("left") || x.getAttribute("top")) {
             var O1 = x.getAttribute("left")  || x.getAttribute("top");
             var O2 = x.getAttribute("right") || x.getAttribute("bottom");
@@ -464,7 +464,7 @@ apf.splitter = function(pHtmlNode){
                 
             //Not a perfect hack, but ok, for now
             setTimeout(function(){
-                jmlNode.init(x.getAttribute("type"),
+                amlNode.init(x.getAttribute("type"),
                     x.getAttribute("size"), 
                     x.getAttribute("min"), 
                     x.getAttribute("max"), 

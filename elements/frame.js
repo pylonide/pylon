@@ -37,7 +37,7 @@
  *
  * @constructor
  * @define fieldset, frame
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  * @addnode elements:frame
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -95,11 +95,11 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         this.oInt = this.oInt 
-            ? apf.JmlParser.replaceNode(oInt, this.oInt) 
-            : apf.JmlParser.parseChildren(this.$jml, oInt, this);
+            ? apf.AmlParser.replaceNode(oInt, this.oInt) 
+            : apf.AmlParser.parseChildren(this.$aml, oInt, this);
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         // not implement now.
     };
 }).implement(apf.Presentation);

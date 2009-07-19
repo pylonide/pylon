@@ -110,7 +110,7 @@ apf.BaseList = function(){
      */
     this.$propHandlers["fill"] = function(value){
         if (value)
-            this.loadFillData(this.$jml.getAttribute("fill"));
+            this.loadFillData(this.$aml.getAttribute("fill"));
         else
             this.clear();
     };
@@ -559,9 +559,9 @@ apf.BaseList = function(){
             apf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
 
-            //#ifdef __WITH_JML_BINDINGS
-            if (this.lastRule && this.lastRule.getAttribute("parse") == "jml")
-                this.doJmlParsing = true;
+            //#ifdef __WITH_AML_BINDINGS
+            if (this.lastRule && this.lastRule.getAttribute("parse") == "aml")
+                this.doAmlParsing = true;
             //#endif
         }
         Item.setAttribute("title", this.applyRuleSetOnNode("tooltip", xmlNode) || "");
@@ -608,8 +608,8 @@ apf.BaseList = function(){
         apf.xmldb.htmlImport(nodes, this.oInt);
         nodes.length = 0;
 
-        //#ifdef __WITH_JML_BINDINGS
-        if (this.doJmlParsing) {
+        //#ifdef __WITH_AML_BINDINGS
+        if (this.doAmlParsing) {
             var x = document.createElement("div");
             while (this.oExt.childNodes.length)
                 x.appendChild(this.oExt.childNodes[0]);
@@ -636,7 +636,7 @@ apf.BaseList = function(){
         if (!this.actionRules || !this.actionRules["add"]) {
             if (this.traverse && !this.traverse.match(/[\/\[]/)) {
                 xmlNode = "<" + this.traverse + (this.traverse.match(/^j:/) 
-                    ? " xmlns:j='" + apf.ns.jml + "'" 
+                    ? " xmlns:j='" + apf.ns.aml + "'" 
                     : "") + " custom='1' />";
             }
             else {
@@ -644,7 +644,7 @@ apf.BaseList = function(){
                 throw new Error(apf.formatErrorString(0, this,
                     "Could not start more",
                     "No add action rule is defined for this component",
-                    this.$jml));
+                    this.$aml));
                 //#endif
                 return false;
             }
@@ -778,11 +778,11 @@ apf.BaseList = function(){
         if (strData.length) {
             var sNode = new apf.smartbinding(null,
                 apf.getXmlDom("<smartbindings xmlns='"
-                    + apf.ns.jml
+                    + apf.ns.aml
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
                     + strData.join("") + "</items></model></smartbindings>")
                   .documentElement);
-            apf.JmlParser.addToSbStack(this.uniqueId, sNode);
+            apf.AmlParser.addToSbStack(this.uniqueId, sNode);
         }
     };
 }

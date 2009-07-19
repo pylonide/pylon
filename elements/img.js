@@ -180,11 +180,11 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
             - this.oImg.offsetHeight) / 2) + "px";
     }
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
         
-        apf.JmlParser.parseChildren(x, null, this);
+        apf.AmlParser.parseChildren(x, null, this);
     };
 }).implement(
     apf.BaseSimple

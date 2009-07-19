@@ -26,7 +26,7 @@
 /**
  * Element displaying a page and several buttons allowing a
  * user to switch between the pages. Each page can contain
- * arbitrary jml. Each page can render it's content during
+ * arbitrary aml. Each page can render it's content during
  * startup of the application or when the page is activated.
  * Example:
  * <code>
@@ -72,7 +72,7 @@ apf.tab       = apf.component(apf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
     };

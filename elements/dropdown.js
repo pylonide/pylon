@@ -85,7 +85,7 @@
  * @addnode elements
  *
  * @inherits apf.BaseList
- * @inherits apf.JmlElement
+ * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -134,7 +134,7 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value 
-            || apf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
+            || apf.xmldb.getInheritedAttribute(this.$aml, "intial-message");
     };
     
     /**** Public methods ****/
@@ -265,10 +265,10 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
     });
     
     /*this.addEventListener("initselbind", function(bindclass){
-        var jmlNode = this;
+        var amlNode = this;
         bindclass.addEventListener("xmlupdate", function(){
             debugger;
-            jmlNode.$showSelection();
+            amlNode.$showSelection();
         });
     });*/
     
@@ -500,11 +500,11 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         this.widthdiff      = this.$getOption("main", "width-diff") || 0;
         this.ignoreOverflow = apf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
         
-        if (this.$jml.childNodes.length)
-            this.$loadInlineData(this.$jml);
+        if (this.$aml.childNodes.length)
+            this.$loadInlineData(this.$aml);
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (!this.selected && this.initialMsg)
             this.$setLabel();
     };

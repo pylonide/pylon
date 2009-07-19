@@ -453,7 +453,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     //@todo can't we make this generic for button, bar, page, divider and others, maybe in presentation
     this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
-            if (!this.$jmlLoaded)
+            if (!this.$amlLoaded)
                 return;
 
             var skinName;
@@ -473,7 +473,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
         if (typeof this.focussable == "undefined") {
             if (this.parentNode.parentNode
               && this.parentNode.parentNode.tagName == "toolbar"
-              && !this.$jml.getAttribute("focussable"))
+              && !this.$aml.getAttribute("focussable"))
                 this.focussable = false;
         }
 
@@ -527,14 +527,14 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     }
     //#endif
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (!this.caption && x.firstChild)
             this.setProperty("caption", x.firstChild.nodeValue);
         else if (typeof this.caption == "undefined")
             this.$propHandlers["caption"].call(this, "");
 
         if (!inited) {
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
             inited = true;
         }
     };
@@ -583,7 +583,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
                 throw new Error(apf.formatErrorString(0, this,
                     "Submission",
                     "Could not find submission to execute action on '"
-                    + this.submission + "'", this.$jml));
+                    + this.submission + "'", this.$aml));
 
             submission.dispatchXFormsEvent("xforms-submit");
 
@@ -597,7 +597,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
                         "Clicking on Button",
                         "Could not find target to execute action on '"
                         + this.target + "' with action '"
-                        + this.action + "'", this.$jml));
+                        + this.action + "'", this.$aml));
                 //#endif
 
                 target = self[this.target]
@@ -619,7 +619,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
                         throw new Error(apf.formatErrorString(0, this,
                             "Clicking on Button",
                             "Could not find target to for action '"
-                            + this.action + "'", this.$jml));
+                            + this.action + "'", this.$aml));
                     //#endif
                 }
             }
@@ -628,7 +628,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
         if (!target[this.action])
             throw new Error(apf.formatErrorString(0, this,
                 "Clicking on Button",
-                "Could not find action on target.", this.$jml));
+                "Could not find action on target.", this.$aml));
         //#endif
 
         target[this.action]();
@@ -716,8 +716,8 @@ apf.button.actions = {
                     node.setProperty("validgroup", vg);
                 }
 
-                if (node.$jml.getAttribute("type"))
-                    vars[node.$jml.getAttribute("type")] = node.getValue();
+                if (node.$aml.getAttribute("type"))
+                    vars[node.$aml.getAttribute("type")] = node.getValue();
 
                 if (vars.username && vars.password)
                     return;

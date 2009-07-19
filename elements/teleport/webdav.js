@@ -1059,7 +1059,7 @@ apf.webdav = function(){
     };
 
     /**
-     * This is the connector function between the JML representation of this
+     * This is the connector function between the AML representation of this
      * Teleport module. If specified, it will also setup the Remote SmartBinding
      * feature.
      *

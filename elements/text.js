@@ -351,7 +351,7 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.caching = false;// hack
         
         if (this["empty-message"] && !this.childNodes.length)
@@ -360,7 +360,7 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
         if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(){

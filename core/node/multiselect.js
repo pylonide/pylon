@@ -384,18 +384,18 @@ apf.MultiSelect = function(){
         //#endif
         
         var refNode  = this.isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
-        var jmlNode  = this; //PROCINSTR
+        var amlNode  = this; //PROCINSTR
         var callback = function(addXmlNode, state, extra){
             if (state != apf.SUCCESS) {
                 var oError;
 
-                oError = new Error(apf.formatErrorString(1032, jmlNode,
+                oError = new Error(apf.formatErrorString(1032, amlNode,
                     "Loading xml data",
-                    "Could not add data for control " + jmlNode.name
-                    + "[" + jmlNode.tagName + "] \nUrl: " + extra.url
+                    "Could not add data for control " + amlNode.name
+                    + "[" + amlNode.tagName + "] \nUrl: " + extra.url
                     + "\nInfo: " + extra.message + "\n\n" + xmlNode));
 
-                if (extra.tpModule.retryTimeout(extra, state, jmlNode, oError) === true)
+                if (extra.tpModule.retryTimeout(extra, state, amlNode, oError) === true)
                     return true;
 
                 throw oError;
@@ -406,31 +406,31 @@ apf.MultiSelect = function(){
             if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
                 addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
 
-            var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
-                ? jmlNode.selected
-                : jmlNode.xmlRoot, true, true);
+            var actionNode = amlNode.getNodeFromRule("add", amlNode.isTreeArch
+                ? amlNode.selected
+                : amlNode.xmlRoot, true, true);
             if (!pNode) {
                 if (actionNode && actionNode.getAttribute("parent")) {
-                    pNode = jmlNode.xmlRoot
+                    pNode = amlNode.xmlRoot
                         .selectSingleNode(actionNode.getAttribute("parent"));
                 }
                 else {
-                    pNode = jmlNode.isTreeArch
-                        ? jmlNode.selected || jmlNode.xmlRoot
-                        : jmlNode.xmlRoot
+                    pNode = amlNode.isTreeArch
+                        ? amlNode.selected || amlNode.xmlRoot
+                        : amlNode.xmlRoot
                 }
             }
 
             if (!pNode)
-                pNode = jmlNode.xmlRoot;
+                pNode = amlNode.xmlRoot;
 
             if (apf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument)
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
 
-            if (jmlNode.executeAction("appendChild",
+            if (amlNode.executeAction("appendChild",
               [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
-              && jmlNode.autoselect)
-                jmlNode.select(addXmlNode);
+              && amlNode.autoselect)
+                amlNode.select(addXmlNode);
 
             return addXmlNode;
         }

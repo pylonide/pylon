@@ -218,13 +218,13 @@ apf.editor.searchPlugin = function(sName) {
         this.oSearch = document.getElementById(idSearch);
         this.oCase   = document.getElementById(idCase);
         
-        var aJml = [
-            '<j:toolbar xmlns:j="', apf.ns.jml, '"><j:bar>\
+        var aAml = [
+            '<j:toolbar xmlns:j="', apf.ns.aml, '"><j:bar>\
              <j:button caption="Find next" \
                onclick="apf.lookup(', this.uniqueId, ').submit(event)" />'];
         if (this.name == "replace") {
             this.oReplace = document.getElementById(idReplace);
-            aJml.push(
+            aAml.push(
                 '<j:button caption="Replace" \
                   onclick="apf.lookup(', this.uniqueId, ').onDoReplClick(event)" \
                   id="', idReplBtn, '" />\
@@ -232,9 +232,9 @@ apf.editor.searchPlugin = function(sName) {
                   onclick="apf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
                   id="', idReplAllBtn, '" />');
         }
-        aJml.push('</j:bar></j:toolbar>');
+        aAml.push('</j:bar></j:toolbar>');
 
-        this.appendJmlNode(aJml.join(""), document.getElementById(idBtns));
+        this.appendAmlNode(aAml.join(""), document.getElementById(idBtns));
 
         if (this.name == "replace") {
             this.oReplBtn    = self[idReplBtn];

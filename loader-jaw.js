@@ -35,7 +35,7 @@ if (!apf.basePath)
     apf.basePath = "./";
 
 apf.Modules = [
-    "JmlParser",
+    "AmlParser",
     "XmlDatabase"
 ];
 apf.Components = [

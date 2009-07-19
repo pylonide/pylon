@@ -222,7 +222,7 @@ apf.DataBinding = function(){
         if (this.$unloaddatabinding)
             this.$unloaddatabinding();
 
-        var node = this.xmlBindings;//this.$jml.selectSingleNode("Bindings");
+        var node = this.xmlBindings;//this.$aml.selectSingleNode("Bindings");
         if (!node || !node.getAttribute("connect"))
             return;
 
@@ -264,14 +264,14 @@ apf.DataBinding = function(){
      * @see  element.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
-        if (!apf.JmlDom)
+        if (!apf.AmlDom)
             return apf.window.$at;
 
         var pNode = this, tracker = ignoreMe ? null : this.$at;
         if (!tracker && this.connectId)
             tracker = self[this.connectId].$at;
 
-        //apf.xmldb.getInheritedAttribute(this.$jml, "actiontracker");
+        //apf.xmldb.getInheritedAttribute(this.$aml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(apf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
@@ -610,7 +610,7 @@ apf.DataBinding = function(){
                     for (var k = multiple.length - 1; k >= 0; k--) {
                         newMultiple.unshift({
                             xmlActionNode : rules[i],
-                            jmlNode       : this,
+                            amlNode       : this,
                             selNode       : multiple[k],
                             xmlNode       : multiple[k]
                         })
@@ -621,7 +621,7 @@ apf.DataBinding = function(){
                     action        : atAction,
                     args          : args,
                     xmlActionNode : rules[i],
-                    jmlNode       : this,
+                    amlNode       : this,
                     selNode       : contextNode,
                     multiple      : newMultiple || false
                     //#ifdef __WITH_LOCKING
@@ -703,7 +703,7 @@ apf.DataBinding = function(){
                         if (!model.data)
                             model.load("<data />");
         
-                        xpath   = (model.getXpathByJmlNode(this) || ".")
+                        xpath   = (model.getXpathByAmlNode(this) || ".")
                             + (xpath && xpath != "." ? "/" + xpath : "");
                         xmlNode = model.data;
                     }
@@ -745,7 +745,7 @@ apf.DataBinding = function(){
      *  <j:text model="#lstExample:select" />
      * </code>
      *
-     * @param {JmlNode} oElement  JmlNode specifying the element which is connected to this element.
+     * @param {AmlNode} oElement  AmlNode specifying the element which is connected to this element.
      * @param {Boolean} [dataOnly]
      *   Possible values:
      *   true   data is sent only once.
@@ -826,7 +826,7 @@ apf.DataBinding = function(){
     /**
      * Disconnects a previously established connection with another element.
      *
-     * @param {JmlNode} oElement  the element to be disconnected from this element.
+     * @param {AmlNode} oElement  the element to be disconnected from this element.
      * @param {String}  [type]
      *   Possible values:
      *   select  disconnects the select connection
@@ -1389,12 +1389,12 @@ apf.DataBinding = function(){
         //#endif
 
         // If control hasn't loaded databinding yet, queue the call
-        if ((!this.bindingRules && this.$jml
+        if ((!this.bindingRules && this.$aml
             && (!this.smartBinding && !this.traverse 
-            || apf.JmlParser.stackHasBindings(this.uniqueId))) 
+            || apf.AmlParser.stackHasBindings(this.uniqueId))) 
             || (this.$canLoadData && !this.$canLoadData())) {
             //#ifdef __DEBUG
-            if (!apf.JmlParser.stackHasBindings(this.uniqueId)) {
+            if (!apf.AmlParser.stackHasBindings(this.uniqueId)) {
                 apf.console.warn("Could not load data yet in " + this.tagName
                     + "[" + (this.name || "") + "]. The loaded data is queued \
                       until smartbinding rules are loaded or set manually.");
@@ -1570,12 +1570,12 @@ apf.DataBinding = function(){
                 throw new Error("Could not find model");
             //#endif
 
-            var jmlNode = this;
+            var amlNode = this;
             if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
                     insertPoint : xmlRootNode, //this.xmlRoot,
-                    jmlNode     : this
+                    amlNode     : this
                 }, function(){
-                    jmlNode.setConnections(xmlRootNode);//jmlNode.xmlRoot);
+                    amlNode.setConnections(xmlRootNode);//amlNode.xmlRoot);
                 }) === false
             ) {
                 this.clear(true);
@@ -1705,7 +1705,7 @@ apf.DataBinding = function(){
     }
 
     var initModelId = [];
-    this.$addJmlLoader(function(x){
+    this.$addAmlLoader(function(x){
         //, this.ref && this.hasFeature(__MULTISELECT__)
         if (initModelId[0])
             apf.setModel(initModelId[0], this);
@@ -1716,8 +1716,8 @@ apf.DataBinding = function(){
 
         //Set the model for normal smartbinding
         if ((!this.ref || this.hasFeature(__MULTISELECT__)) && !this.xmlRoot) {
-            var sb = apf.JmlParser.sbInit[this.uniqueId]
-                && apf.JmlParser.sbInit[this.uniqueId][0];
+            var sb = apf.AmlParser.sbInit[this.uniqueId]
+                && apf.AmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
             if (this.traverse && (sb && !sb.model
@@ -1750,14 +1750,14 @@ apf.DataBinding = function(){
         if (!x.getAttribute("create-model"))
             this.$propHandlers["create-model"].call(this);
 
-        var hasInitSb = apf.JmlParser.sbInit[this.uniqueId] ? true : false;
+        var hasInitSb = apf.AmlParser.sbInit[this.uniqueId] ? true : false;
         if ((!hasInitSb || !hasModel) && this.$setClearMessage
           && (!loadqueue && !this.xmlRoot && (this.hasFeature(__MULTISELECT__)
           || this.ref || hasInitSb)))
             this.$setClearMessage(this["empty-message"], "empty");
     });
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         // Remove data connections - Should be in DataBinding
         if (this.dataParent)
             this.dataParent.parent.disconnect(this);
@@ -1808,7 +1808,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["empty-message"] = function(value){
         this["empty-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$jml, "empty-message")
+            || apf.xmldb.getInheritedAttribute(this.$aml, "empty-message")
             || "No items";
 
         if (!apf.isParsing && this.$updateClearMessage) 
@@ -1846,7 +1846,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["loading-message"] = function(value){
         this["loading-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$jml, "loading-message")
+            || apf.xmldb.getInheritedAttribute(this.$aml, "loading-message")
             || "Loading...";
 
         if (!apf.isParsing && this.$updateClearMessage)
@@ -1862,7 +1862,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["offline-message"] = function(value){
         this["offline-message"] = value
-            || apf.xmldb.getInheritedAttribute(this.$jml, "offline-message")
+            || apf.xmldb.getInheritedAttribute(this.$aml, "offline-message")
             || "You are currently offline...";
 
         if (!apf.isParsing && this.$updateClearMessage)
@@ -1902,7 +1902,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !apf.isFalse(
-            apf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
+            apf.xmldb.getInheritedAttribute(this.$aml, "create-model"));
             
         var mb;
         if (this.getMultibinding && (mb = this.getMultibinding()))
@@ -1955,7 +1955,7 @@ apf.DataBinding = function(){
      * </code>
      * Remarks:
      * The smartbinding parts can also be assigned to an element by adding them
-     * directly as a child in jml.
+     * directly as a child in aml.
      * <code>
      *  <j:tree>
      *      <j:bindings>
@@ -1985,7 +1985,7 @@ apf.DataBinding = function(){
         var sb;
 
         if (value && typeof value == "string") {
-            sb = apf.JmlParser.getSmartBinding(value);
+            sb = apf.AmlParser.getSmartBinding(value);
 
             //#ifdef __DEBUG
             if (!sb)
@@ -2008,7 +2008,7 @@ apf.DataBinding = function(){
                 return this.smartBinding;
             }
 
-            return apf.JmlParser.addToSbStack(this.uniqueId, sb);
+            return apf.AmlParser.addToSbStack(this.uniqueId, sb);
         }
 
         return (this.smartBinding = sb.markForUpdate(this));
@@ -2044,7 +2044,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (apf.isParsing
-            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            ? apf.AmlParser.getFromSbStack(this.uniqueId)
             : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
@@ -2057,7 +2057,7 @@ apf.DataBinding = function(){
         if (!apf.nameserver.get("bindings", value))
             throw new Error(apf.formatErrorString(1064, this,
                 "Connecting bindings",
-                "Could not find bindings by name '" + value + "'", this.$jml));
+                "Could not find bindings by name '" + value + "'", this.$aml));
         // #endif
 
         var xmlNode = apf.nameserver.get("bindings", value);
@@ -2081,7 +2081,7 @@ apf.DataBinding = function(){
      */
     this.$propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (apf.isParsing
-            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            ? apf.AmlParser.getFromSbStack(this.uniqueId)
             : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
@@ -2094,7 +2094,7 @@ apf.DataBinding = function(){
         if (!apf.nameserver.get("actions", value))
             throw new Error(apf.formatErrorString(1065, this,
                 "Connecting bindings",
-                "Could not find actions by name '" + value + "'", this.$jml));
+                "Could not find actions by name '" + value + "'", this.$aml));
         // #endif
 
         var xmlNode = apf.nameserver.get("actions", value);
@@ -2109,7 +2109,7 @@ apf.DataBinding = function(){
             : this;
 
         var sb = hasRefBinding && o.smartBinding || (apf.isParsing
-            ? apf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
+            ? apf.AmlParser.getFromSbStack(this.uniqueId, isSelection, true)
             : o.$propHandlers["smartbinding"].call(o, new apf.smartbinding()))
 
         //We don't want to change a shared smartbinding
@@ -2135,7 +2135,7 @@ apf.DataBinding = function(){
 
         if (!model) {
             modelId = o.lastModelId =
-                o.model || findModel(this.$jml, isSelection);
+                o.model || findModel(this.$aml, isSelection);
 
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
 
@@ -2150,7 +2150,7 @@ apf.DataBinding = function(){
                 //#ifdef __DEBUG
                 else
                     throw new Error(apf.formatErrorString(1062, this, "init",
-                        "Could not find model to get data from", o.$jml));
+                        "Could not find model to get data from", o.$aml));
                 //#endif
             }
         }
@@ -2169,7 +2169,7 @@ apf.DataBinding = function(){
             throw new Error(apf.formatErrorString(1063, this,
                 "Setting @ref",
                 "Could not find xpath to determine XMLRoot: "
-                + strBindRef, o.$jml));
+                + strBindRef, o.$aml));
             //#endif
 
             return;
@@ -2357,7 +2357,7 @@ apf.DataBinding = function(){
 
         if (!this.hasFeature(__MULTISELECT__)) {
             // #ifdef __WITH_INLINE_DATABINDING
-            if (apf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
+            if (apf.isParsing && this.$aml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
                 return; //Ref will take care of everything
 
             //We're changing the model, lets do it using the @ref way
@@ -2468,7 +2468,7 @@ apf.StandardBinding = function(){
         if (action == "redo-remove") {
             var retreatToListenMode = false, model = this.getModel(true);
             if (model) {
-                var xpath = model.getXpathByJmlNode(this);
+                var xpath = model.getXpathByAmlNode(this);
                 if (xpath) {
                     var xmlNode = model.data.selectSingleNode(xpath);
                     if (xmlNode != this.xmlRoot)
@@ -2484,12 +2484,12 @@ apf.StandardBinding = function(){
                     throw new Error(apf.formatErrorString(0, this, 
                         "Setting change notifier on component", 
                         "Component without a model is listening for changes", 
-                        this.$jml));
+                        this.$aml));
                 }
                 #endif*/
 
                 //Set Component in listening state untill data becomes available again.
-                return model.loadInJmlNode(this, xpath);
+                return model.loadInAmlNode(this, xpath);
             }
         }
 
@@ -3290,10 +3290,10 @@ apf.MultiselectBinding = function(){
                     throw new Error(apf.formatErrorString(0, this,
                         "Setting change notifier on component",
                         "Component without a model is listening for changes",
-                        this.$jml));
+                        this.$aml));
                 //#endif
 
-                return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
+                return model.loadInAmlNode(this, model.getXpathByAmlNode(this));
             }
         }
 
@@ -3373,7 +3373,7 @@ apf.MultiselectBinding = function(){
             throw new Error(apf.formatErrorString(1060, this,
                 "adding Nodes for load",
                 "No traverse SmartBinding rule was specified. This rule is \
-                 required for a " + this.tagName + " component.", this.$jml));
+                 required for a " + this.tagName + " component.", this.$aml));
         }
         // #endif
 
@@ -3492,11 +3492,11 @@ apf.MultiselectBinding = function(){
     });
 
     this.$loadInlineData = function(x){
-        if (!$xmlns(x, "item", apf.ns.jml).length)
-            return apf.JmlParser.parseChildren(x, null, this);
+        if (!$xmlns(x, "item", apf.ns.aml).length)
+            return apf.AmlParser.parseChildren(x, null, this);
 
         //#ifdef __WITH_XFORMS
-        var parent = $xmlns(x, "choices", apf.ns.jml)[0] || x;
+        var parent = $xmlns(x, "choices", apf.ns.aml)[0] || x;
         /* #else
         var parent = x;
         #endif */
@@ -3512,7 +3512,7 @@ apf.MultiselectBinding = function(){
         }
         //#endif
 
-        var prefix = apf.findPrefix(x, apf.ns.jml);
+        var prefix = apf.findPrefix(x, apf.ns.aml);
 
         if (apf.isIE) {
             x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"

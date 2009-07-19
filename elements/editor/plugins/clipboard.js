@@ -114,8 +114,8 @@ apf.editor.plugin('pastetext', function() {
                 e.cancelBubble = true;
             };
         }
-        this.appendJmlNode(
-           '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
+        this.appendAmlNode(
+           '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
             <j:button caption="' + this.editor.translate('insert') + '" \
               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
             </j:bar></j:toolbar>',

@@ -292,19 +292,19 @@ apf.editor.plugin = function(sName, fExec) {
         this.uniqueId = apf.all.push(this) - 1;
 
         /**
-         * Appends a new JML element - in its string representation - to an
-         * existing JML node. A new JML node will be created as specified by the
+         * Appends a new AML element - in its string representation - to an
+         * existing AML node. A new AML node will be created as specified by the
          * contents of sNode and appended to oParent.
          *
          * @param {String}  sNode
-         * @param {JmlNode} oParent
-         * @type  {JmlNode}
+         * @param {AmlNode} oParent
+         * @type  {AmlNode}
          */
-        this.appendJmlNode = function(sNode, oParent) {
+        this.appendAmlNode = function(sNode, oParent) {
             if (!sNode) return null;
 
-            var jml = apf.getXml("<tempnode>" + sNode + "</tempnode>");
-            return apf.JmlParser.parseMoreJml(jml, oParent, this.editor, true);
+            var aml = apf.getXml("<tempnode>" + sNode + "</tempnode>");
+            return apf.AmlParser.parseMoreAml(aml, oParent, this.editor, true);
         };
 
         this.dispatchEvent = function() {

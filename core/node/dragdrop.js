@@ -85,27 +85,27 @@ var __DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {JMLElement}  host      the jml source element.
- * @event  dragover Fires when the users drags over this jml element.
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragover Fires when the users drags over this aml element.
  *   cancellable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {JMLElement}  host      the jml source element.
- * @event  dragout  Fires when the user moves away from this jml element.
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragout  Fires when the user moves away from this aml element.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {JMLElement}  host      the jml source element.
- * @event  dragdrop  Fires when the user drops an item on this jml element.
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragdrop  Fires when the user drops an item on this aml element.
  *   cancellable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {JMLElement}  host      the jml source element.
+ *   {AMLElement}  host      the aml source element.
  *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
  *
  * @see element.allow-drag
@@ -657,7 +657,7 @@ apf.DragDrop = function(){
 
     this.$propHandlers["dragdrop"] = function(value){
         var sb = this.smartBinding || (apf.isParsing
-            ? apf.JmlParser.getFromSbStack(this.uniqueId)
+            ? apf.AmlParser.getFromSbStack(this.uniqueId)
             : this.$propHandlers["smartbinding"].call(this, new apf.smartbinding()));
 
         if (!value) {
@@ -671,13 +671,13 @@ apf.DragDrop = function(){
             throw new Error(apf.formatErrorString(1066, this,
                 "Connecting dragdrop",
                 "Could not find dragdrop by name '"
-                + value + "'", this.$jml));
+                + value + "'", this.$aml));
         // #endif
 
         sb.addDragDrop(apf.nameserver.get("dragdrop", value));
     };
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         this.unloadDragDrop();
     });
 };

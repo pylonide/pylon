@@ -959,7 +959,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 
                 this.getModel().insertFrom(rule.getAttribute("get"), xmlContext, {
                     insertPoint : xmlContext, 
-                    jmlNode     : this
+                    amlNode     : this
                 });
             }
             else {
@@ -1260,9 +1260,9 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
      * @see baseclass.multiselect.event.afterchoose
      */
     this.$draw = function(){
-        if (!this.$jml.getAttribute("skin")) {
-            var mode = this.$jml.getAttribute("mode");
-            if (!this.$jml.getAttribute("skin")) {
+        if (!this.$aml.getAttribute("skin")) {
+            var mode = this.$aml.getAttribute("mode");
+            if (!this.$aml.getAttribute("skin")) {
                 this.skinName = null;
                 this.skin = mode + "tree";
                 this.$loadSkin();
@@ -1285,14 +1285,14 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
         };
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
             this.startcollapsed = !apf.isFalse(this.$getOption("main", "startcollapsed"));
         
-        if (this.$jml.childNodes.length) 
-            this.$loadInlineData(this.$jml);
+        if (this.$aml.childNodes.length) 
+            this.$loadInlineData(this.$aml);
     };
     
     this.$destroy = function(){

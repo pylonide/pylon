@@ -46,7 +46,7 @@ var IS_ROOT   = 1 << 4;
  * @inherits apf.Cache
  * @inherits apf.Presentation
  * @inherits apf.DataBinding
- * @inherits apf.JmlElement
+ * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -249,7 +249,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             if (rule.getAttribute("get")) {
                 this.getModel().insertFrom(rule.getAttribute("get"), xmlContext, {
                     insertPoint : xmlContext, 
-                    jmlNode     : this
+                    amlNode     : this
                 });
             }
             else {
@@ -1145,17 +1145,17 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.openOnAdd   = !apf.isFalse(x.getAttribute("openonadd"));
-        this.startClosed = !apf.isFalse(this.$jml.getAttribute("startclosed") 
+        this.startClosed = !apf.isFalse(this.$aml.getAttribute("startclosed") 
             || this.$getOption("Main", "startclosed"));
-        this.noCollapse  = apf.isTrue(this.$jml.getAttribute("nocollapse"));
+        this.noCollapse  = apf.isTrue(this.$aml.getAttribute("nocollapse"));
         if (this.noCollapse)
             this.startClosed = false;
-        this.singleopen  = apf.isTrue(this.$jml.getAttribute("singleopen"));
-        this.prerender   = !apf.isFalse(this.$jml.getAttribute("prerender"));
+        this.singleopen  = apf.isTrue(this.$aml.getAttribute("singleopen"));
+        this.prerender   = !apf.isFalse(this.$aml.getAttribute("prerender"));
         
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.AmlParser.parseChildren(this.$aml, null, this);
     };
     
     this.$destroy = function(){

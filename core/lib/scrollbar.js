@@ -284,7 +284,7 @@ apf.scrollbar = function(){
         return this;
     };
     
-    var jmlNode = this;
+    var amlNode = this;
     function setScroll(timed, noEvent){
         if (CURVALUE > 1) 
             CURVALUE = 1;
@@ -294,9 +294,9 @@ apf.scrollbar = function(){
             - (BTN.offsetHeight * 2) - INDICATOR.offsetHeight) * CURVALUE) + "px";
         
         //status = CURVALUE;
-        jmlNode.pos = CURVALUE;//(INDICATOR.offsetTop-BTNUP.offsetHeight)/(SLIDEMAXHEIGHT-INDICATOR.offsetHeight);
+        amlNode.pos = CURVALUE;//(INDICATOR.offsetTop-BTNUP.offsetHeight)/(SLIDEMAXHEIGHT-INDICATOR.offsetHeight);
         if (!noEvent)
-            onscroll(timed, jmlNode.pos);
+            onscroll(timed, amlNode.pos);
     }
     
     this.setScroll = setScroll;

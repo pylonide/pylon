@@ -100,7 +100,7 @@ apf.Anchoring = function(){
     };
 
     /**
-     * Enables anchoring based on attributes set in the JML of this element
+     * Enables anchoring based on attributes set in the AML of this element
      *
      * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
@@ -196,7 +196,7 @@ apf.Anchoring = function(){
     }
 
     function reparent(beforeNode, pNode, withinParent, oldParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
 
         if (!withinParent && !disabled && parsed) //@todo hmm weird state check
@@ -384,12 +384,12 @@ apf.Anchoring = function(){
         disabled = false;
     };
 
-    this.$addJmlLoader(function(){
+    this.$addAmlLoader(function(){
         if (updateQueue)
             this.$updateLayout();
     });
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         this.disableAnchoring();
     });
 };

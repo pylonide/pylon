@@ -97,7 +97,7 @@ apf.insert = function(pHtmlNode, tagName){
     /* *********
      INIT
      **********/
-    this.implement(apf.JmlElement); /** @inherits apf.JmlElement */
+    this.implement(apf.AmlElement); /** @inherits apf.AmlElement */
     this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = pHtmlNode;
@@ -106,11 +106,11 @@ apf.insert = function(pHtmlNode, tagName){
     };
     
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
-                apf.JmlParser.parseChildren(x, this.oExt, this);
+                apf.AmlParser.parseChildren(x, this.oExt, this);
             }
             else 
                 this.setValue(x.firstChild.nodeValue);

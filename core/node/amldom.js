@@ -19,14 +19,14 @@
  *
  */
 
-var __WITH_JMLDOM__ = 1 << 14;
+var __WITH_AMLDOM__ = 1 << 14;
 
-// #ifdef __WITH_JMLDOM
+// #ifdef __WITH_AMLDOM
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM
  * is the primary method for accessing and manipulating an xml document. This
- * includes html documents and jml documents. Every element in the ajax.org
+ * includes html documents and aml documents. Every element in the ajax.org
  * markup language can be manipulated using the W3C DOM. This means
  * that every element and attribute you can set in the xml format, can be
  * changed, set, removed reparented, etc runtime. This offers a great deal of
@@ -59,7 +59,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  *
  *  tstButton.setAttribute("caption", "Click me");
  * </code>
- * That would be the same as having the following jml:
+ * That would be the same as having the following aml:
  * <code>
  *  <j:window id="winExample"
  *    title = "Example"
@@ -81,7 +81,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  * @version     %I%, %G%
  * @since       0.5
  */
-apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
+apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
     /**
      * Number specifying the type of node within the document.
      *   Possible values:
@@ -99,7 +99,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *   apf.NODE_NOTATION
      */
     this.nodeType      = apf.NODE_ELEMENT;
-    this.$regbase      = this.$regbase | __WITH_JMLDOM__;
+    this.$regbase      = this.$regbase | __WITH_AMLDOM__;
     
     //#ifndef __PACKAGED
     /**
@@ -176,7 +176,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             //#endif
     
             this.parentNode = parentNode;
-            this.$jml        = jml;
+            this.$aml        = aml;
             /**
              * The purpose of this element
              * Possible values:
@@ -193,7 +193,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             /**
              * The unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
              */
-            this.name       = jml && jml.getAttribute("id");
+            this.name       = aml && aml.getAttribute("id");
     
             /**
              * Special content for this object
@@ -207,8 +207,8 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * If the element was already a child of another element it is removed from
      * that parent before adding it this element.
      *
-     * @param  {JmlNode}  jmlNode  the element to insert as child of this element.
-     * @return  {JmlNode}  the appended node
+     * @param  {AmlNode}  amlNode  the element to insert as child of this element.
+     * @return  {AmlNode}  the appended node
      * @method
      */
     this.appendChild =
@@ -218,32 +218,32 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * element. * If the element was already a child of another element it is
      * removed from that parent before adding it this element.
      *
-     * @param  {JmlNode}  jmlNode     the element to insert as child of this element.
-     * @param  {JmlNode}  beforeNode  the element which determines the insertion position of the element.
-     * @return  {JmlNode}  the inserted node
+     * @param  {AmlNode}  amlNode     the element to insert as child of this element.
+     * @param  {AmlNode}  beforeNode  the element which determines the insertion position of the element.
+     * @return  {AmlNode}  the inserted node
      */
-    this.insertBefore = function(jmlNode, beforeNode){
+    this.insertBefore = function(amlNode, beforeNode){
         //#ifdef __DEBUG
-        if (!jmlNode || !jmlNode.nodeFunc || !jmlNode.hasFeature(__WITH_JMLDOM__)){
+        if (!amlNode || !amlNode.nodeFunc || !amlNode.hasFeature(__WITH_AMLDOM__)){
             throw new Error(apf.formatErrorString(1072, this,
                 "Insertbefore DOM operation",
-                "Invalid argument passed. Expecting a JMLElement."));
+                "Invalid argument passed. Expecting a AMLElement."));
         }
         //#endif
         
-        if (jmlNode.nodeType == apf.NODE_DOCUMENT_FRAGMENT) {
-            var nodes = jmlNode.childNodes.slice(0);
+        if (amlNode.nodeType == apf.NODE_DOCUMENT_FRAGMENT) {
+            var nodes = amlNode.childNodes.slice(0);
             for (var i = 0, l = nodes.length; i < l; i++) {
                 this.insertBefore(nodes[i], beforeNode);
             }
             return;
         }
 
-        var isMoveWithinParent = jmlNode.parentNode == this;
-        var oldParentHtmlNode  = jmlNode.pHtmlNode;
-        if (jmlNode.parentNode)
-            jmlNode.removeNode(isMoveWithinParent);
-        jmlNode.parentNode = this;
+        var isMoveWithinParent = amlNode.parentNode == this;
+        var oldParentHtmlNode  = amlNode.pHtmlNode;
+        if (amlNode.parentNode)
+            amlNode.removeNode(isMoveWithinParent);
+        amlNode.parentNode = this;
 
         var index = -1;
         if (beforeNode) {
@@ -258,41 +258,41 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 return false;
             }
 
-            jmlNode.nextSibling = beforeNode;
-            jmlNode.previousSibling = beforeNode.previousSibling;
-            beforeNode.previousSibling = jmlNode;
-            if (jmlNode.previousSibling)
-                jmlNode.previousSibling.nextSibling = jmlNode;
+            amlNode.nextSibling = beforeNode;
+            amlNode.previousSibling = beforeNode.previousSibling;
+            beforeNode.previousSibling = amlNode;
+            if (amlNode.previousSibling)
+                amlNode.previousSibling.nextSibling = amlNode;
         }
 
         if (index >= 0)
-            this.childNodes = this.childNodes.slice(0, index).concat(jmlNode,
+            this.childNodes = this.childNodes.slice(0, index).concat(amlNode,
                 this.childNodes.slice(index));
         else {
-            index = this.childNodes.push(jmlNode) - 1;
+            index = this.childNodes.push(amlNode) - 1;
 
-            jmlNode.nextSibling = null;
+            amlNode.nextSibling = null;
             if (index > 0) {
-                jmlNode.previousSibling = this.childNodes[index - 1];
-                jmlNode.previousSibling.nextSibling = jmlNode;
+                amlNode.previousSibling = this.childNodes[index - 1];
+                amlNode.previousSibling.nextSibling = amlNode;
             }
             else
-                jmlNode.previousSibling = null;
+                amlNode.previousSibling = null;
         }
 
         this.firstChild = this.childNodes[0];
         this.lastChild  = this.childNodes[this.childNodes.length - 1];
 
         function triggerUpdate(){
-            jmlNode.pHtmlNode = _self.canHaveChildren
+            amlNode.pHtmlNode = _self.canHaveChildren
                 ? _self.oInt
                 : document.body;
 
-            //Signal Jml Node
-            var i, callbacks = jmlNode.$domHandlers["reparent"];
+            //Signal Aml Node
+            var i, callbacks = amlNode.$domHandlers["reparent"];
             for (i = 0, l = callbacks.length; i < l; i++) {
                 if (callbacks[i])
-                    callbacks[i].call(jmlNode, beforeNode,
+                    callbacks[i].call(amlNode, beforeNode,
                         _self, isMoveWithinParent, oldParentHtmlNode);
             }
 
@@ -300,21 +300,21 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             callbacks = _self.$domHandlers["insert"];
             for (i = 0, l = callbacks.length; i < l; i++) {
                 if (callbacks[i])
-                    callbacks[i].call(_self, jmlNode,
+                    callbacks[i].call(_self, amlNode,
                         beforeNode, isMoveWithinParent);
             }
 
             //@todo this is a hack, a good solution should be found
-            var containsIframe = jmlNode.oExt.getElementsByTagName("iframe").length > 0;
-            if (jmlNode.oExt && !apf.isGecko && !containsIframe) {
-                jmlNode.pHtmlNode.insertBefore(jmlNode.oExt,
+            var containsIframe = amlNode.oExt.getElementsByTagName("iframe").length > 0;
+            if (amlNode.oExt && !apf.isGecko && !containsIframe) {
+                amlNode.pHtmlNode.insertBefore(amlNode.oExt,
                     beforeNode && beforeNode.oExt || null);
             }
         }
 
-        //If we're not loaded yet, just append us to the jml to be parsed
-        if (!this.$jmlLoaded) {
-            jmlNode.$reappendToParent = triggerUpdate;
+        //If we're not loaded yet, just append us to the aml to be parsed
+        if (!this.$amlLoaded) {
+            amlNode.$reappendToParent = triggerUpdate;
 
             return;
         }
@@ -343,15 +343,15 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (!this.parentNode.childNodes.contains(this)) {
             throw new Error(apf.formatErrorString(0, this,
                 "Removing node from parent",
-                "Passed node is not a child of this node.", this.$jml));
+                "Passed node is not a child of this node.", this.$aml));
         }
         //#endif
 
         this.parentNode.childNodes.remove(this);
 
-        //If we're not loaded yet, just remove us from the jml to be parsed
-        if (this.$jmlLoaded && !apf.isDestroying) {
-            //this.parentNode.$jml.removeChild(this.$jml);
+        //If we're not loaded yet, just remove us from the aml to be parsed
+        if (this.$amlLoaded && !apf.isDestroying) {
+            //this.parentNode.$aml.removeChild(this.$aml);
 
             if (this.oExt && this.oExt.parentNode)
                 this.oExt.parentNode.removeChild(this.oExt);
@@ -400,7 +400,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (!childNode || !childNode.nodeFunc) {
             throw new Error(apf.formatErrorString(0, this,
                 "Removing a child node",
-                "Invalid Argument. removeChild() requires one argument of type JMLElement."));
+                "Invalid Argument. removeChild() requires one argument of type AMLElement."));
         }
         //#endif
 
@@ -432,11 +432,11 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * Clones this element, creating an exact copy of it but does not insert
      * it in the document hierarchy.
      * @param {Boolean} deep whether the element's are cloned recursively.
-     * @return {JmlNode} the cloned element.
+     * @return {AmlNode} the cloned element.
      */
     this.cloneNode = function(deep){
-        var jml = this.serialize(true, true, !deep);
-        return apf.document.createElement(jml);
+        var aml = this.serialize(true, true, !deep);
+        return apf.document.createElement(aml);
     };
 
     /**
@@ -445,7 +445,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * @return {String} the string representation of this element.
      */
     this.serialize = function(returnXml, skipFormat, onlyMe){
-        var node = this.$jml.cloneNode(false);
+        var node = this.$aml.cloneNode(false);
         for (var name, i = 0; i < (this.$supportedProperties || []).length; i++) {
             name = this.$supportedProperties[i];
             if (this.getProperty(name) !== undefined)
@@ -472,8 +472,8 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * @param {String} value the new value of the attribute.
      */
     this.setAttribute = function(name, value) {
-        if (this.$jml)
-            this.$jml.setAttribute(name, (value || "").toString());
+        if (this.$aml)
+            this.$aml.setAttribute(name, (value || "").toString());
 
         if (name.indexOf("on") === 0) { //@todo this is bollocks. Should remove previous set onxxx, see JPF-27
             if (this.$events[name])
@@ -521,11 +521,11 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         return this[name];
     };
     
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     /**
      * Retrieves the attribute node for a given name
      * @param {String} name the name of the attribute to find.
-     * @return {JmlNode} the attribute node or null if none was found with the name specified.
+     * @return {AmlNode} the attribute node or null if none was found with the name specified.
      */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
@@ -534,13 +534,13 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
 
     /**** Xpath support ****/
 
-    //#ifdef __WITH_JMLDOM_XPATH
+    //#ifdef __WITH_AMLDOM_XPATH
     /**
-     * Queries the jml dom using the W3C xPath query language and returns a node
+     * Queries the aml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
      * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
-     * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
-     * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
+     * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
+     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} list of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
@@ -549,12 +549,12 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     /**
-     * Queries the jml dom using the W3C xPath query language and returns a single
+     * Queries the aml dom using the W3C xPath query language and returns a single
      * node. This is not an official API call but can be useful in certain cases.
      * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
-     * @param {String}  sExpr          the xpath expression to query the jml DOM tree with.
-     * @param {JmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
-     * @returns {JmlNode} the first node that matches the query.
+     * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
+     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
+     * @returns {AmlNode} the first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
         return apf.XPath.selectNodes(sExpr,
@@ -564,7 +564,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
 
     /**** properties ****/
 
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     /**
      * Nodelist containing all attributes. This is implemented according to the
      * W3C specification.
@@ -574,8 +574,8 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *      alert(obj.attributes.item(i));
      *  }
      * </code>
-     * @see baseclass.jmldom.method.getAttribute
-     * @see baseclass.jmldom.method.setAttribute
+     * @see baseclass.amldom.method.getAttribute
+     * @see baseclass.amldom.method.setAttribute
      */
     this.attributes = {
         getNamedItem    : function(name){
@@ -608,12 +608,12 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             _self.removeAttribute(name);
         },
         length          : function(){
-            return _self.$jml && _self.$jml.attributes.length
+            return _self.$aml && _self.$aml.attributes.length
                 || (_self.$supportedProperties || {length:0}).length; //@todo incorrect
         },
         item            : function(i){
-            if (_self.$jml && _self.$jml.attributes)
-                return _self.$jml.attributes[i];
+            if (_self.$aml && _self.$aml.attributes)
+                return _self.$aml.attributes[i];
 
             var collection = _self.$supportedProperties;
             if (!collection[i])
@@ -632,7 +632,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * When the node is a document, it returns the XML namespace for the current 
      * document.
      */
-    this.namespaceURI = apf.ns.jml;
+    this.namespaceURI = apf.ns.aml;
     
     this.$setParent = function(pNode){
         if (pNode && pNode.childNodes.indexOf(this) > -1)
@@ -642,7 +642,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         var nodes = this.parentNode.childNodes;
         var id = nodes.push(this) - 1;
 
-        //#ifdef __WITH_JMLDOM_FULL
+        //#ifdef __WITH_AMLDOM_FULL
         if (id === 0)
             this.parentNode.firstChild = this;
         else {
@@ -657,7 +657,7 @@ apf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     if (this.parentNode && this.parentNode.hasFeature
-      && this.parentNode.hasFeature(__WITH_JMLDOM__))
+      && this.parentNode.hasFeature(__WITH_AMLDOM__))
         this.$setParent(this.parentNode);
 };
 // #endif

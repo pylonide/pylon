@@ -171,7 +171,7 @@ apf.Transaction = function(){
                 var at = this.$at;
                 this.$at = this.dataParent 
                     ? this.dataParent.parent.getActionTracker()
-                    : null;//self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+                    : null;//self[this.$aml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
                 
                 transactionSubject.executeAction("replaceNode", [originalNode, transactionNode],
                     "update", transactionNode);
@@ -242,7 +242,7 @@ apf.Transaction = function(){
      *   add    the transaction is started to add a new {@link term.datanode data node}.
      *   update the transaction is started to update an existing {@link term.datanode data node}.
      * @param {XMLElement} xmlNode 
-     * @param {JMLElement} dataParent 
+     * @param {AMLElement} dataParent 
      */
     this.begin = function(strAction, xmlNode, dataParent){
         if (inTransaction) {
@@ -550,23 +550,23 @@ apf.Transaction = function(){
     });
     
     //Init
-    if (!this.$jml || !this.$jml.getAttribute("validgroup")) {
+    if (!this.$aml || !this.$aml.getAttribute("validgroup")) {
         this.$validgroup = new apf.ValidationGroup();
         this.$validgroup.add(this);
     }
     
     //autoset model="#id-or-generated-id"
-    if (this.$jml) {
+    if (this.$aml) {
         if (!this.$model) {
             this.model = -1;
-            if (this.$jml.getAttribute("model")) 
-                this.setProperty("model", this.$jml.getAttribute("model"));
+            if (this.$aml.getAttribute("model")) 
+                this.setProperty("model", this.$aml.getAttribute("model"));
             this.$modelIgnoreOnce = true;
         }
             
         if (!this.name)
             this.setAttribute("id", "trAutoName" + this.uniqueId);
-        this.$jml.setAttribute("model", "#" + this.name);
+        this.$aml.setAttribute("model", "#" + this.name);
     }
     
     if (typeof this.autoshow == "undefined" && (this.tagName == "modalwindow" 

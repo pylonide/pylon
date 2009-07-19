@@ -22,11 +22,11 @@
 // #define __WITH_DATABINDING 1
 
 /**
- * Element that defines a template of jml which is repeated for a list of 
+ * Element that defines a template of aml which is repeated for a list of 
  * selected {@link term.datanode data nodes}. Each template instance is databound to the
  * same {@link term.datanode data node}.
  * Example:
- * Simple example of some jml which is repeated. The button removes an item
+ * Simple example of some aml which is repeated. The button removes an item
  * from the model when pressed.
  * <code>
  *   <j:model id="mdlExample">
@@ -52,7 +52,7 @@
  *
  * @constructor
  * @define repeat
- * @allowchild {anyjml}
+ * @allowchild {anyaml}
  * @addnode elements
  *
  * @inherits apf.DataBinding
@@ -93,22 +93,22 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
             oExt: htmlNode
         };
         
-        //Create JML Nodes
-        var jmlNode = this.template.cloneNode(true);
-        jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
+        //Create AML Nodes
+        var amlNode = this.template.cloneNode(true);
+        amlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
         
         if (apf.isParsing)
-            apf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
+            apf.AmlParser.parseChildren(amlNode, htmlNode, oItem);
         else {
-            apf.JmlParser.parseMoreJml(jmlNode, htmlNode, oItem);
+            apf.AmlParser.parseMoreAml(amlNode, htmlNode, oItem);
         }
         
         if (apf.isGecko) //firefox bug fix?
-            items.push(jmlNode);
+            items.push(amlNode);
     };
     
-    this.getRootData = function(jmlNode){
-        var id = apf.xmldb.getInheritedAttribute(jmlNode.$jml, "model");
+    this.getRootData = function(amlNode){
+        var id = apf.xmldb.getInheritedAttribute(amlNode.$aml, "model");
         return apf.getData(id);
     }
     
@@ -154,7 +154,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
             this.addItem(children[i], null, i);
         }
         
-        apf.JmlParser.parseLastPass();
+        apf.AmlParser.parseLastPass();
     };
     
     /**
@@ -209,7 +209,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
         }
         /*else if (action.match(/add|insert/) && this.isTraverseNode(xmlNode)) {
             this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
-            apf.JmlParser.parseLastPass();
+            apf.AmlParser.parseLastPass();
         }*/
         else if (action == "synchronize") {
         
@@ -224,7 +224,7 @@ apf.repeat = apf.component(apf.NODE_VISIBLE, function(){
         this.oInt = this.oExt;
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.template = x;
         
         if (!this.name) {

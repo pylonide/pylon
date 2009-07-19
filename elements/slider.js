@@ -148,8 +148,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                 apf.removeNode(markers[i]);
         }
 
-        if (!this.step && this.$jml)
-            this.step = parseInt(this.$jml.getAttribute("step")) || 0;
+        if (!this.step && this.$aml)
+            this.step = parseInt(this.$aml.getAttribute("step")) || 0;
 
         //Add markers
         if (value && this.step) {
@@ -632,11 +632,11 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         //#endif
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.$propHandlers["value"].call(this, this.value);
 
         //@todo this goes wrong with skin switching. smartbindings is called again.
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(){

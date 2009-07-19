@@ -24,7 +24,7 @@
 /**
  * Element displaying a rectangle consisting of one or more columns
  * which contain zero or more windows. Each window is loaded with specific
- * content described in jml. Each of these so-called 'docklets'
+ * content described in aml. Each of these so-called 'docklets'
  * can have specific data loaded from a datasource and can
  * be instantiated more than once.
  * Example:
@@ -49,7 +49,7 @@
  *  </j:portal>
  * </code>
  * Remarks:
- * A docklet xml is a piece of jml that should be in the following form:
+ * A docklet xml is a piece of aml that should be in the following form:
  * <code>
  *  <j:docklet xmlns:j="http://ajax.org/2005/aml" 
  *    caption="Billing History" icon="icoBilling.gif" name="BillHistory">
@@ -86,7 +86,7 @@
  * @inherits apf.Presentation
  * @inherits apf.MultiSelect
  * @inherits apf.DataBinding
- * @inherits apf.JmlElement
+ * @inherits apf.AmlElement
  * @inherits apf.Cache
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -224,7 +224,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
               });
         }
         
-        var xmlNode = apf.getJmlDocFromString(strXml).documentElement;
+        var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
         
         /* Model replacement - needs to be build
          var models = xmlNode.selectNodes("//model/@id");
@@ -236,8 +236,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var name = xmlNode.getAttribute("name");
 
         //Load docklet
-        docklet.$jml      = xmlNode;
-        docklet.skinset   = apf.xmldb.getInheritedAttribute(_self.$jml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+        docklet.$aml      = xmlNode;
+        docklet.skinset   = apf.xmldb.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
         xmlNode.setAttribute("skinset", docklet.skinset);
         docklet.skin      = "docklet";
         docklet.skinName  = null;
@@ -250,8 +250,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         docklet.setProperty("title", portalNode.applyRuleSetOnNode("caption", dataNode));
         docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
         
-        docklet.$loadJml(xmlNode, name);
-        apf.JmlParser.parseLastPass();
+        docklet.$loadAml(xmlNode, name);
+        apf.AmlParser.parseLastPass();
 
         if (xmlNode.getAttribute("width"))
             docklet.setProperty("width", xmlNode.getAttribute("width"));
@@ -282,7 +282,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         docklet.implement(apf.modalwindow.widget);
 
         docklet.parentNode = this;
-        docklet.implement(apf.JmlDom);
+        docklet.implement(apf.AmlDom);
         //this.applyRuleSetOnNode("border", xmlNode);
 
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
@@ -291,7 +291,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         if (docklet_cache[srcUrl]) {
             var strXml = docklet_cache[srcUrl];
             //if (apf.isSafariOld)
-                //xmlNode = apf.getJmlDocFromString(xmlNode).documentElement;
+                //xmlNode = apf.getAmlDocFromString(xmlNode).documentElement;
             createDocklet(strXml, docklet, dataNode);
         }
         else {
@@ -332,7 +332,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
-            apf.JmlParser.parseLastPass();
+            apf.AmlParser.parseLastPass();
         }
     });
 
@@ -371,13 +371,13 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         for (var i = 0; i < columns.length; i++) {
             this.addColumn(columns[i]);
         }
 
-        //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
-        apf.JmlParser.parseChildren(x, null, this);
+        //if(this.$aml.childNodes.length) this.$loadInlineData(this.$aml);
+        apf.AmlParser.parseChildren(x, null, this);
 
         if (document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);

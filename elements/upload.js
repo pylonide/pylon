@@ -99,7 +99,7 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {Boolean} target     the url the form is posted to.
      * @attribute {Number}  !progress  the position of the progressbar indicating the position in the upload process.
      * @attribute {Boolean} !uploading whether this upload element is uploading.
-     * @attribute {String}  [rel]      the JML element the file input should retrieve its dimensions from
+     * @attribute {String}  [rel]      the AML element the file input should retrieve its dimensions from
      * Example:
      * When the skin doesn't have a progressbar you can use property binding to
      * update a seperate or central progressbar.
@@ -287,8 +287,8 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
         clearInterval(this.timer);
         clearInterval(this.timeout_timer);
 
-        /*this.oCaption.nodeValue = this.$jml.firstChild
-            ? this.$jml.firstChild.nodeValue
+        /*this.oCaption.nodeValue = this.$aml.firstChild
+            ? this.$aml.firstChild.nodeValue
             : "";*/
         this.$clearProgress();
 
@@ -324,10 +324,10 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
         this.inpFile = this.$getLayoutNode("form", "inp_file", this.form);
 
         if (!apf.isIE) {
-            //var jmlNode = this;
+            //var amlNode = this;
             this.inpFile.setAttribute("size", "0");
             this.inpFile.onchange = function(){
-                //jmlNode.$startUpload();
+                //amlNode.$startUpload();
                 _self.setProperty("value", this.value);
             }
         }
@@ -410,7 +410,7 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
         });
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
             this.$getLayoutNode("main", "background", this.oExt)

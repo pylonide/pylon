@@ -89,8 +89,8 @@ apf.editor.plugin('image', function(){
             </div>\
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oUrl = document.getElementById(idUrl);
-        this.appendJmlNode(
-            '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
+        this.appendAmlNode(
+            '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
              <j:button caption="Insert"\
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',
@@ -129,8 +129,8 @@ apf.editor.plugin('imagespecial', function() {
 
     this.execute = function(editor) {
         if (!winHandle) {
-            // get window handle from editor JML attribute
-            var s = (editor.$jml.getAttribute('imagewindow') || "").trim();
+            // get window handle from editor AML attribute
+            var s = (editor.$aml.getAttribute('imagewindow') || "").trim();
             if (s)
                 winHandle = self[s];
         }

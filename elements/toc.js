@@ -58,17 +58,17 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["represent"] = function(value){
         setTimeout(function(){
-            var jmlNode = _self.$represent = self[value];
+            var amlNode = _self.$represent = self[value];
             
-            jmlNode.addEventListener("afterswitch", function(e){
+            amlNode.addEventListener("afterswitch", function(e){
                 _self.$setActivePage(e.nextId);
             });
             
-            if (jmlNode.$drawn) {
+            if (amlNode.$drawn) {
                 _self.$createReflection();
             }
             else {
-                jmlNode.$jmlLoaders.push(function(){
+                amlNode.$amlLoaders.push(function(){
                     toc.$createReflection();
                 });
             }
@@ -163,7 +163,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
             oPage.setAttribute("onmouseout", 'apf.lookup(' + this.uniqueId 
                 + ').$setStyleClass(this, "", ["hover"]);');
             
-            if(!pages[i].$jml.getAttribute("caption")){
+            if(!pages[i].$aml.getAttribute("caption")){
                 // #ifdef __DEBUG
                 apf.console.warn("Page element without caption found.");
                 // #endif
@@ -171,7 +171,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
             }
             else {
                 apf.xmldb.setNodeValue(oCaption, 
-                    pages[i].$jml.getAttribute("caption") || "");
+                    pages[i].$aml.getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
@@ -207,7 +207,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
         this.oInt     = this.$getLayoutNode("main", "container", this.oExt);
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         // #ifdef __DEBUG
         if (!this.represent)
             throw new Error(apf.formatErrorString(1013, this, 

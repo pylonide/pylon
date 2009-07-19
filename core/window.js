@@ -41,7 +41,7 @@ apf.windowManager = {
 
     addForm: function(xmlFormNode){
         var x = {
-            jml: xmlFormNode,
+            aml: xmlFormNode,
             show: function(){
                 alert("not implemented");
             }
@@ -66,7 +66,7 @@ apf.windowManager = {
 };
 
 /**
- * Object representing the window of the jml application. The semantic is
+ * Object representing the window of the aml application. The semantic is
  * similar to that of a window in the browser, except that this window is not
  * the same as the javascript global object. It handles the focussing within
  * the document and several other events such as exit and the keyboard events.
@@ -247,7 +247,7 @@ apf.WindowImplementation = function(){
     /**
      * @private
      */
-    this.loadJml = function(x){
+    this.loadAml = function(x){
         if (x[apf.TAGNAME] == "deskrun")
             this.loadDeskRun(x);
         else {
@@ -295,7 +295,7 @@ apf.WindowImplementation = function(){
         jdwin.caption = q.getAttribute("caption") || "DeskRun";
         jdwin.icon    = q.getAttribute("icon") || 100;
 
-        var ct = $xmlns(q, "context", apf.ns.jml);
+        var ct = $xmlns(q, "context", apf.ns.aml);
         if (ct.length) {
             ct = ct[0];
             if (!apf.appsettings.tray)
@@ -337,86 +337,86 @@ apf.WindowImplementation = function(){
 
     this.$tabList = [];
 
-    this.$addFocus = function(jmlNode, tabindex, isAdmin){
+    this.$addFocus = function(amlNode, tabindex, isAdmin){
         if (!isAdmin) {
-            if (jmlNode.$domHandlers) {
-                jmlNode.$domHandlers.reparent.push(moveFocus);
-                jmlNode.$domHandlers.remove.push(removeFocus);
+            if (amlNode.$domHandlers) {
+                amlNode.$domHandlers.reparent.push(moveFocus);
+                amlNode.$domHandlers.remove.push(removeFocus);
             }
 
-            if (jmlNode.isWindowContainer > -1) {
-                jmlNode.addEventListener("focus", trackChildFocus);
+            if (amlNode.isWindowContainer > -1) {
+                amlNode.addEventListener("focus", trackChildFocus);
 
-                if (!jmlNode.$tabList) {
-                    jmlNode.$tabList = [jmlNode];
+                if (!amlNode.$tabList) {
+                    amlNode.$tabList = [amlNode];
                 }
 
-                jmlNode.$focusParent = jmlNode;
-                this.$tabList.push(jmlNode);
+                amlNode.$focusParent = amlNode;
+                this.$tabList.push(amlNode);
 
                 return;
             }
         }
 
-        var fParent = findFocusParent(jmlNode);
+        var fParent = findFocusParent(amlNode);
         var list    = fParent.$tabList;
 
         //#ifdef __DEBUG
         if (list[tabindex]) {
-            apf.console.warn("Jml node already exist for tabindex " + tabindex
-                             + ". Will insert " + jmlNode.tagName + " ["
-                             + (jmlNode.name || "") + "] before existing one");
+            apf.console.warn("Aml node already exist for tabindex " + tabindex
+                             + ". Will insert " + amlNode.tagName + " ["
+                             + (amlNode.name || "") + "] before existing one");
         }
         //#endif
 
-        jmlNode.$focusParent = fParent;
+        amlNode.$focusParent = fParent;
 
         if (list[tabindex])
-            list.insertIndex(jmlNode, tabindex);
+            list.insertIndex(amlNode, tabindex);
         else
-            list.push(jmlNode);
+            list.push(amlNode);
     };
 
-    this.$removeFocus = function(jmlNode){
-        if (!jmlNode.$focusParent)
+    this.$removeFocus = function(amlNode){
+        if (!amlNode.$focusParent)
             return;
 
-        jmlNode.$focusParent.$tabList.remove(jmlNode);
+        amlNode.$focusParent.$tabList.remove(amlNode);
 
-        if (!jmlNode.isWindowContainer && jmlNode.$domHandlers) {
-            jmlNode.$domHandlers.reparent.remove(moveFocus);
-            jmlNode.$domHandlers.remove.remove(removeFocus);
+        if (!amlNode.isWindowContainer && amlNode.$domHandlers) {
+            amlNode.$domHandlers.reparent.remove(moveFocus);
+            amlNode.$domHandlers.remove.remove(removeFocus);
         }
 
-        if (jmlNode.isWindowContainer > -1)
-            jmlNode.removeEventListener("focus", trackChildFocus);
+        if (amlNode.isWindowContainer > -1)
+            amlNode.removeEventListener("focus", trackChildFocus);
     };
 
     var focusLoopDetect;
-    this.$focus = function(jmlNode, e, force){
-        if (this.focussed == jmlNode && !force)
+    this.$focus = function(amlNode, e, force){
+        if (this.focussed == amlNode && !force)
             return; //or maybe when force do $focus
 
         //#ifdef __DEBUG
-        var hadAlreadyFocus = this.focussed == jmlNode;
+        var hadAlreadyFocus = this.focussed == amlNode;
         //#endif
 
-        this.$settingFocus = jmlNode;
+        this.$settingFocus = amlNode;
 
-        if (this.focussed && this.focussed != jmlNode 
+        if (this.focussed && this.focussed != amlNode 
           && focusLoopDetect != this.focussed) {
             focusLoopDetect = this.focussed;
             this.focussed.blur(true, e);
 
             //#ifdef __WITH_XFORMS
-            jmlNode.dispatchEvent("DOMFocusOut");
+            amlNode.dispatchEvent("DOMFocusOut");
             //#endif
             
             if (focusLoopDetect != this.focussed)
                 return false;
         }
 
-        (this.focussed = jmlNode).focus(true, e);
+        (this.focussed = amlNode).focus(true, e);
 
         this.$settingFocus = null;
 
@@ -425,8 +425,8 @@ apf.WindowImplementation = function(){
         });
 
         //#ifdef __WITH_XFORMS
-        jmlNode.dispatchEvent("xforms-focus");
-        jmlNode.dispatchEvent("DOMFocusIn");
+        amlNode.dispatchEvent("xforms-focus");
+        amlNode.dispatchEvent("DOMFocusIn");
         //#endif
 
         //#ifdef __DEBUG
@@ -438,12 +438,12 @@ apf.WindowImplementation = function(){
         //#ifdef __WITH_OFFLINE_STATE
         if (typeof apf.offline != "undefined" && apf.offline.state.enabled
           && apf.offline.state.realtime)
-            apf.offline.state.set(this, "focus", jmlNode.name || jmlNode.uniqueId);
+            apf.offline.state.set(this, "focus", amlNode.name || amlNode.uniqueId);
         //#endif
     };
 
-    this.$blur = function(jmlNode){
-        if (this.focussed != jmlNode)
+    this.$blur = function(amlNode){
+        if (this.focussed != amlNode)
             return false;
 
         //#ifdef __DEBUG
@@ -455,11 +455,11 @@ apf.WindowImplementation = function(){
         this.focussed = null;
 
         apf.dispatchEvent("movefocus", {
-            fromElement : jmlNode
+            fromElement : amlNode
         });
 
         //#ifdef __WITH_XFORMS
-        jmlNode.dispatchEvent("DOMFocusOut");
+        amlNode.dispatchEvent("DOMFocusOut");
         //#endif
     };
     
@@ -480,8 +480,8 @@ apf.WindowImplementation = function(){
     });
     //#endif
 
-    this.$focusDefault = function(jmlNode, e){
-        var fParent = findFocusParent(jmlNode);
+    this.$focusDefault = function(amlNode, e){
+        var fParent = findFocusParent(amlNode);
         this.$focusLast(fParent, e);
     }
 
@@ -493,15 +493,15 @@ apf.WindowImplementation = function(){
         }
     };
 
-    this.$focusLast = function(jmlNode, e, ignoreVisible){
-        var lf = jmlNode.$lastFocussed;
+    this.$focusLast = function(amlNode, e, ignoreVisible){
+        var lf = amlNode.$lastFocussed;
 
         if (lf && lf.parentNode && lf.$focussable === true
           && (ignoreVisible || lf.oExt.offsetHeight)) {
             this.$focus(lf, e, true);
         }
         else { //Let's find the object to focus first
-            var next, str, x, node = jmlNode, skip;
+            var next, str, x, node = amlNode, skip;
             while (node) {
                 if (!skip && node.focussable !== false && node.$focussable === true
                   && (ignoreVisible || node.oExt.offsetHeight)) {
@@ -515,7 +515,7 @@ apf.WindowImplementation = function(){
                     if (node.isWindowContainer)
                         skip = true;
                 }
-                else if (node == jmlNode) {
+                else if (node == amlNode) {
                     if (node.isWindowContainer)
                         this.$focus(node, e, true);
                     return;
@@ -523,10 +523,10 @@ apf.WindowImplementation = function(){
                 else {
                     do {
                         node = node.parentNode;
-                    } while (node && !node.nextSibling && node != jmlNode 
+                    } while (node && !node.nextSibling && node != amlNode 
                       && !node.isWindowContainer)
                     
-                    if (node == jmlNode)
+                    if (node == amlNode)
                         return; //do nothing
                     
                     if (node) {
@@ -544,7 +544,7 @@ apf.WindowImplementation = function(){
                 this.$focus(apf.document.documentElement);//return false;//
 
             /*@todo get this back from SVN
-            var node, list = jmlNode.$tabList;
+            var node, list = amlNode.$tabList;
             for (var i = 0; i < list.length; i++) {
                 node = list[i];
                 if (node.focussable !== false && node.$focussable === true
@@ -570,8 +570,8 @@ apf.WindowImplementation = function(){
             e.trackedChild = true;
     }
 
-    function findFocusParent(jmlNode){
-        var node = jmlNode;
+    function findFocusParent(amlNode){
+        var node = amlNode;
         do {
             node = node.parentNode;
         } while(node && !node.isWindowContainer);
@@ -606,12 +606,12 @@ apf.WindowImplementation = function(){
     /**** Focus API ****/
 
     /**
-     * Determines whether a given jml element has the focus.
-     * @param {JMLElement} the element to check
+     * Determines whether a given aml element has the focus.
+     * @param {AMLElement} the element to check
      * @returns {Boolean} whether the element has focus.
      */
-    this.hasFocus = function(jmlNode){
-        return this.focussed == jmlNode;
+    this.hasFocus = function(amlNode){
+        return this.focussed == amlNode;
     };
 
     /**
@@ -626,16 +626,16 @@ apf.WindowImplementation = function(){
                 return false;
         }
 
-        var jmlNode = relObject || apf.window.focussed;
-        var fParent = jmlNode
-            ? (switchWindows && jmlNode.isWindowContainer
+        var amlNode = relObject || apf.window.focussed;
+        var fParent = amlNode
+            ? (switchWindows && amlNode.isWindowContainer
                 ? apf.window
-                : jmlNode.$focusParent)
+                : amlNode.$focusParent)
             : apf.document.documentElement;
         var list    = fParent.$tabList;
 
-        if (jmlNode && (switchWindows || jmlNode != apf.document.documentElement)) {
-            start   = (list || []).indexOf(jmlNode);
+        if (amlNode && (switchWindows || amlNode != apf.document.documentElement)) {
+            start   = (list || []).indexOf(amlNode);
             if (start == -1) {
                 //#ifdef __DEBUG
                 apf.console.warn("Moving focus from element which isn't in the list\
@@ -648,7 +648,7 @@ apf.WindowImplementation = function(){
         else
             start = -1;
 
-        if (this.focussed && this.focussed == jmlNode
+        if (this.focussed && this.focussed == amlNode
           && list.length == 1 || list.length == 0)
             return false;
 
@@ -664,22 +664,22 @@ apf.WindowImplementation = function(){
             else if (next < 0)
                 next = list.length - 1;
 
-            if (start == next && jmlNode)
+            if (start == next && amlNode)
                 return false; //No visible enabled element was found
 
-            jmlNode = list[next];
+            amlNode = list[next];
         }
-        while (!jmlNode
-            || jmlNode.disabled
-            || jmlNode == apf.window.focussed
-            || (switchWindows ? !jmlNode.visible : jmlNode.oExt && !jmlNode.oExt.offsetHeight)
-            || jmlNode.focussable === false
-            || switchWindows && !jmlNode.$tabList.length);
+        while (!amlNode
+            || amlNode.disabled
+            || amlNode == apf.window.focussed
+            || (switchWindows ? !amlNode.visible : amlNode.oExt && !amlNode.oExt.offsetHeight)
+            || amlNode.focussable === false
+            || switchWindows && !amlNode.$tabList.length);
 
         if (fParent == apf.window)
-            this.$focusLast(jmlNode, {mouse:true}, switchWindows);
+            this.$focusLast(amlNode, {mouse:true}, switchWindows);
         else
-            this.$focus(jmlNode, e);
+            this.$focus(amlNode, e);
 
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
@@ -862,23 +862,23 @@ apf.WindowImplementation = function(){
             e = event;
 
         //#ifdef __WITH_CONTEXTMENU
-        var jmlNode = apf.findHost(e.srcElement || e.target)
+        var amlNode = apf.findHost(e.srcElement || e.target)
               || apf.window.focussed
               || apf.document && apf.document.documentElement;
 
-        if (jmlNode.tagName == "menu") //The menu is already visible
+        if (amlNode.tagName == "menu") //The menu is already visible
             return false;
 
         var pos, ev;
 
-        if (jmlNode && jmlNode.tagName == "menu")
-            jmlNode = jmlNode.parentNode;
+        if (amlNode && amlNode.tagName == "menu")
+            amlNode = amlNode.parentNode;
 
         if (apf.contextMenuKeyboard) {
-            if (jmlNode) {
-                pos = jmlNode.selected
-                    ? apf.getAbsolutePosition(jmlNode.$selected)
-                    : apf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
+            if (amlNode) {
+                pos = amlNode.selected
+                    ? apf.getAbsolutePosition(amlNode.$selected)
+                    : apf.getAbsolutePosition(amlNode.oExt || amlNode.pHtmlNode);
             }
             else
                 pos = [0, 0];
@@ -904,7 +904,7 @@ apf.WindowImplementation = function(){
 
         apf.contextMenuKeyboard = null;
 
-        if ((jmlNode || apf).dispatchEvent("contextmenu", ev) === false
+        if ((amlNode || apf).dispatchEvent("contextmenu", ev) === false
           || ev.returnValue === false)
             return false;
         //#endif
@@ -917,50 +917,50 @@ apf.WindowImplementation = function(){
     document.onmousedown = function(e){
         e = e || window.event;
 
-        var jmlNode = apf.findHost(e.srcElement || e.target);
+        var amlNode = apf.findHost(e.srcElement || e.target);
         
         // #ifdef __WITH_POPUP
-        if (apf.popup.last && apf.popup.last != jmlNode.uniqueId)
+        if (apf.popup.last && apf.popup.last != amlNode.uniqueId)
             apf.popup.forceHide();
         // #endif
 
         //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left
-        if ((!jmlNode || !jmlNode.$focussable || jmlNode.focussable === false)
-          && apf.appsettings.allowBlur && jmlNode.canHaveChildren != 2) {
+        if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
+          && apf.appsettings.allowBlur && amlNode.canHaveChildren != 2) {
             lastFocusParent = null;
             if (apf.window.focussed)
                 apf.window.focussed.blur();
         }
         else if ((p = apf.window.focussed && apf.window.focussed.$focusParent || lastFocusParent)
-            && p.visible && p.modal && jmlNode.$focusParent != p) {
+            && p.visible && p.modal && amlNode.$focusParent != p) {
                 apf.window.$focusLast(p, {mouse: true});
         }
-        else if (!jmlNode && apf.window.focussed) {
+        else if (!amlNode && apf.window.focussed) {
             apf.window.$focusRoot();
         }
-        else if (!jmlNode.disabled && jmlNode.focussable !== false) {
-            if (jmlNode.$focussable === apf.KEYBOARD_MOUSE)
-                apf.window.$focus(jmlNode, {mouse: true});
-            else if (jmlNode.canHaveChildren == 2) {
+        else if (!amlNode.disabled && amlNode.focussable !== false) {
+            if (amlNode.$focussable === apf.KEYBOARD_MOUSE)
+                apf.window.$focus(amlNode, {mouse: true});
+            else if (amlNode.canHaveChildren == 2) {
                 if (!apf.appsettings.allowBlur || !apf.window.focussed 
-                  || apf.window.focussed.$focusParent != jmlNode)
-                    apf.window.$focusLast(jmlNode, {mouse: true});
+                  || apf.window.focussed.$focusParent != amlNode)
+                    apf.window.$focusLast(amlNode, {mouse: true});
             }
             else
-                apf.window.$focusDefault(jmlNode, {mouse: true});
+                apf.window.$focusDefault(amlNode, {mouse: true});
         }
         else
-            apf.window.$focusDefault(jmlNode, {mouse: true});
+            apf.window.$focusDefault(amlNode, {mouse: true});
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
             var isContentEditable = ta[(e.srcElement || e.target).tagName]
-                && !(e.srcElement || e.target).disabled || jmlNode.$isContentEditable
-                && jmlNode.$isContentEditable(e) && !jmlNode.disabled;
+                && !(e.srcElement || e.target).disabled || amlNode.$isContentEditable
+                && amlNode.$isContentEditable(e) && !amlNode.disabled;
 
-            if (!jmlNode || !isContentEditable)
+            if (!amlNode || !isContentEditable)
                 apf.window.$focusfix();
         }
         else if (!last) {
@@ -971,19 +971,19 @@ apf.WindowImplementation = function(){
 
         apf.dispatchEvent("mousedown", {
             htmlEvent : e,
-            jmlNode   : jmlNode
+            amlNode   : amlNode
         });
 
         //Non IE/ iPhone selection handling
-        var canSelect = !(!apf.isIphone && !apf.isIE && (apf.JmlParser && !apf.appsettings.allowSelect
-          && (!apf.isParsingPartial || jmlNode)
+        var canSelect = !(!apf.isIphone && !apf.isIE && (apf.AmlParser && !apf.appsettings.allowSelect
+          && (!apf.isParsingPartial || amlNode)
           // #ifdef __WITH_DRAGMODE
           || apf.dragmode.mode
           // #endif
           ) && !ta[e.target.tagName]);
 
-        if (canSelect && !jmlNode.canHaveChildren 
-          || !apf.xmldb.isChildOf(jmlNode.oInt, e.target))
+        if (canSelect && !amlNode.canHaveChildren 
+          || !apf.xmldb.isChildOf(amlNode.oInt, e.target))
             canSelect = false;
         
         if (!canSelect)
@@ -994,7 +994,7 @@ apf.WindowImplementation = function(){
     document.onselectstart = function(e){
         if (!e) e = event;
         
-        var canSelect = !(apf.JmlParser && !apf.appsettings.allowSelect
+        var canSelect = !(apf.AmlParser && !apf.appsettings.allowSelect
           // #ifdef __WITH_DRAGMODE
           || apf.dragmode.mode
           || apf.dragmode.isDragging
@@ -1002,9 +1002,9 @@ apf.WindowImplementation = function(){
         );
 
         if (canSelect) {
-            var jmlNode = apf.findHost(e.srcElement);
-            if (!jmlNode.canHaveChildren 
-              || !apf.xmldb.isChildOf(jmlNode.oInt, e.srcElement))
+            var amlNode = apf.findHost(e.srcElement);
+            if (!amlNode.canHaveChildren 
+              || !apf.xmldb.isChildOf(amlNode.oInt, e.srcElement))
                 canSelect = false;
         }
 
@@ -1289,14 +1289,14 @@ apf.WindowImplementation = function(){
 };
 
 /**
- * The jml document, this is the root of the DOM Tree and has a nodeType with 
+ * The aml document, this is the root of the DOM Tree and has a nodeType with 
  * value 9 (apf.NODE_DOCUMENT). 
  *
  * @constructor
- * @inherits apf.JmlDom
+ * @inherits apf.AmlDom
  * @inherits apf.Class
  * @default_private 
- * @see baseclass.jmldom
+ * @see baseclass.amldom
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -1305,8 +1305,8 @@ apf.WindowImplementation = function(){
 apf.DocumentImplementation = function(){
     apf.makeClass(this);
 
-    //#ifdef __WITH_JMLDOM
-    this.implement(apf.JmlDom);
+    //#ifdef __WITH_AMLDOM
+    this.implement(apf.AmlDom);
     //#endif
 
     /**
@@ -1327,10 +1327,10 @@ apf.DocumentImplementation = function(){
      */
     this.nodeType   = apf.NODE_DOCUMENT;
     this.nodeFunc   = apf.NODE_HIDDEN;
-    this.$jmlLoaded = true;
+    this.$amlLoaded = true;
 
     /**
-     * The root element node of the jml application. This is an element with
+     * The root element node of the aml application. This is an element with
      * the tagName 'application'. This is similar to the 'html' element
      */
     this.documentElement = {
@@ -1347,9 +1347,9 @@ apf.DocumentImplementation = function(){
         parentNode    : this,
         ownerDocument : this,
         pHtmlNode     : document.body,
-        $jml          : apf.JmlParser.$jml,
+        $aml          : apf.AmlParser.$aml,
         $tabList      : [], //Prevents documentElement from being focussed
-        $jmlLoaded    : true,
+        $amlLoaded    : true,
         $focussable   : apf.KEYBOARD,
         focussable    : true,
         visible       : true,
@@ -1376,28 +1376,28 @@ apf.DocumentImplementation = function(){
     apf.window.$addFocus(this.documentElement);
     //#endif
 
-    //#ifdef __WITH_JMLDOM
-    apf.implement.call(this.documentElement, apf.JmlDom);
+    //#ifdef __WITH_AMLDOM
+    apf.implement.call(this.documentElement, apf.AmlDom);
     //#endif
 
     /**
-     * Gets a jml element based on it's id.
-     * @param {String} id the id of the jml element to return.
-     * @return {JMLElement} the jml element with the id specified.
+     * Gets a aml element based on it's id.
+     * @param {String} id the id of the aml element to return.
+     * @return {AMLElement} the aml element with the id specified.
      */
     this.getElementById = function(id){
         return self[id];
     };
 
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     /**
-     * Creates a new jml element.
+     * Creates a new aml element.
      * @param {mixed} tagName information about the new node to create.
      *   Possible values:
      *   {String}     the tagName of the new element to create
-     *   {String}     the jml definition for a single or multiple elements.
-     *   {XMLElement} the jml definition for a single or multiple elements.
-     * @return {JMLElement} the created jml element.
+     *   {String}     the aml definition for a single or multiple elements.
+     *   {XMLElement} the aml definition for a single or multiple elements.
+     * @return {AMLElement} the created aml element.
      */
     this.createElement = function(tagName){
         var x, o;
@@ -1410,15 +1410,15 @@ apf.DocumentImplementation = function(){
             x = apf.getXml(tagName)
         }
         else {
-            var prefix = apf.findPrefix(apf.JmlParser.$jml, apf.ns.jml);
-            var doc = apf.JmlParser.$jml.ownerDocument;
+            var prefix = apf.findPrefix(apf.AmlParser.$aml, apf.ns.aml);
+            var doc = apf.AmlParser.$aml.ownerDocument;
 
-            if(apf.JmlParser.$jml && doc.createElementNS) {
-                x = doc.createElementNS(apf.ns.jml, prefix + ":" + tagName);
+            if(apf.AmlParser.$aml && doc.createElementNS) {
+                x = doc.createElementNS(apf.ns.aml, prefix + ":" + tagName);
             }
             else {
                 x = apf.getXml("<" + prefix + ":" + tagName + " xmlns:"
-                               + prefix + "='" + apf.ns.jml + "' />", true);
+                               + prefix + "='" + apf.ns.aml + "' />", true);
             }
         }
 
@@ -1427,22 +1427,22 @@ apf.DocumentImplementation = function(){
                 prefix = x.prefix;
 
             x.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:" + prefix + "='" + apf.ns.jml + "'");
+                "xmlns:" + prefix + "='" + apf.ns.aml + "'");
         }
 
         tagName = x[apf.TAGNAME];
         var initId;
 
-        if (typeof apf[tagName] != "function") { //Call JMLParser??
-            o = new apf.JmlDom(tagName, null, apf.NODE_HIDDEN, x);
-            if (apf.JmlParser.handler[tagName]) {
+        if (typeof apf[tagName] != "function") { //Call AMLParser??
+            o = new apf.AmlDom(tagName, null, apf.NODE_HIDDEN, x);
+            if (apf.AmlParser.handler[tagName]) {
                 initId = o.$domHandlers["reparent"].push(function(b, pNode){
                     this.$domHandlers.reparent[initId] = null;
 
-                    if (!pNode.$jmlLoaded)
-                        return; //the jmlParser will handle the rest
+                    if (!pNode.$amlLoaded)
+                        return; //the amlParser will handle the rest
 
-                    o = apf.JmlParser.handler[tagName](this.$jml,
+                    o = apf.AmlParser.handler[tagName](this.$aml,
                         pNode, pNode.oInt);
 
                     if (o) apf.extend(this, o); //ruins prototyped things
@@ -1454,37 +1454,37 @@ apf.DocumentImplementation = function(){
                     if (this.name)
                         apf.setReference(name, o);
 
-                    o.$jmlLoaded = true;
+                    o.$amlLoaded = true;
                 }) - 1;
             }
         }
         else {
             o = new apf[tagName](null, tagName, x);
-            if (o.loadJml) {
+            if (o.loadAml) {
                 initId = o.$domHandlers["reparent"].push(function(b, pNode){
                     this.$domHandlers.reparent[initId] = null;
 
-                    if (!pNode.$jmlLoaded) //We're not ready yet
+                    if (!pNode.$amlLoaded) //We're not ready yet
                         return;
 
-                    function loadJml(o, pHtmlNode){
-                        if (!o.$jmlLoaded) {
-                            //Process JML
+                    function loadAml(o, pHtmlNode){
+                        if (!o.$amlLoaded) {
+                            //Process AML
                             var length = o.childNodes.length;
 
                             o.pHtmlNode = pHtmlNode || document.body;
-                            o.loadJml(o.$jml);
-                            o.$jmlLoaded = false; //small hack
+                            o.loadAml(o.$aml);
+                            o.$amlLoaded = false; //small hack
 
                             if (length) {
                                 for (var i = 0, l = o.childNodes.length; i < l; i++) {
-                                    if (o.childNodes[i].loadJml) {
-                                        loadJml(o.childNodes[i], o.canHaveChildren
+                                    if (o.childNodes[i].loadAml) {
+                                        loadAml(o.childNodes[i], o.canHaveChildren
                                             ? o.oInt
                                             : document.body);
                                     }
                                     else
-                                        o.childNodes[i].$jmlLoaded = true;
+                                        o.childNodes[i].$amlLoaded = true;
                                 }
                             }
                         }
@@ -1492,15 +1492,15 @@ apf.DocumentImplementation = function(){
                             o.$reappendToParent();
                         }
 
-                        o.$jmlLoaded = true;
+                        o.$amlLoaded = true;
                         o.$reappendToParent = null;
                     }
 
                     var parsing = apf.isParsing;
                     apf.isParsing = true;
-                    apf.JmlParser.parseFirstPass([x]);
+                    apf.AmlParser.parseFirstPass([x]);
 
-                    loadJml(o, pNode && pNode.oInt || document.body);
+                    loadAml(o, pNode && pNode.oInt || document.body);
 
                     //#ifdef __WITH_ALIGNMENT
                     if (pNode && pNode.pData)
@@ -1513,7 +1513,7 @@ apf.DocumentImplementation = function(){
                     //apf.layout.activateRules();//@todo maybe use processQueue
                     //#endif
 
-                    apf.JmlParser.parseLastPass();
+                    apf.AmlParser.parseLastPass();
                     apf.isParsing = parsing;
                 }) - 1;
             }
@@ -1522,17 +1522,17 @@ apf.DocumentImplementation = function(){
         if (o.name)
             apf.setReference(o.name, o);
 
-        o.$jml = x;
+        o.$aml = x;
 
         return o;
     };
     
     this.createDocumentFragment = function(){
-        return new apf.JmlDom(apf.NODE_DOCUMENT_FRAGMENT)
+        return new apf.AmlDom(apf.NODE_DOCUMENT_FRAGMENT)
     }
     //#endif
 
-    //#ifdef __WITH_JMLDOM_W3C_XPATH
+    //#ifdef __WITH_AMLDOM_W3C_XPATH
     /**
      * See W3C evaluate
      */

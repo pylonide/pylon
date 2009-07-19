@@ -52,15 +52,15 @@ apf.xslt = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(code){
-        if (this.createJml) {
+        if (this.createAml) {
             if (typeof code == "string") 
                 code = apf.xmldb.getXml(code);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
-            // of the this.$jml xml. 
-            apf.JmlParser.parseChildren(code, this.oInt, this);
-            if (apf.JmlParser.inited) 
-                apf.JmlParser.parseLastPass();
+            // of the this.$aml xml. 
+            apf.AmlParser.parseChildren(code, this.oInt, this);
+            if (apf.AmlParser.inited) 
+                apf.AmlParser.parseLastPass();
         }
         else {
             this.oInt.innerHTML = code;
@@ -70,15 +70,15 @@ apf.xslt = apf.component(apf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         //alert("REDRAW");
-        this.oInt = this.oExt = (this.$jml.parentNode.lastChild == this.$jml.parentNode.firstChild)
+        this.oInt = this.oExt = (this.$aml.parentNode.lastChild == this.$aml.parentNode.firstChild)
             ? this.pHtmlNode
             : this.pHtmlNode.appendChild(document.createElement("div"));
-        if (this.$jml.getAttribute("cssclass")) 
-            this.oExt.className = this.$jml.getAttribute("cssclass");
+        if (this.$aml.getAttribute("cssclass")) 
+            this.oExt.className = this.$aml.getAttribute("cssclass");
     };
     
-    this.$loadJml = function(x){
-        this.createJml = apf.isTrue(x.getAttribute("jml"));
+    this.$loadAml = function(x){
+        this.createAml = apf.isTrue(x.getAttribute("aml"));
         
         //Events
         var a, i, attr = x.attributes;
@@ -103,7 +103,7 @@ apf.xslt = apf.component(apf.NODE_VISIBLE, function(){
             for (var i = nodes.length - 1; i >= 0; i--)
                 pNode.appendChild(nodes[i]);
             
-            apf.JmlParser.addToSbStack(this.uniqueId, new apf.smartbinding(null, xmlNode));
+            apf.AmlParser.addToSbStack(this.uniqueId, new apf.smartbinding(null, xmlNode));
         }
     };
 }).implement(

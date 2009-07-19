@@ -369,8 +369,8 @@ apf.editor.plugin('tablewizard', function() {
 
     this.createContextMenu = function(){
         var idMenu = "editor_" + this.uniqueId + "_menu";
-        this.appendJmlNode('\
-            <j:menu xmlns:j="' + apf.ns.jml + '" id="' + idMenu + '">\
+        this.appendAmlNode('\
+            <j:menu xmlns:j="' + apf.ns.aml + '" id="' + idMenu + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
                 <j:item value="deleterow">Delete row</j:item>\

@@ -29,7 +29,7 @@
  * @return {Chart} Returns a new chart
  * @type {Chart}
  * @constructor
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  * @addnode elements:chart
  *
  * @author      Rik Arends
@@ -124,13 +124,13 @@ apf.chart = apf.component(apf.NODE_VISIBLE, function(){
         }
 	}
 	    
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
         this.oInt = oInt;
 
         apf.draw.initDriver();
 
-        apf.JmlParser.parseChildren(x, this.oExt, this);
+        apf.AmlParser.parseChildren(x, this.oExt, this);
        
         var ox, oy, lx, ly, bt, stack = [], interact = false;
         var iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
@@ -568,10 +568,10 @@ apf.axis = apf.component(apf.NODE_HIDDEN, function(){
         }
     }
 
-    this.$loadJml = function(x, obj){
+    this.$loadAml = function(x, obj){
         this.$parentChart = this.parentNode;
 
-        apf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
+        apf.AmlParser.parseChildren(x, this.$parentChart.oExt, this);
 
         this.$redraw();
      }
@@ -996,7 +996,7 @@ apf.graph = apf.component(apf.NODE_VISIBLE, function(){
         if (action == "redo-remove") {
             var retreatToListenMode = false, model = this.getModel(true);
             if (model) {
-                var xpath = model.getXpathByJmlNode(this);
+                var xpath = model.getXpathByAmlNode(this);
                 if (xpath) {
                     var xmlNode = model.data.selectSingleNode(xpath);
                     if (xmlNode != this.xmlRoot)
@@ -1006,7 +1006,7 @@ apf.graph = apf.component(apf.NODE_VISIBLE, function(){
             
             if (retreatToListenMode || this.xmlRoot == xmlNode) {
                 //Set Component in listening state untill data becomes available again.
-                return model.loadInJmlNode(this, xpath);
+                return model.loadInAmlNode(this, xpath);
             }
         }
     
@@ -1081,11 +1081,11 @@ apf.graph = apf.component(apf.NODE_VISIBLE, function(){
     }
     
     /**** Selection ****/
-    this.$loadJml = function(x,obj){
+    this.$loadAml = function(x,obj){
         this.$parentAxis = this.parentNode;
         this.$parentChart = this.$parentAxis.parentNode;
         
-        apf.JmlParser.parseChildren(x, this.$parentChart.oExt, this);
+        apf.AmlParser.parseChildren(x, this.$parentChart.oExt, this);
     }
 }).implement(
     apf.MultiSelect,

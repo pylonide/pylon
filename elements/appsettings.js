@@ -139,7 +139,7 @@ apf.appsettings = {
     baseurl            : "",
 
     setDefaults : function(){
-        //#ifdef __WITH_PARTIAL_JML_LOADING
+        //#ifdef __WITH_PARTIAL_AML_LOADING
         if (apf.isParsingPartial) {
             this.disableRightClick  = false;
             this.allowSelect        = true;
@@ -178,7 +178,7 @@ apf.appsettings = {
         })] = this[name] = value;
         
         (this.$propHandlers && this.$propHandlers[name]
-          || apf.JmlElement.propHandlers[name] || apf.K).call(this, value);
+          || apf.AmlElement.propHandlers[name] || apf.K).call(this, value);
     },
     
     $supportedProperties : ["debug", "name", "baseurl", "resource-path", 
@@ -274,13 +274,13 @@ apf.appsettings = {
     },
 
     //@todo adhere to defaults (loop attributes)
-    loadJml: function(x, parentNode){
-        if (!this.$jml) {
-            this.$jml = x;
+    loadAml: function(x, parentNode){
+        if (!this.$aml) {
+            this.$aml = x;
             
-            //#ifdef __WITH_JMLDOM_FULL
+            //#ifdef __WITH_AMLDOM_FULL
             this.parentNode = parentNode;
-            apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
+            apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
             //#endif
         }
         
@@ -301,7 +301,7 @@ apf.appsettings = {
             })] = this[name] = value;
             
             (this.$propHandlers && this.$propHandlers[name]
-              || apf.JmlElement.propHandlers[name] || apf.K).call(this, value, x);
+              || apf.AmlElement.propHandlers[name] || apf.K).call(this, value, x);
         }
         
         if (!apf.loaded)
@@ -544,18 +544,18 @@ apf.settings = function(){
     /**
      * @private
      */
-    this.loadJml = function(x){
+    this.loadAml = function(x){
         this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
         this.exportInstruction = x.getAttribute("set");
 
-        this.$jml = x;
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+        this.$aml = x;
+        apf.AmlParser.parseChildren(this.$aml, null, this);
 
         //Model handling in case no smartbinding is used
         var modelId = apf.xmldb.getInheritedAttribute(x, "model");
 
-        for (var i = 0; i < apf.JmlParser.modelInit.length; i++)
-            if (apf.JmlParser.modelInit[i][0] == this)
+        for (var i = 0; i < apf.AmlParser.modelInit.length; i++)
+            if (apf.AmlParser.modelInit[i][0] == this)
                 return;
 
         apf.setModel(modelId, this);

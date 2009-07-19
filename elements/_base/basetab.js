@@ -645,18 +645,18 @@ apf.BaseTab = function(){
 
     /**** DOM Hooks ****/
 
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
 
-        if (this.firstChild == jmlNode && jmlNode.nextSibling)
-            jmlNode.nextSibling.$first();
-        if (this.lastChild == jmlNode && jmlNode.previousSibling)
-            jmlNode.previousSibling.$last();
+        if (this.firstChild == amlNode && amlNode.nextSibling)
+            amlNode.nextSibling.$first();
+        if (this.lastChild == amlNode && amlNode.previousSibling)
+            amlNode.previousSibling.$last();
 
-        if (this.$activepage == jmlNode) {
-            if (jmlNode.nextSibling || jmlNode.previousSibling)
-                this.set(jmlNode.nextSibling || jmlNode.previousSibling);
+        if (this.$activepage == amlNode) {
+            if (amlNode.nextSibling || amlNode.previousSibling)
+                this.set(amlNode.nextSibling || amlNode.previousSibling);
             else {
                 // #ifdef __ENABLE_TABSCROLL
                 this.setScrollerState();
@@ -676,20 +676,20 @@ apf.BaseTab = function(){
         //#endif
     });
 
-    this.$domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
-        if (jmlNode.tagName != "page")
+    this.$domHandlers["insert"].push(function(amlNode, beforeNode, withinParent){
+        if (amlNode.tagName != "page")
             return;
 
         if (!beforeNode) {
             if (this.lastChild)
                 this.lastChild.$last(true);
-            jmlNode.$last();
+            amlNode.$last();
         }
 
         if(!this.firstChild || beforeNode == this.firstChild) {
             if (this.firstChild)
                 this.firstChild.$first(true);
-            jmlNode.$first();
+            amlNode.$first();
         }
 
         if (this.$activepage) {
@@ -706,7 +706,7 @@ apf.BaseTab = function(){
             }
         }
         else if (!this.$activepage)
-            this.set(jmlNode);
+            this.set(amlNode);
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
@@ -896,7 +896,7 @@ apf.BaseTab = function(){
 
         //Skin changing support
         if (this.oInt) {
-            //apf.JmlParser.replaceNode(oPages, this.oPages);
+            //apf.AmlParser.replaceNode(oPages, this.oPages);
             this.oInt = this.oPages;
             page      = true;
 
@@ -905,7 +905,7 @@ apf.BaseTab = function(){
                 node = nodes[i];
                 node.$draw(true);
                 node.$skinchange();
-                node.$loadJml();
+                node.$loadAml();
             }
         }
         else {
@@ -921,14 +921,14 @@ apf.BaseTab = function(){
             }
 
             //Build children
-            var node, nodes = this.$jml.childNodes;
+            var node, nodes = this.$aml.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
                 if (node.nodeType != 1) continue;
 
                 var tagName = node[apf.TAGNAME];
                 if ("page|case".indexOf(tagName) > -1) {
-                    page = new apf.page(this.oPages, tagName).loadJml(node, this);
+                    page = new apf.page(this.oPages, tagName).loadAml(node, this);
 
                     //Set first page marker
                     if (!f) page.$first(f = page);
@@ -966,7 +966,7 @@ apf.BaseTab = function(){
                 this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
-            apf.JmlParser.parseChildren(this.$jml, this.oExt, this);
+            apf.AmlParser.parseChildren(this.$aml, this.oExt, this);
             this.isPages = false;
         }
 
@@ -1001,7 +1001,7 @@ apf.BaseTab = function(){
  *
  * @constructor
  * @define  page
- * @allowchild  {elements}, {anyjml}
+ * @allowchild  {elements}, {anyaml}
  * @addnode elements
  *
  * @inherits apf.DelayedRender
@@ -1174,14 +1174,14 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
     });
 
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
 
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
             this.$draw();
             this.$skinchange();
-            this.$loadJml();
+            this.$loadAml();
         }
         else if (this.oButton && pNode.$hasButtons)
             pNode.oButtons.insertBefore(this.oButton,
@@ -1289,7 +1289,7 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
     this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
 
-        var sType = this.$jml.getAttribute("type")
+        var sType = this.$aml.getAttribute("type")
         if (sType) {
             this.fake = true;
             this.relPage = this.parentNode.getPage(sType) || null;
@@ -1327,11 +1327,11 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
             this.oExt.parentNode.removeChild(this.oExt); //@todo mem leaks?
 
         this.oExt = this.parentNode.$getExternal("page",
-            this.parentNode.oPages, null, this.$jml);
+            this.parentNode.oPages, null, this.$aml);
         this.oExt.host = this;
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (this.fake)
             return;
 
@@ -1339,12 +1339,12 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
             var oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
             oInt.setAttribute("id", this.oInt.getAttribute("id"));
-            this.oInt = apf.JmlParser.replaceNode(oInt, this.oInt);
+            this.oInt = apf.AmlParser.replaceNode(oInt, this.oInt);
         }
         else {
             this.oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
-            apf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
+            apf.AmlParser.parseChildren(this.$aml, this.oInt, this, true);
         }
     };
 

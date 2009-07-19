@@ -98,8 +98,8 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["checked"] = function(value) {
         if (!this.$values) {
-            if (this.$jml.getAttribute("values"))
-                this.$propHandler["values"].call(this, this.$jml.getAttribute("values"));
+            if (this.$aml.getAttribute("values"))
+                this.$propHandler["values"].call(this, this.$aml.getAttribute("values"));
             else
                 this.$values = [false, true];
         }
@@ -212,7 +212,7 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
         this.$setupEvents();
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (!this.label && x.firstChild)
             this.setProperty("label", x.firstChild.nodeValue);
 

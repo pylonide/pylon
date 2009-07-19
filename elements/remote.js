@@ -151,9 +151,9 @@ apf.remote = function(name, xmlNode, parentNode){
     this.select = [];
     this.models = [];
     
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     this.parentNode = parentNode;
-    apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
+    apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
     //#endif
     
     //#ifdef __WITH_OFFLINE
@@ -297,9 +297,9 @@ apf.remote = function(name, xmlNode, parentNode){
         : "Creating implicitly assigned remote");
     //#endif
     
-    this.loadJml = function(x){
+    this.loadAml = function(x){
         this.name = x.getAttribute("id");
-        this.$jml  = x;
+        this.$aml  = x;
         
         /**
          * @attribute {String} transport the id of the teleport module instance 
@@ -325,7 +325,7 @@ apf.remote = function(name, xmlNode, parentNode){
     };
     
     if (xmlNode)
-        this.loadJml(xmlNode);
+        this.loadAml(xmlNode);
 }
 
 //@todo this function needs to be 100% proof, it's the core of the system

@@ -360,7 +360,7 @@ apf.Rename = function(){
     }
     this.oTxt.refCount++;
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         this.oTxt.refCount--;
 
         if (!this.oTxt.refCount) {

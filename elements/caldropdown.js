@@ -133,7 +133,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["initial-message"] = function(value) {
         this.initialMsg = value
-            || apf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
+            || apf.xmldb.getInheritedAttribute(this.$aml, "intial-message");
     };
 
     /**
@@ -917,8 +917,8 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype    = parseInt(this.$getLayoutNode("main", "type")) || 1;
 
-        /*if (this.$jml.childNodes.length)
-            this.$loadInlineData(this.$jml); caldropdown don't inherit that function */
+        /*if (this.$aml.childNodes.length)
+            this.$loadInlineData(this.$aml); caldropdown don't inherit that function */
 
         if (!apf.caldropdown.cache) {
             apf.caldropdown.cache = {
@@ -930,7 +930,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         }
     };
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
         var date;
         if (typeof this.value == "undefined") {
             switch(this["default"]) {

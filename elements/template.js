@@ -22,10 +22,10 @@
 // #ifdef __JTEMPLATE || __INC_ALL
 
 /**
- * Defines a template for jml elements. 
+ * Defines a template for aml elements. 
  *
  * @constructor
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  *
  * @define template
  * @addnode elements
@@ -56,7 +56,7 @@ apf.template = apf.component(apf.NODE_HIDDEN, function(){
             return nodes;
         }
         
-        apf.JmlParser.parseMoreJml(this.$jml, pHtmlNode, this, true);
+        apf.AmlParser.parseMoreAml(this.$aml, pHtmlNode, this, true);
         
         return this.childNodes;
     }
@@ -73,9 +73,9 @@ apf.template = apf.component(apf.NODE_HIDDEN, function(){
     }
     
     //this.$draw = function(pHtmlNode){};
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (this.autoinit) {
-            apf.JmlParser.parseChildren(this.$jml, document.body, this);
+            apf.AmlParser.parseChildren(this.$aml, document.body, this);
             this.detach();
             
             instances.push(this.childNodes);

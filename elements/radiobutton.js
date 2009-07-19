@@ -206,7 +206,7 @@ apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
  * </code>
  *
  * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
- * @see baseclass.jmlnode.event.afterchange
+ * @see baseclass.amlnode.event.afterchange
  */
 apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
@@ -245,10 +245,10 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
             apf.nameserver.register("radiogroup", value, rg);
             apf.setReference(value, rg);
 
-            //x = oRB.$jml;
+            //x = oRB.$aml;
             //rg.oExt = oRB.oExt;
-            rg.$jml = this.$jml;
-            rg.loadJml(this.$jml);
+            rg.$aml = this.$aml;
+            rg.loadAml(this.$aml);
 
             this.radiogroup = rg;
         }
@@ -258,8 +258,8 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
                 || "radio" + this.radiogroup.uniqueId);
         }
 
-        if (!this.value && this.$jml)
-            this.value = this.$jml.getAttribute("value");
+        if (!this.value && this.$aml)
+            this.value = this.$aml.getAttribute("value");
         
         this.radiogroup.addRadio(this);
         
@@ -543,7 +543,7 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
         this.enable();
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (x.firstChild) {
             var content = x.innerHTML;
             if (!content) {

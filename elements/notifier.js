@@ -386,7 +386,7 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
         this.oExt.style.zIndex = 100000;
     };
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
         var ev, node, nodes = x.childNodes;
 
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -395,7 +395,7 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
                 continue;
 
             if (node[apf.TAGNAME] == "event")
-                ev = new apf.event(this.pHtmlNode, "event").loadJml(node, this)
+                ev = new apf.event(this.pHtmlNode, "event").loadAml(node, this)
         }
     };
 }).implement(apf.Presentation);
@@ -427,7 +427,7 @@ apf.event = apf.component(apf.NODE_HIDDEN, function() {
             delete this.when;
     };
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
     };
 });
 

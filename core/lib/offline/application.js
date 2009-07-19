@@ -25,7 +25,7 @@
  * Object handling the offline state of the application resources. This includes
  * the files that contain application logic themselve. In most cases the
  * functionality of this object will be managed from within the offline
- * element in JML.
+ * element in AML.
  * Example:
  * <code>
  *  <j:offline
@@ -53,24 +53,24 @@ apf.namespace("offline.application", {
     urls      : [],
     providers : ["deskrun", "gears"],
 
-    init : function(jml){
+    init : function(aml){
         if (this.enabled)
             return;
 
         this.namespace = apf.appsettings.name + ".apf.offline.application";
 
-        if (typeof jml == "string") {
-            this.providers = jml.split("|");
+        if (typeof aml == "string") {
+            this.providers = aml.split("|");
         }
-        else if (jml.nodeType) {
-            if (jml.getAttribute("version-get"))
-                this.application.versionGet = jml.getAttribute("version-get");
+        else if (aml.nodeType) {
+            if (aml.getAttribute("version-get"))
+                this.application.versionGet = aml.getAttribute("version-get");
 
-            if (jml.getAttribute("providers"))
-                this.providers = jml.getAttribute("providers").split("|");
+            if (aml.getAttribute("providers"))
+                this.providers = aml.getAttribute("providers").split("|");
 
-            if (jml.getAttribute("auto-install"))
-                this.autoInstall = apf.isTrue(jml.getAttribute("auto-install"));
+            if (aml.getAttribute("auto-install"))
+                this.autoInstall = apf.isTrue(aml.getAttribute("auto-install"));
         }
 
         //Check for an available offline provider
@@ -304,8 +304,8 @@ apf.namespace("offline.application", {
             return "";
         });
 
-        //Jml based sources
-        if (apf.JmlParser.$jml) {
+        //Aml based sources
+        if (apf.AmlParser.$aml) {
             function callback(item){
                 if(!item.nodeType) return;
 
@@ -315,7 +315,7 @@ apf.namespace("offline.application", {
                 }
             }
 
-            callback(apf.JmlParser.$jml);
+            callback(apf.AmlParser.$aml);
             apf.includeStack.forEach(callback);
         }
 

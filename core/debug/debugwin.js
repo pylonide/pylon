@@ -207,7 +207,7 @@ apf.debugwin = {
     profileGlobal: apf.getcookie("profileglobal") == "true",
     resPath      : "",
     errorTable   : "debug_panel_errortable",
-    contextDiv   : "debug_panel_jmlcontext",
+    contextDiv   : "debug_panel_amlcontext",
     stackTrace   : "debug_panel_stacktrace",//null, //blockquote[0]
     logView      : "jvlnviewlog",
     debugConsole : "apfDebugExpr",
@@ -361,9 +361,9 @@ apf.debugwin = {
             this.errorTable.innerHTML = parsed.table;
             this.errorTable.parentNode.style.display = "block";
             
-            if (parsed.jmlcontext.trim()) {
+            if (parsed.amlcontext.trim()) {
                 this.contextDiv.parentNode.style.display = "block";
-                this.contextDiv.innerHTML = parsed.jmlcontext;
+                this.contextDiv.innerHTML = parsed.amlcontext;
             }
             else
                 this.contextDiv.parentNode.style.display = "none";
@@ -406,7 +406,7 @@ apf.debugwin = {
 
     formatError: function(e) {
         var parse         = e.message.split(/\n===\n/),
-            jmlContext    = apf.highlightXml(parse[1] ? apf.debugwin.outdent(parse[1].trim(true), true).replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/ /g, "&nbsp;") : "")
+            amlContext    = apf.highlightXml(parse[1] ? apf.debugwin.outdent(parse[1].trim(true), true).replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/ /g, "&nbsp;") : "")
                 //.replace(/</g, "&lt;").replace(/\n/g, "<br />")
             errorMessage  = parse[0].replace(/---- APF Error ----\n/g, "")
                 .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://www.ajax.org#docs/errors/$1'>$1</a>]"),
@@ -433,7 +433,7 @@ apf.debugwin = {
         });
         errorTable.push("</td></tr></table>");
 
-        return {table: errorTable.join(''), jmlcontext: jmlContext || ""};
+        return {table: errorTable.join(''), amlcontext: amlContext || ""};
     },
 
     states      : {},
@@ -456,14 +456,14 @@ apf.debugwin = {
 
         this.lastValue = value;
 
-        if (value.match(/^JML/)) {
+        if (value.match(/^AML/)) {
             if (dbgMarkup.getModel())
                 dbgMarkup.getModel().unregister(dbgMarkup);
 
             if (selected.value)
                 dbgMarkup.load(apf.includeStack[selected.value]);
             else
-                dbgMarkup.load(apf.JmlParser.$jml);
+                dbgMarkup.load(apf.AmlParser.$aml);
 
             return;
         }
@@ -499,7 +499,7 @@ apf.debugwin = {
     },
 
     initMarkup : function(oHtml){
-        if (!apf.JmlParser)
+        if (!apf.AmlParser)
             return;// alert("Sorry, the depencies for the Data Debugger could not be loaded");
 
         if (oHtml.getAttribute("inited")) return;
@@ -510,7 +510,7 @@ apf.debugwin = {
          * @todo fix the edit state
          */
         var skinXml = '\
-        <j:skin id="debug" xmlns:j="' + apf.ns.jml + '">\
+        <j:skin id="debug" xmlns:j="' + apf.ns.aml + '">\
             <j:markupedit name="debugmarkup">\
                 <j:style><![CDATA[\
                     .debugmarkup{\
@@ -697,10 +697,10 @@ apf.debugwin = {
         if (!options.length)
             options.push("<option></option>");
 
-        options.push("<option>JML Main</option>");
+        options.push("<option>AML Main</option>");
         for (i = 0; i < apf.includeStack.length; i++) {
             if (typeof apf.includeStack[i] == "boolean") continue;
-            options.push("<option value='" + i + "'>JML "
+            options.push("<option value='" + i + "'>AML "
                 + apf.getFilename(apf.includeStack[i].getAttribute("filename"))
                 + "</option>");
         }
@@ -713,7 +713,7 @@ apf.debugwin = {
 
         //<button onclick='apf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = apf.xmldb.getXml("\
-            <j:parent xmlns:j='" + apf.ns.jml + "'>\
+            <j:parent xmlns:j='" + apf.ns.aml + "'>\
                 <j:markupedit skin='debugmarkup' skinset='debug' " + (first ? "model='" + first + "'" : "") + " id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
@@ -725,11 +725,11 @@ apf.debugwin = {
 
         if (apf.isIE) {
             xml.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:j='" + apf.ns.jml + "'");
+                "xmlns:j='" + apf.ns.aml + "'");
         }
 
         //Reset loading state in case of an error during init
-        var j = apf.JmlParser;
+        var j = apf.AmlParser;
         j.sbInit                = {};
         j.hasNewSbStackItems    = false;
         j.stateStack            = []
@@ -737,8 +737,8 @@ apf.debugwin = {
         j.hasNewModelStackItems = false;
         j.loaded                = true;
 
-        //Load JML
-        j.parseMoreJml(xml, oInt);
+        //Load AML
+        j.parseMoreAml(xml, oInt);
         
         if (apf.layout && !apf.hasSingleRszEvent) {
             apf.layout.setRules(apf.getFirstElement(oInt), "resize",
@@ -1251,7 +1251,7 @@ apf.debugwin = {
                 padding: 0;\
                 white-space: nowrap;\
             }\
-            #apf_debugwin .debug_panel_body_jml{\
+            #apf_debugwin .debug_panel_body_aml{\
                 padding: 0;\
                 white-space: nowrap;\
                 padding : 10px;\
@@ -1377,11 +1377,11 @@ apf.debugwin = {
             <div class='debug_panel' onclick='apf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_down.gif' />&nbsp;\
-                    <strong>JML related to the error</strong>\
+                    <strong>AML related to the error</strong>\
                 </div>\
                 <div id='" + this.contextDiv + "' onclick='event.cancelBubble=true' \
                   onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' \
-                  class='debug_panel_body_base debug_panel_body_jml'>@todo</div>\
+                  class='debug_panel_body_base debug_panel_body_aml'>@todo</div>\
             </div>\
             <div class='debug_panel' onclick='apf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
@@ -1824,7 +1824,7 @@ apf.debugwin = {
         if (!message) message = "";
         var e = message 
             ? {
-                message : message.indexOf("jml file") > -1
+                message : message.indexOf("aml file") > -1
                     ? message
                     : "js file: [line: " + linenr + "] "
                         + apf.removePathContext(apf.hostPath, filename) + "\n" + message

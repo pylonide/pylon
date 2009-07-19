@@ -23,7 +23,7 @@
 
 /**
  * @define offline
- * Adds offline support for jml applications. It can store and restore the state
+ * Adds offline support for aml applications. It can store and restore the state
  * of the application, the models, any transaction that occurred whilst being
  * offline, queuing actions (ActionTracker state) and state of the runtime
  * application itself (all properties of each element). This allows the
@@ -109,28 +109,28 @@ apf.namespace("offline", {
     inited      : false,
     rsbTimeout  : 600000,//After 10 minutes, we assume the RSB messaged will be destroyed
 
-    init : function(jml){
+    init : function(aml){
         apf.makeClass(this);
 
         //Read configuration
-        if (jml) {
-            this.$jml = jml;
+        if (aml) {
+            this.$aml = aml;
 
-            if (typeof jml == "string") {
+            if (typeof aml == "string") {
 
             }
-            else if (jml.nodeType) {
-                if (jml.getAttribute("resources"))
-                    this.providers = jml.getAttribute("resources").split("|");
+            else if (aml.nodeType) {
+                if (aml.getAttribute("resources"))
+                    this.providers = aml.getAttribute("resources").split("|");
 
                 /**
                  * @private
                  */
-                if (jml.getAttribute("rsb-timeout"))
-                    this.rsbTimeout = parseInt(jml.getAttribute("rsb-timeout"));
+                if (aml.getAttribute("rsb-timeout"))
+                    this.rsbTimeout = parseInt(aml.getAttribute("rsb-timeout"));
 
                 //Events
-                var a, i, attr = jml.attributes;
+                var a, i, attr = aml.attributes;
                 for (i = 0; i < attr.length; i++) {
                     a = attr[i];
                     if (a.nodeName.indexOf("on") == 0)
@@ -138,12 +138,12 @@ apf.namespace("offline", {
                 }
             }
             else {
-                apf.extend(this, jml);
+                apf.extend(this, aml);
             }
         }
 
         // #ifdef __WITH_OFFLINE_APPLICATION
-        var provider = apf.offline.application.init(jml)
+        var provider = apf.offline.application.init(aml)
         // #endif
 
         //Check for storage provider
@@ -178,11 +178,11 @@ apf.namespace("offline", {
         }
 
         if (this.storage.asyncInit) {
-            apf.JmlParser.shouldWait = true;
+            apf.AmlParser.shouldWait = true;
             this.storage.ready(function(){
                 apf.offline.storage.onready = null; //Prevent being called twice
                 apf.offline.continueInit();
-                apf.JmlParser.continueStartup();
+                apf.AmlParser.continueStartup();
             });
 
             return;
@@ -197,13 +197,13 @@ apf.namespace("offline", {
             if (!this[this.resources[i]])
                 this.resources.removeIndex(i);
             else
-                this[this.resources[i]].init(this.$jml);
+                this[this.resources[i]].init(this.$aml);
         }
 
         this.enabled = true;
 
         //#ifdef __WITH_OFFLINE_DETECTOR
-        this.detector.init(this.$jml);
+        this.detector.init(this.$aml);
         //#endif
 
         this.offlineTime = parseInt(this.storage.get("offlinetime", this.namespace));

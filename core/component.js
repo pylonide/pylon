@@ -22,11 +22,11 @@
 // #ifdef __WITH_COMPONENT || __INC_ALL
 
 /**
- * This function tries to simplify the development of new JML elements.
+ * This function tries to simplify the development of new AML elements.
  * Creating a new element for JPF may now be as easy as:
  * Example:
  * <code language="javascript">
- * // create a new JML component: <j:foo />
+ * // create a new AML component: <j:foo />
  * apf.foo = apf.component(apf.NODE_VISIBLE, {
  *     // component body (method and property declaration)
  * }).implement(apf.barInterface);
@@ -149,7 +149,7 @@ apf.component = function(nodeFunc, oBase) {
                     //#endif
                     "focussable", "zindex", "disabled", "tabindex",
                     "disable-keyboard", "contextmenu", "visible", "autosize", 
-                    "loadjml", "actiontracker", "alias"];
+                    "loadaml", "actiontracker", "alias"];
             } 
             else {
                 this.$booleanProperties   = {}; //@todo fix this in each component
@@ -158,12 +158,12 @@ apf.component = function(nodeFunc, oBase) {
             
             /** 
              * @inherits apf.Class
-             * @inherits apf.JmlElement
+             * @inherits apf.AmlElement
              */
             // the ORDER is crucial here.
             this.implement(apf.Class);
             this.implement.apply(this, aImpl);
-            this.implement(apf.JmlElement, this.base || apf.K);
+            this.implement(apf.AmlElement, this.base || apf.K);
             
             if (typeof this['init'] == "function")
                 this.init();
@@ -248,7 +248,7 @@ apf.subnode = function(nodeFunc, oBase) {
             // the ORDER is crucial here.
             this.implement(apf.Class);
             this.implement.apply(this, aImpl);
-            this.implement(apf.JmlDom, this.base || apf.K);
+            this.implement(apf.AmlDom, this.base || apf.K);
             
             if (typeof this['init'] == "function")
                 this.init();

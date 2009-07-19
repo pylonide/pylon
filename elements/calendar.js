@@ -639,7 +639,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         this.oContent    = this.$getLayoutNode("main", "content",  this.oExt);
     };
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
         if (typeof this.value == "undefined") {
             switch(this["default"]) {
                 case "today":

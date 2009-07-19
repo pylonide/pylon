@@ -173,7 +173,7 @@ apf.XmlDatabase = function(){
      * Finds the html representation of an xml node for a certain element.
      *
      * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {JMLNode} oComp    the element that has created the representation.
+     * @param {AMLNode} oComp    the element that has created the representation.
      * @return {HTMLNode} the html node representing the xml node.
      */
     this.findHtmlNode = function(xmlNode, oComp){
@@ -974,7 +974,7 @@ apf.XmlDatabase = function(){
         if (!this.delayUpdate && "|remove|move-away|".indexOf("|" + action + "|") > -1)
             this.notifyQueued(); //empty queue
 
-        var listen, uIds, i, j, hash, info, jmlNode, runTimer, found;
+        var listen, uIds, i, j, hash, info, amlNode, runTimer, found;
         while (loopNode && loopNode.nodeType != 9) {
             //Get List of Node listeners ID's
             listen = loopNode.getAttribute(this.xmlListenTag);
@@ -1007,9 +1007,9 @@ apf.XmlDatabase = function(){
                     }
 
                     if (!this.delayUpdate && "|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
-                        jmlNode = apf.lookup(uIds[i]);
-                        if (jmlNode)
-                            jmlNode.$xmlUpdate(action, xmlNode,
+                        amlNode = apf.lookup(uIds[i]);
+                        if (amlNode)
+                            amlNode.$xmlUpdate(action, xmlNode,
                                 loopNode, undoObj, oParent);
                     }
                     else {
@@ -1050,30 +1050,30 @@ apf.XmlDatabase = function(){
         
         for (var uId in notifyQueue) {
             var q = notifyQueue[uId];
-            jmlNode = apf.lookup(uId);
-            if (!jmlNode || !q)
+            amlNode = apf.lookup(uId);
+            if (!amlNode || !q)
                 continue;
 
             //Check if component is just waiting for data to become available
-            if (jmlNode.$listenRoot) {
-                var model = jmlNode.getModel();
+            if (amlNode.$listenRoot) {
+                var model = amlNode.getModel();
 
                 //#ifdef __DEBUG
                 if (!model)
                     throw new Error(apf.formatErrorString(this,
                         "Notifying Component of data change",
                         "Component without a model is listening for changes",
-                        jmlNode.$jml));
+                        amlNode.$aml));
                 //#endif
 
-                var xpath   = model.getXpathByJmlNode(jmlNode);
+                var xpath   = model.getXpathByAmlNode(amlNode);
                 var xmlRoot = xpath
                     ? model.data.selectSingleNode(xpath)
                     : model.data;
                 if (xmlRoot) {
-                    apf.xmldb.removeNodeListener(jmlNode.$listenRoot, jmlNode);
-                    jmlNode.$listenRoot = null;
-                    jmlNode.load(xmlRoot);
+                    apf.xmldb.removeNodeListener(amlNode.$listenRoot, amlNode);
+                    amlNode.$listenRoot = null;
+                    amlNode.load(xmlRoot);
                 }
 
                 continue;
@@ -1085,7 +1085,7 @@ apf.XmlDatabase = function(){
                     continue;
 
                 //Update xml data
-                jmlNode.$xmlUpdate.apply(jmlNode, q[i]);
+                amlNode.$xmlUpdate.apply(amlNode, q[i]);
             }
         }
 
@@ -1622,13 +1622,13 @@ apf.XmlDatabase = function(){
     /**
      * @private
      */
-    this.clearBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.xmlRoot)
+    this.clearBoundValue = function(amlNode, xmlRoot, applyChanges){
+        if (!xmlRoot && !amlNode.xmlRoot)
             return;
 
-        var xmlNode = (jmlNode.nodeFunc == apf.NODE_VISIBLE)
-            ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.xmlRoot);
+        var xmlNode = (amlNode.nodeFunc == apf.NODE_VISIBLE)
+            ? xmlRoot.selectSingleNode(amlNode.getAttribute("ref"))
+            : amlNode.getNodeFromRule("value", amlNode.xmlRoot);
 
         if (xmlNode)
             this.setNodeValue(xmlNode, "", applyChanges);
@@ -1639,13 +1639,13 @@ apf.XmlDatabase = function(){
     /**
      * @private
      */
-    this.getBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.xmlRoot)
+    this.getBoundValue = function(amlNode, xmlRoot, applyChanges){
+        if (!xmlRoot && !amlNode.xmlRoot)
             return "";
 
-        var xmlNode = !jmlNode.nodeFunc
-            ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.xmlRoot);
+        var xmlNode = !amlNode.nodeFunc
+            ? xmlRoot.selectSingleNode(amlNode.getAttribute("ref"))
+            : amlNode.getNodeFromRule("value", amlNode.xmlRoot);
 
         return xmlNode ? this.getNodeValue(xmlNode) : "";
     };

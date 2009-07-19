@@ -283,7 +283,7 @@ apf.runIphone = function() {
                 scrollTo(0, 1);
                 apf.dispatchEvent("pagechange", where);
 
-                var sTitle = p.$jml.getAttribute("title");
+                var sTitle = p.$aml.getAttribute("title");
                 if (apf.iphone.titleNode && sTitle)
                     apf.iphone.titleNode.innerHTML = sTitle;
 

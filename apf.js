@@ -29,7 +29,7 @@
  * @event domready      Fires when the browsers' dom is ready to be manipulated.
  * @event movefocus         Fires when the focus moves from one element to another.
  *   object:
- *   {JMLElement} toElement the element that will receive the focus.
+ *   {AMLElement} toElement the element that will receive the focus.
  * @event exit              Fires when the application wants to exit.
  *   cancellable:  Prevents the application from exiting. The returnValue of the
  *   event object is displayed in a popup which asks the user for permission.
@@ -66,7 +66,7 @@
  * @event mousedown     Fires when the user presses a mouse button
  *   object:
  *   {Event}      htmlEvent the char code of the pressed key.
- *   {JMLElement} jmlNode   the element on which is clicked.
+ *   {AMLElement} amlNode   the element on which is clicked.
  * @event onbeforeprint Fires before the application will print.
  * @event onafterprint  Fires after the application has printed.
  * @event load          Fires after the application is loaded.
@@ -107,14 +107,14 @@ var apf = {
      */
     READY          : false,
 
-    //JML nodeFunc constants
+    //AML nodeFunc constants
     /**
-     * Constant for a hidden jml element.
+     * Constant for a hidden aml element.
      * @type {Number}
      */
     NODE_HIDDEN    : 101,
     /**
-     * Constant for a visible jml element.
+     * Constant for a visible aml element.
      * @type {Number}
      */
     NODE_VISIBLE   : 102,
@@ -189,13 +189,13 @@ var apf = {
     /**
      * Constant for specifying that a widget is using only the keyboard to receive focus.
      * @type {Number}
-     * @see baseclass.jmlelement.method.focus
+     * @see baseclass.amlelement.method.focus
      */
     KEYBOARD       : 2,
     /**
      * Constant for specifying that a widget is using the keyboard or the mouse to receive focus.
      * @type {Boolean}
-     * @see baseclass.jmlelement.method.focus
+     * @see baseclass.amlelement.method.focus
      */
     KEYBOARD_MOUSE : true,
 
@@ -252,14 +252,14 @@ var apf = {
      */
     basePath      : "./",
 
-    //#ifdef __PARSER_JML
+    //#ifdef __PARSER_AML
     /**
      * {Object} contains several known and often used namespace URI's.
      * @private
      */
     ns : {
         apf    : "http://ajax.org/2005/aml",
-        jml    : "http://ajax.org/2005/aml",
+        aml    : "http://ajax.org/2005/aml",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",
@@ -706,7 +706,7 @@ var apf = {
         }
     },
     
-    //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
+    //#ifdef __PARSER_AML || __WITH_NS_SUPPORT
     /**
      * @private
      */
@@ -789,7 +789,7 @@ var apf = {
                 throw new Error(apf.formatErrorString(0, this,
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
-                    this.$jml));
+                    this.$aml));
             }
             //#endif
 
@@ -858,7 +858,7 @@ var apf = {
                 //#endif
                 "focussable", "zindex", "disabled", "tabindex",
                 "disable-keyboard", "contextmenu", "visible", "autosize",
-                "loadjml", "actiontracker", "alias"];
+                "loadaml", "actiontracker", "alias"];
         }
         else {
             o.$booleanProperties = {}; //@todo fix this in each component
@@ -878,7 +878,7 @@ var apf = {
     },
 
     /**
-     * Finds a jml element based on it's uniqueId
+     * Finds a aml element based on it's uniqueId
      */
     lookup : function(uniqueId){
         return this.all[uniqueId];
@@ -886,7 +886,7 @@ var apf = {
 
     /**
      * Searches in the html tree from a certain point to find the
-     * jml element that is responsible for rendering the specified html
+     * aml element that is responsible for rendering the specified html
      * element.
      * @param {HTMLElement} oHtml the html context to start the search from.
      */
@@ -1162,34 +1162,34 @@ var apf = {
     /**
      * Formats a Ajax.org Platform error message.
      * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
-     * @param {JMLElement}  control     the jml element that will throw the error.
+     * @param {AMLElement}  control     the aml element that will throw the error.
      * @param {String}      process     the action that was being executed.
      * @param {String}      message     the actual error message.
-     * @param {XMLElement}  jmlContext  the xml relevant to the error. For instance a piece of Ajax.org Markup Language xml.
+     * @param {XMLElement}  amlContext  the xml relevant to the error. For instance a piece of Ajax.org Markup Language xml.
      */
-    formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
+    formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
         var str = ["---- APF Error ----"];
-        if (jmlContext) {
-            if (jmlContext.nodeType == 9)
-                jmlContext = jmlContext.documentElement;
+        if (amlContext) {
+            if (amlContext.nodeType == 9)
+                amlContext = amlContext.documentElement;
 
             //Determine file context
-            var file = jmlContext.ownerDocument.documentElement.getAttribute("filename");
-            if (!file && jmlContext.ownerDocument.documentElement.tagName == "html")
+            var file = amlContext.ownerDocument.documentElement.getAttribute("filename");
+            if (!file && amlContext.ownerDocument.documentElement.tagName == "html")
                 file = location.href;
             file = file
                 ? apf.removePathContext(apf.hostPath, file)
                 : "Unkown filename";
 
             //Get serialized version of context
-            var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
+            var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
 
             //Determine line number
-            var diff, linenr = 0, w = jmlContext.previousSibling
-                || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
+            var diff, linenr = 0, w = amlContext.previousSibling
+                || amlContext.parentNode && amlContext.parentNode.previousSibling;
             while(w && w[apf.TAGNAME] != "body"){
                 diff = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
                 linenr += diff - 1;
@@ -1198,18 +1198,18 @@ var apf = {
             }
             if (w && w[apf.TAGNAME] != "body")
                 linenr = "unknown";
-            else if(jmlContext.ownerDocument.documentElement.tagName == "html")
+            else if(amlContext.ownerDocument.documentElement.tagName == "html")
                 linenr += apf.lineBodyStart;
 
             //Grmbl line numbers are wrong when \n's in attribute space
 
             //Set file and line number
-            str.push("jml file: [line: " + linenr + "] " + file);
+            str.push("aml file: [line: " + linenr + "] " + file);
         }
         if (control)
             str.push("Control: '"
                 + (control.name
-                    || (control.$jml ? control.$jml.getAttribute("id") : null)
+                    || (control.$aml ? control.$aml.getAttribute("id") : null)
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -1218,8 +1218,8 @@ var apf = {
             str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
         if (outputname)
             str.push(outputname + ": " + output);
-        if (jmlContext)
-            str.push("\n===\n" + jmlStr);
+        if (amlContext)
+            str.push("\n===\n" + amlStr);
         
         return (apf.lastErrorMessage = str.join("\n"));
         /*#else
@@ -1319,13 +1319,13 @@ var apf = {
         }
     },
 
-    //#ifdef __PARSER_JML
+    //#ifdef __PARSER_AML
 
     /**
      * @todo Build this function into the compressor for faster execution
      * @private
      */
-    getJmlDocFromString : function(xmlString, preserveWhiteSpace){
+    getAmlDocFromString : function(xmlString, preserveWhiteSpace){
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
           .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
@@ -1353,11 +1353,11 @@ var apf = {
         return xmlNode;
     },
 
-    //#ifdef __WITH_PARTIAL_JML_LOADING
+    //#ifdef __WITH_PARTIAL_AML_LOADING
     /**
      * @private
      */
-    jmlParts : [],
+    amlParts : [],
     //#endif
 
     /**
@@ -1373,17 +1373,17 @@ var apf = {
      */
     parseStrategy : 0,
 
-    //#ifdef __WITH_PARTIAL_JML_LOADING
-    parsePartialJml : function(docElement){
+    //#ifdef __WITH_PARTIAL_AML_LOADING
+    parsePartialAml : function(docElement){
         //#ifdef __DEBUG
-        apf.console.warn("The jml namespace definition wasn't found \
+        apf.console.warn("The aml namespace definition wasn't found \
                           on the root node of this document. We're assuming \
-                          you want to load a partial piece of jml embedded\
+                          you want to load a partial piece of aml embedded\
                           in this document. Starting to search for it now.");
         //#endif
 
         if (apf.isIE) {
-            var findJml = function(htmlNode){
+            var findAml = function(htmlNode){
                 //#ifdef __DEBUG
                 if (htmlNode.outerHTML.match(/\/>$/)) {
                     throw new Error("Cannot have self closing elements!\n"
@@ -1411,11 +1411,11 @@ var apf = {
                 catch(e) {
                     //#ifdef __DEBUG
                     throw new Error(apf.formatErrorString(0, null,
-                        "Parsing inline jml (without xmlns on root node)",
-                        "Could not parse inline jml. This happens when the html\
+                        "Parsing inline aml (without xmlns on root node)",
+                        "Could not parse inline aml. This happens when the html\
                          is mangled too much by Internet Explorer. Either you\
                          are using a cdata section or javascript containing\
-                         symbols that throw off the browser. Please put this jml\
+                         symbols that throw off the browser. Please put this aml\
                          in a seperate file and load it using a j:include."));
                     //#endif
                     
@@ -1423,7 +1423,7 @@ var apf = {
                 }
 
                 var p = prefix.toLowerCase();
-                var xmlNode = apf.getJmlDocFromString("<div jid='"
+                var xmlNode = apf.getAmlDocFromString("<div jid='"
                     + (id++) + "' " + strXmlns + ">"
                     + strXml + "</div>").documentElement;
 
@@ -1435,12 +1435,12 @@ var apf = {
             }
         }
         else {
-            var findJml = function(htmlNode){
+            var findAml = function(htmlNode){
                 var strXml = htmlNode.outerHTML
                     .replace(/ _moz-userdefined=""/g, "");
 
                 var p = prefix.toLowerCase();
-                var xmlNode = apf.getJmlDocFromString("<div jid='"
+                var xmlNode = apf.getAmlDocFromString("<div jid='"
                     + (id++) + "' " + strXmlns + ">"
                     + strXml + "</div>").documentElement;
 
@@ -1469,7 +1469,7 @@ var apf = {
 
         prefix += ":";
 
-        apf.AppNode = apf.getJmlDocFromString("<" + prefix.toLowerCase()
+        apf.AppNode = apf.getAmlDocFromString("<" + prefix.toLowerCase()
             + "application " + strXmlns + " />").documentElement;
 
         var temp, loop;
@@ -1479,7 +1479,7 @@ var apf = {
                 && node.tagName.substr(0,2) == prefix;
 
             if (isPrefix) {
-                findJml(cnode = node);
+                findAml(cnode = node);
 
                 if (apf.isIE) {
                     loop = node;
@@ -1535,11 +1535,11 @@ var apf = {
                     //node = node.nextSibling;
                 }
 
-                if (apf.jmlParts.length
-                  && apf.jmlParts[apf.jmlParts.length-1][1] == cnode)
-                    apf.jmlParts[apf.jmlParts.length-1][1] = -1;
+                if (apf.amlParts.length
+                  && apf.amlParts[apf.amlParts.length-1][1] == cnode)
+                    apf.amlParts[apf.amlParts.length-1][1] = -1;
 
-                apf.jmlParts.push([node.parentNode, apf.isIE
+                apf.amlParts.push([node.parentNode, apf.isIE
                     ? node.nextSibling : node.nextSibling]);
             }
             else if (node.tagName == "SCRIPT" && node.getAttribute("src")
@@ -1559,7 +1559,7 @@ var apf = {
                     .replace(/\\+(['"])/g, "$1");
 
                 if (strXml.trim()) {
-                    var xmlNode = apf.getJmlDocFromString("<div jid='"
+                    var xmlNode = apf.getAmlDocFromString("<div jid='"
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
 
@@ -1568,7 +1568,7 @@ var apf = {
 
                     apf.AppNode.appendChild(xmlNode);
 
-                    apf.jmlParts.push([node.parentNode, node.nextSibling]);
+                    apf.amlParts.push([node.parentNode, node.nextSibling]);
                 }
             }
 
@@ -1608,21 +1608,21 @@ var apf = {
     loadIncludes : function(docElement){
         var isEmptyDocument = false;
         
-        //#ifdef __WITH_PARTIAL_JML_LOADING
+        //#ifdef __WITH_PARTIAL_AML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(apf.ns.jml) == -1) {
-            this.parsePartialJml(docElement);
+             .indexOf(apf.ns.aml) == -1) {
+            this.parsePartialAml(docElement);
 
-            if (this.parseStrategy == 1 || apf.jmlParts.length) {
+            if (this.parseStrategy == 1 || apf.amlParts.length) {
                 //#ifdef __DEBUG
-                if (apf.jmlParts.length)
-                    apf.console.warn("Jml found, parsing...");
+                if (apf.amlParts.length)
+                    apf.console.warn("Aml found, parsing...");
                 //#endif
 
                 apf.isParsingPartial = true;
 
-                apf.loadJmlIncludes(apf.AppNode);
+                apf.loadAmlIncludes(apf.AppNode);
 
                 if (!self.ERROR_HAS_OCCURRED) {
                     apf.Init.interval = setInterval(function(){
@@ -1635,22 +1635,22 @@ var apf = {
             }
             else {
                 //#ifdef __DEBUG
-                apf.console.warn("No jml found.");
+                apf.console.warn("No aml found.");
                 //#endif
                 isEmptyDocument = true;
             }
         }
         //#endif
 
-        //#ifdef __WITH_PARTIAL_JML_LOADING_FROM_COMMENT
+        //#ifdef __WITH_PARTIAL_AML_LOADING_FROM_COMMENT
         //@todo this strategy needs some updating
         if (this.parseStrategy == 11 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(apf.ns.jml) == -1) {
+             .indexOf(apf.ns.aml) == -1) {
             //#ifdef __DEBUG
-            apf.console.warn("The jml namespace definition wasn't found \
+            apf.console.warn("The aml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
-                              you want to load a partial piece of jml embedded\
+                              you want to load a partial piece of aml embedded\
                               in this document. Starting to search for it now.");
             //#endif
 
@@ -1663,21 +1663,21 @@ var apf = {
                         str = str.substr(5);
 
                         //#ifdef __DEBUG
-                        apf.console.info("Found a piece of jml. Assuming \
+                        apf.console.info("Found a piece of aml. Assuming \
                                           namespace prefix 'j'. Starting \
                                           parsing now.");
                         //#endif
 
                         x = apf.getXml("<j:applicaton xmlns:j='"
-                            + apf.ns.jml + "'>" + str + "</j:applicaton>", true);
+                            + apf.ns.aml + "'>" + str + "</j:applicaton>", true);
 
                         if (apf.isIE) { //@todo generalize this
                             x.ownerDocument.setProperty("SelectionNamespaces",
-                                "xmlns:j='" + apf.ns.jml + "'");
+                                "xmlns:j='" + apf.ns.aml + "'");
                         }
 
-                        apf.loadJmlIncludes(x);
-                        apf.jmlParts.push([x, node]);
+                        apf.loadAmlIncludes(x);
+                        apf.amlParts.push([x, node]);
                     }
                 }
 
@@ -1696,7 +1696,7 @@ var apf = {
             }
 
             if (!self.ERROR_HAS_OCCURRED
-              && (apf.jmlParts.length || this.parseStrategy == 11)) {
+              && (apf.amlParts.length || this.parseStrategy == 11)) {
                 apf.isParsingPartial = true;
 
                 apf.Init.interval = setInterval(function(){
@@ -1711,14 +1711,14 @@ var apf = {
         }
         //#endif
 
-        //#ifdef __WITH_PARSEJMLFROMHTML
-        //Load jml without reloading the page, but also fully parse javascript
+        //#ifdef __WITH_PARSEAMLFROMHTML
+        //Load aml without reloading the page, but also fully parse javascript
         //This requires there to be no self closing elements
         if (this.parseStrategy == 2) { //!this.parseStrategy
             if (apf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + apf.ns.jml + "'
+                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + apf.ns.aml + "'
                     .replace(/HTML>$/, "j:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }
@@ -1731,7 +1731,7 @@ var apf = {
             }
 
             try {
-                docElement = apf.getJmlDocFromString(xmlStr);
+                docElement = apf.getAmlDocFromString(xmlStr);
 
                 //Clear Body
                 var nodes = document.body.childNodes;
@@ -1739,7 +1739,7 @@ var apf = {
                     nodes[i].parentNode.removeChild(nodes[i]);
 
                 /*apf.AppData = $xmlns(docElement, "body", apf.ns.xhtml)[0];
-                apf.loadJmlIncludes(apf.AppData);
+                apf.loadAmlIncludes(apf.AppData);
 
                 if (!self.ERROR_HAS_OCCURRED) {
                     apf.Init.interval = setInterval(function(){
@@ -1765,17 +1765,17 @@ var apf = {
         
         if (isEmptyDocument && document.documentElement.outerHTML
           .split(">", 1)[0]
-          .indexOf(apf.ns.jml) == -1) {
+          .indexOf(apf.ns.aml) == -1) {
             //#ifdef __DEBUG
-            apf.console.warn("The jml namespace declaration wasn't found. \
-                              No jml elements were found in the body. Exiting");
+            apf.console.warn("The aml namespace declaration wasn't found. \
+                              No aml elements were found in the body. Exiting");
             //#endif
             return false;
         }
 
         //Load current HTML document as 'second DOM'
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
-            return apf.oHttp.get((apf.alternativeJml 
+            return apf.oHttp.get((apf.alternativeAml 
               || document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
@@ -1795,7 +1795,7 @@ var apf = {
                         .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     //#endif
 
-                    var xmlNode = apf.getJmlDocFromString(xmlString);
+                    var xmlNode = apf.getAmlDocFromString(xmlString);
 
                     //Clear Body
                     if (apf.isIE)
@@ -1811,7 +1811,7 @@ var apf = {
         }
         
         //Parse the second DOM (add includes)
-        var prefix = apf.findPrefix(docElement, apf.ns.jml);
+        var prefix = apf.findPrefix(docElement, apf.ns.aml);
         //#ifdef __SUPPORT_SAFARI2
         if (apf.isSafariOld || true)
             prefix = "j";
@@ -1822,11 +1822,11 @@ var apf = {
             throw new Error(apf.formatErrorString(0, null,
                 "Parsing document",
                 "Unable to find Ajax.org Platform namespace definition. \
-                 (i.e. xmlns:j=\"" + apf.ns.jml + "\")", docElement));
+                 (i.e. xmlns:j=\"" + apf.ns.aml + "\")", docElement));
         //#endif
 
         apf.AppData = apf.supportNamespaces
-            ? docElement.createElementNS(apf.ns.jml, prefix + ":application")
+            ? docElement.createElementNS(apf.ns.aml, prefix + ":application")
             : docElement.createElement(prefix + ":application");
 
         var i, nodes;
@@ -1856,9 +1856,9 @@ var apf = {
         apf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", apf.ns.xhtml)[0];
         */
 
-        apf.loadJmlIncludes(apf.AppData);
+        apf.loadAmlIncludes(apf.AppData);
 
-        if ($xmlns(apf.AppData, "loader", apf.ns.jml).length) {
+        if ($xmlns(apf.AppData, "loader", apf.ns.aml).length) {
             apf.loadScreen = {
                 show : function(){
                     this.oExt.style.display = "block";
@@ -1876,7 +1876,7 @@ var apf = {
             //#ifdef __SUPPORT_SAFARI
             if (apf.isSafariOld) {
                 var q = apf.getFirstElement(
-                    $xmlns(apf.AppData, "loader", apf.ns.jml)[0]).serialize();
+                    $xmlns(apf.AppData, "loader", apf.ns.aml)[0]).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
                 apf.loadScreen.oExt = document.body.lastChild;
             }
@@ -1884,7 +1884,7 @@ var apf = {
             //#endif
             {
                 var htmlNode = apf.getFirstElement(
-                    $xmlns(apf.AppData, "loader", apf.ns.jml)[0]);
+                    $xmlns(apf.AppData, "loader", apf.ns.aml)[0]);
 
                 //if(apf.isSafari) apf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)
@@ -1911,13 +1911,13 @@ var apf = {
     /**
      * @private
      */
-    checkForJmlNamespace : function(xmlNode){
+    checkForAmlNamespace : function(xmlNode){
         if (!xmlNode.ownerDocument.documentElement)
             return false;
 
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
         for (var found = false, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeValue == apf.ns.jml) {
+            if (nodes[i].nodeValue == apf.ns.aml) {
                 found = true;
                 break;
             }
@@ -1926,7 +1926,7 @@ var apf = {
         //#ifdef __DEBUG
         if (!found) {
             throw new Error(apf.formatErrorString(0, null,
-                "Checking for the jml namespace",
+                "Checking for the aml namespace",
                 "The Ajax.org Platform xml namespace was not found in "
                 + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
@@ -1940,17 +1940,17 @@ var apf = {
     /**
      * @private
      */
-    loadJmlIncludes : function(xmlNode, doSync){
+    loadAmlIncludes : function(xmlNode, doSync){
         // #ifdef __WITH_INCLUDES
 
         var i, nodes, path;
         // #ifdef __DEBUG
-        apf.checkForJmlNamespace(xmlNode);
+        apf.checkForAmlNamespace(xmlNode);
         // #endif
 
         var basePath = apf.getDirname(xmlNode.getAttribute("filename")) || apf.hostPath;
 
-        nodes = $xmlns(xmlNode, "include", apf.ns.jml);
+        nodes = $xmlns(xmlNode, "include", apf.ns.aml);
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
 
@@ -1965,13 +1965,13 @@ var apf = {
 
                 path = apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
 
-                apf.loadJmlInclude(nodes[i], doSync, path);
+                apf.loadAmlInclude(nodes[i], doSync, path);
             }
         }
         else
             xmlNode.setAttribute("loading", "done");
 
-        nodes = $xmlns(xmlNode, "skin", apf.ns.jml);
+        nodes = $xmlns(xmlNode, "skin", apf.ns.aml);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
               || nodes[i].childNodes.length)
@@ -1981,7 +1981,7 @@ var apf = {
                 ? apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
                 : apf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
 
-            apf.loadJmlInclude(nodes[i], doSync, path, true);
+            apf.loadAmlInclude(nodes[i], doSync, path, true);
 
             //nodes[i].parentNode.removeChild(nodes[i]);
             nodes[i].setAttribute("j_preparsed", "9999")
@@ -1992,7 +1992,7 @@ var apf = {
         if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
             apf.console.warn("No skin file found, attempting to autoload the \
                               default skin file: skins.xml");
-            apf.loadJmlInclude(null, doSync, "skins.xml", true);
+            apf.loadAmlInclude(null, doSync, "skins.xml", true);
         }
         //#endif
 
@@ -2004,7 +2004,7 @@ var apf = {
     /**
      * @private
      */
-    loadJmlInclude : function(node, doSync, path, isSkin){
+    loadAmlInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
 
         //#ifdef __DEBUG
@@ -2037,7 +2037,7 @@ var apf = {
 
                 var xmlNode, isTeleport;
                 if (!isSkin) {
-                    xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
+                    xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
                     var tagName = xmlNode[apf.TAGNAME];
 
                     if (tagName == "skin")
@@ -2062,10 +2062,10 @@ var apf = {
                                           use in production environments.")
                         //#endif
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-                        xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
+                        xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
                     }
                     else if (!xmlNode)
-                        xmlNode = apf.getJmlDocFromString(xmlString).documentElement;
+                        xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
                     
                     if (!xmlNode) {
                         throw new Error(apf.formatErrorString(0, null,
@@ -2080,7 +2080,7 @@ var apf = {
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
                 }
                 else if (isTeleport) {
-                    apf.teleport.loadJml(xmlNode);
+                    apf.teleport.loadAml(xmlNode);
                     apf.includeStack[extra.userdata[1]] = true;
                 }
                 else {
@@ -2094,7 +2094,7 @@ var apf = {
                 apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
 
-                apf.loadJmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
+                apf.loadAmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
 
             }, {
                 async         : !doSync,
@@ -2210,16 +2210,16 @@ var apf = {
             //#endif
 
             //var xmlString = apf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-            var xmlNode = apf.getJmlDocFromString(apf.skins.defaultSkin).documentElement; //@todo should get preprocessed
+            var xmlNode = apf.getAmlDocFromString(apf.skins.defaultSkin).documentElement; //@todo should get preprocessed
             xmlNode.setAttribute("media-path", apf.CDN + apf.VERSION + "/images/")
             xmlNode.setAttribute("icon-path", apf.CDN + apf.VERSION + "/icons/")
             apf.skins.Init(xmlNode);
         }
         //#endif
 
-        //#ifdef __WITH_PARTIAL_JML_LOADING
+        //#ifdef __WITH_PARTIAL_AML_LOADING
         if (apf.isParsingPartial) {
-            //Form jml parser
+            //Form aml parser
             if (!apf.window) {
                 apf.window          = new apf.WindowImplementation();
                 apf.document        = new apf.DocumentImplementation();
@@ -2235,12 +2235,12 @@ var apf = {
 
             var pHtmlNode = document.body;
             var lastChild = pHtmlNode.lastChild;
-            apf.JmlParser.parseMoreJml(apf.AppNode, pHtmlNode, null,
+            apf.AmlParser.parseMoreAml(apf.AppNode, pHtmlNode, null,
                 true, false);
 
             var pNode, firstNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
             while (loop && lastChild != loop) {
-                info = apf.jmlParts[loop.getAttribute("jid")];
+                info = apf.amlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
                     pNode = info[0];
@@ -2275,8 +2275,8 @@ var apf = {
         //#endif
         {
             // Start application
-            if (apf.JmlParser && apf.AppData)
-                apf.JmlParser.parse(apf.AppData);
+            if (apf.AmlParser && apf.AppData)
+                apf.AmlParser.parse(apf.AppData);
 
             if (apf.loadScreen && apf.appsettings.autoHideLoading)
                 apf.loadScreen.hide();
@@ -2380,7 +2380,7 @@ var apf = {
     /* Destroy */
 
     /**
-     * Unloads the jml application.
+     * Unloads the aml application.
      */
     destroy : function(exclude){
         //#ifdef __DEBUG
@@ -2404,9 +2404,9 @@ var apf = {
                 this.all[i].destroy(false);
         }
 
-        for (i = this.$jmlDestroyers.length - 1; i >= 0; i--)
-            this.$jmlDestroyers[i].call(this);
-        this.$jmlDestroyers = undefined;
+        for (i = this.$amlDestroyers.length - 1; i >= 0; i--)
+            this.$amlDestroyers[i].call(this);
+        this.$amlDestroyers = undefined;
 
         // #ifdef __WITH_TELEPORT
         apf.teleport.destroy();

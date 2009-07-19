@@ -133,7 +133,7 @@
  * @default_private
  */
 apf.teleport = {
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     tagName  : "teleport",
     nodeFunc : apf.NODE_HIDDEN,
     //#endif
@@ -158,15 +158,15 @@ apf.teleport = {
     },
     
     // Load Teleport Definition
-    loadJml: function(x, parentNode){
-        this.$jml        = x;
+    loadAml: function(x, parentNode){
+        this.$aml        = x;
         
-        //#ifdef __WITH_JMLDOM_FULL
+        //#ifdef __WITH_AMLDOM_FULL
         this.parentNode = parentNode;
-        apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
+        apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
         //#endif
         
-        var id, obj, nodes = this.$jml.childNodes;
+        var id, obj, nodes = this.$aml.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) 
                 continue;
@@ -217,7 +217,7 @@ apf.teleport = {
 apf.BaseComm = function(x){
     apf.makeClass(this);
     this.uniqueId = apf.all.push(this) - 1;
-    this.$jml      = x;
+    this.$aml      = x;
     
     /**
      * Returns a string representation of this object.
@@ -227,34 +227,34 @@ apf.BaseComm = function(x){
             + " (" + this.type + ")]";
     }
     
-    if (this.$jml) {
+    if (this.$aml) {
         this.name = x.getAttribute("id");
         this.type = x[apf.TAGNAME];
         
         // Implement the specified baseclass
         if (!apf[this.type]) 
-            throw new Error(apf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Ajax.org Teleport Component '" + this.type + "'", this.$jml));
+            throw new Error(apf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Ajax.org Teleport Component '" + this.type + "'", this.$aml));
         
         this.implement(apf[this.type]);
         if (this.useHTTP) {
             // Implement HTTP Module
             if (!apf.http) 
-                throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Ajax.org Teleport HTTP Component", this.$jml));
+                throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Ajax.org Teleport HTTP Component", this.$aml));
             this.implement(apf.http);
         }
         
-        if (this.$jml.getAttribute("protocol")) {
+        if (this.$aml.getAttribute("protocol")) {
             // Implement Module
-            var proto = this.$jml.getAttribute("protocol").toLowerCase();
+            var proto = this.$aml.getAttribute("protocol").toLowerCase();
             if (!apf[proto]) 
-                throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Ajax.org Teleport RPC Component '" + proto + "'", this.$jml));
+                throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Ajax.org Teleport RPC Component '" + proto + "'", this.$aml));
             this.implement(apf[proto]);
         }
     }
     
     // Load Comm definition
-    if (this.$jml) 
-        this.load(this.$jml);
+    if (this.$aml) 
+        this.load(this.$aml);
 };
 
 // #endif

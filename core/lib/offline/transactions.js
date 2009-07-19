@@ -26,7 +26,7 @@
  * offline, the state is maintained such that it can be synced at a later date.
  * The actiontracker state can be maintained even when the application restarts.
  * In most cases the functionality of this object will be managed from within 
- * the offline element in JML.
+ * the offline element in AML.
  * Example:
  * <code>
  *  <j:offline ontransactioncancel="alert('You are currently offline')" />

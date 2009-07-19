@@ -212,7 +212,7 @@
  *      </j:bindings>
  *  </j:tree>
  * </code>
- * For more information about how data can be loaded into jml elements please
+ * For more information about how data can be loaded into aml elements please
  * check {@link term.datainstruction data instructions}.
  */
 
@@ -545,17 +545,17 @@ apf.smartbinding = function(name, xmlNode, parentNode){
     this.actions     = null;
     this.dragdrop    = null;
 
-    this.jmlNodes    = {};
+    this.amlNodes    = {};
     this.$modelXpath = {};
     this.name        = name;
     var _self        = this;
     //this.uniqueId    = apf.all.push(this) - 1;
     
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     this.tagName    = "smartbinding";
     this.nodeFunc   = apf.NODE_HIDDEN;
     this.parentNode = parentNode;
-    apf.implement.call(this, apf.JmlDom); /** @inherits apf.JmlDom */
+    apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
     //#endif
 
     var parts        = {
@@ -573,15 +573,15 @@ apf.smartbinding = function(name, xmlNode, parentNode){
     /**
      * @private
      */
-    this.initialize = function(jmlNode, part){
+    this.initialize = function(amlNode, part){
         //register element
-        this.jmlNodes[jmlNode.uniqueId] = jmlNode;
+        this.amlNodes[amlNode.uniqueId] = amlNode;
         
         if (part)
-            return jmlNode[parts[part]](this[part], this["xml" + part]);
+            return amlNode[parts[part]](this[part], this["xml" + part]);
         
-        if (jmlNode.$jml && this.name) //@todo is this still relevant?
-            jmlNode.$jml.setAttribute("smartbinding", this.name);
+        if (amlNode.$aml && this.name) //@todo is this still relevant?
+            amlNode.$aml.setAttribute("smartbinding", this.name);
 
         for (part in parts) {
             //#ifdef __SUPPORT_SAFARI2
@@ -591,23 +591,23 @@ apf.smartbinding = function(name, xmlNode, parentNode){
             if (!this[part]) continue;
 
             //#ifdef __DEBUG
-            if (!jmlNode[parts[part]]) {
-                throw new Error(apf.formatErrorString(1035, jmlNode, 
+            if (!amlNode[parts[part]]) {
+                throw new Error(apf.formatErrorString(1035, amlNode, 
                     "initializing smartBinding", 
                     "Could not find handler for '" + part + "'."));
             }
             //#endif
 
-            jmlNode[parts[part]](this[part], this["xml" + part]);
+            amlNode[parts[part]](this[part], this["xml" + part]);
         }
 
         if (this.model) {
-            this.model.register(jmlNode, this.$modelXpath[jmlNode.getHost
-                ? jmlNode.getHost().uniqueId
-                : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
+            this.model.register(amlNode, this.$modelXpath[amlNode.getHost
+                ? amlNode.getHost().uniqueId
+                : amlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
         }
-        else if (jmlNode.$model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
-            jmlNode.$model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
+        else if (amlNode.$model && (amlNode.smartBinding && amlNode.smartBinding != this))
+            amlNode.$model.reloadAmlNode(amlNode.uniqueId);//.load(amlNode.model.data.selectSingleNode("Accounts/Account[1]"));
         
         return this;
     };
@@ -615,10 +615,10 @@ apf.smartbinding = function(name, xmlNode, parentNode){
     /**
      * @private
      */
-    this.deinitialize = function(jmlNode){
+    this.deinitialize = function(amlNode){
         //unregister element
-        this.jmlNodes[jmlNode.uniqueId] = null;
-        delete this.jmlNodes[jmlNode.uniqueId];
+        this.amlNodes[amlNode.uniqueId] = null;
+        delete this.amlNodes[amlNode.uniqueId];
         
         for (part in parts) {
             //#ifdef __SUPPORT_SAFARI2
@@ -628,27 +628,27 @@ apf.smartbinding = function(name, xmlNode, parentNode){
             if (!this[part]) continue;
             
             //#ifdef __DEBUG
-            if (!jmlNode["un" + parts[part]]) {
-                throw new Error(apf.formatErrorString(1035, jmlNode, 
+            if (!amlNode["un" + parts[part]]) {
+                throw new Error(apf.formatErrorString(1035, amlNode, 
                     "deinitializing smartBinding", 
                     "Could not find handler for '" + part + "'."));
             }
             //#endif
             
-            jmlNode["un" + parts[part]]();
+            amlNode["un" + parts[part]]();
         }
         
         if (this.model)
-            this.model.unregister(jmlNode);
+            this.model.unregister(amlNode);
     };
     
     var timer, queue = {};
-    this.markForUpdate = function(jmlNode, part){
-        (queue[jmlNode.uniqueId] 
-            || (queue[jmlNode.uniqueId] = {}))[part || "all"] = jmlNode;
+    this.markForUpdate = function(amlNode, part){
+        (queue[amlNode.uniqueId] 
+            || (queue[amlNode.uniqueId] = {}))[part || "all"] = amlNode;
         
-        if (!this.jmlNodes[jmlNode.uniqueId])
-            this.jmlNodes[jmlNode.uniqueId] = jmlNode;
+        if (!this.amlNodes[amlNode.uniqueId])
+            this.amlNodes[amlNode.uniqueId] = amlNode;
 
         if (!timer) {
             timer = setTimeout(function(){
@@ -659,44 +659,44 @@ apf.smartbinding = function(name, xmlNode, parentNode){
         return this;
     };
     
-    this.$isMarkedForUpdate = function(jmlNode){
-        return queue[jmlNode.uniqueId] ? true : false;
+    this.$isMarkedForUpdate = function(amlNode){
+        return queue[amlNode.uniqueId] ? true : false;
     }
     
     this.$updateMarkedItems = function(){
         clearTimeout(timer);
         
-        var jmlNode, model, q = queue; timer = null; queue = {}
+        var amlNode, model, q = queue; timer = null; queue = {}
         for (var id in q) {
             //We're only processing nodes that are registered here
-            if (!this.jmlNodes[id])
+            if (!this.amlNodes[id])
                 continue;
             
             if (q[id]["all"]) {
-                jmlNode = q[id]["all"];
+                amlNode = q[id]["all"];
                 //model isn't done here
                 for (part in parts) {
                     if (!this[part]) continue;
-                    jmlNode[parts[part]](this[part], this["xml" + part]);
+                    amlNode[parts[part]](this[part], this["xml" + part]);
                 }
                 
-                model = jmlNode.getModel();
+                model = amlNode.getModel();
                 if (model)
-                    model.reloadJmlNode(jmlNode.uniqueId);
+                    model.reloadAmlNode(amlNode.uniqueId);
                 else
-                    jmlNode.reload();
+                    amlNode.reload();
             }
             else {
                 for (part in q[id]) {
-                    jmlNode = q[id][part];
+                    amlNode = q[id][part];
                     if (part == "model") {
-                        jmlNode.getModel().reloadJmlNode(jmlNode.uniqueId);
+                        amlNode.getModel().reloadAmlNode(amlNode.uniqueId);
                         continue;
                     }
                     
-                    jmlNode[parts[part]](this[part], this["xml" + part]);
+                    amlNode[parts[part]](this[part], this["xml" + part]);
                     if (part == "bindings")
-                        jmlNode.reload();
+                        amlNode.reload();
                 }
             }
         }
@@ -705,9 +705,9 @@ apf.smartbinding = function(name, xmlNode, parentNode){
     /**
      * @private
      */
-    this.addBindRule = function(xmlNode, jmlParent){
+    this.addBindRule = function(xmlNode, amlParent){
         var str = xmlNode[apf.TAGNAME] == "ref"
-            ? jmlParent ? jmlParent.mainBind : "value"
+            ? amlParent ? amlParent.mainBind : "value"
             : xmlNode.tagName;
         if (!this.bindings)
             this.bindings = {};
@@ -790,14 +790,14 @@ apf.smartbinding = function(name, xmlNode, parentNode){
         this.model          = apf.nameserver.register("model", this.name, model);
         this.modelBaseXpath = xpath;
         
-        var jmlNode;
-        for (var uniqueId in this.jmlNodes) {
-            jmlNode = this.jmlNodes[uniqueId];
-            this.model.unregister(jmlNode);
-            this.model.register(jmlNode, this.$modelXpath[jmlNode.getHost
-                ? jmlNode.getHost().uniqueId
-                : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed
-            //this.jmlNodes[uniqueId].load(this.model);
+        var amlNode;
+        for (var uniqueId in this.amlNodes) {
+            amlNode = this.amlNodes[uniqueId];
+            this.model.unregister(amlNode);
+            this.model.register(amlNode, this.$modelXpath[amlNode.getHost
+                ? amlNode.getHost().uniqueId
+                : amlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed
+            //this.amlNodes[uniqueId].load(this.model);
         }
     };
     
@@ -915,9 +915,9 @@ apf.smartbinding = function(name, xmlNode, parentNode){
         dragdrop : "addDragDrop"
     };
 
-    this.loadJml = function(xmlNode){
+    this.loadAml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
-        this.$jml  = xmlNode;
+        this.$aml  = xmlNode;
 
         var name, attr = xmlNode.attributes, l = attr.length;
         for (var i = 0; i < l; i++) {
@@ -974,13 +974,13 @@ apf.smartbinding = function(name, xmlNode, parentNode){
         
         //Set Model
         if (data_node)
-            this.setModel(new apf.model().loadJml(data_node));
+            this.setModel(new apf.model().loadAml(data_node));
         else if (xmlNode.getAttribute("model"))
             apf.setModel(xmlNode.getAttribute("model"), this);
     };
     
     if (xmlNode)
-        this.loadJml(xmlNode);
+        this.loadAml(xmlNode);
 };
 
 // #endif

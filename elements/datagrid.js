@@ -106,7 +106,7 @@
  *   Example:
  *   <code>
  *      <j:propedit 
- *        lookupjml      = "tmpLookup"
+ *        lookupaml      = "tmpLookup"
  *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
  *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
  *        onmultiedit    = "loadMultiEdit(event, this)">
@@ -357,7 +357,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
              *
              * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
              * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-             * @param  {JMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+             * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
              * @return  {Boolean}  specifying whether the checked elements are valid.
              * @method isValid, validate, checkValidity
              */
@@ -432,7 +432,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 return isValid;
             };
             
-            var vgroup = apf.xmldb.getInheritedAttribute(this.$jml, "validgroup");
+            var vgroup = apf.xmldb.getInheritedAttribute(this.$aml, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
         }
@@ -910,7 +910,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         if (this.namevalue && !heads) {
             this.bindingRules.column = heads = [];
 
-            var cols = (this.columns || this.$jml.getAttribute("columns")
+            var cols = (this.columns || this.$aml.getAttribute("columns")
                 || "50%,50%").splitSafe(",");
             
             //@todo ask rik how this can be cached
@@ -1044,7 +1044,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         //#ifdef __DEBUG
         if (!heads) {
             throw new Error(apf.formatErrorString(0, this,
-                "Parsing bindings jml",
+                "Parsing bindings aml",
                 "No column definition found"));
         }
         //#endif
@@ -1674,19 +1674,19 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             return;
         
         var oContainer = editors["dropdown_container"];
-        if (self[this.lookupjml].childNodes.length
-          && self[this.lookupjml].childNodes[0].parentNode != oContainer) {
-            self[this.lookupjml].detach();
+        if (self[this.lookupaml].childNodes.length
+          && self[this.lookupaml].childNodes[0].parentNode != oContainer) {
+            self[this.lookupaml].detach();
             oContainer.innerHTML = "";
         }
         
-        var lookupJml = self[this.lookupjml].render(oContainer);
+        var lookupAml = self[this.lookupaml].render(oContainer);
         
         if (!apf.popup.isShowing(this.uniqueId)) {
             var mirrorNode = oHtml;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             //oContainer.style.height = "auto";
-            oContainer.className     = "ddjmlcontainer";
+            oContainer.className     = "ddamlcontainer";
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
@@ -1700,7 +1700,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
                 ref     : mirrorNode,
-                width   : mirrorNode.offsetWidth - widthdiff + 4, //Math.max(self[this.lookupjml].minwidth, 
+                width   : mirrorNode.offsetWidth - widthdiff + 4, //Math.max(self[this.lookupaml].minwidth, 
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
@@ -1717,7 +1717,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             value    : value,
             xmlNode  : this.selected,
             htmlNode : oHtml,
-            nodes    : lookupJml
+            nodes    : lookupAml
         });
     };
 
@@ -2028,8 +2028,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             else {
                 var oContainer = editors["dropdown_container"];
                 
-                if (self[this.lookupjml]) 
-                    self[this.lookupjml].detach();
+                if (self[this.lookupaml]) 
+                    self[this.lookupaml].detach();
                 
                 var mirrorNode = this.namevalue
                     ? oHtml.parentNode.childNodes[1]
@@ -2263,7 +2263,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         defaultwidth = this.$getOption("main", "defaultwidth") || "100";
         useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.AmlParser.parseChildren(this.$aml, null, this);
         
         //Initialize Iframe 
         if (useiframe && !this.oIframe) {
@@ -2617,7 +2617,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     var editors = {};
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (x.getAttribute("message"))
             this.clearMessage = x.getAttribute("message");
         
@@ -2657,7 +2657,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     apf.popup.setContent(this.uniqueId, editors[edit],
                         apf.skins.getCssString(this.skinName));
                     
-                    //if (apf.isTrue(this.$getOption(edit, "jml")))
+                    //if (apf.isTrue(this.$getOption(edit, "aml")))
                         //continue;
                     
                     this.itemHeight = this.$getOption(edit, "item-height") || 18.5;

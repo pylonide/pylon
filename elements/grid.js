@@ -66,7 +66,7 @@
  * See {@link baseclass.anchoring}
  *
  * @define grid
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  * @addnode elements
  * @constructor
  *
@@ -112,7 +112,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("columns", "padding", "margin", 
         "cellheight", "span");
     
-    var jmlHideShow                  =
+    var amlHideShow                  =
     this.$updateTrigger              =
     this.$propHandlers["columns"]    =
     this.$propHandlers["padding"]    =
@@ -125,55 +125,55 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
     
     /**** DOM Hooks ****/
     
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
         
-        jmlNode.$propHandlers["width"]  = 
-        jmlNode.$propHandlers["height"] = 
-        jmlNode.$propHandlers["span"]   = null;
+        amlNode.$propHandlers["width"]  = 
+        amlNode.$propHandlers["height"] = 
+        amlNode.$propHandlers["span"]   = null;
         
-        jmlNode.$hide = jmlNode.$_hide;
-        jmlNode.$show = jmlNode.$_show;
+        amlNode.$hide = amlNode.$_hide;
+        amlNode.$show = amlNode.$_show;
         
         /* Removing is probably not a good idea, because we're not sure if the node is reparented
         //#ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
-            jmlNode.enableAlignment();
+        if (amlNode.hasFeature(__ALIGNMENT__) && amlNode.aData)
+            amlNode.enableAlignment();
         //#endif
         */
         
         //#ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.$hasAnchorRules())
-            jmlNode.$setAnchoringEnabled();
+        if (amlNode.hasFeature(__ANCHORING__) && amlNode.$hasAnchorRules())
+            amlNode.$setAnchoringEnabled();
         //#endif
         
         l.queue(this.oExt, updater);
         update = true;
     });
     
-    this.$domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
+    this.$domHandlers["insert"].push(function(amlNode, bNode, withinParent){
         if (withinParent)
             return;
         
         //#ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
-            jmlNode.disableAlignment();
+        if (amlNode.hasFeature(__ALIGNMENT__) && amlNode.aData)
+            amlNode.disableAlignment();
         //#endif
         
         //#ifdef __WITH_ANCHORING
-        else if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.$hasAnchorRules())
-            jmlNode.disableAnchoring();
+        else if (amlNode.hasFeature(__ANCHORING__) && amlNode.$hasAnchorRules())
+            amlNode.disableAnchoring();
         //#endif
         
-        jmlNode.$propHandlers["width"]  = 
-        jmlNode.$propHandlers["height"] = 
-        jmlNode.$propHandlers["span"]   = this.$updateTrigger;
+        amlNode.$propHandlers["width"]  = 
+        amlNode.$propHandlers["height"] = 
+        amlNode.$propHandlers["span"]   = this.$updateTrigger;
         
-        jmlNode.$_hide = jmlNode.$hide;
-        jmlNode.$_show = jmlNode.$show;
-        jmlNode.$hide = jmlHideShow;
-        jmlNode.$show = jmlHideShow;
+        amlNode.$_hide = amlNode.$hide;
+        amlNode.$_show = amlNode.$show;
+        amlNode.$hide = amlHideShow;
+        amlNode.$show = amlHideShow;
         
         l.queue(this.oExt, updater);
         update = true;
@@ -471,7 +471,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "grid " + (this.$jml.getAttributeNode("class") || "");
+        this.oExt.className = "grid " + (this.$aml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
         
         if (!this.oExt.getAttribute("id")) 
@@ -486,8 +486,8 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
         this.oExt.style.position  = "relative";
         this.oExt.style.minHeight = "10px";
         
-        if (this.$jml.getAttribute("class")) 
-            apf.setStyleClass(this.oExt, this.$jml.getAttribute("class"));
+        if (this.$aml.getAttribute("class")) 
+            apf.setStyleClass(this.oExt, this.$aml.getAttribute("class"));
 
         if (!apf.isIE && !apf.grid.$initedcss) {
             apf.importCssString(document, ".grid>*{position:absolute}");
@@ -495,20 +495,20 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$loadJml = function(x){
-        apf.JmlParser.parseChildren(x, this.oInt, this, true);
+    this.$loadAml = function(x){
+        apf.AmlParser.parseChildren(x, this.oInt, this, true);
 
         if (!this.width && (apf.getStyle(this.oExt, "position") == "absolute"
           || this.left || this.top || this.right || this.bottom || this.anchors))
             this.oExt.style.width  = "100%"
         
-        var jmlNode, nodes = this.childNodes;
+        var amlNode, nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
-            jmlNode = nodes[i];
-            jmlNode.$_hide = jmlNode.$hide;
-            jmlNode.$_show = jmlNode.$show;
-            jmlNode.$hide = jmlHideShow;
-            jmlNode.$show = jmlHideShow;
+            amlNode = nodes[i];
+            amlNode.$_hide = amlNode.$hide;
+            amlNode.$_show = amlNode.$show;
+            amlNode.$hide = amlHideShow;
+            amlNode.$show = amlHideShow;
         }
         
         this.$updateGrid();

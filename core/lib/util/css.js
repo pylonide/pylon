@@ -116,7 +116,7 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
     if (oHtml.nodeFunc) {
         throw new Error(apf.formatErrorString(0, this,
             "Setting style class",
-            "Trying to set style class on jml node. Only xml or html nodes can \
+            "Trying to set style class on aml node. Only xml or html nodes can \
              be passed to this function"));
     }
     //#endif

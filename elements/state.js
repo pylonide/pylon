@@ -46,7 +46,7 @@ apf.StateServer = {
 
             var pState = new apf.state(null, "state");
             pState.parentNode = pNode;
-            pState.implement(apf.JmlDom);
+            pState.implement(apf.AmlDom);
             pState.name   = name;
             pState.toggle = function(){
                 for (var next = 0, i = 0; i < apf.StateServer.groups[name].length; i++) {
@@ -174,7 +174,7 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
             }
 
             if (this.group) {
-                var attr = this.$jml.attributes;
+                var attr = this.$aml.attributes;
                 for (var i = 0; i < attr.length; i++) {
                     if (attr[i].nodeName.match(/^on|^(?:group|id)$|^.*\..*$/))
                         continue;
@@ -236,7 +236,7 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
 
     this.$signalElements = [];
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         apf.StateServer.addState(this);
 
         this.group = x.getAttribute("group");

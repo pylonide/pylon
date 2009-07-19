@@ -55,7 +55,7 @@
  *      ...
  *  </j:window>
  * </code>
- * @see baseclass.jmlelement.event.contextmenu
+ * @see baseclass.amlelement.event.contextmenu
  *
  * @event display   Fires when the contextmenu is shown.
  * @event itemclick Fires when a user presses the mouse button while over a child of this element.
@@ -187,9 +187,9 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
      * @param {Number}     x        the left position of the menu.
      * @param {Number}     y        the top position of the menu.
      * @param {Boolean}    noanim   whether to animate the showing of this menu.
-     * @param {JMLElement} opener   the element that is the context of this menu.
+     * @param {AMLElement} opener   the element that is the context of this menu.
      * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
-     * @see baseclass.jmlelement.event.contextmenu
+     * @see baseclass.amlelement.event.contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
@@ -471,7 +471,7 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
         apf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         var i, oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         //Skin changing support
@@ -481,7 +481,7 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
             var node, nodes = this.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
-                node.loadJml(node.$jml);
+                node.loadAml(node.$aml);
             }
         }
         else {
@@ -492,7 +492,7 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
                 return;
 
             //Build children
-            var node, nodes = this.$jml.childNodes;
+            var node, nodes = this.$aml.childNodes;
             var l = nodes.length;
             for (i = 0; i < l; i++) {
                 node = nodes[i];
@@ -500,10 +500,10 @@ apf.menu = apf.component(apf.NODE_VISIBLE, function(){
 
                 var tagName = node[apf.TAGNAME];
                 if ("item|radio|check".indexOf(tagName) > -1) {
-                    new apf.item(oInt, tagName).loadJml(node, this);
+                    new apf.item(oInt, tagName).loadAml(node, this);
                 }
                 else if (tagName == "divider") {
-                    new apf.divider(oInt, tagName).loadJml(node, this);
+                    new apf.divider(oInt, tagName).loadAml(node, this);
                 }
                 //#ifdef __DEBUG
                 else {
@@ -772,12 +772,12 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
     /**** Dom Hooks ****/
 
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
 
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
-            this.loadJml();
+            this.loadAml();
         }
     });
 
@@ -876,7 +876,7 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(0, this,
                 "Displaying submenu",
-                "Could not find submenu '" + this.submenu + "'", this.$jml));
+                "Could not find submenu '" + this.submenu + "'", this.$aml));
             //#endif
 
             return;
@@ -934,8 +934,8 @@ apf.item  = apf.subnode(apf.NODE_HIDDEN, function(){
     /**
      * @private
      */
-    this.loadJml = function(x, parentNode) {
-        this.$jml = x;
+    this.loadAml = function(x, parentNode) {
+        this.$aml = x;
         if (parentNode)
             this.$setParent(parentNode);
 

@@ -29,7 +29,7 @@
  * @addnode elements:browser
  * @define browser
  *
- * @inherits apf.JmlElement
+ * @inherits apf.AmlElement
  * @inherits apf.Validation
  * @inherits apf.XForms
  * @inherits apf.DataBinding
@@ -154,7 +154,7 @@ apf.browser = apf.component(apf.NODE_VISIBLE, function(){
         //this.oInt.host = this;
     };
 
-    this.$loadJml = function(x){};
+    this.$loadAml = function(x){};
 }).implement(
     // #ifdef __WITH_VALIDATION || __WITH_XFORMS
     apf.Validation,

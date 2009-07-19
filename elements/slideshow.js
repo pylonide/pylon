@@ -1056,9 +1056,9 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         this.x = null;
     }
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
         var nodes = x.childNodes;
-        apf.JmlParser.parseChildren(x, null, this);
+        apf.AmlParser.parseChildren(x, null, this);
     };
 
     var oEmpty;

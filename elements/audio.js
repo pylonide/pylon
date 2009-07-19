@@ -347,22 +347,22 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
      */
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "apf_audio " + (this.$jml.getAttributeNode("class") || "");
+        this.oExt.className = "apf_audio " + (this.$aml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
     };
 
     /**
-     * Parse the block of JML that constructs the HTML5 compatible <AUDIO> tag
+     * Parse the block of AML that constructs the HTML5 compatible <AUDIO> tag
      * for arguments like URL of the audio, volume, mimetype, etc.
      *
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
         else
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(bRuntime) {

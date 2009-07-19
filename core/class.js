@@ -86,7 +86,7 @@
  * 
  * Usage:
  * In apf multiple inheritance is used on all elements to assign specific traits
- * to jml elements. Check the list of baseclasses on the right to familiarize 
+ * to aml elements. Check the list of baseclasses on the right to familiarize 
  * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
  * databinding, alignment, etc). At the article of each element that inherits
  * from a baseclass you will find an inheritance tree on the right. This tree
@@ -149,15 +149,15 @@
  *
  */
 apf.Class = function(){
-    this.$jmlLoaders   = [];
-    this.$addJmlLoader = function(func){
-        if (!this.$jmlLoaders)
-            func.call(this, this.$jml);
+    this.$amlLoaders   = [];
+    this.$addAmlLoader = function(func){
+        if (!this.$amlLoaders)
+            func.call(this, this.$aml);
         else
-            this.$jmlLoaders.push(func);
+            this.$amlLoaders.push(func);
     };
 
-    this.$jmlDestroyers   = [];
+    this.$amlDestroyers   = [];
 
     this.$regbase         = 0;
     /**
@@ -319,7 +319,7 @@ apf.Class = function(){
 
     /**
      * Sets a dynamic property from a string.
-     * The string used for this function is the same as used in JML to set a dynamic property:
+     * The string used for this function is the same as used in AML to set a dynamic property:
      * <j:button visible="{rbTest.value == 'up'}" />
      *
      * @param  {String}  prop   the name of the property of this element to set using a dynamic rule.
@@ -470,7 +470,7 @@ apf.Class = function(){
             
             if (/^\$(.*)\$$/.test(value)) {
                 this.$isMultiLang[prop] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
-                    jmlNode: this,
+                    amlNode: this,
                     prop : prop
                 })];
                 return;
@@ -687,15 +687,15 @@ apf.Class = function(){
      * @method
      */
     this.destroy = this.destroy || function(deep){
-        if (!this.$jmlDestroyers) //@todo check why this happens
+        if (!this.$amlDestroyers) //@todo check why this happens
             return;
 
         if (this.$destroy)
             this.$destroy();
 
-        for (var i = this.$jmlDestroyers.length - 1; i >= 0; i--)
-            this.$jmlDestroyers[i].call(this);
-        this.$jmlDestroyers = undefined;
+        for (var i = this.$amlDestroyers.length - 1; i >= 0; i--)
+            this.$amlDestroyers[i].call(this);
+        this.$amlDestroyers = undefined;
 
         //Remove from apf.all
         if (typeof this.uniqueId == "undefined")
@@ -703,7 +703,7 @@ apf.Class = function(){
 
         apf.all[this.uniqueId] = undefined;
 
-        if (!this.nodeFunc) { //If this is not a JmlNode, we're done.
+        if (!this.nodeFunc) { //If this is not a AmlNode, we're done.
             //Remove id from global js space
             if (this.id || this.name)
                 self[this.id || this.name] = null;
@@ -716,15 +716,15 @@ apf.Class = function(){
         if (this.oInt && !this.oExt.isNative && this.oInt.nodeType == 1)
             this.oInt.host = null;
 
-        if (this.$jml && this.$jml.parentNode)
-            this.$jml.parentNode.removeChild(this.$jml);
-        this.$jml = null;
+        if (this.$aml && this.$aml.parentNode)
+            this.$aml.parentNode.removeChild(this.$aml);
+        this.$aml = null;
 
         //Remove from DOM tree if we are still connected
         if (this.parentNode && this.removeNode)
             this.removeNode();
 
-        //Remove from focus list - Should be in JmlNode
+        //Remove from focus list - Should be in AmlNode
         if (this.$focussable && this.focussable)
             apf.window.$removeFocus(this);
 
@@ -745,7 +745,7 @@ apf.Class = function(){
 
         //#ifdef __DEBUG
         if (deep !== false && this.childNodes) {
-            apf.console.warn("You have destroyed a Jml Node without destroying\
+            apf.console.warn("You have destroyed a Aml Node without destroying\
                               it's children. Please be aware that if you don't\
                               maintain a reference, memory might leak");
         }

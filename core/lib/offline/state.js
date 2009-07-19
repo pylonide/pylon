@@ -31,7 +31,7 @@
  * recorded only when the application exits. During startup the state of the 
  * application can be restored by cancelling the 'restore' event. In most cases 
  * the functionality of this object will be managed from within the offline 
- * element in JML.
+ * element in AML.
  * Example:
  * <code>
  *  <j:offline 
@@ -47,7 +47,7 @@
  * @attribute {String} [set]    a datainstruction that stores the state of the application to an external data store.
  *
  * @default_private
- * @todo optimize by not getting the default values from the jml
+ * @todo optimize by not getting the default values from the aml
  */
 apf.namespace("offline.state", {
     enabled   : false,
@@ -55,15 +55,15 @@ apf.namespace("offline.state", {
     realtime  : true,
     lookup    : {},
 
-    init : function(jml){
+    init : function(aml){
         this.namespace = apf.appsettings.name + ".apf.offline.state";
         
-        if (jml.nodeType) {
-            if (jml.getAttribute("realtime"))
-                this.realtime = !apf.isFalse(jml.getAttribute("realtime"));
+        if (aml.nodeType) {
+            if (aml.getAttribute("realtime"))
+                this.realtime = !apf.isFalse(aml.getAttribute("realtime"));
             
-            if (jml.getAttribute("set"))
-                this.setInstruction = jml.getAttribute("set");
+            if (aml.getAttribute("set"))
+                this.setInstruction = aml.getAttribute("set");
         }
         
         apf.addEventListener("exit", function(){

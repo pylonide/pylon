@@ -25,7 +25,7 @@
  * @private
  */
 apf.printer = {
-    //#ifdef __WITH_JMLDOM_FULL
+    //#ifdef __WITH_AMLDOM_FULL
     tagName  : "printer",
     nodeFunc : apf.NODE_HIDDEN,
     //#endif
@@ -33,9 +33,9 @@ apf.printer = {
     lastContent : "",
     inited      : false,
     
-    init : function(jml){
+    init : function(aml){
         this.inited = true;
-        this.$jml    = jml;
+        this.$aml    = aml;
         
         this.contentShower = document.body.appendChild(document.createElement("DIV"));
         this.contentShower.id = "print_content"
@@ -55,9 +55,9 @@ apf.printer = {
 
         //body #print_content, body #print_content *{display:block} 
         
-        if (jml) {
+        if (aml) {
             //Events
-            var a, i, attr = jml.attributes;
+            var a, i, attr = aml.attributes;
             for (i = 0; i < attr.length; i++) {
                 a = attr[i];
                 if (a.nodeName.indexOf("on") == 0)

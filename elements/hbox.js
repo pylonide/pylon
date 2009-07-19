@@ -61,30 +61,30 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
 
     /**** DOM Hooks ****/
     
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
         
-        if (jmlNode.disableAlignment)
-            jmlNode.disableAlignment();
+        if (amlNode.disableAlignment)
+            amlNode.disableAlignment();
         
         //#ifdef __WITH_ANCHORING
-        if (jmlNode.enableAnchoring)
-            jmlNode.enableAnchoring();
+        if (amlNode.enableAnchoring)
+            amlNode.enableAnchoring();
         //#endif
     });
     
-    this.$domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
+    this.$domHandlers["insert"].push(function(amlNode, bNode, withinParent){
         if (withinParent)
             return;
         
-        if (!jmlNode.hasFeature(__ALIGNMENT__)) {
-            jmlNode.implement(apf.Alignment);
-            if (jmlNode.hasFeature(__ANCHORING__))
-                jmlNode.disableAnchoring();
+        if (!amlNode.hasFeature(__ALIGNMENT__)) {
+            amlNode.implement(apf.Alignment);
+            if (amlNode.hasFeature(__ANCHORING__))
+                amlNode.disableAnchoring();
         }
         
-        jmlNode.enableAlignment();
+        amlNode.enableAlignment();
     });
     
     this.$domHandlers["reparent"].push(
@@ -115,7 +115,7 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
           || "vbox|hbox".indexOf(this.parentNode.tagName) == -1;
 
         if (isParentOfChain) {
-            var x = this.$jml;
+            var x = this.$aml;
             
             this.oInt = 
             this.oExt = false && apf.isParsing && apf.xmldb.isOnlyChild(x)
@@ -131,7 +131,7 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
         }
     }
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         var l = apf.layout.get(this.oInt || this.pHtmlNode, apf.getBox(this.margin || ""));
         var aData = apf.layout.parseXml(x, l, null, true);
         
@@ -139,11 +139,11 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
             this.pData = aData;
             l.root = this.pData;
             
-            apf.JmlParser.parseChildren(x, this.oInt, this);
+            apf.AmlParser.parseChildren(x, this.oInt, this);
             
             if (this.pData.children.length && !apf.isParsing) 
                 apf.layout.compileAlignment(this.pData);
-            //if(apf.JmlParser.loaded) 
+            //if(apf.AmlParser.loaded) 
             //apf.layout.activateRules(this.oInt);
             
             //#ifdef __WITH_PROPERTY_WATCH
@@ -180,7 +180,7 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
             this.aData.stackId = pData.children.push(this.aData) - 1;
             this.aData.parent  = pData;
             
-            apf.JmlParser.parseChildren(x, this.pHtmlNode, this);
+            apf.AmlParser.parseChildren(x, this.pHtmlNode, this);
         }
     };
 });

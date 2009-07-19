@@ -94,8 +94,8 @@ apf.editor.plugin('anchor', function() {
             </div>\
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        this.appendJmlNode(
-            '<j:toolbar xmlns:j="' + apf.ns.jml + '"><j:bar>\
+        this.appendAmlNode(
+            '<j:toolbar xmlns:j="' + apf.ns.aml + '"><j:bar>\
              <j:button caption="Insert" \
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </j:bar></j:toolbar>',

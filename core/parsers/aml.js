@@ -19,23 +19,23 @@
  *
  */
 
-// #ifdef __PARSER_JML
+// #ifdef __PARSER_AML
 /**
- * The parser of the Ajax.org Markup Language. Besides jml this parser takes care
+ * The parser of the Ajax.org Markup Language. Besides aml this parser takes care
  * of distributing parsing tasks to other parsers like the native html parser and
  * the xsd parser.
  * @parser
  * @private
  *
- * @define include element that loads another jml files.
+ * @define include element that loads another aml files.
  * Example:
  * <code>
- *   <j:include src="bindings.jml" />
+ *   <j:include src="bindings.aml" />
  * </code>
- * @attribute {String} src the location of the jml file to include in this application.
- * @addnode global, anyjml
+ * @attribute {String} src the location of the aml file to include in this application.
+ * @addnode global, anyaml
  */
-apf.JmlParser = {
+apf.AmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
     // #endif
@@ -50,16 +50,16 @@ apf.JmlParser = {
         // #ifdef __DEBUG
         apf.Latometer.start();
         // #endif
-        this.$jml = x;
+        this.$aml = x;
 
         apf.isParsing = true;
 
         // #ifdef __DEBUG
-        //Check for children in Jml node
+        //Check for children in Aml node
         if (!x.childNodes.length)
             throw new Error(apf.formatErrorString(1014, null,
-                "apf.JmlParser",
-                "JML Parser got Markup without any children"));
+                "apf.AmlParser",
+                "AML Parser got Markup without any children"));
         // #endif
 
         //Create window and document
@@ -79,7 +79,7 @@ apf.JmlParser = {
         apf.nameserver.register("actiontracker", "default", apf.window.$at);
         //#endif
 
-        //First pass parsing of all JML documents
+        //First pass parsing of all AML documents
         for (var docs = [x], i = 0; i < apf.includeStack.length; i++) {
             if (apf.includeStack[i].nodeType)
                 docs.push(apf.includeStack[i]);
@@ -97,7 +97,7 @@ apf.JmlParser = {
         this.parseFirstPass(this.docs);
 
         //Main parsing pass
-        apf.JmlParser.parseChildren(this.$jml, document.body, apf.document.documentElement);//, this);
+        apf.AmlParser.parseChildren(this.$aml, document.body, apf.document.documentElement);//, this);
 
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
@@ -107,9 +107,9 @@ apf.JmlParser = {
 
         //Last pass parsing
         if (apf.appsettings.initdelay)
-            setTimeout('apf.JmlParser.parseLastPass();', 1);
+            setTimeout('apf.AmlParser.parseLastPass();', 1);
         else 
-            apf.JmlParser.parseLastPass();
+            apf.AmlParser.parseLastPass();
 
         //Set init flag for subparsers
         this.inited = true;
@@ -150,7 +150,7 @@ apf.JmlParser = {
             if (xmlNode.style) return;
         }*/
 
-        var prefix = apf.findPrefix(xmlNode, apf.ns.jml);
+        var prefix = apf.findPrefix(xmlNode, apf.ns.aml);
         if (prefix) prefix += ":";
         var nodes  = apf.xmldb.selectNodes(".//" + prefix + sel.join("|.//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
@@ -174,14 +174,14 @@ apf.JmlParser = {
                 if (o && name)
                     apf.nameserver.register(tagName, name, o);
 
-                //#ifdef __WITH_JMLDOM_FULL
+                //#ifdef __WITH_AMLDOM_FULL
                 if (!o || !o.nodeFunc)
-                    o = new apf.JmlDom(tagName, null, apf.NODE_HIDDEN, x, o);
+                    o = new apf.AmlDom(tagName, null, apf.NODE_HIDDEN, x, o);
                 /* #else
                 if (o && o.nodeFunc)
                 #endif */
                 {
-                    o.$jmlLoaded = true;
+                    o.$amlLoaded = true;
 
                     if (name)
                         apf.setReference(name, o);
@@ -195,7 +195,7 @@ apf.JmlParser = {
         }
     },
 
-    parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf, beforeNode){
+    parseMoreAml : function(x, pHtmlNode, amlParent, noImpliedParent, parseSelf, beforeNode){
         var parsing = apf.isParsing;
         apf.isParsing = true;
 
@@ -209,32 +209,32 @@ apf.JmlParser = {
             //#endif
         }
         
-        if (!this.$jml)
-            this.$jml = x;
+        if (!this.$aml)
+            this.$aml = x;
 
-        if (!jmlParent)
-            jmlParent = apf.document.documentElement;
+        if (!amlParent)
+            amlParent = apf.document.documentElement;
 
         this.parseFirstPass([x]);
 
         if (parseSelf) {
-            if (jmlParent.loadJml)
-                jmlParent.loadJml(x, jmlParent.parentNode);
-            jmlParent.$jmlLoaded = true;
+            if (amlParent.loadAml)
+                amlParent.loadAml(x, amlParent.parentNode);
+            amlParent.$amlLoaded = true;
 
             //#ifdef __WITH_ALIGNMENT
-            if (jmlParent && jmlParent.pData)
-                apf.layout.compileAlignment(jmlParent.pData);
+            if (amlParent && amlParent.pData)
+                apf.layout.compileAlignment(amlParent.pData);
             //#endif
 
             //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-            if (jmlParent.pData || jmlParent.tagName == "grid")
+            if (amlParent.pData || amlParent.tagName == "grid")
                 apf.layout.activateRules(pNode.oInt || document.body);
             //#endif
         }
         else {
             var lastChild = pHtmlNode.lastChild;
-            this.parseChildren(x, pHtmlNode, jmlParent, false, noImpliedParent);
+            this.parseChildren(x, pHtmlNode, amlParent, false, noImpliedParent);
 
             if (beforeNode) {
                 var loop = pHtmlNode.lastChild;
@@ -255,10 +255,10 @@ apf.JmlParser = {
 
     reWhitespaces : /[\t\n\r ]+/g,
     //the checkRender paramtere is deprecated
-    parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
+    parseChildren : function(x, pHtmlNode, amlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
-        if (pHtmlNode == jmlParent.oInt && jmlParent.childNodes.length
-          && jmlParent != apf.document.documentElement)
+        if (pHtmlNode == amlParent.oInt && amlParent.childNodes.length
+          && amlParent != apf.document.documentElement)
             return pHtmlNode;
 
         // #ifdef __DEBUG
@@ -266,18 +266,18 @@ apf.JmlParser = {
         // #endif
 
         // Check for delayed rendering flag
-        if (jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
-          && jmlParent.$shouldDelay(x)) {
+        if (amlParent && amlParent.hasFeature(__DELAYEDRENDER__) 
+          && amlParent.$shouldDelay(x)) {
             // #ifdef __DEBUG
             apf.console.info("Delaying rendering of children");
             // #endif
 
             return pHtmlNode;
         }
-        if (jmlParent)
-            jmlParent.$rendered = true;
+        if (amlParent)
+            amlParent.$rendered = true;
 
-        if (x.namespaceURI == apf.ns.jml || x.tagUrn == apf.ns.jml)
+        if (x.namespaceURI == apf.ns.aml || x.tagUrn == apf.ns.aml)
             this.lastNsPrefix = x.prefix || x.scopeName;
 
         //Loop through Nodes
@@ -321,14 +321,14 @@ apf.JmlParser = {
                 continue; //ignore tag
 
             this.nsHandler[q.namespaceURI || q.tagUrn || apf.ns.xhtml].call(
-                this, q, pHtmlNode, jmlParent, noImpliedParent);
+                this, q, pHtmlNode, amlParent, noImpliedParent);
         }
 
         if (pHtmlNode) {
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
-            if (jmlParent && jmlParent.pData)
-                apf.layout.compileAlignment(jmlParent.pData);
+            if (amlParent && amlParent.pData)
+                apf.layout.compileAlignment(amlParent.pData);
                 //apf.layout.compile(pHtmlNode);
             // #endif
 
@@ -350,7 +350,7 @@ apf.JmlParser = {
      */
     nsHandler : {
         //Ajax.org Platform
-        "http://ajax.org/2005/aml" : function(x, pHtmlNode, jmlParent, noImpliedParent){
+        "http://ajax.org/2005/aml" : function(x, pHtmlNode, amlParent, noImpliedParent){
             var tagName = x[apf.TAGNAME];
 
             // #ifdef __WITH_INCLUDES
@@ -366,7 +366,7 @@ apf.JmlParser = {
                     return apf.console.warn("No include file found");
                 // #endif
 
-                this.parseChildren(xmlNode, pHtmlNode, jmlParent, null, true);
+                this.parseChildren(xmlNode, pHtmlNode, amlParent, null, true);
             }
             else
             // #endif
@@ -383,14 +383,14 @@ apf.JmlParser = {
                     delete this.preparsed[id];
 
                     if (o && !o.parentNode) {
-                        //#ifdef __WITH_JMLDOM_FULL
-                        if (jmlParent.hasFeature && jmlParent.hasFeature(__WITH_JMLDOM__))
-                            o.$setParent(jmlParent);
+                        //#ifdef __WITH_AMLDOM_FULL
+                        if (amlParent.hasFeature && amlParent.hasFeature(__WITH_AMLDOM__))
+                            o.$setParent(amlParent);
                         else 
                         //#endif
                         {
-                            o.parentNode = jmlParent;
-                            jmlParent.childNodes.push(o);
+                            o.parentNode = amlParent;
+                            amlParent.childNodes.push(o);
                         }
                     }
 
@@ -403,7 +403,7 @@ apf.JmlParser = {
 
                 o = this.handler[tagName](x, (noImpliedParent
                     ? null
-                    : jmlParent), pHtmlNode);
+                    : amlParent), pHtmlNode);
 
                 name = x.getAttribute("id"); //or u could use o.name
 
@@ -411,16 +411,16 @@ apf.JmlParser = {
                 if (o && name)
                     apf.nameserver.register(tagName, name, o);
 
-                //#ifdef __WITH_JMLDOM_FULL
+                //#ifdef __WITH_AMLDOM_FULL
                 if (!o || !o.nodeFunc)
-                    o = new apf.JmlDom(tagName, jmlParent, apf.NODE_HIDDEN, x, o);
+                    o = new apf.AmlDom(tagName, amlParent, apf.NODE_HIDDEN, x, o);
                 else //if(noImpliedParent)
-                    o.$setParent(jmlParent);
+                    o.$setParent(amlParent);
                 /* #else
                 if (o && o.nodeFunc)
                 #endif */
                 {
-                    o.$jmlLoaded = true;
+                    o.$amlLoaded = true;
 
                     if (name)
                         apf.setReference(name, o);
@@ -429,55 +429,55 @@ apf.JmlParser = {
 
             //XForms
             //#ifdef __WITH_XFORMS
-            else if (jmlParent && (jmlParent.hasFeature(__XFORMS__)
-              && (this.xforms[tagName] || jmlParent.setCaption
+            else if (amlParent && (amlParent.hasFeature(__XFORMS__)
+              && (this.xforms[tagName] || amlParent.setCaption
               && this.xforms[tagName] > 2))) {
                 switch (this.xforms[tagName]) {
                     case 1: //Set Event
                         if (x.getAttribute("ev:event")) {
-                            jmlParent.dispatchEvent(x.getAttribute("ev:event"),
+                            amlParent.dispatchEvent(x.getAttribute("ev:event"),
                                 function(){
                                     this.executeXFormStack(x);
                                 });
                         }
                         else
-                            jmlParent.executeXFormStack(x);
+                            amlParent.executeXFormStack(x);
                         break;
                     case 2: //Parse in Element
-                        jmlParent.parseXFormTag(x);
+                        amlParent.parseXFormTag(x);
                         break;
                     case 3: //Label
-                        if (jmlParent.setCaption) {
-                            jmlParent.setCaption(x.firstChild.nodeValue); //or replace it or something...
+                        if (amlParent.setCaption) {
+                            amlParent.setCaption(x.firstChild.nodeValue); //or replace it or something...
                             break;
                         }
 
                         //Create element using this function
-                        var oLabel = this.nsHandler[apf.ns.jml].call(this, x,
-                            jmlParent.oExt.parentNode, jmlParent.parentNode);
+                        var oLabel = this.nsHandler[apf.ns.aml].call(this, x,
+                            amlParent.oExt.parentNode, amlParent.parentNode);
 
                         //Set Dom stuff
-                        oLabel.parentNode = jmlParent.parentNode;
-                        for (var i = 0; i < jmlParent.parentNode.childNodes.length; i++) {
-                            if (jmlParent.parentNode.childNodes[i] == jmlParent) {
-                                jmlParent.parentNode.childNodes[i] = oLabel;
+                        oLabel.parentNode = amlParent.parentNode;
+                        for (var i = 0; i < amlParent.parentNode.childNodes.length; i++) {
+                            if (amlParent.parentNode.childNodes[i] == amlParent) {
+                                amlParent.parentNode.childNodes[i] = oLabel;
                             }
-                            else if (jmlParent.parentNode.childNodes[i] == oLabel) {
-                                jmlParent.parentNode.childNodes[i] = jmlParent;
+                            else if (amlParent.parentNode.childNodes[i] == oLabel) {
+                                amlParent.parentNode.childNodes[i] = amlParent;
                                 break;
                             }
                         }
 
-                        //Insert element to parentHtmlNode of jmlParent and before the node
-                        oLabel.oExt.parentNode.insertBefore(oLabel.oExt, jmlParent.oExt);
+                        //Insert element to parentHtmlNode of amlParent and before the node
+                        oLabel.oExt.parentNode.insertBefore(oLabel.oExt, amlParent.oExt);
 
                         //Use for
-                        oLabel.setProperty("for", jmlParent);
+                        oLabel.setProperty("for", amlParent);
                         break;
                 }
             }
             //#endif
-            //JML Components
+            //AML Components
             else if (pHtmlNode) {
                 // #ifdef __DEBUG
                 if (!apf[tagName] || typeof apf[tagName] != "function")
@@ -512,11 +512,11 @@ apf.JmlParser = {
                 if (x.getAttribute("id"))
                     apf.setReference(x.getAttribute("id"), o);
 
-                //Process JML
-                if (o.loadJml)
-                    o.loadJml(x, jmlParent);
+                //Process AML
+                if (o.loadAml)
+                    o.loadAml(x, amlParent);
 
-                o.$jmlLoaded = true;
+                o.$amlLoaded = true;
             }
 
             return o;
@@ -524,16 +524,16 @@ apf.JmlParser = {
 
         //#ifdef __WITH_XSD
         //XML Schema Definition
-        ,"http://www.w3.org/2001/XMLSchema" : function(x, pHtmlNode, jmlParent, noImpliedParent){
+        ,"http://www.w3.org/2001/XMLSchema" : function(x, pHtmlNode, amlParent, noImpliedParent){
             var type = apf.XSDParser.parse(x);
-            if (type && jmlParent)
-                jmlParent.setProperty("datatype", type);
+            if (type && amlParent)
+                amlParent.setProperty("datatype", type);
         }
         //#endif
 
         // #ifdef __WITH_HTML_PARSING
         //XHTML
-        ,"http://www.w3.org/1999/xhtml" :  function(x, pHtmlNode, jmlParent, noImpliedParent){
+        ,"http://www.w3.org/1999/xhtml" :  function(x, pHtmlNode, amlParent, noImpliedParent){
             var tagName = x.tagName;
             var parseWhole = tagName.match(/table|object|embed/i) ? true : false;
 
@@ -544,7 +544,7 @@ apf.JmlParser = {
 
             //#ifdef __DEBUG
             if (!pHtmlNode) {
-                throw new Error(apf.formatErrorString(0, jmlParent,
+                throw new Error(apf.formatErrorString(0, amlParent,
                     "Parsing html elements",
                     "Unexpected HTML found", x));
             }
@@ -578,11 +578,11 @@ apf.JmlParser = {
             }
 
             //Check attributes for j:left etc and j:repeat-nodeset
-            var prefix = this.lastNsPrefix || apf.findPrefix(x.parentNode, apf.ns.jml) || "";
+            var prefix = this.lastNsPrefix || apf.findPrefix(x.parentNode, apf.ns.aml) || "";
             if (prefix && !x.style) {
                 if (!apf.supportNamespaces)
                     x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
-                        + prefix + "='" + apf.ns.jml + "'");
+                        + prefix + "='" + apf.ns.aml + "'");
                 prefix += ":";
             }
 
@@ -642,7 +642,7 @@ apf.JmlParser = {
              //#endif
 
             if ((apf.canUseInnerHtmlWithTables || !parseWhole) && x.tagName.toUpperCase() != "IFRAME")
-                this.parseChildren(x, o, jmlParent);
+                this.parseChildren(x, o, amlParent);
             else {
                 //#ifdef __DEBUG
                 apf.console.warn("Not parsing children of table, \
@@ -653,7 +653,7 @@ apf.JmlParser = {
             // #ifdef __WITH_EDITMODE || __WITH_LANG_SUPPORT
             if (apf.xmldb.getTextNode(x)) {
                 var data = {
-                    jmlNode  : x,
+                    amlNode  : x,
                     htmlNode : o
                 }
 
@@ -702,12 +702,12 @@ apf.JmlParser = {
     },
     //#endif
 
-    invalidJml : function(jml, message){
+    invalidAml : function(aml, message){
         //#ifdef __DEBUG
-        apf.console.warn((message || "Invalid JML syntax. The j:"
-                        + jml[apf.TAGNAME] + " node should not be placed under \
+        apf.console.warn((message || "Invalid AML syntax. The j:"
+                        + aml[apf.TAGNAME] + " node should not be placed under \
                          it's current parent:") + "\n"
-                        + (jml.xml || jml.serialize));
+                        + (aml.xml || aml.serialize));
         //#endif
     },
 
@@ -728,7 +728,7 @@ apf.JmlParser = {
          *  ]]></j:script>
          * </code>
          * @attribute {String} src the location of the script file.
-         * @addnode global, anyjml
+         * @addnode global, anyaml
          */
         "script" : function(q){
             if (q.getAttribute("src")) {
@@ -774,9 +774,9 @@ apf.JmlParser = {
          * @addnode elements
          * @see element.state
          */
-        "state-group" : function(q, jmlParent){
+        "state-group" : function(q, amlParent){
             var name = q.getAttribute("name") || "stategroup" + apf.all.length;
-            var pState = apf.StateServer.addGroup(name, null, jmlParent);
+            var pState = apf.StateServer.addGroup(name, null, amlParent);
 
             var nodes = q.childNodes, attr = q.attributes, al = attr.length;
             for (var j, i = 0, l = nodes.length; i < l; i++){
@@ -792,9 +792,9 @@ apf.JmlParser = {
 
                 node.setAttribute("group", name);
 
-                //Create Object en Reference and load JML
-                new apf.state(jmlParent ? jmlParent.pHtmlNode : document.body, "state", node)
-                    .loadJml(node, pState);
+                //Create Object en Reference and load AML
+                new apf.state(amlParent ? amlParent.pHtmlNode : document.body, "state", node)
+                    .loadAml(node, pState);
             }
 
             return pState;
@@ -826,7 +826,7 @@ apf.JmlParser = {
          * @attribute {String} offset the distance from the calculated grid point that has to be added. This value consists of two numbers seperated by a comma. Defaults to 0,0.
          * @addnode elements
          */
-        "iconmap" : function(q, jmlParent){
+        "iconmap" : function(q, amlParent){
             var name = q.getAttribute("id");
 
             //#ifdef __DEBUG
@@ -854,12 +854,12 @@ apf.JmlParser = {
          * @define window Alias for {@link element.modalwindow}.
          * @addnode element
          */
-        "window" : function(q, jmlParent, pHtmlNode){
+        "window" : function(q, amlParent, pHtmlNode){
             //Create Object en Reference
             var o = new apf.modalwindow(pHtmlNode, "window", q);
 
-            //Process JML
-            o.loadJml(q, jmlParent);
+            //Process AML
+            o.loadAml(q, amlParent);
 
             //apf.windowManager.addForm(q); //@todo rearchitect this
 
@@ -870,7 +870,7 @@ apf.JmlParser = {
         //#ifdef __WITH_PRESENTATION
         /**
          * @define style element containing css
-         * @addnode global, anyjml
+         * @addnode global, anyaml
          */
         "style" : function(q){
             apf.importCssString(document, q.firstChild.nodeValue);
@@ -878,7 +878,7 @@ apf.JmlParser = {
 
         /**
          * @define comment all elements within the comment tag are ignored by the parser.
-         * @addnode anyjml
+         * @addnode anyaml
          */
         "comment" : function (q){
             //do nothing
@@ -886,7 +886,7 @@ apf.JmlParser = {
 
         /**
          * @define presentation element containing a skin definition
-         * @addnode global, anyjml
+         * @addnode global, anyaml
          */
         "presentation" : function(q){
             var name = "skin" + Math.round(Math.random() * 100000);
@@ -910,10 +910,10 @@ apf.JmlParser = {
          * @attribute {String} src        the location of the skin definition.
          * @attribute {String} media-path the basepath for the images of the skin.
          * @attribute {String} icon-path  the basepath for the icons used in the elements using this skinset.
-         * @addnode global, anyjml
+         * @addnode global, anyaml
          */
-        "skin" : function(q, jmlParent){
-            if (jmlParent) {
+        "skin" : function(q, amlParent){
+            if (amlParent) {
                 var name = "skin" + Math.round(Math.random() * 100000);
                 q.parentNode.setAttribute("skin", name);
                 apf.skins.skins[name] = {name: name, templates: {}};
@@ -927,20 +927,20 @@ apf.JmlParser = {
                     ? apf.getAbsolutePath(apf.hostPath, q.getAttribute("src"))
                     : apf.getAbsolutePath(apf.hostPath, q.getAttribute("name")) + "/index.xml";
 
-                apf.loadJmlInclude(q, true, path);
+                apf.loadAmlInclude(q, true, path);
             }
         },
         //#endif
 
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
 
-        "model" : function(q, jmlParent){
-            var model = new apf.model().loadJml(q, jmlParent);
+        "model" : function(q, amlParent){
+            var model = new apf.model().loadAml(q, amlParent);
 
-            if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                modelId = "model" + jmlParent.uniqueId;
-                jmlParent.$jml.setAttribute("model", modelId);
-                model.register(jmlParent);
+            if (amlParent && amlParent.hasFeature(__DATABINDING__)) {
+                modelId = "model" + amlParent.uniqueId;
+                amlParent.$aml.setAttribute("model", modelId);
+                model.register(amlParent);
                 apf.nameserver.register("model", modelId, model);
             }
 
@@ -948,42 +948,42 @@ apf.JmlParser = {
         },
 
         //#ifdef __WITH_SMARTBINDINGS
-        "smartbinding" : function(q, jmlParent){
-            var bc = new apf.smartbinding(q.getAttribute("id"), q, jmlParent);
+        "smartbinding" : function(q, amlParent){
+            var bc = new apf.smartbinding(q.getAttribute("id"), q, amlParent);
 
-            if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                apf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
+            if (amlParent && amlParent.hasFeature(__DATABINDING__))
+                apf.AmlParser.addToSbStack(amlParent.uniqueId, bc);
 
             return bc;
         },
 
-        "ref" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return apf.JmlParser.invalidJml(q);
+        "ref" : function(q, amlParent){
+            if (!amlParent || !amlParent.hasFeature(__DATABINDING__))
+                return apf.AmlParser.invalidAml(q);
 
-            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                .addBindRule(q, jmlParent);
+            apf.AmlParser.getFromSbStack(amlParent.uniqueId)
+                .addBindRule(q, amlParent);
         }, //not referencable
 
-        "bindings" : function(q, jmlParent){
-            if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+        "bindings" : function(q, amlParent){
+            if (amlParent && amlParent.hasFeature(__DATABINDING__))
+                apf.AmlParser.getFromSbStack(amlParent.uniqueId)
                     .addBindings(apf.getRules(q), q);
 
             return q;
         },
 
-        "action" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return apf.JmlParser.invalidJml(q);
+        "action" : function(q, amlParent){
+            if (!amlParent || !amlParent.hasFeature(__DATABINDING__))
+                return apf.AmlParser.invalidAml(q);
 
-            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                .addActionRule(q, jmlParent);
+            apf.AmlParser.getFromSbStack(amlParent.uniqueId)
+                .addActionRule(q, amlParent);
         }, //not referencable
 
-        "actions" : function(q, jmlParent){
-            if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+        "actions" : function(q, amlParent){
+            if (amlParent && amlParent.hasFeature(__DATABINDING__)) {
+                apf.AmlParser.getFromSbStack(amlParent.uniqueId)
                     .addActions(apf.getRules(q), q);
             }
 
@@ -994,13 +994,13 @@ apf.JmlParser = {
         // #endif
 
         // #ifdef __WITH_ACTIONTRACKER
-        "actiontracker" : function(q, jmlParent){
-            var at = new apf.actiontracker(jmlParent);
-            at.loadJml(q);
+        "actiontracker" : function(q, amlParent){
+            var at = new apf.actiontracker(amlParent);
+            at.loadAml(q);
 
-            if (jmlParent) {
-                at.$setParent(jmlParent);
-                jmlParent.$at = at;
+            if (amlParent) {
+                at.$setParent(amlParent);
+                amlParent.$at = at;
             }
 
             return at;
@@ -1010,9 +1010,9 @@ apf.JmlParser = {
         // #ifdef __WITH_CONTEXTMENU
 
         /**
-         * @for JmlNode
+         * @for AmlNode
          * @define contextmenu element specifying which menu is shown when a
-         * contextmenu is requested by a user for a jml node.
+         * contextmenu is requested by a user for a aml node.
          * Example:
          * This example shows a list that shows the mnuRoot menu when the user
          * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
@@ -1026,39 +1026,39 @@ apf.JmlParser = {
          * @attribute {String} menu   the id of the menu element.
          * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
          */
-        "contextmenu" : function(q, jmlParent){
-            if (!jmlParent)
-                return apf.JmlParser.invalidJml(q); //not supported
+        "contextmenu" : function(q, amlParent){
+            if (!amlParent)
+                return apf.AmlParser.invalidAml(q); //not supported
 
-            if (!jmlParent.contextmenus)
-                jmlParent.contextmenus = [];
-            jmlParent.contextmenus.push(q);
+            if (!amlParent.contextmenus)
+                amlParent.contextmenus = [];
+            amlParent.contextmenus.push(q);
         },
 
         //#endif
 
         // #ifdef __WITH_DRAGDROP
-        "allow-drag" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return apf.JmlParser.invalidJml(q);
+        "allow-drag" : function(q, amlParent){
+            if (!amlParent || !amlParent.hasFeature(__DATABINDING__))
+                return apf.AmlParser.invalidAml(q);
 
-            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                .addDragRule(q, jmlParent);
+            apf.AmlParser.getFromSbStack(amlParent.uniqueId)
+                .addDragRule(q, amlParent);
         },  //not referencable
 
-        "allow-drop" : function(q, jmlParent){
-            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__))
-                return apf.JmlParser.invalidJml(q);
+        "allow-drop" : function(q, amlParent){
+            if (!amlParent || !amlParent.hasFeature(__DATABINDING__))
+                return apf.AmlParser.invalidAml(q);
 
-            apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
-                .addDropRule(q, jmlParent);
+            apf.AmlParser.getFromSbStack(amlParent.uniqueId)
+                .addDropRule(q, amlParent);
         },  //not referencable
 
-        "dragdrop" : function(q, jmlParent){
+        "dragdrop" : function(q, amlParent){
             var rules = apf.getRules(q);
 
-            if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                apf.JmlParser.getFromSbStack(jmlParent.uniqueId)
+            if (amlParent && amlParent.hasFeature(__DATABINDING__)) {
+                apf.AmlParser.getFromSbStack(amlParent.uniqueId)
                     .addDragDrop(rules, q);
             }
 
@@ -1067,27 +1067,27 @@ apf.JmlParser = {
         // #endif
 
         // #ifdef __WITH_TELEPORT
-        "teleport" : function(q, jmlParent){
+        "teleport" : function(q, amlParent){
             //Initialize Communication Component
-            return apf.teleport.loadJml(q, jmlParent);
+            return apf.teleport.loadAml(q, amlParent);
         },
         // #endif
 
         // #ifdef __WITH_RSB
-        "remote" : function(q, jmlParent){
+        "remote" : function(q, amlParent){
             //Remote Smart Bindings
-            return new apf.remote(q.getAttribute("id"), q, jmlParent);
+            return new apf.remote(q.getAttribute("id"), q, amlParent);
         },
         // #endif
 
-        "appsettings" : function(q, jmlParent){
-            return apf.appsettings.loadJml(q, jmlParent);
+        "appsettings" : function(q, amlParent){
+            return apf.appsettings.loadAml(q, amlParent);
         }
 
         //#ifdef __DESKRUN
         , "deskrun" : function(q){
             if (!apf.isDeskrun) return;
-            apf.window.loadJml(q); //@todo rearchitect this
+            apf.window.loadAml(q); //@todo rearchitect this
         }
         //#endif
 
@@ -1174,7 +1174,7 @@ apf.JmlParser = {
                 if (parseInt(uniqueId) != uniqueId)
                     continue;
 
-                //Retrieve Jml Node
+                //Retrieve Aml Node
                 var jNode = apf.lookup(uniqueId);
 
                 //Set Main smartbinding
@@ -1207,7 +1207,7 @@ apf.JmlParser = {
         //#ifdef __WITH_MODEL || __WITH_XFORMS
         //Initialize Models
         while (this.hasNewModelStackItems) {
-            var jmlNode, modelInit     = this.modelInit;
+            var amlNode, modelInit     = this.modelInit;
             this.modelInit             = {};
             this.hasNewModelStackItems = false;
 
@@ -1215,11 +1215,11 @@ apf.JmlParser = {
                 data    = modelInit[i][1];
                 data[0] = data[0].substr(1);
 
-                jmlNode = eval(data[0]);
-                if (jmlNode.connect)
-                    jmlNode.connect(modelInit[i][0], null, data[2], data[1] || "select");
+                amlNode = eval(data[0]);
+                if (amlNode.connect)
+                    amlNode.connect(modelInit[i][0], null, data[2], data[1] || "select");
                 else
-                    jmlNode.setModel(new apf.model().loadFrom(data.join(":")));
+                    amlNode.setModel(new apf.model().loadFrom(data.join(":")));
             }
         }
         this.modelInit = [];
@@ -1370,4 +1370,4 @@ apf.HTML5INPUT = {
 
 //#endif
 
-apf.Init.run('apf.JmlParser');
+apf.Init.run('apf.AmlParser');

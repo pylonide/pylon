@@ -24,9 +24,9 @@
 
 /**
  * Element displaying a skinnable rectangle which can contain other 
- * jml elements. This element is used by other elements such as the 
+ * aml elements. This element is used by other elements such as the 
  * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other jml elements.
+ * which in turn can contain other aml elements.
  * Remarks:
  * This component is used in the accordion element to create its sections. In
  * the statusbar the panel element is an alias of bar.
@@ -41,7 +41,7 @@
  *     false   panel is not collapsed
  * @attribute {String} title   describes content in panel
  * @allowchild button
- * @allowchild {elements}, {anyjml}
+ * @allowchild {elements}, {anyaml}
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -56,7 +56,7 @@ apf.bar   = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
-            if (!this.$jmlLoaded)
+            if (!this.$amlLoaded)
                 return;
 
             if (isUsingParentSkin && !withinParent 
@@ -96,14 +96,14 @@ apf.bar   = apf.component(apf.NODE_VISIBLE, function(){
             : "main", "dragger", this.oExt);
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         var oInt = this.$getLayoutNode(isUsingParentSkin 
             ? this.tagName 
             : "main", "container", this.oExt);
         
         this.oInt = this.oInt
-            ? apf.JmlParser.replaceNode(oInt, this.oInt)
-            : apf.JmlParser.parseChildren(x, oInt, this);
+            ? apf.AmlParser.replaceNode(oInt, this.oInt)
+            : apf.AmlParser.parseChildren(x, oInt, this);
     };
     
     /*#ifdef __WITH_SKIN_CHANGE

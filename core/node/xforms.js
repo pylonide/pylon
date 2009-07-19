@@ -232,7 +232,7 @@ apf.XForms = function(){
         }
     };
     
-    this.$addJmlLoader(function(x){
+    this.$addAmlLoader(function(x){
         this.addEventListener(this.hasFeature(__MULTISELECT__) ? "click" : "choose",
             function(){
                 var model = this.getModel(); 

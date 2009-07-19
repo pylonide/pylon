@@ -147,33 +147,33 @@ apf.auth = {
      */
     inProcess  : 0,
 
-    init : function(jml){
+    init : function(aml){
         apf.makeClass(this);
 
         this.inited = true;
-        if (!jml)
+        if (!aml)
             return;
         
-        this.$jml   = jml;
-        if (jml.getAttribute("login")) {
-            this.services["default"] = jml;
+        this.$aml   = aml;
+        if (aml.getAttribute("login")) {
+            this.services["default"] = aml;
             this.needsLogin          = true;
         }
 
-        if (jml.getAttribute("retry"))
-            this.retry = apf.isTrue(jml.getAttribute("retry"));
+        if (aml.getAttribute("retry"))
+            this.retry = apf.isTrue(aml.getAttribute("retry"));
 
-        if (jml.getAttribute("autostart"))
-            this.autoStart = apf.isTrue(jml.getAttribute("autostart"));
+        if (aml.getAttribute("autostart"))
+            this.autoStart = apf.isTrue(aml.getAttribute("autostart"));
 
         //Handling
-        var loginWindow  = jml.getAttribute("window");
-        var waitingState = jml.getAttribute("waiting-state");
-        var loginState   = jml.getAttribute("login-state");
-        var failState    = jml.getAttribute("fail-state");
-        var errorState   = jml.getAttribute("error-state");
-        var logoutState  = jml.getAttribute("logout-state");
-        var modelLogin   = jml.getAttribute("model");
+        var loginWindow  = aml.getAttribute("window");
+        var waitingState = aml.getAttribute("waiting-state");
+        var loginState   = aml.getAttribute("login-state");
+        var failState    = aml.getAttribute("fail-state");
+        var errorState   = aml.getAttribute("error-state");
+        var logoutState  = aml.getAttribute("logout-state");
+        var modelLogin   = aml.getAttribute("model");
 
         if (loginWindow || loginState || failState || logoutState) {
             this.addEventListener("authrequired", function(){
@@ -234,7 +234,7 @@ apf.auth = {
             });
         }
 
-        var i, nodes = jml.childNodes;
+        var i, nodes = aml.childNodes;
         for (i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1)
                 continue;
@@ -252,7 +252,7 @@ apf.auth = {
         }
 
         //Events
-        var attr = jml.attributes;
+        var attr = aml.attributes;
         for (i = 0; i < attr.length; i++) {
             if (attr[i].nodeName.substr(0,2) == "on")
                 this.addEventListener(attr[i].nodeName,

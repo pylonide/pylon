@@ -142,10 +142,10 @@ apf.layout = {
         }
         else {
             var splitter = new apf.splitter();//this.parentNode
-            var o = apf.findHost(layout.parentNode) || apf.JmlParser;
+            var o = apf.findHost(layout.parentNode) || apf.AmlParser;
             //splitter.parentNode = o;
             //o.childNodes.push(splitter); //@todo hack
-            splitter.skinset = apf.xmldb.getInheritedAttribute(o.$jml, "skinset"); //@todo use skinset here. Has to be set in presentation
+            splitter.skinset = apf.xmldb.getInheritedAttribute(o.$aml, "skinset"); //@todo use skinset here. Has to be set in presentation
             splitter.$loadSkin();
             splitter.$draw();
         }
@@ -185,18 +185,18 @@ apf.layout = {
     isLoadedXml : function(xmlNode){
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
-        var jmlNode = node ? self[node.getAttribute("name")] : null;
+        var amlNode = node ? self[node.getAttribute("name")] : null;
 
         //#ifdef __DEBUG
-        if (!jmlNode) {
+        if (!amlNode) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading Alignment from XML",
-                "Could not find JML node" + (node ? " by name '"
+                "Could not find AML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
         }
         //#endif
 
-        var pNode = jmlNode.oExt.parentNode;
+        var pNode = amlNode.oExt.parentNode;
         var pId   = this.getHtmlId(pNode);
 
         return (this.loadedXml[pId] == xmlNode);
@@ -209,7 +209,7 @@ apf.layout = {
      *  apf.layout.loadFrom("mdlLayout:layout[1]");
      * </code>
      * Remarks:
-     * The jml elements referenced in the layout definition should exist when
+     * The aml elements referenced in the layout definition should exist when
      * this function is called.
      * @param {String} instruction the {@link term.datainstruction data instruction} specifying where to load the data from.
      */
@@ -246,25 +246,25 @@ apf.layout = {
     /**
      * Loads a layout from an xml element.
      * Remarks:
-     * The jml elements referenced in the layout definition should exist when
+     * The aml elements referenced in the layout definition should exist when
      * this function is called.
      * @param {XMLElement} xmlNode the xml element containing the layout description.
      */
     loadXml   : function(xmlNode){
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
-        var jmlNode = node ? self[node.getAttribute("name")] : null;
+        var amlNode = node ? self[node.getAttribute("name")] : null;
 
         //#ifdef __DEBUG
-        if(!jmlNode) {
+        if(!amlNode) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading Alignment from XML",
-                "Could not find JML node" + (node ? " by name '"
+                "Could not find AML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
         }
         //#endif
 
-        var pNode   = jmlNode.oExt.parentNode;
+        var pNode   = amlNode.oExt.parentNode;
         var layout  = this.get(pNode, apf.getBox(xmlNode.getAttribute("margin") || ""));
         var pId     = this.getHtmlId(pNode);
 
@@ -278,7 +278,7 @@ apf.layout = {
         }
 
         this.compile(pNode);
-        if (apf.JmlParser.inited)
+        if (apf.AmlParser.inited)
             this.activateRules(pNode);
 
         this.loadedXml[pId] = xmlNode;
@@ -351,9 +351,9 @@ apf.layout = {
                 this.hidden = 3;
 
                 if (this.hid) {
-                    var jmlNode = apf.lookup(this.hid);
-                    if (jmlNode.syncAlignment)
-                        jmlNode.syncAlignment(this);
+                    var amlNode = apf.lookup(this.hid);
+                    if (amlNode.syncAlignment)
+                        amlNode.syncAlignment(this);
                 }
             },
 
@@ -593,51 +593,51 @@ apf.layout = {
         };
     },
 
-    parseXml : function(x, layout, jmlNode, norecur){
-        var aData = this.getData(typeof jmlNode == "string"
-            ? jmlNode
+    parseXml : function(x, layout, amlNode, norecur){
+        var aData = this.getData(typeof amlNode == "string"
+            ? amlNode
             : x[apf.TAGNAME], layout.layout);
 
         if (aData.node) {
-            if (!jmlNode) {
-                jmlNode = self[x.getAttribute("name")];
+            if (!amlNode) {
+                amlNode = self[x.getAttribute("name")];
                 //#ifdef __DEBUG
-                if (!jmlNode) {
+                if (!amlNode) {
                     throw new Error(apf.formatErrorString(0, null,
                         "Parsing Alignment from XML",
-                        "Could not find JML node" + x.getAttribute("name"), x));
+                        "Could not find AML node" + x.getAttribute("name"), x));
                 }
                 //#endif
             }
 
-            //if (!jmlNode.visible)
-                //jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
+            //if (!amlNode.visible)
+                //amlNode.show(true);//amlNode.setProperty("visible", true);//not the most optimal position
 
-            aData.oHtml   = jmlNode.oExt;
-            jmlNode.aData = aData;
+            aData.oHtml   = amlNode.oExt;
+            amlNode.aData = aData;
 
-            if (!jmlNode.hasFeature(__ALIGNMENT__)) {
-                jmlNode.implement(apf.Alignment);
-                if (jmlNode.hasFeature(__ANCHORING__))
-                    jmlNode.disableAnchoring();
+            if (!amlNode.hasFeature(__ALIGNMENT__)) {
+                amlNode.implement(apf.Alignment);
+                if (amlNode.hasFeature(__ANCHORING__))
+                    amlNode.disableAnchoring();
             }
 
-            var jml = jmlNode.$jml;
-            if (jml.getAttribute("width"))
-                aData.fwidth = jml.getAttribute("width");
-            if (jml.getAttribute("height"))
-                aData.fheight = jml.getAttribute("height");
-            /*if (jmlNode.minwidth)
-                aData.minwidth = jmlNode.minwidth;
-            if (jmlNode.minheight)
-                aData.minheight = jmlNode.minheight;*/
+            var aml = amlNode.$aml;
+            if (aml.getAttribute("width"))
+                aData.fwidth = aml.getAttribute("width");
+            if (aml.getAttribute("height"))
+                aData.fheight = aml.getAttribute("height");
+            /*if (amlNode.minwidth)
+                aData.minwidth = amlNode.minwidth;
+            if (amlNode.minheight)
+                aData.minheight = amlNode.minheight;*/
 
             if (!this.getHtmlId(aData.oHtml))
                 apf.setUniqueHtmlId(aData.oHtml);
             aData.id = this.getHtmlId(aData.oHtml);
             if (aData.oHtml.style)
                 aData.oHtml.style.position = "absolute";
-            aData.hid = jmlNode.uniqueId;
+            aData.hid = amlNode.uniqueId;
         }
         else {
             aData.id = this.metadata.push(aData) - 1;
@@ -700,8 +700,8 @@ apf.layout = {
 
         //guessing this is docking... unsure
         // #ifdef __WITH_DOCKING
-        if (aData.node && jmlNode.syncAlignment)
-            jmlNode.syncAlignment(aData);
+        if (aData.node && amlNode.syncAlignment)
+            amlNode.syncAlignment(aData);
 
         if (!norecur && !aData.node) {
             var nodes = x.childNodes;
@@ -1021,14 +1021,14 @@ apf.layout = {
     },
 
     //#ifdef __WITH_ALIGN_TEMPLATES
-    addAlignNode : function(jmlNode, pData){
-        var align = (typeof jmlNode.align == "undefined"
-            ? jmlNode.$jml.getAttribute("align")
-            : jmlNode.align).split("-");
+    addAlignNode : function(amlNode, pData){
+        var align = (typeof amlNode.align == "undefined"
+            ? amlNode.$aml.getAttribute("align")
+            : amlNode.align).split("-");
         var s = pData.children;
-        var a = jmlNode.aData;
+        var a = amlNode.aData;
 
-        if (typeof jmlNode.splitter == "undefined") {
+        if (typeof amlNode.splitter == "undefined") {
             if (align[1] == "splitter")
                 a.splitter = align[2] || 4
             else

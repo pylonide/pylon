@@ -209,7 +209,7 @@ apf.Cache = function(){
 
     /**
      * Unloads data from this element and resets state displaying an empty message.
-     * Empty message is set on the {@link baseclass.jmlelement.property.msg}.
+     * Empty message is set on the {@link baseclass.amlelement.property.msg}.
      *
      * @param {Boolean} [nomsg]   whether to display the empty message.
      * @param {Boolean} [doEvent] whether to sent select events.
@@ -379,7 +379,7 @@ apf.Cache = function(){
         this.implement(apf.MultiselectCache);
     // #endif
 
-    this.$jmlDestroyers.push(function(){
+    this.$amlDestroyers.push(function(){
         //Remove all cached Items
         this.clearAllCache();
     });

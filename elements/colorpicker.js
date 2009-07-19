@@ -341,7 +341,7 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
         //this.fill(cH, cS, cL);
     }
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (x.getAttribute("color"))
             this.setValue(x.getAttribute("color"));
     }

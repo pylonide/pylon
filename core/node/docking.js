@@ -75,13 +75,13 @@ apf.DockServer = {
         }
     },
     
-    start: function(oItem, jmlNode, e){
+    start: function(oItem, amlNode, e){
         if (!this.inited) 
             apf.DockServer.init();
         
         this.dragdata = {
             item: oItem,
-            jmlNode: jmlNode,
+            amlNode: amlNode,
             x: e.offsetX || e.layerX,
             y: e.offsetY || e.layerY
         }
@@ -110,7 +110,7 @@ apf.DockServer = {
         
         if (this.dragdata.item.hidden != 3) {
             this.dragdata.item.setFloat();
-            this.dragdata.jmlNode.purgeAlignment();
+            this.dragdata.amlNode.purgeAlignment();
         }
         else 
             apf.layout.play(this.dragdata.item.oHtml.parentNode);
@@ -141,7 +141,7 @@ apf.DockServer = {
         // #endif
 
         apf.DockServer.nextPositionMarker.style.top = "10000px";
-        //apf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
+        //apf.DockServer.dragdata.amlNode.oExt.style.top = "10000px";
         
         var el = document.elementFromPoint(e.clientX
             + document.documentElement.scrollLeft,
@@ -154,19 +154,19 @@ apf.DockServer = {
         var o = el;
         while (o && !o.host && o.parentNode) 
             o = o.parentNode;
-        var jmlNode = o && o.host ? o.host : false;
-        var htmlNode = jmlNode.oExt;
-        if (!jmlNode.aData || !jmlNode.dock) {
+        var amlNode = o && o.host ? o.host : false;
+        var htmlNode = amlNode.oExt;
+        if (!amlNode.aData || !amlNode.dock) {
             document.body.style.cursor = "";
             apf.setStyleClass(document.body, "same",
                 ["south", "east", "north", "west"]);
             return apf.DockServer.setPosition(e);
         }
         
-        if (apf.DockServer.dragdata.item == jmlNode.aData && jmlNode.aData.hidden == 3) 
+        if (apf.DockServer.dragdata.item == amlNode.aData && amlNode.aData.hidden == 3) 
             return apf.DockServer.setPosition(e);
         
-        var calcData = jmlNode.aData.calcData;
+        var calcData = amlNode.aData.calcData;
         
         var pos = apf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
@@ -202,7 +202,7 @@ apf.DockServer = {
                 region = "north";
         }
         
-        if (apf.DockServer.dragdata.item == jmlNode.aData) 
+        if (apf.DockServer.dragdata.item == amlNode.aData) 
             region = "same";
         
         if (!region) 
@@ -257,7 +257,7 @@ apf.DockServer = {
 
         apf.dragmode.clear();
         apf.DockServer.nextPositionMarker.style.display = "none";
-        //apf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
+        //apf.DockServer.dragdata.amlNode.oExt.style.top = "10000px";
         document.body.className = "";
         
         var el = document.elementFromPoint(e.clientX
@@ -266,17 +266,17 @@ apf.DockServer = {
         var o = el;
         while (o && !o.host && o.parentNode) 
             o = o.parentNode;
-        var jmlNode  = o && o.host ? o.host : false;
-        var htmlNode = jmlNode.oExt;
-        var aData    = jmlNode.aData;
+        var amlNode  = o && o.host ? o.host : false;
+        var htmlNode = amlNode.oExt;
+        var aData    = amlNode.aData;
         
-        if (!jmlNode.aData || !jmlNode.dock
-          || apf.DockServer.dragdata.item == jmlNode.aData
-          && jmlNode.aData.hidden == 3) {
+        if (!amlNode.aData || !amlNode.dock
+          || apf.DockServer.dragdata.item == amlNode.aData
+          && amlNode.aData.hidden == 3) {
             //apf.layout.play(htmlNode.parentNode);
             return apf.DockServer.floatElement(e);
         }
-        if (apf.DockServer.dragdata.item == jmlNode.aData) 
+        if (apf.DockServer.dragdata.item == amlNode.aData) 
             return apf.layout.play(htmlNode.parentNode);
         
         var pos = apf.getAbsolutePosition(htmlNode);

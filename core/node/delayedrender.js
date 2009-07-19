@@ -89,12 +89,12 @@ apf.DelayedRender = function(){
      * @param {Boolean} [usedelay] whether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */
     this.$render = function(usedelay){
-        if (this.$rendered || this.$jml.getAttribute("render-status") != "delayed")
+        if (this.$rendered || this.$aml.getAttribute("render-status") != "delayed")
             return;
         this.dispatchEvent("beforerender");
 
         if (typeof this.usedelay == "undefined")
-            this.usedelay = apf.isTrue(apf.xmldb.getInheritedAttribute(this.$jml,
+            this.usedelay = apf.isTrue(apf.xmldb.getInheritedAttribute(this.$aml,
                 "use-render-delay"));
 
         if (this.usedelay || usedelay)
@@ -107,10 +107,10 @@ apf.DelayedRender = function(){
         if (this.$rendered)
             return;
 
-        apf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
+        apf.AmlParser.parseMoreAml(this.$aml, this.oInt, this)
 
-        this.$jml.setAttribute("render-status", "done");
-        this.$jml.removeAttribute("render"); //Experimental
+        this.$aml.setAttribute("render-status", "done");
+        this.$aml.removeAttribute("render"); //Experimental
         this.$rendered = true;
         delayed = false;
 

@@ -23,7 +23,7 @@
 
 /**
  * Element displaying a bar consisting of panels containing other text, icons
- * and more jml. This element is usually placed in the bottom of the screen to 
+ * and more aml. This element is usually placed in the bottom of the screen to 
  * display context sensitive and other information about the state of the 
  * application.
  * Example:
@@ -57,21 +57,21 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
     /**** DOM Hooks ****/
     var insertChild;
     
-    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
 
     });
     
-    this.$domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent){
-        if (jmlNode.tagName != "panel")
+    this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent){
+        if (amlNode.tagName != "panel")
             return;
         
-        jmlNode.$propHandlers["caption"] = function(value){
+        amlNode.$propHandlers["caption"] = function(value){
             apf.xmldb.setNodeValue(
                 this.$getLayoutNode("panel", "caption", this.oExt), value);
         }
-        jmlNode.$propHandlers["icon"] = function(value){
+        amlNode.$propHandlers["icon"] = function(value){
             var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
             if (!oIcon) return;
         
@@ -99,8 +99,8 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
     };
     
-    this.$loadJml = function(x){
-        var bar, tagName, i, l, node, nodes = this.$jml.childNodes;
+    this.$loadAml = function(x){
+        var bar, tagName, i, l, node, nodes = this.$aml.childNodes;
         
         //Let's not parse our children, when we've already have them
         if (!this.oInt && this.childNodes.length) 
@@ -118,7 +118,7 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
                 bar = new apf.panel(this.oInt, tagName);
                 bar.skinName = this.skinName
                 insertChild.call(this, bar);
-                bar.loadJml(node, this);
+                bar.loadAml(node, this);
                 
                 bar.setCaption = function(value){
                     bar.oInt.innerHTML = value;
@@ -126,10 +126,10 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
                 
                 /*if (!bar.caption && node.childNodes.length == 1 
                   && "3|4".indexOf(node.childNodes.nodeType) > -1)
-                    jmlNode.setCaption(node.firstChild.nodeValue);*/
+                    amlNode.setCaption(node.firstChild.nodeValue);*/
             }
             else if (tagName == "progressbar") {
-                new apf.progressbar(this.oInt, tagName).loadJml(node, this);
+                new apf.progressbar(this.oInt, tagName).loadAml(node, this);
             }
         }
         

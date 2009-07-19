@@ -24,9 +24,9 @@
 /**
  * Element displaying a text in the user interface, usually specifying
  * a description of another element. When the user clicks on the label it 
- * can set the focus to the connected jml element.
+ * can set the focus to the connected aml element.
  * Example:
- * The jml label element is used in the same way as the html label element. This
+ * The aml label element is used in the same way as the html label element. This
  * example shows the label as a child of a form element. It is rendered outside
  * to the element.
  * <code>
@@ -128,11 +128,11 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.setProperty("value", x.firstChild.nodeValue.trim());
         else
-            apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+            apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
     };
 }).implement(
     //#ifdef __WITH_DATABINDING

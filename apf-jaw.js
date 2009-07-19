@@ -126,7 +126,7 @@ apf = {
                 throw new Error(apf.formatErrorString(0, this, 
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
-                    this.$jml));
+                    this.$aml));
             }
             //#endif
             
@@ -253,21 +253,21 @@ apf = {
         eval("apf." + name + " = oNamespace");
     },
     
-    formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
+    formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
         var str = ["---- APF Error ----"];
-        if (jmlContext) {
-            var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
+        if (amlContext) {
+            var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
             
             //Set file and line number
-            str.push("jml file: [line: " + linenr + "] " + file);
+            str.push("aml file: [line: " + linenr + "] " + file);
         }
         if (control)
             str.push("Control: '" 
                 + (control.name 
-                    || (control.$jml ? control.$jml.getAttribute("id") : null) 
+                    || (control.$aml ? control.$aml.getAttribute("id") : null) 
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -276,8 +276,8 @@ apf = {
             str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
         if (outputname)
             str.push(outputname + ": " + output);
-        if (jmlContext)
-            str.push("\n===\n" + jmlStr);
+        if (amlContext)
+            str.push("\n===\n" + amlStr);
 
         return str.join("\n");
         //#endif
@@ -322,7 +322,7 @@ Function.prototype.toHTMLNode = function(highlight){
     TYPE_BOOLEAN    = "Boolean";
     TYPE_FUNCTION   = "Function";
     TYPE_DOMNODE    = "XMLNode";
-    TYPE_APFNODE    = "JMLElement";
+    TYPE_APFNODE    = "AMLElement";
     
     STATE_UNDEFINED = "undefined";
     STATE_NULL      = "null";

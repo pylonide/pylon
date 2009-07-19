@@ -398,7 +398,7 @@ apf.VirtualViewport = function(){
                     start       : start,
                     length      : length,
                     insertPoint : this.xmlRoot, 
-                    jmlNode     : this
+                    amlNode     : this
                     //#ifdef __WITH_SORTING
                     ,ascending  : this.$sort ? this.$sort.get().ascending : true
                     //#endif

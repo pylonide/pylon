@@ -142,7 +142,7 @@ apf.model = function(data, caching){
     /**
      * @private
      */
-    this.loadInJmlNode = function(jmlNode, xpath){
+    this.loadInAmlNode = function(amlNode, xpath){
         if (this.data && xpath) {
             if (!apf.supportNamespaces && (this.data.prefix || this.data.scopeName))
                 (this.data.nodeType == 9 ? this.data : this.data.ownerDocument)
@@ -152,76 +152,76 @@ apf.model = function(data, caching){
 
             var xmlNode = this.data.selectSingleNode(xpath);
             if (!xmlNode)
-                jmlNode.$listenRoot = apf.xmldb.addNodeListener(this.data, jmlNode);
+                amlNode.$listenRoot = apf.xmldb.addNodeListener(this.data, amlNode);
         }
         else
             xmlNode = this.data || null;
 
-        jmlNode.load(xmlNode);
+        amlNode.load(xmlNode);
     };
 
-    var jmlNodes = {};
+    var amlNodes = {};
     /**
-     * Registers a jml element to this model in order for the jml element to
+     * Registers a aml element to this model in order for the aml element to
      * receive data loaded in this model.
      *
-     * @param  {JMLElement}  jmlNode  The jml element to be registered.
-     * @param  {String}      [xpath]  the xpath query which is executed on the data of the model to select the node to be loaded in the <code>jmlNode</code>.
+     * @param  {AMLElement}  amlNode  The aml element to be registered.
+     * @param  {String}      [xpath]  the xpath query which is executed on the data of the model to select the node to be loaded in the <code>amlNode</code>.
      * @return  {Model}  this model
      * @private
      */
-    this.register = function(jmlNode, xpath){
-        if (!jmlNode)
+    this.register = function(amlNode, xpath){
+        if (!amlNode)
             return this;
 
-        jmlNodes[jmlNode.uniqueId] = [jmlNode, xpath];
-        jmlNode.$model = this;
-        //if(!jmlNode.smartBinding) return this; //Setting model too soon causes object not to have XMLRoot which is incorrect
+        amlNodes[amlNode.uniqueId] = [amlNode, xpath];
+        amlNode.$model = this;
+        //if(!amlNode.smartBinding) return this; //Setting model too soon causes object not to have XMLRoot which is incorrect
 
         if (this.connect) {
             //This model is a connect proxy
             if (this.connect.type)
-                this.connect.node.connect(jmlNode, null, this.connect.select, this.connect.type);
+                this.connect.node.connect(amlNode, null, this.connect.select, this.connect.type);
             else
-                this.connect.node.connect(jmlNode, true, this.connect.select);
+                this.connect.node.connect(amlNode, true, this.connect.select);
         }
         else {
-            //jmlNode.$model = this;
-            if (this.state == 1 && jmlNode.clear)
-                jmlNode.clear("loading");
+            //amlNode.$model = this;
+            if (this.state == 1 && amlNode.clear)
+                amlNode.clear("loading");
             else if (this.data)
-                this.loadInJmlNode(jmlNode, xpath);
+                this.loadInAmlNode(amlNode, xpath);
         }
 
         return this;
     };
 
-    this.$register = function(jmlNode, xpath){
-        jmlNodes[jmlNode.uniqueId][1] = xpath;
+    this.$register = function(amlNode, xpath){
+        amlNodes[amlNode.uniqueId][1] = xpath;
     };
 
     /**
-     * Removes a jml element from the group of registered jml elements.
-     * The jml element will not receive any updates from this model, however
-     * the data loaded in the jml element is not unloaded.
+     * Removes a aml element from the group of registered aml elements.
+     * The aml element will not receive any updates from this model, however
+     * the data loaded in the aml element is not unloaded.
      *
-     * @param  {JMLElement}  jmlNode  The jml element to be unregistered.
+     * @param  {AMLElement}  amlNode  The aml element to be unregistered.
      * @private
      */
-    this.unregister = function(jmlNode){
+    this.unregister = function(amlNode){
         //if (this.connect)
-            //this.connect.node.disconnect(jmlNode);
-        if (jmlNode.dataParent)
-            jmlNode.dataParent.parent.disconnect(jmlNode);
+            //this.connect.node.disconnect(amlNode);
+        if (amlNode.dataParent)
+            amlNode.dataParent.parent.disconnect(amlNode);
 
-        delete jmlNodes[jmlNode.uniqueId];
+        delete amlNodes[amlNode.uniqueId];
     };
 
     /**
      * @private
      */
-    this.getXpathByJmlNode = function(jmlNode){
-        var n = jmlNodes[jmlNode.uniqueId];
+    this.getXpathByAmlNode = function(amlNode){
+        var n = amlNodes[amlNode.uniqueId];
         if (!n)
             return false;
 
@@ -453,12 +453,12 @@ apf.model = function(data, caching){
     /**
      * @private
      */
-    this.reloadJmlNode = function(uniqueId){
+    this.reloadAmlNode = function(uniqueId){
         if (!this.data)
             return;
 
-        var xmlNode = jmlNodes[uniqueId][1] ? this.data.selectSingleNode(jmlNodes[uniqueId][1]) : this.data;
-        jmlNodes[uniqueId][0].load(xmlNode);
+        var xmlNode = amlNodes[uniqueId][1] ? this.data.selectSingleNode(amlNodes[uniqueId][1]) : this.data;
+        amlNodes[uniqueId][0].load(xmlNode);
     };
 
     /* *********** PARSE ***********/
@@ -478,8 +478,8 @@ apf.model = function(data, caching){
         apf.makeClass(this);
 
         this.implement(apf.XForms); /** @inherits apf.XForms */
-        //#ifdef __WITH_JMLDOM
-        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
+        //#ifdef __WITH_AMLDOM
+        this.implement(apf.AmlDom); /** @inherits apf.AmlDom */
         //#endif
     }
     function cBind(x){
@@ -488,7 +488,7 @@ apf.model = function(data, caching){
         this.parentNode = this;
         this.nodeset    = x.getAttribute("nodeset");
         this.type       = x.getAttribute("type");
-        this.$jml        = x;
+        this.$aml        = x;
 
         this.selectSingleNode = function(){
             return this.parentNode.data.selectSingleNode(this.nodeset);
@@ -521,8 +521,8 @@ apf.model = function(data, caching){
 
         apf.makeClass(this);
 
-        //#ifdef __WITH_JMLDOM
-        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
+        //#ifdef __WITH_AMLDOM
+        this.implement(apf.AmlDom); /** @inherits apf.AmlDom */
         //#endif
     }
     //#endif
@@ -533,13 +533,13 @@ apf.model = function(data, caching){
     /**
      * @private
      */
-    this.loadJml = function(x, parentNode){
+    this.loadAml = function(x, parentNode){
         this.name = x.getAttribute("id");
-        this.$jml  = x;
+        this.$aml  = x;
 
-        //#ifdef __WITH_JMLDOM_FULL
+        //#ifdef __WITH_AMLDOM_FULL
         this.parentNode = parentNode;
-        this.implement(apf.JmlDom); /** @inherits apf.JmlDom */
+        this.implement(apf.AmlDom); /** @inherits apf.AmlDom */
         //#endif
 
         //Events
@@ -560,7 +560,7 @@ apf.model = function(data, caching){
         //Parse submissions
         var oSub;
         //#ifdef __WITH_XFORMS
-        var subs = $xmlns(x, "submission", apf.ns.jml);
+        var subs = $xmlns(x, "submission", apf.ns.aml);
         for (var i = 0; i < subs.length; i++) {
             if (!subs[i].getAttribute("id")) {
                 if (!defSubmission)
@@ -586,22 +586,22 @@ apf.model = function(data, caching){
         var instanceNode;
         loadProcInstr = apf.parseExpression(x.getAttribute("load") || x.getAttribute("get"));
         if (!loadProcInstr) {
-            var prefix = apf.findPrefix(x, apf.ns.jml);
+            var prefix = apf.findPrefix(x, apf.ns.aml);
             if (!apf.supportNamespaces)
                 if (prefix)
                     (x.nodeType == 9
                         ? x
                         : x.ownerDocument).setProperty("SelectionNamespaces",
-                            "xmlns:" + prefix + "='" + apf.ns.jml + "'");
+                            "xmlns:" + prefix + "='" + apf.ns.aml + "'");
             if (prefix)
                 prefix += ":";
 
-            var loadNode = x.selectSingleNode(prefix + "load");//$xmlns(x, "load", apf.ns.jml)[0];
+            var loadNode = x.selectSingleNode(prefix + "load");//$xmlns(x, "load", apf.ns.aml)[0];
             if (loadNode)
                 loadProcInstr = loadNode.getAttribute("get");
             //#ifdef __WITH_XFORMS
             else {
-                instanceNode = $xmlns(x, "instance", apf.ns.jml)[0];
+                instanceNode = $xmlns(x, "instance", apf.ns.aml)[0];
                 if (instanceNode && instanceNode.getAttribute("src"))
                     loadProcInstr = "url:" + instanceNode.getAttribute("src");
             }
@@ -610,7 +610,7 @@ apf.model = function(data, caching){
 
         //Process bind nodes
         //#ifdef __WITH_XFORMS
-        var binds = $xmlns(x, "bind", apf.ns.jml);
+        var binds = $xmlns(x, "bind", apf.ns.aml);
         for (var i = 0; i < binds.length; i++) {
             bindValidation.push([binds[i].getAttribute("nodeset"), binds[i]]);
             if (binds[i].getAttribute("id"))
@@ -651,7 +651,7 @@ apf.model = function(data, caching){
             //#ifdef __DEBUG
             if (!this.rsb || !this.rsb.models) {
                 throw new Error(apf.formatErrorString(0, null,
-                    "Loading JML into model",
+                    "Loading AML into model",
                     "Could not find reference to remote smartbinding: '"
                     + x.getAttribute("remote") + "'", x))
             }
@@ -668,7 +668,7 @@ apf.model = function(data, caching){
     };
 
     /**
-     * Changes the jml element that provides data to this model.
+     * Changes the aml element that provides data to this model.
      * Only relevant for models that are a connect proxy.
      * A connect proxy is set up like this:
      * Example:
@@ -676,28 +676,28 @@ apf.model = function(data, caching){
      *  <j:model connect="element_name" type="select" select="xpath" />
      * </code>
      *
-     * @param  {JMLElement} jmlNode  the jml element to be registered.
+     * @param  {AMLElement} amlNode  the aml element to be registered.
      * @param  {String}     [type]   select
      *   Possible values:
      *   default  sents data when a node is selected
      *   choice   sents data when a node is chosen (by double clicking, or pressing enter)
-     * @param  {String}     [select] an xpath query which is executed on the data of the model to select the node to be loaded in the jml element.
+     * @param  {String}     [select] an xpath query which is executed on the data of the model to select the node to be loaded in the aml element.
      * @private
      */
     //Only when model is a connect proxy
-    this.setConnection = function(jmlNode, type, select){
+    this.setConnection = function(amlNode, type, select){
         if (!this.connect)
             this.connect = {};
         var oldNode = this.connect.node;
 
         this.connect.type   = type;
-        this.connect.node   = jmlNode;
+        this.connect.node   = amlNode;
         this.connect.select = select;
 
-        for (var uniqueId in jmlNodes) {
+        for (var uniqueId in amlNodes) {
             if (oldNode)
-                oldNode.disconnect(jmlNodes[uniqueId][0]);
-            this.register(jmlNodes[uniqueId][0]);
+                oldNode.disconnect(amlNodes[uniqueId][0]);
+            this.register(amlNodes[uniqueId][0]);
         }
     };
 
@@ -762,7 +762,7 @@ apf.model = function(data, caching){
             callback = options.callback;
 
         /*
-            Make connectiong with a jml element to get data streamed in
+            Make connectiong with a aml element to get data streamed in
             from existing client side source
         */
         if (instrType.substr(0, 1) == "#") {
@@ -787,11 +787,11 @@ apf.model = function(data, caching){
         
         //Set all components on loading...        
         var uniqueId;
-        for (uniqueId in jmlNodes) {
-            if (!jmlNodes[uniqueId] || !jmlNodes[uniqueId][0])
+        for (uniqueId in amlNodes) {
+            if (!amlNodes[uniqueId] || !amlNodes[uniqueId][0])
                 continue;
 
-            jmlNodes[uniqueId][0].clear("loading");
+            amlNodes[uniqueId][0].clear("loading");
         }
 
         this.state = 1;
@@ -875,8 +875,8 @@ apf.model = function(data, caching){
 
         doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
 
-        if (apf.isIE && this.$jml && this.$jml.getAttribute("ns"))
-            xmlNode.ownerDocument.setProperty("SelectionNamespaces", this.$jml.getAttribute("ns"));
+        if (apf.isIE && this.$aml && this.$aml.getAttribute("ns"))
+            xmlNode.ownerDocument.setProperty("SelectionNamespaces", this.$aml.getAttribute("ns"));
         
         if (xmlNode) {
             apf.xmldb.nodeConnect(
@@ -889,13 +889,13 @@ apf.model = function(data, caching){
         this.data = xmlNode;
 
         var uniqueId;
-        for (uniqueId in jmlNodes) {
-            if (!jmlNodes[uniqueId] || !jmlNodes[uniqueId][0])
+        for (uniqueId in amlNodes) {
+            if (!amlNodes[uniqueId] || !amlNodes[uniqueId][0])
                 continue;
 
-            this.loadInJmlNode(jmlNodes[uniqueId][0], jmlNodes[uniqueId][1]);
-            //var xmlNode = this.data ? (jmlNodes[uniqueId][1] ? this.data.selectSingleNode(jmlNodes[uniqueId][1]) : this.data) : null;
-            //jmlNodes[uniqueId][0].load(xmlNode);
+            this.loadInAmlNode(amlNodes[uniqueId][0], amlNodes[uniqueId][1]);
+            //var xmlNode = this.data ? (amlNodes[uniqueId][1] ? this.data.selectSingleNode(amlNodes[uniqueId][1]) : this.data) : null;
+            //amlNodes[uniqueId][0].load(xmlNode);
         }
 
         this.dispatchEvent("afterload", {xmlNode: xmlNode});
@@ -921,7 +921,7 @@ apf.model = function(data, caching){
         this.dispatchEvent("beforeretrieve");
 
         // #ifdef __DEBUG
-        var jmlNode = options.jmlNode;
+        var amlNode = options.amlNode;
         //#endif
 
         apf.getData(instruction, xmlContext, options, function(data, state, extra){
@@ -939,7 +939,7 @@ apf.model = function(data, caching){
                 //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, 
-                  options.jmlNode || _self, oError) === true)
+                  options.amlNode || _self, oError) === true)
                     return true;
 
                 throw oError;
@@ -947,7 +947,7 @@ apf.model = function(data, caching){
 
             //#ifdef __DEBUG
             if (!options.insertPoint) {
-                throw new Error(apf.formatErrorString(0, jmlNode || _self,
+                throw new Error(apf.formatErrorString(0, amlNode || _self,
                     "Inserting data", "Could not determine insertion point for \
                     instruction: " + instruction));
             }
@@ -958,7 +958,7 @@ apf.model = function(data, caching){
                 insertPoint = _self.data.selectSingleNode(options.insertPoint);
 
             //Call insert function
-            (options.jmlNode || _self).insert(data, options.insertPoint, apf.extend({
+            (options.amlNode || _self).insert(data, options.insertPoint, apf.extend({
                 clearContents: apf.isTrue(extra.userdata[1])
             }, options));
 
@@ -973,7 +973,7 @@ apf.model = function(data, caching){
      * @param  {XMLElement} XMLRoot         the {@link term.datanode data node} to insert into this model.
      * @param  {XMLElement} [parentXMLNode] the parent element for the inserted data.
      */
-    this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){
+    this.insert = function(XMLRoot, parentXMLNode, options, amlNode){
         if (typeof XMLRoot != "object")
             XMLRoot = apf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode)
@@ -1005,7 +1005,7 @@ apf.model = function(data, caching){
         var data = {};
 
         for (var p in this.elements) {
-            var name = this.elements[p].$jml.getAttribute("name") || this.elements[p].name;
+            var name = this.elements[p].$aml.getAttribute("name") || this.elements[p].name;
             if (name)
                 data[name] = this.elements[p].getValue();
         }
@@ -1020,45 +1020,45 @@ apf.model = function(data, caching){
      */
     this.getCgiString = function(){
         //use components
-        var uniqueId, k, sel, oJmlNode, name, value, str = [];
+        var uniqueId, k, sel, oAmlNode, name, value, str = [];
 
-        for (uniqueId in jmlNodes) {
-            oJmlNode = jmlNodes[uniqueId][0];
+        for (uniqueId in amlNodes) {
+            oAmlNode = amlNodes[uniqueId][0];
             //if(!elements[i].active) continue;
-            if (oJmlNode.disabled || !oJmlNode.change && !oJmlNode.hasFeature(__MULTISELECT__))
+            if (oAmlNode.disabled || !oAmlNode.change && !oAmlNode.hasFeature(__MULTISELECT__))
                 continue;
-            if (oJmlNode.tagName == "MultiBinding")
-                oJmlNode = oJmlNode.getHost();
+            if (oAmlNode.tagName == "MultiBinding")
+                oAmlNode = oAmlNode.getHost();
 
-            if (oJmlNode.multiselect) {
-                sel = oJmlNode.getSelection();
+            if (oAmlNode.multiselect) {
+                sel = oAmlNode.getSelection();
                 for (k = 0; k < sel.length; k++) {
-                    name = oJmlNode.$jml.getAttribute("name");//oJmlNode.$jml.getAttribute("id")
-                    if (!name && oJmlNode.$jml.getAttribute("ref"))
-                        name = oJmlNode.$jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
+                    name = oAmlNode.$aml.getAttribute("name");//oAmlNode.$aml.getAttribute("id")
+                    if (!name && oAmlNode.$aml.getAttribute("ref"))
+                        name = oAmlNode.$aml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
                     if (!name)
                         name = sel[k].tagName;
                     if (!name.match(/\]$/))
                         name += "[]";
 
-                    value = oJmlNode.applyRuleSetOnNode("value", sel[k])
-                        || oJmlNode.applyRuleSetOnNode("caption", sel[k]);
+                    value = oAmlNode.applyRuleSetOnNode("value", sel[k])
+                        || oAmlNode.applyRuleSetOnNode("caption", sel[k]);
                     if (value)
                         str.push(name + "=" + encodeURIComponent(value));
                 }
             }
             else {
-                name = oJmlNode.$jml.getAttribute("name")
-                    || oJmlNode.$jml.getAttribute("id");
-                if (!name && oJmlNode.$jml.getAttribute("ref"))
-                    name = oJmlNode.$jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
-                if (!name && oJmlNode.xmlRoot)
-                    name = oJmlNode.xmlRoot.tagName;
+                name = oAmlNode.$aml.getAttribute("name")
+                    || oAmlNode.$aml.getAttribute("id");
+                if (!name && oAmlNode.$aml.getAttribute("ref"))
+                    name = oAmlNode.$aml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
+                if (!name && oAmlNode.xmlRoot)
+                    name = oAmlNode.xmlRoot.tagName;
 
                 if (!name)
                     continue;
 
-                value = oJmlNode.getValue();//oJmlNode.applyRuleSetOnNode(oJmlNode.mainBind, oJmlNode.xmlRoot);
+                value = oAmlNode.getValue();//oAmlNode.applyRuleSetOnNode(oAmlNode.mainBind, oAmlNode.xmlRoot);
                 if (value)
                     str.push(name + "=" + encodeURIComponent(value));
             }
@@ -1139,7 +1139,7 @@ apf.model = function(data, caching){
 
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post")
-        //    throw new Error(apf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$jml));
+        //    throw new Error(apf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$aml));
         //#endif
 
         if (this.dispatchEvent("beforesubmit", {

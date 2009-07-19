@@ -448,8 +448,8 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
         this.oInput.host = this;
     };
 
-    this.$loadJml = function(x) {
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+    this.$loadAml = function(x) {
+        apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function() {

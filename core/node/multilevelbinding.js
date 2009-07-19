@@ -58,11 +58,11 @@ var __MULTIBINDING__ = 1 << 7;
  * @version     %I%, %G%
  * @since       0.5
  */
-apf.MultiLevelBinding = function(jmlNode){
+apf.MultiLevelBinding = function(amlNode){
     this.uniqueId = apf.all.push(this) - 1;
     this.nodeFunc = apf.NODE_HIDDEN;
     this.tagName  = "MultiBinding";
-    this.name     = jmlNode.name + "_multibinding";
+    this.name     = amlNode.name + "_multibinding";
 
     this.$propHandlers = {}; //@todo fix this in each component
     this.$domHandlers  = {
@@ -74,30 +74,30 @@ apf.MultiLevelBinding = function(jmlNode){
     this.$booleanProperties = {};
     this.$supportedProperties = [];
     
-    jmlNode.$regbase = jmlNode.$regbase | __MULTIBINDING__;
+    amlNode.$regbase = amlNode.$regbase | __MULTIBINDING__;
     
     apf.makeClass(this);
     this.implement(apf.DataBinding); /** @inherits apf.DataBinding */
 
     this.getActionTracker = function(ignoreMe){
-        return jmlNode.getActionTracker(ignoreMe);
+        return amlNode.getActionTracker(ignoreMe);
     };
     
     this.getHost = function(){
-        return jmlNode;
+        return amlNode;
     };
     
     this.changeSelection = function(list){
         var i, k, addList, removeList, xmlNode,
             selNodes      = this.getSelectionNodes(),
-            traverseNodes = jmlNode.getTraverseNodes();
+            traverseNodes = amlNode.getTraverseNodes();
         
         //#ifdef __DEBUG
-        if (!jmlNode.traverse && !jmlNode.bindingRules[jmlNode.mainBind]) {
-            throw new Error(apf.formatErrorString(0, jmlNode, 
+        if (!amlNode.traverse && !amlNode.bindingRules[amlNode.mainBind]) {
+            throw new Error(apf.formatErrorString(0, amlNode, 
               "Executing selection change",
               "The default bind rule isn't set. Expected '" 
-              + jmlNode.mainBind + "' rule to exist"));
+              + amlNode.mainBind + "' rule to exist"));
         }
         //#endif
         
@@ -145,7 +145,7 @@ apf.MultiLevelBinding = function(jmlNode){
 
         //Use Action Tracker
         this.executeAction("addRemoveNodes", [this.xmlRoot, addList, removeList],
-            "changeselection", jmlNode.selected);
+            "changeselection", amlNode.selected);
     };
     
     this.change = function(value){
@@ -154,7 +154,7 @@ apf.MultiLevelBinding = function(jmlNode){
             this.clearError();
         // #endif
         
-        if ((!this.createModel || !this.dataParent && !this.getModel()) && !this.xmlRoot) { //!this.$jml.getAttribute("ref")
+        if ((!this.createModel || !this.dataParent && !this.getModel()) && !this.xmlRoot) { //!this.$aml.getAttribute("ref")
             //Not databound
             if (this.dispatchEvent("beforechange", {value : value}) === false)
                 return;
@@ -166,12 +166,12 @@ apf.MultiLevelBinding = function(jmlNode){
         this.executeActionByRuleSet("change", this.mainBind, this.xmlRoot, value);
     };
     
-    if (jmlNode.hasFeature(__VALIDATION__)) {
+    if (amlNode.hasFeature(__VALIDATION__)) {
         this.addEventListener("beforechange", function(){
-            jmlNode.dispatchEvent("beforechange")
+            amlNode.dispatchEvent("beforechange")
         });
         this.addEventListener("afterchange", function(){
-            jmlNode.dispatchEvent("afterchange")
+            amlNode.dispatchEvent("afterchange")
         });
     }
     
@@ -179,21 +179,21 @@ apf.MultiLevelBinding = function(jmlNode){
         this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
 
         //@todo fix 'default' behaviour
-        /*if (!nomsg && jmlNode["default"])
-            jmlNode.setValue(jmlNode["default"]); //@todo setting action
+        /*if (!nomsg && amlNode["default"])
+            amlNode.setValue(amlNode["default"]); //@todo setting action
         else*/
-            jmlNode.clearSelection();
-        //else if (jmlNode.$showSelection) 
-            //jmlNode.$showSelection("");
+            amlNode.clearSelection();
+        //else if (amlNode.$showSelection) 
+            //amlNode.$showSelection("");
     };
 
     this.disable = function(){
-        jmlNode.disable();
+        amlNode.disable();
         this.disabled = true
     };
 
     this.enable = function(){
-        jmlNode.enable();
+        amlNode.enable();
         this.disabled = false
     };
     
@@ -208,8 +208,8 @@ apf.MultiLevelBinding = function(jmlNode){
         });
         
         //@todo fix 'default' behaviour
-        //if (jmlNode["default"] && !jmlNode.getValue())
-            //jmlNode.setValue(jmlNode["default"]);
+        //if (amlNode["default"] && !amlNode.getValue())
+            //amlNode.setValue(amlNode["default"]);
         
         this.dispatchEvent("xmlupdate", {
             action    : action,
@@ -219,28 +219,28 @@ apf.MultiLevelBinding = function(jmlNode){
     };
     
     this.$load = function(XMLRoot){
-        //if(jmlNode.name == "refSMArt_Situatie") debugger;
+        //if(amlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(XMLRoot, this);
 
         this.$updateSelection();
         
         //@todo fix 'default' behaviour
-        //if (jmlNode["default"] && !jmlNode.getValue())
-            //jmlNode.setValue(jmlNode["default"]);
+        //if (amlNode["default"] && !amlNode.getValue())
+            //amlNode.setValue(amlNode["default"]);
         
-        if (!this.createModel && this.disabled != jmlNode.disabled)
-            jmlNode.setProperty("disabled", this.disabled);
+        if (!this.createModel && this.disabled != amlNode.disabled)
+            amlNode.setProperty("disabled", this.disabled);
     };
     
     this.$updateSelection = function(){
-        if (!jmlNode.xmlRoot || !mlNode.xmlRoot) 
+        if (!amlNode.xmlRoot || !mlNode.xmlRoot) 
             return;
 
         var i, k, xmlNode;
-        if (jmlNode.multiselect) {
+        if (amlNode.multiselect) {
             var selNodes      = this.getSelectionNodes();
-            var traverseNodes = jmlNode.getTraverseNodes();
+            var traverseNodes = amlNode.getTraverseNodes();
             
             //Check if a selected node is not selected yet
             for (i = 0; i < selNodes.length; i++) {
@@ -252,13 +252,13 @@ apf.MultiLevelBinding = function(jmlNode){
                     }
                 }
                 
-                if (xmlNode && !jmlNode.isSelected(xmlNode)) {
-                    jmlNode.select(xmlNode, null, null, null, null, true);
+                if (xmlNode && !amlNode.isSelected(xmlNode)) {
+                    amlNode.select(xmlNode, null, null, null, null, true);
                 }
             }
             
             //Check if a currently selected item should be deselected
-            var jSelNodes = jmlNode.getSelection();
+            var jSelNodes = amlNode.getSelection();
             for (i = 0; i < jSelNodes.length; i++) {
                 for (k = 0; k < selNodes.length; k++) {
                     xmlNode = false;
@@ -269,40 +269,40 @@ apf.MultiLevelBinding = function(jmlNode){
                 }
                 
                 if (!xmlNode) {
-                    jmlNode.select(jSelNodes[i], null, null, null, null, true);
+                    amlNode.select(jSelNodes[i], null, null, null, null, true);
                 }
             }
             
-            //jmlNode.selectList(selList);
+            //amlNode.selectList(selList);
         }
         else {
-            if (!jmlNode.xmlRoot) {
+            if (!amlNode.xmlRoot) {
                 //Selection is maintained and visualized, but no Nodes are selected
-                if (jmlNode.$showSelection) 
-                    jmlNode.$showSelection();
+                if (amlNode.$showSelection) 
+                    amlNode.$showSelection();
                 return;
             }
             
-            xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.xmlRoot));
+            xmlNode = amlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.xmlRoot));
             if (xmlNode) {
-                if (jmlNode.$showSelection) 
-                    jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
-                if (jmlNode.selected != xmlNode) {
-                    jmlNode.select(xmlNode);//, null, null, null, null, true);
-                    //jmlNode.dispatchEvent("updateselect");
-                    jmlNode.setConnections(xmlNode);
+                if (amlNode.$showSelection) 
+                    amlNode.$showSelection(amlNode.applyRuleSetOnNode("caption", xmlNode));
+                if (amlNode.selected != xmlNode) {
+                    amlNode.select(xmlNode);//, null, null, null, null, true);
+                    //amlNode.dispatchEvent("updateselect");
+                    amlNode.setConnections(xmlNode);
                 }
             }
-            //if (jmlNode.clearOnNoSelection) 
+            //if (amlNode.clearOnNoSelection) 
             else {
-                jmlNode.clearSelection(null, true);
+                amlNode.clearSelection(null, true);
             }
         }
     };
     
     this.getSelectionNodes = function(){
         return this.xmlRoot 
-            ? this.xmlRoot.selectNodes(this.mode == "copy" ? jmlNode.traverse : jmlNode.$jml.getAttribute("ref"))
+            ? this.xmlRoot.selectNodes(this.mode == "copy" ? amlNode.traverse : amlNode.$aml.getAttribute("ref"))
             : [];//This should be read from the bindingRule //this.getTraverseNodes();
     };
     
@@ -329,8 +329,8 @@ apf.MultiLevelBinding = function(jmlNode){
             return apf.xmldb.clearConnections(xmlNode.cloneNode(true));
         }
         else if (this.xmlRoot) {
-            var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
-            var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.$jml.getAttribute("ref"));
+            var value   = amlNode.applyRuleSetOnNode(amlNode.mainBind, xmlNode);
+            var selNode = this.xmlRoot.ownerDocument.createElement(amlNode.$aml.getAttribute("ref"));
             apf.xmldb.createNodeFromXpath(selNode, this.xpath);
             apf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             
@@ -341,17 +341,17 @@ apf.MultiLevelBinding = function(jmlNode){
     this.compareNodes = function(selNode, traverseNode){
         if (this.mode == "copy") {
             //Other ways of linking should be considered here
-            return jmlNode.applyRuleSetOnNode(jmlNode.mainBind, traverseNode)
-              == jmlNode.applyRuleSetOnNode(jmlNode.mainBind, selNode);
+            return amlNode.applyRuleSetOnNode(amlNode.mainBind, traverseNode)
+              == amlNode.applyRuleSetOnNode(amlNode.mainBind, selNode);
         }
         else {
-            return jmlNode.applyRuleSetOnNode(jmlNode.mainBind, traverseNode)
+            return amlNode.applyRuleSetOnNode(amlNode.mainBind, traverseNode)
               == this.getSelectionValue(selNode);
         }
     };
     
     var mlNode = this;
-    jmlNode.addEventListener("afterselect", function(e){
+    amlNode.addEventListener("afterselect", function(e){
         if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) {
             if (this.value)
                 mlNode.change(this.value);
@@ -365,10 +365,10 @@ apf.MultiLevelBinding = function(jmlNode){
             mlNode.change(this.applyRuleSetOnNode(this.mainBind, e.xmlNode));
     });
     
-    //jmlNode.addEventListener("xmlupdate", function(action, xmlNode){
+    //amlNode.addEventListener("xmlupdate", function(action, xmlNode){
     //    updateSelection.call(this, null, this.selected);
     //});
-    jmlNode.addEventListener("afterload", function(){
+    amlNode.addEventListener("afterload", function(){
         if (this.multiselect) {
             //skipped...
         }
@@ -376,12 +376,12 @@ apf.MultiLevelBinding = function(jmlNode){
             var xmlNode = this.findXmlNodeByValue(mlNode.applyRuleSetOnNode(
                 mlNode.mainBind, mlNode.xmlRoot));
             if (xmlNode) {
-                if (jmlNode.$showSelection) 
-                    jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
-                jmlNode.select(xmlNode, null, null, null, null, true);
-                jmlNode.setConnections(xmlNode);
+                if (amlNode.$showSelection) 
+                    amlNode.$showSelection(amlNode.applyRuleSetOnNode("caption", xmlNode));
+                amlNode.select(xmlNode, null, null, null, null, true);
+                amlNode.setConnections(xmlNode);
             }
-            else if (jmlNode.clearOnNoSelection) {
+            else if (amlNode.clearOnNoSelection) {
                 //This seems cumbersome... check abstraction
                 xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                     mlNode.xmlRoot, null, null, true);
@@ -394,7 +394,7 @@ apf.MultiLevelBinding = function(jmlNode){
         }
     });
     
-    jmlNode.addEventListener("afterdeselect", function(){
+    amlNode.addEventListener("afterdeselect", function(){
         if (!mlNode.xmlRoot) 
             return;
         
@@ -416,7 +416,7 @@ apf.MultiLevelBinding = function(jmlNode){
         }
         //Set value to ""
         else
-            if (jmlNode.clearOnNoSelection) {
+            if (amlNode.clearOnNoSelection) {
                 this.$updateOtherBindings();
                 //mlNode.change("");
                 

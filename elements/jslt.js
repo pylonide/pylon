@@ -109,15 +109,15 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
         if (value)
             this.$removeClearMessage();
         
-        if (this.createJml) {
+        if (this.createAml) {
             if (typeof code == "string") 
                 code = apf.xmldb.getXml(code);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
-            // of the this.$jml xml. 
-            apf.JmlParser.parseChildren(value, this.oInt, this);
-            if (apf.JmlParser.inited) 
-                apf.JmlParser.parseLastPass();
+            // of the this.$aml xml. 
+            apf.AmlParser.parseChildren(value, this.oInt, this);
+            if (apf.AmlParser.inited) 
+                apf.AmlParser.parseLastPass();
         }
         else {
             this.oInt.innerHTML = value;
@@ -134,17 +134,17 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = apf.isParsing && apf.xmldb.isOnlyChild(this.$jml)
+        this.oInt = this.oExt = apf.isParsing && apf.xmldb.isOnlyChild(this.$aml)
             ? this.pHtmlNode 
             : this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.host = this;
 
         this.baseCSSname = this.oExt.className = 
-            (this.$jml.getAttribute("class") || "jslt");
+            (this.$aml.getAttribute("class") || "jslt");
     };
     
-    this.$loadJml = function(x){
-        this.createJml = apf.isTrue(x.getAttribute("jml"));
+    this.$loadAml = function(x){
+        this.createAml = apf.isTrue(x.getAttribute("aml"));
         
         //Events
         var a, i, attr = x.attributes;
@@ -165,7 +165,7 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
                 </bindings>\
             </smartbinding>";
 
-            apf.JmlParser.addToSbStack(this.uniqueId, 
+            apf.AmlParser.addToSbStack(this.uniqueId, 
                 new apf.smartbinding(null, apf.xmldb.getXml(strBind)));
         }
     };

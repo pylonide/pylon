@@ -121,7 +121,7 @@ apf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var i, l, nodes = $xmlns(xmlNode, "style", apf.ns.jml), tnode, node;
+        var i, l, nodes = $xmlns(xmlNode, "style", apf.ns.aml), tnode, node;
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
 
@@ -190,7 +190,7 @@ apf.skins = {
     /* ***********
      Retrieve
      ************/
-    setSkinPaths: function(skinName, jmlNode){
+    setSkinPaths: function(skinName, amlNode){
         skinName = skinName.split(":");
         var name = skinName[0];
         var type = skinName[1];
@@ -199,15 +199,15 @@ apf.skins = {
         if (!this.skins[name]) {
             throw new Error(apf.formatErrorString(1076, null,
                 "Retrieving Skin",
-                "Could not find skin '" + name + "'", jmlNode.$jml));
+                "Could not find skin '" + name + "'", amlNode.$aml));
         }
         // #endif
 
-        jmlNode.iconPath  = this.skins[name].iconPath;
-        jmlNode.mediaPath = this.skins[name].mediaPath;
+        amlNode.iconPath  = this.skins[name].iconPath;
+        amlNode.mediaPath = this.skins[name].mediaPath;
     },
 
-    getTemplate: function(skinName, cJml, noError){
+    getTemplate: function(skinName, cAml, noError){
         skinName = skinName.split(":");
         var name = skinName[0];
         var type = skinName[1];
@@ -219,7 +219,7 @@ apf.skins = {
             // #ifdef __DEBUG
             throw new Error(apf.formatErrorString(1077, null,
                 "Retrieving Template",
-                "Could not find skin '" + name + "'", cJml));
+                "Could not find skin '" + name + "'", cAml));
             // #endif
             
             return false;
@@ -234,14 +234,14 @@ apf.skins = {
             originals = this.skins[name].originals[type] = {};
 
             // #ifdef __DEBUG
-            if (!$xmlns(skin, "presentation", apf.ns.jml)[0]) {
+            if (!$xmlns(skin, "presentation", apf.ns.aml)[0]) {
                 throw new Error(apf.formatErrorString(1078, null,
                     "Retrieving Template",
-                    "Missing presentation tag in '" + name + "'", cJml));
+                    "Missing presentation tag in '" + name + "'", cAml));
             }
             // #endif
 
-            var nodes = $xmlns(skin, "presentation", apf.ns.jml)[0].childNodes;
+            var nodes = $xmlns(skin, "presentation", apf.ns.aml)[0].childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
                 originals[nodes[i].baseName || nodes[i][apf.TAGNAME]] = nodes[i];
@@ -257,7 +257,7 @@ apf.skins = {
 
     getCssString : function(skinName){
         return apf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
-            "style", apf.ns.jml)[0], "text()");
+            "style", apf.ns.aml)[0], "text()");
     },
 
     changeSkinset : function(value){
@@ -417,7 +417,7 @@ apf.Presentation = function(){
      * @attribute {string} skin the name of the skin in the skinset that defines 
      * how this element is rendered. When a skin is changed the full state of the
      * element is kept including it's selection, all the
-     * jml attributes, loaded data, focus and disabled state.
+     * aml attributes, loaded data, focus and disabled state.
      * Example:
      * <code>
      *  <j:list id="lstExample" skin="thumbnails" />
@@ -428,7 +428,7 @@ apf.Presentation = function(){
      * </code>
      */
     this.$propHandlers["skin"] = function(value){
-        if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
+        if (!this.$amlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
 
         if (!skinTimer) {
@@ -528,8 +528,8 @@ apf.Presentation = function(){
         this.oExt.style.display  = oExt.style.display;
 
         //Widget specific
-        if (this.$loadJml)
-            this.$loadJml(this.$jml);
+        if (this.$loadAml)
+            this.$loadAml(this.$aml);
 
         //#ifdef __WITH_DRAGDROP
         //DragDrop
@@ -607,11 +607,11 @@ apf.Presentation = function(){
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
     this.$loadSkin = function(skinName){
-        this.baseSkin = skinName || this.skinName || (this.skinset || this.$jml
-            && apf.xmldb.getInheritedAttribute(this.$jml, "skinset") 
+        this.baseSkin = skinName || this.skinName || (this.skinset || this.$aml
+            && apf.xmldb.getInheritedAttribute(this.$aml, "skinset") 
             || apf.appsettings.skinset)
-            + ":" + (this.skin || this.$jml
-            && this.$jml.getAttribute("skin") || this.tagName);
+            + ":" + (this.skin || this.$aml
+            && this.$aml.getAttribute("skin") || this.tagName);
 
         if (this.skinName) {
             this.$blur();
@@ -622,30 +622,30 @@ apf.Presentation = function(){
         //this.skinset  = this.skinName.split(":")[0];
 
         pNodes = {}; //reset the pNodes collection
-        originalNodes = apf.skins.getTemplate(this.skinName, this.$jml, true);
+        originalNodes = apf.skins.getTemplate(this.skinName, this.$aml, true);
 
         if (!originalNodes) {
-            var skin = this.skin || this.$jml && this.$jml.getAttribute("skin");
+            var skin = this.skin || this.$aml && this.$aml.getAttribute("skin");
             if (skin) {
                 var skinset = this.skinName.split(":")[0];
                 this.baseName = this.skinName = "default:" + skin;
-                originalNodes = apf.skins.getTemplate(this.skinName, this.$jml);
+                originalNodes = apf.skins.getTemplate(this.skinName, this.$aml);
                 
                 if (!originalNodes && skinset != "default") {
                     this.baseName = this.skinName = skinset + ":" + this.tagName;
-                    originalNodes = apf.skins.getTemplate(this.skinName, this.$jml, true);
+                    originalNodes = apf.skins.getTemplate(this.skinName, this.$aml, true);
                 }
             }
             
             if (!originalNodes) {
                 this.baseName = this.skinName = "default:" + this.tagName;
-                originalNodes = apf.skins.getTemplate(this.skinName, this.$jml);
+                originalNodes = apf.skins.getTemplate(this.skinName, this.$aml);
             }
 
             if (!originalNodes) {
                 throw new Error(apf.formatErrorString(1077, this,
                     "Presentation",
-                    "Could not load skin: " + this.skinName, this.$jml));
+                    "Could not load skin: " + this.skinName, this.$aml));
             }
             
             //this.skinset = this.skinName.split(":")[0];
@@ -655,7 +655,7 @@ apf.Presentation = function(){
             apf.skins.setSkinPaths(this.skinName, this);
     };
 
-    this.$getNewContext = function(type, jmlNode){
+    this.$getNewContext = function(type, amlNode){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
@@ -738,24 +738,24 @@ apf.Presentation = function(){
         return option ? option.nodeValue : "";
     };
 
-    this.$getExternal = function(tag, pNode, func, jml){
+    this.$getExternal = function(tag, pNode, func, aml){
         if (!pNode)
             pNode = this.pHtmlNode;
         if (!tag)
             tag = "main";
-        if (!jml)
-            jml = this.$jml;
+        if (!aml)
+            aml = this.$aml;
 
         tag = tag.toLowerCase(); //HACK: make components case-insensitive
 
         this.$getNewContext(tag);
         var oExt = this.$getLayoutNode(tag);
-        if (jml && jml.getAttributeNode("style"))
-            oExt.setAttribute("style", jml.getAttribute("style"));
+        if (aml && aml.getAttributeNode("style"))
+            oExt.setAttribute("style", aml.getAttribute("style"));
 
-        if (jml && (jml.getAttributeNode("class") || jml.className)) {
+        if (aml && (aml.getAttributeNode("class") || aml.className)) {
             this.$setStyleClass(oExt,
-                (oldClass = jml.getAttribute("class") || jml.className));
+                (oldClass = aml.getAttribute("class") || aml.className));
         }
 
         if (func)
@@ -763,9 +763,9 @@ apf.Presentation = function(){
 
         oExt = apf.xmldb.htmlImport(oExt, pNode);
         oExt.host = this;
-        if (jml && jml.getAttribute("bgimage"))
+        if (aml && aml.getAttribute("bgimage"))
             oExt.style.backgroundImage = "url(" + apf.getAbsolutePath(
-                this.mediaPath, jml.getAttribute("bgimage")) + ")";
+                this.mediaPath, aml.getAttribute("bgimage")) + ")";
 
 
         if (!this.baseCSSname)

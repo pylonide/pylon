@@ -145,7 +145,7 @@ apf.modalwindow.widget = function(){
         e.cancelBubble = true;
     };
 
-    this.$loadJml = function(x) {
+    this.$loadAml = function(x) {
         apf.WinServer.setTop(this);
 
         var diff = apf.getDiff(this.oExt);
@@ -158,27 +158,27 @@ apf.modalwindow.widget = function(){
         //Should be moved to an init function
         this.positionHolder = document.body.appendChild(document.createElement("div"));
 
-        var oConfig = $xmlns(this.$jml, "config", apf.ns.jml)[0];
+        var oConfig = $xmlns(this.$aml, "config", apf.ns.aml)[0];
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(this.$jml, "body", apf.ns.jml)[0];//apf.xmldb.selectSingleNode("j:body", this.$jml);
+        var oBody = $xmlns(this.$aml, "body", apf.ns.aml)[0];//apf.xmldb.selectSingleNode("j:body", this.$aml);
         oBody.parentNode.removeChild(oBody);
 
-        apf.JmlParser.parseChildren(this.$jml, null, this);
+        apf.AmlParser.parseChildren(this.$aml, null, this);
 
         if (oConfig)
-            this.$jml.appendChild(oConfig);
-        this.$jml.appendChild(oBody);
+            this.$aml.appendChild(oConfig);
+        this.$aml.appendChild(oBody);
 
         if (oSettings && oConfig) {
             this.oSettings = this.oSettings
-                ? apf.JmlParser.replaceNode(oSettings, this.oSettings)
-                : apf.JmlParser.parseChildren(oConfig, oSettings, this, true);
+                ? apf.AmlParser.replaceNode(oSettings, this.oSettings)
+                : apf.AmlParser.parseChildren(oConfig, oSettings, this, true);
         }
 
         this.oInt = this.oInt
-            ? apf.JmlParser.replaceNode(oInt, this.oInt)
-            : apf.JmlParser.parseChildren(oBody, oInt, this, true);
+            ? apf.AmlParser.replaceNode(oInt, this.oInt)
+            : apf.AmlParser.parseChildren(oBody, oInt, this, true);
 
         if (oBody.getAttribute("class"))
             this.$setStyleClass(this.oInt, oBody.getAttribute("class"))

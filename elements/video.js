@@ -531,13 +531,13 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
+     * Parse the block of AML that constructs the HTML5 compatible <VIDEO> tag
      * for arguments like URL of the video, width, height, etc.
      *
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         this.width  = parseInt(this.width)  || null;
@@ -546,7 +546,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
         else
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(bRuntime) {

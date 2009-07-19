@@ -186,7 +186,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$propHandlers["realtime"] = function(value){
         this.realtime = typeof value == "boolean"
             ? value
-            : apf.xmldb.getInheritedAttribute(this.$jml, "realtime") || false;
+            : apf.xmldb.getInheritedAttribute(this.$aml, "realtime") || false;
     };
     
     this.$propHandlers["language"] = function(value){
@@ -1526,13 +1526,13 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$draw = function() {
-        if (this.$jml.getAttribute("plugins")) {
+        if (this.$aml.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
-                .call(this, this.$jml.getAttribute("plugins"));
+                .call(this, this.$aml.getAttribute("plugins"));
         }
-        if (this.$jml.getAttribute("language")) {
+        if (this.$aml.getAttribute("language")) {
             this.$propHandlers["language"]
-                .call(this, this.$jml.getAttribute("language"));
+                .call(this, this.$aml.getAttribute("language"));
         }
 
         this.plugins   = new apf.editor.plugins(this.$plugins, this);
@@ -1574,7 +1574,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         // see: apf.presentation.getCssString(), where the following statement
         // is derived from.
         var sCss = apf.getXmlValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
-            "docstyle", apf.ns.jml)[0], "text()");
+            "docstyle", apf.ns.aml)[0], "text()");
         if (!sCss) {
             sCss = "\
                 html {\
@@ -1675,19 +1675,19 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Parse the block of JML that constructed this editor instance for arguments
+     * Parse the block of AML that constructed this editor instance for arguments
      * like width, height, etc.
      *
      * @param {XMLRootElement} x
      * @type  {void}
      */
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         if (apf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            apf.JmlParser.parseChildren(this.$jml, null, this);
+            apf.AmlParser.parseChildren(this.$aml, null, this);
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);

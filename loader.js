@@ -36,8 +36,8 @@ if (!apf.basePath)
 
 apf.Modules = [
     "DataBinding",
-    "JmlElement",
-    "JmlParser",
+    "AmlElement",
+    "AmlParser",
     "Presentation",
     "WindowImplementation",
     "XmlDatabase"
@@ -232,13 +232,13 @@ apf.KernelModules = [
     "parsers/js.js",
     "parsers/url.js",
     "parsers/xsd.js",
-    "parsers/jml.js",
+    "parsers/aml.js",
 
     "debug/debug.js",
     "debug/debugwin.js",
     "debug/profiler.js",
 
-    "node/jmlelement.js",
+    "node/amlelement.js",
     "node/alignment.js",
     "node/anchoring.js",
     "node/cache.js",
@@ -247,7 +247,7 @@ apf.KernelModules = [
     "node/docking.js",
     "node/dragdrop.js",
     "node/editmode.js",
-    "node/jmldom.js",
+    "node/amldom.js",
     "node/media.js",
     "node/multicheck.js",
     "node/multilevelbinding.js",

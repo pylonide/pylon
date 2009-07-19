@@ -176,8 +176,8 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
         apf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
     
-    this.$loadJml = function(x){
-        apf.JmlParser.parseChildren(this.$jml, this.oInt, this);
+    this.$loadAml = function(x){
+        apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
     };
     
     this.$destroy = function(){

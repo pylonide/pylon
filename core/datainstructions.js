@@ -202,8 +202,8 @@ apf.saveData = function(instruction, xmlContext, options, callback){
  * Example:
  * Several uses for a data instruction
  * <code>
- *  <!-- loading jml from an xml file -->
- *  <j:bar jml="url:morejml.xml" />
+ *  <!-- loading aml from an xml file -->
+ *  <j:bar aml="url:moreaml.xml" />
  *
  *  <j:bindings>
  *    <!-- loads data using an remote procedure protocol -->
@@ -283,9 +283,9 @@ apf.getData = function(instruction, xmlContext, options, callback){
 
     if (instrType.substr(0, 1) == "#") {
         instrType = instrType.substr(1);
-        var retvalue, oJmlNode = self[instrType];
+        var retvalue, oAmlNode = self[instrType];
 
-        if (!oJmlNode) {
+        if (!oAmlNode) {
             var err = new Error(apf.formatErrorString(0, null, "Loading data",
                 "Could not find object '" + instrType + "' referenced in \
                 process instruction '" + instruction + "' with error "
@@ -300,9 +300,9 @@ apf.getData = function(instruction, xmlContext, options, callback){
             throw err;
         }
 
-        var node = oJmlNode.hasFeature(__MULTISELECT__)
-            ? oJmlNode.selected
-            : oJmlNode.xmlRoot;
+        var node = oAmlNode.hasFeature(__MULTISELECT__)
+            ? oAmlNode.selected
+            : oAmlNode.xmlRoot;
         
         if (!node)
             retvalue = null;
@@ -350,10 +350,10 @@ apf.getData = function(instruction, xmlContext, options, callback){
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
  * @param {String} instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data for the model.
- * @param {JmlNode} jmlNode     the element the model is added to.
+ * @param {AmlNode} amlNode     the element the model is added to.
  * @param {Boolean} isSelection whether the model provides data that determines the selection of the element.
  */
-apf.setModel = function(instruction, jmlNode, isSelection){
+apf.setModel = function(instruction, amlNode, isSelection){
     if (!instruction) return;
 
     var data      = instruction.split(":");
@@ -361,36 +361,36 @@ apf.setModel = function(instruction, jmlNode, isSelection){
 
     //So are we sure we shouldn't also check .dataParent here?
     var model = isSelection
-        ? jmlNode.$getMultiBind().getModel()
-        : jmlNode.getModel && jmlNode.getModel();
+        ? amlNode.$getMultiBind().getModel()
+        : amlNode.getModel && amlNode.getModel();
     if(model)
-        model.unregister(jmlNode);
+        model.unregister(amlNode);
 
     if (apf.datainstr[instrType]) {
-        jmlNode.setModel(new apf.model().loadFrom(instruction));
+        amlNode.setModel(new apf.model().loadFrom(instruction));
     }
     else if (instrType.substr(0,1) == "#") {
         instrType = instrType.substr(1);
 
         if (isSelection) {
             var sb2 = apf.isParsing
-                ? apf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
-                : jmlNode.$getMultiBind().smartBinding;
+                ? apf.AmlParser.getFromSbStack(amlNode.uniqueId, 1)
+                : amlNode.$getMultiBind().smartBinding;
             if (sb2)
                 sb2.model = new apf.model().loadFrom(instruction);
         }
-        else if (!self[instrType] || !apf.JmlParser.inited) {
-            apf.JmlParser.addToModelStack(jmlNode, data)
+        else if (!self[instrType] || !apf.AmlParser.inited) {
+            apf.AmlParser.addToModelStack(amlNode, data)
         }
         else {
             var oConnect = eval(instrType);
             if (oConnect.connect)
-                oConnect.connect(jmlNode, null, data[2], data[1] || "select");
+                oConnect.connect(amlNode, null, data[2], data[1] || "select");
             else
-                jmlNode.setModel(new apf.model().loadFrom(instruction));
+                amlNode.setModel(new apf.model().loadFrom(instruction));
         }
 
-        jmlNode.connectId = instrType;
+        amlNode.connectId = instrType;
     }
     else {
         var instrType = data.shift();
@@ -400,26 +400,26 @@ apf.setModel = function(instruction, jmlNode, isSelection){
 
         //#ifdef __DEBUG
         if (!model) {
-            throw new Error(apf.formatErrorString(1068, jmlNode,
+            throw new Error(apf.formatErrorString(1068, amlNode,
                 "Finding model", "Could not find model by name: " + instrType));
         }
         //#endif
 
         if (isSelection) {
             var sb2 = apf.isParsing
-                ? apf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
-                : jmlNode.$getMultiBind().smartBinding;
+                ? apf.AmlParser.getFromSbStack(amlNode.uniqueId, 1)
+                : amlNode.$getMultiBind().smartBinding;
             if (sb2) {
                 if (apf.isParsing) {
                     sb2.model = model;
-                    sb2.$modelXpath[jmlNode.uniqueId] = data.join(":");
+                    sb2.$modelXpath[amlNode.uniqueId] = data.join(":");
                 }
                 else 
                     sb2.setModel(model, data.join(":"));
             }
         }
         else
-            jmlNode.setModel(model, data.join(":"));
+            amlNode.setModel(model, data.join(":"));
     }
 };
 //#endif
@@ -431,7 +431,7 @@ apf.setModel = function(instruction, jmlNode, isSelection){
  * <code>
  *  apf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
  * </code>
- * Jml
+ * Aml
  * <code>
  *  <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
  * </code>

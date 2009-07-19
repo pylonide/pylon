@@ -25,7 +25,7 @@
  * Object detecting if the application has network, the detection moments can
  * be manual, automatic or only when a communication error occurs. In most
  * cases the functionality of this object will be managed from within the
- * offline element in JML.
+ * offline element in AML.
  * Example:
  * <code>
  *  <j:offline
@@ -54,22 +54,22 @@ apf.namespace("offline.detector", {
     detection : "auto", //manual|auto|error
     interval  : 5000,
 
-    init : function(jml){
-        if (jml.nodeType) {
-            if (jml.getAttribute("detect-url"))
-                this.detectUrl = jml.getAttribute("detect-url");
+    init : function(aml){
+        if (aml.nodeType) {
+            if (aml.getAttribute("detect-url"))
+                this.detectUrl = aml.getAttribute("detect-url");
             /* #ifdef __PACKAGED
             else
                 this.detectUrl = (apf.appsettings.resourcePath || apf.basePath)
                     + "resources/network_check.txt";
             #endif */
 
-            this.detection = apf.isTrue(jml.getAttribute("detection"))
+            this.detection = apf.isTrue(aml.getAttribute("detection"))
                 ? "auto"
-                : jml.getAttribute("detection") || "auto";
+                : aml.getAttribute("detection") || "auto";
 
-            if (jml.getAttribute("interval"))
-                this.interval = parseInt(jml.getAttribute("interval"));
+            if (aml.getAttribute("interval"))
+                this.interval = parseInt(aml.getAttribute("interval"));
         }
 
         if ("error|auto".indexOf(this.detection) > -1) {

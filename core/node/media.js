@@ -254,7 +254,7 @@ apf.Media = function(){
     });
 
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.$jmlLoaded)
+        if (!this.$amlLoaded)
             return;
 
         // #ifdef __DEBUG
@@ -437,23 +437,23 @@ apf.Media = function(){
      * It also parses the &lt;nomedia&gt; tag that specifies what text or HTML to
      * display when a medium is not supported and/ or playable.
      *
-     * @param  {XmlDomElement} [jml] Parent Jml node of the player
+     * @param  {XmlDomElement} [aml] Parent Aml node of the player
      * @return {Boolean}             Tells the client that no supported/ playable source file was found
      */
-    this.setSource = function(jml) {
-        jml = jml || this.$jml;
+    this.setSource = function(aml) {
+        aml = aml || this.$aml;
         // first get the 'Not supported' placeholder...
-        var aNodes = $xmlns(jml, "nomedia", apf.ns.jml);
+        var aNodes = $xmlns(aml, "nomedia", apf.ns.aml);
         if (!aNodes.length) {
-            this.notSupported = (jml.firstChild && jml.firstChild.nodeType == 3)
-                ? jml.firstChild.nodeValue
+            this.notSupported = (aml.firstChild && aml.firstChild.nodeType == 3)
+                ? aml.firstChild.nodeValue
                 : "Unable to playback, medium not supported.";
         }
         else
             this.notSupported = aNodes[0].innerHTML;
 
         if (!this.src) { // no direct src-attribute set
-            var src, type, oSources = $xmlns(jml, "source", apf.ns.jml);
+            var src, type, oSources = $xmlns(aml, "source", apf.ns.aml);
             // iterate through all the <source> tags from left to right
             for (var i = 0, j = oSources.length; i < j; i++) {
                 src  = oSources[i].getAttribute("src");

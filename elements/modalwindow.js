@@ -97,7 +97,7 @@ apf.WinServer = {
  *
  * @constructor
  * @define modalwindow
- * @allowchild {elements}, {smartbinding}, {anyjml}
+ * @allowchild {elements}, {smartbinding}, {anyaml}
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -160,7 +160,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Close the window. It can be reopened by using {@link baseclass.jmlelement.method.show}
+     * Close the window. It can be reopened by using {@link baseclass.amlelement.method.show}
      * Call-chaining is supported.
      * @todo show should unset closed
      */
@@ -976,16 +976,16 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
     var marginBox, hordiff, verdiff;
     this.$draw = function(){
-        this.popout = apf.isTrue(this.$jml.getAttribute("popout"));
+        this.popout = apf.isTrue(this.$aml.getAttribute("popout"));
         if (this.popout)
             this.pHtmlNode = document.body;
 
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-            if (!oButtons || apf.isIphone || !this.$jml.getAttribute("buttons"))
+            if (!oButtons || apf.isIphone || !this.$aml.getAttribute("buttons"))
                 return;
 
-            var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
+            var len = (this.$aml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {
                 this.$getNewContext("button");
                 btn = oButtons.appendChild(this.$getLayoutNode("button"));
@@ -1050,19 +1050,19 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         marginBox = apf.getBox(apf.getStyle(this.oExt, "borderWidth"));
 
         /*var v;
-        if (!apf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
-            this.$jml.setAttribute("visible", "{" + apf.isTrue(v) + "}");
+        if (!apf.dynPropMatch.test(v = this.$aml.getAttribute("visible"))) {
+            this.$aml.setAttribute("visible", "{" + apf.isTrue(v) + "}");
         }*/
     };
 
-    this.$loadJml = function(x){
+    this.$loadAml = function(x){
         apf.WinServer.setTop(this);
 
         var oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         this.oInt = this.oInt
-            ? apf.JmlParser.replaceNode(oInt, this.oInt)
-            : apf.JmlParser.parseChildren(this.$jml, oInt, this, true);
+            ? apf.AmlParser.replaceNode(oInt, this.oInt)
+            : apf.AmlParser.parseChildren(this.$aml, oInt, this, true);
 
         //#ifdef __SUPPORT_IPHONE
         if (!apf.isIphone) {
@@ -1080,7 +1080,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     
             if (typeof this.draggable == "undefined") {
                 (this.$propHandlers.draggable
-                    || apf.JmlElement.propHandlers.draggable).call(this, true);
+                    || apf.AmlElement.propHandlers.draggable).call(this, true);
                 this.draggable = true;
             }
 
@@ -1122,7 +1122,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         if (this.center && this.visible) {
             this.visible = false;
             this.oExt.style.display = "none"; /* @todo temp done for project */
-            apf.JmlParser.stateStack.push({
+            apf.AmlParser.stateStack.push({
                 node  : this,
                 name  : "visible",
                 value : "true"
