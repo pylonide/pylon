@@ -1501,12 +1501,10 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Drag & Drop ****/
     
     // #ifdef __WITH_DRAGDROP
+    var scrollX, scrollY;
     this.$showDragIndicator = function(sel, e){
-        var x = e.offsetX;
-        var y = e.offsetY;
-
-        this.oDrag.startX = x;
-        this.oDrag.startY = y;
+        scrollX = e.scrollX;
+        scrollY = e.scrollY;
 
         document.body.appendChild(this.oDrag);
         //this.$updateNode(this.selected, this.oDrag); // Solution should be found to have this on conditionally
@@ -1519,8 +1517,8 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top  = (e.clientY + 15) + "px";// - this.oDrag.startY
+        this.oDrag.style.left = (e.clientX + scrollX) + "px";// - this.oDrag.startX
+        this.oDrag.style.top  = (e.clientY + scrollY + 15) + "px";// - this.oDrag.startY
     };
 
     this.$initDragDrop = function(){

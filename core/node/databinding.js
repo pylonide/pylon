@@ -3220,28 +3220,29 @@ jpf.MultiselectBinding = function(){
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
-            //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
-            //xmlNode.parentNode == this.xmlRoot ? this.oInt :
-            var parentHTMLNode = xmlNode.parentNode == this.xmlRoot
-                ? this.oInt
-                : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
-                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
-
-            //this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag))
-
+            var parentHTMLNode, pNode = this.getTraverseParent(xmlNode);
+            
+            if (pNode == this.xmlRoot)
+                parentHTMLNode = this.oInt;
+            
+            if (!parentHTMLNode && this.isTreeArch) {
+                parentHTMLNode = this.getNodeFromCache(
+                    pNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); 
+            }
+            
             //This should be moved into a function (used in setCache as well)
             if (!parentHTMLNode)
-                parentHTMLNode = this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag)
-                    || (xmlNode.parentNode.getAttribute(jpf.xmldb.xmlDocTag)
-                         ? "doc" + xmlNode.parentNode.getAttribute(jpf.xmldb.xmlDocTag)
-                         : false))
-                    || this.oInt; //This code should use getTraverseParent()
+                parentHTMLNode = this.getCacheItem(pNode.getAttribute(jpf.xmldb.xmlIdTag)
+                    || (pNode.getAttribute(jpf.xmldb.xmlDocTag)
+                         ? "doc" + pNode.getAttribute(jpf.xmldb.xmlDocTag)
+                         : false));
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || jpf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
+            if (parentHTMLNode || this.isTreeArch 
+              && jpf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
-                    : parentHTMLNode) || this.oInt;
+                    : parentHTMLNode) || this.oInt; //@todo I think this is wrong for non rendered sub tree nodes that get changed
 
                 result = this.$addNodes(xmlNode, parentHTMLNode, true, true,
                     this.getNodeByXml(this.getNextTraverse(xmlNode)));

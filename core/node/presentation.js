@@ -804,6 +804,7 @@ jpf.Presentation = function(){
                     this.oExt.appendChild(document.createElement("div"));
 
                 this.oInt.style.height = "100%";
+                this.oInt.className = "focusbug"
             }
         };
     }

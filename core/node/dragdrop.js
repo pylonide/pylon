@@ -460,6 +460,7 @@ jpf.DragDrop = function(){
 
         this.oExt[jpf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             e = e || window.event;
+            // #ifdef __SUPPORT_IPHONE
             if (jpf.isIphone) {
                 if (e.touches.length == 1) return;
                 var old_e = e;
@@ -468,6 +469,7 @@ jpf.DragDrop = function(){
                 e.offsetX = pos[0];
                 e.offsetY = pos[1];
             }
+            //#endif
 
             var fEl, srcEl = e.originalTarget || e.srcElement || e.target;
             if (this.host.hasFeature(__MULTISELECT__) && srcEl == this.host.oInt)
@@ -494,9 +496,11 @@ jpf.DragDrop = function(){
             if (this.host.isDragAllowed(this.selectable ? this.host.selected : el)) {
                 this.host.dragging = 1;
 
+                // #ifdef __SUPPORT_IPHONE
                 if (jpf.isIphone)
                     old_e.preventDefault();
-
+                //#endif
+                
                 var d = window.document;
                 d = (!d.compatMode || d.compatMode == 'CSS1Compat') 
                     ? d.html || d.documentElement
@@ -522,6 +526,8 @@ jpf.DragDrop = function(){
                 jpf.DragServer.coordinates = {
                     srcElement : srcEl,
                     doc        : d,
+                    scrollX    : scrollX,
+                    scrollY    : scrollY,
                     offsetX    : (e.layerX ? e.layerX - srcEl.offsetLeft : (jpf.isIE8 ? e.clientX - pos[0] : e.offsetX)) - scrollX, //|| jpf.event.layerX - srcEl.offsetLeft,
                     offsetY    : (e.layerY ? e.layerY - srcEl.offsetTop  : (jpf.isIE8 ? e.clientY - pos[1] : e.offsetY)) - scrollY, //|| jpf.event.layerY - srcEl.offsetTop,
                     clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,//e.clientX,
@@ -543,12 +549,15 @@ jpf.DragDrop = function(){
             //jpf.DragServer.start(this.host);
         };
 
+        // #ifdef __SUPPORT_IPHONE
         if (jpf.isIphone) {
             this.oExt.ontouchend = this.oExt.ontouchcancel = function(){
                 this.host.dragging = 0;
             };
         }
-        else {
+        else 
+        //#endif
+        {
             this.oExt.onmouseup = function(){
                 this.host.dragging = 0;
             };
@@ -577,11 +586,14 @@ jpf.DragDrop = function(){
         this.xmlDragDrop = this.dragdropRules = this.icoAllowed 
           = this.icoDenied = this.oExt.dragdrop = this.oExt.ondragmove
           = this.oExt.ondragstart = null;
+        // #ifdef __SUPPORT_IPHONE
         if (jpf.isIphone) {
             this.oExt.ontouchstart = this.oExt.ontouchmove
                 = this.oExt.ontouchend = this.oExt.ontouchcancel = null;
         }
-        else {
+        else 
+        //#endif
+        {
             this.oExt.onmousedown = this.oExt.onmousemove
                 = this.oExt.onmouseup = null;
         }
@@ -676,10 +688,12 @@ jpf.DragDrop = function(){
  */
 jpf.DragServer = {
     Init : function(){
+        // #ifdef __SUPPORT_IPHONE
         if (jpf.isIphone) {
             this.ontouchmove = this.onmousemove;
             this.ontouchend = this.ontouchcancel = this.onmouseup;
         }
+        //#endif
 
         jpf.dragmode.defineMode("dragdrop", this);
 
@@ -858,12 +872,14 @@ jpf.DragServer = {
     onmousemove : function(e){
         if (!jpf.DragServer.dragdata) return;
         e = e || window.event;
+        // #ifdef __SUPPORT_IPHONE
         if (jpf.isIphone) {
             e.preventDefault();
             if (!e.touches)
                 return jpf.DragServer.stop(true);
             e = e.touches[0];
         }
+        //#endif
         
         var dragdata = jpf.DragServer.dragdata,
             c = {
@@ -919,12 +935,14 @@ jpf.DragServer = {
 
     onmouseup : function(e){
         e = e || window.event;
+        // #ifdef __SUPPORT_IPHONE
         if (jpf.isIphone) {
             e.preventDefault();
             if (!e.changedTouches)
                 return jpf.DragServer.stop(true);
             e = e.changedTouches[0];
         }
+        //#endif
 
         var c = {
             clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,

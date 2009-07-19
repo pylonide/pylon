@@ -100,18 +100,22 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
     this.disabled = false; // Object is enabled
     this.realtime = true;
+    this.balloon  = true;
     this.value    = 0;
     this.mask     = "%";
     this.min      = 0;
     this.max      = 1;
 
     this.$supportedProperties.push("step", "mask", "min",
-        "max", "slide", "value");
+        "max", "slide", "value", "markers");
 
     this.$booleanProperties["realtime"] = true;
+    this.$booleanProperties["markers"]  = true;
+    this.$booleanProperties["balloon"]  = true;
 
     /**
      * @attribute {Boolean} realtime whether the slider updates it's value realtime, or just when the user stops dragging.
+     * @attribute {Boolean} balloon  whether to show the balloon with extra information on the position of the slider. Default is true when the skin supports it.
      * @attribute {Number}  step     specifying the step size of a discreet slider.
      * Example:
      * <code>
@@ -129,25 +133,56 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.$hasLayoutNode("marker"))
             return;
 
+        if (!this.slider)
+            this.slideDiscreet = true;
+    }
+
+    /**
+     * @attribute {Boolean} markers whether to display a marker at each discrete step.
+     */
+    this.$propHandlers["markers"] = function(value){
         //Remove Markers
         var markers = this.oMarkers.childNodes;
         for (var i = markers.length - 1; i >= 0; i--) {
-            if (markers[i].nodeType == 1)
+            if (markers[i].tagName == "u" && markers[i].nodeType == 1) //small hack
                 jpf.removeNode(markers[i]);
         }
 
+        if (!this.step && this.$jml)
+            this.step = parseInt(this.$jml.getAttribute("step")) || 0;
+
         //Add markers
-        if (this.step) {
-            var leftPos, count = (this.max - this.min) / this.step;
-            for (var o, nodes = [], i = 0; i < count + 1; i++) {
+        if (value && this.step) {
+            var pos, count = (this.max - this.min) / this.step;
+            var prop = this.$dir == "horizontal" ? "left" : "top";
+            var size = this.$dir == "horizontal"
+                ? this.oExt.offsetWidth - this.oKnob.offsetWidth
+                : this.oExt.offsetHeight - this.oKnob.offsetHeight;
+            
+            for (var o, nodes = [], i = 1; i < count; i++) {
                 this.$getNewContext("marker");
                 o = this.$getLayoutNode("marker");
-                leftPos = Math.max(0, (i * (1 / count) * 100) - 1);
-                o.setAttribute("style", "left:" + leftPos + "%");
+                pos = Math.max(0, ((i+1) * (1 / (count + 1))));
+                o.setAttribute("style", prop + ":" + (pos * size) + "px");
                 nodes.push(o);
             }
 
             jpf.xmldb.htmlImport(nodes, this.oMarkers);
+        }
+    }
+    
+    this.$resize = function(){
+        this.$propHandlers.value.call(this, this.value);
+        var pos, count = (this.max - this.min) / this.step;
+        var prop = this.$dir == "horizontal" ? "left" : "top";
+        var size = this.$dir == "horizontal"
+            ? this.oExt.offsetWidth - this.oKnob.offsetWidth
+            : this.oExt.offsetHeight - this.oKnob.offsetHeight;
+        
+        var nodes = this.oMarkers.getElementsByTagName("u");//small hack
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            pos = Math.max(0, (i+1) * (1 / count));
+            nodes[i].style[prop] = Math.round(pos * size) + "px";
         }
     }
 
@@ -170,7 +205,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             this.mask = "%";
 
         if (!this.mask.match(/^(%|#)$/))
-            this.mask = value.split("|");
+            this.mask = value.split(/\||;/);
     }
 
     /**
@@ -395,6 +430,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oMarkers     = this.$getLayoutNode("main", "markers", this.oExt);
         this.oKnob        = this.$getLayoutNode("main", "slider", this.oExt);
         this.oFill        = this.$getLayoutNode("main", "fill", this.oExt);
+        this.oBalloon     = this.$getLayoutNode("main", "balloon", this.oExt);
         this.oInt         = this.oContainer = this.$getLayoutNode("main",
             "container", this.oExt);
 
@@ -435,7 +471,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 * (_self.max - _self.min)) + _self.min;
 
             value = slideDiscreet
-                ? (Math.round(value / slideDiscreet) * slideDiscreet)
+                ? (Math.round(value / _self.step) * _self.step)
                 : value;
             value = (_self.$dir == "horizontal") ? value : 1 - value;
 
@@ -459,6 +495,13 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
 
             dragging = true;
             
+            if (_self.balloon && _self.oBalloon) {
+                _self.oBalloon.style.display = "block";
+                _self.oBalloon.style.left = (_self.oKnob.offsetLeft 
+                    - (_self.oBalloon.offsetWidth 
+                    - _self.oKnob.offsetWidth)/2) + "px";
+            }
+            
             var timer, lastTime;
             document.onmousemove = function(e){
                 e = e || window.event;
@@ -470,14 +513,26 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     return; //?
                 }
 
-                var knobValue = getKnobValue(o, e, _self.slideDiscreet);
+                var knobValue = getKnobValue(o, e, _self.slideSnap);
                 if (_self.realtime) {
                     _self.value = -1; //reset value
-                    _self.change(knobValue);
+                    if (_self.slideDiscreet) {
+                        this.$onlySetXml = true;//blrgh..
+                        _self.change(Math.round(knobValue / _self.step) * _self.step);
+                        this.$onlySetXml = false;
+                        _self.$propHandlers["value"].call(_self, knobValue, true);
+                    }
+                    else
+                        _self.change(knobValue);
                 }
                 else {
                     _self.$propHandlers["value"].call(_self, knobValue, true);
                 }
+                
+                if (_self.balloon && _self.oBalloon)
+                    _self.oBalloon.style.left = (_self.oKnob.offsetLeft 
+                        - (_self.oBalloon.offsetWidth 
+                        - _self.oKnob.offsetWidth)/2) + "px";
                 
                 /*clearTimeout(timer);
                 if (new Date().getTime() - lastTime > 20) {
@@ -507,9 +562,33 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 //_self.$ignoreSignals = _self.realtime;
                 _self.change(knobValue);
                 //_self.$ignoreSignals = false;
+                
+                if (_self.slideDiscreet)
+                    _self.$propHandlers["value"].call(_self, knobValue, true);
 
-                jpf.dragmode.mode = document.onmousemove = document.onmouseup
-                    = null;
+                jpf.dragmode.mode    = 
+                document.onmousemove = 
+                document.onmouseup   = null;
+
+                if (_self.balloon && _self.oBalloon) {
+                    _self.oBalloon.style.left = (_self.oKnob.offsetLeft 
+                        - (_self.oBalloon.offsetWidth 
+                        - _self.oKnob.offsetWidth)/2) + "px";
+                    
+                    setTimeout(function(){
+                        jpf.tween.single(_self.oBalloon, {
+                            type : "fade",
+                            from : 1,
+                            to   : 0,
+                            steps : 5,
+                            onfinish : function(){
+                                _self.oBalloon.style.display = "none";
+                                if (jpf.isIE)
+                                    _self.oBalloon.style.filter = "";
+                            }
+                        })
+                    }, _self.slideDiscreet ? 200 : 0);
+                }
             };
             //event.cancelBubble = true;
             return false;
@@ -548,8 +627,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         // #endif
 
         //#ifdef __WITH_LAYOUT
-        jpf.layout.setRules(this.oExt, "knob", "var o = jpf.all[" + this.uniqueId + "];\
-            o.$propHandlers.value.call(o, o.value);", true);
+        jpf.layout.setRules(this.oExt, "knob", 
+            "jpf.all[" + this.uniqueId + "].$resize()", true);
         //#endif
     };
 
@@ -565,6 +644,10 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oKnob.onmouseup   =
         this.oKnob.onmouseover =
         this.oKnob.onmouseout  = null;
+        
+        //#ifdef __WITH_LAYOUT
+        jpf.layout.removeRule(this.oExt, "knob");
+        //#endif
     };
 }).implement(
     // #ifdef __WITH_DATABINDING
