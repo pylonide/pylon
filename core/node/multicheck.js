@@ -325,6 +325,11 @@ apf.MultiCheck = function(){
         if (this.checklength != checkedList.length)
             this.setProperty("checklength", checkedList.length);
     });
+    this.addEventListener("afteruncheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != checkedList.length)
+            this.setProperty("checklength", checkedList.length);
+    });
     //#endif
 };
 
