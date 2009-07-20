@@ -380,8 +380,8 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     this.$dragover = function(el, dragdata, extra){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Drop");
         
-        if (el == this.oExt)
-            return;
+        //if (el == this.oExt)
+            //return;
 
         var sel = this.$getSelection(true);
         for (var i = 0, l = sel.length; i < l; i++) 
