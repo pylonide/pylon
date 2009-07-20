@@ -392,30 +392,60 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     /**** DragDrop Support ****/
     
     // #ifdef __WITH_DRAGDROP
+    //@todo can't we generalize this.. list and tree are the same
+    var diffX, diffY, multiple;
     this.$showDragIndicator = function(sel, e){
-        var x = e.offsetX;
-        var y = e.offsetY;
-
-        this.oDrag.startX = x;
-        this.oDrag.startY = y;
+        multiple = sel.length > 1;
+        
+        if (multiple) {
+            diffX = e.scrollX;
+            diffY = e.scrollY;
+        }
+        else {
+            diffX = -1 * e.offsetX;
+            diffY = -1 * e.offsetY;
+        }
+        
+        var prefix = this.oDrag.className.split(" ")[0]
+        this.$setStyleClass(this.oDrag, multiple
+            ? prefix + "_multiple" : "", [prefix + "_multiple"]);
         
         document.body.appendChild(this.oDrag);
-        this.$updateNode(this.selected, this.oDrag);
+        if (!multiple)
+            this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
     };
     
-    this.$hideDragIndicator = function(){
-        this.oDrag.style.display = "none";
+    this.$hideDragIndicator = function(success){
+        if (!multiple && !success) {
+            var pos = apf.getAbsolutePosition(this.$selected);
+            apf.tween.multi(this.oDrag, {
+                anim     : apf.tween.EASEIN,
+                steps    : 15,
+                interval : 10,
+                tweens   : [
+                    {type: "left", from: this.oDrag.offsetLeft, to: pos[0]},
+                    {type: "top",  from: this.oDrag.offsetTop,  to: pos[1]}
+                ],
+                onfinish : function(){
+                    _self.oDrag.style.display = "none";
+                }
+            });
+        }
+        else
+            this.oDrag.style.display = "none";
     };
     
     this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
-        this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
+        this.oDrag.style.left = (e.clientX + diffX) + "px";// - this.oDrag.startX
+        this.oDrag.style.top  = (e.clientY + diffY + (multiple ? 15 : 0)) + "px";// - this.oDrag.startY
     };
     
     this.$initDragDrop = function(){
-        if (!this.$hasLayoutNode("dragindicator")) return;
+        if (!this.$hasLayoutNode("dragindicator")) 
+            return;
+
         this.oDrag = apf.xmldb.htmlImport(
             this.$getLayoutNode("dragindicator"), document.body);
         
@@ -441,36 +471,46 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             : null;
     };
     
+    var lastel;
     this.$dragout = function(dragdata){
-        if (this.lastel)
-            this.$setStyleClass(this.lastel, "", ["dragDenied", "dragInsert",
+        if (lastel)
+            this.$setStyleClass(lastel, "", ["dragDenied", "dragInsert",
                 "dragAppend", "selected", "indicate"]);
-        this.$setStyleClass(this.$selected, "selected", ["dragDenied",
-            "dragInsert", "dragAppend", "indicate"]);
         
-        this.lastel = null;
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "selected", ["dragDenied",
+                "dragInsert", "dragAppend", "indicate"]);
+        
+        lastel = null;
     };
 
     this.$dragover = function(el, dragdata, extra){
         if(el == this.oExt) return;
         
-        this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
-            "dragInsert", "dragAppend", "selected", "indicate"]);
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        if (lastel)
+            this.$setStyleClass(lastel, "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
         
         var action = extra[1] && extra[1].getAttribute("action");
-        this.lastel = this.$findValueNode(el);
+        lastel = this.$findValueNode(el);
         
         if (action == "list-append") {
-            var htmlNode = apf.xmldb.findHtmlNode(this.getTraverseParent(apf.xmldb.getNode(this.lastel)), this);
+            var htmlNode = apf.xmldb.findHtmlNode(this.getTraverseParent(apf.xmldb.getNode(lastel)), this);
             
-            this.lastel = htmlNode
+            lastel = htmlNode
                 ? this.$getLayoutNode("item", "container", htmlNode)
                 : this.oInt;
             
-            this.$setStyleClass(this.lastel, "dragInsert");
+            this.$setStyleClass(lastel, "dragInsert");
         }
         else {
-            this.$setStyleClass(this.lastel, extra 
+            this.$setStyleClass(lastel, extra 
                 ? (action == "insert-before" 
                     ? "dragInsert" 
                     : "dragAppend") 
@@ -479,13 +519,16 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$dragdrop = function(el, dragdata, extra){
-        this.$setStyleClass(this.lastel || this.$selected,
-            !this.lastel && (this.$selected || this.lastel == this.$selected) 
-                ? "selected" 
-                : "", 
-                ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
+        if (lastel)
+            this.$setStyleClass(lastel, "", 
+              ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
         
-        this.lastel = null;
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "selected", ["dragDenied",
+                "dragInsert", "dragAppend", "indicate"]);
+        
+        lastel = null;
     };
     
     // #endif

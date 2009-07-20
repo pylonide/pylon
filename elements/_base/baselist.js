@@ -493,7 +493,6 @@ apf.BaseList = function(){
 
         Item.setAttribute("id", Lid);
 
-        //elSelect.setAttribute("oncontextmenu", 'apf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         elSelect.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'apf.setStyleClass(this, "", ["hover"]);');
 
@@ -503,18 +502,21 @@ apf.BaseList = function(){
                 'o.stopRename();' +
                 // #endif
                 ' o.choose()');
+            elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.uniqueId + ');\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
+                 this.hasPassedDown = true;\
                  if (!o.renaming && o.hasFocus() && isSelected) \
                     this.dorename = true;\
                  if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey)');
-            elSelect.setAttribute("onmouseup", 'var o = apf.lookup(' + this.uniqueId + ');\
-                if(this.dorename && o.mode == "normal")' +
+            elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
+                var o = apf.lookup(' + this.uniqueId + ');'
                 // #ifdef __WITH_RENAME
-                    'o.startDelayedRename(event);' +
+                + 'if (this.dorename && o.mode == "normal")\
+                    o.startDelayedRename(event);' +
                 // #endif
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\

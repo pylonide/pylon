@@ -1109,8 +1109,8 @@ apf.MultiSelect = function(){
 
         return r;
     };
-    this.$getSelection = function(){
-        return valueList;
+    this.$getSelection = function(htmlNodes){
+        return htmlNodes ? selectedList : valueList;
     }
 
     /**

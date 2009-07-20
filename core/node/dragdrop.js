@@ -211,7 +211,9 @@ apf.DragDrop = function(){
         for (var i = 0; i < nodeList.length; i++) {
             changes.push({
                 func : isMove ? "moveNode" : "appendChild",
-                args : [pNode, nodeList[i] = nodeList[i].cloneNode(true), beforeNode]
+                args : [pNode, isMove
+                    ? nodeList[i]
+                    : nodeList[i] = nodeList[i].cloneNode(true), beforeNode]
             });
         }
         
@@ -300,7 +302,7 @@ apf.DragDrop = function(){
             else return false; //It's all or nothing
         }
 
-        return false;
+        return ruleList.length ? ruleList : false;
     };
 
     /**
@@ -413,13 +415,15 @@ apf.DragDrop = function(){
         var ifcopy = rule
             ? (rule.getAttribute("copy-condition")
                 ? eval(rule.getAttribute("copy-condition"))
-                : false)
+                : false) //false (when below wasn't disabled)
             : (this.dragmoveenabled ? ctrlKey : true);
-        if (!ifcopy)
+        
+        //isn't very efficient for multinode dragdrop
+        /*if (!ifcopy)
             ifcopy = typeof srcRule == "object"
               && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
-                : ctrlKey;
+                : ctrlKey;*/
 
         var sNode, actRule = ifcopy ? 'copy' : 'move';
 
@@ -459,6 +463,7 @@ apf.DragDrop = function(){
 
         if (this.selectable && sNode) {
             this.selectList(sNode);//, null, null, null, true);
+            this.setIndicator(sNode[0]);
             this.focus();
         }
 
@@ -543,7 +548,7 @@ apf.DragDrop = function(){
 
                 var scrollX = (apf.isIE ? d.scrollLeft : window.pageXOffset),
                     scrollY = (apf.isIE ? d.scrollTop  : window.pageYOffset);
-                var oParent = srcEl.offsetParent;
+                var oParent = _self.oExt.offsetParent;//srcEl.offsetParent;
                 while (oParent && oParent != d && oParent.tagName != "BODY") {
                     scrollX -= oParent.scrollLeft;
                     scrollY -= oParent.scrollTop;
@@ -764,15 +769,15 @@ apf.DragServer = {
         apf.dragmode.setMode("dragdrop");
     },
 
-    stop : function(runEvent){
+    stop : function(runEvent, success){
         if (this.last) this.dragout();
 
         //Reset Objects
         this.dragdata.host.dragging = 0;
-        this.dragdata.host.$hideDragIndicator();
+        this.dragdata.host.$hideDragIndicator(success);
 
-        //????EVENT: ondragstop
-        //if(runEvent && this.dragdata.host.ondragstop) this.dragdata.host.ondragstop();
+        /*if (runEvent && this.dragdata.host.$dragstop) 
+            this.dragdata.host.$dragstop();*/
 
         apf.dragmode.clear();
         this.dragdata = null;
@@ -794,6 +799,9 @@ apf.DragServer = {
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
         //if(!fEl) return;
+        
+        if (this.lastFel == fEl) //optimization
+            return;
 
         //Check Permission
         var elSel = (fEl
@@ -820,6 +828,7 @@ apf.DragServer = {
             o.$dragover(el, this.dragdata, candrop);
 
         this.last = o;
+        this.lastFel = fEl;
     },
 
     dragout : function(o){
@@ -883,6 +892,9 @@ apf.DragServer = {
         //Reset Cursor
         //o.oExt.style.cursor = "default";
         this.last = null;
+        this.lastFel = null;
+        
+        return true;
     },
 
     /* **********************
@@ -1002,8 +1014,8 @@ apf.DragServer = {
         //Run Events
         if (host != apf.DragServer.host)
             apf.DragServer.dragout(host);
-        apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
-        apf.DragServer.stop(true);
+        var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
+        apf.DragServer.stop(true, success);
     }
 };
 
