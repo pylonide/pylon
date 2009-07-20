@@ -64,7 +64,8 @@ apf.BaseTab = function(){
     var curCallback;
     this.set = function(page, callback, noEvent){
         if (noEvent || this.load && !this.$findPage(page, {}))
-            return this.$propHandlers["activepage"].call(this, page, callback, noEvent);
+            return this.$propHandlers["activepage"].call(
+                this, page, callback, null, noEvent);
         
         if (callback && this.activepage == page)
             return callback();
@@ -79,7 +80,8 @@ apf.BaseTab = function(){
 
     /**** Properties and Attributes ****/
 
-    this.$supportedProperties.push("activepage", "activepagenr", "length");
+    this.$supportedProperties.push("activepage", "activepagenr", 
+        "length", "loading");
 
     /**
      * @attribute {Number} activepagenr the child number of the active page.
@@ -125,7 +127,7 @@ apf.BaseTab = function(){
      *  </a:tab>
      * </code>
      */
-    this.$propHandlers["activepage"]   = function(next, callback, noEvent){
+    this.$propHandlers["activepage"]   = function(next, callback, prop, noEvent){
         if (!inited) return;
         
         if (!callback) {

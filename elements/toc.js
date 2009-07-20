@@ -119,7 +119,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$setActivePage = function(active){
         if (this.disabled) return false;
-        
+
         //Find previous known index and make sure it has known indexes after
         if (!this.pagelookup[active]) {
             var page, last, is_between;
