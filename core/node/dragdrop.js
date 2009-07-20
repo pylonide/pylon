@@ -621,7 +621,7 @@ apf.DragDrop = function(){
     this.$propHandlers["dragmoveenabled"] =
     this.$propHandlers["dropenabled"]     = function(value){
         if (value && !drag_inited)
-            this.loadDragDrop();
+            this.enableDragDrop();
     };
 
     this.$propHandlers["dragdrop"] = function(value){
