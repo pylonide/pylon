@@ -220,6 +220,8 @@ apf.Cache = function(){
         if (this.clearSelection)
             this.clearSelection(null, !doEvent);
 
+        var lastHeight = this.oExt.offsetHeight;
+
         if (this.caching) {
             /*
                 Check if we borrowed an HTMLElement
@@ -275,7 +277,7 @@ apf.Cache = function(){
         if (!nomsg) {
             this.$setClearMessage(msgType 
               ? this[msgType + "-message"] 
-              : this["empty-message"], msgType || "empty");
+              : this["empty-message"], msgType || "empty", lastHeight);
 
             var c = this.$getConnections();
             for (var i = c.length - 1; i >= 0; i--)
@@ -416,9 +418,12 @@ apf.MultiselectCache = function(){
         return cacheNode.getElementById(id);
     };
 
-    var oEmpty;
-    this.$setClearMessage = function(msg, className){
+    var oEmpty, changedHeight;
+    this.$setClearMessage = function(msg, className, lastHeight){
         if (!oEmpty) {
+            if (!this.$hasLayoutNode("empty"))
+                return;
+            
             this.$getNewContext("empty");
 
             var xmlEmpty = this.$getLayoutNode("empty");
@@ -429,6 +434,11 @@ apf.MultiselectCache = function(){
         else {
             this.oInt.appendChild(oEmpty);
         }
+        
+        if (lastHeight)
+            oEmpty.style.height = (lastHeight 
+                - apf.getHeightDiff(oEmpty) 
+                - apf.getHeightDiff(this.oExt)) + "px";
 
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
 
