@@ -217,9 +217,7 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
     /**** Private state handling methods ****/
 
     this.$updateProgress = function(){
-        //@todo use getDiff here
-        /*this.setProperty("progress",
-            this.oSlider.offsetWidth / this.oSlider.parentNode.offsetWith);*/
+        this.setProperty("progress", Math.min(1, (this.progress || 0) + (1/800)));
     };
 
     this.$upload = function(){
