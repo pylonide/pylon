@@ -100,47 +100,102 @@ apf.isJson = (function() {
 })();
 
 if (!window["JSON"]) {
-    window["JSON"] = {};
-    JSON.parse = (function() {
-        // Will match a value in a well-formed JSON file.
-        // If the input is not well-formed, may match strangely, but not in an
-        // unsafe way.
-        // Since this only matches value tokens, it does not match whitespace,
-        // colons, or commas.
-        // The second line of the regex string matches numbers, lines number 4,
-        // 5 and 6 match a string and line number 5 specifically matches one
-        // character.
-        var jsonToken       = new RegExp(
+    window["JSON"] = (function() {
+    // Will match a value in a well-formed JSON file.
+    // If the input is not well-formed, may match strangely, but not in an
+    // unsafe way.
+    // Since this only matches value tokens, it does not match whitespace,
+    // colons, or commas.
+    // The second line of the regex string matches numbers, lines number 4,
+    // 5 and 6 match a string and line number 5 specifically matches one
+    // character.
+    var jsonToken       = new RegExp(
 '(?:false|true|null|[\\{\\}\\[\\]]|\
 (?:-?\\b(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\\b)\
 |\
 (?:\"\
 (?:[^\\0-\\x08\\x0a-\\x1f\"\\\\]|\\\\(?:[\"/\\\\bfnrt]|u[0-9A-Fa-f]{4}))\
 *\"))', "g"),
-            // Matches escape sequences in a string literal
-            escapeSequence  = new RegExp("\\\\(?:([^u])|u(.{4}))", "g"),
-            // Decodes escape sequences in object literals
-            escapes         = {
-                "\"": "\"",
-                "/": "/",
-                "\\": "\\",
-                "b": "\b",
-                "f": "\f",
-                "n": "\n",
-                "r": "\r",
-                "t": "\t"
-            },
-            unescapeOne     = function(_, ch, hex) {
-                return ch ? escapes[ch] : String.fromCharCode(parseInt(hex, 16));
-            },
-            // A non-falsy value that coerces to the empty string when used as a key.
-            EMPTY_STRING    = new String(""),
-            SLASH           = "\\",
-            // Constructor to use based on an open token.
-            firstTokenCtors = { "{": Object, "[": Array },
-            hop             = Object.hasOwnProperty;
+        // Matches escape sequences in a string literal
+        escapeSequence  = new RegExp("\\\\(?:([^u])|u(.{4}))", "g"),
+        // Decodes escape sequences in object literals
+        escapes         = {
+            "\"": "\"",
+            "/": "/",
+            "\\": "\\",
+            "b": "\b",
+            "f": "\f",
+            "n": "\n",
+            "r": "\r",
+            "t": "\t"
+        },
+        unescapeOne     = function(_, ch, hex) {
+            return ch ? escapes[ch] : String.fromCharCode(parseInt(hex, 16));
+        },
+        // A non-falsy value that coerces to the empty string when used as a key.
+        EMPTY_STRING    = new String(""),
+        SLASH           = "\\",
+        // Constructor to use based on an open token.
+        firstTokenCtors = { "{": Object, "[": Array },
+        hop             = Object.hasOwnProperty,
+        jsonSerialize   = {
+            object: function(o){
+                //XML support - NOTICE: Ajax.org Platform specific
+                if (o.nodeType && o.cloneNode)
+                    return "apf.xmldb.getXml("
+                        + this.string(apf.getXmlString(o)) + ")";
 
-        return function (json, opt_reviver) {
+                //Normal JS object support
+                var str = [];
+                for (var prop in o) {
+                    str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
+                        + apf.serialize(o[prop]));
+                }
+
+                return "{" + str.join(", ") + "}";
+            },
+
+            string: function(s){
+                s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
+                return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
+            },
+
+            number: function(i){
+                return i.toString();
+            },
+
+            "boolean": function(b){
+                return b.toString();
+            },
+
+            date: function(d){
+                var padd = function(s, p){
+                    s = p + s;
+                    return s.substring(s.length - p.length);
+                };
+                var y   = padd(d.getUTCFullYear(), "0000");
+                var m   = padd(d.getUTCMonth() + 1, "00");
+                var D   = padd(d.getUTCDate(), "00");
+                var h   = padd(d.getUTCHours(), "00");
+                var min = padd(d.getUTCMinutes(), "00");
+                var s   = padd(d.getUTCSeconds(), "00");
+
+                var isodate = y + m + D + "T" + h + ":" + min + ":" + s;
+
+                return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
+            },
+
+            array: function(a){
+                for (var q = [], i = 0; i < a.length; i++)
+                    q.push(apf.serialize(a[i]));
+
+                return "[" + q.join(", ") + "]";
+            }
+        };
+
+
+    return {
+        parse: function(json, opt_reviver) {
             // Split into tokens
             var toks = json.match(jsonToken),
                 // Construct the object to return
@@ -261,79 +316,25 @@ if (!window["JSON"]) {
                 result = walk({ "": result }, "");
             }
             return result;
-        };
+        },
+        stringify: function(o) {
+            if (typeof args == "function" || apf.isNot(o))
+                return "null";
+            return jsonSerialize[o.dataType || "object"](o);
+        }
+    };
+
     })();
 }
 
-// Serialize Objects
-/**
- * @private
- */
-apf.JSONSerialize = {
-    object: function(o){
-        //XML support - NOTICE: Ajax.org Platform specific
-        if (o.nodeType && o.cloneNode)
-            return "apf.xmldb.getXml("
-                + this.string(apf.getXmlString(o)) + ")";
-
-        //Normal JS object support
-        var str = [];
-        for (var prop in o) {
-            str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
-                + apf.serialize(o[prop]));
-        }
-
-        return "{" + str.join(", ") + "}";
-    },
-
-    string: function(s){
-        s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
-        return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
-    },
-
-    number: function(i){
-        return i.toString();
-    },
-
-    "boolean": function(b){
-        return b.toString();
-    },
-
-    date: function(d){
-        var padd = function(s, p){
-            s = p + s;
-            return s.substring(s.length - p.length);
-        };
-        var y   = padd(d.getUTCFullYear(), "0000");
-        var m   = padd(d.getUTCMonth() + 1, "00");
-        var D   = padd(d.getUTCDate(), "00");
-        var h   = padd(d.getUTCHours(), "00");
-        var min = padd(d.getUTCMinutes(), "00");
-        var s   = padd(d.getUTCSeconds(), "00");
-
-        var isodate = y + m + D + "T" + h + ":" + min + ":" + s;
-
-        return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
-    },
-
-    array: function(a){
-        for (var q = [], i = 0; i < a.length; i++)
-            q.push(apf.serialize(a[i]));
-
-        return "[" + q.join(", ") + "]";
-    }
-};
-
 /**
  * Creates a json string from a javascript object.
- * @param {mixed} the javascript object to serialize.
+ * @param  {mixed}  o the javascript object to serialize.
  * @return {String} the json string representation of the object.
  * @todo allow for XML serialization
  */
-apf.serialize = function(args){
-    if (typeof args == "function" || apf.isNot(args))
-        return "null";
-    return apf.JSONSerialize[args.dataType || "object"](args);
+apf.serialize = function(o){
+    return JSON.stringify(o);
 };
 
 /**
@@ -341,16 +342,12 @@ apf.serialize = function(args){
  * is set to 'TRUE', the provided string will be validated for being valid
  * JSON.
  *
- * @param {String}  str     the json string to create an object from.
- * @param {Boolean} secure  whether the json string should be checked to prevent malice.
+ * @param  {String} str the json string to create an object from.
  * @return {Object} the object created from the json string.
  */
-apf.unserialize = function(str, secure){
+apf.unserialize = function(str){
     if (!str) return str;
-    if (secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/)
-      .test(str.replace(/\\./g, '@').replace(/"(?:\\"|[^"])*"|'(?:\\'|[^'])*'/g, '')))
-        return str;
-    return eval('(' + str + ')');
+    return JSON.parse(str);
 };
 
 // #endif
