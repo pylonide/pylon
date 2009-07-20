@@ -52,7 +52,7 @@
  * to determine the image displayed when using a thumbnail skin. The {baseclass.baselist.binding.icon icon binding}
  * is used to determine the icon in the list skin.
  * Example:
- * In this example a node is bold when the folder contains unread messages:
+ * In this example the image url is read from the thumbnail attribute of the data node.
  * <code>
  *  <a:thumbnail>
  *      <a:bindings>
@@ -497,28 +497,31 @@ apf.BaseList = function(){
         elSelect.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'apf.setStyleClass(this, "", ["hover"]);');
 
-        if (this.hasFeature(__RENAME__)) {
+        if (this.hasFeature(__RENAME__) || this.hasFeature(__DRAGDROP__)) {
             elSelect.setAttribute("ondblclick", 'var o = apf.lookup(' + this.uniqueId + '); ' +
                 // #ifdef __WITH_RENAME
                 'o.stopRename();' +
                 // #endif
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
-                'var o = apf.lookup(' + this.uniqueId
-                + ');if(!o.renaming && o.hasFocus() \
-                  && apf.isChildOf(o.$selected, this, true) \
-                  && o.selected) this.dorename = true;\
-                  if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
-                      o.select(this, event.ctrlKey, event.shiftKey)');
+                'var o = apf.lookup(' + this.uniqueId + ');\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (!o.renaming && o.hasFocus() && isSelected) \
+                    this.dorename = true;\
+                 if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                     o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'var o = apf.lookup(' + this.uniqueId + ');\
                 if(this.dorename && o.mode == "normal")' +
                 // #ifdef __WITH_RENAME
                     'o.startDelayedRename(event);' +
                 // #endif
                 'this.dorename = false;\
-                if (o.hasFeature(__DRAGDROP__) && event.ctrlKey)\
-                    o.select(this, event.ctrlKey, event.shiftKey)');
-        }
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                     o.select(this, event.ctrlKey, event.shiftKey)');
+        } //@todo add DRAGDROP ifdefs
         else {
             elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
                 + this.uniqueId + '); o.choose()');

@@ -189,6 +189,8 @@ var __DRAGDROP__ = 1 << 5;
 apf.DragDrop = function(){
     this.$regbase = this.$regbase | __DRAGDROP__;
 
+    var _self = this;
+
     /* **********************
             Actions
     ***********************/
@@ -201,15 +203,29 @@ apf.DragDrop = function(){
      * @param  {XMLElement} pNode        the new parent element of the copied {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
      * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node} is inserted.
      */
-    this.copy = function(xmlNode, pNode, beforeNode){
-        xmlNode = xmlNode.cloneNode(true);
-
-        //Use Action Tracker
-        var exec = this.executeAction("appendChild",
-            [pNode, xmlNode, beforeNode], "copy", xmlNode);
+    this.copy = function(nodeList, pNode, beforeNode, isMove){
+        if (nodeList.nodeType)
+            nodeList = [nodeList];
+        
+        var multiple, changes = [];
+        for (var i = 0; i < nodeList.length; i++) {
+            changes.push({
+                func : isMove ? "moveNode" : "appendChild",
+                args : [pNode, nodeList[i] = nodeList[i].cloneNode(true), beforeNode]
+            });
+        }
+        
+        if (this.actionRules && this.actionRules[(isMove ? "movegroup" : "copygroup")])
+            var exec = this.executeAction("multicall", changes, 
+                (isMove ? "movegroup" : "copygroup"), nodeList[0]);
+        else {
+            var exec = this.executeAction("multicall", changes, 
+                (isMove ? "move" : "copy"), nodeList[0], null, null, 
+                nodeList.length > 1 ? nodeList : null);
+        }
 
         if (exec !== false)
-            return xmlNode;
+            return nodeList;
 
         return false;
     };
@@ -222,13 +238,8 @@ apf.DragDrop = function(){
      * @param  {XMLElement}  pNode        the new parent element of the moved {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
      * @param  {XMLElement}  [beforeNode] the position where the {@link term.datanode data node} is inserted.
      */
-    this.move = function(xmlNode, pNode, beforeNode){
-        //Use Action Tracker
-        var exec = this.executeAction("moveNode",
-            [pNode, xmlNode, beforeNode], "move", xmlNode);
-        if (exec !== false)
-            return xmlNode;
-        return false;
+    this.move = function(nodeList, pNode, beforeNode){
+        return this.copy(nodeList, pNode, beforeNode, true);
     };
 
     /**
@@ -245,27 +256,48 @@ apf.DragDrop = function(){
      * @return {Boolean} result of the test
      * @see baseclass.dragdrop.method.isDragAllowed
      */
-    this.isDragAllowed = function(x){
+    this.isDragAllowed = function(x, data){
         //#ifdef __WITH_OFFLINE
         if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
-        if (this.disabled || !x)
+        if (this.disabled || !x || !x.length || !x[0])
             return false;
 
-        if (this.dragenabled || this.dragmoveenabled)
+        if (this.dragenabled || this.dragmoveenabled) {
+            if (data)
+                data.merge(x);
             return true;
-
+        }
+        
         var rules = (this.bindingRules || {})["drag"];
         if (!rules || !rules.length)
             return false;
 
-        for (var i = 0; i < rules.length; i++) {
-            if (x.selectSingleNode("self::" +
-              apf.parseExpression(rules[i].getAttribute("select"))
-              .split("|").join("|self::")))
-                return rules[i];
+        var node, rule, ruleList = [];
+        for (var j = 0; j < x.length; j++) {
+            node = x[j], rule = null;
+            for (var i = 0; i < rules.length; i++) {
+                if (node.selectSingleNode("self::" +
+                  apf.parseExpression(rules[i].getAttribute("select"))
+                  .split("|").join("|self::"))) {
+                    rule = rules[i];
+                    break;
+                }
+            }
+            if (rule) {
+                ruleList.push(rule);
+                if (data) {
+                    var sel = rule.getAttribute("select");
+                    data.push(sel
+                      ? node.selectSingleNode("self::" +
+                          apf.parseExpression(sel)
+                          .split("|").join("|self::"))
+                      : node);
+                }
+            }
+            else return false; //It's all or nothing
         }
 
         return false;
@@ -292,22 +324,32 @@ apf.DragDrop = function(){
             return false;
         //#endif
 
-        if (this.disabled || !x || !target)
+        if (this.disabled || !x || !x.length || !target) //!x[0] ???
             return false;
 
         var data, tgt;
 
         if (this.dropenabled) {
-            data = x.selectSingleNode("true".indexOf(this.dropenabled) == -1
+            var query = "true".indexOf(this.dropenabled) == -1
                 ? this.dropenabled
                 : (this.hasFeature(__MULTISELECT__)
                     ? "self::" + this.traverse.replace(/.*?\/([^\/]+)(\||$)/g, "$1$2").split("|").join("|self::")
-                    : "."));
-
+                    : ".");
+            
             tgt = target || target == this.xmlRoot && target || null;
-
-            if (data && tgt && !apf.isChildOf(data, tgt, true))
-                return [tgt, null];
+            if (tgt) {
+                var retValue = [tgt, null];
+                for (var i = 0, l = x.length; i < l; i++) {
+                    data = x[i].selectSingleNode(query);
+                    if (!data || apf.isChildOf(data, tgt, true)) {
+                        retValue = null;
+                        break; //All or nothing
+                    }
+                }
+                
+                if (retValue)
+                    return retValue;
+            }
         }
 
         var rules = (this.bindingRules || {})["drop"];
@@ -315,17 +357,24 @@ apf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
 
-        for (var op, strTgt, i = 0; i < rules.length; i++) {
-            data = x.selectSingleNode("self::" +
-                apf.parseExpression(rules[i].getAttribute("select"))
-                .split("|").join("|self::"));
+        //@todo this can be optimized when needed
+        var rule, query;
+        for (var op, strTgt, i = 0, rl = rules.length; i < rl; i++) {
+            rule  = rules[i];
+            query = "self::" + apf.parseExpression(rule.getAttribute("select"))
+                .split("|").join("|self::");
                 
-            if (!data)
+            for (var j = 0, l = x.length; j < l; j++) {   
+                data = x[j].selectSingleNode(query);
+                if (!data)
+                    break;
+            }
+            if (j != l)
                 continue;
-                
-            strTgt = rules[i].getAttribute("target");
+
+            strTgt = rule.getAttribute("target");
             if (!strTgt || strTgt == ".") {
-                op = rules[i].getAttribute("action");
+                op = rule.getAttribute("action");
                 tgt = (op == "list-append" || target == this.xmlRoot
                   ? this.xmlRoot
                   : null);
@@ -336,13 +385,13 @@ apf.DragDrop = function(){
                     .split("|").join("|self::"));
 
             if (data && tgt && !apf.isChildOf(data, tgt, true))
-                return [tgt, rules[i]];
+                return [tgt, rule];
         }
 
         return false;
     };
 
-    this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event){
         if (action == "tree-append" && isParent) 
             return false;
 
@@ -388,12 +437,12 @@ apf.DragDrop = function(){
                         xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
                     }
                 }
-                sNode = this[actRule](xmlNode, xmlReceiver);
+                sNode = this[actRule](xmlNodeList, xmlReceiver);
                 break;
             case "insert-before":
                 sNode = isParent
-                    ? this[actRule](xmlNode, xmlReceiver)
-                    : this[actRule](xmlNode, xmlReceiver.parentNode, xmlReceiver);
+                    ? this[actRule](xmlNodeList, xmlReceiver)
+                    : this[actRule](xmlNodeList, xmlReceiver.parentNode, xmlReceiver);
                 break;
             case "tree-append":
                 if (parentXpath) {
@@ -404,12 +453,14 @@ apf.DragDrop = function(){
                         xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
                     }
                 }
-                sNode = this[actRule](xmlNode, xmlReceiver);
+                sNode = this[actRule](xmlNodeList, xmlReceiver);
                 break;
         }
 
-        if (this.selectable && sNode)
-            this.select(sNode, null, null, null, true);
+        if (this.selectable && sNode) {
+            this.selectList(sNode);//, null, null, null, true);
+            this.focus();
+        }
 
         return sNode;
     };
@@ -455,29 +506,30 @@ apf.DragDrop = function(){
             //#endif
 
             var fEl, srcEl = e.originalTarget || e.srcElement || e.target;
-            if (this.host.hasFeature(__MULTISELECT__) && srcEl == this.host.oInt)
+            var multiselect = _self.hasFeature(__MULTISELECT__);
+            if (multiselect && srcEl == _self.oInt)
                 return;
-            this.host.dragging = 0;
+            _self.dragging = 0;
 
             var srcElement = e.srcElement || e.target;
-            if (!apf.isIphone && this.host.allowdeselect
+            if (!apf.isIphone && _self.allowdeselect
               && (srcElement == this
               || srcElement.getAttribute(apf.xmldb.htmlIdTag)))
-                return this.host.clearSelection(); //hacky
+                return _self.clearSelection(); //hacky
 
             //MultiSelect must have carret behaviour AND deselect at clicking white
             //for(prop in e) if(prop.match(/x/i)) str += prop + "\n";
             //alert(str);
-            if (this.host.$findValueNode)
-                fEl = this.host.$findValueNode(srcEl);
+            if (_self.$findValueNode)
+                fEl = _self.$findValueNode(srcEl);
             var el = (fEl
                 ? apf.xmldb.getNode(fEl)
                 : apf.xmldb.findXmlNode(srcEl));
-            if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
+            if (multiselect && (!_self.selected || el == _self.xmlRoot) || !el)
                 return;
 
-            if (this.host.isDragAllowed(this.selectable ? this.host.selected : el)) {
-                this.host.dragging = 1;
+            if (_self.isDragAllowed(multiselect ? _self.$getSelection() : el)) {
+                _self.dragging = 1;
 
                 // #ifdef __SUPPORT_IPHONE
                 if (apf.isIphone)
@@ -517,7 +569,7 @@ apf.DragDrop = function(){
                     clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
                 };
 
-                apf.DragServer.start(this.host);
+                apf.DragServer.start(_self);
             }
 
             //e.cancelBubble = true;
@@ -680,36 +732,34 @@ apf.DragServer = {
             API
     ***********************/
 
-    start : function(host){
+    start : function(amlNode){
         if (document.elementFromPointReset)
             document.elementFromPointReset();
 
         //Create Drag Object
-        var selection = host.selectable ? host.getSelection()[0] : host.xmlRoot; //currently only a single item is supported
+        var selection = amlNode.hasFeature(__MULTISELECT__) 
+            ? amlNode.$getSelection()
+            : [amlNode.xmlRoot];
 
-        var srcRule = host.isDragAllowed(selection);
-        if (!srcRule) return;
+        var data    = [];
+        var srcRules = amlNode.isDragAllowed(selection, data);
+        if (!srcRules) return;
 
-        var data = srcRule.nodeType
-            ? selection.selectSingleNode("self::" +
-                apf.parseExpression(srcRule.getAttribute("select"))
-                .split("|").join("|self::"))
-            : selection;
-
-        if (host.hasEventListener("dragdata"))
-            data = host.dispatchEvent("dragdata", {data : data});
+        if (amlNode.hasEventListener("dragdata"))
+            data = amlNode.dispatchEvent("dragdata", {data : data});
 
         this.dragdata = {
-            selection : selection,
-            data      : data,
-            indicator : host.$showDragIndicator(selection, this.coordinates),
-            host      : host
+            rules       : srcRules,
+            selection   : selection,
+            data        : data,
+            indicator   : amlNode.$showDragIndicator(selection, this.coordinates),
+            host        : amlNode
         };
 
         //EVENT - cancellable: ondragstart
-        if (host.dispatchEvent("dragstart", this.dragdata) === false)
-            return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
-        host.dragging = 2;
+        if (amlNode.dispatchEvent("dragstart", this.dragdata) === false)
+            return false;//(this.amlNode.$tempsel ? select(this.amlNode.$tempsel) : false);
+        amlNode.dragging = 2;
 
         apf.dragmode.setMode("dragdrop");
     },
@@ -728,15 +778,17 @@ apf.DragServer = {
         this.dragdata = null;
     },
 
-    m_out : function(){
-        //this.style.cursor = "default";
+    /*m_out : function(){
+        this.style.cursor = "default";
         if (this.$onmouseout)
             this.$onmouseout();
         this.onmouseout = this.$onmouseout || null;
-    },
+    },*/
 
     dragover : function(o, el, e){
         e = e || window.event;
+
+        //@todo optimize by not checking the same node dragged over twice in a row
 
         var fEl;
         if (o.$findValueNode)
@@ -748,7 +800,7 @@ apf.DragServer = {
             ? apf.xmldb.getNode(fEl)
             : apf.xmldb.findXmlNode(el));
         var candrop = o.isDropAllowed
-            ? o.isDropAllowed(this.dragdata.selection, elSel || o.xmlRoot)
+            ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
             : false;
         //EVENT - cancellable: ondragover
         if (o.dispatchEvent("dragover", this.dragdata) === false)
@@ -756,12 +808,12 @@ apf.DragServer = {
 
         //Set Cursor
         var srcEl = e.originalTarget || e.srcElement || e.target;
-        //srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
+        /*srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
         if (srcEl.onmouseout != this.m_out) {
             srcEl.$onmouseout = srcEl.onmouseout;
             srcEl.onmouseout   = this.m_out;
         }
-        //o.oExt.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
+        o.oExt.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);*/
 
         //REQUIRED INTERFACE: __dragover()
         if (o && o.$dragover)
@@ -817,8 +869,7 @@ apf.DragServer = {
 
         //Move XML
         var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
-            action, (candrop[0] == o.xmlRoot), // || !o.isTraverseNode(candrop[0])
-            srcO.isDragAllowed(this.dragdata.selection), e);
+            action, (candrop[0] == o.xmlRoot), this.dragdata.rules, e);
         this.dragdata.resultNode = rNode;
 
         //REQUIRED INTERFACE: __dragdrop()
@@ -953,13 +1004,6 @@ apf.DragServer = {
             apf.DragServer.dragout(host);
         apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
         apf.DragServer.stop(true);
-
-        //Clear Selection
-        if (apf.isNS) {
-            var selObj = window.getSelection();
-            if (selObj)
-                selObj.collapseToEnd();
-        }
     }
 };
 

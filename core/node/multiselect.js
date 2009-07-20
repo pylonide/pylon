@@ -238,7 +238,7 @@ apf.MultiSelect = function(){
             throw new Error(apf.formatErrorString(0,
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
-                 component. This is not allowed."));
+                 element. This is not allowed."));
         }
         //#endif
 
@@ -246,18 +246,14 @@ apf.MultiSelect = function(){
         for (var i = 0; i < nodeList.length; i++) {
             changes.push({
                 func : "removeNode",
-                args   : [nodeList[i]]
+                args : [nodeList[i]]
             });
         }
         
-        var action = this.actionRules && this.actionRules["removegroup"] 
-            ? "removegroup" 
-            : "remove"
-
-        if (action == "removegroup")
-            return this.executeAction("multicall", changes, action, nodeList[0]);
+        if (this.actionRules && this.actionRules["removegroup"])
+            return this.executeAction("multicall", changes, "removegroup", nodeList[0]);
         else {
-            return this.executeAction("multicall", changes, action, 
+            return this.executeAction("multicall", changes, "remove", 
               nodeList[0], null, null, nodeList.length > 1 ? nodeList : null);
         }
     };
@@ -1113,6 +1109,9 @@ apf.MultiSelect = function(){
 
         return r;
     };
+    this.$getSelection = function(){
+        return valueList;
+    }
 
     /**
      * Selects the next {@link term.datanode data node} to be selected.
