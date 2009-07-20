@@ -110,8 +110,8 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
             this.$removeClearMessage();
         
         if (this.createAml) {
-            if (typeof code == "string") 
-                code = apf.xmldb.getXml(code);
+            if (typeof value == "string")
+                value = apf.xmldb.getXml(value);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
             // of the this.$aml xml. 

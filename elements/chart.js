@@ -182,7 +182,7 @@ apf.chart = apf.component(apf.NODE_VISIBLE, function(){
             var pos = apf.getAbsolutePosition(_self.oExt,document.documentElement);
             var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
                 y = e.clientY - pos[1] + document.documentElement.scrollTop;
-            for(var i = stack.length-1;i>=0;i--)
+            for(var t, i = stack.length-1;i>=0;i--)
                 (t=stack[i]).$mouseUp(x - t.left, y - t.top);
             stack.length = 0;
         }
@@ -210,7 +210,7 @@ apf.chart = apf.component(apf.NODE_VISIBLE, function(){
             }
         }
     
-        wheelEvent = function(e) {
+        var wheelEvent = function(e) {
 			if(doinit)return;
             if(!e) e = window.event;
             
@@ -615,7 +615,7 @@ apf.graph = apf.component(apf.NODE_VISIBLE, function(){
         var v_state = this.v_state = []; // class
         this.v_stateresolve = false;
         // x / y value array
-        var p,v,n,k,l,t = (new Date()).getTime()*0.001;
+        var p,v,n,k,l,t = (new Date()).getTime()*0.001, css;
         var series, split, delim, caption, cls, formula, length, mip;
         if (typeof value == "string") {
             series  = value;

@@ -98,7 +98,7 @@ apf.soap = function(){
         host : this,
 
         object : function(o){
-            var wo = o;//.valueOf();
+            var prop, retstr, wo = o;//.valueOf();
 
             for (prop in wo) {
                 if (typeof wo[prop] != "function" && prop != "type") {
@@ -306,7 +306,7 @@ apf.soap = function(){
             data.ownerDocument.setProperty("SelectionNamespaces",
                 "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xds='http://www.w3.org/2001/XMLSchema' xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'");
 
-        rvalue = data.getElementsByTagName("SOAP-ENV:Body")[0];///node()/node()[2]
+        var rvalue = data.getElementsByTagName("SOAP-ENV:Body")[0];///node()/node()[2]
         if (!rvalue && data.getElementsByTagNameNS)
             rvalue = data.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/", "Body")[0]
 

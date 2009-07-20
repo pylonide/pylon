@@ -955,7 +955,7 @@ apf.model = function(data, caching){
 
             //Checking for xpath
             if (typeof options.insertPoint == "string")
-                insertPoint = _self.data.selectSingleNode(options.insertPoint);
+                options.insertPoint = _self.data.selectSingleNode(options.insertPoint);
 
             //Call insert function
             (options.amlNode || _self).insert(data, options.insertPoint, apf.extend({
@@ -1232,8 +1232,8 @@ apf.model = function(data, caching){
                     type != "native" ? type : "cgivars");
 
             if (instruction.match(/^rpc\:/)) {
-                rpc = rpc.split(".");
-                var oRpc = self[rpc[0]];
+                var rpc  = rpc.split("."),
+                    oRpc = self[rpc[0]];
                 oRpc.callWithString(rpc[1], data, cbFunc);
                 //Loop throught vars
                 //Find components with the same name

@@ -469,7 +469,7 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$loadAml = function(x) {
-        var node, panel, nodes = this.$aml.childNodes;
+        var i, l, node, panel, nodes = this.$aml.childNodes;
  
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];

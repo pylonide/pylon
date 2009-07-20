@@ -289,7 +289,7 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
                 
                 //#ifdef __SUPPORT_SAFARI
-                xpath = this.traverse + "[" + rule + "='"
+                var xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
                 /*#else
                 xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";

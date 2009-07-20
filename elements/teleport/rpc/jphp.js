@@ -90,7 +90,7 @@ apf.jphp = function(){
         object: function(ob){
             var ob = ob.valueOf();
             
-            var length = 0, x = "";
+            var length = 0, x = "", prop;
             for (prop in ob) {
                 if (typeof this[prop] != "function") {
                     length++;

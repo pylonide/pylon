@@ -299,7 +299,7 @@ apf.video.TypeQTCompat = (function(){
             }
         }
         else {
-            qtObj = false;
+            var qtObj = false;
             execScript("on error resume next: qtObj = IsObject(CreateObject(\"QuickTimeCheckObject.QuickTimeCheck.1\"))", "VBScript");
             U = qtObj;
         }
@@ -322,7 +322,7 @@ apf.video.TypeQTCompat = (function(){
             }
         }
         else {
-            ieQTVersion = null;
+            var ieQTVersion = null;
             execScript("on error resume next: ieQTVersion = CreateObject(\"QuickTimeCheckObject.QuickTimeCheck.1\").QuickTimeVersion", "VBScript");
             if (ieQTVersion) {
                 var temp = "";

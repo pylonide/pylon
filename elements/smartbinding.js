@@ -619,7 +619,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
         this.amlNodes[amlNode.uniqueId] = null;
         delete this.amlNodes[amlNode.uniqueId];
         
-        for (part in parts) {
+        for (var part in parts) {
             //#ifdef __SUPPORT_SAFARI2
             if (typeof parts[part] != "string") continue;
             //#endif
@@ -665,8 +665,10 @@ apf.smartbinding = function(name, xmlNode, parentNode){
     this.$updateMarkedItems = function(){
         clearTimeout(timer);
         
-        var amlNode, model, q = queue; timer = null; queue = {}
-        for (var id in q) {
+        var amlNode, model, id, part, q = queue;
+        timer = null;
+        queue = {}
+        for (id in q) {
             //We're only processing nodes that are registered here
             if (!this.amlNodes[id])
                 continue;

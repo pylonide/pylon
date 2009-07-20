@@ -87,8 +87,7 @@ apf.xmlrpc = function(){
         host: this,
         
         object: function(o){
-            var wo = o;//.valueOf();
-            retstr = "<struct>";
+            var prop, retstr = "<struct>", wo = o;//.valueOf();
             
             for (prop in wo) {
                 if (typeof wo[prop] != "function" && prop != "type") {
@@ -251,7 +250,7 @@ apf.xmlrpc = function(){
                 if (data && data.tagName == "data") {
                     ret = new Array();
                     
-                    var i = 0;
+                    var child, i = 0;
                     while (child = apf.getNode(data, [i++])) {
                         ret.push(this.unserialize(child));
                     }

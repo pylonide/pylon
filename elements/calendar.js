@@ -348,8 +348,8 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         var nextMonthDays = 1;
         /* Calculations - end */
 
-        var ctDiff = apf.getDiff(this.oExt);
-        _width = (this.width || this.oExt.offsetWidth) - ctDiff[0];
+        var ctDiff = apf.getDiff(this.oExt),
+            _width = (this.width || this.oExt.offsetWidth) - ctDiff[0];
 
         /* Navigation buttons */
         var navi = this.oNavigation.childNodes;
@@ -392,14 +392,15 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                             cWidthf = Math.floor(rWidth / 8)
                                 - cDiff[0] - cDiff2[0];
                             
-                            var width = cWidthf;
-                            var height = cWidthf 
+                            var width = cWidthf,
+                                height = cWidthf
                                 + (cDiff[1] > cDiff[0]
                                     ? cDiff[0] - cDiff[1]
                                     : 0) 
                                 + (cDiff2[1] > cDiff2[0]
                                     ? cDiff2[0] - cDiff2[1]
-                                    : 0);
+                                    : 0),
+                            paddingTop;
     
                             var paddingBottom = 
                                 paddingTop = Math.ceil((height

@@ -284,7 +284,7 @@ apf.appsettings = {
             //#endif
         }
         
-        var name, value, i, attr = x.attributes;
+        var name, value, i, a, attr = x.attributes;
         for (i = 0, l = attr.length; i < l; i++) {
             a     = attr[i];
             value = a.nodeValue;

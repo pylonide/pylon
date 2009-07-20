@@ -1014,7 +1014,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         document.onkeydown(e);
-        keydownTimer = null;
+        //keydownTimer = null;
     }
 
     var keyupTimer = null;

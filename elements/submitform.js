@@ -645,13 +645,15 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
     //HACK!
     this.reset = function(){
-      //Clear all error states
+        //Clear all error states
+        var name, el;
         for (name in this.elements) {
-            var el = this.elements[name];
+            el = this.elements[name];
 
             //Hack!!! maybe traverse
             if (el.length) {
-                throw new Error(apf.formatErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(apf.formatErrorString(this, "clearing form",
+                    "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
 
             el.clearError();
@@ -696,7 +698,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     //Reset form
     function onafterload(){
         //Clear all error states
-        for (name in this.elements) {
+        for (var name in this.elements) {
             if (apf.isSafari && (!this.elements[name]
               || !this.elements[name].$amlLoaders))
                 continue;

@@ -161,16 +161,15 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
     this.objCanvas;
     this.nodes = [];
 
-    lastBlockId = 0;
+    var lastBlockId   = 0,
+        template      = null,
+        //torename      = null,
+        resizeManager = null,
 
-    template      = null;
-    //torename      = null;
-    resizeManager = null;
-
-    xmlBlocks      = {};
-    objBlocks      = {};
-    xmlConnections = {};
-    connToPaint    = [];
+        xmlBlocks      = {},
+        objBlocks      = {},
+        xmlConnections = {},
+        connToPaint    = [];
 
     var _self = this;
 
@@ -350,7 +349,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
             xmlNodeArray = [xmlNodeArray];
         }
 
-        var props = changes = [];
+        var changes,
+            props = changes = [];
         var setNames = ["top", "left"];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
@@ -570,7 +570,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.$executeMulticallAction = function(atName, setNames, xmlNode, values) {
-        var props = changes = [], l = setNames.length;
+        var changes, props = changes = [], l = setNames.length;
         for (var i = 0; i < l; i++) {
             var node = this.getNodeFromRule(setNames[i], xmlNode, false, false,
                                             this.createModel),
@@ -748,9 +748,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
-        var blockId = this.applyRuleSetOnNode("id", xmlNode);
-
-        objBlock = objBlocks[blockId];
+        var blockId  = this.applyRuleSetOnNode("id", xmlNode),
+            objBlock = objBlocks[blockId];
 
         var t = parseInt(this.applyRuleSetOnNode("top", xmlNode))
                 ? this.applyRuleSetOnNode("top", xmlNode)

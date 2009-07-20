@@ -1320,7 +1320,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             p = curBtn.parentNode;
         }
         
-        for (var i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
+        for (var h, i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
             h = headings[nodes[i].getAttribute("hid")];
             
             //@todo fake optimization
@@ -2040,8 +2040,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     ? "overflowY"
                     : "overflow"] = "hidden";
                 
-                str   = [];
-                var s = this.selected.selectNodes("item");
+                var str = [],
+                    s   = this.selected.selectNodes("item");
                 if (type == "dropdown") {
                     if (!this.namevalue) {
                         s = self[h.xml.getAttribute("model")].queryNodes("item");

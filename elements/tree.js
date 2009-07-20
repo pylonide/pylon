@@ -622,6 +622,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
 
         if (isDeleting) {
             //if isLast fix previousSibling
+            var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
                 this.$fixItem(prevSib, this.getNodeFromCache(prevSib
                     .getAttribute(apf.xmldb.xmlIdTag) + "|" 

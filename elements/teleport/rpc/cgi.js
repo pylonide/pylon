@@ -204,7 +204,7 @@ apf.cgi = function(){
                 continue;
 
             if (form.elements[i].tagname = 'select' && form.elements[i].multiple) {
-                for (j = 0; j < form.elements[i].options.length; j++) {
+                for (var j = 0; j < form.elements[i].options.length; j++) {
                     if (form.elements[i].options[j].selected)
                         args.push(form.elements[i].name
                             + "="
