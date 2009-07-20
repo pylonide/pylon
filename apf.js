@@ -813,7 +813,8 @@ var apf = {
         oBlank.implement = this.implement;
         oBlank.implement(apf.Class);
 
-        oBlank.uniqueId = this.all.push(oBlank) - 1;
+        if (!oBlank.uniqueId)
+            oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
 
     /**

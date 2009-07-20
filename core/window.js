@@ -39,8 +39,8 @@
  * @since       0.8
  */
 apf.window = new (function(){
-    apf.register(this, "window", apf.NODE_HIDDEN);
-    this.apf = apf;
+    this.uniqueId = apf.all.push(this);
+    this.apf      = apf;
 
     /**
      * Returns a string representation of this object.
@@ -1198,6 +1198,7 @@ apf.window = new (function(){
     };
     
     this.init = function(){
+        apf.makeClass(this);
         this.document = apf.document = new apf.AmlDocument();
         
         //#ifdef __WITH_ACTIONTRACKER

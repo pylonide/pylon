@@ -1262,11 +1262,9 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     this.$draw = function(){
         if (!this.$aml.getAttribute("skin")) {
             var mode = this.$aml.getAttribute("mode");
-            if (!this.$aml.getAttribute("skin")) {
-                this.skinName = null;
-                this.skin = mode + "tree";
-                this.$loadSkin();
-            }
+            this.skinName = null;
+            this.skin = mode + "tree";
+            this.$loadSkin();
         }
         
         //Build Main Skin
