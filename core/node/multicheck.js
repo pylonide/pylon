@@ -171,6 +171,9 @@ apf.MultiCheck = function(){
     }
     
     this.checkList = function(xmlNodeList, uncheck, noClear, noEvent){
+        if (apf.isIE < 8)
+            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
+        
         if (this.disabled) return;
         
         if (!noEvent && this.dispatchEvent("beforecheck", {
