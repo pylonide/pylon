@@ -530,7 +530,7 @@ apf.DragDrop = function(){
             var el = (fEl
                 ? apf.xmldb.getNode(fEl)
                 : apf.xmldb.findXmlNode(srcEl));
-            if (multiselect && (!_self.selected || el == _self.xmlRoot) || !el)
+            if (multiselect && (!_self.selected || !el || el == _self.xmlRoot))
                 return;
 
             if (_self.isDragAllowed(multiselect ? _self.$getSelection() : el)) {
@@ -832,7 +832,10 @@ apf.DragServer = {
     },
 
     dragout : function(o){
-        if (this.last == o) return false;
+        if (this.last == o) 
+            return false;
+
+        this.lastFel = null;
 
         //EVENT: ondragout
         if (o)

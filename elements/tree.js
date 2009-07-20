@@ -472,7 +472,8 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     var lastel;
-    this.$dragout = function(dragdata){
+    this.$dragout  =
+    this.$dragdrop = function(el, dragdata, extra){
         if (lastel)
             this.$setStyleClass(lastel, "", ["dragDenied", "dragInsert",
                 "dragAppend", "selected", "indicate"]);
@@ -482,11 +483,15 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             this.$setStyleClass(sel[i], "selected", ["dragDenied",
                 "dragInsert", "dragAppend", "indicate"]);
         
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Drop"]);
+        
         lastel = null;
     };
 
     this.$dragover = function(el, dragdata, extra){
-        if(el == this.oExt) return;
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Drop");
+        if (el == this.oExt)
+            return;
         
         var sel = this.$getSelection(true);
         for (var i = 0, l = sel.length; i < l; i++) 
@@ -517,20 +522,6 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 : "dragDenied");
         }
     };
-
-    this.$dragdrop = function(el, dragdata, extra){
-        if (lastel)
-            this.$setStyleClass(lastel, "", 
-              ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
-        
-        var sel = this.$getSelection(true);
-        for (var i = 0, l = sel.length; i < l; i++) 
-            this.$setStyleClass(sel[i], "selected", ["dragDenied",
-                "dragInsert", "dragAppend", "indicate"]);
-        
-        lastel = null;
-    };
-    
     // #endif
     
     /**** Databinding Support ****/
