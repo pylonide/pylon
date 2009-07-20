@@ -58,13 +58,17 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {mixed} page the name of numer of the page which is made active.
+     * @param {mixed}    page     the name of numer of the page which is made active.
+     * @param {Function} callback the function called after setting the page. Especially handy when using the load attribute.
      */
     var curCallback;
     this.set = function(page, callback, noEvent){
         if (noEvent || this.load && !this.$findPage(page, {}))
             return this.$propHandlers["activepage"].call(this, page, callback, noEvent);
         
+        if (callback && this.activepage == page)
+            return callback();
+
         curCallback = callback;
         this.setProperty("activepage", page);
     }
@@ -134,6 +138,11 @@ apf.BaseTab = function(){
 
         if (!page) {
             if (this.load) {
+                if (this.$findPage("loading", {}))
+                    this.$propHandlers["activepage"].call(this, "loading");
+                
+                this.setProperty("loading", true);
+                
                 apf.getData(this.load, null, {
                     page : next
                 }, function(data, state, extra){
@@ -146,7 +155,11 @@ apf.BaseTab = function(){
                           _self, oError) === true)
                             return true;
                         
-                        throw oError;
+                        if (next == "404")
+                            throw oError;
+                        
+                        _self.set("404", callback);
+                        _self.setProperty("loading", false);
                     }
                     
                     _self.add(null, null, "<a:page xmlns:a='" + apf.ns.apf 
@@ -155,6 +168,8 @@ apf.BaseTab = function(){
                     
                     if (callback) 
                         callback();
+                    
+                    _self.setProperty("loading", false);
                 });
                 return;
             }
