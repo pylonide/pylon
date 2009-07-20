@@ -822,8 +822,9 @@ apf.XmlDatabase = function(){
      * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
      * @return {XMLElement} the copy of the {@link term.datanode data node}.
      */
-    this.getCleanCopy = function(xmlNode){
-        return this.cleanNode(xmlNode.cloneNode(true));
+    this.getCleanCopy = 
+    apf.getCleanCopy  = function(xmlNode){
+        return apf.xmldb.cleanNode(xmlNode.cloneNode(true));
     };
 
     /**

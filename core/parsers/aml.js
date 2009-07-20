@@ -624,7 +624,7 @@ apf.AmlParser = {
             }
 
             // #ifdef __WITH_EDITMODE || __WITH_LANG_SUPPORT
-            if (apf.xmldb.getTextNode(x)) {
+            if (apf.getTextNode(x)) {
                 var data = {
                     amlNode  : x,
                     htmlNode : o

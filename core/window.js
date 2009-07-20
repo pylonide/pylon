@@ -1017,6 +1017,14 @@ apf.window = new (function(){
         if (!e)
             e = event;
 
+        //#ifdef __WITH_DEBUG_WIN
+        if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
+            if (!apf.debugwin.resPath)
+                apf.debugwin.init();
+            apf.debugwin.activate();
+        }
+        //#endif
+
         //#ifdef __WITH_CONTEXTMENU
         if (e.keyCode == 93)
             apf.contextMenuKeyboard = true;

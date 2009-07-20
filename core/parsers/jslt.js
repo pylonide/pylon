@@ -998,7 +998,16 @@ apf.JsltImplementation = function(){
         var jsltFunc, cacheId, jsltStr, doTest;
         
         //Type detection xmlNode
-        xmlNode = this.$getBindXmlNode(xmlNode);
+        if (typeof xmlNode != "object")
+            xmlNode = apf.getXmlDom(xmlNode);
+        if (xmlNode.nodeType == 9)
+            xmlNode = xmlNode.documentElement;
+        if (xmlNode.nodeType == 3 || xmlNode.nodeType == 4)
+            xmlNode = xmlNode.parentNode;
+        if (xmlNode.nodeType == 2)
+            xmlNode = xmlNode.ownerElement 
+                || xmlNode.parentNode 
+                || xmlNode.selectSingleNode("..");
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {
