@@ -244,7 +244,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
           .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
         
         for (var i = pNodes.length - 1; i >=0; i--)
-            this.slideClose(null, pNodes[i]);
+            _self.slideToggle(apf.xmldb.getHtmlNode(pNodes[i], _self), 2, true);
     };
     
     /**
