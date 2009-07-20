@@ -924,7 +924,7 @@ apf.MultiSelect = function(){
 
         for (var sel, i=0;i<xmlNodeList.length;i++) {
             if (!xmlNodeList[i] || xmlNodeList[i].nodeType != 1) continue; //@todo fix select state in unserialize after removing
-            var xmlNode = xmlNodeList[i];
+            var htmlNode, xmlNode = xmlNodeList[i];
 
             //Type Detection
             if (typeof xmlNode != "object")

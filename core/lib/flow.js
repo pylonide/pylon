@@ -1152,7 +1152,7 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         }
 
         l = s;
-        position = s[0] > d[0]
+        var position = s[0] > d[0]
                  ? (s[1] > d[1]
                      ? "TL" : (s[1] < d[1] ? "BL" : "ML"))
                  : (s[0] < d[0]

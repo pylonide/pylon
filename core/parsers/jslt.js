@@ -879,7 +879,7 @@ apf.JsltImplementation = function(){
                 else //shorthand expansion
                     if (t == 9) {
                         var nt1 = (i < k - 1) ? n[i + 1][0] : -1, nt2 = (i < k - 2) ? n[i + 2][0] : -1;
-                        var m = n[i][1];
+                        var m = n[i][1], lt;
                         
                         if (nt1 == 12) {
                             if (nt2 == 1) {

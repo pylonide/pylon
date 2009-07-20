@@ -323,7 +323,7 @@ apf.debugwin = {
         else {
             //Opera doesnt support caller... weird...
             try {
-                var loop = end = apf.isIE
+                var end, loop = end = apf.isIE
                   ? this.show.caller.caller
                   : this.show.caller.caller
                       ? this.show.caller.caller.caller
@@ -406,8 +406,8 @@ apf.debugwin = {
 
     formatError: function(e) {
         var parse         = e.message.split(/\n===\n/),
-            amlContext    = apf.highlightXml(parse[1] ? apf.debugwin.outdent(parse[1].trim(true), true).replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/ /g, "&nbsp;") : "")
-                //.replace(/</g, "&lt;").replace(/\n/g, "<br />")
+            amlContext    = apf.highlightXml(parse[1] ? apf.debugwin.outdent(parse[1].trim(true), true).replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/ /g, "&nbsp;") : ""),
+                //.replace(/</g, "&lt;").replace(/\n/g, "<br />"),
             errorMessage  = parse[0].replace(/---- APF Error ----\n/g, "")
                 .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://www.ajax.org#docs/errors/$1'>$1</a>]"),
                 //.replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>"),//.replace(/\n/g, "<br />"),

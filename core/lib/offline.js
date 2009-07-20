@@ -193,7 +193,7 @@ apf.namespace("offline", {
 
     continueInit : function(){
         // Check if all specified resources are available
-        for (i = this.resources.length - 1; i >= 0; i--) {
+        for (var i = this.resources.length - 1; i >= 0; i--) {
             if (!this[this.resources[i]])
                 this.resources.removeIndex(i);
             else
@@ -471,7 +471,7 @@ apf.namespace("offline", {
         apf.console.info("Clearing all offline and state cache");
         //#endif
 
-         for (i = this.resources.length - 1; i >= 0; i--) {
+         for (var i = this.resources.length - 1; i >= 0; i--) {
             if (this[this.resources[i]].clear)
                 this[this.resources[i]].clear();
         }

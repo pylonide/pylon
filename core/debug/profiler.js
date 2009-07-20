@@ -215,7 +215,7 @@ apf.profiler = {
                         ? arguments.callee.caller.caller.nameSelf
                         : null]);
 
-                for (var i = 0; i < todo.length; i++) {
+                for (var iLength, i = 0; i < todo.length; i++) {
                     iLength = this.stackTrace[todo[i][0]].executions.length - 1;
                     if (this.stackTrace[todo[i][0]].executions[iLength][1] == null) {
                         this.stackTrace[todo[i][0]].executions[iLength][1] = new Date();
@@ -415,7 +415,7 @@ apf.profiler = {
             </tr>');
         
         var rowColor, sortedStack = this.sortStack(stackTrace);
-        for (i = 0; i < sortedStack.length; i++) {
+        for (var stack, i = 0; i < sortedStack.length; i++) {
             stack = stackTrace[sortedStack[i][0]];
             rowColor = (i % 2 == 0) ? row0 : row1;
             out.push('<tr style="background-color: ', rowColor, '; padding: 0; margin: 0; ">\

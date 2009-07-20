@@ -540,7 +540,7 @@ apf.convertMethods = {
                         str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
                             + escape(lnodes[j].firstChild.nodeValue));
                     
-                    var a, attr = lnodes[j].attributes;
+                    var k, a, attr = lnodes[j].attributes;
                     for (k = 0; k < attr.length; k++) {
                         if (!(a = attr[k]).nodeValue)
                             continue;

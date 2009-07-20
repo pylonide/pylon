@@ -211,7 +211,7 @@ apf.scrollbar = function(){
     
     var LIST, viewheight, scrollheight;
 
-    function onscroll(timed, perc){
+    var onscroll = function(timed, perc){
         LIST.scrollTop = (LIST.scrollHeight - LIST.offsetHeight + 4) * CURVALUE;
         /*var now = new Date().getTime();
          if (timed && now - LIST.last < (timed ? SCROLLWAIT : 0)) return;

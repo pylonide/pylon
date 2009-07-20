@@ -271,6 +271,7 @@ apf.silverlight = (function() {
         delete slProperties.alt;
 
         // detect that the correct version of Silverlight is installed, else display install
+        var slPluginHTML;
         if (isInstalled(slPluginHelper.version)) {
             //move unknown events to the slProperties array
             for (var name in slEvents) {

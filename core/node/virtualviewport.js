@@ -451,7 +451,7 @@ apf.VirtualViewport = function(){
     
     function buildList(markers, markerId, distance, xml) {
         var vlen = this.viewport.limit;
-        var marker, nodes, start, list = [];
+        var marker, markerid, nodes, start, list = [];
         
         //Count from 0
         if (markerId == -1) {

@@ -176,7 +176,7 @@ apf.MultiLevelBinding = function(amlNode){
     }
     
     this.clear = function(nomsg, do_event){
-        this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
+        this.documentId = this.xmlRoot = this.cacheID = null;
 
         //@todo fix 'default' behaviour
         /*if (!nomsg && amlNode["default"])

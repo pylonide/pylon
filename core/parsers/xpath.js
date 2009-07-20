@@ -378,6 +378,7 @@ apf.XPath = {
         if (type == "not")
             return !nodelist;
 
+        var arg1;
         if (typeof nodelist == "object" || nodelist.dataType == "array") {
             if (nodelist && !nodelist.length)
                 nodelist = [nodelist];
@@ -398,7 +399,8 @@ apf.XPath = {
             }
             return res;
         }
-        else arg1 = nodelist;
+        else
+            arg1 = nodelist;
 
         switch(type){
             case "position":

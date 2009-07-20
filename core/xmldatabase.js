@@ -694,8 +694,8 @@ apf.XmlDatabase = function(){
         clearTimeout(notifyTimer);
         
         for (var uId in notifyQueue) {
-            var q = notifyQueue[uId];
-            amlNode = apf.lookup(uId);
+            var q       = notifyQueue[uId],
+                amlNode = apf.lookup(uId);
             if (!amlNode || !q)
                 continue;
 

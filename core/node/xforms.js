@@ -187,7 +187,7 @@ apf.XForms = function(){
             
                 switch (actionNode.getAttribute("level")) {
                     case "ephemeral":
-                        status = message;
+                        self.status = message;
                         break;
                     case "modeless":
                         document.title = message;

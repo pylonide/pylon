@@ -94,7 +94,7 @@ apf.skins = {
         this.purgeCss(mediaPath || base + "images/", iconPath || base + "icons/");
         
         if (this.queue[name]) {
-            for (prop in this.queue[name]) {
+            for (var prop in this.queue[name]) {
                 this.queue[name][prop]();
             }
         }
@@ -107,6 +107,7 @@ apf.skins = {
      * @method
      */
     loadStylesheet: function(filename, title){
+        var o;
         with (o = document.getElementsByTagName("head")[0].appendChild(document.createElement("LINK"))) {
             rel   = "stylesheet";
             type  = "text/css";

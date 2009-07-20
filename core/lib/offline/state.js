@@ -169,7 +169,8 @@ apf.namespace("offline.state", {
     
     //blrgh.. unoptimized
     getAll : function(obj) {
-        var res = {}, x, name = obj.name || obj.uniqueId + "_" + obj.tagName;
+        var prop, res = {}, x,
+            name = obj.name || obj.uniqueId + "_" + obj.tagName;
         for (prop in this.lookup) {
             x = prop.split(".");
             if (x[0] == name)

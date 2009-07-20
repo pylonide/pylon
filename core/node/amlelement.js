@@ -502,7 +502,7 @@ apf.AmlElement = function(){
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults tag in appsettings
         if (apf.appsettings.defaults[this.tagName]) {
-            d = apf.appsettings.defaults[this.tagName];
+            var d = apf.appsettings.defaults[this.tagName];
             for (i = 0, l = d.length; i < l; i++) {
                 name = d[i][0], value = d[i][1];
                 if (this[name] === undefined) {
@@ -665,7 +665,7 @@ apf.AmlElement = function(){
                           + data + "</a:application>", true).documentElement;
 
                 if (aml.ownerDocument.importNode) {
-                    doc = aml.ownerDocument;
+                    var doc = aml.ownerDocument;
                     for (var i = data.childNodes.length - 1; i >= 0; i--)
                         aml.insertBefore(doc.importNode(data.childNodes[i], true), aml.firstChild);
                 }

@@ -71,8 +71,8 @@ var __INTERACTIVE__ = 1 << 21;
  * @see element.appsettings.attribute.drag-outline
  */
 apf.Interactive = function(){
-    var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, 
-        w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
+    var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, lMin, 
+        tMin, w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
         dragOutline, resizeOutline;
 

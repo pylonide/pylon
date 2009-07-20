@@ -162,8 +162,9 @@ apf.crypto.BigInt = (function() {
         // 2 <= radix <= 36
         var b = new BigInt();
         b.digits[0] = radix;
-        var qr = biDivideModulo(x, b);
-        var result = hexatrigesimalToChar[qr[1].digits[0]];
+        var digit,
+            qr     = biDivideModulo(x, b),
+            result = hexatrigesimalToChar[qr[1].digits[0]];
         while (biCompare(qr[0], bigZero) == 1) {
             qr = biDivideModulo(qr[0], b);
             digit = qr[1].digits[0];
@@ -188,8 +189,9 @@ apf.crypto.BigInt = (function() {
       'a', 'b', 'c', 'd', 'e', 'f');
     
     function digitToHex(n) {
-        var mask = 0xf;
-        var result = "";
+        var i, 
+            mask   = 0xf,
+            result = "";
         for (i = 0; i < 4; ++i) {
             result += hexToChar[n & mask];
             n >>>= 4;
@@ -348,9 +350,9 @@ apf.crypto.BigInt = (function() {
         var c;
         var n = biHighIndex(x);
         var t = biHighIndex(y);
-        var u, uv, k;
+        var u, uv, k, i, j;
     
-        for (var i = 0; i <= t; ++i) {
+        for (i = 0; i <= t; ++i) {
             c = 0;
             k = i;
             for (j = 0; j <= n; ++j, ++k) {
@@ -367,9 +369,8 @@ apf.crypto.BigInt = (function() {
     }
     
     function biMultiplyDigit(x, y) {
-        var n, c, uv;
-    
-        result = new BigInt();
+        var n, c, uv,
+            result = new BigInt();
         n = biHighIndex(x);
         c = 0;
         for (var j = 0; j <= n; ++j) {

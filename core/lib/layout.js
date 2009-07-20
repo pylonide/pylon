@@ -1915,13 +1915,14 @@ apf.layoutParser = function(parentNode, pMargin){
 
         //@todo this function needs some serious optimization (according to the profiler)
         this.parseRule = function(rule){
-            var aRule        = rule.split(" = ");
-            var id           = aRule[0].replace(/^([_\w\d\|]+)\.style\.(\w)/, this.maskText);
-            var vname        = "a" + aRule[0].replace(/[\.\|]/g, "_");
+            var aRule        = rule.split(" = "),
+                id           = aRule[0].replace(/^([_\w\d\|]+)\.style\.(\w)/, this.maskText),
+                vname        = "a" + aRule[0].replace(/[\.\|]/g, "_");
             knownVars[vname] = true;
 
-            var depsearch    = aRule[1].split(/[ \(\)]/);// " "
-            var deps         = [];
+            var depsearch    = aRule[1].split(/[ \(\)]/),// " "
+                deps         = [],
+                ruleB;
             for (var i = 0; i < depsearch.length; i++) {
                 if (depsearch[i].match(/^([_\w\d\|]+)\.offset(\w+)$/) && !depsearch[i].match(/PNODE/)) {
                     deps.push(depsearch[i]);
@@ -1950,7 +1951,7 @@ apf.layoutParser = function(parentNode, pMargin){
                 id        : id,
                 rule_p1   : "var " + vname + " = ",
                 rule_p2   : aRule[1],
-                ruleb      : ruleB,
+                ruleb     : ruleB,
                 deps      : deps,
                 processed : false
             };
@@ -1958,8 +1959,8 @@ apf.layoutParser = function(parentNode, pMargin){
 
         //@todo test safari
         this.calc = function(aRules){
-            var str = "";
-            for (var i = 0; i < aRules.length; i++) {
+            var i, prop, str = "";
+            for (i = 0; i < aRules.length; i++) {
                 if (aRules[i].match(/^var/)) {
                     this.nRules.push(aRules[i]);
                     continue;

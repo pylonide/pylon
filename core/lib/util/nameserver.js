@@ -54,7 +54,7 @@ apf.namespace("nameserver", {
     remove : function(type, item){
         var list = this.lookup[type];
         if (list) {
-            for (prop in list) {
+            for (var prop in list) {
                 if (list[prop] == item) {
                     delete list[prop];
                 }

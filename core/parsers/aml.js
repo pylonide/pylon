@@ -909,7 +909,7 @@ apf.AmlParser = {
             var model = new apf.model().loadAml(q, amlParent);
 
             if (amlParent && amlParent.hasFeature(__DATABINDING__)) {
-                modelId = "model" + amlParent.uniqueId;
+                var modelId = "model" + amlParent.uniqueId;
                 amlParent.$aml.setAttribute("model", modelId);
                 model.register(amlParent);
                 apf.nameserver.register("model", modelId, model);

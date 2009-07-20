@@ -883,7 +883,7 @@ apf.DataBinding = function(){
             : (type == "choice" ? cXmlChoice : cXmlSelect);
 
         //Call Load of objects
-        for (var x, o, i = 0; i < a.length; i++) {
+        for (var x, o, xpath, i = 0; i < a.length; i++) {
             o     = a[i].o;
             xpath = a[i].xpath;
             o.load((xpath && xmlNode)
@@ -3465,7 +3465,7 @@ apf.MultiselectBinding = function(){
                     attr[nodes[j].nodeName] = nodes[j].nodeValue;
 
                 //Remove nodes
-                for (var i = 1; i < e.list.length; i++) {
+                for (var prop, i = 1; i < e.list.length; i++) {
                     for (prop in attr) {
                         if (typeof attr[prop] != "string") continue;
 

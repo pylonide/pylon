@@ -29,7 +29,8 @@ apf.runXslt = function(){
         this.templates = {};
         this.p = {
             "value-of": function(context, xslNode, childStack, result){
-                var xmlNode = apf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
+                var value,
+                    xmlNode = apf.XPath.selectNodes(xslNode.getAttribute("select"), context)[0];// + "[0]"
                 if (!xmlNode)
                     value = "";
                 else {
@@ -184,7 +185,7 @@ apf.runXslt = function(){
             "copy-clone": function(context, xslNode, childStack, result){
                 result = result.appendChild(apf.canImportNode ? result.ownerDocument.importNode(xslNode, false) : xslNode.cloneNode(false));
                 if (result.nodeType == 1) {
-                    for (var i = 0; i < result.attributes.length; i++) {
+                    for (var value, i = 0; i < result.attributes.length; i++) {
                         var blah = result.attributes[i].nodeValue; //stupid Safari shit
                         if (!apf.isSafariOld && result.attributes[i].nodeName.match(/^xmlns/))
                             continue;
@@ -252,7 +253,7 @@ apf.runXslt = function(){
 
         this.importStylesheet = function(xslDoc){
             this.xslDoc = xslDoc.nodeType == 9 ? xslDoc.documentElement : xslDoc;
-            xslStack = this.compile(xslDoc);
+            var xslStack = this.compile(xslDoc);
 
             //var t = this.templates["/"] ? "/" : false;
             //if(!t) for(t in this.templates) if(typeof this.templates[t] == "array") break;

@@ -184,7 +184,7 @@ apf.namespace("draw", {
     // 3D API
     // draw a 3D polygon clipped against a z-plane
     poly3DClip : function(idx,pt,cm,zc,open){
-        var i = 0, d, pt, q, s = ["__n=0;"], x = 0, y = 1, z = 2, sx, sy, vx, vy, vxi, vyi;
+        var i = 0, d, p, pt, q, s = ["__n=0;"], x = 0, y = 1, z = 2, sx, sy, vx, vy, vxi, vyi;
         if(cm) x = cm[0], y = cm[1], z = cm[2];            
 
         //calculate z-clipping info for each vertex
@@ -1166,7 +1166,7 @@ apf.namespace("draw", {
         
         s.push("switch(_t?_t._mid:0){" );
         for(i = 0, j = v.length;i<j;i++){
-            style = v[i]; 
+            var style = v[i];
             //alert(apf.vardump(style).replace(/\t/g,'@').replace(/\n/g,'#'));
             this.style = style;
             if(v[i])
@@ -1413,7 +1413,7 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     //----------------------------------------------------------------------
     
     serializeStyleState : function(style){
-        var s = [] ,h,v,k;
+        var s = [] ,h,v,k,f;
         if(!style.$stylelist)return "";
         s.push("$storelist:_n=[", Array(style.$stylelist.length).join("[],"),"[]]");
         s.push(",$storelut:{");

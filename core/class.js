@@ -752,7 +752,7 @@ apf.Class = function(){
         //#endif
         
         //#ifdef __WITH_LANG_SUPPORT
-        for (prop in this.$isMultiLang) {
+        for (var prop in this.$isMultiLang) {
             apf.language.removeElement(this.$isMultiLang[prop][0], 
                 this.$isMultiLang[prop][1]);
         }

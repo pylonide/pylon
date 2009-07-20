@@ -93,9 +93,10 @@ function base64tobin(codestring){
 }
 
 function base64encode(binary){
-    var temp, bincount = 0;
-    var codestring = "";
-    var chars = "0123456789?@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    var temp, x,
+        bincount   = 0,
+        codestring = "",
+        chars      = "0123456789?@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     
     while (bincount < binary.length) {
         for (x = 0; x < 2; x++) {
@@ -178,8 +179,9 @@ apf.crypto.Blowfish.prototype = {
      * @type String
      */
     encode: function(str, pass){
-        var ciphertext = new String("");
-        var IV = new Array();
+        var ciphertext = new String(""),
+            IV         = new Array(),
+            x;
         
         for (x = 0; x < 4; x++) {
             if (typeof(this.customRand) == 'function') {
@@ -429,7 +431,7 @@ apf.crypto.Blowfish.prototype = {
     },
     
     encipher_array: function(x){
-        var count, xHi, xLo, Round, temp;
+        var i, count, xHi, xLo, Round, temp;
         
         for (i = 0; (i < x.length) || (x.length % 6); i += 2) {
             xHi = x[i];
@@ -460,7 +462,7 @@ apf.crypto.Blowfish.prototype = {
     },
     
     decipher: function(x){
-        var xHi, xLo, Round, temp;
+        var i, xHi, xLo, Round, temp;
         
         for (i = 0; i < x.length; i += 2) {
             xHi = x[i];

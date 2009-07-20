@@ -336,46 +336,46 @@ apf.tween = {
             return this;
         }
 
-        var steps = info.color
-            ? apf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
-            : apf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps);
+        var timer,
+            steps        = info.color
+                ? apf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
+                : apf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
+            _self        = this,
+            stepFunction = function(step){
+                _self.current = info;
+                if (info.control && info.control.stop) {
+                    info.control.stop = false;
 
-        var _self = this;
-        var stepFunction = function(step){
-            _self.current = info;
-            if (info.control && info.control.stop) {
-                info.control.stop = false;
+                    apf.tween.clearQueue(oHtml);
+                    if (info.onstop)
+                        info.onstop(oHtml, info.userdata);
+                    return;
+                }
 
-                apf.tween.clearQueue(oHtml);
-                if (info.onstop)
-                    info.onstop(oHtml, info.userdata);
-                return;
-            }
+                if (info.onbeforeeach
+                  && info.onbeforeeach(oHtml, info.userdata) === false)
+                    return;
 
-            if (info.onbeforeeach
-              && info.onbeforeeach(oHtml, info.userdata) === false)
-                return;
+                try {
+                   info.method(oHtml, steps[step], info);
+                }
+                catch (e) {}
 
-            try {
-               info.method(oHtml, steps[step], info);
-            }
-            catch (e) {}
+                if (info.oneach)
+                    info.oneach(oHtml, info.userdata);
 
-            if (info.oneach)
-                info.oneach(oHtml, info.userdata);
+                if (step < info.steps)
+                    timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
+                else {
+                    _self.current = null;
+                    if (info.control)
+                        info.control.stopped = true;
+                    if (info.onfinish)
+                        info.onfinish(oHtml, info.userdata);
 
-            if (step < info.steps)
-                timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
-            else {
-                _self.current = null;
-                if (info.control)
-                    info.control.stopped = true;
-                if (info.onfinish)
-                    info.onfinish(oHtml, info.userdata);
-
-                apf.tween.nextQueue(oHtml);
-            }
-        };
+                    apf.tween.nextQueue(oHtml);
+                }
+            };
 
         this.setQueue(oHtml, stepFunction);
 
@@ -495,40 +495,41 @@ apf.tween = {
             return this;
         }
 
-        var tweens = info.tweens;
-        var _self  = this;
-        var stepFunction = function(step){
-            _self.current = info;
-            if (info.control && info.control.stop) {
-                info.control.stop = false;
-                apf.tween.clearQueue(oHtml);
-                if (info.onstop)
-                    info.onstop(oHtml, info.userdata);
-                return;
-            }
-
-            try {
-                for (var i = 0; i < steps.length; i++) {
-                    tweens[i].method(tweens[i].oHtml || oHtml, 
-                      steps[i][step], tweens[i]);
+        var timer,
+            tweens       = info.tweens,
+            _self        = this,
+            stepFunction = function(step){
+                _self.current = info;
+                if (info.control && info.control.stop) {
+                    info.control.stop = false;
+                    apf.tween.clearQueue(oHtml);
+                    if (info.onstop)
+                        info.onstop(oHtml, info.userdata);
+                    return;
                 }
-            } catch (e) {}
 
-            if (info.oneach)
-                info.oneach(oHtml, info.userdata);
+                try {
+                    for (var i = 0; i < steps.length; i++) {
+                        tweens[i].method(tweens[i].oHtml || oHtml,
+                          steps[i][step], tweens[i]);
+                    }
+                } catch (e) {}
 
-            if (step < info.steps)
-                timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
-            else {
-                _self.current = null;
-                if (info.control)
-                    info.control.stopped = true;
-                if (info.onfinish)
-                    info.onfinish(oHtml, info.userdata);
+                if (info.oneach)
+                    info.oneach(oHtml, info.userdata);
 
-                apf.tween.nextQueue(oHtml);
-            }
-        };
+                if (step < info.steps)
+                    timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
+                else {
+                    _self.current = null;
+                    if (info.control)
+                        info.control.stopped = true;
+                    if (info.onfinish)
+                        info.onfinish(oHtml, info.userdata);
+
+                    apf.tween.nextQueue(oHtml);
+                }
+            };
 
         this.setQueue(oHtml, stepFunction);
 

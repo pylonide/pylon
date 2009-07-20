@@ -335,9 +335,10 @@ function playFrame() {
     if(!frame || !apf.uirecorder.isPlaying)
         return;
 
-    var lastTime = frame[0];
-    var simulate = false;
-    var src = frame[3], e;
+    var lastTime = frame[0],
+        simulate = false,
+        src = frame[3],
+        prop, e;
 
     if (apf.isIE) {
         e = document.createEventObject();
