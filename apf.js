@@ -1678,7 +1678,7 @@ var apf = {
 
                         if (apf.isIE) { //@todo generalize this
                             x.ownerDocument.setProperty("SelectionNamespaces",
-                                "xmlns:j='" + apf.ns.aml + "'");
+                                "xmlns:a='" + apf.ns.aml + "'");
                         }
 
                         apf.loadAmlIncludes(x);
@@ -1723,7 +1723,7 @@ var apf = {
             if (apf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<a:application")//xmlns:j='" + apf.ns.aml + "'
+                    .replace(/^<HTM./, "<a:application")//xmlns:a='" + apf.ns.aml + "'
                     .replace(/HTML>$/, "a:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }

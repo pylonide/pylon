@@ -661,7 +661,7 @@ apf.AmlElement = function(){
                 if (typeof data == "string")
                     data = apf.getAmlDocFromString(data.indexOf("<a:application") > -1
                       ? data 
-                      : "<a:application xmlns:j='" + apf.ns.aml +"'>" 
+                      : "<a:application xmlns:a='" + apf.ns.aml +"'>" 
                           + data + "</a:application>", true).documentElement;
 
                 if (aml.ownerDocument.importNode) {
