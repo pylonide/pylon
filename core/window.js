@@ -786,7 +786,7 @@ apf.window = new (function(){
 
         last = newState;
 
-        apf.window.dispatchEvent(last);
+        apf.dispatchEvent(last);
         //apf.console.warn(last);
     }
 
