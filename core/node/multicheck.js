@@ -42,7 +42,8 @@ apf.MultiCheck = function(){
 
     /**** Properties ****/
 
-    this.multicheck = true;
+    this.multicheck  = true;
+    this.checklength = 0;
 
     /**** Public Methods ****/
     
@@ -54,7 +55,7 @@ apf.MultiCheck = function(){
             return false;
         
         if (!this.multicheck && checkedList.length)
-            this.clearSelection(true);
+            this.clearChecked(true);
 
         checkedList.push(xmlNode);
         
@@ -317,6 +318,14 @@ apf.MultiCheck = function(){
         
         this.checkList(nodes);
     }
+    
+    //#ifdef __WITH_PROPERTY_BINDING
+    this.addEventListener("aftercheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != checkedList.length)
+            this.setProperty("checklength", checkedList.length);
+    });
+    //#endif
 };
 
 //#endif
