@@ -311,11 +311,11 @@ apf.runNonIe = function (){
             xmlParser = new DOMParser();
             xmlParser = xmlParser.parseFromString(message, "text/xml");
 
-            //#ifdef __WITH_XMLDATABASE
+            //#ifdef __WITH_JSON2XML
             if (xmlParser.documentElement.tagName == "parsererror" && apf.xmldb
-              && apf.isJSON(message)) {
+              && apf.isJson(message)) {
                 try {
-                    xmlParser = apf.xmldb.fromJson(message, noError);
+                    xmlParser = apf.json2Xml(message, noError);
                 }
                 catch(e) {
                     throw new Error(apf.formatErrorString(1051, null,

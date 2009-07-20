@@ -630,7 +630,7 @@ apf.model = function(data, caching){
                         .replace(/xmlns=\"[^"]*\"/g, ""));
                 }
                 // we also support JSON data loading in a model CDATA section
-                else if (apf.isJSON(xmlNode.childNodes[0].nodeValue)) {
+                else if (apf.isJson(xmlNode.childNodes[0].nodeValue)) {
                     this.load(xmlNode.childNodes[0].nodeValue);
                 }
             }

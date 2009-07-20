@@ -60,16 +60,18 @@ apf.BaseTab = function(){
      * Sets the current page of this element.
      * @param {mixed} page the name of numer of the page which is made active.
      */
-    this.set = function(page, noEvent){
-        if (noEvent)
-            return this.$propHandlers["activepage"].call(this, page, noEvent);
-            
-        return this.setProperty("activepage", page);
+    var curCallback;
+    this.set = function(page, callback, noEvent){
+        if (noEvent || this.load && !this.$findPage(page, {}))
+            return this.$propHandlers["activepage"].call(this, page, callback, noEvent);
+        
+        curCallback = callback;
+        this.setProperty("activepage", page);
     }
 
     var inited = false,
         ready  = false,
-        _self  = this;;
+        _self  = this;
 
     /**** Properties and Attributes ****/
 
@@ -119,13 +121,44 @@ apf.BaseTab = function(){
      *  </a:tab>
      * </code>
      */
-    this.$propHandlers["activepage"]   = function(next, noEvent){
+    this.$propHandlers["activepage"]   = function(next, callback, noEvent){
         if (!inited) return;
+        
+        if (!callback) {
+            callback = curCallback;
+            curCallback = null;
+        }
 
         var page, info = {};
         page = this.$findPage(next, info);
 
         if (!page) {
+            if (this.load) {
+                apf.getData(this.load, null, {
+                    page : next
+                }, function(data, state, extra){
+                    if (state != apf.SUCCESS) {
+                        var oError = new Error(apf.formatErrorString(0, null,
+                            "Loading new page", "Could not load \
+                            new page: " + extra.message));
+
+                        if (extra.tpModule.retryTimeout(extra, state, 
+                          _self, oError) === true)
+                            return true;
+                        
+                        throw oError;
+                    }
+                    
+                    _self.add(null, null, "<a:page xmlns:a='" + apf.ns.apf 
+                        + "' id='" + next + "'>" + data + "</a:page>");
+                    _self.setProperty("activepage", next);
+                    
+                    if (callback) 
+                        callback();
+                });
+                return;
+            }
+            
             //#ifdef __DEBUG
             apf.console.warn("Setting tab page which doesn't exist, \
                               referenced by name: '" + next + "'");
@@ -214,6 +247,9 @@ apf.BaseTab = function(){
                 });
              }
         }
+        
+        if (callback) 
+            callback();
 
         return true;
     };
@@ -247,11 +283,12 @@ apf.BaseTab = function(){
      * @param {String} [name]    the name of the page which is can be referenced by.
      * @return {page} the created page element.
      */
-    this.add = function(caption, name){
-        var page = apf.document.createElement("page");
+    this.add = function(caption, name, jml){
+        var page = apf.document.createElement(jml || "page");
         if (name)
             page.setAttribute("id", name);
-        page.setAttribute("caption", caption);
+        if (caption)
+            page.setAttribute("caption", caption);
         this.appendChild(page);
         
         // #ifdef __ENABLE_TABSCROLL

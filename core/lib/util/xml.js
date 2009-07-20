@@ -648,8 +648,4 @@ apf.getXmlString = function(xmlNode){
 apf.getXml = function(){
     return apf.xmldb.getXml.apply(apf.xmldb, arguments);
 };
-
-apf.getXmlFromJson = function() {
-    return apf.xmldb.fromJson.apply(apf.xmldb, arguments);
-};
 // #endif

@@ -98,10 +98,10 @@ apf.runIE = function(){
 
                 xmlParser.loadXML(message);
 
-                //#ifdef __WITH_XMLDATABASE
-                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJSON(message)) {
+                //#ifdef __WITH_JSON2XML
+                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJson(message)) {
                     try {
-                        xmlParser = apf.xmldb.fromJson(message, noError);
+                        xmlParser = apf.json2Xml(message, noError);
                     }
                     catch(e) {
                         throw new Error(apf.formatErrorString(1051, null,

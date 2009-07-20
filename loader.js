@@ -174,6 +174,7 @@ apf.KernelModules = [
     "lib/util/dragmode.js",
     "lib/util/ecmaext.js",
     "lib/util/hotkey.js",
+    "lib/util/json.js",
     "lib/util/flash.js",
     "lib/util/nameserver.js",
     "lib/util/plane.js",

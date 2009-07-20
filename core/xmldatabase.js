@@ -884,62 +884,6 @@ apf.XmlDatabase = function(){
 
         return xmlDocLut.length - 1;
     };
-    
-    //#ifdef __WITH_JSON2XML
-    /**
-     * Creates xml nodes from an JSON string/ object recursively.
-     *
-     * @param {String}  strJson     the JSON definition.
-     * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
-     * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
-     * @return {XMLNode} the created xml document (NOT the root-node).
-     */
-    this.fromJson = function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && apf.isJSON(strJson))
-          ? JSON.parse(strJson)//eval("(" + strJson + ")")
-          : strJson,
-            xml = [], i;
-        for (i in o)
-            xml.push(jsonToXml(o[i], i, ""));
-        return apf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
-            + "</jsonroot>", noError, preserveWhiteSpace);
-    };
-    
-    function jsonToXml(v, name) {
-        var i, n, xml = [];
-        name = name.replace(/[^a-zA-z0-9_-]+/g, "_");
-        if (apf.isArray(v)) {
-            for (i = 0, n = v.length; i < n; i++)
-                xml.push(jsonToXml(v[i], name));
-        }
-        else if (typeof v == "object") {
-            var hasChild = false;
-            xml.push("<", name);
-            for (i in v) {
-                if (i.charAt(0) == "@")
-                    xml.push(" ", i.substr(1), "=\"", v[i].toString(), "\"");
-                else
-                    hasChild = true;
-            }
-            xml.push(hasChild ? ">" : "/>");
-            if (hasChild) {
-                for (i in v) {
-                    if (i == "#text")
-                        xml.push(v[i]);
-                    else if (i == "#cdata")
-                        xml.push("<![CDATA[", v[i], "]]>");
-                    else if (i.charAt(0) != "@")
-                        xml.push(jsonToXml(v[i], i));
-                }
-                xml.push("</", name, ">");
-            }
-        }
-        else
-            xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
-    
-        return xml.join("");
-    }
-    //#endif
 };
 
 apf.Init.run('XmlDatabase');
