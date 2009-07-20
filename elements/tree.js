@@ -393,7 +393,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_DRAGDROP
     this.$showDragIndicator = function(sel, e){
-        var x = e.offsetX + 22;
+        var x = e.offsetX;
         var y = e.offsetY;
 
         this.oDrag.startX = x;
