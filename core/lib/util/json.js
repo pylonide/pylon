@@ -138,6 +138,10 @@ if (!window["JSON"]) {
         // Constructor to use based on an open token.
         firstTokenCtors = { "{": Object, "[": Array },
         hop             = Object.hasOwnProperty,
+        padd            = function(s, p){
+            s = p + s;
+            return s.substring(s.length - p.length);
+        },
         jsonSerialize   = {
             object: function(o){
                 //XML support - NOTICE: Ajax.org Platform specific
@@ -149,7 +153,7 @@ if (!window["JSON"]) {
                 var str = [];
                 for (var prop in o) {
                     str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
-                        + apf.serialize(o[prop]));
+                        + JSON.stringify(o[prop]));
                 }
 
                 return "{" + str.join(", ") + "}";
@@ -169,25 +173,19 @@ if (!window["JSON"]) {
             },
 
             date: function(d){
-                var padd = function(s, p){
-                    s = p + s;
-                    return s.substring(s.length - p.length);
-                };
-                var y   = padd(d.getUTCFullYear(), "0000");
-                var m   = padd(d.getUTCMonth() + 1, "00");
-                var D   = padd(d.getUTCDate(), "00");
-                var h   = padd(d.getUTCHours(), "00");
-                var min = padd(d.getUTCMinutes(), "00");
-                var s   = padd(d.getUTCSeconds(), "00");
-
-                var isodate = y + m + D + "T" + h + ":" + min + ":" + s;
-
-                return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
+                return '{"jsonclass":["sys.ISODate", ["'
+                    + padd(d.getUTCFullYear(), "0000")
+                    + padd(d.getUTCMonth() + 1, "00") 
+                    + padd(d.getUTCDate(), "00") + "T" 
+                    + padd(d.getUTCHours(), "00") + ":" 
+                    + padd(d.getUTCMinutes(), "00") + ":" 
+                    + padd(d.getUTCSeconds(), "00")
+                    + '"]]}';
             },
 
             array: function(a){
                 for (var q = [], i = 0; i < a.length; i++)
-                    q.push(apf.serialize(a[i]));
+                    q.push(JSON.stringify(a[i]));
 
                 return "[" + q.join(", ") + "]";
             }
