@@ -136,6 +136,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         if (!this.slider)
             this.slideDiscreet = true;
     }
+    
 
     /**
      * @attribute {Boolean} markers whether to display a marker at each discrete step.
@@ -144,7 +145,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         //Remove Markers
         var markers = this.oMarkers.childNodes;
         for (var i = markers.length - 1; i >= 0; i--) {
-            if (markers[i].tagName == "u" && markers[i].nodeType == 1) //small hack
+            if (markers[i].tagName == "U" && markers[i].nodeType == 1) //small hack
                 apf.destroyHtmlNode(markers[i]);
         }
 
@@ -158,11 +159,11 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
             var size = this.$dir == "horizontal"
                 ? this.oExt.offsetWidth - this.oKnob.offsetWidth
                 : this.oExt.offsetHeight - this.oKnob.offsetHeight;
-            
-            for (var o, nodes = [], i = 1; i < count; i++) {
+
+            for (var o, nodes = [], i = 0; i < count + 1; i++) {
                 this.$getNewContext("marker");
                 o = this.$getLayoutNode("marker");
-                pos = Math.max(0, ((i+1) * (1 / (count + 1))));
+                pos = Math.max(0, (i * (1 / (count))));
                 o.setAttribute("style", prop + ":" + (pos * size) + "px");
                 nodes.push(o);
             }
@@ -174,14 +175,16 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.$resize = function(){
         this.$propHandlers.value.call(this, this.value);
         var pos, count = (this.max - this.min) / this.step;
+        if (!count) return;
+
         var prop = this.$dir == "horizontal" ? "left" : "top";
         var size = this.$dir == "horizontal"
             ? this.oExt.offsetWidth - this.oKnob.offsetWidth
             : this.oExt.offsetHeight - this.oKnob.offsetHeight;
         
-        var nodes = this.oMarkers.getElementsByTagName("u");//small hack
+        var nodes = this.oMarkers.getElementsByTagName("U");//small hack
         for (var i = nodes.length - 1; i >= 0; i--) {
-            pos = Math.max(0, (i+1) * (1 / count));
+            pos = Math.max(0, i * (1 / count));
             nodes[i].style[prop] = Math.round(pos * size) + "px";
         }
     }
@@ -239,6 +242,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["min"] = function(value){
         this.min = parseInt(value) || 0;
+        if (this.markers)
+            this.$propHandlers["markers"].call(this, this.markers);
     }
 
     /**
@@ -247,6 +252,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["max"] = function(value){
         this.max = parseInt(value) || 1;
+        if (this.markers)
+            this.$propHandlers["markers"].call(this, this.markers);
     }
 
     /**
@@ -276,8 +283,10 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
             return;
 
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-        var max, min, offset,
-            multiplier = (this.value - this.min) / (this.max - this.min) || 1;
+        var max, min, offset;
+        var multiplier = this.max == this.min 
+            ? 1 
+            : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
@@ -574,19 +583,22 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                     _self.oBalloon.style.left = (_self.oKnob.offsetLeft 
                         - (_self.oBalloon.offsetWidth 
                         - _self.oKnob.offsetWidth)/2) + "px";
-                    
+
                     setTimeout(function(){
-                        apf.tween.single(_self.oBalloon, {
-                            type : "fade",
-                            from : 1,
-                            to   : 0,
-                            steps : 5,
-                            onfinish : function(){
-                                _self.oBalloon.style.display = "none";
-                                if (apf.isIE)
-                                    _self.oBalloon.style.filter = "";
-                            }
-                        })
+                        if (apf.isIE) {
+                            _self.oBalloon.style.display = "none";
+                        }
+                        else {
+                            apf.tween.single(_self.oBalloon, {
+                                type : "fade",
+                                from : 1,
+                                to   : 0,
+                                steps : 5,
+                                onfinish : function(){
+                                    _self.oBalloon.style.display = "none";
+                                }
+                            })
+                        }
                     }, _self.slideDiscreet ? 200 : 0);
                 }
             };
