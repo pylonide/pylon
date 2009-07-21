@@ -240,7 +240,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
      * Collapses all items in the tree
      */
     this.collapseAll   = function(){
-        var pNodes = this.xmlRoot.selectNodes(this.traverse
+        var pNodes = this.xmlRoot.selectNodes(".//" + this.traverse
           .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
         
         for (var i = pNodes.length - 1; i >=0; i--)
@@ -815,14 +815,14 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             elSelect.setAttribute("onmousedown", 
               "var o = apf.lookup(" + this.uniqueId + ");" + strMouseDown);
         }
-        
+
         elSelect.setAttribute("ondblclick", 
           "var o = apf.lookup(" + this.uniqueId + ");\
           o.choose();" + 
           //#ifdef __WITH_RENAME
           "o.stopRename();this.dorename=false;" + 
           //#endif
-          (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
+          (ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
           "apf.cancelBubble(event,o);");
         
         //Setup Nodes Identity (Look)
