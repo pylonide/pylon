@@ -240,8 +240,11 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 apf.queryValue = function (xmlNode, xpath){
     if (!xmlNode) 
         return "";
-    if (xpath)
+    if (xpath) {
         xmlNode = xmlNode.selectSingleNode(xpath);
+        if (!xmlNode) 
+            return "";
+    }
    return xmlNode.nodeType == 1
         ? (!xmlNode.firstChild ? "" : xmlNode.firstChild.nodeValue)
         : xmlNode.nodeValue;

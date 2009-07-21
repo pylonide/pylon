@@ -774,13 +774,36 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
         //Select interaction
         var elSelect = this.$getLayoutNode("item", "select");
         
-        var strMouseDown = 
-            "if (!o.renaming && o.hasFocus() \
-               && apf.isChildOf(o.$selected, this) && o.selected)\
-                 this.dorename = true;\
-             o.select(this, event.ctrlKey, event.shiftKey);\
-             if (o.onmousedown)\
-                o.onmousedown(event, this);";
+        //#ifdef __WITH_RENAME || __WITH_DRAGDROP
+        if (this.hasFeature(__RENAME__) || this.hasFeature(__DRAGDROP__)) {
+            var strMouseDown = 
+                'var o = apf.lookup(' + this.uniqueId + ');\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 this.hasPassedDown = true;\
+                 if (!o.renaming && o.hasFocus() && isSelected) \
+                    this.dorename = true;\
+                 if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                     o.select(this, event.ctrlKey, event.shiftKey);';
+            
+            elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;');
+            elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
+                var o = apf.lookup(' + this.uniqueId + ');'
+                // #ifdef __WITH_RENAME
+                + 'if (this.dorename && o.mode == "normal")\
+                    o.startDelayedRename(event);' +
+                // #endif
+                'this.dorename = false;\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                     o.select(this, event.ctrlKey, event.shiftKey);');
+        }
+        else 
+        //#endif 
+        {
+            var strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey);";
+        }
         
         if (ocAction != "ondblclick") {
             elSelect.setAttribute(ocAction, 
@@ -801,16 +824,6 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
           //#endif
           (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
           "apf.cancelBubble(event,o);");
-        
-        //#ifdef __WITH_RENAME
-        elSelect.setAttribute("onmouseup", 
-            "var o = apf.lookup(" + this.uniqueId + ");\
-            if (this.dorename && !o.$mode) \
-                o.startDelayedRename(event);\
-            this.dorename = false;");
-        //#endif
-        
-        //elItem.setAttribute("contextmenu", "alert(1);var o = apf.lookup(" + this.uniqueId + ");o.dispatchEvent("contextMenu", o.selected);");
         
         //Setup Nodes Identity (Look)
         if (elIcon) {
