@@ -1904,7 +1904,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 
         if (typeof lastSorted != "undefined") {
             h = headings[lastSorted];
-            apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "");
+            apf.setStyleRule("." + this.baseCSSname + " .records ." + h.className, "background", "white"); //This breaks row coloring
             apf.setStyleClass(h.htmlNode, "", ["descending", "ascending"]);
         }
         

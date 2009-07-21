@@ -22,26 +22,26 @@
 // #ifdef __JSTATUSBAR || __INC_ALL
 
 /**
- * Element displaying a bar consisting of panels containing other text, icons
+ * Element displaying a bar consisting of bars containing other text, icons
  * and more aml. This element is usually placed in the bottom of the screen to 
  * display context sensitive and other information about the state of the 
  * application.
  * Example:
  * <code>
  *   <a:statusbar align="bottom">
- *      <a:panel>
+ *      <a:bar>
  *          Ajax.org Platform
- *      </a:panel>
+ *      </a:bar>
  *      <a:progressbar value="{apf.offline.position}" />
- *      <a:panel>
+ *      <a:bar>
  *      
- *      </a:panel>
+ *      </a:bar>
  *  </a:statusbar>
  * </code>
  *
  * @constructor
  * @define statusbar
- * @allowchild panel
+ * @allowchild bar
  * @allowchild progressbar
  * @addnode elements
  *
@@ -64,15 +64,15 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
     });
     
     this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent){
-        if (amlNode.tagName != "panel")
+        if (amlNode.tagName != "bar")
             return;
         
         amlNode.$propHandlers["caption"] = function(value){
             apf.setNodeValue(
-                this.$getLayoutNode("panel", "caption", this.oExt), value);
+                this.$getLayoutNode("bar", "caption", this.oExt), value);
         }
         amlNode.$propHandlers["icon"] = function(value){
-            var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
+            var oIcon = this.$getLayoutNode("bar", "icon", this.oExt);
             if (!oIcon) return;
         
             if (value)
@@ -114,8 +114,8 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
                 continue;
             
             tagName = node[apf.TAGNAME];
-            if (tagName == "panel") {
-                bar = new apf.panel(this.oInt, tagName);
+            if (tagName == "bar") {
+                bar = new apf.bar(this.oInt, tagName);
                 bar.skinName = this.skinName
                 insertChild.call(this, bar);
                 bar.loadAml(node, this);

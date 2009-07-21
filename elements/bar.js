@@ -48,8 +48,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.panel = 
-apf.bar   = apf.component(apf.NODE_VISIBLE, function(){
+apf.bar = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     this.canHaveChildren = true;

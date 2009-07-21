@@ -46,6 +46,7 @@
  *
  * @inherits apf.Presentation
  */
+apf.panel    = 
 apf.fieldset = 
 apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;

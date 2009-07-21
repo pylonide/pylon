@@ -799,17 +799,23 @@ apf.DragServer = {
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
         //if(!fEl) return;
-        
-        if (this.lastFel == fEl) //optimization
+
+        if (this.lastFel && this.lastFel == fEl 
+          || !this.lastFel && this.last == o) //optimization
             return;
 
         //Check Permission
         var elSel = (fEl
             ? apf.xmldb.getNode(fEl)
             : apf.xmldb.findXmlNode(el));
-        var candrop = o.isDropAllowed
+        var candrop = o.isDropAllowed && o.xmlRoot
             ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
-            : false;
+            : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+                  if (p.dropenabled) {
+                      o = p;
+                      return true;
+                  }
+               }));
         //EVENT - cancellable: ondragover
         if (o.dispatchEvent("dragover", this.dragdata) === false)
             candrop = false;
@@ -832,8 +838,8 @@ apf.DragServer = {
     },
 
     dragout : function(o){
-        if (this.last == o) 
-            return false;
+        //if (this.last == o) 
+            //return false;
 
         this.lastFel = null;
 
@@ -852,12 +858,18 @@ apf.DragServer = {
 
     dragdrop : function(o, el, srcO, e){
         //Check Permission
+        var isParent;
         var elSel   = (o.$findValueNode
-            ? apf.xmldb.getNode(o.$findValueNode(el))
-            : apf.xmldb.findXmlNode(el));
-        var candrop = (o.isDropAllowed)//elSel && 
-            ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
-            : false;
+          ? apf.xmldb.getNode(o.$findValueNode(el))
+          : apf.xmldb.findXmlNode(el));
+        var candrop = (o.isDropAllowed && o.xmlRoot)
+          ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
+          : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+              if (p.dropenabled) {
+                  o = p;
+                  return true;
+              }
+           }));
 
         //EVENT - cancellable: ondragdrop
         if (candrop) {
@@ -865,11 +877,22 @@ apf.DragServer = {
               this.dragdata)) === false)
                 candrop = false;
             else {
-                var action = candrop[1]
-                    && candrop[1].getAttribute("action")
-                    || (o.isTreeArch ? "tree-append" : "list-append");
-                if (action == "list-append" && (!o.isTreeArch && o == this.dragdata.host))
-                    candrop = false;
+                if (!o.xmlRoot) {
+                    var m = o.getModel 
+                      ? o.getModel(true) 
+                      : apf.nameserver.get("model", o.model)
+                    if (m)
+                        m.load(this.dragdata.data[0])
+                    //warn??
+                    return;
+                }
+                else {
+                    var action = candrop[1]
+                        && candrop[1].getAttribute("action")
+                        || (o.isTreeArch ? "tree-append" : "list-append");
+                    if (action == "list-append" && (!o.isTreeArch && o == this.dragdata.host))
+                        candrop = false;
+                }
             }
         }
 
@@ -881,7 +904,7 @@ apf.DragServer = {
 
         //Move XML
         var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
-            action, (candrop[0] == o.xmlRoot), this.dragdata.rules, e);
+            action, isParent || candrop[0] == o.xmlRoot, this.dragdata.rules, e);
         this.dragdata.resultNode = rNode;
 
         //REQUIRED INTERFACE: __dragdrop()
@@ -961,7 +984,8 @@ apf.DragServer = {
         var receiver = apf.findHost(el);
 
         //Run Events
-        apf.DragServer.dragout(receiver);
+        if (apf.DragServer.last && apf.DragServer.last != receiver)
+            apf.DragServer.dragout(apf.DragServer.last);
         if (receiver)
             apf.DragServer.dragover(receiver, el, e);
 
@@ -1015,8 +1039,8 @@ apf.DragServer = {
         var host = apf.findHost(el);
 
         //Run Events
-        if (host != apf.DragServer.host)
-            apf.DragServer.dragout(host);
+        if (apf.DragServer.host && host != apf.DragServer.host)
+            apf.DragServer.dragout(apf.DragServer.host);
         var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
         apf.DragServer.stop(true, success);
     }

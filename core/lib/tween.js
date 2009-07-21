@@ -586,10 +586,10 @@ apf.tween = {
                 callback.apply(this, arguments);
         }
 
-        var result, newvalue, curvalue, j, isColor, style, rules, i;
+        var result, newvalue, curvalue, j, isColor, style, rules, i, tweens = {};
         for (i = 0; i < document.styleSheets.length; i++) {
             rules = document.styleSheets[i][apf.styleSheetRules];
-            for (j = 0; j < rules.length; j++) {
+            for (j = rules.length - 1; j >= 0; j--) {
                 var rule = rules[j];
 
                 if (!rule.style || !rule.selectorText.match('\.' + className + '$'))
@@ -621,7 +621,7 @@ apf.tween = {
                         isColor = style.match(/color/i) ? true : false;
                     }
 
-                    info.tweens.push({
+                    tweens[style] = {
                         type    : style,
                         from    : (isColor ? String : parseFloat)(remove
                                     ? newvalue
@@ -631,10 +631,13 @@ apf.tween = {
                                     : newvalue),
                         color   : isColor,
                         needsPx : apf.tween.needsPix[style.toLowerCase()] || false
-                    });
+                    };
                 }
             }
         }
+        
+        for (var prop in tweens)
+            info.tweens.push(tweens[prop]);
 
         if (remove)
             apf.setStyleClass(oHtml, className);
