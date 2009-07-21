@@ -92,7 +92,8 @@ apf.MultiCheck = function(){
         }
         //#endif
 
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), "checked", ["partial"]);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
+            "checked", ["partial"]);
         
         this.dispatchEvent("aftercheck", {
             list        : checkedList,
@@ -104,49 +105,19 @@ apf.MultiCheck = function(){
         if (this.disabled || checkedList.indexOf(xmlNode) == -1)
             return;
         
+        // #ifdef __WITH_MULTICHECK_TREE
+        if (this.isTreeArch)
+            return this.checkList([xmlNode], true, true);
+        //#endif
+        
         if (this.dispatchEvent("beforeuncheck", {
             xmlNode : xmlNode
         }) === false)
             return false;
-        
+
         checkedList.remove(xmlNode);
-        
-        // #ifdef __WITH_MULTICHECK_TREE
-        if (this.isTreeArch) {
-            //Children
-            var nodes = xmlNode.selectNodes(".//" 
-                + this.traverse.split("|").join("|.//"));
-        
-            this.checkList(nodes, true, true, true);
-            
-            //Parents
-            var none, all, pNode = this.getTraverseParent(xmlNode);
-            while(pNode && pNode != this.xmlRoot) {
-                nodes = this.getTraverseNodes(pNode);
-                
-                all = true, none = true;
-                for (var i = 0; i < nodes.length; i++) {
-                    if (checkedList.indexOf(nodes[i]) == -1)
-                        all = false;
-                    else
-                        none = false;
-                    if (!all && !none)
-                        break;
-                }
-                
-                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
-                    none ? ""
-                         : "partial", ["partial", "checked"]);
-                
-                if (!all)
-                    checkedList.remove(pNode);
-                
-                pNode = this.getTraverseParent(pNode);
-            }
-        }
-        //#endif
-        
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), "", ["checked", "partial"]);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
+            "", ["checked", "partial"]);
         
         this.dispatchEvent("afteruncheck", {
             list        : checkedList,
@@ -172,6 +143,7 @@ apf.MultiCheck = function(){
     
     this.checkList = function(xmlNodeList, uncheck, noClear, noEvent){
         //if (apf.isIE < 8)
+        if (!xmlNodeList.indexOf)
             xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
             //@todo is this need for ie8 and/or other browsers
         
@@ -217,7 +189,6 @@ apf.MultiCheck = function(){
                         }
                         else {
                             if (checkedList.indexOf(xmlNode) == -1) {
-                                debugger;
                                 checkedList.push(xmlNode);
                                 _self.$setStyleClass(
                                     apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
@@ -261,12 +232,12 @@ apf.MultiCheck = function(){
                             "checked", ["partial"]);
                     }
                 }
-                else {
-                    if (isInList) {
+                else{
+                    if (isInList)
                         checkedList.remove(xmlNode);
-                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                            partial ? "partial" : "", ["partial", "checked"]);
-                    }
+
+                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                        partial ? "partial" : "", ["partial", "checked"]);
                 }
                 
                 return all ? 1 : (none ? 0 : 2);
