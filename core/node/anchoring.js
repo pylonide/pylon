@@ -257,6 +257,21 @@ apf.Anchoring = function(){
         return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");
     }
 
+     //#ifdef __WITH_SKIN_CHANGE
+    this.$recalcAnchoring = function(queueDelay){
+        var diff    = apf.getDiff(this.oExt);
+        hordiff     = diff[0];
+        verdiff     = diff[1];
+        
+        updateQueue = updateQueue | HORIZONTAL | VERTICAL;
+        this.$updateLayout();
+        l.queue(this.pHtmlNode, this);
+        
+        if (!queueDelay)
+            l.processQueue();
+    }
+    //#endif
+
     this.$updateLayout = function(){
         if (!parsed) {
             if (!this.oExt.getAttribute("id"))

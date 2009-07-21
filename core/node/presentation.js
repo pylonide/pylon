@@ -572,6 +572,11 @@ apf.Presentation = function(){
         }
         //#endif
 
+        //#ifdef __WITH_ANCHORING
+        if (this.hasFeature(__ANCHORING__))
+            this.$recalcAnchoring();
+        //#endif
+
         //#ifdef __WITH_ALIGNMENT
         if (this.hasFeature(__ALIGNMENT__)) {
             if (this.aData)

@@ -1211,14 +1211,34 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         var oRow = this.$getLayoutNode("row");
         oRow.setAttribute("id", sLid);
         oRow.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
-        oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
-            var wasSelected = o.$selected == this;\
-            o.select(this, event.ctrlKey, event.shiftKey);'
-            + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));//, true;o.dragging=1;
+        
         oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.uniqueId + ');o.choose();'
             + (this.$withContainer ? 'o.slideToggle(this);' : '')
-            + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));//, true;o.dragging=1;
-        //oRow.setAttribute("onmouseup", 'var o = apf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
+            + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));
+        
+        if (this.hasFeature(__DRAGDROP__)) {
+            oRow.setAttribute("onmouseout", 'this.hasPassedDown = false;');
+            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
+                var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 this.hasPassedDown = true;\
+                 if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                     o.select(this, event.ctrlKey, event.shiftKey)'
+                + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
+            
+            oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
+                var o = apf.lookup(' + this.uniqueId + ');\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                     o.select(this, event.ctrlKey, event.shiftKey)');
+        } //@todo add DRAGDROP ifdefs
+        else {
+            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
+                var wasSelected = o.$selected == this;\
+                o.select(this, event.ctrlKey, event.shiftKey);'
+                + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
+        }
         
         //Build the Cells
         for(var c, h, i = 0; i < headings.length; i++){
@@ -1501,32 +1521,62 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     /**** Drag & Drop ****/
     
     // #ifdef __WITH_DRAGDROP
-    var scrollX, scrollY;
+    var diffX, diffY, multiple;
     this.$showDragIndicator = function(sel, e){
-        scrollX = e.scrollX;
-        scrollY = e.scrollY;
+        multiple = true;//sel.length > 1;
+        
+        if (multiple) {
+            diffX = e.scrollX;
+            diffY = e.scrollY;
+        }
+        else {
+            diffX = -1 * e.offsetX;
+            diffY = -1 * e.offsetY;
+        }
+        
+        var prefix = this.oDrag.className.split(" ")[0]
+        this.$setStyleClass(this.oDrag, multiple
+            ? prefix + "_multiple" : "", [prefix + "_multiple"]);
 
         document.body.appendChild(this.oDrag);
-        //this.$updateNode(this.selected, this.oDrag); // Solution should be found to have this on conditionally
+        if (!multiple)
+            this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
     };
     
-    this.$hideDragIndicator = function(){
-        this.oDrag.style.display = "none";
+    this.$hideDragIndicator = function(success){
+        if (!multiple && !success) {
+            var pos = apf.getAbsolutePosition(this.$selected);
+            apf.tween.multi(this.oDrag, {
+                anim     : apf.tween.EASEIN,
+                steps    : 15,
+                interval : 10,
+                tweens   : [
+                    {type: "left", from: this.oDrag.offsetLeft, to: pos[0]},
+                    {type: "top",  from: this.oDrag.offsetTop,  to: pos[1]}
+                ],
+                onfinish : function(){
+                    _self.oDrag.style.display = "none";
+                }
+            });
+        }
+        else
+            this.oDrag.style.display = "none";
     };
     
     this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX + scrollX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top  = (e.clientY + scrollY + 15) + "px";// - this.oDrag.startY
+        this.oDrag.style.left = (e.clientX + diffX) + "px";// - this.oDrag.startX
+        this.oDrag.style.top  = (e.clientY + diffY + (multiple ? 15 : 0)) + "px";// - this.oDrag.startY
     };
-
+    
     this.$initDragDrop = function(){
-        if (!this.$hasLayoutNode("dragindicator")) return;
+        if (!this.$hasLayoutNode("dragindicator")) 
+            return;
 
-        this.oDrag = apf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"),
-            document.body);
-        
+        this.oDrag = apf.xmldb.htmlImport(
+            this.$getLayoutNode("dragindicator"), document.body);
+
         this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
@@ -1549,37 +1599,43 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             : null;
     };
 
-    this.$dragout = function(dragdata){
-        if (this.lastel)
-            this.$setStyleClass(this.lastel, "", ["dragDenied", "dragInsert",
+    var lastel;
+    this.$dragout  =
+    this.$dragdrop = function(el, dragdata, extra){
+        if (lastel)
+            this.$setStyleClass(lastel, "", ["dragDenied", "dragInsert",
                 "dragAppend", "selected", "indicate"]);
-        this.$setStyleClass(this.$selected, "selected", ["dragDenied",
-            "dragInsert", "dragAppend", "indicate"]);
         
-        this.lastel = null;
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "selected", ["dragDenied",
+                "dragInsert", "dragAppend", "indicate"]);
+        
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Drop"]);
+        
+        lastel = null;
     };
 
     this.$dragover = function(el, dragdata, extra){
-        if(el == this.oExt) return;
-
-        this.$setStyleClass(this.lastel || this.$selected, "", ["dragDenied",
-            "dragInsert", "dragAppend", "selected", "indicate"]);
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Drop");
         
-        this.$setStyleClass(this.lastel = this.$findValueNode(el), extra 
+        //if (el == this.oExt)
+            //return;
+
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        if (lastel)
+            this.$setStyleClass(lastel, "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        this.$setStyleClass(lastel = this.$findValueNode(el), extra 
             ? (extra[1] && extra[1].getAttribute("action") == "insert-before" 
                 ? "dragInsert" 
                 : "dragAppend") 
             : "dragDenied");
-    };
-
-    this.$dragdrop = function(el, dragdata, extra){
-        this.$setStyleClass(this.lastel || this.$selected,
-            !this.lastel && (this.$selected || this.lastel == this.$selected) 
-                ? "selected" 
-                : "", 
-                ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
-        
-        this.lastel = null;
     };
     // #endif
 
