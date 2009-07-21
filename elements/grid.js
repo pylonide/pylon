@@ -451,7 +451,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
             //Height
             if (parseFloat(cellInfo.height) == cellInfo.height
                 || typeof rowheight[row] == "number")
-                cellInfo.oHtml.style.height = ((cellInfo.height || rowheight[row]) 
+                cellInfo.oHtml.style.height = (cellInfo.height || rowheight[row]
                     - (cellInfo.m[0] + cellInfo.m[2] + cellInfo.verdiff)) + "px";
             else
                 rule.push(id + ".style.height = (" 

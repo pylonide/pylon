@@ -277,7 +277,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var max, min, offset,
-            multiplier = (this.value - this.min) / (this.max - this.min);
+            multiplier = (this.value - this.min) / (this.max - this.min) || 1;
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
