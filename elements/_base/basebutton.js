@@ -222,7 +222,7 @@ apf.BaseButton = function(pHtmlNode){
 
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
-            apf.iphone.linkEvents(this.oExt);
+            apf.iphone.linkEvents(this.oExt, true);
         // #endif
 
         if (apf.hasClickFastBug)

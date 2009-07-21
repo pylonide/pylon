@@ -223,8 +223,8 @@ apf.runIphone = function() {
     apf.iphone = {
         titleNode : null,
 
-        linkEvents: function(el) {
-            el.ontouchstart = function(evt) {
+        linkEvents: function(el, bClick) {
+            el[bClick ? "onclick" : "ontouchstart"] = function(evt) {
                 if (!evt.touches || evt.touches.length != 1) return;
 
                 var e = evt.touches[0];
