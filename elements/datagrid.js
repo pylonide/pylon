@@ -917,7 +917,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             //@todo get xmlUpdate to be called only once per document update for propedit
             var xml = 
               apf.getXml('<a:root xmlns:a="' + apf.ns.apf + '">\
-                <a:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></column>\
+                <a:column caption="Property" width="' + cols[0] + '"><![CDATA[[%($"@caption" + ($"@required" ? " *" : ""));]]]></a:column>\
                 <a:column caption="Value" width="' + cols[1] + '" css="' + this.baseCSSname + '_{@type}{@multiple}"><![CDATA[[\
                     var dg = apf.lookup(' + this.uniqueId + ');\
                     var select = $"@select";\
@@ -995,7 +995,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     else {\
                         %apf.queryValue(dg.xmlData, select);\
                     }\
-                ]]]></column>\
+                ]]]></a:column>\
                 <a:traverse select="property|prop" />\
                 <a:required select="self::node()/@required" />\
                 <a:datatype select="@datatype" />\
@@ -1005,12 +1005,12 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                         %("/\\.\\d{" + validate + "}/");\
                     else if ((validate = $"@validate") && validate.chartAt(0) == "/")\
                         %("/" + validate.replace(/^\\/|\\/$/g, "") + "/");\
-                ]]]></pattern>\
+                ]]]></a:pattern>\
                 <a:maxlength select="@maxlength" />\
                 <a:invalidmsg><![CDATA[[\
                      out = $"@invalidmsg" || "Invalid entry;Please correct your entry";\
-                ]]]></invalidmsg>\
-              </root>');
+                ]]]></a:invalidmsg>\
+              </a:root>');
               <!-- mask -->
             
             //<a:select select="self::node()[not(@frozen)]" />\
