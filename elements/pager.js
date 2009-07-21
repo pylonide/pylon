@@ -56,6 +56,14 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
         "previous", "next", "autohide");
         
     this.$booleanProperties["autohide"] = true;
+    
+    /**
+     * @attribute {String} represent the id of the element to display 
+     * navigation for.
+     */
+    this.$propHandlers["curpage"] = function(value){
+        this.gotoPage(value);
+    }
 
     /**
      * Selects page depends on its number or jump length
@@ -65,7 +73,10 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
      *                             current page and new selected page
      */
     this.gotoPage = function(pageNr, pageDelta) {
+        var lastCurpage = this.curpage;
         this.curpage = pageNr || this.curpage + pageDelta;
+        if (lastCurpage != this.curpage)
+            this.setProperty("curpage", this.curpage);
 
         //Sanity checks
         if (this.curpage < 1) 
