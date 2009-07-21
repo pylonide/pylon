@@ -200,7 +200,7 @@ apf.AmlParser = {
                 apf.layout.compileAlignment(amlParent.pData);
             //#endif
 
-            //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+            //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
             if (amlParent.pData || amlParent.tagName == "grid")
                 apf.layout.activateRules(pNode.oInt || document.body);
             //#endif
@@ -218,7 +218,7 @@ apf.AmlParser = {
             }
         }
 
-        //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+        //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
         apf.layout.activateRules();//@todo maybe use processQueue
         //#endif
 
@@ -305,7 +305,7 @@ apf.AmlParser = {
                 //apf.layout.compile(pHtmlNode);
             // #endif
 
-            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
             if (!apf.hasSingleRszEvent)
                 apf.layout.activateRules(pHtmlNode);
             // #endif
@@ -495,7 +495,7 @@ apf.AmlParser = {
             return o;
         }
 
-        //#ifdef __WITH_XSD
+        //#ifdef __PARSER_XSD
         //XML Schema Definition
         ,"http://www.w3.org/2001/XMLSchema" : function(x, pHtmlNode, amlParent, noImpliedParent){
             var type = apf.XSDParser.parse(x);
@@ -722,7 +722,7 @@ apf.AmlParser = {
             }
         },
 
-        //#ifdef __WITH_STATE
+        //#ifdef __JSTATE
         /**
          * @define state-group Element that groups state elements together and
          * provides a way to set a default state.
@@ -1200,7 +1200,7 @@ apf.AmlParser = {
             models[i].dispatchEvent("xforms-ready");
         //#endif
 
-        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
         apf.layout.processQueue();
         apf.layout.activateRules();
         //#endif

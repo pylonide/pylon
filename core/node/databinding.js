@@ -3451,7 +3451,7 @@ apf.MultiselectBinding = function(){
     this.addEventListener("beforeselect", function(e){
         var combinedvalue = null;
 
-        //#ifdef __WITH_MULTISELECT_BINDINGS
+        //#ifdef __WITH_MULTIBINDING
         if (this.indicator == this.selected || e.list && e.list.length > 1
           && this.$getConnections().length) {
             //Multiselect databinding handling... [experimental]

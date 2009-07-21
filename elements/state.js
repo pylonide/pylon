@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//#ifdef __WITH_STATE || __JSTATE || __INC_ALL
+//#ifdef __JSTATE || __INC_ALL
 
 /**
  * @private

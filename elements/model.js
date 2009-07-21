@@ -510,7 +510,7 @@ apf.model = function(data, caching){
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].childNodes > 1)
                     continue; //The association is ignored since the element contains child elements.
-                // #ifdef __WITH_XSD
+                // #ifdef __PARSER_XSD
                 if (!apf.XSDParser.checkType(this.type, nodes[i]))
                     return false;
                 // #endif

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_BACKBUTTON
+// #ifdef __WITH_HISTORY
 
 /**
  * Implementation of hash change listener. The 'hash' is the part of the

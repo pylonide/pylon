@@ -379,7 +379,7 @@ apf.appsettings = {
             apf.offline.init(this.offline);
         //#endif
 
-        //#ifdef __WITH_BACKBUTTON
+        //#ifdef __WITH_HISTORY
         apf.addEventListener("done", function(){
             apf.history.init(apf.appsettings.defaultPage, "page");
         });

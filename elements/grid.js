@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __WITH_GRID || __JGRID || __INC_ALL
+// #ifdef __JGRID || __JGRID || __INC_ALL
 
 /**
  * Any child element of this element is placed in a grid. The size of the 

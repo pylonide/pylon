@@ -421,7 +421,7 @@ apf.Validation = function(){
             vRules[vId] = rule;
     }
 
-    //#ifdef __WITH_XSD
+    //#ifdef __PARSER_XSD
     this.$propHandlers["datatype"] = function(value){
         if (!value)
             return this.$setRule("datatype");

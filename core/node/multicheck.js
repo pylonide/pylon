@@ -171,8 +171,9 @@ apf.MultiCheck = function(){
     }
     
     this.checkList = function(xmlNodeList, uncheck, noClear, noEvent){
-        if (apf.isIE < 8)
+        //if (apf.isIE < 8)
             xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
+            //@todo is this need for ie8 and/or other browsers
         
         if (this.disabled) return;
         
@@ -201,7 +202,7 @@ apf.MultiCheck = function(){
                     apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
             }
         }
-        
+
         // #ifdef __WITH_MULTICHECK_TREE
         if (!noEvent && this.isTreeArch) {
             var recur = function(xmlNode, forceChange){
@@ -215,19 +216,23 @@ apf.MultiCheck = function(){
                             return 0;
                         }
                         else {
-                            checkedList.push(xmlNode);
-                            _self.$setStyleClass(
-                                apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
+                            if (checkedList.indexOf(xmlNode) == -1) {
+                                debugger;
+                                checkedList.push(xmlNode);
+                                _self.$setStyleClass(
+                                    apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
+                            }
                             return 1;
                         }
                     }
                     return checkedList.indexOf(xmlNode) > -1 ? 1 : 0;
                 }
 
+                var isInList = checkedList.indexOf(xmlNode) != -1;
                 var shouldBeChanged = forceChange 
                     || xmlNodeList.indexOf(xmlNode) > -1 && (uncheck 
-                        ? checkedList.indexOf(xmlNode) == -1 
-                        : checkedList.indexOf(xmlNode) != -1);
+                        ? !isInList 
+                        : isInList);
                 var all = true, none = true, partial = false, isChecked;
                 for (var i = nodes.length - 1; i >= 0; i--) {
                     isChecked = recur(nodes[i], shouldBeChanged);
@@ -246,15 +251,22 @@ apf.MultiCheck = function(){
                     }
                 }
                 
+                if (xmlNode == _self.xmlRoot)
+                    return;
+                
                 if (all) {
-                    checkedList.push(xmlNode);
-                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                        "checked", ["partial"]);
+                    if (!isInList) {
+                        checkedList.push(xmlNode);
+                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                            "checked", ["partial"]);
+                    }
                 }
                 else {
-                    checkedList.remove(xmlNode);
-                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                        partial ? "partial" : "", ["partial", "checked"]);
+                    if (isInList) {
+                        checkedList.remove(xmlNode);
+                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                            partial ? "partial" : "", ["partial", "checked"]);
+                    }
                 }
                 
                 return all ? 1 : (none ? 0 : 2);

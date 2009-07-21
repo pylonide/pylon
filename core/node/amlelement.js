@@ -364,7 +364,7 @@ apf.AmlElement = function(){
                 this.oExt.setAttribute("id", id);
 
             var pTagName = x.parentNode && x.parentNode[apf.TAGNAME] || "";
-            //#ifdef __WITH_GRID
+            //#ifdef __JGRID
             if (pTagName == "grid") {
                 //#ifdef __WITH_ANCHORING
                 this.implement(apf.Anchoring);

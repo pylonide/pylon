@@ -261,6 +261,7 @@ apf.skins = {
             "style", apf.ns.aml)[0], "text()");
     },
 
+    //#ifdef __WITH_SKIN_CHANGE
     changeSkinset : function(value){
         var node = apf.document.documentElement;
         while (node) {
@@ -284,6 +285,7 @@ apf.skins = {
             }
         }
     },
+    //#endif
     
     queue : {},
     waitForSkin : function(skinset, id, callback){
@@ -428,6 +430,7 @@ apf.Presentation = function(){
      *  lstExample.setAttribute("skin", "list");
      * </code>
      */
+    //#ifdef __WITH_SKIN_CHANGE
     this.$propHandlers["skin"] = function(value){
         if (!this.$amlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
@@ -440,6 +443,7 @@ apf.Presentation = function(){
             });
         }
     }
+    //#endif
 
     /**
      * @attribute {String} style the css style applied to the this element. This can be a string containing one or more css rules.
@@ -457,6 +461,7 @@ apf.Presentation = function(){
         this.$setStyleClass(this.oExt, value, [oldClass || ""])
     }
 
+    //#ifdef __WITH_SKIN_CHANGE
     this.$forceSkinChange = function(skin, skinset){
         changeSkin.call(this, skin, skinset);
     }
@@ -597,6 +602,7 @@ apf.Presentation = function(){
         //Dispatch event
         //this.dispatchEvent("skinchange");
     };
+    //#endif
 
     /**** Private methods ****/
 
