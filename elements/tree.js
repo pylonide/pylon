@@ -286,6 +286,12 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
+    this.isCollapsed = function(xmlNode){
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+        var container = this.$getLayoutNode("item", "container", htmlNode);
+        return apf.getStyle(container, "display") == "none";
+    }
+    
     var lastOpened = {};
     /**
      * @private
@@ -1119,15 +1125,33 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 this.remove(this.indicator); //this.mode != "check"
                 break;
             case 109:
+            case 36:
+                //HOME
+                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.oInt.scrollTop = 0;
+                return false;
+            case 35:
+                //END
+                var lastNode = this.getLastTraverseNode();
+                while (!this.isCollapsed(lastNode))
+                    lastNode = this.getLastTraverseNode(lastNode);
+                    
+                this.select(lastNode, false, shiftKey);
+                this.oInt.scrollTop = this.oInt.scrollHeight;
+                return false;
             case 37:
                 //LEFT
                 if (this.$tempsel)
                     this.selectTemp();
                     
-                if (this.indicator.selectSingleNode(this.traverse))
+                var pNode;
+                if (this.indicator.selectSingleNode(this.traverse) && !this.isCollapsed(this.indicator))
                     this.slideToggle(this.$indicator || this.$selected, 2)
+                else if (pNode = this.getTraverseParent(this.indicator))
+                    this.select(pNode)
                 return false;
             case 107:
+            case 187: //+
             case 39:
                 //RIGHT
                 if (this.$tempsel)
@@ -1136,15 +1160,10 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 if (this.indicator.selectSingleNode(this.traverse))
                     this.slideToggle(this.$indicator || this.$selected, 1)
                 break;
-            case 187:
-                //+
-                if (shiftKey)
-                    arguments.callee(39);
-            break;
             case 189:
                 //-
-                if (!shiftKey)
-                    arguments.callee(37);
+                if (this.indicator.selectSingleNode(this.traverse))
+                    this.slideToggle(this.$indicator || this.$selected, 2)
                 break;
             case 38:
                 //UP

@@ -1033,13 +1033,14 @@ apf.MultiSelect = function(){
         }
         else if (shiftKey){
             if (this.$tempsel) {
+                this.selectTemp();
                 this.$deselect(this.$tempsel);
                 this.$tempsel = null;
             }
 
             this.select(xmlNode, null, shiftKey);
         }
-        else if (!this.bufferselect) {
+        else if (!this.bufferselect || valueList.length > 1) {
             this.select(xmlNode);
         }
         else {
@@ -1339,8 +1340,8 @@ apf.MultiSelect = function(){
             this.select(this.selected);
         }
 
-        if (value)
-            this.bufferselect = false; //@todo doesn't return to original value
+        //if (value)
+            //this.bufferselect = false; //@todo doesn't return to original value
     };
 
     // Select Bind class
