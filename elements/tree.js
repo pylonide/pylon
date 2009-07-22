@@ -219,12 +219,6 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
      * Expands all items in the tree
      */
     this.expandAll    = function(){
-        /*var pNodes = this.xmlRoot.selectNodes(this.traverse
-          .split('|').join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//'));
-          
-        for (var i = pNodes.length - 1; i >=0; i--)
-            this.slideOpen(null, pNodes[i], true);*/
-        
         var xpath = this.traverse.split('|')
             .join('[' + this.traverse.replace(/\|/g, " or ") + ']|.//');
         (function(node){
@@ -1124,20 +1118,19 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 //this.remove();
                 this.remove(this.indicator); //this.mode != "check"
                 break;
-            case 109:
             case 36:
                 //HOME
-                this.select(this.getFirstTraverseNode(), false, shiftKey);
-                this.oInt.scrollTop = 0;
+                this.setTempSelected(this.getFirstTraverseNode(), false, shiftKey);
+                oExt.scrollTop = 0;
                 return false;
             case 35:
                 //END
                 var lastNode = this.getLastTraverseNode();
                 while (!this.isCollapsed(lastNode))
                     lastNode = this.getLastTraverseNode(lastNode);
-                    
-                this.select(lastNode, false, shiftKey);
-                this.oInt.scrollTop = this.oInt.scrollHeight;
+                
+                this.setTempSelected(lastNode, false, shiftKey);    
+                oExt.scrollTop = oExt.scrollHeight;
                 return false;
             case 37:
                 //LEFT
@@ -1150,7 +1143,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 else if (pNode = this.getTraverseParent(this.indicator))
                     this.select(pNode)
                 return false;
-            case 107:
+            case 107: //+
             case 187: //+
             case 39:
                 //RIGHT
@@ -1160,6 +1153,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 if (this.indicator.selectSingleNode(this.traverse))
                     this.slideToggle(this.$indicator || this.$selected, 1)
                 break;
+            case 109:
             case 189:
                 //-
                 if (this.indicator.selectSingleNode(this.traverse))
@@ -1199,9 +1193,13 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
 
                 if (sNode && sNode.nodeType == 1)
                    this.setTempSelected(sNode, ctrlKey, shiftKey);
+                else return false;
                 
-                if (this.$tempsel && this.$tempsel.offsetTop < oExt.scrollTop)
-                    oExt.scrollTop = this.$tempsel.offsetTop;
+                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var top = apf.getAbsolutePosition(selHtml, this.oInt)[1]
+                     - (selHtml.offsetHeight/2);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
                 
                 return false;
             case 40:
@@ -1235,24 +1233,50 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 
                 if (sNode && sNode.nodeType == 1)
                    this.setTempSelected(sNode, ctrlKey, shiftKey);
-                
-                if (this.$tempsel && this.$tempsel.offsetTop + this.$tempsel.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight)
-                    oExt.scrollTop = this.$tempsel.offsetTop 
-                        - oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
+                else return false;
+                    
+                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var top = apf.getAbsolutePosition(selHtml, this.oInt)[1] 
+                    + (selHtml.offsetHeight/2);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
                 
                 return false;
             case 33: //@todo
                 //PGUP
+                var pos = apf.getAbsolutePosition(this.oInt);
+                var el = document.elementFromPoint(pos[0] + this.oInt.offsetWidth - 2, pos[1] + 2);
+                var sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop -= oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el = document.elementFromPoint(pos[0] + this.oInt.offsetWidth - 2, pos[1] + 2);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var top = apf.getAbsolutePosition(selHtml, this.oInt)[1]
+                     - (selHtml.offsetHeight/2);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
                 break;
             case 34: //@todo
                 //PGDN
-                break;
-            case 36: //@todo
-                //HOME
-                break;
-            case 35: //@todo
-                //END
+                var pos = apf.getAbsolutePosition(this.oInt);
+                var el = document.elementFromPoint(pos[0] + this.oInt.offsetWidth - 2, pos[1] + this.oExt.offsetHeight - 4);
+                var sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop += oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el = document.elementFromPoint(pos[0] + this.oInt.offsetWidth - 2, pos[1] + this.oExt.offsetHeight - 4);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var top = apf.getAbsolutePosition(selHtml, this.oInt)[1] 
+                    + (selHtml.offsetHeight/2);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
                 break;
             default:
                 if (key == 65 && ctrlKey) {
@@ -1276,7 +1300,9 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
-        var nodes = this.getTraverseNodes();
+        var nodes = this.xmlRoot.selectNodes(".//" + this.traverse
+          .split('|').join('.//'));
+
         for (var f = false, i = 0; i < nodes.length; i++) {
             if (nodes[i] == xmlStartNode)
                 f = true;

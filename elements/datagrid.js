@@ -509,12 +509,12 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 break;
             case 36:
                 //HOME
-                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.setTempSelected(this.getFirstTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = 0;
                 return false;
             case 35:
                 //END
-                this.select(this.getLastTraverseNode(), false, shiftKey);
+                this.setTempSelected(this.getLastTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = this.oInt.scrollHeight;
                 return false;
             case 107:
