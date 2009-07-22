@@ -1482,7 +1482,7 @@ apf.AmlDocument = function(){
                         apf.layout.compileAlignment(pNode.pData);
                     //#endif
 
-                    //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
+                    //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JTABLE
                     if (pNode.pData)
                         apf.layout.activateRules(pNode.oInt || document.body);
                     //apf.layout.activateRules();//@todo maybe use processQueue

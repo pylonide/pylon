@@ -200,7 +200,7 @@ apf.AmlParser = {
                 apf.layout.compileAlignment(amlParent.pData);
             //#endif
 
-            //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
+            //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JTABLE
             if (amlParent.pData || amlParent.tagName == "grid")
                 apf.layout.activateRules(pNode.oInt || document.body);
             //#endif
@@ -218,7 +218,7 @@ apf.AmlParser = {
             }
         }
 
-        //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
+        //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JTABLE
         apf.layout.activateRules();//@todo maybe use processQueue
         //#endif
 
@@ -305,7 +305,7 @@ apf.AmlParser = {
                 //apf.layout.compile(pHtmlNode);
             // #endif
 
-            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
+            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JTABLE
             if (!apf.hasSingleRszEvent)
                 apf.layout.activateRules(pHtmlNode);
             // #endif
@@ -1200,7 +1200,7 @@ apf.AmlParser = {
             models[i].dispatchEvent("xforms-ready");
         //#endif
 
-        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JGRID
+        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __JTABLE
         apf.layout.processQueue();
         apf.layout.activateRules();
         //#endif

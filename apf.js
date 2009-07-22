@@ -2261,7 +2261,7 @@ var apf = {
                 loop = next;
             }
 
-            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JGRID
+            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JTABLE
             setTimeout("apf.layout.forceResize();");
             // #endif
         }

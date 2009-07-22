@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JGRID || __WITH_LAYOUT
+// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JTABLE || __WITH_LAYOUT
 
 /**
  * Takes care of the spatial order of elements within the display area

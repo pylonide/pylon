@@ -18,21 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JGRID || __JGRID || __INC_ALL
+// #ifdef __JTABLE || __INC_ALL
 
 /**
- * Any child element of this element is placed in a grid. The size of the 
- * columns and rows of the grid can be set by attributes. Child elements can
+ * Any child element of this element is placed in a table. The size of the 
+ * columns and rows of the table can be set by attributes. Child elements can
  * span multiple columns. Using '*' as a size indicator will use the remaining
- * size for that column or row, when the grid's size is set.
+ * size for that column or row, when the table's size is set.
  * Example:
- * This example shows a window with a grid and two buttons that change the 
- * orientation of the grid runtime. The textarea and it's label have a span set
+ * This example shows a window with a table and two buttons that change the 
+ * orientation of the table runtime. The textarea and it's label have a span set
  * to '*'. This means they will span the entire width of all columns, no matter
  * how many columns there are.
  * <code>
  *  <a:window>
- *      <a:grid id="gridTest" 
+ *      <a:table id="tableTest" 
  *        columns = "80, *"
  *        margin  = "10 10 10 10"
  *        padding = "5"
@@ -49,15 +49,15 @@
  *          <a:textarea id="txtMessage" 
  *              height = "*" 
  *              span   = "*" />
- *      </a:grid>
+ *      </a:table>
  *      
  *      <a:button 
  *          caption = "Two Columns"
- *          onclick = "gridTest.setAttribute('columns', '80, *');"/>
+ *          onclick = "tableTest.setAttribute('columns', '80, *');"/>
  *          
  *      <a:button 
  *          caption = "Four Columns"
- *          onclick = "gridTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *          onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
  *  </a:window>
  * </code>
  * Remarks:
@@ -65,7 +65,7 @@
  * See {@link baseclass.alignment}
  * See {@link baseclass.anchoring}
  *
- * @define grid
+ * @define table
  * @allowchild {elements}, {anyaml}
  * @addnode elements
  * @constructor
@@ -74,14 +74,14 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.grid = apf.component(apf.NODE_VISIBLE, function(){
+apf.table = apf.component(apf.NODE_VISIBLE, function(){
     var id;
     var update  = false;
     var l       = apf.layout;
     var _self   = this;
     var updater = {
         $updateLayout : function(){
-            _self.$updateGrid();
+            _self.$updateTable();
         }
     };
     
@@ -99,13 +99,13 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
      * Example:
      * <code>
-     *  <a:grid columns="150, *, 20%" />
+     *  <a:table columns="150, *, 20%" />
      * </code>
      * @attribute {String} padding      the space between each element. Defaults to 2.
      * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
      * Example:
      * <code>
-     *  <a:grid margin="10 10 40 10" />
+     *  <a:table margin="10 10 40 10" />
      * </code>
      * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row. Defaults to 19.
      */
@@ -182,7 +182,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
     //#ifdef __WITH_PROPERTY_WATCH
     function propChange(name, old, value){
         if (update && apf.isTrue(value) && _self.oExt.offsetHeight) {
-            _self.$updateGrid();
+            _self.$updateTable();
             apf.layout.activateRules(_self.oExt);
             
             var p = _self;
@@ -203,7 +203,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
             : expr;
     }
     
-    this.$updateGrid = function(){
+    this.$updateTable = function(){
         if (!update)
             return;
 
@@ -451,8 +451,8 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
             //Height
             if (parseFloat(cellInfo.height) == cellInfo.height
                 || typeof rowheight[row] == "number")
-                cellInfo.oHtml.style.height = (cellInfo.height || rowheight[row]
-                    - (cellInfo.m[0] + cellInfo.m[2] + cellInfo.verdiff)) + "px";
+                cellInfo.oHtml.style.height = ((cellInfo.height || rowheight[row]
+                    - (cellInfo.m[0] + cellInfo.m[2])) - cellInfo.verdiff) + "px";
             else
                 rule.push(id + ".style.height = (" 
                     + (cellInfo.height || "rowh" + row) + " - " 
@@ -461,17 +461,17 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
         }
 
         //rule.join("\n"), true);
-        apf.layout.setRules(this.oExt, "grid", (rule.length 
+        apf.layout.setRules(this.oExt, "table", (rule.length 
             ? "try{" + rule.join(";}catch(e){};\ntry{") + ";}catch(e){};" 
             : ""), true);
 
-        //Set size of grid if necesary here...
+        //Set size of table if necesary here...
         update = false;
     };
     
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "grid " + (this.$aml.getAttributeNode("class") || "");
+        this.oExt.className = "table " + (this.$aml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
         this.oExt.host = this;
         
@@ -490,9 +490,9 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
         if (this.$aml.getAttribute("class")) 
             apf.setStyleClass(this.oExt, this.$aml.getAttribute("class"));
 
-        if (!apf.isIE && !apf.grid.$initedcss) {
-            apf.importCssString(document, ".grid>*{position:absolute}");
-            apf.grid.$initedcss = true;
+        if (!apf.isIE && !apf.table.$initedcss) {
+            apf.importCssString(document, ".table>*{position:absolute}");
+            apf.table.$initedcss = true;
         }
     };
     
@@ -512,7 +512,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
             amlNode.$show = amlHideShow;
         }
         
-        this.$updateGrid();
+        this.$updateTable();
     };
 });
 

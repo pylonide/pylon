@@ -74,7 +74,7 @@ apf.Elements = [
     "flashplayer",
     "flowchart",
     "frame",
-    "grid",
+    "table",
     "htmlwrapper",
     "hbox",
     "insert",

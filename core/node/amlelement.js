@@ -27,7 +27,7 @@ var __VALIDATION__ = 1 << 6;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
  *
- * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
+ * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
  *
  * @constructor
  * @baseclass
@@ -364,8 +364,8 @@ apf.AmlElement = function(){
                 this.oExt.setAttribute("id", id);
 
             var pTagName = x.parentNode && x.parentNode[apf.TAGNAME] || "";
-            //#ifdef __JGRID
-            if (pTagName == "grid") {
+            //#ifdef __JTABLE
+            if (pTagName == "table") {
                 //#ifdef __WITH_ANCHORING
                 this.implement(apf.Anchoring);
                 //#endif
