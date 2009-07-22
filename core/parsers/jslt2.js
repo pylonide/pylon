@@ -25,8 +25,6 @@
  * Object returning an implementation of a JSLT parser.
  * @todo Rik: please document this one extensively!
  *
- * Note: you cannot declare a variable with name node it is a deserved word
- *
  * @constructor
  * @parser
  *
