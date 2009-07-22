@@ -361,10 +361,12 @@ apf.AmlParser = {
                             o.$setParent(amlParent);
                         else 
                         //#endif
+                        //#ifdef __WITH_AMLDOM
                         {
                             o.parentNode = amlParent;
                             amlParent.childNodes.push(o);
                         }
+                        //#endif
                     }
 
                     return o;
