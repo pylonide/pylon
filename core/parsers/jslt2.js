@@ -32,7 +32,7 @@
  * @version     %I%, %G%
  * @since       3.0
  */
-function _JSLT2(){
+ apf.JsltImplementation = function(){
 
     var statement_lut = {
         "var": 1, "for": 1, "while": 1, "do": 1, "if": 1, "else": 1,
@@ -437,12 +437,17 @@ function _JSLT2(){
                         o.shift();
                         o[0] = 'return "';
                         o[--o.length-1] = '"';
+                        // TODO: you might also want to know if its plaintext. ifso thats here.
                     }
                 }
                 else if (xpathsegs == 1 && textsegs == 0 && codesegs == 0) {
-                    o.shift();
-                    o[0] = "var _v;return ";
-                    o.length -= 3;
+                    // TODO: see if this is how you want a simple xpath returned from compile
+                    // it uses the parsed stuff so thats nice for consistency with comments and such
+                    return [0,o.slice(4,o.length-5).join('').replace(/\\(["'])/g,"$1"),1,0];
+                    // NOTE: 
+                    //o.shift();
+                    //o[0] = "var _v;return ";
+                    //o.length -= 3;
                 }
             }
             // TODO outside of try/catch for debugmode or something?
@@ -462,21 +467,102 @@ function _JSLT2(){
         return [func, o, xpathsegs, jsobjs];
     };
 
-    this.execute = function(jsltStr, xmlNode){
-        // TODO add caching
-        var jsltFunc = compile(jsltStr, 1);
-        if (!jsltFunc[0]) return false;
+   /* ***********************************************
+     //you can interchange nodes and strings
+     apply(jsltStr, xmlStr);
+     apply(jsltNode, xmlNode);
+     
+     returns string or false
+     ************************************************/
+    this.cache = [];
+    
+    this.apply = function(jsltNode, xmlNode){
+        var jsltFunc, cacheId, jsltStr, doTest;
+        
+        //Type detection xmlNode
+        if (typeof xmlNode != "object")
+            xmlNode = apf.getXmlDom(xmlNode);
+        if (xmlNode.nodeType == 9)
+            xmlNode = xmlNode.documentElement;
+        if (xmlNode.nodeType == 3 || xmlNode.nodeType == 4)
+            xmlNode = xmlNode.parentNode;
+        if (xmlNode.nodeType == 2)
+            xmlNode = xmlNode.ownerElement 
+                || xmlNode.parentNode 
+                || xmlNode.selectSingleNode("..");
+        
+        //Type detection jsltNode
+        if (typeof jsltNode == "object") {
+            // #ifdef __DEBUG
+            doTest = apf.isTrue(jsltNode.getAttribute("test"));
+            // #endif
+            
+            //check the jslt node for cache setting
+            cacheId = jsltNode.getAttribute("cache");
+            jsltFunc = this.cache[cacheId];
+            if (!jsltFunc) {
+                var jsltStr = [], textNodes = jsltNode.selectNodes('text()');
+                for (var i = 0; i < textNodes.length; i++) {
+                    jsltStr = textNodes[i].nodeValue;
+                    if (jsltStr.trim()) 
+                        break;
+                }
+            }
+        }
+        else {
+            cacheId = jsltNode;
+            jsltFunc = this.cache[cacheId];
+            if (!jsltFunc) {
+                jsltStr = jsltNode;
+                cacheId = null;
+            }
+        }
+        
+        //Compile string
+        if (!jsltFunc) 
+            jsltFunc = this.compile(jsltStr);
+        
+        this.lastJslt = jsltStr;
+        this.lastJs   = jsltFunc[0]; //if it crashes here there is something seriously wrong
 
-        // TODO ifdef for debugmode or something?
+        //Invalid code - Syntax Error
+        if (!jsltFunc[0]) 
+            return false;
+        
+        //Caching
+        if (!cacheId) {
+            if (typeof jsltNode == "object") {
+                cacheId = this.cache.push(jsltFunc) - 1
+                jsltNode.setAttribute("cache", cacheId);
+            }
+            else 
+                this.cache[jsltStr] = jsltFunc;
+        }
+        
+        //Execute JSLT
+        /* #ifndef __DEBUG
         try {
-            var ret = jsltFunc[0](xmlNode);
+        #endif */
+            if (!xmlNode) 
+                return '';
+            
+            // #ifdef __DEBUG
+            var str = jsltFunc[0](xmlNode);
+            if (doTest) 
+                apf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
+            return str;
+            /* #else
+             return jsltFunc[0](xmlNode);
+             #endif */
+        /* #ifndef __DEBUG
         }
-        catch(e){
-            logw("Runtime exception: " + e.message);
+        catch (e) {
+            apf.console.info(apf.formatJS(jsltFunc[1]));
+            throw new Error(apf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
+        #endif */
     };
-}
-
-JSLT2 = new _JSLT2();
+};
+apf.JsltInstance = new apf.JsltImplementation();
 
 // #endif
