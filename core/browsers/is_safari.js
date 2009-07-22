@@ -383,11 +383,14 @@ apf.runIphone = function() {
             amlNode = apf.findHost(e.target);
         if (!amlNode) return;
 
-        while (el["onmousemove"] && el != document.body)
+        while (typeof el["onmousemove"] != "function" && el != document.body)
             el = el.parentNode;
         if (typeof el.onmousemove == "function") {
             el.onmousemove(e);
             return false;
+        }
+        else if (typeof document["onmousemove"] == "function") {
+            return document.onmousemove(e);
         }
     };
 
@@ -407,6 +410,9 @@ apf.runIphone = function() {
                 el.onmouseout(e);
             el.onmouseup(e, true);
             return false;
+        }
+        else if (typeof document["onmouseup"] == "function") {
+            return document.onmouseup(e);
         }
     };
 };
