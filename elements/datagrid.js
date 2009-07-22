@@ -1154,8 +1154,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             //first column has total -1 * fixed margin-left. - 5
             //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
             //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
-            cssRules.push([".row" + this.uniqueId, "padding-right:" + vLeft 
-                + "px;margin-right:-" + vLeft + "px"]);
+            cssRules.push(["." + this.baseCSSname + " .row" + this.uniqueId, 
+                "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
             this.oInt.style.paddingRight  =
@@ -1521,9 +1521,9 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
     /**** Drag & Drop ****/
     
     // #ifdef __WITH_DRAGDROP
-    var diffX, diffY, multiple;
+    var diffX, diffY, multiple, lastDragNode;
     this.$showDragIndicator = function(sel, e){
-        multiple = true;//sel.length > 1;
+        multiple = sel.length > 1;
         
         if (multiple) {
             diffX = e.scrollX;
@@ -1538,36 +1538,67 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oDrag, multiple
             ? prefix + "_multiple" : "", [prefix + "_multiple"]);
 
-        document.body.appendChild(this.oDrag);
-        if (!multiple)
-            this.$updateNode(this.selected, this.oDrag);
-        
-        return this.oDrag;
+        if (multiple) {
+            document.body.appendChild(this.oDrag);
+            return this.oDrag;
+        }
+        else {
+            if (lastDragNode)
+                apf.destroyHtmlNode(lastDragNode);
+            
+            var sel = this.$selected || this.$indicator;
+            var oDrag = document.body.appendChild(sel.cloneNode(true));
+            oDrag.style.position = "absolute";
+            oDrag.style.width    = sel.offsetWidth + "px";
+            oDrag.style.display  = "none";
+            oDrag.removeAttribute("id");
+            this.$setStyleClass(oDrag, "draggrid");
+            var nodes = sel.childNodes;
+            var dragnodes = oDrag.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--)
+                dragnodes[i].style.width = apf.getStyle(nodes[i], "width");
+            oDrag.removeAttribute("onmousedown");
+            oDrag.removeAttribute("onmouseup");
+            oDrag.removeAttribute("onmouseout");
+            oDrag.removeAttribute("ondblclick");
+            return (lastDragNode = oDrag);
+        }
     };
     
     this.$hideDragIndicator = function(success){
-        if (!multiple && !success) {
-            var pos = apf.getAbsolutePosition(this.$selected);
-            apf.tween.multi(this.oDrag, {
+        var oDrag = lastDragNode || this.oDrag;
+        if (!multiple && !success && oDrag.style.display == "block") {
+            var pos = apf.getAbsolutePosition(this.$selected || this.$indicator);
+            apf.tween.multi(oDrag, {
                 anim     : apf.tween.EASEIN,
                 steps    : 15,
                 interval : 10,
                 tweens   : [
-                    {type: "left", from: this.oDrag.offsetLeft, to: pos[0]},
-                    {type: "top",  from: this.oDrag.offsetTop,  to: pos[1]}
+                    {type: "left", from: oDrag.offsetLeft, to: pos[0]},
+                    {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
                 ],
                 onfinish : function(){
-                    _self.oDrag.style.display = "none";
+                    if (lastDragNode) {
+                        apf.destroyHtmlNode(lastDragNode);
+                        lastDragNode = null;
+                    }
+                    else
+                        _self.oDrag.style.display = "none";
                 }
             });
+        }
+        else if (lastDragNode) {
+            apf.destroyHtmlNode(lastDragNode);
+            lastDragNode = null;
         }
         else
             this.oDrag.style.display = "none";
     };
     
     this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX + diffX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top  = (e.clientY + diffY + (multiple ? 15 : 0)) + "px";// - this.oDrag.startY
+        var oDrag = lastDragNode || this.oDrag;
+        oDrag.style.left = (e.clientX + diffX) + "px";// - this.oDrag.startX
+        oDrag.style.top  = (e.clientY + diffY + (multiple ? 15 : 0)) + "px";// - this.oDrag.startY
     };
     
     this.$initDragDrop = function(){
@@ -1986,8 +2017,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             if (!this.$isFixedGrid) {
                 //apf.setStyleRule("." + this.baseCSSname + " .headings ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
                 //apf.setStyleRule("." + this.baseCSSname + " .records ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
-                apf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft, null, this.oWin); //Set
-                apf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft, null, this.oWin); //Set
+                apf.setStyleRule("." + this.baseCSSname + " .row" + this.uniqueId, "paddingRight", vLeft, null, this.oWin); //Set
+                apf.setStyleRule("." + this.baseCSSname + " .row" + this.uniqueId, "marginRight", "-" + vLeft, null, this.oWin); //Set
             
                 //headings and records have same padding-right
                 this.oInt.style.paddingRight  =

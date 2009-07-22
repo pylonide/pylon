@@ -183,6 +183,7 @@ apf.KernelModules = [
     "lib/util/xml.js",
 
     "lib/tween.js",
+    "lib/colors.js",
     "lib/date.js",
     "lib/flow.js",
     "lib/history.js",

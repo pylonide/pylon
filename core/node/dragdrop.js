@@ -743,7 +743,7 @@ apf.DragServer = {
 
         //Create Drag Object
         var selection = amlNode.hasFeature(__MULTISELECT__) 
-            ? amlNode.$getSelection()
+            ? amlNode.getSelection()
             : [amlNode.xmlRoot];
 
         var data    = [];
@@ -798,7 +798,6 @@ apf.DragServer = {
         var fEl;
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
-        //if(!fEl) return;
 
         if (this.lastFel && this.lastFel == fEl 
           || !this.lastFel && this.last == o) //optimization
@@ -813,9 +812,18 @@ apf.DragServer = {
             : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
                   if (p.dropenabled) {
                       o = p;
+                      if (o == apf.DragServer.last)
+                        return false;
                       return true;
                   }
                }));
+
+        if (this.last && this.last != o)
+            this.dragout(this.last);
+            
+        if (!candrop)
+            return;
+
         //EVENT - cancellable: ondragover
         if (o.dispatchEvent("dragover", this.dragdata) === false)
             candrop = false;
@@ -883,8 +891,8 @@ apf.DragServer = {
                       : apf.nameserver.get("model", o.model)
                     if (m)
                         m.load(this.dragdata.data[0])
-                    //warn??
-                    return;
+                    //else warn??
+                    return true;
                 }
                 else {
                     var action = candrop[1]
@@ -984,10 +992,11 @@ apf.DragServer = {
         var receiver = apf.findHost(el);
 
         //Run Events
-        if (apf.DragServer.last && apf.DragServer.last != receiver)
-            apf.DragServer.dragout(apf.DragServer.last);
         if (receiver)
             apf.DragServer.dragover(receiver, el, e);
+        else if (apf.DragServer.last)
+            apf.DragServer.dragout(apf.DragServer.last);
+
 
         apf.DragServer.lastTime = new Date().getTime();
     },

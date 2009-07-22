@@ -883,7 +883,7 @@ apf.MultiSelect = function(){
                 : document.getElementById(this.indicator.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
 
-            this.$selected  =
+            //this.$selected  =
             this.$indicator = this.$indicate(htmlNode);
         }
 

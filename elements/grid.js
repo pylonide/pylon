@@ -473,6 +473,7 @@ apf.grid = apf.component(apf.NODE_VISIBLE, function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.className = "grid " + (this.$aml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
+        this.oExt.host = this;
         
         if (!this.oExt.getAttribute("id")) 
             apf.setUniqueHtmlId(this.oExt);

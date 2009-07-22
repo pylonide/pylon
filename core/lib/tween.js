@@ -208,37 +208,19 @@ apf.tween = {
      * begin and end value for colors
      */
     $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var i, steps, beginEnd = [fromValue, toValue];
-        for (i = 0; i < 2; i++) {
-            if (beginEnd[i].match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)) {
-                beginEnd[i] = [parseInt(RegExp.$1), parseInt(RegExp.$2), parseInt(RegExp.$3)];
-                continue;
-            }
-
-            beginEnd[i] = beginEnd[i].replace(/^#/, "");
-            if (beginEnd[i].length == 3)
-                beginEnd[i] += beginEnd[i];
-
-            beginEnd[i] = [
-                Math.hexToDec(beginEnd[i].substr(0,2)),
-                Math.hexToDec(beginEnd[i].substr(2,2)),
-                Math.hexToDec(beginEnd[i].substr(4,2))
-            ];
+        var a = parseInt((apf.colors[fromValue]||fromValue).slice(1),16),
+            b = parseInt((apf.colors[toValue]||toValue).slice(1),16),
+            __round = Math.round, out = [];
+            
+        for(var i = 0; i < nrOfSteps; i++){
+            var d1 = i / (nrOfSteps - 1), d2 = 1-d1;
+            out[out.length] = '#' + ('000000'+
+                ((__round((a&0xff)*d2+(b&0xff)*d1)&0xff)|
+                (__round((a&0xff00)*d2+(b&0xff00)*d1)&0xff00)|
+                (__round((a&0xff0000)*d2+(b&0xff0000)*d1)&0xff0000)).toString(16)).slice(-6);
         }
-
-        var stepParts = [
-            apf.tween.$calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
-            apf.tween.$calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
-            apf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
-        ];
-
-        for (steps = [], i = 0; i < stepParts[0].length; i++) {
-            steps.push("#" + Math.decToHex(stepParts[0][i])
-                           + Math.decToHex(stepParts[1][i])
-                           + Math.decToHex(stepParts[2][i]));
-        }
-
-        return steps;
+        
+        return out;
     },
 
     /**
@@ -567,8 +549,7 @@ apf.tween = {
         if (remove)
             apf.setStyleClass(oHtml, "", [className]);
 
-        var callback = info.onfinish;
-        info.onfinish = function(){
+        var resetAnim = function(remove, callback){
             if (remove)
                 apf.setStyleClass(oHtml, "", [className]);
             else
@@ -585,6 +566,11 @@ apf.tween = {
             if (callback)
                 callback.apply(this, arguments);
         }
+
+        var onfinish  = info.onfinish;
+        var onstop    = info.onstop;
+        info.onfinish = function(){resetAnim(remove, onfinish);}
+        info.onstop   = function(){resetAnim(!remove, onstop);}
 
         var result, newvalue, curvalue, j, isColor, style, rules, i, tweens = {};
         for (i = 0; i < document.styleSheets.length; i++) {
@@ -643,6 +629,10 @@ apf.tween = {
             apf.setStyleClass(oHtml, className);
 
         return this.multi(oHtml, info);
+    },
+    
+    cssRemove : function(oHtml, className, info){
+        this.css(oHtml, className, info, true);
     },
 
     needsPix : {

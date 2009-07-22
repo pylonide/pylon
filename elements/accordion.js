@@ -22,7 +22,7 @@
 
 /**
  * The Accordion is component that allows you to provide multiple vertical or 
- * horizontal panes. You can display them one or more at a time. Each panel has 
+ * horizontal panes. You can display them one or more at a time. Each bar has 
  * a title and its content. Content can contain other components.
  * 
  * @define accordion
@@ -36,26 +36,26 @@
  * 
  * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
  * 
- * @attribute {Boolean} multiexpand   allows collapsing one or more panels, default is true
+ * @attribute {Boolean} multiexpand   allows collapsing one or more bars, default is true
  * Possible values:
  *     true    one or more planels can be expanded at a time
- *     false   only one panel can be expanded at a time
+ *     false   only one bar can be expanded at a time
  * 
- * @attribute {String} expand   sets event which activate panel, default is click
+ * @attribute {String} expand   sets event which activate bar, default is click
  * Possible values:
- *     click   panel will be expanded when user click on it
- *     hover   panel will be expanded when user hover over it with mouse
+ *     click   bar will be expanded when user click on it
+ *     hover   bar will be expanded when user hover over it with mouse
  * 
- * @attribute {Boolean} startexpanded   collapses all panels on load, default is false
+ * @attribute {Boolean} startexpanded   collapses all bars on load, default is false
  * Possible values:
- *     true    collapses all panels
- *     false   only choosen panels will be expanded
- * @see panel expanded="true" 
+ *     true    collapses all bars
+ *     false   only choosen bars will be expanded
+ * @see bar expanded="true" 
  * 
  * @inherits apf.Presentation
  * 
  * Example:
- * Horizontal acccordion component with 5 panels. First and third panel will be 
+ * Horizontal acccordion component with 5 bars. First and third bar will be 
  * expanded on load.
  * 
  * <code>
@@ -69,43 +69,43 @@
  *      startexpanded   = "false"
  *      skin            = "accordion_horizontal"
  *      >
- *     <a:panel title="Iron Maiden" expanded="true" icon="icon.png">
+ *     <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Piece Of Mind</li>
  *             <li>X Factor</li>
  *         </ul>
- *     </a:panel>
- *     <a:panel title="Megadeth" icon="images/accordion_icon.png">
+ *     </a:bar>
+ *     <a:bar title="Megadeth" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Youthanasia</li>
  *         </ul>
- *     </a:panel>
- *     <a:panel title="Judas Priest" expanded="true" icon="icon.png">
+ *     </a:bar>
+ *     <a:bar title="Judas Priest" expanded="true" icon="icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Painkiller</li>
  *         </ul>
- *     </a:panel>
- *     <a:panel title="Metallica" icon="images/accordion_icon.png">
+ *     </a:bar>
+ *     <a:bar title="Metallica" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Load</li>
  *         </ul>
- *     </a:panel>
- *     <a:panel title="Behemoth" icon="images/accordion_icon.png">
+ *     </a:bar>
+ *     <a:bar title="Behemoth" icon="images/accordion_icon.png">
  *         <b>Discography</b>
  *         <ul>
  *             <li>Satanica</li>
  *         </ul>
- *     </a:panel>
+ *     </a:bar>
  * </a:accordion>
  * </code>
  * 
  * Example:
- * Vertical accordion component with 2 panels. Only one panel can be expanded
- * at a time. Both panels conatins JPF components.
+ * Vertical accordion component with 2 bars. Only one bar can be expanded
+ * at a time. Both bars conatins JPF components.
  * 
  * <code>
  * <a:accordion
@@ -119,15 +119,15 @@
  *     startexpanded   = "false"
  *     skin            = "accordion_vertical"
  *     >
- *     <a:panel title="Components" expanded="true" icon="icon.png">
+ *     <a:bar title="Components" expanded="true" icon="icon.png">
  *         <a:label>Choose Your favourite component</a:label><br />
  *         <a:dropdown>
  *             <a:item>Bar</a:item>
  *             <a:item>Notifier</a:item>
  *             <a:item>Tree</a:item>
  *         </a:dropdown><br />
- *     </a:panel>
- *     <a:panel title="Blog" icon="images/accordion_icon.png">
+ *     </a:bar>
+ *     <a:bar title="Blog" icon="images/accordion_icon.png">
  *         <a:label>Choose Your favourite blog</a:label><br />
  *         <a:radiobutton group="g1">overthinkings</a:radiobutton> 
  *         <a:radiobutton group="g1">Rik on code </a:radiobutton> 
@@ -136,7 +136,7 @@
  *         <a:radiobutton group="g1">All about Javascript </a:radiobutton>
  *         <a:radiobutton group="g1">observing the dos</a:radiobutton><br />
  *         <a:button>Vote</a:button><br />
- *     </a:panel>
+ *     </a:bar>
  * </a:accordion>
  * </code>
  *
@@ -164,25 +164,25 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     var _self    = this;
     
     /**
-     * Keeps all panels
+     * Keeps all bars
      * 
-     * panels[oTitle.id] = {
-     *     panel  : panel,
+     * bars[oTitle.id] = {
+     *     bar  : bar,
      *     opened : false,
      *     oTitle : oTitle,
      *     oBody  : oBody
      * };
      */
-    var panels = {};
+    var bars = {};
     
     /**
-     * Id of title from last opened panel
+     * Id of title from last opened bar
      */
     var lastOpened = [];
     var hoverTimer = null;
     
     /**
-     * when "multiexpand" is false, only one panel with expanded="true"
+     * when "multiexpand" is false, only one bar with expanded="true"
      * can be opened
      */
     var startExpanded = 0;
@@ -202,11 +202,11 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     });
     
     this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent) {
-        if (amlNode.tagName != "panel")
+        if (amlNode.tagName != "bar")
             return;
 
         amlNode.$propHandlers["icon"] = function(value) {
-            var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
+            var oIcon = this.$getLayoutNode("bar", "icon", this.oExt);
             if (!oIcon) return;
 
             if (oIcon.tagName == "img") 
@@ -242,10 +242,10 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
      *     {String} unique name of title bar
      */
     this.slideToggle = function(id) {
-        if (!panels[id])
+        if (!bars[id])
             return;
 
-        if (panels[id].opened) 
+        if (bars[id].opened) 
             _self.slideUp(id);
         else
             this.slideDown(id);
@@ -262,11 +262,11 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     this.slideDown = function(id) {
         var id2 = null;
 
-        if (!panels[id]) {
+        if (!bars[id]) {
             return;
         }
 
-        var panel = panels[id];
+        var bar = bars[id];
         
         if (!_self.multiexpand && lastOpened.length > 0) {
             var _temp = lastOpened.shift();
@@ -277,43 +277,43 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
         
         lastOpened.push(id);
 
-        _self.$setStyleClass(panel.panel.oExt, "active");
+        _self.$setStyleClass(bar.bar.oExt, "active");
 
-        panel.oBody.style.display = "block";
+        bar.oBody.style.display = "block";
         
         //#ifdef __WITH_PROPERTY_WATCH
-        panel.panel.dispatchWatch("visible", true);
+        bar.bar.dispatchWatch("visible", true);
         //#endif
         
         if (_self.$dir == "vertical") {
-            panel.oBody.style.height = "1px";
+            bar.oBody.style.height = "1px";
         }
 
         if (_self.animtype1 == "none") {
             if (id2) {
-                _self.$setStyleClass(panels[id2].panel.oExt, "", ["active"]);
-                panels[id2].oBody.style.display = "none";
+                _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
+                bars[id2].oBody.style.display = "none";
                 
                 if (_self.$dir == "horizontal") {
-                    panel.oBody.style.width = "auto";
-                    panels[id2].oBody.style.width = "auto";
+                    bar.oBody.style.width = "auto";
+                    bars[id2].oBody.style.width = "auto";
                 }
 
-                panels[id].opened = true;
+                bars[id].opened = true;
             }
             else {
                 if (_self.$dir == "horizontal") {
-                    panel.oBody.style.width = "auto";
+                    bar.oBody.style.width = "auto";
                 }
 
-                panels[id].opened = true;
+                bars[id].opened = true;
             }
         }
         else {
             if (id2) {
-                _self.$setStyleClass(panels[id2].panel.oExt, "", ["active"]);
+                _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
                 
-                apf.tween.multi(panel.oBody, {
+                apf.tween.multi(bar.oBody, {
                     steps    : animStep[_self.animtype1],
                     anim     : _self.animtype1,
                     interval : _self.animdelay,
@@ -321,55 +321,55 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                        type : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                        from : 0,
                        to   : _self.$dir == "vertical"
-                                  ? panel.oBody.scrollHeight
-                                  : panel.oBody.scrollWidth
+                                  ? bar.oBody.scrollHeight
+                                  : bar.oBody.scrollWidth
                     },
                     {
                         type  : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                         from  : _self.$dir == "vertical"
-                                   ? panels[id2].oBody.scrollHeight
-                                   : panels[id2].oBody.scrollWidth,
+                                   ? bars[id2].oBody.scrollHeight
+                                   : bars[id2].oBody.scrollWidth,
                         to    : 0,
-                        oHtml : panels[id2].oBody
+                        oHtml : bars[id2].oBody
                     }],
                     onfinish : function() {
                         //Slide down
-                        _self.$setStyleClass(panel.panel.oExt, "active", [""]);
+                        _self.$setStyleClass(bar.bar.oExt, "active", [""]);
         
                         if (_self.$dir == "horizontal")
-                            panel.oBody.style.width = "auto";
+                            bar.oBody.style.width = "auto";
         
-                        panels[id].opened = true;
+                        bars[id].opened = true;
                         
                         //Slide up
-                        _self.$setStyleClass(panels[id2].panel.oExt, "", ["active"]);
-                        panels[id2].oBody.style.display = "none";
+                        _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
+                        bars[id2].oBody.style.display = "none";
         
                         if (_self.$dir == "horizontal") {
-                            panels[id2].oBody.style.width = "auto";
+                            bars[id2].oBody.style.width = "auto";
                         }
         
-                        panels[id2].opened = false;
+                        bars[id2].opened = false;
                     }
                 });
             }
             else {
-                apf.tween.single(panel.oBody, {
+                apf.tween.single(bar.oBody, {
                     steps    : animStep[_self.animtype1],
                     type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                     from     : 0,
                     to       : _self.$dir == "vertical"
-                                   ? panel.oBody.scrollHeight
-                                   : panel.oBody.scrollWidth,
+                                   ? bar.oBody.scrollHeight
+                                   : bar.oBody.scrollWidth,
                     anim     : _self.animtype1,
                     interval : _self.animdelay,
                     onfinish : function() {
-                        _self.$setStyleClass(panel.panel.oExt, "active", [""]);
+                        _self.$setStyleClass(bar.bar.oExt, "active", [""]);
 
                         if (_self.$dir == "horizontal")
-                            panel.oBody.style.width = "auto";
+                            bar.oBody.style.width = "auto";
 
-                        panels[id].opened = true;
+                        bars[id].opened = true;
                     }
                 });
             }
@@ -385,47 +385,47 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
      *     {String} unique name of title bar
      */
     this.slideUp = function(id) {
-        if (!panels[id]) {
+        if (!bars[id]) {
             return;
         }
 
-        var panel = panels[id];
+        var bar = bars[id];
         
         //#ifdef __WITH_PROPERTY_WATCH
-        panel.panel.dispatchWatch("visible", false);
+        bar.bar.dispatchWatch("visible", false);
         //#endif
 
-        _self.$setStyleClass(panel.panel.oExt, "", ["active"]);
+        _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
 
         if (_self.animtype2 == "none") {
-            _self.$setStyleClass(panel.panel.oExt, "", ["active"]);
-            panel.oBody.style.display = "none";
+            _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
+            bar.oBody.style.display = "none";
             
             if (_self.$dir == "horizontal") {
-                panel.oBody.style.width = "auto";
+                bar.oBody.style.width = "auto";
             }
     
-            panels[id].opened = false;
+            bars[id].opened = false;
         }
         else {
-            apf.tween.single(panel.oBody, {
+            apf.tween.single(bar.oBody, {
                 steps    : animStep[_self.animtype2],
                 type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                 from     : _self.$dir == "vertical"
-                               ? panel.oBody.scrollHeight
-                               : panel.oBody.scrollWidth,
+                               ? bar.oBody.scrollHeight
+                               : bar.oBody.scrollWidth,
                 to       : 0,
                 anim     : _self.animtype2,
                 interval : _self.animdelay,
                 onfinish : function() {
-                    _self.$setStyleClass(panel.panel.oExt, "", ["active"]);
-                    panel.oBody.style.display = "none";
+                    _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
+                    bar.oBody.style.display = "none";
     
                     if (_self.$dir == "horizontal") {
-                        panel.oBody.style.width = "auto";
+                        bar.oBody.style.width = "auto";
                     }
     
-                    panels[id].opened = false;
+                    bars[id].opened = false;
                 }
             });
         }
@@ -440,10 +440,10 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
      *                          from left to right for horizontal mode, and 
      *                          from top to bottom for vertical mode
      */
-    this.$getPanelIdByNumber = function(number) {
+    this.$getbarIdByNumber = function(number) {
         var counter = 1;
         
-        for (var id in panels) {
+        for (var id in bars) {
             if (counter++ == number)
                 return id;
         }
@@ -469,7 +469,7 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$loadAml = function(x) {
-        var i, l, node, panel, nodes = this.$aml.childNodes;
+        var i, l, node, bar, nodes = this.$aml.childNodes;
  
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
@@ -477,21 +477,21 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
             if (node.nodeType != 1) 
                 continue;
 
-            if (node[apf.TAGNAME] == "panel") {
-                var panel = new apf.panel(this.oInt, "panel");
+            if (node[apf.TAGNAME] == "bar") {
+                var bar = new apf.bar(this.oInt, "bar");
                 var opened = node.getAttribute("expanded")
                     ? (node.getAttribute("expanded") == "true"
                         ? true
                         : false)
                     : false;
 
-                panel.skinName = this.skinName;
-                insertChild.call(this, panel);
-                panel.loadAml(node, this);
+                bar.skinName = this.skinName;
+                insertChild.call(this, bar);
+                bar.loadAml(node, this);
                 
-                var oTitle = this.$getLayoutNode("panel", "title", panel.oExt);
-                var oCaption = this.$getLayoutNode("panel", "caption", panel.oExt);
-                var oIcon = this.$getLayoutNode("panel", "icon", panel.oExt);
+                var oTitle = this.$getLayoutNode("bar", "title", bar.oExt);
+                var oCaption = this.$getLayoutNode("bar", "caption", bar.oExt);
+                var oIcon = this.$getLayoutNode("bar", "icon", bar.oExt);
                 
                 apf.setUniqueHtmlId(oTitle);
                 (oCaption || oTitle).appendChild(document.createTextNode(node.getAttribute("title")))
@@ -532,11 +532,11 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                     };
                 }
 
-                var oBody = this.$getLayoutNode("panel", "body", panel.oExt);
+                var oBody = this.$getLayoutNode("bar", "body", bar.oExt);
                 apf.setUniqueHtmlId(oBody);
 
-                panels[oTitle.id] = {
-                    panel  : panel,
+                bars[oTitle.id] = {
+                    bar  : bar,
                     opened : false,
                     oTitle : oTitle,
                     oBody  : oBody
