@@ -1301,7 +1301,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
         var nodes = this.xmlRoot.selectNodes(".//" + this.traverse
-          .split('|').join('.//'));
+          .split('|').join('|.//'));
 
         for (var f = false, i = 0; i < nodes.length; i++) {
             if (nodes[i] == xmlStartNode)
