@@ -371,19 +371,16 @@
             ol      = 1;
             code = s_codeinxpath = s_xpathincode = s_xpath = complexcode = 
                 xpathsegs = s_popauto = bl = type =  lineno = linepos =
-                codesegs = textsegs = 0;
-            count   = 0;
+                codesegs = textsegs = count = last = 0;
 
             s_block = 1;
-            block   = [];
             stack   = [];
             xstack  = [];
             jsobjs  = {};
-            //tblock;
-            last    = "";
             keepnl  = vkeepnl;
 
             str.replace(parserx, parser);
+            
             if (s_block == 1 && count > 0)
                 o[ol++] = '");';
             if (!xpathsegs && count >= 1 || count > 1)
