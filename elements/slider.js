@@ -104,7 +104,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.value    = 0;
     this.mask     = "%";
     this.min      = 0;
-    this.max      = 1;
+    this.max      = 1000001;
 
     this.$supportedProperties.push("step", "mask", "min",
         "max", "slide", "value", "markers");
@@ -645,7 +645,9 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$loadAml = function(x){
-        this.$propHandlers["value"].call(this, this.value);
+        if (this.max == 1000001)
+            this.setProperty("max", 1);
+        //this.$propHandlers["value"].call(this, this.value);
 
         //@todo this goes wrong with skin switching. smartbindings is called again.
         apf.AmlParser.parseChildren(this.$aml, null, this);

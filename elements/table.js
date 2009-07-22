@@ -131,6 +131,7 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         
         amlNode.$propHandlers["width"]  = 
         amlNode.$propHandlers["height"] = 
+        amlNode.$propHandlers["margin"] = 
         amlNode.$propHandlers["span"]   = null;
         
         amlNode.$hide = amlNode.$_hide;
@@ -168,6 +169,7 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         
         amlNode.$propHandlers["width"]  = 
         amlNode.$propHandlers["height"] = 
+        amlNode.$propHandlers["margin"] = 
         amlNode.$propHandlers["span"]   = this.$updateTrigger;
         
         amlNode.$_hide = amlNode.$hide;
@@ -246,7 +248,7 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
                 jNode.disableAnchoring();
             //#endif
             
-            m = apf.getBox(jNode.getAttribute("margin"));
+            m = apf.getBox(String(jNode.getAttribute("margin")));
             //for (j = 0; j < 4; j++)
                 //m[j] += this.padding;
 
@@ -506,6 +508,12 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         var amlNode, nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
             amlNode = nodes[i];
+            
+            amlNode.$propHandlers["width"]  = 
+            amlNode.$propHandlers["height"] = 
+            amlNode.$propHandlers["margin"] = 
+            amlNode.$propHandlers["span"]   = this.$updateTrigger;
+            
             amlNode.$_hide = amlNode.$hide;
             amlNode.$_show = amlNode.$show;
             amlNode.$hide = amlHideShow;

@@ -598,6 +598,7 @@ apf.XmlDatabase = function(){
      * @private
      */
     var notifyQueue = {}, notifyTimer;
+    this.$hasQueue = false;
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && apf.offline.models.enabled
@@ -678,6 +679,7 @@ apf.XmlDatabase = function(){
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             //notifyTimer = setTimeout(function(){
+                //this.$hasQueue = true;
                 apf.xmldb.notifyQueued();
             //});
         }
@@ -691,6 +693,8 @@ apf.XmlDatabase = function(){
      *  @private
      */
     this.notifyQueued = function(){
+        this.$hasQueue = false;
+        
         clearTimeout(notifyTimer);
         
         for (var uId in notifyQueue) {

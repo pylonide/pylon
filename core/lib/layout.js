@@ -1200,8 +1200,11 @@ apf.layout = {
     timer : null,
     qlist : {},
     dlist : [],
+    $hasQueue : false,
     
     queue : function(oHtml, obj, compile){
+        this.$hasQueue = true;
+        
         if (this.qlist[oHtml.getAttribute("id")]) {
             if (obj)
                 this.qlist[oHtml.getAttribute("id")][2].push(obj);
@@ -1219,6 +1222,7 @@ apf.layout = {
     processQueue : function(){
         clearTimeout(this.timer);
         this.timer = null;
+        this.$hasQueue = false;
 
         var i, id, l, qItem, list;
 

@@ -582,6 +582,11 @@ apf.Class = function(){
      */
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue;
+        
+        //#ifdef __WITH_LAYOUT || __WITH_XMLDATABASE
+        if (!apf.eventDepth) apf.eventDepth = 0;
+        apf.eventDepth++ 
+        //#endif
 
         /* #ifdef __WITH_EDITMODE
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
@@ -632,7 +637,24 @@ apf.Class = function(){
                 result = rValue;
         }
         //#endif
-
+        
+        //#ifdef __WITH_LAYOUT || __WITH_XMLDATABASE
+        if (--apf.eventDepth == 0 && !apf.isParsing
+            //#ifdef __DEBUG
+            && eventName != "debug"
+            //#endif
+        ) {
+            //#ifdef __WITH_LAYOUT
+            if (apf.layout && apf.layout.$hasQueue)
+                apf.layout.processQueue();
+            //#endif
+            //#ifdef __WITH_XMLDATABASE
+            if (apf.xmldb && apf.xmldb.$hasQueue)
+                apf.xmldb.notifyQueued();
+            //#endif
+        }
+        //#endif
+        
         return e.returnValue !== undefined ? e.returnValue : result;
     };
 
