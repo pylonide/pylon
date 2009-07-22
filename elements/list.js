@@ -109,6 +109,11 @@ apf.select    =
 apf.select1   = 
 apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     var _self = this;
+
+    // #ifdef __WITH_RENAME
+    if (!apf.isIphone)
+        this.implement(apf.Rename);
+    // #endif
     
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
@@ -458,9 +463,6 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         this.oDrag = null;
     };
 }).implement(
-    // #ifdef __WITH_RENAME
-    apf.Rename,
-    // #endif
     // #ifdef __WITH_DRAGDROP
     apf.DragDrop, 
     // #endif

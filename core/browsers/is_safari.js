@@ -224,6 +224,7 @@ apf.runIphone = function() {
         titleNode : null,
 
         linkEvents: function(el, bClick) {
+            return;
             el[bClick ? "onclick" : "ontouchstart"] = function(evt) {
                 if (!evt.touches || evt.touches.length != 1) return;
 
@@ -268,7 +269,7 @@ apf.runIphone = function() {
             return this;
         },
         nav: {
-            panels       : null,
+            sections     : null,
             active       : null,
             def          : "home",
             divideChar   : "/",
@@ -278,7 +279,7 @@ apf.runIphone = function() {
                 var i, p, _self = apf.iphone.nav;
                 _self.update();
 
-                if (!(p = _self.panels[where.page])) return;
+                if (!(p = _self.sections[where.page])) return;
 
                 scrollTo(0, 1);
                 apf.dispatchEvent("pagechange", where);
@@ -288,25 +289,25 @@ apf.runIphone = function() {
                     apf.iphone.titleNode.innerHTML = sTitle;
 
                 if (noanim) {
-                    for (i in _self.panels)
-                        _self.panels[i].hide();
+                    for (i in _self.sections)
+                        _self.sections[i].hide();
                     p.show();
                 }
                 else {
-                    for (i in _self.panels) {
-                        if (!_self.panels[i].visible || i == where.page)
+                    for (i in _self.sections) {
+                        if (!_self.sections[i].visible || i == where.page)
                             continue;
-                        var panel = _self.panels[i];
-                        panel.setProperty("zindex", 0);
-                        apf.tween.single(panel.oExt, {
+                        var section = _self.sections[i];
+                        section.setProperty("zindex", 0);
+                        apf.tween.single(section.oExt, {
                             steps   : 5,
                             interval: 10,
-                            from    : panel.oExt.offsetLeft,
+                            from    : section.oExt.offsetLeft,
                             to      : (where.index < 0) ? 1000 : -1000,
                             type    : "left",
                             anim    : apf.tween.EASEOUT,
                             onfinish: function() {
-                                panel.setProperty("visible", false);
+                                section.setProperty("visible", false);
                             }
                         });
                     }
@@ -330,12 +331,12 @@ apf.runIphone = function() {
             },
 
             update: function(force) {
-                if (this.panels && !force) return;
-                this.panels = {};
+                if (this.sections && !force) return;
+                this.sections = {};
                 for (var i in window) {
                     if (window[i] && window[i]["tagName"]
-                      && window[i].tagName == "panel")
-                        this.panels[i] = window[i];
+                      && window[i].tagName == "section")
+                        this.sections[i] = window[i];
                 }
             }
         }
@@ -353,7 +354,61 @@ apf.runIphone = function() {
     // make sure that document event link to mouse events already. Since the
     // document object on top of the event bubble chain, it will probably also
     // be hooked by other JPF elements.
-    apf.iphone.linkEvents(document);
+    //apf.iphone.linkEvents(document);
+    document.ontouchstart = function(evt) {
+        if (!evt.touches || evt.touches.length != 1) return;
+
+        var e       = evt.touches[0],
+            el      = e.target,
+            amlNode = apf.findHost(e.target);
+        if (!amlNode) return;
+
+        while (typeof el["onmousedown"] != "function" && el != document.body)
+            el = el.parentNode;
+        if (typeof el.onmousedown == "function") {
+            if (typeof el.onmouseover == "function")
+                el.onmouseover(e);
+            else if (typeof el.onmousemove == "function")
+                el.onmousemove(e);
+            el.onmousedown(e);
+            return false;
+        }
+    };
+
+    document.ontouchmove = function(evt) {
+        if (!evt.touches || evt.touches.length != 1) return;
+
+        var e       = evt.touches[0],
+            el      = e.target,
+            amlNode = apf.findHost(e.target);
+        if (!amlNode) return;
+
+        while (el["onmousemove"] && el != document.body)
+            el = el.parentNode;
+        if (typeof el.onmousemove == "function") {
+            el.onmousemove(e);
+            return false;
+        }
+    };
+
+    document.ontouchend = document.ontouchcancel = function(evt) {
+        var e = evt.touches && evt.touches.length
+            ? evt.touches[0]
+            : evt.changedTouches[0];
+        if (!e) return;
+        var el      = e.target,
+            amlNode = apf.findHost(e.target);
+        if (!amlNode) return;
+
+        while (typeof el["onmouseup"] != "function" && el != document.body)
+            el = el.parentNode;
+        if (typeof el.onmouseup == "function") {
+            if (typeof el.onmouseout == "function")
+                el.onmouseout(e);
+            el.onmouseup(e, true);
+            return false;
+        }
+    };
 };
 
 // #endif
