@@ -154,7 +154,9 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
         //Add markers
         if (value && this.step) {
-            var pos, count = (this.max - this.min) / this.step;
+            var max = this.max == 1000001 ? 1 : this.max;
+            
+            var pos, count = (max - this.min) / this.step;
             var prop = this.$dir == "horizontal" ? "left" : "top";
             var size = this.$dir == "horizontal"
                 ? this.oExt.offsetWidth - this.oKnob.offsetWidth
