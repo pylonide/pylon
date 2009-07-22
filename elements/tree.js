@@ -790,7 +790,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.uniqueId + ');'
                 // #ifdef __WITH_RENAME
-                + 'if (this.dorename && o.mode == "normal")\
+                + 'if (this.dorename && !o.mode)\
                     o.startDelayedRename(event);' +
                 // #endif
                 'this.dorename = false;\

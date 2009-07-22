@@ -510,7 +510,7 @@ apf.BaseList = function(){
                  this.hasPassedDown = true;\
                  if (!o.renaming && o.hasFocus() && isSelected) \
                     this.dorename = true;\
-                 if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                 if (!o.hasFeature(__DRAGDROP__) || o.mode != "normal" || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.uniqueId + ');'
@@ -521,7 +521,7 @@ apf.BaseList = function(){
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                 if (o.mode == "normal" && o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
                      o.select(this, event.ctrlKey, event.shiftKey)');
         } //@todo add DRAGDROP ifdefs
         else {

@@ -289,8 +289,8 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
             }
             else if(typeof rowheight[row] != "string") {
                 rowheight[row] = Math.max(rowheight[row] || 0, 
-                    parseFloat(cellInfo.height || this.cellheight) 
-                    + cellInfo.m[0] + cellInfo.m[2]);
+                    parseFloat(cellInfo.height || this.cellheight));
+                    //+ cellInfo.m[0] + cellInfo.m[2]);
             }
         }
         var dt = new Date().getTime();

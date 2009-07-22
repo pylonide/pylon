@@ -1223,7 +1223,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
                  if (!o.hasFeature(__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey)'
+                     o.select(this, event.ctrlKey, event.shiftKey);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -1231,7 +1231,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
-                     o.select(this, event.ctrlKey, event.shiftKey)');
+                     o.select(this, event.ctrlKey, event.shiftKey);');
         } //@todo add DRAGDROP ifdefs
         else {
             oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
