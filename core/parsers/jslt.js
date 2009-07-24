@@ -152,7 +152,7 @@
         "xlang"    : "(",
         "xlang_"   : ")",
    #else*/        
-        "xlang"    : "(_langkey?(_langkey[_v=(",
+        "xlang"    : "(_langkey?(_langkey.has=_langkey[_v=(",
         "xlang_"   : ")]=1):0,apf.language.getWord(_v))",
 //#endif
         "codeinxpath"       : " ",
@@ -219,7 +219,6 @@
                         if (v = xpath_incode_lut[last])
                             o.pop() == " " ? (ol = --o.length) : ol--;
                         else {
-                            logw(stack[stack.length-1]);
                             v = xpath_macro_default[stack[stack.length-1]] || "xvalue";
                         }
                         stack.push(v + "_");
@@ -338,7 +337,7 @@
                        
                             xpathsegs++;
                             if (v = xpath_intext_lut[last]){
-                                ol = --o.length;
+                                ol = --o.length;textsegs++;
                                 if(count<2)o.length--,count--;
                             }else
                                 v = xpath_macro_default[stack[stack.length-1]] || "xvalue";
@@ -419,7 +418,9 @@
                             ol = o.length-=4;o[ol++]="";
                             jsmodels[n] = 1;
                             // lets find the right macro for our new 3 state shiznizzleshiz
-                            o[ol++] = macro[(v = stack.pop())+'1']+n+macro[v+'2'];
+                            o[ol++] = macro[(v = stack.pop())+'1']+n+(n=macro[v+'2']);
+                            if(!n)
+                                throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
                             stack.push(v+'3');
                             // this xpath might be bound on a special node
                         } else {
@@ -515,6 +516,9 @@
                 throw {t: "Unclosed " + s + " found at eof", p: str.length};
             }
 
+            //for(n in jsmodels)
+            //    logw("Found model: "+n);
+
             // Optimize the code for simple cases
             if (!complexcode) {
                 if (!xpathsegs) {
@@ -543,18 +547,13 @@
                     }
                 }
                 else if (xpathsegs == 1 && textsegs == 0 && codesegs == 0) {
-                    //logw(o.join('##'));
-                    logw(o.slice(4,o.length-5).join(''));
-                    for(n in jsmodels){
-                        logw("Found model: "+n);
-                    }
                     // TODO: see if this is how you want a simple xpath returned from compile
                     // it uses the parsed stuff so thats nice for consistency with comments and such
                     return [0,o.slice(4,o.length-5).join('').replace(/\\(["'])/g,"$1"),1,null,jsmodels];
                     // NOTE: 
-                    o.shift();
-                    o[0] = "var _v;return ";
-                    o.length -= 3;
+                    //o.shift();
+                    //o[0] = "var _v;return ";
+                    //o.length -= 3;
                 }
             }
             // TODO outside of try/catch for debugmode or something?
@@ -575,7 +574,7 @@
             }
         }
         // TODO check API: xpathsegs counts how many xpaths are in here, jsobjs has all the used jsobjects, o is the compiled string
-        return [func, o, xpathsegs, jsobjs,jsmodels];
+        return [func, o, xpathsegs, jsobjs, jsmodels];
     };
 
    /* ***********************************************
