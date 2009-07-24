@@ -42,7 +42,7 @@
         "each": 1, "node": 1, "local": 1
     },
     type_lut = {
-        "\n": 1, "\r\n": 1, '"': 4, "'": 4, "//": 5, "/*": 5, "*/": 5, "{": 6,
+        "\n": 1, "\r\n": 1, '"': 4, "'": 4, "<!--": 5,"-->": 5, "/*": 5, "*/": 5, "{": 6,
         "}": 7, "[": 8, "]": 9, "(": 10, ")": 11
     },
     type_close = {"}": "{", "]": "[", ")": "("},
@@ -96,7 +96,7 @@
         "xvalue"   : "(n?((_v=n.selectSingleNode(",
         "xvalue_"  : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')",
         "xvalue_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
-        "xvalue_2" : "\"])?_v.data:0)?_v.selectSingleNode(\"",
+        "xvalue_2" : "\"])?_v.data:0)?_v.selectSingleNode(",
         "xvalue_3" : "):0)?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')",
         "values"   : "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
         "values_"  : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])_n[_n.length]=(n.nodeType==1?n.firstChild:n).nodeValue;return _n;})()",
@@ -109,7 +109,7 @@
         "xcount"   : "(n?n.selectNodes(",
         "xcount_"  : ").length:0)",
         "xcount_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
-        "xcount_2" : "\"])?_v.data:0)?_v.selectNodes(\"",
+        "xcount_2" : "\"])?_v.data:0)?_v.selectNodes(",
         "xcount_3" : "):0)?v.length:0)",
         "node"     : "(",
         "node_"    : ")",
@@ -118,7 +118,7 @@
         "xnode"    : "(n?n.selectSingleNode(",
         "xnode_"   : "):null)",
         "xnode_1"  : "((_v=(_v=apf.nameserver.lookup.model[\"",
-        "xnode_2"  : "\"])?_v.data:0)?_v.selectSingleNode(\"",
+        "xnode_2"  : "\"])?_v.data:0)?_v.selectSingleNode(",
         "xnode_3"  : "):null)",
         "nodes"    : "(",
         "nodes_"   : ")",
@@ -127,7 +127,7 @@
         "xnodes"   : "(n?n.selectNodes(",
         "xnodes_"  : "):[])",
         "xnodes_1" : "((_v=(_v=apf.nameserver.lookup.model[\"",
-        "xnodes_2" : "\"])?_v.data:0)?_v.selectNodes(\"",
+        "xnodes_2" : "\"])?_v.data:0)?_v.selectNodes(",
         "xnodes_3" : "):[])",
         "copy"     : "((_v=(",
         "copy_"    : "))?_v.xml:'')",        
@@ -136,7 +136,7 @@
         "xcopy"    : "(n?((_v=n.selectSingleNode(",
         "xcopy_"   :  "))?_v.xml:''):'')",
         "xcopy_1"  : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
-        "xcopy_2"  : "\"])?_v.data:0)?_v.selectSingleNode(\"",
+        "xcopy_2"  : "\"])?_v.data:0)?_v.selectSingleNode(",
         "xcopy_3"  : "):null)?_v.xml:'')",
         "copies"   : "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
         "copies_"  : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])_n[_n.length]=n.xml;return _n;})()",
@@ -145,7 +145,7 @@
         "xcopies"  : "(function(){var _a,_i,_l,s=[];for(_a=n?n.selectNodes(",
         "xcopies_" : "):[],_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])s[s.length]=n.xml;return s.join('')})()",
         "xcopies_1": "(function(){var _a,_i,_l,s=[];for(_a=((_v=(_v=apf.nameserver.lookup.model[\"",
-        "xcopies_2": "\"])?_v.data:0)?_v.selectNodes(\"",
+        "xcopies_2": "\"])?_v.data:0)?_v.selectNodes(",
         "xcopies_3": "):[]),_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])s[s.length]=n.xml;return s.join('')})()",
         "local"    : "for(_t.push(n,_i), n=(",
         "local_"   : ");_i<1 || (_i=_t.pop(),n=_t.pop(),0);_i++)",
@@ -163,16 +163,17 @@
     },
     o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block, s_pblock,
     s_popauto, block, bl, stack, xstack, tblock, type, count, last, jsobjs,
-    jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
+    jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,s_xpathwithmodel,xpathbegin,
     complexcode, v, n;
     
     // Also you would need to add a cmdline arg to 'compile' to switch between
     // the macro_edit and macro_default things
     
-    parserx.compile("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/[/*]|\\*/)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
+    parserx.compile("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
 
     function parser(m, rx_lut, rx_white, rx_word, rx_misc, pos){
         type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : 2));
+        //logw(type+" "+m+"\n");
         if (!s_block) {
             switch (type) {
                 case 0: // whitespace
@@ -211,8 +212,8 @@
                     bl      = 1;
                     break;
                 case 5: // comment
-                    if (m == "*/")
-                        throw {t: "Unmatched comment */", p: pos};
+                    if (m == "*/" || m== "-->")
+                        throw {t: "Unmatched comment "+m, p: pos};
                     s_pblock = 0;
                     s_block  = 3;
                     block    = [tblock = m];
@@ -234,6 +235,7 @@
                         s_block = s_xpath = s_xpathincode = 1;
                         xstack.push(count);
                         count   = 1;
+                        xpathbegin = ol;
                     }
                     else {
                         o[ol++] = m;
@@ -354,7 +356,7 @@
                             count         = 1;
                             s_xpath       = 1;
                             s_xpathincode = 0;
-                            ol            = o.length;
+                            xpathbegin = ol = o.length;
                         }
                         else {
                             // someone put an extra { in our xpath... we might be in a reference-
@@ -378,6 +380,10 @@
                                 s_block = 0;
                             }
                             else {
+                                if(s_xpathwithmodel){ // add our xpath too
+                                    jsmodels[jsmodels.length] = o.slice(s_xpathwithmodel,ol).join('');
+                                    s_xpathwithmodel = 0;
+                                }
                                 o.push(s_codeinxpath ? "" : '"',
                                     macro[v = stack.pop()], ',"');
                             }
@@ -424,14 +430,19 @@
                         }*/
                         break;
                     case 2: // misc
-                        if (s_xpath && count < 4 && count > 2 && m == ":" 
+                        if (s_xpath && count > 2 && m == ":" 
                           && last == ":" && !xpath_axes[n = o[ol - 2]]) {
-                            ol          = o.length -= 4;
-                            o[ol++]     = "";
-                            jsmodels[n] = 1;
+                            if(xpathbegin<=ol-3){
+                                n = o.splice(xpathbegin,ol-7).join('');
+                            }
+                            // we have to skip back to the length when starting the xpath macro.
+                            ol          = o.length = xpathbegin - 2;
+                            s_xpathwithmodel = ol+2;
+                            (jsmodels || (jsmodels = [])).push( n );
                             // lets find the right macro for our new 3 state shiznizzleshiz
                             o[ol++]     = macro[(v = stack.pop()) + "1"] + n
                                 + (n = macro[v + "2"]);
+                            o[ol++]     = "\"";
                             if (!n)
                                 throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
                             stack.push(v + "3");
@@ -456,8 +467,6 @@
                         lineno++;
                         linepos = pos;
                         block[bl++] = "\\n";
-                        if (s_block == 3 && tblock == "//")
-                            s_block = s_pblock;
                         break;
                     case 2: // misc
                         block[bl++] = unesc_str[m] || m;
@@ -469,7 +478,8 @@
                         o[ol++] = block.join("");
                         break;
                     case 5: // comment
-                        if (s_block == 3 && tblock == "/*" && m == "*/")
+                        if (s_block == 3 && ((tblock == "/*" && m == "*/")
+                                         || (tblock=="<!--" && m == "-->")))
                             s_block = s_pblock;
                         break;
                     default:
@@ -500,13 +510,12 @@
             ol   = 1;
             code = s_codeinxpath = s_xpathincode = s_xpath = complexcode = 
                 xpathsegs = s_popauto = bl = type =  lineno = linepos =
-                codesegs = textsegs = count = last = 0;
+                codesegs = textsegs = count = last = s_xpathwithmodel = jsmodels = 0;
 
             s_block  = 1;
             stack    = [];
             xstack   = [];
             jsobjs   = {};
-            jsmodels = {};
             str.replace(parserx, parser);
             
             if (s_block == 1 && count > 0)
@@ -542,10 +551,10 @@
                     s = s.charAt(0) == "x" ? "xpath {" : "macro ( from " + s;
                 throw {t: "Unclosed " + s + " found at eof", p: str.length};
             }
-
+            if(jsmodels)logw(jsmodels.join('#'));
             //for(n in jsmodels)
             //    logw("Found model: "+n);
-
+            //logw("State text:"+textsegs+" xpath:"+xpathsegs+" code:"+codesegs);
             // Optimize the code for simple cases
             if (!complexcode) {
                 if (!xpathsegs) {
