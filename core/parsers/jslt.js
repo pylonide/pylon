@@ -79,8 +79,7 @@
         "LTE" : "<=", "GTE" : ">=", "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&", "ORBIN" : "|"
     },
     parserx = new RegExp(),
-    macrotable = {
-        def : {
+    macro_default = {
         "each"     : "for(_t.push(n,_a,_i,_l),_a=(_a=(",
         "each_"    : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l||(_l=_t.pop(),_i=_t.pop(),_a=_t.pop(),n=_t.pop(),0);n=_a[++_i])",
         "_each"    : "",
@@ -162,7 +161,7 @@
     o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block,macro,
     s_pblock, s_popauto, block, bl, stack, xstack, tblock, type, count, last,
     jsobjs, jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
-    complexcode, v, n, macro = macrotable.def;
+    complexcode, v, n, macro = macro_default;
     
     // Also you would need to add a cmdline arg to 'compile' to switch between the macro_edit and macro_default things
     
@@ -469,19 +468,14 @@
             last = m;
     }
 
-    // returns 0 when macro table was already initialized, else it returns the macro table to be extended
-    this.set_macro_mode = function(modename){
-        var v, d, n;
-        if(v = macrotable[modename])
-           return macro = v, 0;
-        v = macrotable[modename] = {}, d = macrotable.def;
-        for(n in d) // copy default macros.
-            v[n] = d[n];
-        // returns v object to be extendable by caller if so required
-        return v;
-        // MIKE: now you can extend the returned macrotable like so:
-        // macro_edit["xvalue"]   : "('<div class=\'editable\'>'+(n?((_v=n.selectSingleNode(",
-        // macro_edit["xvalue_"]  : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')";
+    // pass in an extension object for our macro table
+    this.extendMacros = function(exts){
+        // extend / overwrite the macro table
+        for(n in exts) 
+            macro[n] = exts[n];
+        // MIKE: Example of extension
+        // { "xvalue"  : "('<div class=\'editable\'>'+(n?((_v=n.selectSingleNode(",
+        //   "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')" }           
     },
     
     this.compile = function(str, hasoptions, editmode){
