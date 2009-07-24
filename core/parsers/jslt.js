@@ -299,7 +299,6 @@
         }
         else {
             if (s_block == 1) {
-                logw("Blockmode "+m);
                 switch (type) {
                     case 8:// [
                         if(!s_xpath){
