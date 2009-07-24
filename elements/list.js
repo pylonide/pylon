@@ -136,7 +136,12 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     
-    this.$supportedProperties.push("appearance", "mode", "more");
+    this.$supportedProperties.push("appearance", "mode", "more", "thumbsize");
+    
+    this.$propHandlers["thumbsize"] = function(value){
+        apf.setStyleRule("width", ".thumbs_caption blockquote", value);
+    };
+    
     
     /**
      * @attribute {String} appearance the type of select this element is. 
@@ -450,6 +455,9 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         this.listtype  = parseInt(this.$getOption("main", "type")) || 1;
         //Types: 1=Check on click, 2=Check independent
         this.behaviour = parseInt(this.$getOption("main", "behaviour")) || 1; 
+        
+        this.thumbsize  = this.$getOption("main", "thumbsize");
+        this.thumbclass = this.$getOption("main", "thumbclass");
     };
     
     this.$loadAml = function(x){
