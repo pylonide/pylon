@@ -139,7 +139,8 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize");
     
     this.$propHandlers["thumbsize"] = function(value){
-        apf.setStyleRule("width", ".thumbs_caption blockquote", value);
+        apf.setStyleRule(this.thumbclass, "width", value + "px");
+        apf.setStyleRule(this.thumbclass, "height",  value + "px");
     };
     
     
