@@ -79,7 +79,7 @@
         "LTE" : "<=", "GTE" : ">=", "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&", "ORBIN" : "|"
     },
     parserx = new RegExp(),
-    macro = {
+    macro_default = {
         "each"     : "for(_t.push(n,_a,_i,_l),_a=(_a=(",
         "each_"    : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l||(_l=_t.pop(),_i=_t.pop(),_a=_t.pop(),n=_t.pop(),0);n=_a[++_i])",
         "_each"    : "",
@@ -157,14 +157,20 @@
 //#endif
         "codeinxpath"       : " ",
         "codeinxpathincode" : " "
-    },
-    o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block,
+    },macro_edit={},
+    o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block,macro,
     s_pblock, s_popauto, block, bl, stack, xstack, tblock, type, count, last,
     jsobjs, jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
-    complexcode, v, n;
-
-    // macro aliases
-
+    complexcode, v, n, macro;
+    for(n in macro_def)
+        macro_edit[n] = macro_default[n];
+  
+    // MIKE: now you can overload de macro_edit things to support inline editing mode.
+    macro_edit["xvalue"]   : "('<div class=\'editable\'>'+(n?((_v=n.selectSingleNode(",
+    macro_edit["xvalue_"]  : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')";
+    
+    // Also you would need to add a cmdline arg to 'compile' to switch between the macro_edit and macro_default things
+    
     parserx.compile("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/[/*]|\\*/)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])","g");
 
     function parser(m, rx_lut, rx_white, rx_word, rx_misc, pos){
@@ -468,8 +474,9 @@
             last = m;
     }
 
-    this.compile = function(str, hasoptions){
+    this.compile = function(str, hasoptions, editmode){
         try {
+            macro = editmode?macro_edit:macro_default;
             o       = hasoptions?["var _t=[],_v,_i,_a,_l,s=[];with(_opts){"]:
                                  ["var _t=[],_v,_i,_a,_l,s=[];"];
             ol      = 1;
