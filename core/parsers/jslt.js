@@ -58,7 +58,7 @@
     },
     xpath_macro_default = {
         "each_" : "xnodes", "local_": "xnode", "value_" : "xnode", 
-        "values_" : "xnodes",  "copies_" : "xnodes", "node_": "xnode",
+        "values_" : "xnodes",  "copies_" : "xnodes", "_node_": "xnode",
         "nodes_" : "xnodes", "count_" : "xnodes", "copy_" : "xnode"
     },
     xpath_axes = {
@@ -106,11 +106,11 @@
         "count_"   : "))?_v.length:0)",
         "_count"   : "",
         "_count_"  : "(n?1:0)",
-        "xcount"   : "(n?n.selectNodes(",
-        "xcount_"  : ").length:0)",
-        "xcount_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
-        "xcount_2" : "\"])?_v.data:0)?_v.selectNodes(",
-        "xcount_3" : "):0)?v.length:0)",
+        "x_count"   : "(n?n.selectNodes(",
+        "x_count_"  : ").length:0)",
+        "x_count_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
+        "x_count_2" : "\"])?_v.data:0)?_v.selectNodes(",
+        "x_count_3" : "):0)?v.length:0)",
         "node"     : "(",
         "node_"    : ")",
         "_node"    : "",
