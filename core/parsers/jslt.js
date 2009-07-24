@@ -422,7 +422,7 @@
                         break;
                     case 11: // )
                         if (!count++)
-                            o[ol++] = "\ns.push(";
+                            o[ol++] = "\ns.push(\"";
                         o[ol++] = ")";
                         break;
                     case 1: // newline
@@ -460,7 +460,7 @@
                         }
                         else {
                             if (!count++)
-                                o[ol++] = "\ns.push(";
+                                o[ol++] = "\ns.push(\"";
                             o[ol++] = unesc_lut[m] || m;
                         }
                         break;
