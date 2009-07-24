@@ -48,7 +48,7 @@
     type_close = {"}": "{", "]": "[", ")": "("},
     xpath_enter = {
         ":": 1, "&": 1, "#": 1, "(": 1, "[": 1, "=": 1, ">": 1, "<": 1, "{": 1,
-        "+": 1, "-": 1, "/": 1, "*": 1, "&": 1, "!": 1, "%": 1, "$": 1
+        "+": 1, "-": 1, "/": 1, "*": 1, "!": 1, "%": 1, "$": 1
     },
     xpath_incode_lut = {
         "&": "xnode", "*": "xnodes", "#": "xcount", "$": "xlang"
@@ -683,7 +683,8 @@
             jsltFunc = this.compile(jsltStr);
         
         this.lastJslt = jsltStr;
-        this.lastJs   = jsltFunc[0]; //if it crashes here there is something seriously wrong
+        //if this crashes here there is something seriously wrong:
+        this.lastJs   = jsltFunc[0];
 
         //Invalid code - Syntax Error
         if (!jsltFunc[0]) 
