@@ -551,7 +551,7 @@
                     s = s.charAt(0) == "x" ? "xpath {" : "macro ( from " + s;
                 throw {t: "Unclosed " + s + " found at eof", p: str.length};
             }
-            if(jsmodels)logw(jsmodels.join('#'));
+            //if(jsmodels)logw(jsmodels.join('#'));
             //for(n in jsmodels)
             //    logw("Found model: "+n);
             //logw("State text:"+textsegs+" xpath:"+xpathsegs+" code:"+codesegs);
