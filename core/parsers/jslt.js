@@ -223,6 +223,7 @@
                 case 6: // {
                     // lets see if we should switch to xpath mode
                     if (!count || xpath_enter[last]) {
+                    
                         xpathsegs++;
                         if (v = xpath_incode_lut[last])
                             o.pop() == " " ? (ol = --o.length) : ol--;
@@ -298,16 +299,19 @@
         }
         else {
             if (s_block == 1) {
+                logw("Blockmode "+m);
                 switch (type) {
                     case 8:// [
-                        if (count) {
-                            if (!xpathsegs && count >= 1 || count > 1)
-                                textsegs++;
-                            o[ol++] = '");';
-                        }
-                        s_block = count = 0;
-                        code    = 1;
-                        codesegs++;
+                        if(!s_xpath){
+                            if (count) {
+                                if (!xpathsegs && count >= 1 || count > 1)
+                                    textsegs++;
+                                o[ol++] = '");';
+                            }
+                            s_block = count = 0;
+                            code    = 1;
+                            codesegs++;
+                        }else o[ol++] = m;
                         break;
                     case 4: // textblock
                         // switch back to code mode if we are the first character
@@ -340,6 +344,7 @@
                         break;
                     case 6: // {
                         if (!s_xpath) { // switch to xpath mode
+
                             xpathsegs++;
                             if (v = xpath_intext_lut[last]) {
                                 ol = --o.length;textsegs++;
@@ -369,6 +374,7 @@
                         break;
                     case 7: // }
                         if (s_xpath) { // end xpath mode
+                        
                             // optimize the {.} case
                             if (last == "." && o[ol-2] == '"') {
                                 ol = (o.length-=3);
@@ -404,6 +410,7 @@
                     case 10: // (
                         // we are going into inner-code mode.
                         if (s_xpath && count < 2 && last=="{") {
+                                                                           
                             if (o[ol - 1] != '"')
                                 throw {t: "Invalid code-in-xpath" + v, p: pos};
                             // remove quote and go into code mode
