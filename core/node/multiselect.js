@@ -407,13 +407,15 @@ apf.MultiSelect = function(){
                 : amlNode.xmlRoot, true, true);
             if (!pNode) {
                 if (actionNode && actionNode.getAttribute("parent")) {
-                    pNode = amlNode.xmlRoot
+                    pNode = (amlNode.isTreeArch
+                      ? amlNode.selected || amlNode.xmlRoot
+                      : amlNode.xmlRoot)
                         .selectSingleNode(actionNode.getAttribute("parent"));
                 }
                 else {
                     pNode = amlNode.isTreeArch
-                        ? amlNode.selected || amlNode.xmlRoot
-                        : amlNode.xmlRoot
+                      ? amlNode.selected || amlNode.xmlRoot
+                      : amlNode.xmlRoot
                 }
             }
 
