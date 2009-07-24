@@ -57,26 +57,29 @@
         "&": "xcopy", "*": "xcopies", "#": "xcount", "$": "xlang"
     },
     xpath_macro_default = {
-        "each_" : "xnodes", "local_": "xnode", "value_" : "xnode", "values_" : "xnodes", 
-        "copies_" : "xnodes", "node_": "xnode", "nodes_" : "xnodes", "count_" : "xnodes",
-        "copy_" : "xnode"
+        "each_" : "xnodes", "local_": "xnode", "value_" : "xnode", 
+        "values_" : "xnodes",  "copies_" : "xnodes", "node_": "xnode",
+        "nodes_" : "xnodes", "count_" : "xnodes", "copy_" : "xnode"
     },
     xpath_axes = {
-        "ancestor":1,"ancestor-or-self":1,"attribute":1, 
-        "child":1, "descendant":1, "descendant-or-self":1, 
-        "following":1, "following-sibling":1, "namespace":1, 
-        "parent":1, "preceding":1, "self":1
+        "ancestor": 1, "ancestor-or-self": 1, "attribute": 1, "child": 1,
+        "descendant": 1, "descendant-or-self": 1, "following": 1,
+        "following-sibling": 1, "namespace": 1, "parent": 1, "preceding": 1,
+        "self": 1
     },    
     unesc_lut = {
         "\\\"": "\"", "\\\'": "\'", "\\{": "{", "\\}": "}",
         "\\[": "[", "\\]": "]", "\\(":"(", "\\)":")", "\\\\":"\\"
     },
     unesc_str = {
-        "\\{": "{", "\\}": "}","\\[": "[", "\\]": "]", "\\(":"(", "\\)":")", "\\\\":"\\"
+        "\\{": "{", "\\}": "}", "\\[": "[", "\\]": "]", "\\(": "(", "\\)": ")",
+        "\\\\": "\\"
     },
     andorlut = {
-        "lte" : "<=", "gte" : ">=", "lt" : "<", "gt" : ">", "and" : "&&", "or": "||", "andbin" : "&", "orbin" : "|",
-        "LTE" : "<=", "GTE" : ">=", "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&", "ORBIN" : "|"
+        "lte" : "<=", "gte" : ">=", "lt" : "<", "gt" : ">", "and" : "&&", 
+        "or": "||", "andbin" : "&", "orbin" : "|", "LTE" : "<=", "GTE" : ">=",
+        "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&",
+        "ORBIN" : "|"
     },
     parserx = new RegExp(),
     macro = {
@@ -114,9 +117,9 @@
         "_node_"   : "(n)",
         "xnode"    : "(n?n.selectSingleNode(",
         "xnode_"   : "):null)",
-        "xnode_1" : "((_v=(_v=apf.nameserver.lookup.model[\"",
-        "xnode_2" : "\"])?_v.data:0)?_v.selectSingleNode(\"",
-        "xnode_3" : "):null)",
+        "xnode_1"  : "((_v=(_v=apf.nameserver.lookup.model[\"",
+        "xnode_2"  : "\"])?_v.data:0)?_v.selectSingleNode(\"",
+        "xnode_3"  : "):null)",
         "nodes"    : "(",
         "nodes_"   : ")",
         "_nodes"   : "",
@@ -132,9 +135,9 @@
         "_copy_"   : "(n?n.xml:'')",        
         "xcopy"    : "(n?((_v=n.selectSingleNode(",
         "xcopy_"   :  "))?_v.xml:''):'')",
-        "xcopy_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
-        "xcopy_2" : "\"])?_v.data:0)?_v.selectSingleNode(\"",
-        "xcopy_3" : "):null)?_v.xml:'')",
+        "xcopy_1"  : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
+        "xcopy_2"  : "\"])?_v.data:0)?_v.selectSingleNode(\"",
+        "xcopy_3"  : "):null)?_v.xml:'')",
         "copies"   : "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
         "copies_"  : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])_n[_n.length]=n.xml;return _n;})()",
         "_copies"  : "",
@@ -148,24 +151,25 @@
         "local_"   : ");_i<1 || (_i=_t.pop(),n=_t.pop(),0);_i++)",
         "_local"   : "",
         "_local_"  : "",
- /*#ifndef __WITH_LANG_SUPPORT       
+        /*#ifndef __WITH_LANG_SUPPORT
         "xlang"    : "(",
         "xlang_"   : ")",
-   #else*/        
+        #else*/
         "xlang"    : "(_langkey?(_langkey.has=_langkey[_v=(",
         "xlang_"   : ")]=1):0,apf.language.getWord(_v))",
-//#endif
+        //#endif
         "codeinxpath"       : " ",
         "codeinxpathincode" : " "
     },
-    o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block,macro,
-    s_pblock, s_popauto, block, bl, stack, xstack, tblock, type, count, last,
-    jsobjs, jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
+    o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block, s_pblock,
+    s_popauto, block, bl, stack, xstack, tblock, type, count, last, jsobjs,
+    jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
     complexcode, v, n;
     
-    // Also you would need to add a cmdline arg to 'compile' to switch between the macro_edit and macro_default things
+    // Also you would need to add a cmdline arg to 'compile' to switch between
+    // the macro_edit and macro_default things
     
-    parserx.compile("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/[/*]|\\*/)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])","g");
+    parserx.compile("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/[/*]|\\*/)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
 
     function parser(m, rx_lut, rx_white, rx_word, rx_misc, pos){
         type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : 2));
@@ -190,11 +194,13 @@
                         if(!statement_lut[m])
                             o[ol++] = "s[s.length]=";
                         else complexcode = 1;
-                    }else if(!complexcode && statement_lut[m])
+                    }
+                    else if (!complexcode && statement_lut[m])
                         complexcode = 1;
                     if (m.indexOf(".") != -1) // add to object table
                         jsobjs[jslast = m] = 1;
-                    else m = andorlut[m] || m;
+                    else
+                        m = andorlut[m] || m;
                     o[ol++] = m;
                     break;
                 case 4: // textblock
@@ -218,9 +224,8 @@
                         xpathsegs++;
                         if (v = xpath_incode_lut[last])
                             o.pop() == " " ? (ol = --o.length) : ol--;
-                        else {
+                        else
                             v = xpath_macro_default[stack[stack.length-1]] || "xvalue";
-                        }
                         stack.push(v + "_");
                         if (s_popauto = !count++)
                             o[ol++] = "s[s.length]=";
@@ -259,7 +264,7 @@
                 case 10: // (
                     if (!count++)
                         o[ol++] = "s[s.length]=";
-                    if (n = macro[last]){
+                    if (n = macro[last]) {
                         if(o[ol-1]==" ")
                             ol--;
                         o[ol-1] = n;
@@ -339,8 +344,11 @@
                             if (v = xpath_intext_lut[last]){
                                 ol = --o.length;textsegs++;
                                 if(count<2)o.length--,count--;
-                            }else
-                                v = xpath_macro_default[stack[stack.length-1]] || "xvalue";
+                            }
+                            else {
+                                v = xpath_macro_default[stack[stack.length-1]]
+                                    || "xvalue";
+                            }
                             o.push((count++) ? (textsegs++, '",') : "\ns.push(",
                                 macro[v], '"');
                             stack.push(v + "_");
@@ -350,22 +358,24 @@
                             s_xpathincode = 0;
                             ol            = o.length;
                         }
-                        else{
+                        else {
                             // someone put an extra { in our xpath... we might be in a reference-
                             o[ol++] = (!count++) ? "\ns.push(\"{" : "{";
                         }
                         break;
                     case 7: // }
                         if (s_xpath) { // end xpath mode
-                            if(last=='.' && o[ol-2]=='"'){ // optimize the {.} case
+                            // optimize the {.} case
+                            if (last == "." && o[ol-2] == '"') {
                                 ol = (o.length-=3);
-                                o[ol++] = macro[v='_'+stack.pop().substring(1,v.length)];
-                                stack.push(v+'_');
+                                o[ol++] = macro[v = "_" + stack.pop()
+                                    .substring(1, v.length)];
+                                stack.push(v + "_");
                                 s_codeinxpath = 1; // no " insertion
                             }
                             if (s_xpathincode) {
                                 o.push(s_codeinxpath ? "" : '"', 
-                                    macro[v = stack.pop()],"\n");
+                                    macro[v = stack.pop()], "\n");
                                 s_block = 0;
                             }
                             else {
@@ -386,7 +396,8 @@
                         if (s_xpath && count < 2 && last=="{") {
                             if (o[ol - 1] != '"')
                                 throw {t: "Invalid code-in-xpath" + v, p: pos};
-                            ol      = --o.length; // remove quote and go into code mode
+                            // remove quote and go into code mode
+                            ol      = --o.length;
                             stack.push(s_xpathincode 
                                 ? "codeinxpathincode"
                                 : "codeinxpath");
@@ -406,24 +417,28 @@
                         break;
                     case 1: // newline
                         lineno++;
-                        linepos = pos;/*
-                        if (keepnl && !s_xpath) {
+                        linepos = pos;
+                        /*if (keepnl && !s_xpath) {
                             if (!count++)
                                 o[ol++] = "\ns.push(";
                             o[ol++] = "\\n";
                         }*/
                         break;
                     case 2: // misc
-                        if(s_xpath && count < 4 && count>2 && m==':' && last==':' && !xpath_axes[n=o[ol-2]]){
-                            ol = o.length-=4;o[ol++]="";
+                        if (s_xpath && count < 4 && count > 2 && m == ":" 
+                          && last == ":" && !xpath_axes[n = o[ol - 2]]) {
+                            ol          = o.length -= 4;
+                            o[ol++]     = "";
                             jsmodels[n] = 1;
                             // lets find the right macro for our new 3 state shiznizzleshiz
-                            o[ol++] = macro[(v = stack.pop())+'1']+n+(n=macro[v+'2']);
-                            if(!n)
+                            o[ol++]     = macro[(v = stack.pop()) + "1"] + n
+                                + (n = macro[v + "2"]);
+                            if (!n)
                                 throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
-                            stack.push(v+'3');
+                            stack.push(v + "3");
                             // this xpath might be bound on a special node
-                        } else {
+                        }
+                        else {
                             if (!count++)
                                 o[ol++] = "\ns.push(";
                             o[ol++] = unesc_lut[m] || m;
@@ -480,17 +495,18 @@
     
     this.compile = function(str, hasoptions, editmode){
         try {
-            o       = hasoptions?["var _t=[],_v,_i,_a,_l,s=[];with(_opts){"]:
-                                 ["var _t=[],_v,_i,_a,_l,s=[];"];
-            ol      = 1;
+            o    = hasoptions 
+                ? ["var _t=[],_v,_i,_a,_l,s=[];with(_opts){"]
+                : ["var _t=[],_v,_i,_a,_l,s=[];"];
+            ol   = 1;
             code = s_codeinxpath = s_xpathincode = s_xpath = complexcode = 
                 xpathsegs = s_popauto = bl = type =  lineno = linepos =
                 codesegs = textsegs = count = last = 0;
 
-            s_block = 1;
-            stack   = [];
-            xstack  = [];
-            jsobjs  = {};
+            s_block  = 1;
+            stack    = [];
+            xstack   = [];
+            jsobjs   = {};
             jsmodels = {};
             str.replace(parserx, parser);
             
@@ -498,7 +514,9 @@
                 o[ol++] = '");';
             if (!xpathsegs && count >= 1 || count > 1)
                 textsegs++;
-            o[ol++] = hasoptions?"\nreturn s.join('');}":"\nreturn s.join('');";
+            o[ol++] = hasoptions 
+                ? "\nreturn s.join('');}"
+                : "\nreturn s.join('');";
 
             // check any unclosed errors
             var s;
@@ -541,25 +559,28 @@
                                 o[o.length] = '""';
                             else
                                 o.length--;
-                            if(hasoptions)o[o.length]="}";
+                            if (hasoptions)
+                                o[o.length] = "}";
                         }
                         else if (!codesegs) {
                             o = ['return ""'];
                         }
                     }
                     else if (textsegs == 1 && !codesegs) {
-                        return [0,o.slice(2,o.length-2).join('').replace(/\\(["'])/g,"$1"),0,null,jsmodels];
-/*                      o.shift();
-                        o[0] = 'return "';
-                        o[--o.length-1] = '"';
-  */                      
+                        return [0, o.slice(2, o.length - 2).join("")
+                            .replace(/\\(["'])/g, "$1"), 0, null, jsmodels];
+                        /*o.shift();
+                          o[0] = 'return "';
+                          o[--o.length-1] = '"';
+                        */
                         // TODO: you might also want to know if its plaintext. ifso thats here.
                     }
                 }
                 else if (xpathsegs == 1 && textsegs == 0 && codesegs == 0) {
                     // TODO: see if this is how you want a simple xpath returned from compile
                     // it uses the parsed stuff so thats nice for consistency with comments and such
-                    return [0,o.slice(4,o.length-5).join('').replace(/\\(["'])/g,"$1"),1,null,jsmodels];
+                    return [0, o.slice(4, o.length - 5).join('')
+                        .replace(/\\(["'])/g, "$1"), 1, null, jsmodels];
                     // NOTE: 
                     //o.shift();
                     //o[0] = "var _v;return ";
@@ -567,11 +588,9 @@
                 }
             }
             // TODO outside of try/catch for debugmode or something?
-            if(hasoptions){
-                var func = new Function("n","_langkey","_opts", o = o.join(""));
-            } else {
-                var func = new Function("n","_langkey", o = o.join(""));
-            }
+            var func = hasoptions
+                ? new Function("n", "_langkey", "_opts", o = o.join(""))
+                : new Function("n", "_langkey", o = o.join(""));
         }
         catch(e) {
             // TODO: make a proper JPF exception with this information:
@@ -621,7 +640,8 @@
             cacheId = jsltNode.getAttribute("cache");
             jsltFunc = this.cache[cacheId];
             if (!jsltFunc) {
-                var jsltStr = [], textNodes = jsltNode.selectNodes('text()');
+                jsltStr       = [];
+                var textNodes = jsltNode.selectNodes('text()');
                 for (var i = 0; i < textNodes.length; i++) {
                     jsltStr = textNodes[i].nodeValue;
                     if (jsltStr.trim()) 
