@@ -42,8 +42,8 @@
         "each": 1, "node": 1, "local": 1
     },
     type_lut = {
-        "\n": 1, "\r\n": 1, '"': 4, "'": 4, "<!--": 5,"-->": 5, "/*": 5, "*/": 5, "{": 6,
-        "}": 7, "[": 8, "]": 9, "(": 10, ")": 11
+        "\n": 1, "\r\n": 1, '"': 4, "'": 4, "<!--": 5,"-->": 5, "/*": 5, 
+        "*/": 5, "{": 6, "}": 7, "[": 8, "]": 9, "(": 10, ")": 11
     },
     type_close = {"}": "{", "]": "[", ")": "("},
     xpath_enter = {
@@ -163,8 +163,8 @@
     },
     o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block, s_pblock,
     s_popauto, block, bl, stack, xstack, tblock, type, count, last, jsobjs,
-    jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,s_xpathwithmodel,xpathbegin,
-    complexcode, v, n;
+    jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
+    s_xpathwithmodel, xpathbegin, complexcode, v, n;
     
     // Also you would need to add a cmdline arg to 'compile' to switch between
     // the macro_edit and macro_default things
@@ -173,7 +173,7 @@
 
     function parser(m, rx_lut, rx_white, rx_word, rx_misc, pos){
         type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : 2));
-        //logw(type+" "+m+"\n");
+        //apf.console.log(type+" "+m+"\n");
         if (!s_block) {
             switch (type) {
                 case 0: // whitespace
@@ -184,7 +184,7 @@
                     linepos = pos;
                     break;
                 case 2: // misc
-                    if (m == "%" )
+                    if (m == "%")
                         o[ol++] = "s[s.length]=";
                     else
                         o[ol++] = unesc_lut[m] || m;
@@ -192,9 +192,10 @@
                     break;
                 case 3: // word
                     if (!count++){
-                        if(!statement_lut[m])
+                        if (!statement_lut[m])
                             o[ol++] = "s[s.length]=";
-                        else complexcode = 1;
+                        else
+                            complexcode = 1;
                     }
                     else if (!complexcode && statement_lut[m])
                         complexcode = 1;
@@ -338,15 +339,17 @@
                         s_pblock = 1;
                         break;
                     case 6: // {
-                        if(!s_xpath){ // switch to xpath mode
-                       
+                        if (!s_xpath) { // switch to xpath mode
                             xpathsegs++;
-                            if (v = xpath_intext_lut[last]){
+                            if (v = xpath_intext_lut[last]) {
                                 ol = --o.length;textsegs++;
-                                if(count<2)o.length--,count--;
+                                if (count < 2) {
+                                    o.length--;
+                                    count--;
+                                }
                             }
                             else {
-                                v = xpath_macro_default[stack[stack.length-1]]
+                                v = xpath_macro_default[stack[stack.length - 1]]
                                     || "xvalue";
                             }
                             o.push((count++) ? (textsegs++, '",') : "\ns.push(",
@@ -359,7 +362,8 @@
                             xpathbegin = ol = o.length;
                         }
                         else {
-                            // someone put an extra { in our xpath... we might be in a reference-
+                            // someone put an extra { in our xpath... we might
+                            // be in a reference-
                             o[ol++] = (!count++) ? "\ns.push(\"{" : "{";
                         }
                         break;
@@ -380,8 +384,9 @@
                                 s_block = 0;
                             }
                             else {
-                                if(s_xpathwithmodel){ // add our xpath too
-                                    jsmodels[jsmodels.length] = o.slice(s_xpathwithmodel,ol).join('');
+                                if (s_xpathwithmodel) { // add our xpath too
+                                    jsmodels[jsmodels.length] =
+                                        o.slice(s_xpathwithmodel, ol).join("");
                                     s_xpathwithmodel = 0;
                                 }
                                 o.push(s_codeinxpath ? "" : '"',
@@ -432,17 +437,19 @@
                     case 2: // misc
                         if (s_xpath && count > 2 && m == ":" 
                           && last == ":" && !xpath_axes[n = o[ol - 2]]) {
-                            if(xpathbegin<=ol-3){
-                                n = o.splice(xpathbegin,ol-7).join('');
+                            if (xpathbegin <= ol - 3) {
+                                n = o.splice(xpathbegin, ol - 7).join("");
                             }
-                            // we have to skip back to the length when starting the xpath macro.
-                            ol          = o.length = xpathbegin - 2;
-                            s_xpathwithmodel = ol+2;
-                            (jsmodels || (jsmodels = [])).push( n );
-                            // lets find the right macro for our new 3 state shiznizzleshiz
-                            o[ol++]     = macro[(v = stack.pop()) + "1"] + n
+                            // we have to skip back to the length when starting
+                            // the xpath macro.
+                            ol = o.length = xpathbegin - 2;
+                            s_xpathwithmodel = ol + 2;
+                            (jsmodels || (jsmodels = [])).push(n);
+                            // lets find the right macro for our new 3 state
+                            // shiznizzleshiz
+                            o[ol++] = macro[(v = stack.pop()) + "1"] + n
                                 + (n = macro[v + "2"]);
-                            o[ol++]     = "\"";
+                            o[ol++] = "\"";
                             if (!n)
                                 throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
                             stack.push(v + "3");
@@ -479,7 +486,7 @@
                         break;
                     case 5: // comment
                         if (s_block == 3 && ((tblock == "/*" && m == "*/")
-                                         || (tblock=="<!--" && m == "-->")))
+                          || (tblock == "<!--" && m == "-->")))
                             s_block = s_pblock;
                         break;
                     default:
@@ -510,7 +517,8 @@
             ol   = 1;
             code = s_codeinxpath = s_xpathincode = s_xpath = complexcode = 
                 xpathsegs = s_popauto = bl = type =  lineno = linepos =
-                codesegs = textsegs = count = last = s_xpathwithmodel = jsmodels = 0;
+                codesegs = textsegs = count = last = s_xpathwithmodel =
+                jsmodels = 0;
 
             s_block  = 1;
             stack    = [];
@@ -551,10 +559,11 @@
                     s = s.charAt(0) == "x" ? "xpath {" : "macro ( from " + s;
                 throw {t: "Unclosed " + s + " found at eof", p: str.length};
             }
-            //if(jsmodels)logw(jsmodels.join('#'));
-            //for(n in jsmodels)
-            //    logw("Found model: "+n);
-            //logw("State text:"+textsegs+" xpath:"+xpathsegs+" code:"+codesegs);
+            //if (jsmodels)
+            //    apf.console.log(jsmodels.join("#"));
+            //for (n in jsmodels)
+            //    apf.console.log("Found model: " + n);
+            //apf.console.log("State text: " + textsegs + " xpath:" + xpathsegs + " code:" + codesegs);
             // Optimize the code for simple cases
             if (!complexcode) {
                 if (!xpathsegs) {
@@ -562,7 +571,7 @@
                     if (!textsegs) {
                         if (codesegs == 1) {
                             o.shift();
-                            o[0] = hasoptions?"with(_opts){return ":"return ";
+                            o[0] = hasoptions ? "with(_opts){return " : "return ";
                             if (o.length < 2)
                                 o[o.length] = '""';
                             else
@@ -581,12 +590,14 @@
                           o[0] = 'return "';
                           o[--o.length-1] = '"';
                         */
-                        // TODO: you might also want to know if its plaintext. ifso thats here.
+                        // TODO: you might also want to know if its plaintext.
+                        // ifso thats here.
                     }
                 }
                 else if (xpathsegs == 1 && textsegs == 0 && codesegs == 0) {
-                    // TODO: see if this is how you want a simple xpath returned from compile
-                    // it uses the parsed stuff so thats nice for consistency with comments and such
+                    // TODO: see if this is how you want a simple xpath returned
+                    // from compile. It uses the parsed stuff so thats nice for
+                    // consistency with comments and such
                     return [0, o.slice(4, o.length - 5).join('')
                         .replace(/\\(["'])/g, "$1"), 1, null, jsmodels];
                     // NOTE: 
@@ -603,14 +614,15 @@
         catch(e) {
             // TODO: make a proper JPF exception with this information:
             if (e.t) {
-                logw("Parse exception: " + e.t + " on line:" + lineno + " col:"
-                    + (e.p - linepos - 2));
+                apf.console.error("Parse exception: " + e.t + " on line:"
+                    + lineno + " col:" + (e.p - linepos - 2));
             }
             else {
-                logw("Compile exception: " + e.message);
+                apf.console.error("Compile exception: " + e.message);
             }
         }
-        // TODO check API: xpathsegs counts how many xpaths are in here, jsobjs has all the used jsobjects, o is the compiled string
+        // TODO check API: xpathsegs counts how many xpaths are in here,
+        // jsobjs has all the used jsobjects, o is the compiled string
         return [func, o, xpathsegs, jsobjs, jsmodels];
     };
 
@@ -645,7 +657,7 @@
             // #endif
             
             //check the jslt node for cache setting
-            cacheId = jsltNode.getAttribute("cache");
+            cacheId  = jsltNode.getAttribute("cache");
             jsltFunc = this.cache[cacheId];
             if (!jsltFunc) {
                 jsltStr       = [];
@@ -658,7 +670,7 @@
             }
         }
         else {
-            cacheId = jsltNode;
+            cacheId  = jsltNode;
             jsltFunc = this.cache[cacheId];
             if (!jsltFunc) {
                 jsltStr = jsltNode;
@@ -705,7 +717,7 @@
         /* #ifndef __DEBUG
         }
         catch (e) {
-            apf.console.info(apf.formatJS(jsltFunc[1]));
+            apf.console.error(apf.formatJS(jsltFunc[1]));
             throw new Error(apf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
         #endif */
