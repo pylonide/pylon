@@ -621,7 +621,7 @@
                     + lineno + " col:" + (e.p - linepos - 2));
             }
             else {
-                apf.console.error("Compile exception: " + e.message);
+                apf.console.error("Compile exception: " + e.message + "\nCode: " + o);
             }
         }
         // TODO check API: xpathsegs counts how many xpaths are in here,
@@ -716,8 +716,8 @@
                 apf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
             return str;
             /* #else
-             return jsltFunc[0](xmlNode);
-             #endif */
+            return jsltFunc[0](xmlNode);
+            #endif */
         /* #ifndef __DEBUG
         }
         catch (e) {
