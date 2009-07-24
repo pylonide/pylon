@@ -79,7 +79,7 @@
         "LTE" : "<=", "GTE" : ">=", "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&", "ORBIN" : "|"
     },
     parserx = new RegExp(),
-    macro_default = {
+    macro = {
         "each"     : "for(_t.push(n,_a,_i,_l),_a=(_a=(",
         "each_"    : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l||(_l=_t.pop(),_i=_t.pop(),_a=_t.pop(),n=_t.pop(),0);n=_a[++_i])",
         "_each"    : "",
@@ -161,7 +161,7 @@
     o, ol, code, s_codeinxpath, s_xpathincode, s_xpath, s_block,macro,
     s_pblock, s_popauto, block, bl, stack, xstack, tblock, type, count, last,
     jsobjs, jsmodels, jslast, lineno, linepos, textsegs, codesegs, xpathsegs,
-    complexcode, v, n, macro = macro_default;
+    complexcode, v, n;
     
     // Also you would need to add a cmdline arg to 'compile' to switch between the macro_edit and macro_default things
     
