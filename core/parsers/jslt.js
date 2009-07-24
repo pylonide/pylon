@@ -438,7 +438,7 @@
                         if (s_xpath && count > 2 && m == ":" 
                           && last == ":" && !xpath_axes[n = o[ol - 2]]) {
                             if (xpathbegin <= ol - 3) {
-                                n = o.splice(xpathbegin, ol - 7).join("");
+                                n = o.slice(xpathbegin,ol-1).join('');
                             }
                             // we have to skip back to the length when starting
                             // the xpath macro.
@@ -450,8 +450,11 @@
                             o[ol++] = macro[(v = stack.pop()) + "1"] + n
                                 + (n = macro[v + "2"]);
                             o[ol++] = "\"";
-                            if (!n)
+                            if (!n){
+                                if(v.match(/\d+$/))
+                                    throw {t: "Found triple or more :: in model connection in xpath " + v, p: pos};
                                 throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
+                            }
                             stack.push(v + "3");
                             // this xpath might be bound on a special node
                         }
