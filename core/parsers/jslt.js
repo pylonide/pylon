@@ -241,7 +241,6 @@
                     }
                     break;
                 case 7: // }
-                    //complexcode = 1;
                     if ((v = stack.pop()) != type_close[o[ol++] = m])// ERROR
                         throw {t: "Cannot close " + v + " with " + m, p: pos};
                     break;
@@ -278,7 +277,6 @@
                     }
                     break;
                 case 11: // )
-                    //complexcode = 1;
                     if (n = macro[v = stack.pop()]) {
                         if (n==" ") {// xpath in code
                             s_xpathincode = (v == "codeinxpathincode") ? 1 : 0;
@@ -371,7 +369,8 @@
                                 o[ol++] = macro[v = "_" + stack.pop()
                                     .substring(1, v.length)];
                                 stack.push(v + "_");
-                                s_codeinxpath = 1; // no " insertion
+                                complexcode = s_codeinxpath = 1; // no " insertion
+                                // make sure it doesnt get optimized as pure xpath also
                             }
                             if (s_xpathincode) {
                                 o.push(s_codeinxpath ? "" : '"', 
