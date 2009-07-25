@@ -246,7 +246,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
         docklet.$draw();//name
         
-        docklet.setProperty("buttons", "edit|min|close");
+        //docklet.setProperty("buttons", "edit|min|close");
+        docklet.setProperty("buttons", portalNode.applyRuleSetOnNode("buttons", dataNode) || "edit|min|close");
         docklet.setProperty("title", portalNode.applyRuleSetOnNode("caption", dataNode));
         docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
         
