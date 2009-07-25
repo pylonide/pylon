@@ -981,7 +981,7 @@ apf.DataBinding = function(){
             return returnValue;
         }
         
-        var node = null, sel, i, o, v, rule;
+        var node = null, sel, i, o, v, rule, jsltEditable;
         for (i = 0; i < rules.length; i++) {
             rule = rules[i];
             sel  = apf.parseExpression(rule.getAttribute("select")) || ".";
@@ -1044,16 +1044,33 @@ apf.DataBinding = function(){
                         }
                     }
 
+                    var x;
                     //XSLT
                     if (xsltNode) {
-                        var x = o.transformNode(xsltNode)
+                        x = o.transformNode(xsltNode)
                             .replace(/^<\?xml version="1\.0" encoding="UTF-16"\?>/, "")
                             .replace(/\&lt\;/g, "<").replace(/\&gt\;/g, ">")
                             .replace(/\&amp\;/g, "&");
                     }
                     //JSLT
                     else {
-                        var x = apf.JsltInstance.apply(rule, o);
+                        // #ifdef __WITH_CONTENTEDITABLE
+                        if (this.contenteditable) {
+                            if (!jsltEditable) {
+                                jsltEditable = new apf.JsltImplementation()
+                                    .extendMacros({
+                                        "xvalue"  : "('<div class=\"contentEditable\" xpath=\"' + apf.remote.xmlToXpath(n, null, false) + '\">'+(n?((_v=n.selectSingleNode(",
+                                        "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')"
+                                    });
+                            }
+                            x = jsltEditable.apply(rule, o);
+                        }
+                        else {
+                        // #endif
+                            x = apf.JsltInstance.apply(rule, o);
+                        // #ifdef __WITH_CONTENTEDITABLE
+                        }
+                        // #endif
 
                         //#ifdef __DEBUG
                         var d = document.createElement("div");

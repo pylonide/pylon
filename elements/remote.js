@@ -382,7 +382,7 @@ apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
         lNode = lNode.parentNode;
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
     
-    return str.join("/") + "[" + (apf.xmldb.getChildNumber(xmlNode) + 1) + "]";
+    return str.join("/") + "[" + (apf.xmldb.getChildNumber(xmlNode, true) + 1) + "]";
 };
     
 //for RSB: Xpath statement --> xmlNode

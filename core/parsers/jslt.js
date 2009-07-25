@@ -301,7 +301,7 @@
             if (s_block == 1) {
                 switch (type) {
                     case 8:// [
-                        if(!s_xpath){
+                        if (!s_xpath) {
                             if (count) {
                                 if (!xpathsegs && count >= 1 || count > 1)
                                     textsegs++;
@@ -310,7 +310,10 @@
                             s_block = count = 0;
                             code    = 1;
                             codesegs++;
-                        }else o[ol++] = m;
+                        }
+                        else {
+                            o[ol++] = m;
+                        }
                         break;
                     case 4: // textblock
                         // switch back to code mode if we are the first character
@@ -515,7 +518,8 @@
             macro[n] = exts[n];
         // MIKE: Example of extension
         // { "xvalue"  : "('<div class=\'editable\'>'+(n?((_v=n.selectSingleNode(",
-        //   "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')" }           
+        //   "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')" }
+        return this;
     },
     
     this.compile = function(str, hasoptions, editmode){

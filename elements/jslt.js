@@ -103,7 +103,7 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
 
-    this.$booleanProperties["selectable"] = true;
+    this.$booleanProperties["selectable"]      = true;
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         if (value)
@@ -131,7 +131,7 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
             }
           : null;
     };
-    
+
     this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = apf.isParsing && apf.isOnlyChild(this.$aml)

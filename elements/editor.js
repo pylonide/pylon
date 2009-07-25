@@ -1176,10 +1176,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-    * Add various event handlers to a <i>Editor</i> object.
-    *
-    * @type {void}
-    */
+     * Add various event handlers to a <i>Editor</i> object.
+     *
+     * @type {void}
+     */
     this.$addListeners = function() {
         apf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick);
         //apf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
@@ -1536,7 +1536,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         this.plugins   = new apf.editor.plugins(this.$plugins, this);
-        this.selection = new apf.editor.selection(this);
+        this.selection = new apf.selection(this);
 
         this.oExt = this.$getExternal("main", null, function(oExt){
             this.drawToolbars(this.$getLayoutNode("main", "toolbar"));

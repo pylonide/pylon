@@ -104,11 +104,15 @@ apf.XmlDatabase = function(){
      * @param {DOMNode} node the node for which the child position is determined.
      * @return {Number} the child position of the node.
      */
-    this.getChildNumber = function(node){
-        var p = node.parentNode;
-        for (var i = 0; i < p.childNodes.length; i++)
+    this.getChildNumber = function(node, sameTagname){
+        var p = node.parentNode, j = 0;
+        for (var i = 0; i < p.childNodes.length; i++) {
             if (p.childNodes[i] == node)
-                return i;
+                return j;
+            if (!sameTagname || node.nodeType == 1 && node.tagName == p.childNodes[i].tagName)
+                j++;
+        }
+        return j;
     };
 
     /**
