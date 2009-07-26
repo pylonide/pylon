@@ -45,7 +45,8 @@ apf.ContentEditable = function() {
                 || initTabStack())[e.shiftKey ? tabStack.length - 1 : 0]);
 
             if (lastActiveNode) {
-                lastActiveNode.focus();
+                if (lastActiveNode.parentNode)
+                    lastActiveNode.focus();
                 lastActiveNode = null;
             }
             
@@ -350,7 +351,8 @@ apf.ContentEditable = function() {
                 }
             });
 
-            wasFocussable = [this.$focussable, this.focussable];
+            wasFocussable = [this.$focussable, 
+                typeof this.focussable == "undefined" ? true : this.focussable];
             this.$focussable = true;
             this.setProperty("focussable", true);
         }
