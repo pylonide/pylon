@@ -26,12 +26,14 @@ var __CONTENTEDITABLE__  = 1 << 23;
 apf.ContentEditable = function() {
     this.$regbase = this.$regbase | __CONTENTEDITABLE__;
 
-    var imageHandles = false,
-        tableHandles = false,
-        activeNode   = null,
-        oSel         = null,
-        oEditor      = null,
-        _self        = this;
+    var objectHandles = false,
+        tableHandles  = false,
+        lastPos       = 0,
+        activeNode    = null,
+        tabStack      = null,
+        oSel          = null,
+        oEditor       = null,
+        _self         = this;
 
     this.$booleanProperties["contenteditable"] = true;
     this.$propHandlers["contenteditable"] = function(value){
@@ -56,10 +58,12 @@ apf.ContentEditable = function() {
         else {
             document.designMode = "on";
             if (apf.isGecko) {
+                // On each return, insert a BR element
+                document.execCommand("insertBrOnReturn", false, true);
                 // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                document.execCommand('enableObjectResizing', false, imageHandles);
+                document.execCommand("enableObjectResizing", false, objectHandles);
                 // Disable the standard table editing features of Firefox.
-                document.execCommand('enableInlineTableEditing', false, tableHandles);
+                document.execCommand("enableInlineTableEditing", false, tableHandles);
             }
         }
         apf.AbstractEvent.addListener(document, "mousedown", docMouseDown);
@@ -72,8 +76,9 @@ apf.ContentEditable = function() {
         }));
     }
 
-    function removeEditor(oNode, bProcess) {
+    function removeEditor(oNode, bProcess, callback) {
         if (!oNode || oNode.nodeType != 1) return;
+        oSel.collapse(true);
 
         setTimeout(function() {
             activeNode = null;
@@ -89,11 +94,15 @@ apf.ContentEditable = function() {
             document.designMode = "off";
 
         if (!bProcess) return;
-        // do additional handling
-        _self.edit(oNode.getAttribute("xpath"), oNode.innerHTML);
-
+        // do additional handling, first we check for a change in the data...
+        var xpath = oNode.getAttribute("xpath");
+        if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
+            _self.edit(xpath, oNode.innerHTML);
+            tabStack = null; // redraw of editable region, invalidate cache
+        }
+        if (!callback) return;
         setTimeout(function() {
-            _self.focus();
+            callback();
         });
     }
 
@@ -117,29 +126,43 @@ apf.ContentEditable = function() {
         var el   = oSel.getSelectedNode(),
             code = e.which || e.keyCode,
             found;
-        if (!apf.isChildOf(activeNode, el, true)) {
-            removeEditor(activeNode); //no processing
-            var found = false;
-            if (apf.isChildOf(_self.oExt, el)) {
-                var oNode = el;
-                while (!(oNode.className && oNode.className.indexOf("contentEditable") !== -1)
-                  && oNode != _self.oExt)
-                    oNode = oNode.parentNode;
 
-                if (oNode.className && oNode.className.indexOf("contentEditable") !== -1) {
-                    createEditor(oNode);
-                    oSel.selectNode(el);
-                    found = true;
+        if (!apf.isChildOf(activeNode, el, true)) {
+            // #ifdef __DEBUG
+            apf.console.log('ContentEditable - keyDown: no child of mine');
+            // #endif
+            var callback = null;
+            if (apf.isChildOf(_self.oExt, el)) {
+                // #ifdef __DEBUG
+                apf.console.log('ContentEditable - keyDown: el IS a child of mine');
+                // #endif
+                while (el.parentNode && !(el.className && el != _self.oExt
+                  && el.className.indexOf("contentEditable") !== -1))
+                    el = el.parentNode;
+
+                if (el.className && el.className.indexOf("contentEditable") !== -1) {
+                    callback = function() {
+                        createEditor(el);
+                        oSel.selectNode(el.lastChild);
+                    }
                 }
             }
-            if (found)
+            removeEditor(activeNode, false, callback); //no processing
+            if (callback) {
+                // most common case this happens: user navigated out of
+                // contentEditable area with the arrow keys
+                window.blur();
                 return;
+            }
             apf.AbstractEvent.stop(e);
             return false;
         }
 
         if (apf.isIE) {
-
+            if (code == 8 && oSel.getType() == "Control") {
+                oSel.remove();
+                found = true;
+            }
         }
         else {
             if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
@@ -147,38 +170,81 @@ apf.ContentEditable = function() {
                 switch (code) {
                     case 66: // B
                     case 98: // b
-                        execCommand('Bold');
+                        execCommand("Bold");
                         found = true;
                         break;
                     case 105: // i
                     case 73:  // I
-                        execCommand('Italic');
+                        execCommand("Italic");
                         found = true;
                         break;
                     case 117: // u
                     case 85:  // U
-                        execCommand('Underline');
+                        execCommand("Underline");
                         found = true;
                         break;
                     case 13: // Enter
                         removeEditor(activeNode, true);
+                        found = true;
                         break;
-                    /*case 86:  // V
-                    case 118: // v
-                        if (!apf.isGecko)
-                            onPaste.call(_self);
-                        //found = true;
-                        break;
-                    case 37: // left
-                    case 39: // right
-                        found = true;*/
-                }
-                if (found) {
-                    apf.AbstractEvent.stop(e);
-                    return false;
                 }
             }
         }
+        // Tab navigation handling
+        if (code == 9 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            var oNode = e.shiftKey ? getTabPrev(activeNode) : getTabNext(activeNode);
+            if (oNode) {
+                // a callback is passed, because the call is a-sync
+                removeEditor(activeNode, true, function() {
+                    // re-fetch, because data may been reloaded
+                    oNode = e.shiftKey ? getTabPrev(activeNode) : getTabNext(activeNode);
+                    createEditor(oNode);
+                    oSel.selectNode(oNode.firstChild);
+                });
+            }
+            found = true;
+        }
+        // Esc key handling
+        else if (code == 27 && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
+            removeEditor(activeNode, true);
+            found = true;
+        }
+
+        if (found) {
+            apf.AbstractEvent.stop(e);
+            return false;
+        }
+    }
+
+    function initTabStack() {
+        tabStack = [];
+        var aNodes = _self.oExt.getElementsByTagName("*");
+        for (var i = 0, l = aNodes.length; i < l && aNodes[i].nodeType == 1; i++) {
+            if (aNodes[i].className
+              && aNodes[i].className.indexOf("contentEditable") !== -1) {
+                tabStack.push(aNodes[i]);
+            }
+        }
+    }
+
+    function getTabPrev(oNode) {
+        if (!tabStack)
+            initTabStack();
+        for (var i = tabStack.length - 1; i >= 0; i--) {
+            if (tabStack[i] == oNode)
+                return tabStack[lastPos = (--i < 0 ? tabStack.length - 1 : i)];
+        }
+        return tabStack[lastPos] || tabStack[0];
+    }
+
+    function getTabNext(oNode) {
+        if (!tabStack)
+            initTabStack();
+        for (var i = 0, l = tabStack.length; i < l; i++) {
+            if (tabStack[i] == oNode)
+                return tabStack[lastPos = (++i >= l ? 0 : i)];
+        }
+        return tabStack[lastPos] || tabStack[0];
     }
 
     var mouseOver, mouseOut, mouseDown;
@@ -187,16 +253,14 @@ apf.ContentEditable = function() {
         apf.AbstractEvent.addListener(_self.oExt, "mouseover", mouseOver = function(e) {
             var el = e.srcElement || e.target;
             if (el == activeNode) return;
-            if (el.className && el.className.indexOf("contentEditable") !== -1) {
+            if (el.className && el.className.indexOf("contentEditable") !== -1)
                 apf.setStyleClass(el, "contentEditable_over");
-            }
         });
         apf.AbstractEvent.addListener(_self.oExt, "mouseout",  mouseOut = function(e) {
             var el = e.srcElement || e.target;
             if (el == activeNode) return;
-            if (el.className && el.className.indexOf("contentEditable") !== -1) {
+            if (el.className && el.className.indexOf("contentEditable") !== -1)
                 apf.setStyleClass(el, null, ["contentEditable_over"]);
-            }
         });
         apf.AbstractEvent.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
             var el = e.srcElement || e.target;
@@ -217,7 +281,7 @@ apf.ContentEditable = function() {
 
     function getViewPort() {
         var doc = (!window.document.compatMode
-          || window.document.compatMode == 'CSS1Compat')
+          || window.document.compatMode == "CSS1Compat")
             ? window.document.html || window.document.documentElement //documentElement for an iframe
             : window.document.body;
 
@@ -232,7 +296,7 @@ apf.ContentEditable = function() {
     
     this.edit = function(xpath, value) {
         this.executeActionByRuleSet("edit", "edit", this.xmlRoot.ownerDocument
-            .documentElement.selectSingleNode("//" + xpath), value);
+            .selectSingleNode(xpath), value);
     }
 
 };

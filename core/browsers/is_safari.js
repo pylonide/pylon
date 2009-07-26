@@ -100,7 +100,7 @@ apf.runIphone = function() {
 
     apf.makeClass(this);
 
-    // #ifdef __WITH_CSS
+    // #ifdef __WITH_STYLE
     apf.importCssString(document,
        'html, body {\
             margin: 0;\

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_CSS
+// #ifdef __WITH_STYLE
 
 /**
  * This method sets a single css rule

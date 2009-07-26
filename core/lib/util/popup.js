@@ -124,7 +124,7 @@ apf.popup = {
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
 
-        // #ifdef __WITH_CSS
+        // #ifdef __WITH_STYLE
         // set a className that specifies the direction, to help skins with
         // specific styling options.
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
