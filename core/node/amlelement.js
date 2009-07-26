@@ -1212,10 +1212,12 @@ apf.AmlElement.propHandlers = {
         this.$isSelfLoading = true;
     },
 
+    //#ifdef __WITH_CONTENTEDITABLE
     "contenteditable": function(value) {
         this.implement(apf.ContentEditable);
         this.$propHandlers["contenteditable"].apply(this, arguments);
     }
+    //#endif
    
     //#ifdef __WITH_ALIAS
     /**

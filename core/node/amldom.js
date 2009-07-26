@@ -472,6 +472,8 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
      * @param {String} value the new value of the attribute.
      */
     this.setAttribute = function(name, value) {
+        name = name.toLowerCase();
+        
         if (this.$aml)
             this.$aml.setAttribute(name, (value || "").toString());
 

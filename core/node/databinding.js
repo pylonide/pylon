@@ -406,7 +406,7 @@ apf.DataBinding = function(){
      *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
-        if (this.disabled)
+        if (this.disabled || this.contenteditable)
             return false;
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true, true)
@@ -582,7 +582,7 @@ apf.DataBinding = function(){
      * @private
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
-        if (this.disabled) return; //hack
+        if (this.disabled || this.contenteditable) return; //hack
 
         //#ifdef __DEBUG
         apf.console.info("Executing action '" + action + "' for " + this.name
@@ -1059,8 +1059,8 @@ apf.DataBinding = function(){
                             if (!jsltEditable) {
                                 jsltEditable = new apf.JsltImplementation()
                                     .extendMacros({
-                                        "xvalue"  : "('<div class=\"contentEditable\" xpath=\"' + apf.remote.xmlToXpath(n, null, false) + '\">'+(n?((_v=n.selectSingleNode(",
-                                        "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')"
+                                        "xvalue"  : "('<span class=\"contentEditable\" xpath=\"' + apf.remote.xmlToXpath(n, null, false) + '\">'+(n?((_v=n.selectSingleNode(",
+                                        "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</span>')"
                                     });
                             }
                             x = jsltEditable.apply(rule, o);
