@@ -35,7 +35,7 @@ apf.ContentEditable = function() {
         _self         = this;
 
     this.$booleanProperties["contenteditable"] = true;
-    this.$propHandlers["contenteditable"] = function(value){
+    this.$propHandlers["contenteditable"]      = function(value){
         if (apf.isTrue(value))
             attachBehaviors();
         else
@@ -50,9 +50,7 @@ apf.ContentEditable = function() {
         apf.setStyleClass(oNode, "contentEditable_active", ["contentEditable_over"]);
         
         if (apf.isIE) {
-            //setTimeout(function() {
-                oNode.contentEditable = true;
-            //});
+            oNode.contentEditable = true;
         }
         else {
             document.designMode = "on";
@@ -136,7 +134,7 @@ apf.ContentEditable = function() {
         var el   = oSel.getSelectedNode(),
             code = e.which || e.keyCode,
             found;
-//debugger;
+
         if (!apf.isIE && !apf.isChildOf(activeNode, el, true)) {
             // #ifdef __DEBUG
             apf.console.log('ContentEditable - keyDown: no child of mine');
