@@ -619,8 +619,10 @@ apf.window = new (function(){
 
         if (fParent == apf.window)
             this.$focusLast(amlNode, {mouse:true}, switchWindows);
-        else
+        else {
+            (e || (e = {})).shiftKey = shiftKey;
             this.$focus(amlNode, e);
+        }
 
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
@@ -670,19 +672,14 @@ apf.window = new (function(){
 
     /**** Set Window Events ****/
 
-    window.onbeforeunload = function(){
+    apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");
-    };
+    });
 
-    //#ifdef __DESKRUN
-    if (apf.isDeskrun)
-        window.external.onbeforeunload = window.onbeforeunload;
-    //#endif
-
-    window.onunload = function(){
+    apf.addListener(window, "unload", function(){
         apf.window.isExiting = true;
         apf.window.destroy();
-    };
+    });
 
     //#ifdef __WITH_WINDOW_FOCUS
 
@@ -740,7 +737,7 @@ apf.window = new (function(){
         timer = null;
     }
 
-    window.onfocus = function(){
+    apf.addListener(window, "focus", function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
             return apf.window.dispatchEvent("focus");
@@ -756,9 +753,9 @@ apf.window = new (function(){
             //apf.console.warn("win-focus");
             iframeFixTimer = setTimeout(iframeFix, 10);
         }
-    };
+    });
 
-    window.onblur = function(){
+    apf.addListener(window, "onblur", function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
             return apf.window.dispatchEvent("blur");
@@ -774,7 +771,7 @@ apf.window = new (function(){
             //apf.console.warn("win-blur");
             iframeFixTimer = setTimeout(iframeFix, 10);
         }
-    };
+    });
 
     var iframeFixTimer;
     function iframeFix(){
@@ -798,7 +795,7 @@ apf.window = new (function(){
 
     /**** Keyboard and Focus Handling ****/
 
-    document.oncontextmenu = function(e){
+    apf.addListener(document, "contextmenu", function(e){
         if (!e)
             e = event;
 
@@ -852,10 +849,10 @@ apf.window = new (function(){
 
         if (apf.appsettings.disableRightClick)
             return false;
-    };
+    });
 
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
-    document.onmousedown = function(e){
+    apf.addListener(document, "mousedown", function(e){
         e = e || window.event;
 
         var amlNode = apf.findHost(e.srcElement || e.target);
@@ -931,10 +928,10 @@ apf.window = new (function(){
         
         if (!canSelect)
             return false;
-    };
+    });
 
     //IE selection handling
-    document.onselectstart = function(e){
+    apf.addListener(document, "selectstart", function(e){
         if (!e) e = event;
         
         var canSelect = !(apf.AmlParser && !apf.appsettings.allowSelect
@@ -955,10 +952,10 @@ apf.window = new (function(){
             e.returnValue = false;
             return false;
         }
-    };
+    });
 
     // Keyboard forwarding to focussed object
-    document.onkeyup = function(e){
+    apf.addListener(document, "keyup", function(e){
         if (!e) e = event;
 
         //#ifdef __WITH_KEYBOARD
@@ -977,7 +974,7 @@ apf.window = new (function(){
         //#endif
 
         apf.dispatchEvent("keyup", null, e);
-    };
+    });
 
     //#ifdef __WITH_MOUSESCROLL
     function wheel(e) {
@@ -1015,7 +1012,7 @@ apf.window = new (function(){
     //var browserNavKeys = {32:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1}
     
     //@todo optimize this function
-    document.onkeydown = function(e){
+    apf.addListener(document, "keydown", function(e){
         if (!e)
             e = event;
 
@@ -1197,7 +1194,7 @@ apf.window = new (function(){
 
         return e.returnValue;
         //#endif
-    };
+    });
     
     this.init = function(){
         apf.makeClass(this);
@@ -1239,6 +1236,7 @@ apf.window = new (function(){
         this.window   =
         this.document = null;
 
+        //@todo this is not needed... maybe use apf.removeListener
         window.onfocus        =
         window.onerror        =
         window.onunload       =

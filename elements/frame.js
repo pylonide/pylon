@@ -67,6 +67,17 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
             this.oCaption.nodeValue = value;
     };
     
+    /**
+     * @attribute {String} icon the location of the image.
+     */
+    this.$propHandlers["icon"] = function(value){
+        var oIcon = this.$getLayoutNode("main", "icon", this.oExt);
+        if (!oIcon) return;
+
+        oIcon.style.display = value ? "block" : "none";
+        apf.skins.setIcon(oIcon, value, this.iconPath);
+    };
+    
     this.$propHandlers["url"] = function(value){
         var node = this.oCaption.nodeType == 1 
             ? this.oCaption 
@@ -77,6 +88,28 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
             + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
             + this.caption + "</a>";
         this.oCaption = this.oCaption.firstChild;
+    };
+    
+    var maximized = false;
+    this.$propHandlers["state"] = function(value){
+        //Set min or not
+        this.$setStyleClass(this.oExt, value.indexOf("minized") > -1
+            ? this.baseCSSname + "Min" : "", [this.baseCSSname + "Min"]);
+        
+        if (value.indexOf("maximized") > -1 && !maximized)
+            slideMaximize(this.something || this.parentNode.oInt);
+        else if (maximized)
+            slideRestore(this.something || this.parentNode.oInt);
+    }
+    
+    //move this to seperate lib
+    //@todo
+    this.slideMaximize = function(oRef) {
+        
+    };
+    
+    this.slideRestore = function(oRef) {
+        
     };
     
     /** 

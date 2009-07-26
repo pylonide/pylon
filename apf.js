@@ -2370,6 +2370,22 @@ var apf = {
         }
         apf.load_events.push(func);
     },
+    
+    addListener : function(el, type, fn){
+        if (el.addEventListener)
+            el.addEventListener(type, fn, false);
+        else if (el.attachEvent)
+            el.attachEvent('on' + type, fn);
+        return this;
+    },
+    
+    removeListener : function(el, type, fn){
+        if (el.removeEventListener)
+            el.removeEventListener(type, fn, false);
+        else if (el.detachEvent)
+            el.detachEvent('on' + type, fn);
+        return this;
+    },
 
     /* Destroy */
 

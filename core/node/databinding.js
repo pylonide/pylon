@@ -406,7 +406,7 @@ apf.DataBinding = function(){
      *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
-        if (this.disabled || this.contenteditable)
+        if (this.disabled || this.contenteditable && name != "edit")
             return false;
 
         var actionRule = this.getNodeFromRule(name, xmlContext, true, true)
@@ -582,7 +582,7 @@ apf.DataBinding = function(){
      * @private
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
-        if (this.disabled || this.contenteditable) return; //hack
+        if (this.disabled || this.contenteditable && action != "edit") return; //hack
 
         //#ifdef __DEBUG
         apf.console.info("Executing action '" + action + "' for " + this.name
@@ -2559,9 +2559,15 @@ apf.StandardBinding = function(){
 
         #endif */
 
-        //Think should be set in the event by the Validation Class
+        //@todo Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
             this.clearError();
+        
+        this.dispatchEvent("xmlupdate", {
+            action : action,
+            xmlNode: xmlNode,
+            UndoObj: UndoObj
+        });
     };
 
     if (!this.clear) {

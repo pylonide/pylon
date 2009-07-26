@@ -660,8 +660,10 @@ apf.selection = function(oWin, oDoc, editor) {
             if (!node)
                 node = oSel.createRange().parentElement();
             
-            oSel.empty();
-            
+            try{
+                oSel.empty();
+            }catch(e){}
+
             try {
                 // Try to select the node as a control.
                 range = oDoc.body.createControlRange();
@@ -671,7 +673,9 @@ apf.selection = function(oWin, oDoc, editor) {
                 // If failed, select it as a text range.
                 range = oDoc.body.createTextRange();
                 try {
-                    range.moveToElementText(node);
+                    range.moveToElementText(node.nodeType != 1 
+                        ? node.parentNode 
+                        : node);
                 }
                 catch (e2) {
                     if (node.nodeValue)

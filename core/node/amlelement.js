@@ -279,7 +279,9 @@ apf.AmlElement = function(){
 
                 this.dispatchEvent("focus", {
                     srcElement : this,
-                    bubbles    : true
+                    bubbles    : true,
+                    mouse      : e && e.mouse,
+                    shiftKey   : e && e.shiftKey
                 });
                 return this;
             };
