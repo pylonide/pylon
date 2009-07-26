@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-apf.editor.plugin('code', function() {
+apf.ContentEditable.plugin('code', function() {
     this.name        = 'code';
     this.icon        = 'code';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+h';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.noDisable   = true;
     this.regex       = null;
 
@@ -46,9 +46,9 @@ apf.editor.plugin('code', function() {
 
             this.update(editor);
 
-            editor.plugins.active = this;
+            editor.$pluginsActive = this.name;
             // disable the editor...
-            editor.setProperty('state', apf.editor.DISABLED);
+            editor.setProperty('state', apf.DISABLED);
 
             // show the textarea and position it correctly...
             this.setSize(editor);
@@ -57,10 +57,10 @@ apf.editor.plugin('code', function() {
             oPreview.focus();
         }
         else {
-            editor.plugins.active = null;
+            editor.$pluginsActive = null;
             
             oCont.style.display = "none";
-            editor.setProperty('state', apf.editor.OFF);
+            editor.setProperty('state', apf.OFF);
             
             propagateChange();
             
@@ -317,9 +317,9 @@ apf.editor.plugin('code', function() {
     }
 
     this.queryState = function(editor) {
-        if (editor.plugins.active == this)
-            return apf.editor.SELECTED;
-        return apf.editor.OFF;
+        if (editor.$pluginsActive == this.name)
+            return apf.SELECTED;
+        return apf.OFF;
     };
 
     this.destroy = function() {

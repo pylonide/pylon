@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-apf.editor.plugin('pastetext', function() {
+apf.ContentEditable.plugin('pastetext', function() {
     this.name        = 'pastetext';
     this.icon        = 'pastetext';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+v';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 
@@ -130,13 +130,13 @@ apf.editor.plugin('pastetext', function() {
         delete this.oArea;
     };
 });
-apf.editor.plugin('pasteword', function() {
+apf.ContentEditable.plugin('pasteword', function() {
     this.name        = 'pasteword';
     this.icon        = 'pasteword';
-    this.type        = apf.editor.CMDMACRO;
+    this.type        = apf.CMDMACRO;
     this.hook        = 'onpaste';
     this.keyBinding  = 'ctrl+shift+v';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     
     this.parse = function(sContent) {
         // Cleanup Word content

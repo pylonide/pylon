@@ -19,27 +19,23 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
+// #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-apf.editor.plugin('visualaid', function(){
-    this.name        = 'visualaid';
-    this.icon        = 'visualaid';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('help', function(){
+    this.name        = 'help';
+    this.icon        = 'help';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+v';
-    this.state       = apf.editor.OFF;
+    this.keyBinding  = 'ctrl+h';
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        var state = this.queryState(editor);
-        editor.oDoc.body.className = (state == apf.editor.ON) ? "" : "visualAid";
-        editor.notify(this.name);
-
+        // @todo: implement this plugin
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        this.state = apf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
         return this.state;
     };
 });

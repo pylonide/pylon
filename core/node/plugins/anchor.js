@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-apf.editor.plugin('anchor', function() {
+apf.ContentEditable.plugin('anchor', function() {
     this.name        = 'anchor';
     this.icon        = 'anchor';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+a';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 
@@ -65,7 +65,7 @@ apf.editor.plugin('anchor', function() {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = editor.selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute('name'))
-            return apf.editor.ON;
+            return apf.ON;
 
         return this.state;
     };

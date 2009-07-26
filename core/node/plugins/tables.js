@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-apf.editor.plugin('table', function() {
+apf.ContentEditable.plugin('table', function() {
     this.name        = 'table';
     this.icon        = 'table';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+shift+t';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
         iCurrentX = 0,
@@ -229,12 +229,12 @@ apf.editor.plugin('table', function() {
     };
 });
 
-apf.editor.plugin('tablewizard', function() {
+apf.ContentEditable.plugin('tablewizard', function() {
     this.name        = 'tablewizard';
     this.icon        = 'tablewizard';
-    this.type        = apf.editor.CONTEXTPANEL;
+    this.type        = apf.CONTEXTPANEL;
     this.hook        = 'context';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.oTable      = null;
     this.oRow        = null;
     this.oCell       = null;
@@ -242,7 +242,7 @@ apf.editor.plugin('tablewizard', function() {
     var activeNode, oDoc, _self = this;
 
     this.execute = function(editor, e) {
-        if (this.queryState(editor) != apf.editor.ON)
+        if (this.queryState(editor) != apf.ON)
             return;
         // get the active table, row and cell nodes:
         this.oTable = this.oRow = this.oCell = null;
@@ -281,12 +281,12 @@ apf.editor.plugin('tablewizard', function() {
             if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
               || oNode.tagName == "TR" || oNode.tagName == "TD") {
                 activeNode = oNode;
-                return apf.editor.ON;
+                return apf.ON;
             }
             oNode = oNode.parentNode;
         }
 
-        return apf.editor.OFF;
+        return apf.OFF;
     };
 
     function addRows(td_elm, tr_elm, rowspan) {

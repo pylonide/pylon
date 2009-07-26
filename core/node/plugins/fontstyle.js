@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.editor.plugin('fontstyle', function() {
+apf.ContentEditable.plugin('fontstyle', function() {
     this.name         = 'fontstyle';
     this.icon         = 'fontstyle';
-    this.type         = apf.editor.TOOLBARITEM;
-    this.subType      = apf.editor.TOOLBARPANEL;
+    this.type         = apf.TOOLBARITEM;
+    this.subType      = apf.TOOLBARPANEL;
     this.hook         = 'ontoolbar';
     this.buttonNode   = null;
-    this.state        = apf.editor.OFF;
+    this.state        = apf.OFF;
 
     var panelBody, oStyles = null;
 
@@ -240,11 +240,11 @@ apf.editor.plugin('fontstyle', function() {
         if (o) {
             if (this.stylePreview.innerHTML != o.caption)
                 this.stylePreview.innerHTML = o.caption;
-            this.state = apf.editor.ON;
+            this.state = apf.ON;
         }
         else {
             this.stylePreview.innerHTML = "Style";
-            this.state = apf.editor.OFF;
+            this.state = apf.OFF;
         }
 
         return this.state;
@@ -279,14 +279,14 @@ apf.editor.plugin('fontstyle', function() {
 
 //##############################################################################
 
-apf.editor.plugin('blockformat', function() {
+apf.ContentEditable.plugin('blockformat', function() {
     this.name         = 'blockformat';
     this.icon         = 'blockformat';
-    this.type         = apf.editor.TOOLBARITEM;
-    this.subType      = apf.editor.TOOLBARPANEL;
+    this.type         = apf.TOOLBARITEM;
+    this.subType      = apf.TOOLBARPANEL;
     this.hook         = 'ontoolbar';
     this.buttonNode   = null;
-    this.state        = apf.editor.OFF;
+    this.state        = apf.OFF;
     this.node         = null;
 
     var panelBody,
@@ -370,12 +370,12 @@ apf.editor.plugin('blockformat', function() {
             var sBlock = blocksMap[tagName];
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
-            this.state = apf.editor.ON;
+            this.state = apf.ON;
             this.node  = oNode;
         }
         else {
             this.blockPreview.innerHTML = "Normal";
-            this.state = apf.editor.OFF;
+            this.state = apf.OFF;
             this.node  = null;
         }
         return this.state;
@@ -396,7 +396,7 @@ apf.editor.plugin('blockformat', function() {
             sel.set();
             this.editor.$visualFocus();
             var s = sel.getContent();
-            if (sBlock == "normal" && this.queryState(this.editor) == apf.editor.ON) {
+            if (sBlock == "normal" && this.queryState(this.editor) == apf.ON) {
                 // revert style to NORMAL, i.e. no style at all.
                 /*sel.selectNode(this.node);
                 sel.setContent(this.node.innerHTML);*/
@@ -427,7 +427,7 @@ apf.editor.plugin('blockformat', function() {
                     p.removeChild(this.node);
                 }
                 
-                this.state = apf.editor.OFF;
+                this.state = apf.OFF;
                 this.node  = null;
                 this.blockPreview.innerHTML = "Normal";
             }

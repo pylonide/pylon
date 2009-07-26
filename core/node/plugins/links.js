@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-apf.editor.plugin('link', function(){
+apf.ContentEditable.plugin('link', function(){
     this.name        = 'link';
     this.icon        = 'link';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 
@@ -64,7 +64,7 @@ apf.editor.plugin('link', function(){
 
     this.queryState = function(editor) {
         if (editor.selection.isCollapsed() || editor.selection.getSelectedNode().tagName == "A")
-            return apf.editor.DISABLED;
+            return apf.DISABLED;
         return this.state;
     };
 
@@ -159,17 +159,17 @@ apf.editor.plugin('link', function(){
     };
 });
 
-apf.editor.plugin('unlink', function(){
+apf.ContentEditable.plugin('unlink', function(){
     this.name        = 'unlink';
     this.icon        = 'unlink';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        if (this.queryState(editor) == apf.editor.DISABLED)
+        if (this.queryState(editor) == apf.DISABLED)
             return;
 
         if (apf.isIE) {
@@ -191,9 +191,9 @@ apf.editor.plugin('unlink', function(){
 
     this.queryState = function(editor) {
         if (editor.selection.getSelectedNode().tagName == "A")
-            return apf.editor.OFF;
+            return apf.OFF;
 
-        return apf.editor.DISABLED;
+        return apf.DISABLED;
     };
 });
 

@@ -19,28 +19,26 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_HR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
-apf.editor.plugin('hr', function(){
-    this.name        = 'hr';
-    this.icon        = 'hr';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('blockquote', function(){
+    this.name        = 'blockquote';
+    this.icon        = 'blockquote';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+h';
-    this.state       = apf.editor.OFF;
+    this.keyBinding  = 'ctrl+shift+b';
+    this.buttonBuilt = false;
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        if (apf.isGecko || apf.isIE)
-            editor.insertHTML('<hr />', true);
-        else
-            editor.executeCommand('InsertHorizontalRule');
+        editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        return this.state;
+        return editor.getCommandState('FormatBlock');
     };
 });
 

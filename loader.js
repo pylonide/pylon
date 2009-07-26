@@ -120,31 +120,6 @@ apf.Elements = [
 
     "audio/type_flash",
 
-    "editor/plugins",
-
-    "editor/plugins/anchor",
-    "editor/plugins/blockquote",
-    "editor/plugins/charmap",
-    "editor/plugins/clipboard",
-    "editor/plugins/code",
-    "editor/plugins/color",
-    "editor/plugins/datetime",
-    "editor/plugins/directions",
-    "editor/plugins/emotions",
-    "editor/plugins/fontbase",
-    "editor/plugins/fontstyle",
-    "editor/plugins/help",
-    "editor/plugins/hr",
-    "editor/plugins/image",
-    "editor/plugins/links",
-    "editor/plugins/list",
-    "editor/plugins/media",
-    "editor/plugins/printing",
-    "editor/plugins/search",
-    "editor/plugins/subsup",
-    "editor/plugins/tables",
-    "editor/plugins/visualaid",
-
     "textbox/masking",
     "textbox/autocomplete",
 
@@ -262,7 +237,30 @@ apf.KernelModules = [
     "node/validation.js",
     "node/virtualviewport.js",
     "node/xforms.js",
-    "node/interactive.js"
+    "node/interactive.js",
+
+    "node/plugins/anchor.js",
+    "node/plugins/blockquote.js",
+    "node/plugins/charmap.js",
+    "node/plugins/clipboard.js",
+    "node/plugins/code.js",
+    "node/plugins/color.js",
+    "node/plugins/datetime.js",
+    "node/plugins/directions.js",
+    "node/plugins/emotions.js",
+    "node/plugins/fontbase.js",
+    "node/plugins/fontstyle.js",
+    "node/plugins/help.js",
+    "node/plugins/hr.js",
+    "node/plugins/image.js",
+    "node/plugins/links.js",
+    "node/plugins/list.js",
+    "node/plugins/media.js",
+    "node/plugins/printing.js",
+    "node/plugins/search.js",
+    "node/plugins/subsup.js",
+    "node/plugins/tables.js",
+    "node/plugins/visualaid.js"
 ];
 apf.TelePortModules = [
     "http.js",         // for simple HTTP transactions

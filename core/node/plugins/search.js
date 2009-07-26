@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_SEARCH || __INC_ALL
 
-apf.editor.searchPlugin = function(sName) {
+apf.ContentEditable.searchPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = this.name == "search" ? 'ctrl+f' : 'ctrl+shift+f';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 
@@ -276,7 +276,7 @@ apf.editor.searchPlugin = function(sName) {
     };
 };
 
-apf.editor.plugin('search',  apf.editor.searchPlugin);
-apf.editor.plugin('replace', apf.editor.searchPlugin);
+apf.ContentEditable.plugin('search',  apf.ContentEditable.searchPlugin);
+apf.ContentEditable.plugin('replace', apf.ContentEditable.searchPlugin);
 
 // #endif

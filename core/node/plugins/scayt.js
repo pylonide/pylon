@@ -21,17 +21,33 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-apf.editor.plugin('help', function(){
-    this.name        = 'help';
-    this.icon        = 'help';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('scayt', function(){
+    this.name        = 'scayt';
+    this.icon        = 'scayt';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+h';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this plugin
+
+        // cmd=get_opt
+        // customerid=1:rvyy72-5NS5o3-yXVS13-hNbyY1-GNda0-KjkQH1-jWrIR3-03eg64-J9VJ93-LXmzy4-FeHKe2-VO5TF3
+        // sessionid=
+        // ---------------------
+        // cmd=scayt_spelltext
+        // customerid=1:rvyy72-5NS5o3-yXVS13-hNbyY1-GNda0-KjkQH1-jWrIR3-03eg64-J9VJ93-LXmzy4-FeHKe2-VO5TF3
+        // sessionid=1
+        // text={urlencoded, html-tag-free text}
+        // slang=en
+        // intlang=en
+        // sug_len=14
+        apf.oHttp.get(function() {
+
+        }, {});
+
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 

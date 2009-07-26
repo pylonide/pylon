@@ -19,27 +19,48 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_DIRECTIONS || __INC_ALL
+// #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
-apf.editor.directionPlugin = function(sName) {
-    this.name        = sName;
-    this.icon        = sName;
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('print', function(){
+    this.name        = 'print';
+    this.icon        = 'print';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.state       = apf.editor.OFF;
+    this.keyBinding  = 'ctrl+p';
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        // @todo: implement this baby
+        if (apf.print)
+            apf.print(editor.getValue());
+
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
-    this.queryState = function(editor) {
+    this.queryState = function() {
         return this.state;
     };
-};
+});
 
-apf.editor.plugin('ltr', apf.editor.directionPlugin);
-apf.editor.plugin('rtl', apf.editor.directionPlugin);
+apf.ContentEditable.plugin('preview', function(){
+    this.name        = 'preview';
+    this.icon        = 'preview';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+p';
+    this.state       = apf.OFF;
+
+    this.execute = function(editor) {
+        if (apf.printer)
+            apf.printer.preview(editor.getValue());
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+    };
+
+    this.queryState = function() {
+        return this.state;
+    };
+});
 
 // #endif

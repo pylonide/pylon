@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.editor.plugin('fonts', function() {
+apf.ContentEditable.plugin('fonts', function() {
     this.name        = 'fonts';
     this.icon        = 'fonts';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.colspan     = 1;
     this.fontNames   = {};
 
@@ -128,14 +128,14 @@ apf.editor.plugin('fonts', function() {
     };
 });
 
-apf.editor.plugin('fontsize', function() {
+apf.ContentEditable.plugin('fontsize', function() {
     this.name        = 'fontsize';
     this.icon        = 'fontsize';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 

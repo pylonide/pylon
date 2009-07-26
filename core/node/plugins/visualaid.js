@@ -19,26 +19,28 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
+// #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-apf.editor.plugin('blockquote', function(){
-    this.name        = 'blockquote';
-    this.icon        = 'blockquote';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('visualaid', function(){
+    this.name        = 'visualaid';
+    this.icon        = 'visualaid';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+b';
-    this.buttonBuilt = false;
-    this.state       = apf.editor.OFF;
+    this.keyBinding  = 'ctrl+shift+v';
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
+        var state = this.queryState(editor);
+        editor.oDoc.body.className = (state == apf.ON) ? "" : "visualAid";
+        editor.notify(this.name);
 
-        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+        apf.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        return editor.getCommandState('FormatBlock');
+        this.state = apf[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
+        return this.state;
     };
 });
 

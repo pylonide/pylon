@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-apf.editor.plugin('charmap', function() {
+apf.ContentEditable.plugin('charmap', function() {
     this.name        = 'charmap';
     this.icon        = 'charmap';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.colspan     = 20;
 
     var panelBody;

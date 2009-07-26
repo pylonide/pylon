@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-apf.editor.plugin('image', function(){
+apf.ContentEditable.plugin('image', function(){
     this.name        = 'image';
     this.icon        = 'image';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+i';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var panelBody;
 
@@ -116,14 +116,14 @@ apf.editor.plugin('image', function(){
     };
 });
 
-apf.editor.plugin('imagespecial', function() {
+apf.ContentEditable.plugin('imagespecial', function() {
     this.name        = 'imagespecial';
     this.icon        = 'image';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+j';
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var winHandle;
 

@@ -75,13 +75,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     this.value           = "";
     this.$value          = "";
-    this.state           = apf.editor.ON;
-    this.$buttons        = ['Bold', 'Italic', 'Underline'];
-    this.$plugins        = ['pasteword', 'tablewizard'];
-    this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
-                            'justifyleft', 'justifycenter', 'justifyright',
-                            'justifyfull', 'removeformat', 'cut', 'copy',
-                            'paste', 'outdent', 'indent', 'undo', 'redo'];
     this.$classToolbar   = 'editor_Toolbar';
     this.language        = 'en_GB';//'nl_NL';
 
@@ -90,13 +83,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     /**** Properties and Attributes ****/
 
     this.isContentEditable = true;
-    this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
 
-    this.$booleanProperties["realtime"]     = true;
-    this.$booleanProperties["imagehandles"] = true;
-    this.$booleanProperties["tablehandles"] = true;
-    this.$supportedProperties.push("value", "realtime", "imagehandles", 
-        "tablehandles", "plugins", "output", "state", "language");
+    this.$supportedProperties.push("value", "language");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -117,8 +105,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         html = this.prepareHtml(html);
 
-        if (this.plugins.isActive('code')) {
-            this.plugins.get('code').update(this, html);
+        if (this.$pluginsActive == "code") {
+            this.$plugins["code"].update(this, html);
         }
         else {
             this.oDoc.body.innerHTML = html;
@@ -160,35 +148,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         //this.$visualFocus(true);
     };
 
-    this.$propHandlers["output"] = function(value){
-        //@todo Update XML
-    };
-
-    this.$propHandlers["state"] = function(value){
-        this.state = parseInt(value); // make sure it's an int
-        // the state has changed, update the button look/ feel
-        setTimeout(function() {
-            _self.notifyAll(value);
-            if (_self.plugins && _self.plugins.isActive('code'))
-                _self.notify('code', apf.editor.SELECTED);
-        });
-    };
-
-    this.$propHandlers["plugins"] = function(value){
-        this.$plugins = value && value.splitSafe(value) || null;
-    };
-
-    /**
-     * @attribute {Boolean} realtime whether the value of the bound data is
-     * updated as the user types it, or only when this element looses focus or
-     * the user presses enter.
-     */
-    this.$propHandlers["realtime"] = function(value){
-        this.realtime = typeof value == "boolean"
-            ? value
-            : apf.getInheritedAttribute(this.$aml, "realtime") || false;
-    };
-    
     this.$propHandlers["language"] = function(value){
         // @todo implement realtime language switching
     };
@@ -230,21 +189,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-     * API; get the (X)HTML that's inside the Editor at any given time
-     *
-     * @param {String} output This may be left empty or set to 'dom' or 'text'
-     * @type  {mixed}
-     */
-    this.getXHTML = function(output) {
-        if (!output)
-            output = this.output;
-        if (output == "text")
-            return this.oDoc.body.innerHTML;
-        else
-            return this.oDoc.body;
-    };
-
-    /**
      * API; processes the current state of the editor's content and outputs the result that
      *      can be used inside any other content or stored elsewhere.
      *
@@ -252,21 +196,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        var xhtml = (this.$value = this.exportHtml(this.getXHTML('text'), bStrict));
-        if (this.output == "dom") { //@todo might need a bit more love...
-            var dom      = apf.getXml('<apf_cool>' + xhtml + '</apf_cool>'),
-                fragment = document.createDocumentFragment();
-            for (var i = 0, j = dom.childNodes.length; i < j; i++) {
-                try {
-                    fragment.appendChild(dom.childNodes[i]);
-                }
-                catch (ex) {}
-            }
-
-            return fragment;
-        }
-
-        return xhtml;
+        return (this.$value = this.exportHtml(this.oDoc.body.innerHTML, bStrict));
     };
 
     /**
@@ -636,8 +566,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.executeCommand = function(cmdName, cmdParam) {
-        if (!this.plugins.isPlugin(cmdName) && inited && complete
-          && this.state != apf.editor.DISABLED) {
+        if (!this.$plugins[cmdName] && inited && complete
+          && this.state != apf.DISABLED) {
             if (apf.isIE) {
                 if (!this.oDoc.body.innerHTML)
                     return commandQueue.push([cmdName, cmdParam]);
@@ -648,8 +578,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             this.$visualFocus();
             
             if (cmdName.toLowerCase() == "removeformat") {
-                /*this.plugins.get('paragraph', 'fontstyle').forEach(function(plugin){
-                    if (plugin.queryState(_self) == apf.editor.ON) {
+                /*[this.$plugins["paragraph"], this.$plugins["fontstyle"].forEach(function(plugin){
+                    if (plugin.queryState(_self) == apf.ON) {
                         plugin.submit(null, 'normal');
                     }
                 });*/
@@ -679,15 +609,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             var bNoSel = (cmdName == "SelectAll");
             if (apf.isIE) {
                 if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
-                  && this.getCommandState(cmdName) == apf.editor.OFF) {
+                  && this.getCommandState(cmdName) == apf.OFF) {
                     bNoSel = true;
                 }
                 else if (cmdName == "outdent") {
                     bNoSel = true;
-                    var pLists = this.plugins.get('bullist', 'numlist');
-                    if (pLists.length) {
-                        if (pLists[0].queryState(_self) != apf.editor.OFF
-                          && pLists[1].queryState(_self) != apf.editor.OFF)
+                    if (this.$plugins["bullist"] && this.$plugins["numlist"]) {
+                        if (this.$plugins["bullist"].queryState(_self) != apf.OFF
+                          && this.$plugins["numlist"].queryState(_self) != apf.OFF)
                             bNoSel = false;
                     }
                     var oNode = this.selection.getSelectedNode();
@@ -722,17 +651,17 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.getCommandState = function(cmdName) {
         if (apf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
-            return apf.editor.DISABLED;
+            return apf.DISABLED;
         try {
             if (!this.oDoc.queryCommandEnabled(cmdName))
-                return apf.editor.DISABLED;
+                return apf.DISABLED;
             else
                 return this.oDoc.queryCommandState(cmdName)
-                    ? apf.editor.ON
-                    : apf.editor.OFF;
+                    ? apf.ON
+                    : apf.OFF;
         }
         catch (e) {
-            return apf.editor.OFF;
+            return apf.OFF;
         }
     };
 
@@ -751,8 +680,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (apf.popup.last && apf.popup.last != sCacheId) {
             var o = apf.lookup(apf.popup.last);
             if (o) {
-                o.state = apf.editor.OFF;
-                this.notify(o.name, o.state);
+                o.state = apf.OFF;
+                this.$notifyPlugin(o.name, o.state);
             }
         }
 
@@ -760,8 +689,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.selection.set();
         this.$visualFocus();
 
-        oPlugin.state = apf.editor.ON;
-        this.notify(oPlugin.name, apf.editor.ON);
+        oPlugin.state = apf.ON;
+        this.$notifyPlugin(oPlugin.name, apf.ON);
 
         if (apf.popup.isShowing(sCacheId))
             return;
@@ -800,9 +729,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     function onPaste(e) {
         setTimeout(function() {
-            var s = _self.getXHTML('text');
+            var s = this.oDoc.body.innerHTML;
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
-                var o = _self.plugins.get('pasteword');
+                var o = _self.$plugins["pasteword"];
                 if (o)
                     _self.$propHandlers['value'].call(_self, o.parse(s));
             }
@@ -851,10 +780,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
-        if (_self.state == apf.editor.DISABLED) return;
+        if (_self.state == apf.DISABLED) return;
         //if (apf.isIE)
         //    this.$visualFocus(true);
-        var ret = _self.plugins.notifyAll('context', e);
+        var ret = _self.$notifyAllPlugins('context', e);
     }
 
     var changeTimer = null;
@@ -965,7 +894,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
         _self.$visualFocus();
         if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
-            found = _self.plugins.notifyKeyBindings({
+            found = _self.$notifyKeyBindings({
                 code   : code,
                 control: e.ctrlKey,
                 alt    : e.altKey,
@@ -1013,10 +942,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         function keyupHandler() {
             clearTimeout(keyupTimer);
-            if (_self.state == apf.editor.DISABLED) return;
+            if (_self.state == apf.DISABLED) return;
             _self.notifyAll();
             _self.dispatchEvent('typing', {editor: _self, event: e});
-            _self.plugins.notifyAll('typing', e.code);
+            _self.$notifyAllPlugins('typing', e.code);
             keyupTimer = null;
         }
 
@@ -1036,14 +965,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function listBehavior(e, bFix) {
-        var pLists = this.plugins.get('bullist', 'numlist');
-        if (!pLists || !pLists.length) return false;
+        if (!this.$plugins["bullist"] || !this.$plugins["numlist"])
+            return false;
         if (typeof e.shift != "undefined")
            e.shiftKey = e.shift;
-        var pList = pLists[0].queryState(this) == apf.editor.ON
-            ? pLists[0]
-            : pLists[1].queryState(this) == apf.editor.ON
-                ? pLists[1]
+        var pList = this.$plugins["bullist"].queryState(this) == apf.ON
+            ? this.$plugins["bullist"]
+            : this.$plugins["numlist"].queryState(this) == apf.ON
+                ? this.$plugins["numlist"]
                 : null;
         if (!pList) return false;
         if (bFix === true)
@@ -1064,7 +993,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$visualFocus = function(bNotify) {
         // setting focus to the iframe content, upsets the 'code' plugin
-        var bCode = this.plugins.isActive('code');
+        var bCode = (this.$pluginsActive == "code");
         if (apf.window.focussed == this && !bCode) {
             try {
                 _self.oWin.focus();
@@ -1073,8 +1002,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         if (bCode) {
-            _self.notifyAll(apf.editor.DISABLED);
-            _self.notify('code', apf.editor.SELECTED);
+            _self.notifyAll(apf.DISABLED);
+            _self.notify('code', apf.SELECTED);
         }
         else if (bNotify)
             _self.notifyAll();
@@ -1091,9 +1020,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (!this.oExt || this.oExt.disabled)
             return;
 
-        this.setProperty('state', this.plugins.isActive('code')
-            ? apf.editor.DISABLED
-            : apf.editor.OFF);
+        this.setProperty('state', (this.$pluginsActive == "code")
+            ? apf.DISABLED
+            : apf.OFF);
 
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
@@ -1147,11 +1076,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
-        var bCode = this.plugins.isActive('code');
+        var bCode = (this.$pluginsActive == "code");
         if (!this.realtime || bCode)
-            this.change(bCode ? this.plugins.get('code').getValue() : this.getValue());
+            this.change(bCode ? this.$plugins["code"].getValue() : this.getValue());
 
-        this.setProperty('state', apf.editor.DISABLED);
+        this.setProperty('state', apf.DISABLED);
     };
 
     /**
@@ -1231,18 +1160,18 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         //context 'this' is the buttons' DIV domNode reference
         if (!e._bogus) {
-            e.isPlugin = _self.plugins.isPlugin(item);
+            e.isPlugin = _self.$plugins[item] ? true : false;
             e.state    = getState(item, e.isPlugin);
         }
 
-        if (e.state == apf.editor.DISABLED) {
+        if (e.state == apf.DISABLED) {
             buttonDisable.call(oButton);
         }
         else {
             if (this.disabled)
                 buttonEnable.call(oButton);
 
-            if (e.state == apf.editor.ON) {
+            if (e.state == apf.ON) {
                 apf.setStyleClass(oButton, 'editor_selected');
                 oButton.selected = true;
             }
@@ -1253,8 +1182,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
             if (!e._bogus) {
                 if (e.isPlugin) {
-                    var o = _self.plugins.active = _self.plugins.get(item);
-                    o.execute(_self);
+                    var o = _self.$pluginsActive = item;
+                    _self.$plugins[item].execute(_self);
                 }
                 else
                     _self.executeCommand(item);
@@ -1276,16 +1205,16 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     function getState(id, isPlugin) {
         if (isPlugin) {
-            var plugin = _self.plugins.get(id);
-            if (_self.state == apf.editor.DISABLED && !plugin.noDisable)
-                return apf.editor.DISABLED;
+            var plugin = _self.$plugins[id];
+            if (_self.state == apf.DISABLED && !plugin.noDisable)
+                return apf.DISABLED;
             return plugin.queryState
                 ? plugin.queryState(_self)
                 : _self.state;
         }
 
-        if (_self.state == apf.editor.DISABLED)
-            return apf.editor.DISABLED;
+        if (_self.state == apf.DISABLED)
+            return apf.DISABLED;
 
         return _self.getCommandState(id);
     }
@@ -1298,14 +1227,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.notify = function(item, state) {
-        if (!this.plugins) //We're in the process of being destroyed
+        if (!this.$plugins) //We're in the process of being destroyed
             return;
         
         var oButton = oButtons[item];
         if (!oButton)
             return;
 
-        var oPlugin = this.plugins.get(item);
+        var oPlugin = this.$plugins[item];
         if (typeof state == "undefined" || state === null) {
             if (oPlugin && oPlugin.queryState)
                 state = oPlugin.queryState(this);
@@ -1318,11 +1247,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         oButton.state = state;
 
-        if (state == apf.editor.DISABLED)
+        if (state == apf.DISABLED)
             buttonDisable.call(oButton);
-        else if (state == apf.editor.HIDDEN)
+        else if (state == apf.HIDDEN)
             oButton.style.display = "none";
-        else if (state == apf.editor.VISIBLE)
+        else if (state == apf.VISIBLE)
             oButton.style.display = "";
         else {
             if (oButton.style.display == 'none')
@@ -1332,8 +1261,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 buttonEnable.call(oButton);
 
             var btnState = (oButton.selected)
-                ? apf.editor.ON
-                : apf.editor.OFF;
+                ? apf.ON
+                : apf.OFF;
 
             if (state != btnState) {
                 this.$buttonClick({
@@ -1390,7 +1319,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
         var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
             oNode = this.$getOption('toolbars'),
-            plugin, oButton, plugins = this.plugins;
+            plugin, oButton, plugins = this.$plugins;
 
         if (!sSkinTag)
             sSkinTag = "toolbar";
@@ -1451,7 +1380,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     bIsPlugin = false;
                     // Plugin toolbarbuttons may only be placed inside the main toolbar
                     if (sSkinTag == "toolbar" && !this.$nativeCommands.contains(item)) {
-                        plugin = plugins.add(item);
+                        plugin = this.$addPlugin(item);
                         // #ifdef __DEBUG
                         if (!plugin)
                             apf.console.error('Plugin \'' + item + '\' can not \
@@ -1462,10 +1391,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     }
 
                     if (bIsPlugin) {
-                        plugin = plugin || plugins.get(item);
+                        plugin = plugin || plugins[item];
                         if (!plugin)
                             continue;
-                        if (plugin.type != apf.editor.TOOLBARITEM)
+                        if (!(plugin.type & apf.TOOLBARITEM))
                             continue;
 
                         this.$getLayoutNode("button", "label", oButton)
@@ -1514,7 +1443,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 .call(this, this.$aml.getAttribute("language"));
         }
 
-        this.plugins   = new apf.editor.plugins(this.$plugins, this);
+        //this.plugins   = new apf.editor.plugins(this.$plugins, this);
         this.selection = new apf.selection(this.oWin, this.oDoc, this);
 
         this.oExt = this.$getExternal("main", null, function(oExt){
@@ -1531,7 +1460,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             if (!item) continue;
 
             oButtons[item] = btns[i];
-            plugin = this.plugins.coll[item];
+            plugin = this.$plugins[item];
             if (!plugin) continue;
 
             plugin.buttonNode = btns[i];
@@ -1625,7 +1554,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.makeEditable();
 
         setTimeout(function() {
-            _self.setProperty('state', apf.editor.DISABLED);
+            _self.setProperty('state', apf.DISABLED);
         })
     };
 
@@ -1647,10 +1576,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.iframe.parentNode.style.height = h + "px";
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
-        this.plugins.notifyAll("resize");
+        this.$notifyAllPlugins("resize");
 
-        if (this.plugins.isActive('code'))
-            this.plugins.get('code').setSize(this);
+        if (this.$pluginsActive == "code")
+            this.$plugins["code"].setSize(this);
     };
 
     /**
@@ -1676,9 +1605,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$destroy = function() {
-        this.plugins.$destroy();
+        //this.plugins.$destroy();
         this.selection.$destroy();
-        this.plugins = this.selection = this.oDoc.host = this.oToobar = 
+        /*this.plugins = */this.selection = this.oDoc.host = this.oToobar =
             this.oDoc = this.oWin = this.iframe = prepareRE = exportRE = null;
     };
 }).implement(
@@ -1691,15 +1620,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     //#ifdef __WITH_DATABINDING
     apf.DataBinding,
     //#endif
-    apf.Presentation
+    apf.Presentation,
+    apf.ContentEditable
 );
-
-apf.editor.ON             = 1;
-apf.editor.OFF            = 0;
-apf.editor.DISABLED       = -1;
-apf.editor.VISIBLE        = 2;
-apf.editor.HIDDEN         = 3;
-apf.editor.SELECTED       = 4;
 
 apf.editor.i18n = {
     'en_GB': {

@@ -19,33 +19,25 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_SUBSUP || __INC_ALL
+// #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-apf.editor.subSupCommand = function(sName) {
-    this.name        = sName;
-    this.icon        = sName;
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+apf.ContentEditable.plugin('media', function(){
+    this.name        = 'media';
+    this.icon        = 'media';
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = sName == "sub" ? 'ctrl+alt+s' : 'ctrl+shift+s';
-    this.state       = apf.editor.OFF;
+    this.keyBinding  = 'ctrl+m';
+    this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        var other = this.name == "sub" ? 'Superscript' : 'Subscript';
-        if (editor.getCommandState(other) == apf.editor.ON)
-            editor.executeCommand(other);
-        editor.executeCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
-
+        // @todo: implement this plugin
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        return editor.getCommandState(this.name == "sub"
-            ? 'Subscript'
-            : 'Superscript');
+        return this.state;
     };
-}
-apf.editor.plugin('sub', apf.editor.subSupCommand);
-apf.editor.plugin('sup', apf.editor.subSupCommand);
+});
 
 // #endif

@@ -21,29 +21,29 @@
 
 // #ifdef __ENABLE_EDITOR_COLOR || __INC_ALL
 
-apf.editor.colorPlugin = function(sName) {
+apf.ContentEditable.colorPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.colspan     = 18;
 
     var panelBody;
 
     var colorAtoms = ['00', '33', '66', '99', 'CC', 'FF'];
     function generatePalette() {
-        apf.editor.colorPlugin.palette = [];
+        apf.ContentEditable.colorPlugin.palette = [];
         var r, g, b, iCol;
         for (r = 0; r < colorAtoms.length; r++) {
             for (g = 0; g < colorAtoms.length; g++) {
                 iCol = (r % 3) * 6 + g;
                 for (b = 0; b < colorAtoms.length; b++) {
-                    if (!apf.editor.colorPlugin.palette[iCol])
-                        apf.editor.colorPlugin.palette[iCol] = [];
-                    apf.editor.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
+                    if (!apf.ContentEditable.colorPlugin.palette[iCol])
+                        apf.ContentEditable.colorPlugin.palette[iCol] = [];
+                    apf.ContentEditable.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
                         red  : colorAtoms[r],
                         green: colorAtoms[g],
                         blue : colorAtoms[b]
@@ -157,7 +157,7 @@ apf.editor.colorPlugin = function(sName) {
     };
 
     this.createPanelBody = function() {
-        if (!apf.editor.colorPlugin.palette)
+        if (!apf.ContentEditable.colorPlugin.palette)
             generatePalette();
 
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -165,7 +165,7 @@ apf.editor.colorPlugin = function(sName) {
         panelBody.style.display = "none";
         var aHtml = [];
 
-        var row, col, colorCode, palette = apf.editor.colorPlugin.palette;
+        var row, col, colorCode, palette = apf.ContentEditable.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
             aHtml.push('<div class="editor_panelrow">');
             for (col= 0; col < palette.length; col++) {
@@ -191,9 +191,9 @@ apf.editor.colorPlugin = function(sName) {
         delete this.colorPreview;
     };
 };
-apf.editor.colorPlugin.palette = null;
+apf.ContentEditable.colorPlugin.palette = null;
 
-apf.editor.plugin('forecolor', apf.editor.colorPlugin);
-apf.editor.plugin('backcolor', apf.editor.colorPlugin);
+apf.ContentEditable.plugin('forecolor', apf.ContentEditable.colorPlugin);
+apf.ContentEditable.plugin('backcolor', apf.ContentEditable.colorPlugin);
 
 // #endif

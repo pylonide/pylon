@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_LIST || __INC_ALL
 
-apf.editor.listPlugin = function(sName) {
+apf.ContentEditable.listPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARBUTTON;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
 
     var emptyRegex = apf.isIE
         ? /^(&nbsp;)?<DIV[^>]*_apf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
@@ -121,13 +121,13 @@ apf.editor.listPlugin = function(sName) {
         var state = editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
-        if (state == apf.editor.DISABLED)
-            return apf.editor.OFF;
+        if (state == apf.DISABLED)
+            return apf.OFF;
         return state;
     };
 };
 
-apf.editor.plugin('bullist', apf.editor.listPlugin);
-apf.editor.plugin('numlist', apf.editor.listPlugin);
+apf.ContentEditable.plugin('bullist', apf.ContentEditable.listPlugin);
+apf.ContentEditable.plugin('numlist', apf.ContentEditable.listPlugin);
 
 // #endif

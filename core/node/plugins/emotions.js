@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-apf.editor.plugin('emotions', function() {
+apf.ContentEditable.plugin('emotions', function() {
     this.name        = 'emotions';
     this.icon        = 'emotions';
-    this.type        = apf.editor.TOOLBARITEM;
-    this.subType     = apf.editor.TOOLBARPANEL;
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.state       = apf.editor.OFF;
+    this.state       = apf.OFF;
     this.colspan     = 4;
     this.emotions    = [];
 
