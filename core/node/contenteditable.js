@@ -32,7 +32,6 @@ apf.ContentEditable = function() {
         activeNode    = null,
         tabStack      = null,
         oSel          = null,
-        oEditor       = null,
         _self         = this;
 
     this.$booleanProperties["contenteditable"] = true;
@@ -51,9 +50,9 @@ apf.ContentEditable = function() {
         apf.setStyleClass(oNode, "contentEditable_active", ["contentEditable_over"]);
         
         if (apf.isIE) {
-            setTimeout(function() {
+            //setTimeout(function() {
                 oNode.contentEditable = true;
-            });
+            //});
         }
         else {
             document.designMode = "on";
@@ -66,10 +65,22 @@ apf.ContentEditable = function() {
                 document.execCommand("enableInlineTableEditing", false, tableHandles);
             }
         }
+
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (apf.hasFocusBug) {
+            apf.sanitizeTextbox(oNode);
+            oNode.onselectstart = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
+        }
+        //#endif
+
         apf.AbstractEvent.addListener(document, "mousedown", docMouseDown);
         apf.AbstractEvent.addListener(document, "keydown",   docKeyDown);
 
         oSel = new apf.selection(window, document);
+        oSel.cache();
     }
 
     function removeEditor(oNode, bProcess, callback) {
@@ -103,13 +114,15 @@ apf.ContentEditable = function() {
     }
 
     function execCommand(name, param) {
+        oSel.cache();
         (apf.isIE ? activeNode : document).execCommand(name, false, param);
     }
 
     function docMouseDown(e) {
         if (!activeNode) return;
         e = e || window.event;
-        var el = e.target;
+        oSel.cache();
+        var el = e.srcElement || e.target;
         if (!apf.isChildOf(activeNode, el, true)) {
             removeEditor(activeNode, true); //action confirmed!
             return false;
@@ -119,11 +132,12 @@ apf.ContentEditable = function() {
     function docKeyDown(e) {
         if (!activeNode) return;
         e = e || window.event;
+        oSel.cache();
         var el   = oSel.getSelectedNode(),
             code = e.which || e.keyCode,
             found;
-
-        if (!apf.isChildOf(activeNode, el, true)) {
+//debugger;
+        if (!apf.isIE && !apf.isChildOf(activeNode, el, true)) {
             // #ifdef __DEBUG
             apf.console.log('ContentEditable - keyDown: no child of mine');
             // #endif
@@ -188,12 +202,13 @@ apf.ContentEditable = function() {
         }
         // Tab navigation handling
         if (code == 9 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-            var oNode = e.shiftKey ? getTabPrev(activeNode) : getTabNext(activeNode);
+            var bShift = e.shiftKey,
+                oNode  = bShift ? getTabPrev(activeNode) : getTabNext(activeNode);
             if (oNode) {
                 // a callback is passed, because the call is a-sync
                 removeEditor(activeNode, true, function() {
                     // re-fetch, because data may been reloaded
-                    oNode = e.shiftKey ? getTabPrev(activeNode) : getTabNext(activeNode);
+                    oNode = bShift ? getTabPrev(activeNode) : getTabNext(activeNode);
                     createEditor(oNode);
                     oSel.selectNode(oNode.firstChild);
                 });
@@ -210,6 +225,8 @@ apf.ContentEditable = function() {
             apf.AbstractEvent.stop(e);
             return false;
         }
+
+        document.onkeydown(e);
     }
 
     function initTabStack() {
@@ -261,11 +278,14 @@ apf.ContentEditable = function() {
         apf.AbstractEvent.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
             var el = e.srcElement || e.target;
             if (el == activeNode) return; //already in editMode
-            if (el.className && el.className.indexOf("contentEditable") !== -1)
+            if (el.className && el.className.indexOf("contentEditable") !== -1) {
                 createEditor(el);
+                return false;
+            }
             // action confirmed
-            else if (activeNode)
+            else if (activeNode) {
                 removeEditor(activeNode, true);
+            }
         });
     }
 

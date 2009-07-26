@@ -88,7 +88,7 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.cache = function() {
         if (!apf.isIE) return this;
-        var oSel = _self.editor.oDoc.selection;
+        var oSel = oDoc.selection;
         _self.current      = oSel.createRange();
         _self.current.type = oSel.type;
 
@@ -321,7 +321,7 @@ apf.selection = function(oWin, oDoc, editor) {
             }
 
             if (vfocus)
-                this.editor.$visualFocus();
+                editor.$visualFocus();
             else
                 oWin.focus();
 
@@ -406,7 +406,7 @@ apf.selection = function(oWin, oDoc, editor) {
 
                 if (!apf.isOpera) {
                     if (vfocus)
-                        this.editor.$visualFocus();
+                        editor.$visualFocus();
                     else
                         oWin.focus();
                 }
@@ -670,7 +670,13 @@ apf.selection = function(oWin, oDoc, editor) {
             catch (e) {
                 // If failed, select it as a text range.
                 range = oDoc.body.createTextRange();
-                range.moveToElementText(node);
+                try {
+                    range.moveToElementText(node);
+                }
+                catch (e2) {
+                    if (node.nodeValue)
+                        range.findText(node.nodeValue);
+                }
             }
             range.select();
         }

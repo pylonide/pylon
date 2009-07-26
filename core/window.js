@@ -898,7 +898,9 @@ apf.window = new (function(){
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
             var isContentEditable = ta[(e.srcElement || e.target).tagName]
-                && !(e.srcElement || e.target).disabled || amlNode.$isContentEditable
+                && !(e.srcElement || e.target).disabled
+                || (e.srcElement && apf.isTrue(e.srcElement.contentEditable))
+                || amlNode.$isContentEditable
                 && amlNode.$isContentEditable(e) && !amlNode.disabled;
 
             if (!amlNode || !isContentEditable)
@@ -1187,7 +1189,7 @@ apf.window = new (function(){
         if (!apf.appsettings.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
           && !ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
-          && (!e.srcElement || e.srcElement.contentEditable != "true")) {
+          && (!e.srcElement || apf.isTrue(e.srcElement.contentEditable != "true"))) {
             e.returnValue = false;
         }
 
