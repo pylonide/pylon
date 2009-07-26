@@ -72,7 +72,7 @@ apf.ContentEditable = function() {
             var lastPos = (tabStack || initTabStack()).indexOf(oNode);
             removeEditor(activeNode, true);
             oNode = initTabStack()[lastPos];
-            setTimeout(function(){oNode.focus();});
+            setTimeout(function(){oNode.focus();}, 10);
         }
 
         if (!_self.hasFocus())
@@ -115,7 +115,7 @@ apf.ContentEditable = function() {
 
     function removeEditor(oNode, bProcess, callback) {
         if (!oNode) oNode = activeNode;
-        if (!oNode || oNode.nodeType != 1) return oNode;
+        if (!oNode || oNode.nodeType != 1) return false;
         _self.$selection.collapse(true);
 
         activeNode = null;
@@ -129,10 +129,8 @@ apf.ContentEditable = function() {
 
         if (!bProcess || oNode.innerHTML == lastValue) {
             oNode.innerHTML = lastValue;
-            return oNode;
+            return false;
         }
-        
-        var lastPos = (tabStack || initTabStack()).indexOf(oNode);
         
         // do additional handling, first we check for a change in the data...
         var xpath = oNode.getAttribute("xpath");
@@ -142,8 +140,6 @@ apf.ContentEditable = function() {
 
         if (callback)
             setTimeout(callback);
-
-        return initTabStack()[lastPos];
     }
 
     function execCommand(name, param) {
@@ -249,12 +245,14 @@ apf.ContentEditable = function() {
         if (code == 9) {
             var bShift = e.shiftKey;
             // a callback is passed, because the call is a-sync
-            oNode = removeEditor(activeNode, true);
+            var lastPos = (tabStack || initTabStack()).indexOf(activeNode);
+            var oNode = removeEditor(activeNode, true) || initTabStack()[lastPos];
+            
+            oNode = tabStack[
+                tabStack.indexOf(oNode) + (bShift ? -1 : 1)
+            ];
+            
             if (oNode) {
-                oNode = tabStack[
-                    (lastPos = tabStack.indexOf(oNode) + (bShift ? -1 : 1))
-                ];
-                
                 createEditor(oNode);
                 oNode.focus();
                 _self.$selection.selectNode(oNode.firstChild);
