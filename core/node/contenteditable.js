@@ -69,11 +69,7 @@ apf.ContentEditable = function() {
         apf.AbstractEvent.addListener(document, "mousedown", docMouseDown);
         apf.AbstractEvent.addListener(document, "keydown",   docKeyDown);
 
-        oSel = new apf.selection(oEditor || (oEditor = {
-            oDoc       : document,
-            oWin       : window,
-            getViewPort: getViewPort
-        }));
+        oSel = new apf.selection(window, document);
     }
 
     function removeEditor(oNode, bProcess, callback) {
@@ -279,21 +275,6 @@ apf.ContentEditable = function() {
         apf.AbstractEvent.removeListener(_self.oExt, "mousedown", mouseDown);
     }
 
-    function getViewPort() {
-        var doc = (!window.document.compatMode
-          || window.document.compatMode == "CSS1Compat")
-            ? window.document.html || window.document.documentElement //documentElement for an iframe
-            : window.document.body;
-
-        // Returns viewport size excluding scrollbars
-        return {
-            x     : window.pageXOffset || doc.scrollLeft,
-            y     : window.pageYOffset || doc.scrollTop,
-            width : window.innerWidth  || doc.clientWidth,
-            height: window.innerHeight || doc.clientHeight
-        };
-    }
-    
     this.edit = function(xpath, value) {
         this.executeActionByRuleSet("edit", "edit", this.xmlRoot.ownerDocument
             .selectSingleNode(xpath), value);
