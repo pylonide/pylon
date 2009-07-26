@@ -331,20 +331,11 @@ apf.remote = function(name, xmlNode, parentNode){
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
 apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
-    if (useJid) {
-        //#ifdef __DEBUG
-        if (!xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
-            throw new Error(apf.formatErrorString(0, null, 
-                "Converting XML to Xpath", 
-                "Error xml node without a_id found whilst \
-                 trying to use it.", xmlNode));
-        }
-        //#endif
-        
+    if (useJid && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
         return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
             + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
     }
-    
+
     if (this.lookup && this.select) {
         var def = this.lookup[xmlNode.tagName];
         if (def) {
@@ -377,12 +368,22 @@ apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
     }
 
     var str = [], lNode = xmlNode;
+    if (lNode.nodeType == 2) {
+        str.push("@" + lNode.nodeName);
+        lNode = lNode.ownerElement || xmlNode.selectSingleNode("..");
+    }
+    
+    var id;
     do {
-        str.unshift(lNode.tagName);
+        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
+            + "[" + (useJid && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
+                ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
+                : (apf.xmldb.getChildNumber(lNode, true) + 1))
+             + "]");
         lNode = lNode.parentNode;
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
-    
-    return str.join("/") + "[" + (apf.xmldb.getChildNumber(xmlNode, true) + 1) + "]";
+
+    return str.join("/");
 };
     
 //for RSB: Xpath statement --> xmlNode

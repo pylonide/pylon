@@ -166,7 +166,7 @@ apf.ContentEditable = function() {
         else
             document.designMode = "off";
 
-        if (!bProcess) {
+        if (!bProcess || oNode.innerHTML == lastValue) {
             oNode.innerHTML = lastValue;
             return;
         }
@@ -291,6 +291,7 @@ apf.ContentEditable = function() {
                 // re-fetch, because data may been reloaded
                 oNode = (tabStack || initTabStack())[lastPos];
                 createEditor(oNode);
+                oNode.focus();
                 oSel.selectNode(oNode.firstChild);
 
                 found = true;

@@ -106,6 +106,7 @@ apf.XmlDatabase = function(){
      */
     this.getChildNumber = function(node, sameTagname){
         var p = node.parentNode, j = 0;
+        if (!p) return 0;
         for (var i = 0; i < p.childNodes.length; i++) {
             if (p.childNodes[i] == node)
                 return j;
