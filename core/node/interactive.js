@@ -249,7 +249,7 @@ apf.Interactive = function(){
         };
         
         if (apf.isIE)
-            apf.window.$mousedown();
+            apf.window.$mousedown(e);
 
         return false;
     };
@@ -430,7 +430,7 @@ apf.Interactive = function(){
         };
         
         if (apf.isIE)
-            apf.window.$mousedown();
+            apf.window.$mousedown(e);
         
         return false;
     };

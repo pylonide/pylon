@@ -852,7 +852,7 @@ apf.window = new (function(){
     });
 
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
-    apf.addListener(document, "mousedown", apf.window.$mousedown = function(e){
+    apf.addListener(document, "mousedown", this.$mousedown = function(e){
         e = e || window.event;
 
         var amlNode = apf.findHost(e.srcElement || e.target);
@@ -955,7 +955,7 @@ apf.window = new (function(){
     });
 
     // Keyboard forwarding to focussed object
-    apf.addListener(document, "keyup", function(e){
+    apf.addListener(document, "keyup", this.$keyup = function(e){
         if (!e) e = event;
 
         //#ifdef __WITH_KEYBOARD
@@ -1012,7 +1012,7 @@ apf.window = new (function(){
     //var browserNavKeys = {32:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1}
     
     //@todo optimize this function
-    apf.addListener(document, "keydown", function(e){
+    apf.addListener(document, "keydown", this.$keydown = function(e){
         if (!e)
             e = event;
 

@@ -272,8 +272,6 @@ apf.ContentEditable = function() {
             e.returnValue = false;
             return false;
         }
-
-        //document.onkeydown(e);
     }, true);
 
     function initTabStack() {

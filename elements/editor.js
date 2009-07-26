@@ -921,7 +921,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             resumeChangeTimer();
         }
 
-        document.onkeydown(e);
+        apf.window.$keydown(e);
         //keydownTimer = null;
     }
 
@@ -951,7 +951,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         keyupTimer = window.setTimeout(keyupHandler, 200);
         //keyHandler();
-        document.onkeyup(e);
+        apf.window.$keyup(e || window.event);
     }
 
     /**
@@ -1098,7 +1098,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             _self.selection.cache();
             apf.popup.forceHide();
             //this.notifyAll();
-            apf.window.$mousedown();
+            apf.window.$mousedown(e);
         });
 
         apf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
