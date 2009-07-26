@@ -313,4 +313,28 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     return [wt - (apf.isIE && !apf.isIE8 ? 0 : 0), ht];
 };
 
+/**
+ * Returns the viewport of the a window.
+ *
+ * @param  {WindowImplementation} [win] The window to take the measurements of.
+ * @return {Object}                     Viewport object with fields x, y, w and h.
+ * @type   {Object}
+ */
+apf.getViewPort = function(win) {
+    win = win || window;
+    var doc = (!win.document.compatMode
+      || win.document.compatMode == "CSS1Compat")
+        //documentElement for an iframe
+        ? win.document.html || win.document.documentElement
+        : win.document.body;
+
+    // Returns viewport size excluding scrollbars
+    return {
+        x     : win.pageXOffset || doc.scrollLeft,
+        y     : win.pageYOffset || doc.scrollTop,
+        width : win.innerWidth  || doc.clientWidth,
+        height: win.innerHeight || doc.clientHeight
+    };
+}
+
 // #endif

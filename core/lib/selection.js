@@ -26,17 +26,18 @@
  * @constructor
  * @author Mike de Boer  (mike AT javeline DOT com)
  */
-apf.selection = function(editor) {
+apf.selection = function(oWin, oDoc, editor) {
     /*
      * Initialize the apf.selection class.
      *
-     * @type Editor.selection
+     * @type apf.selection
      */
-    this.editor  = editor;
+    oWin = oWin || window;
+    oDoc = oDoc || window.document;
     this.current = null;
 
     var csLock,
-        vfocus = (typeof editor.$visualFocus == "function"),
+        vfocus = (editor && typeof editor.$visualFocus == "function"),
         _self  = this;
 
     /**
@@ -45,10 +46,9 @@ apf.selection = function(editor) {
      * @type {Selection}
      */
     this.get = function() {
-        var oDoc = this.editor.oDoc;
         return oDoc.selection
             ? oDoc.selection
-            : this.editor.oWin.getSelection()
+            : oWin.getSelection()
     };
 
     /**
@@ -64,17 +64,17 @@ apf.selection = function(editor) {
 
         try {
             if (vfocus)
-                this.editor.$visualFocus();
+                editor.$visualFocus();
             else
-                this.editor.oWin.focus();
+                oWin.focus();
             this.current.select();
         }
         catch (ex) {}
 
         if (vfocus)
-            this.editor.$visualFocus();
+            editor.$visualFocus();
         else
-            this.editor.oWin.focus();
+            oWin.focus();
         return this.current;
     };
 
@@ -112,7 +112,7 @@ apf.selection = function(editor) {
      * @type {Range}
      */
     this.getRange = function() {
-        var oSel = this.get(), oDoc = this.editor.oDoc, range;
+        var oSel = this.get(), range;
 
         try {
             if (oSel)
@@ -168,20 +168,21 @@ apf.selection = function(editor) {
      * object can then be used to restore the selection after some content
      * modification to the document.
      *
-     * @param {bool}    type Optional State if the bookmark should be simple or not. Default is complex.
-     * @return {Object} Bookmark object, use moveToBookmark with this object to restore the selection.
+     * @param  {Boolean}    [type] State if the bookmark should be simple or not.
+     *                             Default is complex.
+     * @return {Object}            Bookmark object, use moveToBookmark with this
+     *                             object to restore the selection.
      */
     this.getBookmark = function(type) {
         var range    = this.getRange(),
-            viewport = this.editor.getViewPort(),
-            oDoc     = this.editor.oDoc;
+            viewport = apf.getViewPort(oWin);
 
         // Simple bookmark fast but not as persistent
         if (type == 'simple')
             return {range : range, scrollX : viewport.x, scrollY : viewport.y};
 
-        var oEl, sp, bp, iLength;
-        var oRoot = oDoc.body;
+        var oEl, sp, bp, iLength,
+            oRoot = oDoc.body;
 
         // Handle IE
         if (apf.isIE) {
@@ -227,7 +228,7 @@ apf.selection = function(editor) {
         }
 
         // Handle W3C
-        oEl     = this.getSelectedNode();
+        oEl      = this.getSelectedNode();
         var oSel = this.get();
 
         if (!oSel)
@@ -243,7 +244,8 @@ apf.selection = function(editor) {
 
         // Text selection
         function getPos(sn, en) {
-            var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false), n, p = 0, d = {};
+            var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false),
+                n, p = 0, d = {};
 
             while ((n = w.nextNode()) != null) {
                 if (n == sn)
@@ -301,12 +303,11 @@ apf.selection = function(editor) {
     this.moveToBookmark = function(bmark) {
         var range = this.getRange(), oSel = this.get(), sd, nvl, nv;
 
-        var oDoc  = this.editor.oDoc;
         var oRoot = oDoc.body;
         if (!bmark)
             return false;
 
-        this.editor.oWin.scrollTo(bmark.scrollX, bmark.scrollY);
+        oWin.scrollTo(bmark.scrollX, bmark.scrollY);
 
         // Handle explorer
         if (apf.isIE) {
@@ -322,7 +323,7 @@ apf.selection = function(editor) {
             if (vfocus)
                 this.editor.$visualFocus();
             else
-                this.editor.oWin.focus();
+                oWin.focus();
 
             // Handle control bookmark
             if (bmark.tag) {
@@ -407,7 +408,7 @@ apf.selection = function(editor) {
                     if (vfocus)
                         this.editor.$visualFocus();
                     else
-                        this.editor.oWin.focus();
+                        oWin.focus();
                 }
             }
             catch (ex) {}
@@ -423,8 +424,8 @@ apf.selection = function(editor) {
     this.getContent = function(retType) {
         if (typeof retType != "string")
             retType = "html"
-        var range = this.getRange(), oSel = this.get(), prefix, suffix, n;
-        var oNode = this.editor.oDoc.body;
+        var range = this.getRange(), oSel = this.get(), prefix, suffix, n,
+            oNode = oDoc.body;
         
         if (retType == "text")
              return this.isCollapsed() ? '' : (range.text || (oSel.toString ? oSel.toString() : ''));
@@ -446,8 +447,9 @@ apf.selection = function(editor) {
 
         /*
         prefix = suffix = '';
-        //if (this.editor.output == 'text')
-            //return this.isCollapsed() ? '' : (range.htmlText || (range.item && range.item(0).outerHTML) || '');//oSel.toString ? oSel.toString() : '')); // ?
+        //if (editor && editor.output == 'text')
+            //return this.isCollapsed() ? '' : (range.htmlText || (range.item
+            //   && range.item(0).outerHTML) || '');
 
         if (range.cloneContents) {
             n = range.cloneContents();
@@ -480,10 +482,9 @@ apf.selection = function(editor) {
      */
     this.setContent = function(html, bNoPrepare) {
         var range = this.getRange();
-        var oDoc  = this.editor.oDoc;
 
-        if (!bNoPrepare && this.editor.prepareHtml)
-            html = this.editor.prepareHtml(html, true);
+        if (!bNoPrepare && editor && editor.prepareHtml)
+            html = editor.prepareHtml(html, true);
 
         if (range.insertNode) {
             // Make caret marker since insertNode places the caret in the
@@ -584,7 +585,7 @@ apf.selection = function(editor) {
         if (!apf.isIE) {
             // Range maybe lost after the editor is made visible again
             if (!range)
-                return this.editor.oDoc;
+                return oDoc;
 
             var oSel = this.get(), oNode = range.commonAncestorContainer;
 
@@ -652,7 +653,6 @@ apf.selection = function(editor) {
      * @type void
      */
     this.selectNode = function(node) {
-        //this.editor.setFocus();
         var oSel, range;
         if (apf.isIE) {
             oSel = this.get();
@@ -664,12 +664,12 @@ apf.selection = function(editor) {
             
             try {
                 // Try to select the node as a control.
-                range = this.editor.oDoc.body.createControlRange();
+                range = oDoc.body.createControlRange();
                 range.addElement(node);
             }
             catch (e) {
                 // If failed, select it as a text range.
-                range = this.editor.oDoc.body.createTextRange();
+                range = oDoc.body.createTextRange();
                 range.moveToElementText(node);
             }
             range.select();
@@ -689,7 +689,8 @@ apf.selection = function(editor) {
     /**
      * Collapse the selection to start or end of range.
      *
-     * @param {Boolean} toEnd Optional boolean state if to collapse to end or not. Defaults to start.
+     * @param {Boolean} [toEnd] Boolean state if to collapse to end or
+     *                          not. Defaults to start.
      * @type  {void}
      */
     this.collapse = function(toEnd) {
@@ -698,7 +699,7 @@ apf.selection = function(editor) {
         // 'Control' range on IE
         if (range.item) {
             n = range.item(0);
-            range = this.editor.oDoc.body.createTextRange();
+            range = oDoc.body.createTextRange();
             range.moveToElementText(n);
         }
 
@@ -784,7 +785,7 @@ apf.selection = function(editor) {
         else {
             var oContainer = this.getSelectedNode();
             if (!oContainer)
-                oContainer = this.editor.oWin.getSelection().getRangeAt(0).startContainer
+                oContainer = oWin.getSelection().getRangeAt(0).startContainer
             while (oContainer) {
                 if (oContainer.tagName == nodeTagName)
                     return oContainer;
@@ -813,8 +814,10 @@ apf.selection = function(editor) {
     };
 
     this.$destroy = function() {
-        this.editor = this.current = _self = null;
-        delete this.editor;
+        oWin = oDoc = editor = this.current = _self = null;
+        delete oWin;
+        delete oDoc;
+        delete editor;
         delete this.current;
         delete _self;
     };

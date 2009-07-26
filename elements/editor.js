@@ -230,27 +230,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-    * Returns the viewport of the Editor window.
-    *
-    * @return {Object} Viewport object with fields x, y, w and h.
-    * @type   {Object}
-    */
-    this.getViewPort = function() {
-        var doc = (!this.oWin.document.compatMode
-          || this.oWin.document.compatMode == 'CSS1Compat')
-            ? this.oWin.document.html || this.oWin.document.documentElement //documentElement for an iframe
-            : this.oWin.document.body;
-
-        // Returns viewport size excluding scrollbars
-        return {
-            x     : this.oWin.pageXOffset || doc.scrollLeft,
-            y     : this.oWin.pageYOffset || doc.scrollTop,
-            width : this.oWin.innerWidth  || doc.clientWidth,
-            height: this.oWin.innerHeight || doc.clientHeight
-        };
-    };
-
-    /**
      * API; get the (X)HTML that's inside the Editor at any given time
      *
      * @param {String} output This may be left empty or set to 'dom' or 'text'
@@ -1536,7 +1515,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         this.plugins   = new apf.editor.plugins(this.$plugins, this);
-        this.selection = new apf.selection(this);
+        this.selection = new apf.selection(this.oWin, this.oDoc, this);
 
         this.oExt = this.$getExternal("main", null, function(oExt){
             this.drawToolbars(this.$getLayoutNode("main", "toolbar"));
