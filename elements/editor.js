@@ -1098,7 +1098,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             _self.selection.cache();
             apf.popup.forceHide();
             //this.notifyAll();
-            document.onmousedown(e);
+            apf.window.$mousedown();
         });
 
         apf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);

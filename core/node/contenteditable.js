@@ -68,8 +68,12 @@ apf.ContentEditable = function() {
     function createEditor(oNode) {
         if (!oNode || oNode.nodeType != 1 || activeNode == oNode) 
             return;
-        if (activeNode)
+        if (activeNode) {
+            var lastPos = (tabStack || initTabStack()).indexOf(oNode);
             removeEditor(activeNode, true);
+            oNode = initTabStack()[lastPos];
+            setTimeout(function(){oNode.focus();});
+        }
 
         if (!_self.hasFocus())
             skipFocusOnce = true;
@@ -111,7 +115,7 @@ apf.ContentEditable = function() {
 
     function removeEditor(oNode, bProcess, callback) {
         if (!oNode) oNode = activeNode;
-        if (!oNode || oNode.nodeType != 1) return;
+        if (!oNode || oNode.nodeType != 1) return oNode;
         _self.$selection.collapse(true);
 
         activeNode = null;
@@ -125,8 +129,11 @@ apf.ContentEditable = function() {
 
         if (!bProcess || oNode.innerHTML == lastValue) {
             oNode.innerHTML = lastValue;
-            return;
+            return oNode;
         }
+        
+        var lastPos = (tabStack || initTabStack()).indexOf(oNode);
+        
         // do additional handling, first we check for a change in the data...
         var xpath = oNode.getAttribute("xpath");
         if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
@@ -135,6 +142,8 @@ apf.ContentEditable = function() {
 
         if (callback)
             setTimeout(callback);
+
+        return initTabStack()[lastPos];
     }
 
     function execCommand(name, param) {
@@ -238,23 +247,19 @@ apf.ContentEditable = function() {
         
         // Tab navigation handling
         if (code == 9) {
-            var bShift = e.shiftKey,
-                oNode  = (tabStack || initTabStack())[
-                    (lastPos = tabStack.indexOf(activeNode) + (bShift ? -1 : 1))
-                  ];
+            var bShift = e.shiftKey;
+            // a callback is passed, because the call is a-sync
+            oNode = removeEditor(activeNode, true);
             if (oNode) {
-                // a callback is passed, because the call is a-sync
-                removeEditor(activeNode, true);
-                // re-fetch, because data may been reloaded
-                oNode = (tabStack || initTabStack())[lastPos];
+                oNode = tabStack[
+                    (lastPos = tabStack.indexOf(oNode) + (bShift ? -1 : 1))
+                ];
+                
                 createEditor(oNode);
                 oNode.focus();
                 _self.$selection.selectNode(oNode.firstChild);
 
                 found = true;
-            }
-            else {
-                removeEditor();
             }
         }
         // Esc key handling

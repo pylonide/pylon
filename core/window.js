@@ -852,7 +852,7 @@ apf.window = new (function(){
     });
 
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
-    apf.addListener(document, "mousedown", function(e){
+    apf.addListener(document, "mousedown", apf.window.$mousedown = function(e){
         e = e || window.event;
 
         var amlNode = apf.findHost(e.srcElement || e.target);
