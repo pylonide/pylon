@@ -1104,11 +1104,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         apf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
         apf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
             //if (!apf.isIE)
-                window.onfocus(e.event);
+                apf.window.$focus(_self); //TODO: ok?
         });
         apf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
             //if (!apf.isIE)
-                window.onblur(e.event);
+                apf.window.$blur(_self); //TODO: ok?
         });
 
         this.oDoc.host = this;

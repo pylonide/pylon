@@ -755,7 +755,7 @@ apf.window = new (function(){
         }
     });
 
-    apf.addListener(window, "onblur", function(){
+    apf.addListener(window, "blur", function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
             return apf.window.dispatchEvent("blur");
