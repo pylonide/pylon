@@ -333,8 +333,9 @@ var apf = {
          * Specifies whether the application is running in the Firefox browser version 3.
          * @type {Boolean}
          */
-        this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
-        this.isGecko35   = this.isGecko && sAgent.indexOf("firefox/3.5") != -1;
+        this.isGecko3     = this.isGecko && sAgent.indexOf("firefox/3") != -1;
+        this.isGecko35    = this.isGecko && sAgent.indexOf("firefox/3.5") != -1;
+        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/firefox\/([\d\.]+)/)[1]) : -1;
         
         var found;
         /**
@@ -355,12 +356,14 @@ var apf = {
          * @type {Boolean}
          */
         this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
+        this.versionIE   = this.isIE ? parseFloat(sAgent.match(/msie ([\d\.]+)/)[1]) : -1;
         
         //Mode detection
         if (this.isIE8 && document.documentMode == 7) {
-            apf.isIE7 = true;
-            apf.isIE8 = false;
+            apf.isIE7        = true;
+            apf.isIE8        = false;
             apf.isIE7Emulate = true;
+            this.versionIE   = 7;
         }
         
         /**
@@ -417,7 +420,7 @@ var apf = {
         //Set Compatibility
         this.TAGNAME                   = apf.isIE ? "baseName" : "localName";
         this.supportVML                = apf.isIE;
-        this.hasHtml5XDomain           = apf.isGecko35;
+        this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !apf.isIE;
         this.supportSVG                = !apf.isIE;
         this.styleSheetRules           = apf.isIE ? "rules" : "cssRules";
@@ -430,12 +433,11 @@ var apf = {
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
         this.hasInnerText              = apf.isIE;
         this.hasMsRangeObject          = apf.isIE;
-        this.hasContentEditable        = apf.isIE || apf.isOpera;
         this.descPropJs                = apf.isIE;
         this.hasClickFastBug           = apf.isIE;
         this.hasExecScript             = window.execScript ? true : false;
         this.canDisableKeyCodes        = apf.isIE;
-        this.hasTextNodeWhiteSpaceBug  = apf.isIE && !apf.isIE8;
+        this.hasTextNodeWhiteSpaceBug  = apf.isIE || apf.versionIE >= 8;
         this.hasCssUpdateScrollbarBug  = apf.isIE;
         this.canUseInnerHtmlWithTables = !apf.isIE;
         this.hasSingleResizeEvent      = !apf.isIE;
@@ -443,7 +445,7 @@ var apf = {
         this.supportOpacity            = !apf.isIE;
         this.supportPng24              = !apf.isIE6 && !apf.isIE5;
         this.cantParseXmlDefinition    = apf.isIE50;
-        this.hasDynamicItemList        = !apf.isIE || apf.isIE7;
+        this.hasDynamicItemList        = !apf.isIE || apf.versionIE >= 7;
         this.canImportNode             = apf.isIE;
         this.hasSingleRszEvent         = !apf.isIE;
         this.hasXPathHtmlSupport       = !apf.isIE;
@@ -451,10 +453,10 @@ var apf = {
         this.hasReadyStateBug          = apf.isIE50;
         this.dateSeparator             = apf.isIE ? "-" : "/";
         this.canCreateStyleNode        = !apf.isIE;
-        this.supportFixedPosition      = !apf.isIE || apf.isIE7;
+        this.supportFixedPosition      = !apf.isIE || apf.versionIE >= 7;
         this.hasHtmlIdsInJs            = apf.isIE || apf.isSafari;
         this.needsCssPx                = !apf.isIE;
-        this.hasCSSChildOfSelector     = !apf.isIE || apf.isIE8;
+        this.hasCSSChildOfSelector     = !apf.isIE || apf.versionIE >= 8;
         this.hasAutocompleteXulBug     = apf.isGecko;
         this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
@@ -463,6 +465,12 @@ var apf = {
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
+        var t = document.createElement("div");
+        this.hasContentEditable        = (typeof t.contentEditable == "string"
+                                       || typeof t.contentEditable == "boolean");
+        this.hasCommandIface           = apf.isIE;
+        t = null;
+        delete t;
 
         //Other settings
         this.maxHttpRetries = apf.isOpera ? 0 : 3;
