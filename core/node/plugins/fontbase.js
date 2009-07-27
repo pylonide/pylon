@@ -46,7 +46,7 @@ apf.ContentEditable.plugin('fonts', function() {
 
         // parse fonts
         var l, j, font, fonts, node;
-        var oNode = editor.$getOption('fonts').childNodes[0];
+        var oNode = editor.$getPluginOption('fonts').childNodes[0];
         while(oNode) {
             fonts = oNode.nodeValue.splitSafe('(?:;|=)');
             if (fonts[0]) {
@@ -164,7 +164,7 @@ apf.ContentEditable.plugin('fontsize', function() {
             this.editor = editor;
 
             // parse font sizes
-            var i, node, oNode = editor.$getOption('fontsizes');
+            var i, node, oNode = editor.$getPluginOption('fontsizes');
             for (i = 0; i < oNode.childNodes.length; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4)

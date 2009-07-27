@@ -35,7 +35,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
     function getStyles(editor) {
         if (!oStyles) {
             // parse font styles from skin definition
-            var node, aCss, bCss, oNode = editor.$getOption('fontstyles');
+            var node, aCss, bCss, oNode = editor.$getPluginOption('fontstyles');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(apf.formatErrorString(0, editor,
@@ -309,7 +309,7 @@ apf.ContentEditable.plugin('blockformat', function() {
     function getFormats(editor) {
         if (!blockFormats) {
             // parse font styles from skin definition
-            var i, j, node, oNode = editor.$getOption('blockformats');
+            var i, j, node, oNode = editor.$getPluginOption('blockformats');
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(apf.formatErrorString(0, editor,

@@ -279,7 +279,7 @@ apf.AmlElement = function(){
 
                 this.dispatchEvent("focus", apf.extend({
                     srcElement : this,
-                    bubbles    : true,
+                    bubbles    : true
                 }, e));
                 return this;
             };

@@ -32,6 +32,7 @@ apf.ContentEditable = function() {
         mouseDown, docklet,
         objectHandles = false,
         tableHandles  = false,
+        bStandalone   = false,
         lastPos       = 0,
         activeNode    = null,
         tabStack      = null,
@@ -768,8 +769,10 @@ apf.ContentEditable = function() {
      */
     this.$drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
         var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
-            oNode = this.$getOption("toolbars"),
-            plugin, oButton, plugins = this.$plugins;
+            plugin, oButton,
+            sButton = bStandalone ? "button" : "toolbarbutton",
+            oNode   = docklet.$getOption("toolbars"),
+            plugins = this.$plugins;
 
         if (!sSkinTag)
             sSkinTag = "toolbar";
@@ -806,26 +809,26 @@ apf.ContentEditable = function() {
             if (!buttons || !buttons.length)
                 continue;
 
-            this.$getNewContext("toolbar");
+            docklet.$getNewContext("toolbar");
             tb = bAfterRender
-                ? apf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
-                : oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
+                ? apf.xmldb.htmlImport(docklet.$getLayoutNode("toolbar"), oParent)
+                : oParent.appendChild(docklet.$getLayoutNode("toolbar"));//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
                 item = buttons[z];
 
                 if (item == "|") { //seperator!
-                    this.$getNewContext("divider");
+                    docklet.$getNewContext("divider");
                     if (bAfterRender)
-                        apf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
+                        apf.xmldb.htmlImport(docklet.$getLayoutNode("divider"), tb);
                     else
-                        tb.appendChild(this.$getLayoutNode("divider"));
+                        tb.appendChild(docklet.$getLayoutNode("divider"));
                 }
                 else {
-                    this.$getNewContext("button");
+                    docklet.$getNewContext(sButton);
                     oButton = bAfterRender
-                        ? oButton = apf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
-                        : oButton = tb.appendChild(this.$getLayoutNode("button"));
+                        ? oButton = apf.xmldb.htmlImport(docklet.$getLayoutNode(sButton), tb)
+                        : oButton = tb.appendChild(docklet.$getLayoutNode(sButton));
 
                     bIsPlugin = false;
                     // Plugin toolbarbuttons may only be placed inside the main toolbar
@@ -847,13 +850,13 @@ apf.ContentEditable = function() {
                         if (!(plugin.type & apf.TOOLBARITEM))
                             continue;
 
-                        this.$getLayoutNode("button", "label", oButton)
+                        docklet.$getLayoutNode(sButton, "label", oButton)
                             .setAttribute("class", "editor_icon editor_" + plugin.icon);
 
                         oButton.setAttribute("title", this.$translate(plugin.name));
                     }
                     else {
-                        this.$getLayoutNode("button", "label", oButton)
+                        docklet.$getLayoutNode(sButton, "label", oButton)
                             .setAttribute("class", "editor_icon editor_" + item);
 
                         oButton.setAttribute("title", this.$translate(item));
@@ -891,12 +894,13 @@ apf.ContentEditable = function() {
         // no External representation yet, which means that we're dealing with
         // a full-mode editor.
         if (!this.oExt) {
+            docklet     = this;
+            bStandalone = true;
+            
             this.oExt = this.$getExternal("main", null, function(oExt){
                 this.$drawToolbars(this.$getLayoutNode("main", "toolbar"));
             });
             oToolbar = this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
-            
-            docklet = this;
         }
         else if (!docklet && !(apf.ContentEditable.toolwin = docklet)) {
             docklet = apf.ContentEditable.toolwin = 
@@ -912,30 +916,34 @@ apf.ContentEditable = function() {
             //docklet.skin      = "docklet";
             //docklet.skinName  = null;
             docklet.$loadSkin();
-            //docklet.draggable = false;
 
-            docklet.$draw();//name
-            //alert(docklet.oExt.parentNode);
-            //docklet.setProperty("buttons", "edit|min|close");
+            docklet.$draw();
             docklet.setProperty("buttons", "min");
             docklet.setProperty("title", "Toolbar");
             docklet.setProperty("icon", "application.png");
             docklet.setProperty("resizable", true);
             docklet.setProperty("draggable", true);
             docklet.setProperty("focussable", true);
+            //docklet.setProperty("resizeoutline", true);
 
-            //docklet.$loadAml(xmlNode, name);
             apf.AmlParser.parseLastPass();
 
             docklet.setProperty("right", 100);
             docklet.setTop(100);
-            docklet.setWidth(300);
+            docklet.setWidth(670);
             docklet.setHeight(200);
             
             docklet.onfocus = function(){
                 _self.focus();
             }
-            this.$drawToolbars(oToolbar = docklet.oExt, "toolbar", null, true);
+            var content, aNodes = docklet.oExt.getElementsByTagName("div");
+            for (var j = 0, l = aNodes.length; j < l && !content; j++) {
+                if (aNodes[j].className.indexOf("content") != -1)
+                    content = aNodes[j];
+            }
+            this.$drawToolbars(oToolbar = content, "toolbar", null, true);
+            // @todo make this hack disappear...
+            oToolbar.innerHTML = oToolbar.innerHTML;
         }
 
         if (oToolbar) {
@@ -956,6 +964,10 @@ apf.ContentEditable = function() {
                     plugin.init(this);
             }
         }
+    };
+
+    this.$getPluginOption = function(node) {
+        return docklet.$getOption(node);
     };
 
     /**

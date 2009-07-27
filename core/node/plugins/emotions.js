@@ -44,10 +44,10 @@ apf.ContentEditable.plugin('emotions', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor       = editor;
-            this.emotionsPath = editor.$getOption("emotions", "path");
+            this.emotionsPath = editor.$getPluginOption("emotions", "path");
 
             // parse smiley images, or 'emotions'
-            var i, node, oNode = editor.$getOption('emotions');
+            var i, node, oNode = editor.$getPluginOption('emotions');
             for (i = 0; i < oNode.childNodes.length; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4)
