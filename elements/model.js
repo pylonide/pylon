@@ -137,6 +137,17 @@ apf.model = function(data, caching){
     this.$handlePropSet = function(prop, value, force){
         if (prop == "submission")
             defSubmission = value;
+        else if(prop == "validation")
+            apf.nameserver.get("validation", value).register(this); //@todo error handling
+    }
+    
+    this.isValid = function(xmlNode){
+        if (!xmlNode) {
+            //Validate entire model.. not right now please
+        }
+        else {
+            return this.$validation.validate(xmlNode);
+        }
     }
 
     /**

@@ -23,6 +23,95 @@ var __VALIDATION__ = 1 << 6;
 
 // #ifdef __WITH_VALIDATION
 
+//if checkequal then notnull = true
+apf.validator = {
+    macro : {
+        //#ifdef __PARSER_XSD
+        "datatype"  : "apf.XSDParser.matchType(value, '",
+        "datatype_" : "')",
+        //#endif
+
+        //var temp
+        "pattern"     : "value.match(",
+        "pattern_"    : ")",
+        "custom"      : "(",
+        "custom_"     : ")",
+        "min"         : "parseInt(value) >= ",
+        "max"         : "parseInt(value) <= ",
+        "maxlength"   : "value.toString().length <= ",
+        "minlength"   : "value.toString().length >= ",
+        "notnull"     : "value.toString().length > 0",
+        "checkequal"  : "!(temp = ",
+        "checkequal_" : ").isValid() || temp.getValue() == value"
+    },
+    
+    compile : function(options){
+        var m = this.macro, s = ["var temp, valid = true; \
+            if (!validityState) \
+                validityState = new apf.validator.validityState(); "];
+        
+        if (options.required) {
+            s.push("if (checkRequired && (!value || value.toString().trim().length == 0)) {\
+                validityState.$reset();\
+                validityState.valueMissing = true;\
+                valid = false;\
+            }")
+        }
+        
+        s.push("validityState.$reset();\
+            if (value) {");
+        
+        for (prop in options) {
+            if (!m[prop]) continue;
+            s.push("if (!(", m[prop], options[prop], m[prop + "_"] || "", ")){\
+                validityState.$set('", prop, "');\
+                valid = false;\
+            }");
+        }
+
+        s.push("};validityState.valid = valid; return validityState;");
+        return new Function('value', 'checkRequired', 'validityState', s.join(""));
+    }
+}
+
+/**
+ * Object containing information about the validation state. It contains
+ * properties that specify whether a certain validation was passed.
+ * Remarks:
+ * This is part of {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#validitystatethe HTML 5 specification}.
+ */
+apf.validator.validityState = function(){
+    this.valueMissing    = false,
+    this.typeMismatch    = false,
+    this.patternMismatch = false,
+    this.tooLong         = false,
+    this.rangeUnderflow  = false,
+    this.rangeOverflow   = false,
+    this.stepMismatch    = false,
+    this.customError     = false,
+    this.valid           = false,
+
+    this.$reset = function(){
+        for (var prop in this) {
+            if (prop.substr(0,1) == "$") return;
+            this[prop] = false;
+        }
+    },
+
+    this.$set = function(type) {
+        switch (type) {
+            case "min"         : this.rangeUnderflow  = true; break;
+            case "max"         : this.rangeOverflow   = true; break;
+            case "minlength"   : this.tooShort        = true; break;
+            case "maxlength"   : this.tooLong         = true; break;
+            case "pattern"     : this.patternMismatch = true; break;
+            case "datatype"    : this.typeMismatch    = true; break;
+            case "notnull"     : this.typeMismatch    = true; break;
+            case "checkequal"  : this.typeMismatch    = true; break;
+        }
+    }
+};
+
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have validation support.
  * Example:
@@ -65,91 +154,21 @@ apf.Validation = function(){
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
-        var value = typeof this.getValue == "function" ? this.getValue(null, true) : null;
-
-        if (checkRequired && this.required) {
-            if (!value || value.toString().trim().length == 0) {
-                //#ifdef __WITH_HTML5
-                this.validityState.$reset();
-                this.validityState.valueMissing = true;
-                this.dispatchEvent("invalid", this.validityState);
-                //#endif
-
-                return false;
-            }
-        }
-
-        //#ifdef __WITH_HTML5
-        this.validityState.$reset();
-        var isValid = true;
-        if (value) {
-            for (var type in vIds) {
-                if (!eval(vRules[vIds[type]])) {
-                    this.validityState.$set(type);
-                    isValid = false;
-                }
-            }
-        }
-        /*#else
-        var isValid = (vRules.length
-            ? eval("!value || (" + vRules.join(") && (") + ")")
-            : true);
-        //#endif
-
+        var valid = (validationOptions.isValid || (validationOptions.isValid 
+          = apf.validator.compile(validationOptions)))(
+            typeof this.getValue == "function" ? this.getValue(null, true) : null, 
+            checkRequired, this.validityState || 
+            (this.validityState = new apf.validator.validityState()));
+        
         /* #ifdef __WITH_XFORMS
-        this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
+        this.dispatchEvent("xforms-" + (valid ? "valid" : "invalid"));
         #endif*/
         
-        //#ifdef __WITH_HTML5
-        if (!isValid)
+        if (!valid)
             this.dispatchEvent("invalid", this.validityState);
-        else {
-            this.validityState.valid = true;
-            isValid = true;
-        }
-        //#endif
-
-        return isValid;
+            
+        return valid;
     };
-
-    //#ifdef __WITH_HTML5
-    /**
-     * Object containing information about the validation state. It contains
-     * properties that specify whether a certain validation was passed.
-     * Remarks:
-     * This is part of {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#validitystatethe HTML 5 specification}.
-     */
-    this.validityState = {
-        valueMissing    : false,
-        typeMismatch    : false,
-        patternMismatch : false,
-        tooLong         : false,
-        rangeUnderflow  : false,
-        rangeOverflow   : false,
-        stepMismatch    : false,
-        customError     : false,
-        valid           : false,
-
-        "$reset" : function(){
-            for (var prop in this) {
-                if (prop.substr(0,1) == "$") return;
-                this[prop] = false;
-            }
-        },
-
-        "$set" : function(type) {
-            switch (type) {
-                case "min"         : this.rangeUnderflow  = true; break;
-                case "max"         : this.rangeOverflow   = true; break;
-                case "minlength"   : this.tooShort        = true; break;
-                case "maxlength"   : this.tooLong         = true; break;
-                case "pattern"     : this.patternMismatch = true; break;
-                case "datatype"    : this.typeMismatch    = true; break;
-                case "notnull"     : this.typeMismatch    = true; break;
-                case "checkequal"  : this.typeMismatch    = true; break;
-            }
-        }
-    }
 
     /**
      * @private
@@ -157,7 +176,6 @@ apf.Validation = function(){
     this.setCustomValidity = function(message){
         //do stuff
     }
-    //#endif
 
     /**
      * @private
@@ -190,7 +208,7 @@ apf.Validation = function(){
     
     /**
      * Puts this element in the error state, optionally showing the
-     * error box if this element's is invalid.
+     * error box if this element is invalid.
      *
      * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
      * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
@@ -262,15 +280,6 @@ apf.Validation = function(){
             this.$validgroup.remove(this);
     });
 
-    var vRules = ["true"];
-    var vIds   = {};
-    /**
-     * Adds a string of javascript that validates this element.
-     */
-    this.addValidationRule = function(rule){
-        vRules.push(rule);
-    };
-
     /**
      *
      * @attribute  {Boolean}  required     whether a valid value for this element is required.
@@ -333,31 +342,8 @@ apf.Validation = function(){
                 return false;
         });*/
 
-        // Submitform
-        if (!this.form) {
-            //Set Form
-            var y = this.$aml;
-            do {
-                y = y.parentNode;
-            }
-            while (y && y.tagName && !y.tagName.match(/submitform|xforms$/)
-              && y.parentNode && y.parentNode.nodeType != 9);
-
-            if (y && y.tagName && y.tagName.match(/submitform|xforms$/)) {
-                // #ifdef __DEBUG
-                if (!y.tagName.match(/submitform|xforms$/))
-                    throw new Error(apf.formatErrorString(1070, this, this.tagName, "Could not find Form element whilst trying to bind to it's Data."));
-                if (!y.getAttribute("id"))
-                    throw new Error(apf.formatErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
-                // #endif
-
-                this.form = eval(y.getAttribute("id"));
-                this.form.addInput(this);
-            }
-        }
-
         // validgroup
-        if (!this.form && !x.getAttribute("validgroup")) {
+        if (!x.getAttribute("validgroup")) {
             var vgroup = apf.getInheritedAttribute(x, "validgroup");
             if (vgroup)
                 this.$propHandlers["validgroup"].call(this, vgroup);
@@ -366,7 +352,7 @@ apf.Validation = function(){
 
     this.$booleanProperties["required"] = true;
     this.$supportedProperties.push("validgroup", "required", "datatype",
-        "pattern", "min", "max", "maxlength", "minlength", "valid-test",
+        "pattern", "min", "max", "maxlength", "minlength", "validtest",
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
     this.$fValidate = function(){
@@ -393,7 +379,7 @@ apf.Validation = function(){
             }
 
             this.$validgroup = vgroup || new apf.ValidationGroup(value);
-            this.$validgroup.add(this);
+            this.$validgroup.register(this);
 
             /*
                 @todo What about children, when created after start
@@ -401,96 +387,32 @@ apf.Validation = function(){
             */
         }
         else {
-            this.$validgroup.remove(this);
+            this.$validgroup.unregister(this);
             this.$validgroup = null;
         }
     };
-
-    this.$setRule = function(type, rule){
-        var vId = vIds[type];
-
-        if (!rule) {
-            if (vId)
-                vRules[vId] = "";
-            return;
-        }
-
-        if (!vId)
-            vIds[type] = vRules.push(rule) - 1;
-        else
-            vRules[vId] = rule;
-    }
-
+    
+    var validationOptions = {};
+    
     //#ifdef __PARSER_XSD
-    this.$propHandlers["datatype"] = function(value){
-        if (!value)
-            return this.$setRule("datatype");
-
-        this.$setRule("datatype", this.multiselect
-            ? "this.xmlRoot && apf.XSDParser.checkType('"
-                + value + "', this.getTraverseNodes())"
-            : "apf.XSDParser.matchType(value, '" + value + "')");
-        //this.xmlRoot && apf.XSDParser.checkType('" + value + "', this.xmlRoot) || !this.xmlRoot && 
-    };
+    this.$propHandlers["datatype"]   =
     //#endif
-
-    this.$propHandlers["pattern"] = function(value){
-        if (!value)
-            return this.$setRule("pattern");
-
-        if (value.match(/^\/.*\/(?:[gim]+)?$/))
-            this.reValidation = eval(value);
-
-        this.$setRule("pattern", this.reValidation
-            ? "value.match(this.reValidation)" //RegExp
-            : "(" + value + ")"); //JavaScript
-    };
-
-    this.$propHandlers["min"] = function(value){
-        this.$setRule("min", value
-            ? "parseInt(value) >= " + value
-            : null);
-    };
-
-    this.$propHandlers["max"] = function(value){
-        this.$setRule("max", value
-            ? "parseInt(value) <= " + value
-            : null);
-    };
-
-    this.$propHandlers["maxlength"] = function(value){
-        this.$setRule("maxlength", value
-            ? "value.toString().length <= " + value
-            : null);
-    };
-
-    this.$propHandlers["minlength"] = function(value){
-        this.$setRule("minlength", value
-            ? "value.toString().length >= " + value
-            : null);
-    };
-
-    this.$propHandlers["notnull"] = function(value){
-        this.$setRule("notnull", value
-            ? "value.toString().length > 0"
-            : null);
-    };
-
-    this.$propHandlers["checkequal"] = function(value){
-        if (!this.required)
-            this.required = 2;
-        else if (!value && this.required == 2)
-            this.required = false;
-        
-        this.$setRule("checkequal", value
-            ? "!" + value + ".isValid() || " + value + ".getValue() == value"
-            : null);
+    this.$propHandlers["pattern"]    = 
+    this.$propHandlers["min"]        = 
+    this.$propHandlers["max"]        = 
+    this.$propHandlers["maxlength"]  = 
+    this.$propHandlers["minlength"]  = 
+    this.$propHandlers["notnull"]    = 
+    this.$propHandlers["checkequal"] = function(value, prop){
+        validationOptions[prop] = value;
+        delete validationOptions.isValid;
     };
     
-    this.$propHandlers["valid-test"] = function(value){
+    //@todo rewrite this for apf3.0
+    this.$propHandlers["validtest"] = function(value){
         var _self = this, rvCache = {};
         /**
-         * Removes the validation cache created by the valid-test rule.
+         * Removes the validation cache created by the validtest rule.
          */
         this.removeValidationCache = function(){
             rvCache = {};
@@ -502,7 +424,7 @@ apf.Validation = function(){
             if(rvCache[value] == -1) return true;
             rvCache[value] = -1;
             
-            var instr = this.$aml.getAttribute('valid-test').split("==");
+            var instr = this.$aml.getAttribute('validtest').split("==");
             apf.getData(instr[0], this.xmlRoot, {
                value : this.getValue() 
             }, function(data, state, extra){
@@ -534,10 +456,9 @@ apf.Validation = function(){
             
             return true;
         }
-              
-        this.$setRule("valid-test", value
-            ? "this.$checkRemoteValidation()"
-            : null);
+        
+        validationOptions.custom = "apf.lookup(" + this.uniqueId + ").$checkRemoteValidation()";
+        delete validationOptions.isValid;
     };
 };
 
@@ -609,12 +530,15 @@ apf.ValidationGroup = function(name){
     /**
      * Adds a aml element to this validation group.
      */
-    this.add        = function(o){ this.childNodes.push(o); };
+    this.register   = function(o){ 
+        if (o.hasFeature(__VALIDATION__)) 
+            this.childNodes.push(o);
+    };
     
     /**
      * Removes a aml element from this validation group.
      */
-    this.remove     = function(o){ this.childNodes.remove(o); };
+    this.unregister = function(o){ this.childNodes.remove(o); };
 
     if (name)
         apf.setReference(name, this);

@@ -113,6 +113,7 @@ apf.Elements = [
     "toolbar",
     "tree",
     "markupedit",
+    "validation",
     "video",
     "xslt",
 
