@@ -43,19 +43,20 @@ apf.ContentEditable = function() {
         if (!this.contenteditable || skipFocusOnce && !(skipFocusOnce = false))
             return;
 
-        if (lastActiveNode || typeof e.shiftKey == "boolean") {
+        if (lastActiveNode && lastActiveNode.parentNode 
+          || typeof e.shiftKey == "boolean") {
             createEditor(lastActiveNode || (tabStack 
                 || initTabStack())[e.shiftKey ? tabStack.length - 1 : 0]);
 
-            if (lastActiveNode) {
-                if (lastActiveNode.parentNode)
-                    lastActiveNode.focus();
-                lastActiveNode = null;
-            }
-            
+            if (lastActiveNode)
+                lastActiveNode.focus();
+        }
+        lastActiveNode = null;
+        
+        if (activeNode) {
             var node = activeNode;
             setTimeout(function(){
-                _self.$selection.selectNode(node.firstChild);
+                _self.$selection.selectNode(node);
                 node.focus();
             }, 10);
         }
@@ -83,17 +84,17 @@ apf.ContentEditable = function() {
             setTimeout(function(){oNode.focus();}, 10);
         }
 
-        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
-
         if (_self.validityState && !_self.validityState.valid) {
             oNode = initTabStack()[_self.validityState.$lastPos];
             setTimeout(function(){
                 oNode.focus();
-                _self.$selection.selectNode(oNode.lastChild);
+                _self.$selection.selectNode(oNode);
                 
                 _self.getModel().validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
+        
+        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
 
         if (!_self.hasFocus())
             skipFocusOnce = true;
@@ -164,6 +165,9 @@ apf.ContentEditable = function() {
             return false;
         }
         
+        if (_self.validityState)
+            _self.validityState.$reset();
+        
         // do additional handling, first we check for a change in the data...
         var xpath = oNode.getAttribute("xpath");
         if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
@@ -175,10 +179,9 @@ apf.ContentEditable = function() {
             
             if (model.$validation) {
                 (_self.validityState || (_self.validityState = 
-                    new apf.validator.validityState())).errorHtml = 
+                    new apf.validator.validityState())).$errorHtml = 
                         (tabStack || initTabStack())[lastPos]
                 
-                _self.validityState.$reset();
                 _self.validityState.$lastPos = lastPos;
                 
                 var rule = model.$validation.getRule(xmlNode);
@@ -207,7 +210,6 @@ apf.ContentEditable = function() {
     this.addEventListener("keydown", function(e) {
         e = e || window.event;
         var isDone, code = e.which || e.keyCode;
-        
         if (!activeNode) {
             //F2 starts editing
             if (code == 113) {
@@ -215,7 +217,7 @@ apf.ContentEditable = function() {
                 createEditor((tabStack || initTabStack())[0]);
                 if (activeNode) {
                     activeNode.focus();
-                    _self.$selection.selectNode(activeNode.firstChild);
+                    _self.$selection.selectNode(activeNode);
                 }
             }
             
@@ -241,7 +243,7 @@ apf.ContentEditable = function() {
                 if (el.className && el.className.indexOf("contentEditable") != -1) {
                     callback = function() {
                         createEditor(el);
-                        _self.$selection.selectNode(el.lastChild);
+                        _self.$selection.selectNode(el);
                     }
                 }
             }
@@ -304,7 +306,7 @@ apf.ContentEditable = function() {
             if (oNode) {
                 createEditor(oNode);
                 oNode.focus();
-                _self.$selection.selectNode(oNode.firstChild);
+                _self.$selection.selectNode(oNode);
 
                 found = true;
             }

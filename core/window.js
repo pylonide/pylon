@@ -1151,7 +1151,7 @@ apf.window = new (function(){
         var altKey = apf.isMac ? e.metaKey : e.altKey;
         if (apf.appsettings.disableBackspace
           && (e.keyCode == 8 || altKey && (e.keyCode == 37 || e.keyCode == 39))
-          && !ta[(e.srcElement || e.target).tagName]) {
+          && !isContentEditable) {
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;

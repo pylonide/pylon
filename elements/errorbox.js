@@ -97,7 +97,7 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
         
         var refHtml = 
             //#ifdef __WITH_HTML5
-            host.validityState.errorHtml || 
+            host.validityState.$errorHtml || 
             //#endif
             host.oExt;
 

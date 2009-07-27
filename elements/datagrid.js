@@ -408,8 +408,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                     //#ifdef __WITH_HTML5
                     //@todo make this work for non html5 validation
                     if (!isValid) {
-                        this.validityState.errorHtml = apf.xmldb.findHtmlNode(node, this).childNodes[1];
-                        this.validityState.errorXml  = node;
+                        this.validityState.$errorHtml = apf.xmldb.findHtmlNode(node, this).childNodes[1];
+                        this.validityState.$errorXml  = node;
                         this.invalidmsg = this.applyRuleSetOnNode("invalidmsg", node);
                         break;
                     }

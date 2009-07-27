@@ -656,6 +656,11 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.selectNode = function(node) {
         var oSel, range;
+        
+        //@todo Mike please check this!
+        while (node.nodeType == 1 && node.firstChild)
+            node = node.firstChild;
+
         if (apf.isIE) {
             oSel = this.get();
             
@@ -684,7 +689,9 @@ apf.selection = function(oWin, oDoc, editor) {
                         range.findText(node.nodeValue);
                 }
             }
-            range.select();
+            try{
+                range.select();
+            }catch(e){}
         }
         else {
             range = this.getRange();

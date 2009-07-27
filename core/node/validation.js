@@ -89,13 +89,15 @@ apf.validator.validityState = function(){
     this.rangeOverflow   = false,
     this.stepMismatch    = false,
     this.customError     = false,
-    this.valid           = false,
+    this.valid           = true,
 
     this.$reset = function(){
         for (var prop in this) {
-            if (prop.substr(0,1) == "$") return;
+            if (prop.substr(0,1) == "$") 
+                continue;
             this[prop] = false;
         }
+        this.valid = true;
     },
 
     this.$set = function(type) {
@@ -253,8 +255,8 @@ apf.Validation = function(){
         errBox.display(this);
         
         //#ifdef __WITH_HTML5
-        if (this.hasFeature(__MULTISELECT__) && this.validityState.errorXml)
-            this.select(this.validityState.errorXml);
+        if (this.hasFeature(__MULTISELECT__) && this.validityState.$errorXml)
+            this.select(this.validityState.$errorXml);
         //#endif
         
         if (apf.window.focussed && apf.window.focussed != this)

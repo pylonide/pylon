@@ -34,7 +34,7 @@
  * @default_private
  */
 apf.validation = apf.component(apf.NODE_HIDDEN, function(){
-    this.$rules = {};
+    this.$rules = [];
     
     var amlNodes = {};
     this.register = function(amlNode){
@@ -66,15 +66,15 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
         }*/
 
         var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
-        for (var xpath in this.$rules) {
-            if (xmlNode.ownerDocument.selectSingleNode("(.//" + xpath.split("|").join("|.//") + ")[@" + apf.xmldb.xmlIdTag + "='" + id + "']"))
-                return this.$rules[xpath];
+        for (var i = 0, l = this.$rules.length; i < l; i++) {
+            if (xmlNode.ownerDocument.selectSingleNode("(.//" + this.$rules[i][0].split("|").join("|.//") + ")[@" + apf.xmldb.xmlIdTag + "='" + id + "']"))
+                return this.$rules[i][1];
         }
     }
     
     this.validate = function(xmlNode, checkRequired, validityState){
         var rule = this.getRule(xmlNode);
-        if (!rule) return true;
+        if (!rule) return validityState;
         
         return (rule.isValid || (rule.isValid 
           = apf.validator.compile(rule)))(apf.queryValue(xmlNode), checkRequired, validityState);
@@ -98,7 +98,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
         for (var i = 0, l = nodes.length; i < l; i++) {
             if ((node = nodes[i]).nodeType != 1)
                 continue;
-            rule = this.$rules[node.getAttribute("match")] = {};
+            this.$rules.push([node.getAttribute("match"), (rule = {})]);
             attr = node.attributes;
             for (var j = 0; j < attr.length; j++)
                 rule[attr[j].nodeName] = attr[j].nodeValue;
