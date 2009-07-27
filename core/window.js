@@ -1028,11 +1028,14 @@ apf.window = new (function(){
         if (e.keyCode == 93)
             apf.contextMenuKeyboard = true;
         // #endif
+        
+        var isContentEditable = ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
+          || (e.srcElement && apf.isTrue(e.srcElement.contentEditable));
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
         var ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
-        if (apf.appsettings.undokeys && ctrlKey) {
+        if (!isContentEditable && apf.appsettings.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 var o = apf.window.focussed;
@@ -1185,8 +1188,7 @@ apf.window = new (function(){
 
         if (!apf.appsettings.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
-          && !ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
-          && (!e.srcElement || apf.isTrue(e.srcElement.contentEditable != "true"))) {
+          && !isContentEditable) {
             e.returnValue = false;
         }
 

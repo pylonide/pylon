@@ -154,11 +154,13 @@ apf.Validation = function(){
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
-        var valid = (validationOptions.isValid || (validationOptions.isValid 
+        (validationOptions.isValid || (validationOptions.isValid 
           = apf.validator.compile(validationOptions)))(
             typeof this.getValue == "function" ? this.getValue(null, true) : null, 
             checkRequired, this.validityState || 
             (this.validityState = new apf.validator.validityState()));
+        
+        var valid = this.validityState.valid;
         
         /* #ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (valid ? "valid" : "invalid"));
@@ -277,7 +279,7 @@ apf.Validation = function(){
 
     this.$amlDestroyers.push(function(){
         if (this.$validgroup)
-            this.$validgroup.remove(this);
+            this.$validgroup.unregister(this);
     });
 
     /**
@@ -356,6 +358,9 @@ apf.Validation = function(){
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
     this.$fValidate = function(){
+        if (this.contenteditable)
+            return;
+        
         if (!this.$validgroup)
             this.validate(true);
         else {
@@ -367,7 +372,6 @@ apf.Validation = function(){
     this.addEventListener("blur", this.$fValidate);
     
     this.$propHandlers["validgroup"] = function(value){
-        //this.removeEventListener("blur", this.$fValidate);
         if (value) {
             var vgroup;
             if (typeof value != "string") {

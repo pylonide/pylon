@@ -342,6 +342,10 @@ apf.XSDImplementation = function(){
         //check if type is type
         if (typeHandlers[type])
             return typeHandlers[type](value);
+        
+        throw new Error(apf.formatErrorString(0, null, 
+            "Validating XSD Type", "Could not find type: " + type));
+           
         return true;
     };
 

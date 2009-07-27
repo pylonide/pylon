@@ -137,18 +137,35 @@ apf.model = function(data, caching){
     this.$handlePropSet = function(prop, value, force){
         if (prop == "submission")
             defSubmission = value;
-        else if(prop == "validation")
+        else if (prop == "validation")
             apf.nameserver.get("validation", value).register(this); //@todo error handling
     }
     
-    this.isValid = function(xmlNode){
+    //#ifdef __WITH_MODEL_VALIDATION
+    this.validate = function(xmlNode, checkRequired, validityState, amlNode){
+        if (!this.$validation) //@todo warn
+            return;
+
         if (!xmlNode) {
-            //Validate entire model.. not right now please
+            //Validate entire model.. not implemented yet...
         }
         else {
-            return this.$validation.validate(xmlNode);
+            validityState = this.$validation.validate(xmlNode, checkRequired, validityState);
+            if (validityState.valid) {
+                amlNode.clearError();
+                return true;
+            }
+            else {
+                amlNode.setError();
+                return false;
+            }
+            
+            //@todo detect amlNode based xmlNode listeners
         }
     }
+    //@todo add xmlupdate hook here
+    
+    //#endif
 
     /**
      * @private
@@ -353,7 +370,6 @@ apf.model = function(data, caching){
 
     /**
      * @private
-     */
     this.isValid = function(){
         //Loop throug bind nodes and process their rules.
         for (var bindNode, i = 0; i < bindValidation.length; i++) {
@@ -367,6 +383,7 @@ apf.model = function(data, caching){
         //Valid
         return true;
     };
+    */
     //#endif
 
     //#ifdef __WITH_XFORMS
@@ -544,6 +561,7 @@ apf.model = function(data, caching){
     /**
      * @private
      */
+    //@todo refactor this to properly parse things
     this.loadAml = function(x, parentNode){
         this.name = x.getAttribute("id");
         this.$aml  = x;
@@ -670,6 +688,9 @@ apf.model = function(data, caching){
 
             this.rsb.models.push(this);
         }
+
+        if (x.getAttribute("validation"))
+            apf.nameserver.get("validation", x.getAttribute("validation")).register(this);
 
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-model-construct-done");

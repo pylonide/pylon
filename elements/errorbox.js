@@ -110,8 +110,8 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
             pos[1] += pos2[1];
         }
         
-        var x = (pos[0] + parseFloat(host.$getOption("main", "erroffsetx") || 0));
-        var y = (pos[1] + parseFloat(host.$getOption("main", "erroffsety") || 0));
+        var x = (pos[0] + parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0));
+        var y = (pos[1] + parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
         //this.oExt.style.left = x + "px"
         //this.oExt.style.top  = y + "px"
         

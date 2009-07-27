@@ -62,7 +62,7 @@ apf.ContentEditable = function() {
             return;
         
         lastActiveNode = activeNode;
-        removeEditor();
+        removeEditor(activeNode, true);
     });
 
     var skipFocusOnce;
@@ -74,6 +74,17 @@ apf.ContentEditable = function() {
             removeEditor(activeNode, true);
             oNode = initTabStack()[lastPos];
             setTimeout(function(){oNode.focus();}, 10);
+        }
+
+        if (_self.validityState && !_self.validityState.valid) {
+            oNode = initTabStack()[_self.validityState.$lastPos];
+            setTimeout(function(){
+                oNode.focus();
+                _self.$selection.selectNode(oNode.lastChild);
+                
+                var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
+                _self.getModel().validate(xmlNode, false, _self.validityState, _self);
+            }, 10);
         }
 
         if (!_self.hasFocus())
@@ -136,7 +147,26 @@ apf.ContentEditable = function() {
         // do additional handling, first we check for a change in the data...
         var xpath = oNode.getAttribute("xpath");
         if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
-            _self.edit(xpath, oNode.innerHTML);
+            var model = _self.getModel();
+            
+            var lastPos = (tabStack || initTabStack()).indexOf(oNode);
+            var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath);
+            _self.edit(xmlNode, oNode.innerHTML);
+            
+            if (model.$validation) {
+                (_self.validityState || (_self.validityState = 
+                    new apf.validator.validityState())).errorHtml = 
+                        (tabStack || initTabStack())[lastPos]
+                
+                _self.validityState.$reset();
+                _self.validityState.$lastPos = lastPos;
+                
+                var rule = model.$validation.getRule(xmlNode);
+                if (rule)
+                    _self.invalidmsg = rule.invalidmsg;
+
+                model.validate(xmlNode, false, _self.validityState, _self); //@todo this can be improved later       
+            }
         }
 
         if (callback)
@@ -161,7 +191,7 @@ apf.ContentEditable = function() {
     
     this.addEventListener("keydown", function(e) {
         e = e || window.event;
-        var code = e.which || e.keyCode;
+        var isDone, code = e.which || e.keyCode;
         
         if (!activeNode) {
             //F2 starts editing
@@ -211,10 +241,17 @@ apf.ContentEditable = function() {
             return false;
         }
 
-        if (apf.isIE) {
-            if (code == 8 && _self.$selection.getType() == "Control") {
-                _self.$selection.remove();
-                found = true;
+        if (apf.isIE && code == 8 && _self.$selection.getType() == "Control") {
+            _self.$selection.remove();
+            found = true;
+        }
+        else if (code == 13) { //Enter
+            isDone = e.ctrlKey || apf.isMac && e.metaKey;
+            if (!isDone) {
+                var model = this.getModel();
+                var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(activeNode.getAttribute("xpath"));
+                var rule = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline:true};
+                isDone = apf.isFalse(rule.multiline);
             }
         }
         else if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
@@ -235,15 +272,11 @@ apf.ContentEditable = function() {
                     execCommand("Underline");
                     found = true;
                     break;
-                case 13: // Enter
-                    removeEditor(activeNode, true);
-                    found = true;
-                    break;
             }
         }
         
         // Tab navigation handling
-        if (code == 9) {
+        if (code == 9 || isDone) {
             var bShift = e.shiftKey;
             // a callback is passed, because the call is a-sync
             var lastPos = (tabStack || initTabStack()).indexOf(activeNode);
@@ -508,9 +541,8 @@ apf.ContentEditable = function() {
      * PUBLIC
      **************************************************************************/
 
-    this.edit = function(xpath, value) {
-        this.executeActionByRuleSet("edit", "edit", this.xmlRoot.ownerDocument
-            .selectSingleNode(xpath), value);
+    this.edit = function(xmlNode, value) {
+        this.executeActionByRuleSet("edit", "edit", xmlNode, value);
     }
 };
 

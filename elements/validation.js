@@ -36,7 +36,7 @@
 apf.validation = apf.component(apf.NODE_HIDDEN, function(){
     this.$rules = {};
     
-    var compiled, smartbinding;
+    var amlNodes = {};
     this.register = function(amlNode){
         if (amlNode.tagName != "model")
             return;
@@ -65,7 +65,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
                 return rule;
         }*/
 
-        var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
+        var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
         for (var xpath in this.$rules) {
             if (xmlNode.ownerDocument.selectSingleNode("(.//" + xpath.split("|").join("|.//") + ")[@" + apf.xmldb.xmlIdTag + "='" + id + "']"))
                 return this.$rules[xpath];
@@ -74,6 +74,8 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
     
     this.validate = function(xmlNode, checkRequired, validityState){
         var rule = this.getRule(xmlNode);
+        if (!rule) return true;
+        
         return (rule.isValid || (rule.isValid 
           = apf.validator.compile(rule)))(apf.queryValue(xmlNode), checkRequired, validityState);
     }
@@ -99,7 +101,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
             rule = this.$rules[node.getAttribute("match")] = {};
             attr = node.attributes;
             for (var j = 0; j < attr.length; j++)
-                rule[attr[i].nodeName] = attr[i].nodeValue;
+                rule[attr[j].nodeName] = attr[j].nodeValue;
         }
     };
 });

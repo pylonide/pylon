@@ -1217,6 +1217,8 @@ apf.AmlElement.propHandlers = {
     //#ifdef __WITH_CONTENTEDITABLE
     "contenteditable": function(value) {
         this.implement(apf.ContentEditable);
+        if (!this.hasFeature(__VALIDATION__))
+            this.implement(apf.Validation);
         this.$propHandlers["contenteditable"].apply(this, arguments);
     }
     //#endif

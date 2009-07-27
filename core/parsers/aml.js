@@ -116,8 +116,9 @@ apf.AmlParser = {
 
         //@todo fix inline skin parsing collision
         //"presentation", 
+
         for (var i = 0; i < xmlDocs.length; i++)
-            this.preLoadRef(xmlDocs[i], ["teleport", "settings",
+            this.preLoadRef(xmlDocs[i], ["teleport", "settings", "validation[@id]",
                 "skin[not(@a_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
         //"style", 
         for (var i = 0; i < xmlDocs.length; i++)
@@ -173,7 +174,9 @@ apf.AmlParser = {
                 x.setAttribute("a_preparsed", this.preparsed.push(o) - 1);
             }
             else if (x.parentNode) {
-               x.parentNode.removeChild(x);
+                //@todo generalize this function to use line below
+                this.nsHandler[apf.ns.apf].call(this, x, null, null, true);
+                x.parentNode.removeChild(x);
             }
         }
     },
@@ -453,7 +456,7 @@ apf.AmlParser = {
             }
             //#endif
             //AML Components
-            else if (pHtmlNode) {
+            else {
                 // #ifdef __DEBUG
                 if (!apf[tagName] || typeof apf[tagName] != "function")
                     throw new Error(apf.formatErrorString(1017, null,
@@ -482,10 +485,12 @@ apf.AmlParser = {
                 //#endif
 
                 //Create Object en Reference
-                var o = new apf[objName](pHtmlNode, tagName, x);
+                var name, o = new apf[objName](pHtmlNode, tagName, x);
 
-                if (x.getAttribute("id"))
+                if (name = x.getAttribute("id")) {
                     apf.setReference(x.getAttribute("id"), o);
+                    apf.nameserver.register(tagName, name, o); //@todo overhead only for non visible elements??
+                }
 
                 //Process AML
                 if (o.loadAml)
