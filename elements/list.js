@@ -139,8 +139,10 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize");
     
     this.$propHandlers["thumbsize"] = function(value){
-        apf.setStyleRule(this.thumbclass, "width", value + "px");
-        apf.setStyleRule(this.thumbclass, "height",  value + "px");
+        var className = apf.isIE ? this.thumbclassIE : this.thumbclass;
+        
+        apf.setStyleRule(className, "width", value + "px");
+        apf.setStyleRule(className, "height",  value + "px");
     };
     
     
@@ -459,6 +461,7 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         
         this.thumbsize  = this.$getOption("main", "thumbsize");
         this.thumbclass = this.$getOption("main", "thumbclass");
+        this.thumbclassIE = this.$getOption("main", "thumbclassIE");
     };
     
     this.$loadAml = function(x){
