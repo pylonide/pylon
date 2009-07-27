@@ -125,7 +125,7 @@ apf.ContentEditable = function() {
         // #ifdef __PARSER_HTML
         if (rule && apf.isTrue(rule.richtext)) {
             lastValue = [];
-            lastValue[0] = oNode.innerHTML = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
+            oNode.innerHTML = lastValue[0] = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
                 .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
                 "<br _apf_marker='1' /><br _apf_marker='1' />"));
         }
@@ -171,8 +171,8 @@ apf.ContentEditable = function() {
         if (docklet)
             docklet.setProperty("visible", false);
 
-        if (!bProcess || oNode.innerHTML == lastValue[0]) {
-            oNode.innerHTML = lastValue[1];
+        if (!bProcess || oNode.innerHTML.toLowerCase().replace(/[\r\n]/g, "") == (lastValue.length ? lastValue[0] : lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
+            oNode.innerHTML = lastValue[1] || lastValue;
             return false;
         }
         
@@ -438,7 +438,7 @@ apf.ContentEditable = function() {
                         removeEditor(activeNode, true);
                     return;
                 }
-                
+
                 createEditor(el);
                 e.cancelBubble = true;
                 apf.window.$mousedown({srcElement: activeNode});
