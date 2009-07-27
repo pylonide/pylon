@@ -483,8 +483,10 @@ apf.selection = function(oWin, oDoc, editor) {
     this.setContent = function(html, bNoPrepare) {
         var range = this.getRange();
 
-        if (!bNoPrepare && editor && editor.prepareHtml)
-            html = editor.prepareHtml(html, true);
+        // #ifdef __PARSER_HTML
+        if (!bNoPrepare)
+            html = apf.htmlParser.prepare(html, true);
+        // #endif
 
         if (range.insertNode) {
             // Make caret marker since insertNode places the caret in the

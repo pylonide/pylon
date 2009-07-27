@@ -212,6 +212,7 @@ apf.KernelModules = [
     "parsers/url.js",
     "parsers/xsd.js",
     "parsers/aml.js",
+    "parsers/html.js",
 
     "debug/debug.js",
     "debug/debugwin.js",

@@ -81,7 +81,7 @@ apf.ContentEditable.plugin('code', function() {
         }
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, sHtml 
-            ? editor.exportHtml(sHtml)
+            ? apf.htmlParser.parse(sHtml)
             : (lastLoaded = editor.getValue()));
     };
 
@@ -91,7 +91,7 @@ apf.ContentEditable.plugin('code', function() {
 
     function propagateChange() {
         //if (lastLoaded == oPreview.value) return false;
-        var html = _self.editor.exportHtml(oPreview.value
+        var html = apf.htmlParser.parse(oPreview.value
             .replace(/<\/p>/gi, "</p><p></p>")
             .replace(/\n/g, ''));
 
@@ -141,7 +141,7 @@ apf.ContentEditable.plugin('code', function() {
         this.editor = editor;
 
         //this.editor.$getNewContext("code");
-        oCont = editor.$getExternal('code', editor.oExt);//.appendChild(this.editor.$getLayoutNode("code"));
+        oCont = editor.$getExternal('code', editor.oExt);
 
         oToolbar = oCont.getElementsByTagName('div')[0];
         //oToolbar.className = "";
