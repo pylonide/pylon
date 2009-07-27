@@ -277,12 +277,10 @@ apf.AmlElement = function(){
                 if (this.$focus)
                     this.$focus(e);
 
-                this.dispatchEvent("focus", {
+                this.dispatchEvent("focus", apf.extend({
                     srcElement : this,
                     bubbles    : true,
-                    mouse      : e && e.mouse,
-                    shiftKey   : e && e.shiftKey
-                });
+                }, e));
                 return this;
             };
 
@@ -302,10 +300,10 @@ apf.AmlElement = function(){
                 if (!noset)
                     apf.window.$blur(this);
 
-                this.dispatchEvent("blur", {
+                this.dispatchEvent("blur", apf.extend({
                     srcElement : this,
                     bubbles    : !e || !e.cancelBubble
-                });
+                }, e));
                 return this;
             };
 

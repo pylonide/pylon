@@ -90,7 +90,7 @@ apf.DelayedRender = function(){
      */
     this.$render = function(usedelay){
         if (this.$rendered || this.$aml.getAttribute("render-status") != "delayed")
-            return;
+            return (this.$rendered = true);
         this.dispatchEvent("beforerender");
 
         if (typeof this.usedelay == "undefined")

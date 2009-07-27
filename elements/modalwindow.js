@@ -122,6 +122,7 @@ apf.WinServer = {
  *   {Boolean} edit       whether the window is in the edit state.
  *   {Boolean} closed     whether the window is closed.
  */
+apf.toolwindow  = 
 apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
     this.collapsedHeight   = 30;
@@ -495,8 +496,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                 this.bringToFront();
             
             // #ifdef __WITH_FOCUS
+            //@todo make widget a tagname and alias
             if (!apf.isParsing && (this.model 
-              || (!this.dockable || !this.aData) && !this.$isWidget))
+              || (!this.dockable || !this.aData) && !this.$isWidget 
+              && this.tagName != "toolwindow"))
                 this.focus(false, {mouse:true});
             // #endif
             
@@ -963,7 +966,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             "apf.setStyleClass(this, 'down');\
              event.cancelBubble = true; \
              apf.findHost(this).oExt.onmousedown(event);\
-             document.onmousedown(event);");
+             apf.window.$mousedown(event);");
         btn.setAttribute("onmouseup",
             "apf.setStyleClass(this, '', ['down'])");
         btn.setAttribute("onmouseover",

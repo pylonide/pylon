@@ -27,7 +27,7 @@ apf.ContentEditable = function() {
     /***************************************************************************
      * PRIVATE
      **************************************************************************/
-
+    
     var lastActiveNode, wasFocussable, lastValue, mouseOver, mouseOut, 
         mouseDown, docklet,
         objectHandles = false,
@@ -52,18 +52,22 @@ apf.ContentEditable = function() {
                 lastActiveNode = null;
             }
             
-            var node = activeNode.firstChild;
+            var node = activeNode;
             setTimeout(function(){
-                _self.$selection.selectNode(node);
-            });
+                _self.$selection.selectNode(node.firstChild);
+                node.focus();
+            }, 10);
         }
     });
     
-    this.addEventListener("blur", function(){
+    this.addEventListener("blur", function(e){
         if (!this.contenteditable)
             return;
         
         lastActiveNode = activeNode;
+        if (e.toElement == docklet) 
+            return;
+
         removeEditor(activeNode, true);
     });
 
@@ -78,13 +82,14 @@ apf.ContentEditable = function() {
             setTimeout(function(){oNode.focus();}, 10);
         }
 
+        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
+
         if (_self.validityState && !_self.validityState.valid) {
             oNode = initTabStack()[_self.validityState.$lastPos];
             setTimeout(function(){
                 oNode.focus();
                 _self.$selection.selectNode(oNode.lastChild);
                 
-                var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
                 _self.getModel().validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
@@ -123,7 +128,14 @@ apf.ContentEditable = function() {
         }
         //#endif
 
-        _self.$editable();
+        var v, rule;
+        if (v = _self.getModel().$validation)
+            rule = v.getRule(xmlNode);
+        var showDocklet = !rule || !apf.isFalse(rule.richtext);
+        if (showDocklet && !docklet)
+            _self.$editable();
+        if (docklet)
+            docklet.setProperty("visible", showDocklet);
 
         _self.$selection = new apf.selection(window, document);
         _self.$selection.cache();
@@ -142,6 +154,9 @@ apf.ContentEditable = function() {
             oNode.contentEditable = false;
         else
             document.designMode = "off";
+
+        if (docklet)
+            docklet.setProperty("visible", false);
 
         if (!bProcess || oNode.innerHTML == lastValue) {
             oNode.innerHTML = lastValue;
@@ -172,7 +187,7 @@ apf.ContentEditable = function() {
                 model.validate(xmlNode, false, _self.validityState, _self); //@todo this can be improved later       
             }
         }
-
+        
         if (callback)
             setTimeout(callback);
     }
@@ -361,27 +376,36 @@ apf.ContentEditable = function() {
         if (apf.isTrue(value)) {
             apf.addListener(_self.oExt, "mouseover", mouseOver = function(e) {
                 var el = e.srcElement || e.target;
-                if (el == activeNode) return;
-                if (el.className && el.className.indexOf("contentEditable") != -1)
-                    apf.setStyleClass(el, "contentEditable_over");
+                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                    el = el.parentNode;
+                }
+                if (!el || el == _self.oExt || el == activeNode) 
+                    return;
+                apf.setStyleClass(el, "contentEditable_over");
             });
             apf.addListener(_self.oExt, "mouseout",  mouseOut = function(e) {
                 var el = e.srcElement || e.target;
-                if (el == activeNode) return;
-                if (el.className && el.className.indexOf("contentEditable") != -1)
-                    apf.setStyleClass(el, null, ["contentEditable_over"]);
+                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                    el = el.parentNode;
+                }
+                if (!el || el == _self.oExt || el == activeNode) 
+                    return;
+                apf.setStyleClass(el, null, ["contentEditable_over"]);
             });
             apf.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
                 var el = e.srcElement || e.target;
-                if (el == activeNode) return; //already in editMode
-                if (el.className && el.className.indexOf("contentEditable") != -1) {
-                    createEditor(el);
-                    return false;
+                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                    el = el.parentNode;
                 }
-                // action confirmed
-                else if (activeNode) {
-                    removeEditor(activeNode, true);
+                
+                if (!el || el == _self.oExt) {
+                    if (activeNode)
+                        removeEditor(activeNode, true);
+                    return;
                 }
+                
+                createEditor(el);
+                return false;
             });
 
             wasFocussable = [this.$focussable, 
@@ -886,13 +910,15 @@ apf.ContentEditable = function() {
                     plugin.init(this);
             }
         }
-        else if (!docklet) {
-            docklet = new apf.modalwindow(document.body, "window");
+        else if (!docklet && !(apf.ContentEditable.toolwin = docklet)) {
+            docklet = apf.ContentEditable.toolwin = 
+                new apf.modalwindow(document.body, "toolwindow");
 
-            docklet.parentNode = this;
+            docklet.parentNode = apf.document.documentElement;
             docklet.implement(apf.AmlDom);
+            
             //Load docklet
-            //docklet.$aml      = xmlNode;
+            docklet.$aml        = apf.getXml("<toolwindow />");
             //docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             //xmlNode.setAttribute("skinset", docklet.skinset);
             //docklet.skin      = "docklet";
@@ -901,20 +927,26 @@ apf.ContentEditable = function() {
             //docklet.draggable = false;
 
             docklet.$draw();//name
-//alert(docklet.oExt.parentNode);
+            //alert(docklet.oExt.parentNode);
             //docklet.setProperty("buttons", "edit|min|close");
             docklet.setProperty("buttons", "min");
             docklet.setProperty("title", "Toolbar");
             docklet.setProperty("icon", "application.png");
             docklet.setProperty("resizable", true);
+            docklet.setProperty("draggable", true);
+            docklet.setProperty("focussable", true);
 
             //docklet.$loadAml(xmlNode, name);
             apf.AmlParser.parseLastPass();
 
+            docklet.setProperty("right", 100);
+            docklet.setTop(100);
             docklet.setWidth(300);
             docklet.setHeight(200);
-
-            docklet.show();
+            
+            docklet.onfocus = function(){
+                _self.focus();
+            }
         }
     };
 

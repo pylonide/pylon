@@ -359,9 +359,13 @@ apf.window = new (function(){
 
         this.$settingFocus = amlNode;
 
+        if (!e) e = {};
+
         if (this.focussed && this.focussed != amlNode 
           && focusLoopDetect != this.focussed) {
             focusLoopDetect = this.focussed;
+            e.toElement   = amlNode;
+            e.fromElement = this.focussed;
             this.focussed.blur(true, e);
 
             //#ifdef __WITH_XFORMS
@@ -896,7 +900,7 @@ apf.window = new (function(){
         if (apf.hasFocusBug) {
             var isContentEditable = ta[(e.srcElement || e.target).tagName]
                 && !(e.srcElement || e.target).disabled
-                || (e.srcElement && apf.isTrue(e.srcElement.contentEditable))
+                || (e.srcElement && e.srcElement.isContentEditable)
                 || amlNode.$isContentEditable
                 && amlNode.$isContentEditable(e) && !amlNode.disabled;
 
@@ -1030,7 +1034,7 @@ apf.window = new (function(){
         // #endif
         
         var isContentEditable = ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
-          || (e.srcElement && apf.isTrue(e.srcElement.contentEditable));
+          || (e.srcElement && e.srcElement.isContentEditable);
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey

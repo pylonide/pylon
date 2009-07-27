@@ -2943,6 +2943,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 /**
  * @private
  */
+//@todo this is all broken. needs to be fixed before apf3.0
 apf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
