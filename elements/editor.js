@@ -66,7 +66,7 @@
  * </code>
  */
 apf.editor = apf.component(apf.NODE_VISIBLE, function() {
-    var inited, complete, oButtons = {};
+    var inited, complete;
 
     /**** Default Properties ****/
 
@@ -75,8 +75,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     this.value           = "";
     this.$value          = "";
-    this.$classToolbar   = 'editor_Toolbar';
-    this.language        = 'en_GB';//'nl_NL';
 
     this.oDoc = this.oWin = null;
 
@@ -84,7 +82,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     this.isContentEditable = true;
 
-    this.$supportedProperties.push("value", "language");
+    this.$supportedProperties.push("value");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -145,13 +143,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             }
         }
             
-        this.dispatchEvent('sethtml', {editor: this});
+        this.dispatchEvent("sethtml", {editor: this});
 
         //this.$visualFocus(true);
-    };
-
-    this.$propHandlers["language"] = function(value){
-        // @todo implement realtime language switching
     };
 
     /**
@@ -173,19 +167,19 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
         else {
             try {
-                this.oDoc.designMode = 'on';
+                this.oDoc.designMode = "on";
                 if (apf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                    this.oDoc.execCommand('enableObjectResizing', false, this.imagehandles);
+                    this.oDoc.execCommand("enableObjectResizing", false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
-                    this.oDoc.execCommand('enableInlineTableEditing', false, this.tablehandles);
+                    this.oDoc.execCommand("enableInlineTableEditing", false, this.tablehandles);
                 }
             }
             catch (e) {};
         }
         if (justinited) {
             //this.$propHandlers["value"].call(this, "");
-            this.dispatchEvent('complete', {editor: this});
+            this.dispatchEvent("complete", {editor: this});
             complete = true;
         }
     };
@@ -198,7 +192,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return (this.$value = apd.htmlParser.parse(this.oDoc.body.innerHTML, bStrict));
+        return (this.$value = apf.htmlParser.parse(this.oDoc.body.innerHTML, bStrict));
     };
 
     /**
@@ -303,7 +297,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             var bNoSel = (cmdName == "SelectAll");
             if (apf.isIE) {
                 if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
-                  && this.getCommandState(cmdName) == apf.OFF) {
+                  && this.$queryCommand(cmdName) == apf.OFF) {
                     bNoSel = true;
                 }
                 else if (cmdName == "outdent") {
@@ -331,37 +325,15 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     r.scrollIntoView();
             }
             
-            this.notifyAll();
+            this.$notifyAllButtons();
             this.change(this.getValue());
 
             setTimeout(function() {
-                //_self.notifyAll(); // @todo This causes pain, find out why
+                //_self.$notifyAllButtons(); // @todo This causes pain, find out why
                 if (apf.isIE && !bNoSel)
                    _self.selection.set();
                 _self.$visualFocus();
             });
-        }
-    };
-
-    /**
-     * Get the state of a command (on, off or disabled)
-     *
-     * @param {String} cmdName
-     * @type Number
-     */
-    this.getCommandState = function(cmdName) {
-        if (apf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
-            return apf.DISABLED;
-        try {
-            if (!this.oDoc.queryCommandEnabled(cmdName))
-                return apf.DISABLED;
-            else
-                return this.oDoc.queryCommandState(cmdName)
-                    ? apf.ON
-                    : apf.OFF;
-        }
-        catch (e) {
-            return apf.OFF;
         }
     };
 
@@ -411,7 +383,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     oPopup.onkeydown = function(e) {
                         e = e || window.event;
                         var key = e.which || e.keyCode;
-                        if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
+                        if (key == 13 && typeof oPlugin["submit"] == "function") //Enter
                             return oPlugin.submit(new apf.AbstractEvent(e));
                     }
                 }
@@ -433,7 +405,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
                 var o = _self.$plugins["pasteword"];
                 if (o)
-                    _self.$propHandlers['value'].call(_self, o.parse(s));
+                    _self.$propHandlers["value"].call(_self, o.parse(s));
             }
             if (_self.realtime)
                 _self.change(_self.getValue());
@@ -483,7 +455,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (_self.state == apf.DISABLED) return;
         //if (apf.isIE)
         //    this.$visualFocus(true);
-        var ret = _self.$notifyAllPlugins('context', e);
+        var ret = _self.$notifyAllPlugins("context", e);
     }
 
     var changeTimer = null;
@@ -536,7 +508,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     break;
                 case 8: // backspace
                     found = false;
-                    if (_self.selection.getType() == 'Control') {
+                    if (_self.selection.getType() == "Control") {
                         _self.selection.remove();
                         found = true;
                     }
@@ -560,17 +532,17 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 switch (code) {
                     case 66: // B
                     case 98: // b
-                        _self.executeCommand('Bold');
+                        _self.executeCommand("Bold");
                         found = true;
                         break;
                     case 105: // i
                     case 73:  // I
-                        _self.executeCommand('Italic');
+                        _self.executeCommand("Italic");
                         found = true;
                         break;
                     case 117: // u
                     case 85:  // U
-                        _self.executeCommand('Underline');
+                        _self.executeCommand("Underline");
                         found = true;
                         break;
                     case 86:  // V
@@ -590,7 +562,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 }
             }
             else if (!e.ctrlKey && !e.shiftKey && code == 13)
-                _self.dispatchEvent('keyenter', {editor: _self, event: e});
+                _self.dispatchEvent("keyenter", {editor: _self, event: e});
         }
         _self.$visualFocus();
         if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
@@ -643,9 +615,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         function keyupHandler() {
             clearTimeout(keyupTimer);
             if (_self.state == apf.DISABLED) return;
-            _self.notifyAll();
-            _self.dispatchEvent('typing', {editor: _self, event: e});
-            _self.$notifyAllPlugins('typing', e.code);
+            _self.$notifyAllButtons();
+            _self.dispatchEvent("typing", {editor: _self, event: e});
+            _self.$notifyAllPlugins("typing", e.code);
             keyupTimer = null;
         }
 
@@ -678,7 +650,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (bFix === true)
             pList.correctLists(this);
         else
-            pList.correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+            pList.correctIndentation(this, e.shiftKey ? "outdent" : "indent");
 
         return true;
     }
@@ -702,11 +674,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         if (bCode) {
-            _self.notifyAll(apf.DISABLED);
-            _self.notify('code', apf.SELECTED);
+            _self.$notifyAllButtons(apf.DISABLED);
+            _self.$notifyButton("code", apf.SELECTED);
         }
         else if (bNotify)
-            _self.notifyAll();
+            _self.$notifyAllButtons();
     };
 
     var fTimer;
@@ -720,7 +692,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (!this.oExt || this.oExt.disabled)
             return;
 
-        this.setProperty('state', (this.$pluginsActive == "code")
+        this.setProperty("state", (this.$pluginsActive == "code")
             ? apf.DISABLED
             : apf.OFF);
 
@@ -780,7 +752,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (!this.realtime || bCode)
             this.change(bCode ? this.$plugins["code"].getValue() : this.getValue());
 
-        this.setProperty('state', apf.DISABLED);
+        this.setProperty("state", apf.DISABLED);
     };
 
     /**
@@ -789,31 +761,31 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$addListeners = function() {
-        apf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick);
+        apf.AbstractEvent.addListener(this.oDoc, "mouseup", onClick);
         //apf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
-        apf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup);
-        apf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown);
-        apf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e){
+        apf.AbstractEvent.addListener(this.oDoc, "keyup", onKeyup);
+        apf.AbstractEvent.addListener(this.oDoc, "keydown", onKeydown);
+        apf.AbstractEvent.addListener(this.oDoc, "mousedown", function(e){
             e = e || window.event;
             _self.selection.cache();
             apf.popup.forceHide();
-            //this.notifyAll();
+            //this.$notifyAllButtons();
             apf.window.$mousedown(e);
         });
 
-        apf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu);
-        apf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
+        apf.AbstractEvent.addListener(this.oDoc, "contextmenu", onContextmenu);
+        apf.AbstractEvent.addListener(this.oDoc, "focus", function(e) {
             //if (!apf.isIE)
                 apf.window.$focus(_self); //TODO: ok?
         });
-        apf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
+        apf.AbstractEvent.addListener(this.oDoc, "blur", function(e) {
             //if (!apf.isIE)
                 apf.window.$blur(_self); //TODO: ok?
         });
 
         this.oDoc.host = this;
 
-        apf.AbstractEvent.addListener(this.oDoc.body, 'paste', onPaste);
+        apf.AbstractEvent.addListener(this.oDoc.body, "paste", onPaste);
     };
 
     //this.addEventListener("contextmenu", onContextmenu);
@@ -821,362 +793,26 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     /**** Button Handling ****/
 
     /**
-     * Transform the state of a button node to 'enabled'
-     *
-     * @type {void}
-     * @private
-     */
-    function buttonEnable() {
-        apf.setStyleClass(this, 'editor_enabled',
-            ['editor_selected', 'editor_disabled']);
-        this.disabled = false;
-    }
-
-    /**
-     * Transform the state of a button node to 'disabled'
-     *
-     * @type {void}
-     * @private
-     */
-    function buttonDisable() {
-        apf.setStyleClass(this, 'editor_disabled',
-            ['editor_selected', 'editor_enabled']);
-        this.disabled = true;
-    }
-
-    /**
-     * Handler function; invoked when a toolbar button node was clicked
-     *
-     * @see object.abstractevent
-     * @param {Event}      e
-     * @param {DOMElement} oButton
-     * @type  {void}
-     */
-    this.$buttonClick = function(e, oButton) {
-        _self.selection.cache();
-
-        apf.setStyleClass(oButton, 'active');
-        var item = oButton.getAttribute("type");
-
-        //context 'this' is the buttons' DIV domNode reference
-        if (!e._bogus) {
-            e.isPlugin = _self.$plugins[item] ? true : false;
-            e.state    = getState(item, e.isPlugin);
-        }
-
-        if (e.state == apf.DISABLED) {
-            buttonDisable.call(oButton);
-        }
-        else {
-            if (this.disabled)
-                buttonEnable.call(oButton);
-
-            if (e.state == apf.ON) {
-                apf.setStyleClass(oButton, 'editor_selected');
-                oButton.selected = true;
-            }
-            else {
-                apf.setStyleClass(oButton, '', ['editor_selected']);
-                oButton.selected = false;
-            }
-
-            if (!e._bogus) {
-                if (e.isPlugin) {
-                    var o = _self.$pluginsActive = item;
-                    _self.$plugins[item].execute(_self);
-                }
-                else
-                    _self.executeCommand(item);
-                e.state = getState(item, e.isPlugin);
-            }
-        }
-        apf.setStyleClass(oButton, "", ["active"]);
-    };
-
-    /**
-     * Retrieve the state of a command and if the command is a plugin, retrieve
-     * the state of the plugin
-     *
-     * @param  {String}  id
-     * @param  {Boolean} isPlugin
-     * @return The command state as an integer that maps to one of the editor state constants
-     * @type   {Number}
-     * @private
-     */
-    function getState(id, isPlugin) {
-        if (isPlugin) {
-            var plugin = _self.$plugins[id];
-            if (_self.state == apf.DISABLED && !plugin.noDisable)
-                return apf.DISABLED;
-            return plugin.queryState
-                ? plugin.queryState(_self)
-                : _self.state;
-        }
-
-        if (_self.state == apf.DISABLED)
-            return apf.DISABLED;
-
-        return _self.getCommandState(id);
-    }
-
-    /**
-     * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
-     *
-     * @param {String} item
-     * @param {Number} state Optional.
-     * @type  {void}
-     */
-    this.notify = function(item, state) {
-        if (!this.$plugins) //We're in the process of being destroyed
-            return;
-        
-        var oButton = oButtons[item];
-        if (!oButton)
-            return;
-
-        var oPlugin = this.$plugins[item];
-        if (typeof state == "undefined" || state === null) {
-            if (oPlugin && oPlugin.queryState)
-                state = oPlugin.queryState(this);
-            else
-                state = this.getCommandState(item);
-        }
-
-        if (oButton.state === state)
-            return;
-
-        oButton.state = state;
-
-        if (state == apf.DISABLED)
-            buttonDisable.call(oButton);
-        else if (state == apf.HIDDEN)
-            oButton.style.display = "none";
-        else if (state == apf.VISIBLE)
-            oButton.style.display = "";
-        else {
-            if (oButton.style.display == 'none')
-                oButton.style.display = "";
-
-            if (oButton.disabled)
-                buttonEnable.call(oButton);
-
-            var btnState = (oButton.selected)
-                ? apf.ON
-                : apf.OFF;
-
-            if (state != btnState) {
-                this.$buttonClick({
-                    state   : state,
-                    isPlugin: oPlugin ? true : false,
-                    _bogus  : true
-                }, oButton);
-            }
-        }
-    };
-
-    /**
-     * Notify all button items on state changes (on, off or disabled)
-     *
-     * @param {Number} state Optional.
-     * @type  {void}
-     */
-    this.notifyAll = function(state) {
-        for (var item in oButtons)
-            this.notify(item, state);
-    };
-    
-    /**
-     * Returns the translated key from a locale pack/ collection
-     *
-     * @param {String}  key
-     * @param {Boolean} bIsPlugin
-     * @type  {String}
-     * @private
-     */
-    this.translate = function(key, bIsPlugin) {
-        // #ifdef __DEBUG
-        if ((!bIsPlugin && !apf.editor.i18n[_self.language][key])
-          || (bIsPlugin && !apf.editor.i18n[_self.language]['plugins'][key]))
-            apf.console.error('Translation does not exist' 
-                + (bIsPlugin ? ' for plugin' : '') + ': ' + key);
-        // #endif
-        
-        return bIsPlugin 
-            ? apf.editor.i18n[_self.language]['plugins'][key]
-            : apf.editor.i18n[_self.language][key];
-    };
-
-    /**** Init ****/
-
-    /**
-     * Draw all HTML elements for the editor toolbar
-     *
-     * @param {HTMLElement} oParent     DOM element which the toolbars should be inserted into
-     * @param {String}      [sSkinTag]  Tagname of a toolbar node inside the editor skin definition
-     * @param {String}      [sBtnClick] JS that will be executed when a button node is clicked
-     * @type  {void}
-     */
-    this.drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
-        var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
-            oNode = this.$getOption('toolbars'),
-            plugin, oButton, plugins = this.$plugins;
-
-        if (!sSkinTag)
-            sSkinTag = "toolbar";
-
-        for (i = 0, l = oNode.childNodes.length; i < l; i++) {
-            node = oNode.childNodes[i];
-            if (node.nodeType != 1 || node[apf.TAGNAME] != sSkinTag)
-                continue;
-
-            //#ifdef __DEBUG
-            /*if (node[apf.TAGNAME] != "toolbar") {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Creating toolbars",
-                    "Invalid element found in toolbars definition",
-                    node));
-            }*/
-            //#endif
-
-            for (j = 0, k = node.childNodes.length; j < k; j++) {
-                bNode = node.childNodes[j];
-
-                //#ifdef __DEBUG;
-                if (bNode.nodeType != 3 && bNode.nodeType != 4) {
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Creating toolbars",
-                        "Invalid element found in toolbar definition",
-                        bNode));
-                }
-                //#endif
-
-                buttons = bNode.nodeValue.splitSafe(",", -1, true);
-            }
-
-            if (!buttons || !buttons.length)
-                continue;
-
-            this.$getNewContext("toolbar");
-            tb = bAfterRender
-                ? apf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
-                : oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
-
-            for (z = 0, x = buttons.length; z < x; z++) {
-                item = buttons[z];
-
-                if (item == "|") { //seperator!
-                    this.$getNewContext("divider");
-                    if (bAfterRender)
-                        apf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
-                    else
-                        tb.appendChild(this.$getLayoutNode("divider"));
-                }
-                else {
-                    this.$getNewContext("button");
-                    oButton = bAfterRender
-                        ? oButton = apf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
-                        : oButton = tb.appendChild(this.$getLayoutNode("button"));
-                    
-                    bIsPlugin = false;
-                    // Plugin toolbarbuttons may only be placed inside the main toolbar
-                    if (sSkinTag == "toolbar" && !this.$nativeCommands.contains(item)) {
-                        plugin = this.$addPlugin(item);
-                        // #ifdef __DEBUG
-                        if (!plugin)
-                            apf.console.error('Plugin \'' + item + '\' can not \
-                                               be found and/ or instantiated.',
-                                               'editor');
-                        // #endif
-                        bIsPlugin = true;
-                    }
-
-                    if (bIsPlugin) {
-                        plugin = plugin || plugins[item];
-                        if (!plugin)
-                            continue;
-                        if (!(plugin.type & apf.TOOLBARITEM))
-                            continue;
-
-                        this.$getLayoutNode("button", "label", oButton)
-                            .setAttribute("class", 'editor_icon editor_' + plugin.icon);
-
-                        oButton.setAttribute("title", this.translate(plugin.name));
-                    }
-                    else {
-                        this.$getLayoutNode("button", "label", oButton)
-                            .setAttribute("class", 'editor_icon editor_' + item);
-
-                        oButton.setAttribute("title", this.translate(item));
-                    }
-
-                    oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
-                        + _self.uniqueId + "].$buttonClick(event, this);");
-                    oButton.setAttribute("onmouseover", "apf.setStyleClass(this, 'hover');");
-                    oButton.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);");
-
-                    oButton.setAttribute("type", item);
-                }
-            }
-
-            buttons = null;
-        }
-        
-        if (apf.isIE) {
-            var nodes = oParent.getElementsByTagName("*");
-            for (i = nodes.length - 1; i >= 0; i--)
-                nodes[i].setAttribute("unselectable", "On");
-        }
-    };
-    
-    /**
      * Draw all the HTML elements at startup time.
      *
      * @type {void}
      */
     this.$draw = function() {
-        if (this.$aml.getAttribute("plugins")) {
-            this.$propHandlers["plugins"]
-                .call(this, this.$aml.getAttribute("plugins"));
-        }
-        if (this.$aml.getAttribute("language")) {
-            this.$propHandlers["language"]
-                .call(this, this.$aml.getAttribute("language"));
-        }
+        this.$editable();
 
         //this.plugins   = new apf.editor.plugins(this.$plugins, this);
-        this.selection = new apf.selection(this.oWin, this.oDoc, this);
+        var oEditor    = this.$getLayoutNode("main", "editor",  this.oExt);
 
-        this.oExt = this.$getExternal("main", null, function(oExt){
-            this.drawToolbars(this.$getLayoutNode("main", "toolbar"));
-        });
-        this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
-        var oEditor   = this.$getLayoutNode("main", "editor",  this.oExt);
-
-        // fetch the DOM references of all toolbar buttons and let the
-        // respective plugins finish initialization
-        var btns = this.oToolbar.getElementsByTagName("div");
-        for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
-            item = btns[i].getAttribute("type");
-            if (!item) continue;
-
-            oButtons[item] = btns[i];
-            plugin = this.$plugins[item];
-            if (!plugin) continue;
-
-            plugin.buttonNode = btns[i];
-
-            if (plugin.init)
-                plugin.init(this);
-        }
-
-        this.iframe = document.createElement('iframe');
-        this.iframe.setAttribute('frameborder', '0');
-        this.iframe.setAttribute('border', '0');
-        this.iframe.setAttribute('marginwidth', '0');
-        this.iframe.setAttribute('marginheight', '0');
+        this.iframe = document.createElement("iframe");
+        this.iframe.setAttribute("frameborder", "0");
+        this.iframe.setAttribute("border", "0");
+        this.iframe.setAttribute("marginwidth", "0");
+        this.iframe.setAttribute("marginheight", "0");
         oEditor.appendChild(this.iframe);
         this.oWin = this.iframe.contentWindow;
         this.oDoc = this.oWin.document;
+
+        this.selection = new apf.selection(this.oWin, this.oDoc, this);
 
         // get the document style (CSS) from the skin:
         // see: apf.presentation.getCssString(), where the following statement
@@ -1254,7 +890,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.makeEditable();
 
         setTimeout(function() {
-            _self.setProperty('state', apf.DISABLED);
+            _self.setProperty("state", apf.DISABLED);
         })
     };
 
@@ -1308,7 +944,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         //this.plugins.$destroy();
         this.selection.$destroy();
         /*this.plugins = */this.selection = this.oDoc.host = this.oToobar =
-            this.oDoc = this.oWin = this.iframe = prepareRE = exportRE = null;
+            this.oDoc = this.oWin = this.iframe = null;
     };
 }).implement(
      //#ifdef __WITH_VALIDATION
@@ -1323,130 +959,5 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     apf.Presentation,
     apf.ContentEditable
 );
-
-apf.editor.i18n = {
-    'en_GB': {
-        'cancel': 'Cancel',
-        'insert': 'Insert',
-        'bold': 'Bold',
-        'italic': 'Italic',
-        'underline': 'Underline',
-        'strikethrough': 'Strikethrough',
-        'justifyleft': 'Align text left',
-        'justifycenter': 'Center',
-        'justifyright': 'Align text right',
-        'justifyfull': 'Justify',
-        'removeformat': 'Clear formatting',
-        'cut': 'Cut',
-        'copy': 'Copy',
-        'paste': 'Paste',
-        'outdent': 'Decrease indent',
-        'indent': 'Increase indent',
-        'undo': 'Undo',
-        'redo': 'Redo',
-        // plugin keys:
-        'anchor': 'Insert anchor',
-        'blockquote': 'Blockquote',
-        'charmap': 'Character map',
-        'code': 'HTML source view',
-        'listitem': 'List item',
-        'nbsp': 'Non-breaking space',
-        'break': 'Linebreak',
-        'paragraph': 'Paragraph',
-        'forecolor': 'Font color',
-        'backcolor': 'Highlight color',
-        'insertdate': 'Insert current date',
-        'inserttime': 'Insert current time',
-        'rtl': 'Change text direction to right-to-left',
-        'ltr': 'Change text direction to left-to-right',
-        'emotions': 'Insert emotion',
-        'fonts': 'Font',
-        'fontsize': 'Font size',
-        'fontstyle': 'Font style',
-        'blockformat': 'Paragraph style',
-        'help': 'Help',
-        'hr': 'Insert horizontal rule',
-        'image': 'Insert image',
-        'imagespecial': 'Choose an image to insert',
-        'link': 'Insert hyperlink',
-        'unlink': 'Remove hyperlink',
-        'bullist': 'Bullets',
-        'numlist': 'Numbering',
-        'media': 'Insert medium',
-        'pastetext': 'Paste plaintext',
-        'paste_keyboardmsg': 'Use %s on your keyboard to paste the text into the window.',
-        'print': 'Print document',
-        'preview': 'Preview document',
-        'scayt': 'Turn spellcheck on/ off',
-        'search': 'Search',
-        'replace': 'Search and Replace',
-        'sub': 'Subscript',
-        'sup': 'Superscript',
-        'table': 'Insert table',
-        'table_noun': 'Table',
-        'visualaid': 'Toggle visual aid on/ off'
-    },
-     'nl_NL': {
-        'cancel': 'Annuleren',
-        'insert': 'Invoegen',
-        'bold': 'Vet',
-        'italic': 'Schuingedrukt',
-        'underline': 'Onderstreept',
-        'strikethrough': 'Doorgestreept',
-        'justifyleft': 'Recht uitlijnen',
-        'justifycenter': 'Centreren',
-        'justifyright': 'Rechts uitlijnen',
-        'justifyfull': 'Justify',
-        'removeformat': 'Stijlen verwijderen',
-        'cut': 'Knippen',
-        'copy': 'Kopieren',
-        'paste': 'Plakken',
-        'outdent': 'Inspringen verkleinen',
-        'indent': 'Inspringen vergroten',
-        'undo': 'Ongedaan maken',
-        'redo': 'Opnieuw',
-        // plugin keys:
-        'anchor': 'Anchor invoegen',
-        'blockquote': 'Blockquote',
-        'charmap': 'Speciale tekens',
-        'code': 'HTML broncode',
-        'listitem': 'Lijst item',
-        'nbsp': 'Niet-brekende spatie',
-        'break': 'Regelafbreuk',
-        'paragraph': 'Paragraaf',
-        'forecolor': 'Tekstkleur',
-        'backcolor': 'Markeerkleur',
-        'insertdate': 'Huidige datum invoegen',
-        'inserttime': 'Huidige tijd invoegen',
-        'rtl': 'Verander tekstrichting naar rechts-naar-links',
-        'ltr': 'Verander tekstrichting naar links-naar-rechts',
-        'emotions': 'Emoticon invoegen',
-        'fonts': 'Lettertype',
-        'fontsize': 'Letter grootte',
-        'fontstyle': 'Tekststijl',
-        'blockformat': 'Paragraafstijl',
-        'help': 'Hulp',
-        'hr': 'Horizontale lijn invoegen',
-        'image': 'Afbeelding invoegen',
-        'imagespecial': 'Afbeelding kiezen',
-        'link': 'Link invoegen',
-        'unlink': 'Link verwijderen',
-        'bullist': 'Ongenummerd',
-        'numlist': 'Genummerd',
-        'media': 'Medium invoegen',
-        'pastetext': 'Tekst Plakken',
-        'paste_keyboardmsg': 'Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.',
-        'print': 'Printen',
-        'preview': 'Voorbeeldvertoning',
-        'scayt': 'Spellingscontrole aan/ uit',
-        'search': 'Zoeken',
-        'replace': 'Zoeken en vervangen',
-        'sub': 'Subscript',
-        'sup': 'Superscript',
-        'table': 'Tabel invoegen',
-        'table_noun': 'Tabel',
-        'visualaid': 'Visuele hulp aan/ uit'
-    }
-};
 
 // #endif

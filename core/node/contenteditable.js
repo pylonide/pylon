@@ -34,6 +34,7 @@ apf.ContentEditable = function() {
         lastPos       = 0,
         activeNode    = null,
         tabStack      = null,
+        oButtons      = {},
         _self         = this;
 
     this.addEventListener("focus", function(e){
@@ -173,11 +174,6 @@ apf.ContentEditable = function() {
             setTimeout(callback);
     }
 
-    function execCommand(name, param) {
-        _self.$selection.cache();
-        (apf.isIE ? activeNode : document).execCommand(name, false, param);
-    }
-
     this.addEventListener("load", function(){
         if (!this.contenteditable)
             return;
@@ -212,12 +208,12 @@ apf.ContentEditable = function() {
 
         if (!apf.isIE && !apf.isChildOf(activeNode, el, true)) {
             // #ifdef __DEBUG
-            apf.console.log('ContentEditable - keyDown: no child of mine');
+            apf.console.log("ContentEditable - keyDown: no child of mine");
             // #endif
             var callback = null;
             if (apf.isChildOf(this.oExt, el)) {
                 // #ifdef __DEBUG
-                apf.console.log('ContentEditable - keyDown: el IS a child of mine');
+                apf.console.log("ContentEditable - keyDown: el IS a child of mine");
                 // #endif
                 while (el.parentNode && !(el.className && el != this.oExt
                   && el.className.indexOf("contentEditable") != -1))
@@ -259,17 +255,17 @@ apf.ContentEditable = function() {
             switch (code) {
                 case 66: // B
                 case 98: // b
-                    execCommand("Bold");
+                    _self.$execCommand("Bold");
                     found = true;
                     break;
                 case 105: // i
                 case 73:  // I
-                    execCommand("Italic");
+                    _self.$execCommand("Italic");
                     found = true;
                     break;
                 case 117: // u
                 case 85:  // U
-                    execCommand("Underline");
+                    _self.$execCommand("Underline");
                     found = true;
                     break;
             }
@@ -341,20 +337,21 @@ apf.ContentEditable = function() {
     this.$regbase        = this.$regbase | __CONTENTEDITABLE__;
     this.$state          = apf.ON;
     this.$selection      = null;
-    this.$buttons        = ['Bold', 'Italic', 'Underline'];
+    this.$buttons        = ["Bold", "Italic", "Underline"];
+    this.$classToolbar   = "editor_Toolbar";
     this.$plugins        = {};
     this.$pluginsHooks   = {};
     this.$pluginsTypes   = {};
     this.$pluginsKeys    = [];
     this.$pluginsActive  = null;
-    this.$pluginsOn      = ['pasteword', 'tablewizard'];
-    this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
-                            'justifyleft', 'justifycenter', 'justifyright',
-                            'justifyfull', 'removeformat', 'cut', 'copy',
-                            'paste', 'outdent', 'indent', 'undo', 'redo'];
+    this.$pluginsOn      = ["pasteword", "tablewizard"];
+    this.$nativeCommands = ["bold", "italic", "underline", "strikethrough",
+                            "justifyleft", "justifycenter", "justifyright",
+                            "justifyfull", "removeformat", "cut", "copy",
+                            "paste", "outdent", "indent", "undo", "redo"];
 
     this.$supportedProperties.push("contenteditable", "state", "plugins",
-        "realtime");
+        "realtime", "language");
     this.$booleanProperties["contenteditable"] = true;
     this.$booleanProperties["realtime"]        = true;
     this.$propHandlers["contenteditable"]      = function(value){
@@ -406,9 +403,9 @@ apf.ContentEditable = function() {
         this.state = parseInt(value); // make sure it's an int
         // the state has changed, update the button look/ feel
         setTimeout(function() {
-            _self.notifyAll(value);
+            _self.$notifyAllButtons(value);
             if (_self.$pluginsActive == "code")
-                _self.notify("code", apf.SELECTED);
+                _self.$notifyButton("code", apf.SELECTED);
         });
     };
 
@@ -430,6 +427,37 @@ apf.ContentEditable = function() {
             ? value
             : apf.getInheritedAttribute(this.$aml, "realtime") || false;
     };
+
+    this.$propHandlers["language"] = function(value){
+        // @todo implement realtime language switching
+    };
+
+    /**
+     * Get the state of a command (on, off or disabled)
+     *
+     * @param {String} cmdName
+     * @type Number
+     */
+    this.$queryCommand = function(cmdName) {
+        if (apf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
+            return apf.DISABLED;
+        try {
+            if (!this.oDoc.queryCommandEnabled(cmdName))
+                return apf.DISABLED;
+            else
+                return this.oDoc.queryCommandState(cmdName)
+                    ? apf.ON
+                    : apf.OFF;
+        }
+        catch (e) {
+            return apf.OFF;
+        }
+    };
+
+    this.$execCommand = function(name, param) {
+        _self.$selection.cache();
+        (apf.isIE ? activeNode : document).execCommand(name, false, param);
+    }
 
     /**
      * Add a plugin to the collection IF an implementation actually exists.
@@ -470,10 +498,10 @@ apf.ContentEditable = function() {
             // a keyBinding prop has been set, parse it and push it up the
             // keys-collection
             plugin.keyBinding = {
-                meta   : (plugin.keyBinding.indexOf('meta')  > -1),
-                control: (plugin.keyBinding.indexOf('ctrl')  > -1),
-                alt    : (plugin.keyBinding.indexOf('alt')   > -1),
-                shift  : (plugin.keyBinding.indexOf('shift') > -1),
+                meta   : (plugin.keyBinding.indexOf("meta")  > -1),
+                control: (plugin.keyBinding.indexOf("ctrl")  > -1),
+                alt    : (plugin.keyBinding.indexOf("alt")   > -1),
+                shift  : (plugin.keyBinding.indexOf("shift") > -1),
                 key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1).toLowerCase()
             };
             plugin.keyHash = createKeyHash(plugin.keyBinding);
@@ -537,9 +565,354 @@ apf.ContentEditable = function() {
         return true;
     };
 
+    /**
+     * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
+     *
+     * @param {String} item
+     * @param {Number} state Optional.
+     * @type  {void}
+     */
+    this.$notifyButton = function(item, state) {
+        if (!this.$plugins) //We're in the process of being destroyed
+            return;
+
+        var oButton = oButtons[item];
+        if (!oButton)
+            return;
+
+        var oPlugin = this.$plugins[item];
+        if (typeof state == "undefined" || state === null) {
+            if (oPlugin && oPlugin.queryState)
+                state = oPlugin.queryState(this);
+            else
+                state = this.$queryCommand(item);
+        }
+
+        if (oButton.state === state)
+            return;
+
+        oButton.state = state;
+
+        if (state == apf.DISABLED)
+            buttonDisable.call(oButton);
+        else if (state == apf.HIDDEN)
+            oButton.style.display = "none";
+        else if (state == apf.VISIBLE)
+            oButton.style.display = "";
+        else {
+            if (oButton.style.display == "none")
+                oButton.style.display = "";
+
+            if (oButton.disabled)
+                buttonEnable.call(oButton);
+
+            var btnState = (oButton.selected)
+                ? apf.ON
+                : apf.OFF;
+
+            if (state != btnState) {
+                this.$buttonClick({
+                    state   : state,
+                    isPlugin: oPlugin ? true : false,
+                    _bogus  : true
+                }, oButton);
+            }
+        }
+    };
+
+    /**
+     * Notify all button items on state changes (on, off or disabled)
+     *
+     * @param {Number} state Optional.
+     * @type  {void}
+     */
+    this.$notifyAllButtons = function(state) {
+        for (var item in oButtons)
+            this.$notifyButton(item, state);
+    };
+
+    /**
+     * Transform the state of a button node to "enabled"
+     *
+     * @type {void}
+     * @private
+     */
+    function buttonEnable() {
+        apf.setStyleClass(this, "editor_enabled",
+            ["editor_selected", "editor_disabled"]);
+        this.disabled = false;
+    }
+
+    /**
+     * Transform the state of a button node to "disabled"
+     *
+     * @type {void}
+     * @private
+     */
+    function buttonDisable() {
+        apf.setStyleClass(this, "editor_disabled",
+            ["editor_selected", "editor_enabled"]);
+        this.disabled = true;
+    }
+
+    /**
+     * Handler function; invoked when a toolbar button node was clicked
+     *
+     * @see object.abstractevent
+     * @param {Event}      e
+     * @param {DOMElement} oButton
+     * @type  {void}
+     */
+    this.$buttonClick = function(e, oButton) {
+        _self.selection.cache();
+
+        apf.setStyleClass(oButton, "active");
+        var item = oButton.getAttribute("type");
+
+        //context 'this' is the buttons' DIV domNode reference
+        if (!e._bogus) {
+            e.isPlugin = _self.$plugins[item] ? true : false;
+            e.state    = getState(item, e.isPlugin);
+        }
+
+        if (e.state == apf.DISABLED) {
+            buttonDisable.call(oButton);
+        }
+        else {
+            if (this.disabled)
+                buttonEnable.call(oButton);
+
+            if (e.state == apf.ON) {
+                apf.setStyleClass(oButton, "editor_selected");
+                oButton.selected = true;
+            }
+            else {
+                apf.setStyleClass(oButton, "", ["editor_selected"]);
+                oButton.selected = false;
+            }
+
+            if (!e._bogus) {
+                if (e.isPlugin)
+                    _self.$plugins[(_self.$pluginsActive = item)].execute(_self);
+                else
+                    _self.executeCommand(item);
+                e.state = getState(item, e.isPlugin);
+            }
+        }
+        apf.setStyleClass(oButton, "", ["active"]);
+    };
+
+    /**
+     * Retrieve the state of a command and if the command is a plugin, retrieve
+     * the state of the plugin
+     *
+     * @param  {String}  id
+     * @param  {Boolean} isPlugin
+     * @return The command state as an integer that maps to one of the editor state constants
+     * @type   {Number}
+     * @private
+     */
+    function getState(id, isPlugin) {
+        if (isPlugin) {
+            var plugin = _self.$plugins[id];
+            if (_self.state == apf.DISABLED && !plugin.noDisable)
+                return apf.DISABLED;
+            return plugin.queryState
+                ? plugin.queryState(_self)
+                : _self.state;
+        }
+
+        if (_self.state == apf.DISABLED)
+            return apf.DISABLED;
+
+        return _self.$queryCommand(id);
+    }
+
+    /**
+     * Returns the translated key from a locale pack/ collection
+     *
+     * @param {String}  key
+     * @param {Boolean} bIsPlugin
+     * @type  {String}
+     * @private
+     */
+    this.$translate = function(key, bIsPlugin) {
+        // #ifdef __DEBUG
+        if ((!bIsPlugin && !apf.ContentEditable.i18n[_self.language][key])
+          || (bIsPlugin && !apf.ContentEditable.i18n[_self.language]["plugins"][key]))
+            apf.console.error("Translation does not exist"
+                + (bIsPlugin ? " for plugin" : "") + ": " + key);
+        // #endif
+
+        return bIsPlugin
+            ? apf.ContentEditable.i18n[_self.language]["plugins"][key]
+            : apf.ContentEditable.i18n[_self.language][key];
+    };
+
+    /**** Init ****/
+
+    /**
+     * Draw all HTML elements for the editor toolbar
+     *
+     * @param {HTMLElement} oParent     DOM element which the toolbars should be inserted into
+     * @param {String}      [sSkinTag]  Tagname of a toolbar node inside the editor skin definition
+     * @param {String}      [sBtnClick] JS that will be executed when a button node is clicked
+     * @type  {void}
+     */
+    this.$drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
+        var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
+            oNode = this.$getOption("toolbars"),
+            plugin, oButton, plugins = this.$plugins;
+
+        if (!sSkinTag)
+            sSkinTag = "toolbar";
+
+        for (i = 0, l = oNode.childNodes.length; i < l; i++) {
+            node = oNode.childNodes[i];
+            if (node.nodeType != 1 || node[apf.TAGNAME] != sSkinTag)
+                continue;
+
+            //#ifdef __DEBUG
+            /*if (node[apf.TAGNAME] != "toolbar") {
+                throw new Error(apf.formatErrorString(0, this,
+                    "Creating toolbars",
+                    "Invalid element found in toolbars definition",
+                    node));
+            }*/
+            //#endif
+
+            for (j = 0, k = node.childNodes.length; j < k; j++) {
+                bNode = node.childNodes[j];
+
+                //#ifdef __DEBUG;
+                if (bNode.nodeType != 3 && bNode.nodeType != 4) {
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Creating toolbars",
+                        "Invalid element found in toolbar definition",
+                        bNode));
+                }
+                //#endif
+
+                buttons = bNode.nodeValue.splitSafe(",", -1, true);
+            }
+
+            if (!buttons || !buttons.length)
+                continue;
+
+            this.$getNewContext("toolbar");
+            tb = bAfterRender
+                ? apf.xmldb.htmlImport(this.$getLayoutNode("toolbar"), oParent)
+                : oParent.appendChild(this.$getLayoutNode("toolbar"));//, oParent.lastChild
+
+            for (z = 0, x = buttons.length; z < x; z++) {
+                item = buttons[z];
+
+                if (item == "|") { //seperator!
+                    this.$getNewContext("divider");
+                    if (bAfterRender)
+                        apf.xmldb.htmlImport(this.$getLayoutNode("divider"), tb);
+                    else
+                        tb.appendChild(this.$getLayoutNode("divider"));
+                }
+                else {
+                    this.$getNewContext("button");
+                    oButton = bAfterRender
+                        ? oButton = apf.xmldb.htmlImport(this.$getLayoutNode("button"), tb)
+                        : oButton = tb.appendChild(this.$getLayoutNode("button"));
+
+                    bIsPlugin = false;
+                    // Plugin toolbarbuttons may only be placed inside the main toolbar
+                    if (sSkinTag == "toolbar" && !this.$nativeCommands.contains(item)) {
+                        plugin = this.$addPlugin(item);
+                        // #ifdef __DEBUG
+                        if (!plugin)
+                            apf.console.error("Plugin '" + item + "' can not \
+                                               be found and/ or instantiated.",
+                                               "editor");
+                        // #endif
+                        bIsPlugin = true;
+                    }
+
+                    if (bIsPlugin) {
+                        plugin = plugin || plugins[item];
+                        if (!plugin)
+                            continue;
+                        if (!(plugin.type & apf.TOOLBARITEM))
+                            continue;
+
+                        this.$getLayoutNode("button", "label", oButton)
+                            .setAttribute("class", "editor_icon editor_" + plugin.icon);
+
+                        oButton.setAttribute("title", this.$translate(plugin.name));
+                    }
+                    else {
+                        this.$getLayoutNode("button", "label", oButton)
+                            .setAttribute("class", "editor_icon editor_" + item);
+
+                        oButton.setAttribute("title", this.$translate(item));
+                    }
+
+                    oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
+                        + _self.uniqueId + "].$buttonClick(event, this);");
+                    oButton.setAttribute("onmouseover", "apf.setStyleClass(this, 'hover');");
+                    oButton.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);");
+
+                    oButton.setAttribute("type", item);
+                }
+            }
+
+            buttons = null;
+        }
+
+        if (apf.isIE) {
+            var nodes = oParent.getElementsByTagName("*");
+            for (i = nodes.length - 1; i >= 0; i--)
+                nodes[i].setAttribute("unselectable", "On");
+        }
+    };
+
+    this.$editable = function() {
+        if (this.$aml.getAttribute("plugins")) {
+            this.$propHandlers["plugins"]
+                .call(this, this.$aml.getAttribute("plugins"));
+        }
+        if (this.$aml.getAttribute("language")) {
+            this.$propHandlers["language"]
+                .call(this, this.$aml.getAttribute("language"));
+        }
+
+        // no External representation yet, which means that we're dealing with
+        // a full-mode editor.
+        if (!this.oExt) {
+            this.oExt = this.$getExternal("main", null, function(oExt){
+                this.$drawToolbars(this.$getLayoutNode("main", "toolbar"));
+            });
+            this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
+            
+            // fetch the DOM references of all toolbar buttons and let the
+            // respective plugins finish initialization
+            var btns = this.oToolbar.getElementsByTagName("div");
+            for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
+                item = btns[i].getAttribute("type");
+                if (!item) continue;
+
+                oButtons[item] = btns[i];
+                plugin = this.$plugins[item];
+                if (!plugin) continue;
+
+                plugin.buttonNode = btns[i];
+
+                if (plugin.init)
+                    plugin.init(this);
+            }
+        }
+    }
+
     /***************************************************************************
      * PUBLIC
      **************************************************************************/
+
+    this.language = "en_GB";//"nl_NL";
 
     this.edit = function(xmlNode, value) {
         this.executeActionByRuleSet("edit", "edit", xmlNode, value);
@@ -552,6 +925,131 @@ apf.DISABLED       = -1;
 apf.VISIBLE        = 2;
 apf.HIDDEN         = 3;
 apf.SELECTED       = 4;
+
+apf.ContentEditable.i18n = {
+    "en_GB": {
+        "cancel": "Cancel",
+        "insert": "Insert",
+        "bold": "Bold",
+        "italic": "Italic",
+        "underline": "Underline",
+        "strikethrough": "Strikethrough",
+        "justifyleft": "Align text left",
+        "justifycenter": "Center",
+        "justifyright": "Align text right",
+        "justifyfull": "Justify",
+        "removeformat": "Clear formatting",
+        "cut": "Cut",
+        "copy": "Copy",
+        "paste": "Paste",
+        "outdent": "Decrease indent",
+        "indent": "Increase indent",
+        "undo": "Undo",
+        "redo": "Redo",
+        // plugin keys:
+        "anchor": "Insert anchor",
+        "blockquote": "Blockquote",
+        "charmap": "Character map",
+        "code": "HTML source view",
+        "listitem": "List item",
+        "nbsp": "Non-breaking space",
+        "break": "Linebreak",
+        "paragraph": "Paragraph",
+        "forecolor": "Font color",
+        "backcolor": "Highlight color",
+        "insertdate": "Insert current date",
+        "inserttime": "Insert current time",
+        "rtl": "Change text direction to right-to-left",
+        "ltr": "Change text direction to left-to-right",
+        "emotions": "Insert emotion",
+        "fonts": "Font",
+        "fontsize": "Font size",
+        "fontstyle": "Font style",
+        "blockformat": "Paragraph style",
+        "help": "Help",
+        "hr": "Insert horizontal rule",
+        "image": "Insert image",
+        "imagespecial": "Choose an image to insert",
+        "link": "Insert hyperlink",
+        "unlink": "Remove hyperlink",
+        "bullist": "Bullets",
+        "numlist": "Numbering",
+        "media": "Insert medium",
+        "pastetext": "Paste plaintext",
+        "paste_keyboardmsg": "Use %s on your keyboard to paste the text into the window.",
+        "print": "Print document",
+        "preview": "Preview document",
+        "scayt": "Turn spellcheck on/ off",
+        "search": "Search",
+        "replace": "Search and Replace",
+        "sub": "Subscript",
+        "sup": "Superscript",
+        "table": "Insert table",
+        "table_noun": "Table",
+        "visualaid": "Toggle visual aid on/ off"
+    },
+     "nl_NL": {
+        "cancel": "Annuleren",
+        "insert": "Invoegen",
+        "bold": "Vet",
+        "italic": "Schuingedrukt",
+        "underline": "Onderstreept",
+        "strikethrough": "Doorgestreept",
+        "justifyleft": "Recht uitlijnen",
+        "justifycenter": "Centreren",
+        "justifyright": "Rechts uitlijnen",
+        "justifyfull": "Justify",
+        "removeformat": "Stijlen verwijderen",
+        "cut": "Knippen",
+        "copy": "Kopieren",
+        "paste": "Plakken",
+        "outdent": "Inspringen verkleinen",
+        "indent": "Inspringen vergroten",
+        "undo": "Ongedaan maken",
+        "redo": "Opnieuw",
+        // plugin keys:
+        "anchor": "Anchor invoegen",
+        "blockquote": "Blockquote",
+        "charmap": "Speciale tekens",
+        "code": "HTML broncode",
+        "listitem": "Lijst item",
+        "nbsp": "Niet-brekende spatie",
+        "break": "Regelafbreuk",
+        "paragraph": "Paragraaf",
+        "forecolor": "Tekstkleur",
+        "backcolor": "Markeerkleur",
+        "insertdate": "Huidige datum invoegen",
+        "inserttime": "Huidige tijd invoegen",
+        "rtl": "Verander tekstrichting naar rechts-naar-links",
+        "ltr": "Verander tekstrichting naar links-naar-rechts",
+        "emotions": "Emoticon invoegen",
+        "fonts": "Lettertype",
+        "fontsize": "Letter grootte",
+        "fontstyle": "Tekststijl",
+        "blockformat": "Paragraafstijl",
+        "help": "Hulp",
+        "hr": "Horizontale lijn invoegen",
+        "image": "Afbeelding invoegen",
+        "imagespecial": "Afbeelding kiezen",
+        "link": "Link invoegen",
+        "unlink": "Link verwijderen",
+        "bullist": "Ongenummerd",
+        "numlist": "Genummerd",
+        "media": "Medium invoegen",
+        "pastetext": "Tekst Plakken",
+        "paste_keyboardmsg": "Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.",
+        "print": "Printen",
+        "preview": "Voorbeeldvertoning",
+        "scayt": "Spellingscontrole aan/ uit",
+        "search": "Zoeken",
+        "replace": "Zoeken en vervangen",
+        "sub": "Subscript",
+        "sup": "Superscript",
+        "table": "Tabel invoegen",
+        "table_noun": "Tabel",
+        "visualaid": "Visuele hulp aan/ uit"
+    }
+};
 
 apf.TOOLBARITEM   = 0x0001;//"toolbaritem";
 apf.TOOLBARBUTTON = 0x0002;//"toolbarbutton";
@@ -568,7 +1066,7 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
  *
  * Example plugin:
  * <code language=javascript>
- * apf.ContentEditable.plugin('sample', function() {
+ * apf.ContentEditable.plugin("sample", function() {
  *     this.name    = "SamplePluginName";
  *     this.type    = "PluginType";
  *     this.subType = "PluginSubType";
@@ -610,7 +1108,7 @@ apf.ContentEditable.plugin = function(sName, fExec) {
                     return;
                 _self.state = apf.editor.OFF;
                 if (_self.editor)
-                    _self.editor.notify(_self.name, _self.state);
+                    _self.editor.$notifyButton(_self.name, _self.state);
                 //@todo: add animation?
                 apf.popup.hide();
                 apf.popup.last = null;

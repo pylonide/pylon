@@ -38,7 +38,7 @@ apf.ContentEditable.plugin('blockquote', function(){
     };
 
     this.queryState = function(editor) {
-        return editor.getCommandState('FormatBlock');
+        return editor.$queryCommand('FormatBlock');
     };
 });
 

@@ -163,7 +163,7 @@ apf.ContentEditable.plugin('table', function() {
             oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
             oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
             var sCaption = iCurrentY + " x " + iCurrentX + " " 
-                + _self.editor.translate('table_noun');
+                + _self.editor.$translate('table_noun');
             if (sCurrentCaption != sCaption)
                 oStatus.innerHTML = sCurrentCaption = sCaption;
         }
@@ -175,7 +175,7 @@ apf.ContentEditable.plugin('table', function() {
         if (bMorphing) return;
         oTableSel.style.width = oTableSel.style.height = "0px";
         iCurrentX = iCurrentY = 0;
-        oStatus.innerHTML = sCurrentCaption = _self.editor.translate('cancel');
+        oStatus.innerHTML = sCurrentCaption = _self.editor.$translate('cancel');
     }
 
     function statusClick(e) {

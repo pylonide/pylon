@@ -69,7 +69,7 @@ apf.ContentEditable.plugin('code', function() {
                 editor.$visualFocus();
             });
         }
-        editor.notify('code', this.queryState(editor));
+        editor.$notifyButton('code', this.queryState(editor));
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
@@ -145,7 +145,7 @@ apf.ContentEditable.plugin('code', function() {
 
         oToolbar = oCont.getElementsByTagName('div')[0];
         //oToolbar.className = "";
-        this.editor.drawToolbars(oToolbar, 'codetoolbar',
+        this.editor.$drawToolbars(oToolbar, 'codetoolbar',
             'apf.all[' + this.uniqueId + '].$buttonClick(event, this);', true);
         // @todo make this hack disappear...
         oToolbar.innerHTML = oToolbar.innerHTML;

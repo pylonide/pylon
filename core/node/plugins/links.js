@@ -142,7 +142,7 @@ apf.ContentEditable.plugin('link', function(){
 
         this.appendAmlNode(
             '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
-             <a:button caption="' + this.editor.translate('insert') + '" \
+             <a:button caption="' + this.editor.$translate('insert') + '" \
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </a:bar></a:toolbar>',
           document.getElementById(idBtns))

@@ -96,7 +96,7 @@ apf.ContentEditable.plugin('pastetext', function() {
         var idBtns = 'editor_' + this.uniqueId + '_btns';
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
-           this.editor.translate('paste_keyboardmsg').sprintf(apf.isMac ? 'CMD+V' : 'CTRL+V')
+           this.editor.$translate('paste_keyboardmsg').sprintf(apf.isMac ? 'CMD+V' : 'CTRL+V')
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
               cols="60" rows="10" class="editor_textarea"></textarea>\
@@ -116,7 +116,7 @@ apf.ContentEditable.plugin('pastetext', function() {
         }
         this.appendAmlNode(
            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
-            <a:button caption="' + this.editor.translate('insert') + '" \
+            <a:button caption="' + this.editor.$translate('insert') + '" \
               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
             </a:bar></a:toolbar>',
           document.getElementById(idBtns));

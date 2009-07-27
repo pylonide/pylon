@@ -32,7 +32,7 @@ apf.ContentEditable.subSupCommand = function(sName) {
 
     this.execute = function(editor) {
         var other = this.name == "sub" ? 'Superscript' : 'Subscript';
-        if (editor.getCommandState(other) == apf.ON)
+        if (editor.$queryCommand(other) == apf.ON)
             editor.executeCommand(other);
         editor.executeCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
 
@@ -40,7 +40,7 @@ apf.ContentEditable.subSupCommand = function(sName) {
     };
 
     this.queryState = function(editor) {
-        return editor.getCommandState(this.name == "sub"
+        return editor.$queryCommand(this.name == "sub"
             ? 'Subscript'
             : 'Superscript');
     };

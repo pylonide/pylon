@@ -33,7 +33,7 @@ apf.ContentEditable.plugin('visualaid', function(){
     this.execute = function(editor) {
         var state = this.queryState(editor);
         editor.oDoc.body.className = (state == apf.ON) ? "" : "visualAid";
-        editor.notify(this.name);
+        editor.$notifyButton(this.name);
 
         apf.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

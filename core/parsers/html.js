@@ -62,13 +62,13 @@ apf.htmlParser = (function() {
 
             // Convert strong and em to b and i in FF since it can't handle them
             if (apf.isGecko) {//@todo what about the other browsers?
-                html = html.replace(prepareRE[0], '<$1b$2>')
-                           .replace(prepareRE[1], '<$1i$2>');
+                html = html.replace(prepareRE[0], "<$1b$2>")
+                           .replace(prepareRE[1], "<$1i$2>");
             }
             else if (apf.isIE) {
-                html = html.replace(prepareRE[2], '&#39;') // IE can't handle apos
-                           .replace(prepareRE[4], '$1$2 _apf_href=$2$3');
-                           //.replace(prepareRE[5], '<p>&nbsp;</p>');
+                html = html.replace(prepareRE[2], "&#39;") // IE can't handle apos
+                           .replace(prepareRE[4], "$1$2 _apf_href=$2$3");
+                           //.replace(prepareRE[5], "<p>&nbsp;</p>");
 
                 // <BR>'s need to be replaced to be properly handled as
                 // block elements by IE - because they're not converted
@@ -182,7 +182,7 @@ apf.htmlParser = (function() {
             }
 
             // Fix some issues
-            html = html.replace(prepareRE[6], '<a$1$2></a>');
+            html = html.replace(prepareRE[6], "<a$1$2></a>");
 
             return html;
         },
@@ -215,19 +215,19 @@ apf.htmlParser = (function() {
             }
 
             if (apf.isIE) {
-                html = html.replace(exportRE[7], '<p></p>')
-                           .replace(exportRE[9], '<br />')
-                           .replace(exportRE[10], '')
+                html = html.replace(exportRE[7], "<p></p>")
+                           .replace(exportRE[9], "<br />")
+                           .replace(exportRE[10], "")
             }
             else if (html == "<br>")
                 html = "";
 
-            html = html.replace(exportRE[0], '</li>')
-                       .replace(exportRE[1], '')
-                       .replace(exportRE[2], '')
-                       .replace(exportRE[3], '<$1>&nbsp;</$2>')
-                       .replace(exportRE[4], '')
-                       .replace(exportRE[6], '<$1 />')
+            html = html.replace(exportRE[0], "</li>")
+                       .replace(exportRE[1], "")
+                       .replace(exportRE[2], "")
+                       .replace(exportRE[3], "<$1>&nbsp;</$2>")
+                       .replace(exportRE[4], "")
+                       .replace(exportRE[6], "<$1 />")
                        .replace(exportRE[11], function(m){
                            return m.toLowerCase();
                        });
@@ -344,14 +344,14 @@ apf.htmlParser = (function() {
                 html = str.join("");
             }
             else {
-                html = html.replace(/<br[^>]*_apf_marker="1"[^>]*>/gi, '<br />');
+                html = html.replace(/<br[^>]*_apf_marker="1"[^>]*>/gi, "<br />");
             }
 
             // #ifdef __DEBUG
             // check for VALID XHTML in DEBUG mode...
             try {
-                apf.getXml('<source>' + html.replace(/&.{3,5};/g, "")
-                    + '</source>');
+                apf.getXml("<source>" + html.replace(/&.{3,5};/g, "")
+                    + "</source>");
             }
             catch(ex) {
                 apf.console.error(ex.message + "\n" + html.escapeHTML());

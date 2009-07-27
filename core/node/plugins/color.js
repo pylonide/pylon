@@ -126,7 +126,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
         var cmdName   = this.name == "forecolor"
             ? 'ForeColor'
             : apf.isIE ? 'BackColor' : 'HiliteColor';
-        this.state    = editor.getCommandState(cmdName);
+        this.state    = editor.$queryCommand(cmdName);
         var currValue = "";
         try {
             currValue = editor.oDoc.queryCommandValue(cmdName);
