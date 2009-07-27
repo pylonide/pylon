@@ -32,9 +32,9 @@ apf.ContentEditable.plugin('hr', function(){
 
     this.execute = function(editor) {
         if (apf.isGecko || apf.isIE)
-            editor.insertHTML('<hr />', true);
+            editor.$insertHtml('<hr />', true);
         else
-            editor.executeCommand('InsertHorizontalRule');
+            editor.$execCommand('InsertHorizontalRule');
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

@@ -55,7 +55,7 @@ apf.ContentEditable.plugin('table', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode);
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
             panelBody.style.height = (oTableCont.offsetWidth + 20) + "px";
@@ -83,9 +83,9 @@ apf.ContentEditable.plugin('table', function() {
 
         //this.restoreSelection();
         //if (apf.isIE)
-        //this.editor.selection.set();
-        this.editor.insertHTML(aOut.join(''), true);
-        this.editor.selection.collapse(false);
+        //this.editor.$selection.set();
+        this.editor.$insertHtml(aOut.join(''), true);
+        this.editor.$selection.collapse(false);
         this.editor.$visualFocus();
     };
 
@@ -276,7 +276,7 @@ apf.ContentEditable.plugin('tablewizard', function() {
     };
 
     this.queryState = function(editor) {
-        var oNode = editor.selection.getSelectedNode();
+        var oNode = editor.$selection.getSelectedNode();
         while (oNode.nodeType != 1 || oNode.tagName != "BODY") {
             if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
               || oNode.tagName == "TR" || oNode.tagName == "TD") {
@@ -399,7 +399,7 @@ apf.ContentEditable.plugin('tablewizard', function() {
                         idx = i;
             }
 
-            _self.editor.selection.set();
+            _self.editor.$selection.set();
 
             switch (e.value) {
                 case "rowbefore":
@@ -467,7 +467,7 @@ apf.ContentEditable.plugin('tablewizard', function() {
                     break;
                 case "mergecells":
                     var rows = [], cells = [],
-                        oSel = _self.editor.selection.get(),
+                        oSel = _self.editor.$selection.get(),
                         grid = getTableGrid(_self.oTable),
                         oCellPos, aRows, aRowCells, aBrs, oTd, k;
 

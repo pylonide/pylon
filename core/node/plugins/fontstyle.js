@@ -112,7 +112,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -123,7 +123,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
     function getCurrentStyle(editor) {
         getStyles(editor);
 
-        var oNode = editor.selection.getSelectedNode();
+        var oNode = editor.$selection.getSelectedNode();
         while (oNode.nodeType != 1) // we need a block element
             oNode = oNode.parentNode;
 
@@ -152,7 +152,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
 
         if (sStyle) {
             apf.popup.forceHide();
-            var sel = this.editor.selection;
+            var sel = this.editor.$selection;
 
             sel.set();
             this.editor.$visualFocus();
@@ -345,7 +345,7 @@ apf.ContentEditable.plugin('blockformat', function() {
 
             apf.popup.setContent(this.uniqueId, this.createPanelBody(editor));
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -354,7 +354,7 @@ apf.ContentEditable.plugin('blockformat', function() {
     };
     
     this.queryState = function(editor) {
-        var oNode    = editor.selection.getSelectedNode(),
+        var oNode    = editor.$selection.getSelectedNode(),
             aFormats = getFormats(editor),
             /*bCurrent = (oNode && oNode.nodeType == 1
                 && aFormats.contains(oNode.tagName.toLowerCase())),
@@ -391,7 +391,7 @@ apf.ContentEditable.plugin('blockformat', function() {
 
         if (sBlock) {
             apf.popup.forceHide();
-            var oNode, sel = this.editor.selection;
+            var oNode, sel = this.editor.$selection;
 
             sel.set();
             this.editor.$visualFocus();
@@ -460,7 +460,7 @@ apf.ContentEditable.plugin('blockformat', function() {
                     sel.selectNode(p);
                 }
                 else {
-                    this.editor.executeCommand('FormatBlock', sBlock);
+                    this.editor.$execCommand('FormatBlock', sBlock);
                 }
                 
                 this.blockPreview.innerHTML = blocksMap[sBlock];

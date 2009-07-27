@@ -48,7 +48,7 @@ apf.ContentEditable.plugin('charmap', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 469 : 466, 199);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 469 : 466, 199);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -95,7 +95,7 @@ apf.ContentEditable.plugin('charmap', function() {
         if (sCode) {
             apf.popup.forceHide();
             //this.storeSelection();
-            this.editor.insertHTML(sCode, true);
+            this.editor.$insertHtml(sCode, true);
             var _self = this;
             setTimeout(function() { //make sure the 'change' is notified to the smartbindings
                 _self.editor.change(_self.editor.getValue());

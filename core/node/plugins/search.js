@@ -47,10 +47,10 @@ apf.ContentEditable.searchPlugin = function(sName) {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218,
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 218,
             this.name == "search" ? 71 : 95);
         // prefill search box with selected text
-        this.oSearch.value = this.editor.selection.getContent();
+        this.oSearch.value = this.editor.$selection.getContent();
         var _self = this;
         setTimeout(function() {
             _self.oSearch.focus();
@@ -74,10 +74,10 @@ apf.ContentEditable.searchPlugin = function(sName) {
             return;
 
         if (apf.isIE)
-            this.editor.selection.set();
+            this.editor.$selection.set();
         //this.editor.oDoc.execCommand('SelectAll');
-        //this.editor.executeCommand('SelectAll');
-        this.editor.selection.collapse(false);
+        //this.editor.$execCommand('SelectAll');
+        this.editor.$selection.collapse(false);
         this.editor.$visualFocus();
 
         if (bMatchCase) //IE specific flagging
@@ -86,7 +86,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
         var found = false;
 
         if (apf.isIE) {
-            var sel   = this.editor.selection;
+            var sel   = this.editor.$selection;
             var range = sel.getRange();
             if (!(found = range.findText(val, 1, flag))) {
                 // simulate 'wrapAround' search...
@@ -146,11 +146,11 @@ apf.ContentEditable.searchPlugin = function(sName) {
             return;
 
         // Move caret to beginning of text
-        this.editor.executeCommand('SelectAll');
-        this.editor.selection.collapse(true);
+        this.editor.$execCommand('SelectAll');
+        this.editor.$selection.collapse(true);
         this.editor.$visualFocus();
 
-        var range = this.editor.selection.getRange(), found = 0;
+        var range = this.editor.$selection.getRange(), found = 0;
 
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
@@ -162,7 +162,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
                 this.replace();
                 found++;
             }
-            this.editor.selection.cache();
+            this.editor.$selection.cache();
             //this.storeSelection();
         }
         else {
@@ -182,8 +182,8 @@ apf.ContentEditable.searchPlugin = function(sName) {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
         if (apf.isIE) {
-            this.editor.selection.set();
-            this.editor.selection.getRange().duplicate().pasteHTML(sRepl);
+            this.editor.$selection.set();
+            this.editor.$selection.getRange().duplicate().pasteHTML(sRepl);
         }
         else
             this.editor.oDoc.execCommand('InsertHTML', false, sRepl);

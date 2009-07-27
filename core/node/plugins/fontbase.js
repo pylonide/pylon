@@ -65,7 +65,7 @@ apf.ContentEditable.plugin('fonts', function() {
 
         this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
         
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 120);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 120);
         //return button id, icon and action:
 
         return {
@@ -90,17 +90,17 @@ apf.ContentEditable.plugin('fonts', function() {
         if (sFont) {
             apf.popup.forceHide();
             if (apf.isIE) {
-                this.editor.selection.set();
-                if (this.editor.selection.isCollapsed()) {
+                this.editor.$selection.set();
+                if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
-                    var r = this.editor.selection.getRange();
+                    var r = this.editor.$selection.getRange();
                     r.moveStart('character', -1);
                     r.select();
                 }
             }
-            this.editor.executeCommand('FontName', sFont);
+            this.editor.$execCommand('FontName', sFont);
             if (apf.isIE)
-                this.editor.selection.collapse(false);
+                this.editor.$selection.collapse(false);
         }
     };
 
@@ -173,7 +173,7 @@ apf.ContentEditable.plugin('fontsize', function() {
 
             apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -198,17 +198,17 @@ apf.ContentEditable.plugin('fontsize', function() {
         if (sSize) {
             apf.popup.forceHide();
             if (apf.isIE) {
-                this.editor.selection.set();
-                if (this.editor.selection.isCollapsed()) {
+                this.editor.$selection.set();
+                if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
-                    var r = this.editor.selection.getRange();
+                    var r = this.editor.$selection.getRange();
                     r.moveStart('character', -1);
                     r.select();
                 }
             }
-            this.editor.executeCommand('FontSize', sSize);
+            this.editor.$execCommand('FontSize', sSize);
             if (apf.isIE)
-                this.editor.selection.collapse(false);
+                this.editor.$selection.collapse(false);
         }
         e.stop();
         return false;

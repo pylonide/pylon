@@ -48,7 +48,7 @@ apf.ContentEditable.plugin('image', function(){
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
         // @todo: auto-fill input with currently selected image url
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
         var _self = this;
         setTimeout(function() {
             _self.oUrl.focus();
@@ -72,7 +72,7 @@ apf.ContentEditable.plugin('image', function(){
             if (!oUrl.protocol || !oUrl.host || !oUrl.file) 
                 alert("Please enter a valid URL");
             else
-                this.editor.insertHTML('<img src="' + sUrl + '" border="0" />', true);
+                this.editor.$insertHtml('<img src="' + sUrl + '" border="0" />', true);
         }
     };
 

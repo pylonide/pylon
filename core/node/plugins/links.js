@@ -48,7 +48,7 @@ apf.ContentEditable.plugin('link', function(){
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
         this.oUrl.value = "http://";
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 95);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 218, 95);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
@@ -63,7 +63,7 @@ apf.ContentEditable.plugin('link', function(){
     };
 
     this.queryState = function(editor) {
-        if (editor.selection.isCollapsed() || editor.selection.getSelectedNode().tagName == "A")
+        if (editor.$selection.isCollapsed() || editor.$selection.getSelectedNode().tagName == "A")
             return apf.DISABLED;
         return this.state;
     };
@@ -73,7 +73,7 @@ apf.ContentEditable.plugin('link', function(){
 
         if (!this.oUrl.value.replace("http://", "")) return;
 
-        this.editor.executeCommand("CreateLink", "javascript:apftmp(0);");
+        this.editor.$execCommand("CreateLink", "javascript:apftmp(0);");
         var oLink, aLinks = this.editor.oDoc.getElementsByTagName("a");
         for (var i = 0; i < aLinks.length && !oLink; i++)
             if (aLinks[i].href == "javascript:apftmp(0);")
@@ -84,7 +84,7 @@ apf.ContentEditable.plugin('link', function(){
             oLink.target = this.oTarget.value;
             oLink.title  = this.oTitle.value;
         }
-        this.editor.selection.collapse(false);
+        this.editor.$selection.collapse(false);
         
         // propagate the change AFTER changing back the link to its proper format
         this.editor.change(this.editor.getValue());
@@ -173,10 +173,10 @@ apf.ContentEditable.plugin('unlink', function(){
             return;
 
         if (apf.isIE) {
-            editor.executeCommand('Unlink');
+            editor.$execCommand('Unlink');
         }
         else {
-            var sel = editor.selection;
+            var sel = editor.$selection;
             sel.set();
             var oNode = sel.getSelectedNode();
             if (oNode.tagName == "A") {
@@ -184,13 +184,13 @@ apf.ContentEditable.plugin('unlink', function(){
                 sel.selectNode(oNode);
                 sel.remove();
                 sel.collapse();
-                editor.insertHTML(txt);
+                editor.$insertHtml(txt);
             }
         }
     };
 
     this.queryState = function(editor) {
-        if (editor.selection.getSelectedNode().tagName == "A")
+        if (editor.$selection.getSelectedNode().tagName == "A")
             return apf.OFF;
 
         return apf.DISABLED;

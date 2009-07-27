@@ -118,9 +118,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     if (oNode.nodeType == 1) {
                         if (oNode.nodeName == "BR"
                           && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
-                            this.selection.selectNode(oNode);
-                            this.selection.remove();
-                            this.selection.collapse(false);
+                            this.$selection.selectNode(oNode);
+                            this.$selection.remove();
+                            this.$selection.collapse(false);
                             break;
                         }
                     }
@@ -219,74 +219,42 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-     * API; insert any given text (or HTML) at cursor position into the Editor
-     *
-     * @param {String}  html
-     * @param {Boolean} bNoParse Prevents parsing the HTML, which might alter the string
-     * @param {Boolean} bNoFocus Prevents setting the focus back to the editor area
-     * @type  {void}
-     */
-    this.insertHTML = function(html, bNoParse, bNoFocus) {
-        if (inited && complete) {
-            if (!bNoFocus)
-                this.selection.set();
-            this.$visualFocus(true);
-            // #ifdef __WITH_PARSER_HTML
-            html = bNoParse ? html : apf.htmlParser.prepare(html);
-            // #endif
-            this.selection.setContent(html);
-            // notify SmartBindings that we changed stuff...
-            this.change(this.getValue());
-            
-            if (bNoFocus) return;
-            setTimeout(function() {
-                _self.selection.set();
-                _self.$visualFocus();
-            });
-        }
-    };
-
-    /**
      * Issue a command to the editable area.
      *
      * @param {String} cmdName
      * @param {mixed}  cmdParam
      * @type  {void}
      */
-    this.executeCommand = function(cmdName, cmdParam) {
+    this.$execCommand = function(cmdName, cmdParam) {
         if (!this.$plugins[cmdName] && inited && complete
           && this.state != apf.DISABLED) {
             if (apf.isIE) {
                 if (!this.oDoc.body.innerHTML)
                     return commandQueue.push([cmdName, cmdParam]);
                 else
-                    this.selection.set();
+                    this.$selection.set();
             }
 
             this.$visualFocus();
             
             if (cmdName.toLowerCase() == "removeformat") {
-                /*[this.$plugins["paragraph"], this.$plugins["fontstyle"].forEach(function(plugin){
-                    if (plugin.queryState(_self) == apf.ON) {
-                        plugin.submit(null, 'normal');
-                    }
-                });*/
-
-                var c = this.selection.getContent();
-                var disallowed = {FONT:1, SPAN:1, H1:1, H2:1, H3:1, H4:1, H5:1, 
-                    H6:1, PRE:1, ADDRESS:1, BLOCKQUOTE:1, STRONG:1, B:1, U:1,
-                    I:1, EM:1, LI:1, OL:1, UL:1, DD:1, DL:1, DT:1};
+                var c          = this.$selection.getContent(),
+                    disallowed = {FONT: 1, SPAN: 1, H1: 1, H2: 1, H3: 1, H4: 1,
+                    H5: 1, H6: 1, PRE: 1, ADDRESS: 1, BLOCKQUOTE: 1, STRONG: 1,
+                    B: 1, U: 1, I: 1, EM: 1, LI: 1, OL: 1, UL: 1, DD: 1, DL: 1,
+                    DT: 1};
                 c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
                     return !disallowed[tag] ? m : "";
                 });
                 if (apf.isIE) {
-                    var htmlNode = this.selection.setContent("<div>" + c + "</div>");
-                    this.selection.selectNode(htmlNode);
+                    var htmlNode = this.$selection.setContent("<div>" + c
+                        + "</div>");
+                    this.$selection.selectNode(htmlNode);
                     htmlNode.removeNode(false);
                     return;
                 }
                 else {
-                    this.selection.setContent(c);
+                    this.$selection.setContent(c);
                 }
             }
 
@@ -307,7 +275,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                           && this.$plugins["numlist"].queryState(_self) != apf.OFF)
                             bNoSel = false;
                     }
-                    var oNode = this.selection.getSelectedNode();
+                    var oNode = this.$selection.getSelectedNode();
                     if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
                         bNoSel = false;
                 }
@@ -320,7 +288,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                         this.oDoc.body.innerHTML);
                     // #endif
                 }
-                var r = this.selection.getRange();
+                var r = this.$selection.getRange();
                 if (r)
                     r.scrollIntoView();
             }
@@ -331,64 +299,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             setTimeout(function() {
                 //_self.$notifyAllButtons(); // @todo This causes pain, find out why
                 if (apf.isIE && !bNoSel)
-                   _self.selection.set();
+                   _self.$selection.set();
                 _self.$visualFocus();
             });
         }
-    };
-
-    /**
-     * Make an instance of apf.popup (identified with a pointer to the cached
-     * DOM node - sCacheId) visible to the user.
-     *
-     * @param {apf.editor.plugin} oPlugin  The plugin instance
-     * @param {String}            sCacheId Pointer to the cached DOM node
-     * @param {DOMElement}        oRef     Button node to show popup below to
-     * @param {Number}            iWidth   New width of the popup
-     * @param {Number}            iHeight  New height of the popup
-     * @type  {void}
-     */
-    this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
-        if (apf.popup.last && apf.popup.last != sCacheId) {
-            var o = apf.lookup(apf.popup.last);
-            if (o) {
-                o.state = apf.OFF;
-                this.$notifyPlugin(o.name, o.state);
-            }
-        }
-
-        //this.selection.cache();
-        this.selection.set();
-        this.$visualFocus();
-
-        oPlugin.state = apf.ON;
-        this.$notifyPlugin(oPlugin.name, apf.ON);
-
-        if (apf.popup.isShowing(sCacheId))
-            return;
-
-        // using setTimeout here, because I want the popup to be shown AFTER the
-        // event bubbling is complete. Another click handler further up the DOM
-        // tree may call a apf.popup.forceHide();
-        setTimeout(function() {
-            apf.popup.show(sCacheId, {
-                x        : 0,
-                y        : 22,
-                animate  : false,
-                ref      : oRef,
-                width    : iWidth,
-                height   : iHeight,
-                callback : function(oPopup) {
-                    if (oPopup.onkeydown) return;
-                    oPopup.onkeydown = function(e) {
-                        e = e || window.event;
-                        var key = e.which || e.keyCode;
-                        if (key == 13 && typeof oPlugin["submit"] == "function") //Enter
-                            return oPlugin.submit(new apf.AbstractEvent(e));
-                    }
-                }
-            });
-        });
     };
 
     /**
@@ -423,9 +337,9 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     function onClick(e) {
         if (oBookmark && apf.isGecko) {
-            var oNewBm = _self.selection.getBookmark();
+            var oNewBm = _self.$selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
-                //this.selection.moveToBookmark(oBookmark);
+                //this.$selection.moveToBookmark(oBookmark);
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
             }
         }
@@ -490,7 +404,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (apf.isIE) {
             if (commandQueue.length > 0 && _self.oDoc.body.innerHTML.length > 0) {
                 for (i = 0; i < commandQueue.length; i++)
-                    _self.executeCommand(commandQueue[i][0], commandQueue[i][1]);
+                    _self.$execCommand(commandQueue[i][0], commandQueue[i][1]);
                 commandQueue = [];
             }
             switch(code) {
@@ -508,8 +422,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     break;
                 case 8: // backspace
                     found = false;
-                    if (_self.selection.getType() == "Control") {
-                        _self.selection.remove();
+                    if (_self.$selection.getType() == "Control") {
+                        _self.$selection.remove();
                         found = true;
                     }
                     listBehavior.call(_self, e, true); //correct lists, if any
@@ -532,17 +446,17 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 switch (code) {
                     case 66: // B
                     case 98: // b
-                        _self.executeCommand("Bold");
+                        _self.$execCommand("Bold");
                         found = true;
                         break;
                     case 105: // i
                     case 73:  // I
-                        _self.executeCommand("Italic");
+                        _self.$execCommand("Italic");
                         found = true;
                         break;
                     case 117: // u
                     case 85:  // U
-                        _self.executeCommand("Underline");
+                        _self.$execCommand("Underline");
                         found = true;
                         break;
                     case 86:  // V
@@ -608,7 +522,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeyup(e) {
-        _self.selection.cache();
+        _self.$selection.cache();
         if (keyupTimer != null)
             return;
 
@@ -767,7 +681,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         apf.AbstractEvent.addListener(this.oDoc, "keydown", onKeydown);
         apf.AbstractEvent.addListener(this.oDoc, "mousedown", function(e){
             e = e || window.event;
-            _self.selection.cache();
+            _self.$selection.cache();
             apf.popup.forceHide();
             //this.$notifyAllButtons();
             apf.window.$mousedown(e);
@@ -812,7 +726,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.oWin = this.iframe.contentWindow;
         this.oDoc = this.oWin.document;
 
-        this.selection = new apf.selection(this.oWin, this.oDoc, this);
+        this.$selection = new apf.selection(this.oWin, this.oDoc, this);
 
         // get the document style (CSS) from the skin:
         // see: apf.presentation.getCssString(), where the following statement
@@ -942,8 +856,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$destroy = function() {
         //this.plugins.$destroy();
-        this.selection.$destroy();
-        /*this.plugins = */this.selection = this.oDoc.host = this.oToobar =
+        this.$selection.$destroy();
+        /*this.plugins = */this.$selection = this.oDoc.host = this.oToobar =
             this.oDoc = this.oWin = this.iframe = null;
     };
 }).implement(

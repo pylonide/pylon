@@ -42,7 +42,7 @@ apf.ContentEditable.plugin('code', function() {
 
         if (oCont.style.display == "none") {
             // remember the selection for IE
-            editor.selection.cache();
+            editor.$selection.cache();
 
             this.update(editor);
 
@@ -65,7 +65,7 @@ apf.ContentEditable.plugin('code', function() {
             propagateChange();
             
             setTimeout(function() {
-                editor.selection.set();
+                editor.$selection.set();
                 editor.$visualFocus();
             });
         }

@@ -28,7 +28,8 @@ apf.ContentEditable = function() {
      * PRIVATE
      **************************************************************************/
 
-    var lastActiveNode, wasFocussable, lastValue, mouseOver, mouseOut, mouseDown,
+    var lastActiveNode, wasFocussable, lastValue, mouseOver, mouseOut, 
+        mouseDown, docklet,
         objectHandles = false,
         tableHandles  = false,
         lastPos       = 0,
@@ -121,6 +122,8 @@ apf.ContentEditable = function() {
             };
         }
         //#endif
+
+        _self.$editable();
 
         _self.$selection = new apf.selection(window, document);
         _self.$selection.cache();
@@ -664,7 +667,7 @@ apf.ContentEditable = function() {
      * @type  {void}
      */
     this.$buttonClick = function(e, oButton) {
-        _self.selection.cache();
+        _self.$selection.cache();
 
         apf.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
@@ -695,7 +698,7 @@ apf.ContentEditable = function() {
                 if (e.isPlugin)
                     _self.$plugins[(_self.$pluginsActive = item)].execute(_self);
                 else
-                    _self.executeCommand(item);
+                    _self.$execCommand(item);
                 e.state = getState(item, e.isPlugin);
             }
         }
@@ -727,29 +730,6 @@ apf.ContentEditable = function() {
 
         return _self.$queryCommand(id);
     }
-
-    /**
-     * Returns the translated key from a locale pack/ collection
-     *
-     * @param {String}  key
-     * @param {Boolean} bIsPlugin
-     * @type  {String}
-     * @private
-     */
-    this.$translate = function(key, bIsPlugin) {
-        // #ifdef __DEBUG
-        if ((!bIsPlugin && !apf.ContentEditable.i18n[_self.language][key])
-          || (bIsPlugin && !apf.ContentEditable.i18n[_self.language]["plugins"][key]))
-            apf.console.error("Translation does not exist"
-                + (bIsPlugin ? " for plugin" : "") + ": " + key);
-        // #endif
-
-        return bIsPlugin
-            ? apf.ContentEditable.i18n[_self.language]["plugins"][key]
-            : apf.ContentEditable.i18n[_self.language][key];
-    };
-
-    /**** Init ****/
 
     /**
      * Draw all HTML elements for the editor toolbar
@@ -906,7 +886,140 @@ apf.ContentEditable = function() {
                     plugin.init(this);
             }
         }
-    }
+        else if (!docklet) {
+            docklet = new apf.modalwindow(document.body, "window");
+
+            docklet.parentNode = this;
+            docklet.implement(apf.AmlDom);
+            //Load docklet
+            //docklet.$aml      = xmlNode;
+            //docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            //xmlNode.setAttribute("skinset", docklet.skinset);
+            //docklet.skin      = "docklet";
+            //docklet.skinName  = null;
+            docklet.$loadSkin();
+            //docklet.draggable = false;
+
+            docklet.$draw();//name
+//alert(docklet.oExt.parentNode);
+            //docklet.setProperty("buttons", "edit|min|close");
+            docklet.setProperty("buttons", "min");
+            docklet.setProperty("title", "Toolbar");
+            docklet.setProperty("icon", "application.png");
+            docklet.setProperty("resizable", true);
+
+            //docklet.$loadAml(xmlNode, name);
+            apf.AmlParser.parseLastPass();
+
+            docklet.setWidth(300);
+            docklet.setHeight(200);
+
+            docklet.show();
+        }
+    };
+
+    /**
+     * Make an instance of apf.popup (identified with a pointer to the cached
+     * DOM node - sCacheId) visible to the user.
+     *
+     * @param {apf.ContentEditable.plugin} oPlugin  The plugin instance
+     * @param {String}            sCacheId Pointer to the cached DOM node
+     * @param {DOMElement}        oRef     Button node to show popup below to
+     * @param {Number}            iWidth   New width of the popup
+     * @param {Number}            iHeight  New height of the popup
+     * @type  {void}
+     */
+    this.$showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
+        if (apf.popup.last && apf.popup.last != sCacheId) {
+            var o = apf.lookup(apf.popup.last);
+            if (o) {
+                o.state = apf.OFF;
+                this.$notifyPlugin(o.name, o.state);
+            }
+        }
+
+        //this.$selection.cache();
+        this.$selection.set();
+        if (this.$visualFocus)
+            this.$visualFocus();
+
+        oPlugin.state = apf.ON;
+        this.$notifyPlugin(oPlugin.name, apf.ON);
+
+        if (apf.popup.isShowing(sCacheId))
+            return;
+
+        // using setTimeout here, because I want the popup to be shown AFTER the
+        // event bubbling is complete. Another click handler further up the DOM
+        // tree may call a apf.popup.forceHide();
+        setTimeout(function() {
+            apf.popup.show(sCacheId, {
+                x        : 0,
+                y        : 22,
+                animate  : false,
+                ref      : oRef,
+                width    : iWidth,
+                height   : iHeight,
+                callback : function(oPopup) {
+                    if (oPopup.onkeydown) return;
+                    oPopup.onkeydown = function(e) {
+                        e = e || window.event;
+                        var key = e.which || e.keyCode;
+                        if (key == 13 && typeof oPlugin["submit"] == "function") //Enter
+                            return oPlugin.submit(new apf.AbstractEvent(e));
+                    }
+                }
+            });
+        });
+    };
+
+    /**
+     * Returns the translated key from a locale pack/ collection
+     *
+     * @param {String}  key
+     * @param {Boolean} bIsPlugin
+     * @type  {String}
+     * @private
+     */
+    this.$translate = function(key, bIsPlugin) {
+        // #ifdef __DEBUG
+        if ((!bIsPlugin && !apf.ContentEditable.i18n[_self.language][key])
+          || (bIsPlugin && !apf.ContentEditable.i18n[_self.language]["plugins"][key]))
+            apf.console.error("Translation does not exist"
+                + (bIsPlugin ? " for plugin" : "") + ": " + key);
+        // #endif
+
+        return bIsPlugin
+            ? apf.ContentEditable.i18n[_self.language]["plugins"][key]
+            : apf.ContentEditable.i18n[_self.language][key];
+    };
+
+    /**
+     * Inserts any given text (or HTML) at cursor position into the Editor
+     *
+     * @param {String}  html
+     * @param {Boolean} [bNoParse] Prevents parsing the HTML, which might alter the string
+     * @param {Boolean} [bNoFocus] Prevents setting the focus back to the editor area
+     * @type  {void}
+     */
+    this.$insertHtml = function(html, bNoParse, bNoFocus) {
+        //removed check: if (inited && complete)
+        if (!bNoFocus)
+            this.$selection.set();
+        this.$visualFocus(true);
+        // #ifdef __WITH_PARSER_HTML
+        html = bNoParse ? html : apf.htmlParser.prepare(html);
+        // #endif
+        this.$selection.setContent(html);
+        // notify SmartBindings that we changed stuff...
+        this.change(this.getValue());
+
+        if (bNoFocus) return;
+        setTimeout(function() {
+            _self.$selection.set();
+            _self.$visualFocus();
+        });
+    };
 
     /***************************************************************************
      * PUBLIC

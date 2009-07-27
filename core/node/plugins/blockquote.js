@@ -32,7 +32,7 @@ apf.ContentEditable.plugin('blockquote', function(){
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
+        editor.$execCommand('FormatBlock', 'BLOCKQUOTE');
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

@@ -35,7 +35,7 @@ apf.ContentEditable.listPlugin = function(sName) {
         : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
-            editor.executeCommand(this.name == "bullist"
+            editor.$execCommand(this.name == "bullist"
                 ? 'InsertUnorderedList'
                 : 'InsertOrderedList');
 
@@ -73,11 +73,11 @@ apf.ContentEditable.listPlugin = function(sName) {
     }
 
     this.correctLists = function(editor) {
-        editor.selection.set();
+        editor.$selection.set();
 
-        var oNode = editor.selection.getSelectedNode();
+        var oNode = editor.$selection.getSelectedNode();
         //window.console.log('correcting lists0: ', oNode);
-        //window.console.dir(editor.selection.getRange());
+        //window.console.dir(editor.$selection.getRange());
         if (oNode.tagName != "LI") {
             oNode = getEmptyLi(oNode);
             if (!oNode || oNode.tagName != "LI")
@@ -103,17 +103,17 @@ apf.ContentEditable.listPlugin = function(sName) {
         //while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
         //    moveListItems(oSibling.nextSibling, oSibling);
 
-        editor.selection.selectNode(oNode);
+        editor.$selection.selectNode(oNode);
         if (!apf.isIE)
-            editor.selection.getRange().setStart(oNode, 0);
-        editor.selection.collapse(!apf.isIE);
+            editor.$selection.getRange().setStart(oNode, 0);
+        editor.$selection.collapse(!apf.isIE);
         editor.$visualFocus();
         return true;
     };
 
     this.correctIndentation = function(editor, dir) {
         //this.correctLists(editor);
-        editor.executeCommand(dir);
+        editor.$execCommand(dir);
         this.correctLists(editor);
     };
 

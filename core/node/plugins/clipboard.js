@@ -47,7 +47,7 @@ apf.ContentEditable.plugin('pastetext', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 270);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 300, 270);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
@@ -79,7 +79,7 @@ apf.ContentEditable.plugin('pastetext', function() {
         sContent = sContent.replace(/\r\n/g, '<br />')
             .replace(/\r/g, '<br />')
             .replace(/\n/g, '<br />');
-        this.editor.insertHTML(sContent);
+        this.editor.$insertHtml(sContent);
 
         if (e.stop)
             e.stop();

@@ -102,7 +102,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 296 : 292, 167);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, apf.isIE6 ? 296 : 292, 167);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -147,7 +147,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
             apf.popup.forceHide();
 //            if (this.name == "backcolor" && apf.isGecko)
 //                this.setStyleMethod(true);
-            this.editor.executeCommand(this.name == "forecolor"
+            this.editor.$execCommand(this.name == "forecolor"
                 ? 'ForeColor'
                 : apf.isIE ? 'BackColor' : 'HiliteColor',
                 '#' + sColor);

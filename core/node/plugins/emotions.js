@@ -59,7 +59,7 @@ apf.ContentEditable.plugin('emotions', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 123, 110);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 123, 110);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -80,7 +80,7 @@ apf.ContentEditable.plugin('emotions', function() {
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
         apf.popup.forceHide();
-        this.editor.insertHTML('<img src="' + this.emotionsPath
+        this.editor.$insertHtml('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />', true);
         //this.restoreSelection();
     };

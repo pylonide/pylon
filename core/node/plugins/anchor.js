@@ -47,7 +47,7 @@ apf.ContentEditable.plugin('anchor', function() {
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 218, 47);
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
@@ -63,7 +63,7 @@ apf.ContentEditable.plugin('anchor', function() {
 
     this.queryState = function(editor) {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
-        var oNode = editor.selection.getSelectedNode();
+        var oNode = editor.$selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute('name'))
             return apf.ON;
 
@@ -76,9 +76,9 @@ apf.ContentEditable.plugin('anchor', function() {
         if (!this.oName.value) return;
 
         //this.storeSelection();
-        this.editor.insertHTML('<a name="' + this.oName.value + '" class="itemAnchor" />');
+        this.editor.$insertHtml('<a name="' + this.oName.value + '" class="itemAnchor" />');
         //this.restoreSelection();
-        this.editor.selection.collapse(false);
+        this.editor.$selection.collapse(false);
     };
 
     this.createPanelBody = function() {
