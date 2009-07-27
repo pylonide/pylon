@@ -926,8 +926,8 @@ apf.window = new (function(){
           // #endif
           ) && !ta[e.target.tagName]);
 
-        if (canSelect && !amlNode.canHaveChildren 
-          || !apf.isChildOf(amlNode.oInt, e.target))
+        if (canSelect && !amlNode.$allowSelect && (!amlNode.canHaveChildren 
+          || !apf.isChildOf(amlNode.oInt, e.target)))
             canSelect = false;
         
         if (!canSelect)
@@ -947,8 +947,8 @@ apf.window = new (function(){
 
         if (canSelect) {
             var amlNode = apf.findHost(e.srcElement);
-            if (!amlNode.canHaveChildren 
-              || !apf.isChildOf(amlNode.oInt, e.srcElement))
+            if (!amlNode.$allowSelect && (!amlNode.canHaveChildren 
+              || !apf.isChildOf(amlNode.oInt, e.srcElement)))
                 canSelect = false;
         }
 

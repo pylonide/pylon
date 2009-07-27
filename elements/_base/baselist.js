@@ -126,7 +126,7 @@ apf.BaseList = function(){
             shiftKey = e.shiftKey,
             selHtml  = this.$selected || this.$indicator;
 
-        if (!selHtml || this.renaming) //@todo how about allowdeselect?
+        if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
             return;
 
         var selXml = this.indicator || this.selected,

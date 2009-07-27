@@ -81,7 +81,7 @@ apf.ContentEditable.plugin('code', function() {
         }
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, sHtml 
-            ? apf.htmlParser.parse(sHtml)
+            ? apf.htmlCleaner.parse(sHtml)
             : (lastLoaded = editor.getValue()));
     };
 
@@ -91,7 +91,7 @@ apf.ContentEditable.plugin('code', function() {
 
     function propagateChange() {
         //if (lastLoaded == oPreview.value) return false;
-        var html = apf.htmlParser.parse(oPreview.value
+        var html = apf.htmlCleaner.parse(oPreview.value
             .replace(/<\/p>/gi, "</p><p></p>")
             .replace(/\n/g, ''));
 

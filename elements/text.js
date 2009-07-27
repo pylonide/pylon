@@ -41,6 +41,7 @@
 apf.text = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can't get the focus
     this.focussable  = false;
+    this.$allowSelect = true;
     this.$hasStateMessages = true;
     var _self        = this;
 

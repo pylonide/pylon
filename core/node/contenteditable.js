@@ -107,6 +107,7 @@ apf.ContentEditable = function() {
             oNode.contentEditable = true;
         }
         else {
+            document.body.setAttribute("spellcheck", "false");
             document.designMode = "on";
             if (apf.isGecko) {
                 // On each return, insert a BR element
@@ -118,7 +119,14 @@ apf.ContentEditable = function() {
             }
         }
 
-        lastValue = oNode.innerHTML;
+        var v, rule;
+        if (v = _self.getModel().$validation)
+            rule = v.getRule(xmlNode);
+
+        lastValue = (rule && apf.isTrue(rule.richtext) 
+            ? (oNode.innerHTML = apf.htmlCleaner.prepare(oNode.innerHTML)) 
+            : oNode.innerHTML);
+        //lastValue = oNode.innerHTML;
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
@@ -131,10 +139,7 @@ apf.ContentEditable = function() {
         }
         //#endif
 
-        var v, rule;
-        if (v = _self.getModel().$validation)
-            rule = v.getRule(xmlNode);
-        var showDocklet = !rule || !apf.isFalse(rule.richtext);
+        var showDocklet = rule && apf.isTrue(rule.richtext);
         if (showDocklet && !docklet)
             _self.$editable();
         if (docklet)
@@ -171,21 +176,27 @@ apf.ContentEditable = function() {
         
         // do additional handling, first we check for a change in the data...
         var xpath = oNode.getAttribute("xpath");
-        if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
+        if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) { //@todo this will not always work in IE
             var model = _self.getModel();
             
             var lastPos = (tabStack || initTabStack()).indexOf(oNode);
             var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath);
-            _self.edit(xmlNode, oNode.innerHTML);
             
-            if (model.$validation) {
+            var v, rule;
+            if (v = model.$validation)
+                rule = v.getRule(xmlNode);
+    
+            _self.edit(xmlNode, rule && apf.isTrue(rule.richtext) 
+                ? apf.htmlCleaner.parse(oNode.innerHTML)
+                : oNode.innerHTML);
+            
+            if (v) {
                 (_self.validityState || (_self.validityState = 
                     new apf.validator.validityState())).$errorHtml = 
                         (tabStack || initTabStack())[lastPos]
                 
                 _self.validityState.$lastPos = lastPos;
                 
-                var rule = model.$validation.getRule(xmlNode);
                 if (rule)
                     _self.invalidmsg = rule.invalidmsg;
 
@@ -209,13 +220,23 @@ apf.ContentEditable = function() {
     //@todo skin change
     
     this.addEventListener("keydown", function(e) {
+        if (!this.contenteditable)
+            return;
+        
         e = e || window.event;
         var isDone, code = e.which || e.keyCode;
         if (!activeNode) {
             //F2 starts editing
             if (code == 113) {
-                //@todo find the item of the this.$selected
-                createEditor((tabStack || initTabStack())[0]);
+                var oNode, nodes = this.$selected.getElementsByTagName("*");
+                for (var i = nodes.length - 1; i >= 0; i--) {
+                    if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
+                        oNode = nodes[i];
+                        break;
+                    }
+                }
+                
+                createEditor(oNode || (tabStack || initTabStack())[0]);
                 if (activeNode) {
                     activeNode.focus();
                     _self.$selection.selectNode(activeNode);
@@ -269,7 +290,7 @@ apf.ContentEditable = function() {
                 var model = this.getModel();
                 var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(activeNode.getAttribute("xpath"));
                 var rule = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline:true};
-                isDone = apf.isFalse(rule.multiline);
+                isDone = !apf.isTrue(rule.multiline);
             }
         }
         else if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
@@ -322,6 +343,8 @@ apf.ContentEditable = function() {
             e.returnValue = false;
             return false;
         }
+        else if (activeNode)
+            e.returnValue = -1;
     }, true);
 
     function initTabStack() {
@@ -918,20 +941,19 @@ apf.ContentEditable = function() {
             docklet.$loadSkin();
 
             docklet.$draw();
-            docklet.setProperty("buttons", "min");
-            docklet.setProperty("title", "Toolbar");
+            docklet.setProperty("buttons", "");
+            docklet.setProperty("title", "Formatting");
             docklet.setProperty("icon", "application.png");
-            docklet.setProperty("resizable", true);
+            docklet.setProperty("resizable", "horizontal");
             docklet.setProperty("draggable", true);
             docklet.setProperty("focussable", true);
             //docklet.setProperty("resizeoutline", true);
 
             apf.AmlParser.parseLastPass();
 
-            docklet.setProperty("right", 100);
-            docklet.setTop(100);
-            docklet.setWidth(670);
-            docklet.setHeight(200);
+            docklet.setProperty("left", 500);
+            docklet.setProperty("top", 100);
+            docklet.setProperty("width", 400);
             
             docklet.onfocus = function(){
                 _self.focus();
@@ -1060,7 +1082,7 @@ apf.ContentEditable = function() {
             this.$selection.set();
         this.$visualFocus(true);
         // #ifdef __WITH_PARSER_HTML
-        html = bNoParse ? html : apf.htmlParser.prepare(html);
+        html = bNoParse ? html : apf.htmlCleaner.prepare(html);
         // #endif
         this.$selection.setContent(html);
         // notify SmartBindings that we changed stuff...

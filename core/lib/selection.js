@@ -485,7 +485,7 @@ apf.selection = function(oWin, oDoc, editor) {
 
         // #ifdef __PARSER_HTML
         if (!bNoPrepare)
-            html = apf.htmlParser.prepare(html, true);
+            html = apf.htmlCleaner.prepare(html, true);
         // #endif
 
         if (range.insertNode) {

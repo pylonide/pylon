@@ -676,7 +676,8 @@ apf.Class = function(){
         var stack = useCapture ? capture_stack : events_stack;
         if (!stack[eventName])
             stack[eventName] = [];
-        stack[eventName].pushUnique(callback);
+        if (stack[eventName].indexOf(callback) == -1)
+            stack[eventName].unshift(callback);
     }
 
     /**

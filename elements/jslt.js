@@ -48,6 +48,7 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
     this.$hasStateMessages = true;
     this.mainBind = "contents";
     this.focussable = false;
+    this.$allowSelect = true;
     
     this.parse = function(code){
         this.setProperty("value", code);

@@ -37,6 +37,7 @@
  */
 apf.xslt = apf.component(apf.NODE_VISIBLE, function(){
     this.$hasStateMessages = true;
+    this.$allowSelect = true;
     
     // INIT
     this.parse = function(code){

@@ -102,7 +102,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             "<br _apf_marker='1' /><br _apf_marker='1' />");
 
         // #ifdef __PARSER_HTML
-        html = apf.htmlParser.prepare(html);
+        html = apf.htmlCleaner.prepare(html);
         // #endif
 
         if (this.$pluginsActive == "code") {
@@ -192,7 +192,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return (this.$value = apf.htmlParser.parse(this.oDoc.body.innerHTML, bStrict));
+        return (this.$value = apf.htmlCleaner.parse(this.oDoc.body.innerHTML, bStrict));
     };
 
     /**
@@ -284,7 +284,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                     /* #ifndef __WITH_PARSER_HTML
                     this.oDoc.body.innerHTML = this.oDoc.body.innerHTML;
                     #else*/
-                    this.oDoc.body.innerHTML = apf.htmlParser.prepare(
+                    this.oDoc.body.innerHTML = apf.htmlCleaner.prepare(
                         this.oDoc.body.innerHTML);
                     // #endif
                 }

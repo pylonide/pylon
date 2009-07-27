@@ -22,12 +22,9 @@
 // #ifdef __PARSER_HTML
 /**
  * The parser of the HyperText Markup Language.
- * @parser
  * @private
- *
- * @addnode global, anyaml
  */
-apf.htmlParser = (function() {
+apf.htmlCleaner = (function() {
     var prepareRE    = null, exportRE = null,
         noMarginTags = {"table": 1, "TABLE": 1},
         selfClosing  = {"br": 1, "img": 1, "input": 1, "hr": 1};
