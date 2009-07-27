@@ -36,6 +36,7 @@ apf.ContentEditable = function() {
         activeNode    = null,
         tabStack      = null,
         oButtons      = {},
+        oToolbar      = null,
         _self         = this;
 
     this.addEventListener("focus", function(e){
@@ -891,24 +892,9 @@ apf.ContentEditable = function() {
             this.oExt = this.$getExternal("main", null, function(oExt){
                 this.$drawToolbars(this.$getLayoutNode("main", "toolbar"));
             });
-            this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
+            oToolbar = this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
             
-            // fetch the DOM references of all toolbar buttons and let the
-            // respective plugins finish initialization
-            var btns = this.oToolbar.getElementsByTagName("div");
-            for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
-                item = btns[i].getAttribute("type");
-                if (!item) continue;
-
-                oButtons[item] = btns[i];
-                plugin = this.$plugins[item];
-                if (!plugin) continue;
-
-                plugin.buttonNode = btns[i];
-
-                if (plugin.init)
-                    plugin.init(this);
-            }
+            docklet = this;
         }
         else if (!docklet && !(apf.ContentEditable.toolwin = docklet)) {
             docklet = apf.ContentEditable.toolwin = 
@@ -946,6 +932,26 @@ apf.ContentEditable = function() {
             
             docklet.onfocus = function(){
                 _self.focus();
+            }
+            this.$drawToolbars(oToolbar = docklet.oExt, "toolbar", null, true);
+        }
+
+        if (oToolbar) {
+            // fetch the DOM references of all toolbar buttons and let the
+            // respective plugins finish initialization
+            var btns = oToolbar.getElementsByTagName("div");
+            for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
+                item = btns[i].getAttribute("type");
+                if (!item) continue;
+
+                oButtons[item] = btns[i];
+                plugin = this.$plugins[item];
+                if (!plugin) continue;
+
+                plugin.buttonNode = btns[i];
+
+                if (plugin.init)
+                    plugin.init(this);
             }
         }
     };
