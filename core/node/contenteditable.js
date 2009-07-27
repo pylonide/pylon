@@ -90,7 +90,6 @@ apf.ContentEditable = function() {
             setTimeout(function(){
                 oNode.focus();
                 _self.$selection.selectNode(oNode);
-                
                 _self.getModel().validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
@@ -122,11 +121,17 @@ apf.ContentEditable = function() {
         var v, rule;
         if (v = _self.getModel().$validation)
             rule = v.getRule(xmlNode);
-
-        lastValue = (rule && apf.isTrue(rule.richtext) 
-            ? (oNode.innerHTML = apf.htmlCleaner.prepare(oNode.innerHTML)) 
-            : oNode.innerHTML);
-        //lastValue = oNode.innerHTML;
+        
+        // #ifdef __PARSER_HTML
+        if (rule && apf.isTrue(rule.richtext)) {
+            lastValue = [];
+            lastValue[0] = oNode.innerHTML = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
+                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
+                "<br _apf_marker='1' /><br _apf_marker='1' />"));
+        }
+        else 
+        //#endif
+            lastValue = oNode.innerHTML;
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
@@ -166,8 +171,8 @@ apf.ContentEditable = function() {
         if (docklet)
             docklet.setProperty("visible", false);
 
-        if (!bProcess || oNode.innerHTML == lastValue) {
-            oNode.innerHTML = lastValue;
+        if (!bProcess || oNode.innerHTML == lastValue[0]) {
+            oNode.innerHTML = lastValue[1];
             return false;
         }
         
@@ -228,11 +233,14 @@ apf.ContentEditable = function() {
         if (!activeNode) {
             //F2 starts editing
             if (code == 113) {
-                var oNode, nodes = this.$selected.getElementsByTagName("*");
-                for (var i = nodes.length - 1; i >= 0; i--) {
-                    if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
-                        oNode = nodes[i];
-                        break;
+                var oNode;
+                if (this.$selected) {
+                    var nodes = this.$selected.getElementsByTagName("*");
+                    for (var i = nodes.length - 1; i >= 0; i--) {
+                        if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
+                            oNode = nodes[i];
+                            break;
+                        }
                     }
                 }
                 
@@ -432,6 +440,13 @@ apf.ContentEditable = function() {
                 }
                 
                 createEditor(el);
+                e.cancelBubble = true;
+                apf.window.$mousedown({srcElement: activeNode});
+                setTimeout(function(){
+                    //@todo Mike. The cursor position is lost!!! Please help me!
+                    activeNode.focus();
+                }, 10);
+                
                 return false;
             });
 
@@ -949,15 +964,16 @@ apf.ContentEditable = function() {
             docklet.setProperty("focussable", true);
             //docklet.setProperty("resizeoutline", true);
 
+            docklet.onfocus = function(){
+                _self.focus();
+            }
+
             apf.AmlParser.parseLastPass();
 
             docklet.setProperty("left", 500);
             docklet.setProperty("top", 100);
             docklet.setProperty("width", 400);
             
-            docklet.onfocus = function(){
-                _self.focus();
-            }
             var content, aNodes = docklet.oExt.getElementsByTagName("div");
             for (var j = 0, l = aNodes.length; j < l && !content; j++) {
                 if (aNodes[j].className.indexOf("content") != -1)

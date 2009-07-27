@@ -98,10 +98,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         
         this.$value = html;
 
+        // #ifdef __PARSER_HTML
         html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
             "<br _apf_marker='1' /><br _apf_marker='1' />");
 
-        // #ifdef __PARSER_HTML
         html = apf.htmlCleaner.prepare(html);
         // #endif
 
