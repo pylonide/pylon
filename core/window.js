@@ -1539,6 +1539,20 @@ apf.AmlDocument = function(){
         return {};
     };
     //#endif
+
+    //#ifdef __WITH_CONTENTEDITABLE
+    this.queryCommand = function(cmd){
+       if (!apf.window.focussed || !apf.window.focussed.$queryCommand)
+           return;
+       apf.window.focussed.$queryCommand(cmd);
+    };
+
+    this.execCommand = function(cmd, ui, val){
+       if (!apf.window.focussed || !apf.window.focussed.$execCommand)
+           return;
+       apf.window.focussed.$execCommand(cmd, val);
+    };
+    //#endif
 };
 
 //#endif

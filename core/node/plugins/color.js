@@ -129,7 +129,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
         this.state    = editor.$queryCommand(cmdName);
         var currValue = "";
         try {
-            currValue = editor.oDoc.queryCommandValue(cmdName);
+            currValue = editor.$activeDocument.queryCommandValue(cmdName);
         }
         catch (ex) {}
         if (apf.isIE)

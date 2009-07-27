@@ -70,11 +70,12 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     /**** Default Properties ****/
 
-    var commandQueue = [];
-    var _self        = this;
+    var _self   = this;
 
-    this.value           = "";
-    this.$value          = "";
+    this.value  = "";
+    this.$value = "";
+
+    this.contenteditable = true;
 
     this.oDoc = this.oWin = null;
 
@@ -177,6 +178,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             }
             catch (e) {};
         }
+        this.$activeDocument = this.oDoc;
+        
         if (justinited) {
             //this.$propHandlers["value"].call(this, "");
             this.dispatchEvent("complete", {editor: this});
@@ -227,82 +230,83 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$execCommand = function(cmdName, cmdParam) {
         if (!this.$plugins[cmdName] && inited && complete
-          && this.state != apf.DISABLED) {
+          && this.state != apf.DISABLED) 
+            return;
+
+        if (apf.isIE) {
+            if (!this.oDoc.body.innerHTML)
+                return commandQueue.push([cmdName, cmdParam]);
+            else
+                this.$selection.set();
+        }
+
+        this.$visualFocus();
+
+        if (cmdName.toLowerCase() == "removeformat") {
+            var c          = this.$selection.getContent(),
+                disallowed = {FONT: 1, SPAN: 1, H1: 1, H2: 1, H3: 1, H4: 1,
+                H5: 1, H6: 1, PRE: 1, ADDRESS: 1, BLOCKQUOTE: 1, STRONG: 1,
+                B: 1, U: 1, I: 1, EM: 1, LI: 1, OL: 1, UL: 1, DD: 1, DL: 1,
+                DT: 1};
+            c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
+                return !disallowed[tag] ? m : "";
+            });
             if (apf.isIE) {
-                if (!this.oDoc.body.innerHTML)
-                    return commandQueue.push([cmdName, cmdParam]);
-                else
-                    this.$selection.set();
+                var htmlNode = this.$selection.setContent("<div>" + c
+                    + "</div>");
+                this.$selection.selectNode(htmlNode);
+                htmlNode.removeNode(false);
+                return;
             }
-
-            this.$visualFocus();
-            
-            if (cmdName.toLowerCase() == "removeformat") {
-                var c          = this.$selection.getContent(),
-                    disallowed = {FONT: 1, SPAN: 1, H1: 1, H2: 1, H3: 1, H4: 1,
-                    H5: 1, H6: 1, PRE: 1, ADDRESS: 1, BLOCKQUOTE: 1, STRONG: 1,
-                    B: 1, U: 1, I: 1, EM: 1, LI: 1, OL: 1, UL: 1, DD: 1, DL: 1,
-                    DT: 1};
-                c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
-                    return !disallowed[tag] ? m : "";
-                });
-                if (apf.isIE) {
-                    var htmlNode = this.$selection.setContent("<div>" + c
-                        + "</div>");
-                    this.$selection.selectNode(htmlNode);
-                    htmlNode.removeNode(false);
-                    return;
-                }
-                else {
-                    this.$selection.setContent(c);
-                }
+            else {
+                this.$selection.setContent(c);
             }
+        }
 
-            this.oDoc.execCommand(cmdName, false, cmdParam);
+        this.oDoc.execCommand(cmdName, false, cmdParam);
 
-            // make sure that the command didn't leave any <P> tags behind (cleanup)
-            cmdName    = cmdName.toLowerCase();
-            var bNoSel = (cmdName == "SelectAll");
-            if (apf.isIE) {
-                if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
-                  && this.$queryCommand(cmdName) == apf.OFF) {
-                    bNoSel = true;
-                }
-                else if (cmdName == "outdent") {
-                    bNoSel = true;
-                    if (this.$plugins["bullist"] && this.$plugins["numlist"]) {
-                        if (this.$plugins["bullist"].queryState(_self) != apf.OFF
-                          && this.$plugins["numlist"].queryState(_self) != apf.OFF)
-                            bNoSel = false;
-                    }
-                    var oNode = this.$selection.getSelectedNode();
-                    if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
+        // make sure that the command didn't leave any <P> tags behind (cleanup)
+        cmdName    = cmdName.toLowerCase();
+        var bNoSel = (cmdName == "SelectAll");
+        if (apf.isIE) {
+            if ((cmdName == "insertunorderedlist" || cmdName == "insertorderedlist")
+              && this.$queryCommand(cmdName) == apf.OFF) {
+                bNoSel = true;
+            }
+            else if (cmdName == "outdent") {
+                bNoSel = true;
+                if (this.$plugins["bullist"] && this.$plugins["numlist"]) {
+                    if (this.$plugins["bullist"].queryState(_self) != apf.OFF
+                      && this.$plugins["numlist"].queryState(_self) != apf.OFF)
                         bNoSel = false;
                 }
-                
-                if (bNoSel) {
-                    /* #ifndef __WITH_PARSER_HTML
-                    this.oDoc.body.innerHTML = this.oDoc.body.innerHTML;
-                    #else*/
-                    this.oDoc.body.innerHTML = apf.htmlCleaner.prepare(
-                        this.oDoc.body.innerHTML);
-                    // #endif
-                }
-                var r = this.$selection.getRange();
-                if (r)
-                    r.scrollIntoView();
+                var oNode = this.$selection.getSelectedNode();
+                if (bNoSel && oNode && oNode.tagName == "BLOCKQUOTE")
+                    bNoSel = false;
             }
-            
-            this.$notifyAllButtons();
-            this.change(this.getValue());
 
-            setTimeout(function() {
-                //_self.$notifyAllButtons(); // @todo This causes pain, find out why
-                if (apf.isIE && !bNoSel)
-                   _self.$selection.set();
-                _self.$visualFocus();
-            });
+            if (bNoSel) {
+                /* #ifndef __WITH_PARSER_HTML
+                this.oDoc.body.innerHTML = this.oDoc.body.innerHTML;
+                #else*/
+                this.oDoc.body.innerHTML = apf.htmlCleaner.prepare(
+                    this.oDoc.body.innerHTML);
+                // #endif
+            }
+            var r = this.$selection.getRange();
+            if (r)
+                r.scrollIntoView();
         }
+
+        this.$notifyAllButtons();
+        this.change(this.getValue());
+
+        setTimeout(function() {
+            //_self.$notifyAllButtons(); // @todo This causes pain, find out why
+            if (apf.isIE && !bNoSel)
+               _self.$selection.set();
+            _self.$visualFocus();
+        });
     };
 
     /**
@@ -372,228 +376,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         var ret = _self.$notifyAllPlugins("context", e);
     }
 
-    var changeTimer = null;
-    /**
-     * Firing change(), when the editor is databound, subsequently after each
-     * keystroke, can have a VERY large impact on editor performance. That's why
-     * we delay the change() call.
-     *
-     * @type {void}
-     */
-    function resumeChangeTimer() {
-        if (!_self.realtime || changeTimer !== null) return;
-        changeTimer = setTimeout(function() {
-            clearTimeout(changeTimer);
-            _self.change(_self.getValue());
-            changeTimer = null;
-        }, 200);
-    }
-
-    /**
-     * Event handler; fired when the user pressed a key inside the editor IFRAME.
-     * For IE, we apply some necessary behavior correction and for other browsers, like
-     * Firefox and Safari, we enable some of the missing default keyboard shortcuts.
-     *
-     * @param {Event} e
-     * @type {Boolean}
-     * @private
-     */
-    function onKeydown(e) {
-        e = e || window.event;
-        var i, found, code = e.which || e.keyCode;
-        if (apf.isIE) {
-            if (commandQueue.length > 0 && _self.oDoc.body.innerHTML.length > 0) {
-                for (i = 0; i < commandQueue.length; i++)
-                    _self.$execCommand(commandQueue[i][0], commandQueue[i][1]);
-                commandQueue = [];
-            }
-            switch(code) {
-                case 66:  // B
-                case 98:  // b
-                case 105: // i
-                case 73:  // I
-                case 117: // u
-                case 85:  // U
-                //case 86:  // V |_ See onPaste()
-                //case 118: // v |  event handler...
-                    if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey 
-                      && !e.altKey && _self.realtime)
-                        _self.change(_self.getValue());
-                    break;
-                case 8: // backspace
-                    found = false;
-                    if (_self.$selection.getType() == "Control") {
-                        _self.$selection.remove();
-                        found = true;
-                    }
-                    listBehavior.call(_self, e, true); //correct lists, if any
-                    if (found)
-                        return false;
-                    break;
-                case 46:
-                    listBehavior.call(_self, e, true); //correct lists, if any
-                    break;
-                case 9: // tab
-                    if (listBehavior.call(_self, e))
-                        return false;
-                    break;
-            }
-        }
-        else {
-            _self.$visualFocus();
-            if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
-                found = false;
-                switch (code) {
-                    case 66: // B
-                    case 98: // b
-                        _self.$execCommand("Bold");
-                        found = true;
-                        break;
-                    case 105: // i
-                    case 73:  // I
-                        _self.$execCommand("Italic");
-                        found = true;
-                        break;
-                    case 117: // u
-                    case 85:  // U
-                        _self.$execCommand("Underline");
-                        found = true;
-                        break;
-                    case 86:  // V
-                    case 118: // v
-                        if (!apf.isGecko)
-                            onPaste.call(_self);
-                        //found = true;
-                        break;
-                    case 37: // left
-                    case 39: // right
-                        found = true;
-                }
-                if (found) {
-                    apf.AbstractEvent.stop(e);
-                    if (_self.realtime)
-                        _self.change(_self.getValue());
-                }
-            }
-            else if (!e.ctrlKey && !e.shiftKey && code == 13)
-                _self.dispatchEvent("keyenter", {editor: _self, event: e});
-        }
-        _self.$visualFocus();
-        if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
-            found = _self.$notifyKeyBindings({
-                code   : code,
-                control: e.ctrlKey,
-                alt    : e.altKey,
-                shift  : e.shiftKey,
-                meta   : e.metaKey
-            });
-            if (found) {
-                apf.AbstractEvent.stop(e);
-                return false;
-            }
-        }
-
-        if (code == 9) { // tab
-            if (listBehavior.call(_self, e)) {
-                apf.AbstractEvent.stop(e);
-                return false;
-            }
-        }
-        else if (code == 8 || code == 46) //backspace or del
-            listBehavior.call(_self, e, true); //correct lists, if any
-
-        if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
-          && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
-            resumeChangeTimer();
-        }
-
-        apf.window.$keydown(e);
-        //keydownTimer = null;
-    }
-
-    var keyupTimer = null;
-
-    /**
-     * Event handler; fired when the user releases a key inside the editable area
-     *
-     * @see object.abstractevent
-     * @param {Event} e
-     * @type  {void}
-     * @private
-     */
-    function onKeyup(e) {
-        _self.$selection.cache();
-        if (keyupTimer != null)
-            return;
-
-        function keyupHandler() {
-            clearTimeout(keyupTimer);
-            if (_self.state == apf.DISABLED) return;
-            _self.$notifyAllButtons();
-            _self.dispatchEvent("typing", {editor: _self, event: e});
-            _self.$notifyAllPlugins("typing", e.code);
-            keyupTimer = null;
-        }
-
-        keyupTimer = window.setTimeout(keyupHandler, 200);
-        //keyHandler();
-        apf.window.$keyup(e || window.event);
-    }
-
-    /**
-     * Corrects the default/ standard behavior of list elements (&lt;ul&gt; and
-     * &lt;ol&gt; HTML nodes) to match the general user experience match with
-     * M$ Office Word.
-     *
-     * @param {Event}   e
-     * @param {Boolean} bFix Flag set to TRUE if you want to correct list indentation
-     * @type Boolean
-     * @private
-     */
-    function listBehavior(e, bFix) {
-        if (!this.$plugins["bullist"] || !this.$plugins["numlist"])
-            return false;
-        if (typeof e.shift != "undefined")
-           e.shiftKey = e.shift;
-        var pList = this.$plugins["bullist"].queryState(this) == apf.ON
-            ? this.$plugins["bullist"]
-            : this.$plugins["numlist"].queryState(this) == apf.ON
-                ? this.$plugins["numlist"]
-                : null;
-        if (!pList) return false;
-        if (bFix === true)
-            pList.correctLists(this);
-        else
-            pList.correctIndentation(this, e.shiftKey ? "outdent" : "indent");
-
-        return true;
-    }
-
     /**** Focus Handling ****/
-
-    /**
-     * Give or return the focus to the editable area, hence 'visual' focus.
-     *
-     * @param {Boolean} bNotify Flag set to TRUE if plugins should be notified of this event
-     * @type  {void}
-     */
-    this.$visualFocus = function(bNotify) {
-        // setting focus to the iframe content, upsets the 'code' plugin
-        var bCode = (this.$pluginsActive == "code");
-        if (apf.window.focussed == this && !bCode) {
-            try {
-                _self.oWin.focus();
-            }
-            catch(e) {};
-        }
-
-        if (bCode) {
-            _self.$notifyAllButtons(apf.DISABLED);
-            _self.$notifyButton("code", apf.SELECTED);
-        }
-        else if (bNotify)
-            _self.$notifyAllButtons();
-    };
 
     var fTimer;
     /**
@@ -677,8 +460,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$addListeners = function() {
         apf.AbstractEvent.addListener(this.oDoc, "mouseup", onClick);
         //apf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
-        apf.AbstractEvent.addListener(this.oDoc, "keyup", onKeyup);
-        apf.AbstractEvent.addListener(this.oDoc, "keydown", onKeydown);
+        apf.AbstractEvent.addListener(this.oDoc, "keyup", apf.window.$keyup);
+        apf.AbstractEvent.addListener(this.oDoc, "keydown", apf.window.$keydown);
         apf.AbstractEvent.addListener(this.oDoc, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
@@ -715,7 +498,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.$editable();
 
         //this.plugins   = new apf.editor.plugins(this.$plugins, this);
-        var oEditor    = this.$getLayoutNode("main", "editor",  this.oExt);
+        var oEditor = this.$getLayoutNode("main", "editor",  this.oExt);
 
         this.iframe = document.createElement("iframe");
         this.iframe.setAttribute("frameborder", "0");

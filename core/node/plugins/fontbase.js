@@ -77,7 +77,7 @@ apf.ContentEditable.plugin('fonts', function() {
     this.queryState = function(editor) {
         this.state = editor.$queryCommand('FontName');
 
-        var currValue = editor.oDoc.queryCommandValue('FontName');
+        var currValue = editor.$activeDocument.queryCommandValue('FontName');
         if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue))
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
     };
@@ -184,7 +184,7 @@ apf.ContentEditable.plugin('fontsize', function() {
     this.queryState = function(editor) {
         this.state = editor.$queryCommand('FontSize');
 
-        var currValue = editor.oDoc.queryCommandValue('FontSize')
+        var currValue = editor.$activeDocument.queryCommandValue('FontSize')
         if (!currValue || this.sizePreview.innerHTML != currValue) {
             this.sizePreview.innerHTML = currValue ? currValue : "Size";
         }
