@@ -60,21 +60,27 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {Range}
      */
     this.set = function() {
-        if (!apf.isIE || !this.current) return;
+        if (!this.current) return;
 
-        try {
+        if (apf.isIE) {
+            try {
+                if (vfocus)
+                    editor.$visualFocus();
+                else
+                    oWin.focus();
+                this.current.select();
+            }
+            catch (ex) {}
+
             if (vfocus)
                 editor.$visualFocus();
             else
                 oWin.focus();
-            this.current.select();
         }
-        catch (ex) {}
+        else {
+            this.moveToBookmark(this.current);
+        }
 
-        if (vfocus)
-            editor.$visualFocus();
-        else
-            oWin.focus();
         return this.current;
     };
 
@@ -87,17 +93,21 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {void}
      */
     this.cache = function() {
-        if (!apf.isIE) return this;
-        var oSel = oDoc.selection;
-        _self.current      = oSel.createRange();
-        _self.current.type = oSel.type;
+        if (apf.isIE) {
+            var oSel = oDoc.selection;
+            _self.current      = oSel.createRange();
+            _self.current.type = oSel.type;
 
-        if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
-            csLock = setTimeout(_self.cache, 0);
+            if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
+                csLock = setTimeout(_self.cache, 0);
+            }
+            else {
+                clearTimeout(csLock);
+                csLock = null;
+            }
         }
         else {
-            clearTimeout(csLock);
-            csLock = null;
+            _self.current = _self.getBookmark();
         }
         
         return this;
@@ -658,8 +668,8 @@ apf.selection = function(oWin, oDoc, editor) {
         var oSel, range;
         
         //@todo Mike please check this!
-        while (node.nodeType == 1 && node.firstChild)
-            node = node.firstChild;
+        //while (node.nodeType == 1 && node.firstChild)
+        //    node = node.firstChild;
 
         if (apf.isIE) {
             oSel = this.get();

@@ -115,7 +115,10 @@ apf.ContentEditable = function() {
     this.addEventListener("keydown", function(e) {
         if (!this.contenteditable && !bStandalone)
             return;
-        
+
+        if (_self.$selection)
+            _self.$selection.cache();
+
         e = e || window.event;
         var isDone, code = e.which || e.keyCode;
         if (!activeNode && !bStandalone) {
@@ -142,7 +145,6 @@ apf.ContentEditable = function() {
             return;
         }
 
-        _self.$selection.cache();
         var el = _self.$selection.getSelectedNode(), found;
 
         if (!bStandalone && !apf.hasContentEditable && !apf.isChildOf(activeNode, el, true)) {
@@ -252,7 +254,7 @@ apf.ContentEditable = function() {
             }
         }
         if (!bStandalone && code == 13) { //Enter
-            isDone = e.ctrlKey || apf.isMac && e.metaKey;
+            isDone = e.ctrlKey || (apf.isMac && e.metaKey);
             if (!isDone) {
                 var model   = this.getModel(),
                     xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(activeNode.getAttribute("xpath")),
@@ -731,6 +733,8 @@ apf.ContentEditable = function() {
                 apf.setStyleClass(el, null, ["contentEditable_over"]);
             });
             apf.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
+                if (_self.$selection)
+                    _self.$selection.cache();
                 var el = e.srcElement || e.target;
                 while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
@@ -748,6 +752,7 @@ apf.ContentEditable = function() {
                     apf.window.$mousedown({srcElement: activeNode});
                     setTimeout(function(){
                         //@todo Mike. The cursor position is lost!!! Please help me!
+                        _self.$selection.set();
                         if (activeNode)
                             activeNode.focus();
                     }, 10);
@@ -846,12 +851,10 @@ apf.ContentEditable = function() {
         if (this.$plugins[name] || this.state == apf.DISABLED)
             return;
 
-        if (apf.isIE) {
-            if (!this.oDoc.body.innerHTML)
-                return commandQueue.push([name, param]);
-            else
-                this.$selection.set();
-        }
+        if (apf.isIE && !this.$sctiveDocument.innerHTML)
+            return commandQueue.push([name, param]);
+
+        this.$selection.set();
         
         this.$visualFocus();
 
@@ -876,6 +879,7 @@ apf.ContentEditable = function() {
             }
         }
 
+        _self.$selection.cache();
         (bStandalone ? this.oDoc : apf.hasCommandIface ? activeNode : document)
             .execCommand(name, false, param);
 
@@ -917,7 +921,7 @@ apf.ContentEditable = function() {
 
         setTimeout(function() {
             //_self.$notifyAllButtons(); // @todo This causes pain, find out why
-            if (apf.isIE && !bNoSel)
+            //if (apf.isIE && !bNoSel)
                _self.$selection.set();
             _self.$visualFocus();
         });
