@@ -656,7 +656,7 @@ apf.Class = function(){
         }
         //#endif
         
-        return e.returnValue !== undefined ? e.returnValue : result;
+        return e && e.returnValue !== undefined ? e.returnValue : result;
     };
 
     /**
