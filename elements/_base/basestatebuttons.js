@@ -212,15 +212,15 @@ apf.BaseStateButtons = function(){
                     return;
                 }
 
-                this.oExt.style.left   = lastpos.css[0];// + "px";
-                this.oExt.style.top    = lastpos.css[1];// + "px";
-                this.oExt.style.width  = lastpos.css[2];// + "px";
-                this.oExt.style.height = lastpos.css[3];// + "px";
-
-                var pNode = (this.oExt.parentNode == document.body
-                    ? this.oExt.offsetParent || document.documentElement
-                    : this.oExt.offsetParent);
-                pNode.style.overflow = lastpos.css[4];
+                this.oExt.style.left   = lastpos.css[0];
+                this.oExt.style.top    = lastpos.css[1];
+                this.oExt.style.width  = lastpos.css[2];
+                this.oExt.style.height = lastpos.css[3];
+                
+                var pNode = lastpos.parentNode;
+                pNode.style.width  = lastpos.parent[0];
+                pNode.style.height = lastpos.parent[1];
+                pNode.style.overflow = lastpos.parent[2];
             }
 
             //#ifdef __WITH_ALIGNMENT
@@ -307,11 +307,13 @@ apf.BaseStateButtons = function(){
                 }
                 
                 lastpos = {
-                    css: [this.oExt.style.left, this.oExt.style.top,
-                          this.oExt.style.width, this.oExt.style.height, 
-                          this.oExt.style.overflow],
-                    px : [l, t, this.oExt.offsetWidth - hordiff, 
-                          this.oExt.offsetHeight - verdiff]
+                    css    : [this.oExt.style.left, this.oExt.style.top,
+                              this.oExt.style.width, this.oExt.style.height],
+                    px     : [l, t, this.oExt.offsetWidth - hordiff, 
+                              this.oExt.offsetHeight - verdiff],
+                    parent : [pNode.style.width, pNode.style.height, 
+                              pNode.style.overflow],
+                    parentNode : pNode
                 };
 
                 var from = [htmlNode.offsetWidth, htmlNode.offsetHeight];
@@ -326,17 +328,24 @@ apf.BaseStateButtons = function(){
                     
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
-                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);
-                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);
+                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
                     }
-                    
                     //@todo dirty hack!
-                    if (!_self.$refParent && apf.isIE8) {
+                    else if (!_self.$refParent && apf.isIE8) {
                         w -= 4;
                         h -= 4;
                     }
+                    
                     var box = _self.$refParent ? [0,0,0,0] : marginBox;
-                    var pos = pNode != htmlNode.offsetParent ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent) : [0,0];
+                    var pos = pNode != htmlNode.offsetParent 
+                        ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent) 
+                        : [0,0]
+
+                    var pDiff = apf.getDiff(pNode);
+                    pNode.style.width = (pNode.offsetWidth - pDiff[0]) + "px";
+                    pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
+                    
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated = true;
