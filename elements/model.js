@@ -430,7 +430,7 @@ apf.model = function(data, caching){
      * @private
      */
     this.revalidate  = function(){
-        if (this.isValid()) {
+        if (this.validate()) {
             this.dispatchEvent("xforms-valid"); //Is this OK, or should this be called on an element
         }
         else {
@@ -1115,7 +1115,7 @@ apf.model = function(data, caching){
      */
     this.submit = function(instruction, xmlNode, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
-        if (!this.isValid()) {
+        if (!this.validate()) {
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-submit-error");
             //#endif
