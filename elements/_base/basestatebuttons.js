@@ -336,7 +336,7 @@ apf.BaseStateButtons = function(){
                         h -= 4;
                     }
                     var box = _self.$refParent ? [0,0,0,0] : marginBox;
-                    var pos = apf.getAbsolutePosition(pNode, htmlNode.offsetParent);
+                    var pos = pNode != htmlNode.offsetParent ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent) : [0,0];
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated = true;

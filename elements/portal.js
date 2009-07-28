@@ -286,7 +286,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             return dockletClass.dispatchEvent("afterstatechange", e);
         });
         
-        docklet.$refParent = this.oInt;
+        docklet.$refParent = _self.oInt;
     }
 
     this.docklets     = [];
