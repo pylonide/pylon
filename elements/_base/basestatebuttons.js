@@ -125,6 +125,12 @@ apf.BaseStateButtons = function(){
         this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
     };
     
+    this.$propHandlers["refparent"] = function(value){
+        if (typeof value == "string")
+            this.$refParent = self[value] && self[value].oExt || document.getElementById(value);
+        else this.$refParent = value;
+    }
+    
     /**
      * @attribute {String} state the state of the window. The state can be a
      * combination of multiple states seperated by a pipe '|' character.
@@ -279,10 +285,11 @@ apf.BaseStateButtons = function(){
                     this.baseCSSname + "Min",
                     this.baseCSSname + "Edit");
 
-                var pNode = (this.$refParent || this.oExt.parentNode);
-                pNode = (pNode == document.body
-                    ? pNode.offsetParent || document.documentElement
-                    : pNode.parentNode);
+                var pNode = this.$refParent;
+                if (!pNode)
+                    pNode = (this.oExt.offsetParent == document.body
+                      ? document.documentElement
+                      : this.oExt.parentNode);
 
                 _self.animstate = 0;
                 var hasAnimated = false, htmlNode = this.oExt;
@@ -319,16 +326,17 @@ apf.BaseStateButtons = function(){
                     
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
-                        w -= diff[0] + (apf.isIE8 ? 4 : 0);
-                        h -= diff[0] + (apf.isIE8 ? 4 : 0);
+                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);
+                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);
                     }
                     
                     //@todo dirty hack!
-                    if (apf.isIE8) {
+                    if (!_self.$refParent && apf.isIE8) {
                         w -= 4;
                         h -= 4;
                     }
-                    
+                    var box = _self.$refParent ? [0,0,0,0] : marginBox;
+                    var pos = apf.getAbsolutePosition(pNode, htmlNode.offsetParent);
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated = true;
@@ -336,12 +344,12 @@ apf.BaseStateButtons = function(){
                             steps    : 5,
                             interval : 10,
                             tweens   : [
-                                {type: "left",   from: l,   to: -1 * marginBox[3]},
-                                {type: "top",    from: t,    to: -1 * marginBox[0]},
+                                {type: "left",   from: l,    to: pos[0] - box[3]},
+                                {type: "top",    from: t,    to: pos[1] - box[0]},
                                 {type: "width",  from: from[0] - hordiff, 
-                                 to: (w - hordiff + marginBox[1] + marginBox[3])},
+                                 to: (w - hordiff + box[1] + box[3])},
                                 {type: "height", from: from[1] - verdiff, 
-                                 to: (h - verdiff + marginBox[0] + marginBox[2])}
+                                 to: (h - verdiff + box[0] + box[2])}
                             ],
                             oneach   : function(){
                                 if (apf.hasSingleRszEvent)
@@ -353,13 +361,13 @@ apf.BaseStateButtons = function(){
                         });
                     }
                     else if (!_self.animstate) {
-                        htmlNode.style.left = (-1 * marginBox[3]) + "px";
-                        htmlNode.style.top  = (-1 * marginBox[0]) + "px";
+                        htmlNode.style.left = (pos[0] - box[3]) + "px";
+                        htmlNode.style.top  = (pos[1] - box[0]) + "px";
 
                         htmlNode.style.width  = (w
-                            - hordiff + marginBox[1] + marginBox[3]) + "px";
+                            - hordiff + box[1] + box[3]) + "px";
                         htmlNode.style.height = (h
-                            - verdiff + marginBox[0] + marginBox[2]) + "px";
+                            - verdiff + box[0] + box[2]) + "px";
                     }
                 }
 
