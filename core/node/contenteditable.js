@@ -145,7 +145,7 @@ apf.ContentEditable = function() {
         _self.$selection.cache();
         var el = _self.$selection.getSelectedNode(), found;
 
-        if (!bStandalone && apf.hasContentEditable && !apf.isChildOf(activeNode, el, true)) {
+        if (!bStandalone && !apf.hasContentEditable && !apf.isChildOf(activeNode, el, true)) {
             // #ifdef __DEBUG
             apf.console.log("ContentEditable - keyDown: no child of mine");
             // #endif
@@ -505,6 +505,8 @@ apf.ContentEditable = function() {
             rule = v.getRule(xmlNode);
         
         if (lastTemplate) {
+            if (lastTemplate.childNodes.indexOf(apf.window.focussed) > -1)
+                _self.focus();
             lastTemplate.detach();
             oNode.innerHTML = lastTemplate.childNodes[0].getValue();
             lastTemplate = null;

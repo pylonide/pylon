@@ -1349,7 +1349,7 @@ apf.AmlDocument = function(){
 
     this.appendChild  =
     this.insertBefore = function(){
-        this.documentElement.insertBefore.apply(this.documentElement, arguments);
+        return this.documentElement.insertBefore.apply(this.documentElement, arguments);
     };
 
     apf.implement.call(this.documentElement, apf.Class);

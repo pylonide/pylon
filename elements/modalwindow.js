@@ -555,7 +555,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
      *   edit       The window is in the edit state.
      *   closed     The window is closed.
      */
-    this.$propHandlers["state"] = function(value, noanim){
+    this.$propHandlers["state"] = function(value, noanim, comp, reenter){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
             o[s[i]] = true;
@@ -564,6 +564,11 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         if (!o.maximized && !o.minimized)
             o.normal = true;
+
+        if (!reenter && _self.dispatchEvent("beforestatechange", {
+          from : lastState, 
+          to   : o}) === false)
+            return false;
 
         //Closed state
         if (o.closed == this.visible) {//change detected
@@ -611,7 +616,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                                 apf.layout.forceResize(_self.oInt);
                         },
                         onfinish : function(){
-                            _self.$propHandlers["state"].call(_self, value, true);
+                            _self.$propHandlers["state"].call(_self, value, true, null, true);
                         }
                     });
 
@@ -807,7 +812,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         if (styleClass.length) {
             this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
 
-            this.dispatchEvent('statechange', o);
+            _self.dispatchEvent("afterstatechange", {
+              from : lastState, 
+              to   : o});
+            
             lastState = o;
 
             //#ifdef __WITH_ALIGNMENT

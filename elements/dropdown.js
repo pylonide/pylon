@@ -347,22 +347,6 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         this.$setLabel("");
     };
 
-    //#ifdef __JSUBMITFORM || __INC_ALL
-    this.addEventListener("slidedown", function(){
-        //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
-        if (!this.form || !this.form.xmlActions || this.xmlRoot)
-            return;
-        var loadlist = this.form.xmlActions
-            .selectSingleNode("LoadList[@element='" + this.name + "']");
-        if (!loadlist) return;
-        
-        this.isOpen = 2;
-        this.form.processLoadRule(loadlist, true, [loadlist]);
-        
-        return false;
-    });
-    //#endif	
-    
     this.addEventListener("popuphide", this.slideUp);
     
     /**** Keyboard Support ****/

@@ -236,7 +236,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
             for (var i = 0, l = nodes.length; i < l; i++) {
                 this.insertBefore(nodes[i], beforeNode);
             }
-            return;
+            return amlNode;
         }
 
         var isMoveWithinParent = amlNode.parentNode == this;
@@ -305,7 +305,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
             }
 
             //@todo this is a hack, a good solution should be found
-            var containsIframe = amlNode.oExt.getElementsByTagName("iframe").length > 0;
+            var containsIframe = amlNode.oExt && amlNode.oExt.getElementsByTagName("iframe").length > 0;
             if (amlNode.oExt && !apf.isGecko && !containsIframe) {
                 amlNode.pHtmlNode.insertBefore(amlNode.oExt,
                     beforeNode && beforeNode.oExt || null);
@@ -316,10 +316,11 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
         if (!this.$amlLoaded) {
             amlNode.$reappendToParent = triggerUpdate;
 
-            return;
+            return amlNode;
         }
 
         triggerUpdate();
+        return amlNode;
     };
 
     /**

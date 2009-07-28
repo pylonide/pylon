@@ -102,6 +102,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
             attr = node.attributes;
             for (var j = 0; j < attr.length; j++)
                 rule[attr[j].nodeName] = attr[j].nodeValue;
+            rule.node = node;
         }
     };
 });
