@@ -612,7 +612,7 @@ apf.Class = function(){
             }
             
             if (options && options.captureOnly)
-                return e.returnValue || rValue;
+                return e && e.returnValue || rValue;
             else {
                 if (this["on" + eventName])
                     result = this["on" + eventName].call(this, e 
