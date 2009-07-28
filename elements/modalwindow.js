@@ -127,7 +127,6 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
     this.collapsedHeight   = 30;
     this.canHaveChildren   = 2;
-    this.animate           = true;//!apf.hasSingleRszEvent; // experimental
     this.visible           = false;
     this.showdragging      = false;
     this.kbclose           = false;
@@ -287,12 +286,11 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     this.$booleanProperties["center"]       = true;
     this.$booleanProperties["transaction"]  = true;
     this.$booleanProperties["hideselects"]  = true;
-    this.$booleanProperties["animate"]      = true;
     this.$booleanProperties["showdragging"] = true;
     this.$booleanProperties["kbclose"]      = true;
     this.$supportedProperties.push("title", "icon", "modal", "minwidth",
         "minheight", "hideselects", "center", "kbclose",
-        "maxwidth", "maxheight", "animate", "showdragging", "transaction");
+        "maxwidth", "maxheight", "showdragging", "transaction");
 
     /**
      * @attribute {Boolean} modal whether the window prevents access to the

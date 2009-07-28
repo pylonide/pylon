@@ -30,9 +30,9 @@
  * @since       0.8
  */
 apf.BaseStateButtons = function(){
-    this.state = "normal";
-    this.edit  = false;
-    var _self  = this;
+    this.state   = "normal";
+    this.edit    = false;
+    this.animate = true;//!apf.hasSingleRszEvent; // experimental
     
     var actions  = {
         "min"   : ["minimized", "minimize", "restore"],
@@ -44,9 +44,11 @@ apf.BaseStateButtons = function(){
     var lastheight  = null;
     var lastpos     = null;
     var lastzindex  = null;
-    this.$lastState = {"normal":1};
-    
-    this.$supportedProperties.push("buttons", "state");
+    var _self       = this;
+
+    this.$lastState = {"normal":1};    
+    this.$booleanProperties["animate"] = true;
+    this.$supportedProperties.push("buttons", "animate", "state");
     
     /**
      * Close the window. It can be reopened by using {@link baseclass.amlelement.method.show}
@@ -316,8 +318,14 @@ apf.BaseStateButtons = function(){
                     
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
-                        w -= diff[0];
-                        h -= diff[0];
+                        w -= diff[0] + (apf.isIE8 ? 4 : 0);
+                        h -= diff[0] + (apf.isIE8 ? 4 : 0);
+                    }
+                    
+                    //@todo dirty hack!
+                    if (apf.isIE8) {
+                        w -= 4;
+                        h -= 4;
                     }
                     
                     if (_self.animate && !hasAnimated) {
