@@ -620,7 +620,7 @@ apf.XmlDatabase = function(){
         var oParent  = nextloop;
         var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
 
-        var xmlId = xmlNode.getAttribute(this.xmlIdTag);
+        //var xmlId = xmlNode.getAttribute(this.xmlIdTag);
 
         if (!this.delayUpdate && "|remove|move-away|".indexOf("|" + action + "|") > -1)
             this.notifyQueued(); //empty queue

@@ -289,7 +289,8 @@ apf.model = function(data, caching){
         if (!node)
             return null;
 
-        apf.xmldb.setTextNode(node, value);
+        apf.setNodeValue(node, value, true);
+        //apf.xmldb.setTextNode(node, value);
         return node;
     };
 
@@ -1115,13 +1116,13 @@ apf.model = function(data, caching){
      */
     this.submit = function(instruction, xmlNode, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
-        if (!this.validate()) {
+        /*if (!this.isValid()) {
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-submit-error");
             //#endif
             this.dispatchEvent("submiterror");
             return;
-        }
+        }*/
         //#endif
 
         if (!instruction && !defSubmission)
