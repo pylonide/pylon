@@ -36,6 +36,9 @@ apf.modalwindow.widget = function(){
     this.dragStart = function(e){
         if (!e) e = event;
 
+        if (_self.state.indexOf("maximized") > -1)
+            return;
+
         nX = _self.oExt.offsetLeft - e.clientX;
         nY = _self.oExt.offsetTop - e.clientY;
 

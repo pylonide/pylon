@@ -274,9 +274,15 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         dockletClass.init(dataNode, docklet);
         
         docklet.addEventListener("beforestatechange", function(e){
+            if (e.to.maximized)
+                docklet.oExt.parentNode.style.zIndex = 100000;
+            
             return dockletClass.dispatchEvent("beforestatechange", e);
         });
         docklet.addEventListener("afterstatechange", function(e){
+            if (e.from.maximized)
+                docklet.oExt.parentNode.style.zIndex = 1;
+            
             return dockletClass.dispatchEvent("afterstatechange", e);
         });
         

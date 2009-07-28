@@ -714,8 +714,9 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                     var t = htmlNode.offsetTop;
                 }
                 else {
-                    var l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
-                    var t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                    var pos = apf.getAbsolutePosition(htmlNode, pNode);
+                    var l = pos[0];//parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                    var t = pos[1];//parseInt(apf.getStyle(htmlNode, "top")) || 0;
                 }
                 
                 lastpos = {
