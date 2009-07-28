@@ -21,10 +21,10 @@
 
 // #ifdef __JEDITOR || __INC_ALL
 /**
- * Element displaying a Rich Text Editor, like M$ Office Word in a browser window. Even
- * though this Editor does not offer the same amount of features as Word, we did try to
- * make it behave that way, simply because it is considered to be the market leader among
- * word-processors.
+ * Element displaying a Rich Text Editor, like M$ Office Word in a browser
+ * window. Even though this Editor does not offer the same amount of features
+ * as Word, we did try to make it behave that way, simply because it is
+ * considered to be the market leader among word-processors.
  * Example:
  * <code>
  *     <a:editor
@@ -66,18 +66,12 @@
  * </code>
  */
 apf.editor = apf.component(apf.NODE_VISIBLE, function() {
-    var inited, complete;
-
-    /**** Default Properties ****/
-
     var _self   = this;
 
     this.value  = "";
     this.$value = "";
 
-    this.contenteditable = true;
-
-    this.$activeDocument = this.oWin = null;
+    this.oWin = null;
 
     /**** Properties and Attributes ****/
 
@@ -86,9 +80,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("value");
 
     this.$propHandlers["value"] = function(html){
-        if (!inited || !complete)
-            return;
-
         if (typeof html != "string")// || html == ""
             html = "";//apf.isIE ? "<br />" :
 
@@ -111,42 +102,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
         else {
             this.$activeDocument.body.innerHTML = html;
-
-            if (apf.isGecko) {
-                var oNode, oParent = this.$activeDocument.body;
-                while (oParent.childNodes.length) {
-                    oNode = oParent.firstChild;
-                    if (oNode.nodeType == 1) {
-                        if (oNode.nodeName == "BR"
-                          && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
-                            this.$selection.selectNode(oNode);
-                            this.$selection.remove();
-                            this.$selection.collapse(false);
-                            break;
-                        }
-                    }
-                    oParent = oNode;
-                }
-            }
-            else if (apf.isSafari) {
-                this.$activeDocument.designMode = "on";
-            }
-            else if (apf.isIE) {
-                // yes, we fix hyperlinks...%&$#*@*!
-                var s, aLinks = this.$activeDocument.getElementsByTagName("a");
-                for (var i = 0, j = aLinks.length; i < j; i++) {
-                    s = aLinks[i].getAttribute("_apf_href");
-                    if (s) { //prefix 'http://' if it's not there yet...
-                        aLinks[i].href = (s.indexOf("http://") == -1 
-                            ? "http://" : "") + s;
-                    }
-                }
-            }
+            this.$controlAgentBehavior(this.$activeDocument.body);
         }
             
         this.dispatchEvent("sethtml", {editor: this});
-
-        //this.$visualFocus(true);
     };
 
     /**
@@ -156,11 +115,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type void
      */
     this.makeEditable = function() {
-        var justinited = false;
-        if (!inited) {
-            this.$addListeners();
-            inited = justinited = true;
-        }
         if (apf.isIE) {
             setTimeout(function() {
                 _self.$activeDocument.body.contentEditable = true;
@@ -171,19 +125,18 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 this.$activeDocument.designMode = "on";
                 if (apf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                    this.$activeDocument.execCommand("enableObjectResizing", false, this.imagehandles);
+                    this.$activeDocument.execCommand("enableObjectResizing",
+                        false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
-                    this.$activeDocument.execCommand("enableInlineTableEditing", false, this.tablehandles);
+                    this.$activeDocument.execCommand("enableInlineTableEditing",
+                        false, this.tablehandles);
                 }
             }
-            catch (e) {};
+            catch (e) {}
         }
         
-        if (justinited) {
-            //this.$propHandlers["value"].call(this, "");
-            this.dispatchEvent("complete", {editor: this});
-            complete = true;
-        }
+        //this.$propHandlers["value"].call(this, "");
+        this.dispatchEvent("complete", {editor: this});
     };
 
     /**
@@ -194,7 +147,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return (this.$value = apf.htmlCleaner.parse(this.$activeDocument.body.innerHTML, bStrict));
+        return (this.$value = apf.htmlCleaner.parse(
+            this.$activeDocument.body.innerHTML, bStrict));
     };
 
     /**
@@ -203,7 +157,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @param {String} html
      * @type  {void}
      */
-    this.setHTML  =
     this.setValue = function(value){
         return this.setProperty("value", value);
     };
@@ -284,7 +237,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         if (_self.state == apf.DISABLED) return;
         //if (apf.isIE)
         //    this.$visualFocus(true);
-        var ret = _self.$notifyAllPlugins("context", e);
+        _self.$notifyAllPlugins("context", e);
     }
 
     /**** Focus Handling ****/
@@ -357,8 +310,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
         var bCode = (this.$pluginsActive == "code");
-        if (!this.realtime || bCode)
-            this.change(bCode ? this.$plugins["code"].getValue() : this.getValue());
+        if (!this.realtime || bCode) {
+            this.change(bCode
+                ? this.$plugins["code"].getValue()
+                : this.getValue());
+        }
 
         this.setProperty("state", apf.DISABLED);
     };
@@ -377,7 +333,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             e = e || window.event;
             _self.$selection.cache();
             apf.popup.forceHide();
-            //this.$notifyAllButtons();
             apf.window.$mousedown(e);
         });
 
@@ -419,13 +374,15 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             this.oWin = this.iframe.contentWindow;
             this.$activeDocument = this.oWin.document;
 
-            this.$selection = new apf.selection(this.oWin, this.$activeDocument, this);
+            this.$selection = new apf.selection(this.oWin,
+                this.$activeDocument, this);
 
             // get the document style (CSS) from the skin:
             // see: apf.presentation.getCssString(), where the following statement
             // is derived from.
-            var sCss = apf.queryValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
-                "docstyle", apf.ns.aml)[0], "text()");
+            var sCss = apf.queryValue($xmlns(apf.skins.skins[
+                this.skinName.split(":")[0]].xml, "docstyle", apf.ns.aml)[0],
+                "text()");
             if (!sCss) {
                 sCss = "\
                     html {\
@@ -493,6 +450,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             apf.layout.activateRules(this.oExt);
             //#endif
 
+            this.$addListeners();
+
             // do the magic, make the editor editable.
             this.makeEditable();
 
@@ -543,15 +502,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
-        
-        //apf.ed = this;
-        //apf.ed.iframe.contentWindow.document == apf.ed.$activeDocument
     };
 
     this.$destroy = function() {
-        //this.plugins.$destroy();
         this.$selection.$destroy();
-        /*this.plugins = */this.$selection = this.$activeDocument.host = this.oToobar =
+        this.$selection = this.$activeDocument.host = this.oToobar =
             this.$activeDocument = this.oWin = this.iframe = null;
     };
 }).implement(

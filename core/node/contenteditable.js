@@ -369,7 +369,7 @@ apf.ContentEditable = function() {
             oNode.innerHTML = lastValue[0] = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
                 .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
                 "<br _apf_marker='1' /><br _apf_marker='1' />"));
-            controlAgentBehavior(oNode);
+            _self.$controlAgentBehavior(oNode);
         }
         else 
         //#endif
@@ -638,48 +638,6 @@ apf.ContentEditable = function() {
     }
 
     /**
-     * Corrects the default/ standard behavior of user agents that do not match
-     * our intentions or those of the user.
-     *
-     * @param {DOMElement} oParent ContentEditable element
-     * @type  void
-     * @private
-     */
-    function controlAgentBehavior(oParent) {
-        if (apf.isGecko) {
-            //var oParent = this.$activeDocument.body;
-            var oNode;
-            while (oParent.childNodes.length) {
-                oNode = oParent.firstChild;
-                if (oNode.nodeType == 1) {
-                    if (oNode.nodeName == "BR"
-                      && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
-                        _self.$selection.selectNode(oNode);
-                        _self.$selection.remove();
-                        _self.$selection.collapse(false);
-                        break;
-                    }
-                }
-                oParent = oNode;
-            }
-        }
-        else if (apf.isSafari) {
-            _self.$activeDocument.designMode = "on";
-        }
-        else if (apf.isIE) {
-            // yes, we fix hyperlinks...%&$#*@*!
-            var s, aLinks = oParent.getElementsByTagName("a");
-            for (var i = 0, j = aLinks.length; i < j; i++) {
-                s = aLinks[i].getAttribute("_apf_href");
-                if (s) { //prefix 'http://' if it's not there yet...
-                    aLinks[i].href = (s.indexOf("http://") == -1
-                        ? "http://" : "") + s;
-                }
-            }
-        }
-    }
-
-    /**
      * Firing change(), when the editor is databound, subsequently after each
      * keystroke, can have a VERY large impact on editor performance. That's why
      * we delay the change() call.
@@ -761,7 +719,7 @@ apf.ContentEditable = function() {
                     apf.window.$mousedown({srcElement: activeNode});
                     setTimeout(function(){
                         //@todo Mike. The cursor position is lost!!! Please help me!
-                        //_self.$selection.set();
+                        _self.$selection.set();
                         if (activeNode)
                             activeNode.focus();
                     }, 10);
@@ -918,7 +876,7 @@ apf.ContentEditable = function() {
                 //#ifdef __WITH_PARSER_HTML
                 el.innerHTML = apf.htmlCleaner.prepare(el.innerHTML);
                 //#endif
-                controlAgentBehavior(el);
+                this.$controlAgentBehavior(el);
             }
             var r = this.$selection.getRange();
             if (r)
@@ -1491,9 +1449,51 @@ apf.ContentEditable = function() {
 
         if (bNoFocus) return;
         setTimeout(function() {
-            //_self.$selection.set();
+            _self.$selection.set();
             _self.$visualFocus();
         });
+    };
+
+    /**
+     * Corrects the default/ standard behavior of user agents that do not match
+     * our intentions or those of the user.
+     *
+     * @param {DOMElement} oParent ContentEditable element
+     * @type  void
+     * @private
+     */
+    this.$controlAgentBehavior = function(oParent) {
+        if (apf.isGecko) {
+            //var oParent = this.$activeDocument.body;
+            var oNode;
+            while (oParent.childNodes.length) {
+                oNode = oParent.firstChild;
+                if (oNode.nodeType == 1) {
+                    if (oNode.nodeName == "BR"
+                      && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
+                        _self.$selection.selectNode(oNode);
+                        _self.$selection.remove();
+                        _self.$selection.collapse(false);
+                        break;
+                    }
+                }
+                oParent = oNode;
+            }
+        }
+        else if (apf.isSafari) {
+            _self.$activeDocument.designMode = "on";
+        }
+        else if (apf.isIE) {
+            // yes, we fix hyperlinks...%&$#*@*!
+            var s, aLinks = oParent.getElementsByTagName("a");
+            for (var i = 0, j = aLinks.length; i < j; i++) {
+                s = aLinks[i].getAttribute("_apf_href");
+                if (s) { //prefix 'http://' if it's not there yet...
+                    aLinks[i].href = (s.indexOf("http://") == -1
+                        ? "http://" : "") + s;
+                }
+            }
+        }
     };
 
     /***************************************************************************

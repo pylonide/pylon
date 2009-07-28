@@ -60,26 +60,21 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {Range}
      */
     this.set = function() {
-        if (!this.current) return;
+        if (!apf.ieIE || !this.current) return null;
 
-        if (apf.isIE) {
-            try {
-                if (vfocus)
-                    editor.$visualFocus();
-                else
-                    oWin.focus();
-                this.current.select();
-            }
-            catch (ex) {}
-
+        try {
             if (vfocus)
                 editor.$visualFocus();
             else
                 oWin.focus();
+            this.current.select();
         }
-        else {
-            this.moveToBookmark(this.current);
-        }
+        catch (ex) {}
+
+        if (vfocus)
+            editor.$visualFocus();
+        else
+            oWin.focus();
 
         return this.current;
     };
@@ -93,21 +88,18 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {void}
      */
     this.cache = function() {
-        if (apf.isIE) {
-            var oSel = oDoc.selection;
-            _self.current      = oSel.createRange();
-            _self.current.type = oSel.type;
+        if (!apf.isIE) return null;
 
-            if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
-                csLock = setTimeout(_self.cache, 0);
-            }
-            else {
-                clearTimeout(csLock);
-                csLock = null;
-            }
+        var oSel = oDoc.selection;
+        _self.current      = oSel.createRange();
+        _self.current.type = oSel.type;
+
+        if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
+            csLock = setTimeout(_self.cache, 0);
         }
         else {
-            _self.current = _self.getBookmark();
+            clearTimeout(csLock);
+            csLock = null;
         }
         
         return this;
