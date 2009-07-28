@@ -609,10 +609,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                         steps    : 5,
                         interval : 10,
                         tweens   : [
-                            {type: "left",   from: l,   to: lastpos[0]},
-                            {type: "top",    from: t,    to: lastpos[1]},
-                            {type: "width",  from: this.oExt.offsetWidth - hordiff,  to: lastpos[2]},
-                            {type: "height", from: this.oExt.offsetHeight - verdiff, to: lastpos[3]}
+                            {type: "left",   from: l,    to: lastpos.px[0]},
+                            {type: "top",    from: t,    to: lastpos.px[1]},
+                            {type: "width",  from: this.oExt.offsetWidth - hordiff,  to: lastpos.px[2]},
+                            {type: "height", from: this.oExt.offsetHeight - verdiff, to: lastpos.px[3]}
                         ],
                         oneach   : function(){
                             if (apf.hasSingleRszEvent)
@@ -626,15 +626,15 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                     return;
                 }
 
-                this.oExt.style.left   = lastpos[0] + "px";
-                this.oExt.style.top    = lastpos[1] + "px";
-                this.oExt.style.width  = lastpos[2] + "px";
-                this.oExt.style.height = lastpos[3] + "px";
+                this.oExt.style.left   = lastpos.css[0];// + "px";
+                this.oExt.style.top    = lastpos.css[1];// + "px";
+                this.oExt.style.width  = lastpos.css[2];// + "px";
+                this.oExt.style.height = lastpos.css[3];// + "px";
 
                 var pNode = (this.oExt.parentNode == document.body
                     ? this.oExt.offsetParent || document.documentElement
                     : this.oExt.offsetParent);
-                pNode.style.overflow = lastpos[4];
+                pNode.style.overflow = lastpos.css[4];
             }
 
             //#ifdef __WITH_ALIGNMENT
@@ -718,10 +718,14 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                     var t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
                 }
                 
-                lastpos = [l, t, this.oExt.offsetWidth - hordiff, 
-                           this.oExt.offsetHeight - verdiff,
-                           pNode.style.overflow];
-                
+                lastpos = {
+                    css: [this.oExt.style.left, this.oExt.style.top,
+                          this.oExt.style.width, this.oExt.style.height, 
+                          this.oExt.style.overflow],
+                    px : [l, t, this.oExt.offsetWidth - hordiff, 
+                          this.oExt.offsetHeight - verdiff]
+                };
+
                 function setMax(){
                     var w = !apf.isIE && pNode == document.documentElement
                         ? window.innerWidth
@@ -1023,7 +1027,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             if (!e) e = event;
 
             //because of some issue I don't understand oExt.onmousedown is not called
-            if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
+            if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 apf.WinServer.setTop(_self);
 
             if (lastState.maximized)
@@ -1046,7 +1050,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             //#endif
             
             //Set ZIndex on oExt mousedown
-            if (!_self.isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
+            if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 apf.WinServer.setTop(_self);
 
             if (!lastState.normal)
