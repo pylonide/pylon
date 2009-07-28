@@ -198,7 +198,7 @@ apf.ContentEditable.plugin('table', function() {
                 <div id="' + idTable + '" class="editor_paneltable"></div>\
             </div>\
             <div id="' + idStatus + '" class="editor_paneltablecancel">' 
-                + this.editor.translate('cancel') + '</div>';
+                + this.editor.$translate('cancel') + '</div>';
 
         oTableCont = document.getElementById(idTableCont);
         oTableSel  = document.getElementById(idTableSel);

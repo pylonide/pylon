@@ -28,8 +28,8 @@ apf.ContentEditable = function() {
      * PRIVATE
      **************************************************************************/
     
-    var lastActiveNode, wasFocussable, skipFocusOnce, lastValue, mouseOver,
-        mouseOut, mouseDown, docklet,
+    var lastActiveNode, wasFocussable, skipFocusOnce, lastTemplate, lastValue, 
+        mouseOver, mouseOut, mouseDown, docklet,
         objectHandles = false,
         tableHandles  = false,
         bStandalone   = false,
@@ -56,12 +56,15 @@ apf.ContentEditable = function() {
             createEditor(lastActiveNode || (tabStack 
                 || initTabStack())[e.shiftKey ? tabStack.length - 1 : 0]);
 
-            if (lastActiveNode)
+            if (lastActiveNode && !lastTemplate)
                 lastActiveNode.focus();
         }
         lastActiveNode = null;
         
-        if (activeNode) {
+        if (lastTemplate) {
+            lastTemplate.childNodes[0].focus();
+        }
+        else if (activeNode) {
             var node = activeNode;
             setTimeout(function(){
                 _self.$selection.selectNode(node);
@@ -74,8 +77,8 @@ apf.ContentEditable = function() {
         if (!this.contenteditable)
             return;
         
-        lastActiveNode = activeNode;
-        if (e.toElement == docklet) 
+        lastActiveNode = activeNode || lastActiveNode;
+        if (e.toElement && (e.toElement == docklet || e.toElement.parentNode == lastTemplate)) //@todo should be recursive in refactor 
             return;
 
         var pParent = apf.popup.last && apf.lookup(apf.popup.last);
@@ -118,11 +121,14 @@ apf.ContentEditable = function() {
         if (!activeNode && !bStandalone) {
             //F2 starts editing
             if (code == 113) {
-                var oNode, nodes = this.$selected.getElementsByTagName("*");
-                for (var i = nodes.length - 1; i >= 0; i--) {
-                    if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
-                        oNode = nodes[i];
-                        break;
+                var oNode;
+                if (this.$selected) {
+                    var nodes = this.$selected.getElementsByTagName("*");
+                    for (var i = nodes.length - 1; i >= 0; i--) {
+                        if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
+                            oNode = nodes[i];
+                            break;
+                        }
                     }
                 }
                 
@@ -286,9 +292,13 @@ apf.ContentEditable = function() {
 
                 if (oNode) {
                     createEditor(oNode);
-                    oNode.focus();
-                    _self.$selection.selectNode(oNode);
-
+                    if (lastTemplate) {
+                        lastTemplate.childNodes[0].focus();
+                    }
+                    else if (oNode.parentNode) { //lastTemplate
+                        oNode.focus();
+                        _self.$selection.selectNode(oNode);
+                    }
                     found = true;
                 }
             }
@@ -333,7 +343,8 @@ apf.ContentEditable = function() {
 
         e = e || window.event;
 
-        _self.$selection.cache();
+        if (_self.$selection)
+            _self.$selection.cache();
         if (keyupTimer != null)
             return;
 
@@ -372,14 +383,77 @@ apf.ContentEditable = function() {
             }, 10);
         }
 
-        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath"));
+        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath")),
+            v, rule;
+        if (v = _self.getModel().$validation)
+            rule = v.getRule(xmlNode);
 
         if (!_self.hasFocus())
             skipFocusOnce = true;
 
         activeNode = oNode;
         apf.setStyleClass(oNode, "contentEditable_active", ["contentEditable_over"]);
+        
+        // #ifdef __PARSER_HTML
+        if (rule && apf.isTrue(rule.richtext)) {
+            lastValue = [];
+            oNode.innerHTML = lastValue[0] = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
+                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
+                "<br _apf_marker='1' /><br _apf_marker='1' />"));
+        }
+        else 
+        //#endif
+            lastValue = oNode.innerHTML;
 
+        /**
+         * @todo for template
+         *  - Focus handling enters at the first and leaves at the last both entry/leave are from/to parent element
+         *  - Parent focus/blur events aren't called ($focus / $blur should use event system)
+         *  - Keyboard events for leave (both ends) are forwarded to parent
+         *  - Attach manages height of container
+         *  - Attach code / Detach code
+         */
+        if (rule && rule.type == "custom") {
+            if (!rule.$template) {
+                var nodes = rule.node.childNodes;
+                rule.$template = apf.document.appendChild(apf.document.createElement("template"));//todo fix this
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if (nodes[i].nodeType != 1)
+                        continue;
+                    rule.$template.appendChild(apf.document.createElement(nodes[i]));
+                }
+            }
+            rule.$lastHeight = oNode.style.height;
+            rule.$template.attach(oNode, null, true);
+            oNode.style.height = (oNode.scrollHeight - apf.getHeightDiff(oNode) + 2) + "px";
+            rule.$template.childNodes[0].onblur = function(e){
+                if (e.toElement && e.toElement != _self)
+                    _self.dispatchEvent("blur");
+                else {
+                    if (e.toElement)
+                        skipFocusOnce = true;
+                    else
+                        _self.dispatchEvent("blur");
+                    _self.focus(null, null, true);
+                }
+            }
+            rule.$template.childNodes[0].onafterchange = function(){  //@todo buggy should be no events in refactor apf3.0
+                //skipFocusOnce = true;
+                //_self.focus();
+            }
+            rule.$template.childNodes[0].onkeydown = function(e){
+                if (e.keyCode == 9) {
+                    e.originalElement = null;
+                    _self.dispatchEvent("keydown", e, true);
+                    return false;
+                }
+            }
+            rule.$template.childNodes[0].setValue(apf.queryValue(xmlNode));
+            //rule.$template.childNodes[0].focus(); //@todo general focus problem for subchildren
+            lastTemplate = rule.$template;
+            return;
+        }
+        
         if (apf.hasContentEditable) {
             oNode.contentEditable = true;
         }
@@ -397,21 +471,6 @@ apf.ContentEditable = function() {
         }
         _self.$activeDocument = apf.hasCommandIface ? activeNode : document;
 
-        var v, rule;
-        if (v = _self.getModel().$validation)
-            rule = v.getRule(xmlNode);
-        
-        // #ifdef __PARSER_HTML
-        if (rule && apf.isTrue(rule.richtext)) {
-            lastValue = [];
-            oNode.innerHTML = lastValue[0] = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
-                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-                "<br _apf_marker='1' /><br _apf_marker='1' />"));
-        }
-        else 
-        //#endif
-            lastValue = oNode.innerHTML;
-
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
             //@todo this leaks like a ..
@@ -428,6 +487,7 @@ apf.ContentEditable = function() {
             _self.$editable();
         if (docklet)
             docklet.setProperty("visible", showDocklet);
+        _self.setProperty("state", apf.OFF);
 
         _self.$selection.cache();
     }
@@ -435,22 +495,39 @@ apf.ContentEditable = function() {
     function removeEditor(oNode, bProcess, callback) {
         if (!oNode) oNode = activeNode;
         if (!oNode || oNode.nodeType != 1) return false;
-        _self.$selection.collapse(true);
+        
+        var model = _self.getModel();
+        var xpath = oNode.getAttribute("xpath");
+        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath);
+        
+        var v, rule;
+        if (v = model.$validation)
+            rule = v.getRule(xmlNode);
+        
+        if (lastTemplate) {
+            lastTemplate.detach();
+            oNode.innerHTML = lastTemplate.childNodes[0].getValue();
+            lastTemplate = null;
+            oNode.style.height = rule.$lastHeight;
+        }
+        else {
+            _self.$selection.collapse(true);
+            
+            if (apf.hasContentEditable)
+                oNode.contentEditable = false;
+            else
+                document.designMode = "off";
+        }
 
         activeNode = null;
 
         apf.setStyleClass(oNode, null, ["contentEditable_over", "contentEditable_active"]);
 
-        if (apf.hasContentEditable)
-            oNode.contentEditable = false;
-        else
-            document.designMode = "off";
-
         if (docklet)
             docklet.setProperty("visible", false);
 
-        if (!bProcess || oNode.innerHTML.toLowerCase().replace(/[\r\n]/g, "") == (lastValue.length ? lastValue[0] : lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
-            oNode.innerHTML = lastValue[1] || lastValue;
+        if (!bProcess || lastValue && oNode.innerHTML.toLowerCase().replace(/[\r\n]/g, "") == (lastValue.dataType == "array" ? lastValue[0] : lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
+            oNode.innerHTML = lastValue.dataType == "array" ? lastValue[1] : lastValue;
             return false;
         }
 
@@ -458,24 +535,16 @@ apf.ContentEditable = function() {
             _self.validityState.$reset();
 
         // do additional handling, first we check for a change in the data...
-        var xpath = oNode.getAttribute("xpath");
         if (apf.queryValue(_self.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) { //@todo this will not always work in IE
-            var model = _self.getModel();
-
             var lastPos = (tabStack || initTabStack()).indexOf(oNode);
-            var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath);
 
-            var v, rule;
-            if (v = model.$validation)
-                rule = v.getRule(xmlNode);
-
-            _self.edit(xmlNode, rule && apf.isTrue(rule.richtext)
+            _self.edit(xmlNode, rule && apf.isTrue(rule.richtext) 
                 ? apf.htmlCleaner.parse(oNode.innerHTML)
                 : oNode.innerHTML);
 
             if (v) {
-                (_self.validityState || (_self.validityState =
-                    new apf.validator.validityState())).$errorHtml =
+                (_self.validityState || (_self.validityState = 
+                    new apf.validator.validityState())).$errorHtml = 
                         (tabStack || initTabStack())[lastPos]
 
                 _self.validityState.$lastPos = lastPos;
@@ -483,7 +552,7 @@ apf.ContentEditable = function() {
                 if (rule)
                     _self.invalidmsg = rule.invalidmsg;
 
-                model.validate(xmlNode, false, _self.validityState, _self); //@todo this can be improved later
+                model.validate(xmlNode, false, _self.validityState, _self); //@todo this can be improved later       
             }
         }
 
@@ -672,12 +741,21 @@ apf.ContentEditable = function() {
                 }
 
                 createEditor(el);
-                e.cancelBubble = true;
-                apf.window.$mousedown({srcElement: activeNode});
-                setTimeout(function(){
-                    //@todo Mike. The cursor position is lost!!! Please help me!
-                    activeNode.focus();
-                }, 10);
+                if (!lastTemplate) {
+                    e.cancelBubble = true;
+                    apf.window.$mousedown({srcElement: activeNode});
+                    setTimeout(function(){
+                        //@todo Mike. The cursor position is lost!!! Please help me!
+                        if (activeNode)
+                            activeNode.focus();
+                    }, 10);
+                }
+                else {
+                    setTimeout(function(){
+                        lastTemplate.childNodes[0].focus();
+                    }, 100);
+                    lastTemplate.childNodes[0].slideDown();
+                }
                 
                 return false;
             });
@@ -763,7 +841,7 @@ apf.ContentEditable = function() {
      * @type  {void}
      */
     this.$execCommand = function(name, param) {
-        if (!this.$plugins[name] && this.state != apf.DISABLED)
+        if (this.$plugins[name] || this.state == apf.DISABLED)
             return;
 
         if (apf.isIE) {
@@ -1405,6 +1483,7 @@ apf.ContentEditable = function() {
      **************************************************************************/
 
     this.language = "en_GB";//"nl_NL";
+    this.state    = apf.OFF;
 
     this.edit = function(xmlNode, value) {
         this.executeActionByRuleSet("edit", "edit", xmlNode, value);
