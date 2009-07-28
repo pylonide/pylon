@@ -592,16 +592,14 @@ apf.Class = function(){
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
         #endif */
 
-        if (options && options.name)
-            e = options;
-        else if (!e)
-            e = new apf.Event(eventName, options);
+        e = options && options.name ? options : e;
 
         if (this.disabled)
             result = false;
         else {
-            if (!e.originalElement) {
-                e.originalElement = this;
+            if (!e || !e.originalElement) {
+                (e || (e = new apf.Event(eventName, options)))
+                    .originalElement = this;
     
                 //Capture support
                 if (arr = capture_stack[eventName]) {
@@ -617,11 +615,13 @@ apf.Class = function(){
                 return e.returnValue || rValue;
             else {
                 if (this["on" + eventName])
-                    result = this["on" + eventName].call(this, e); //Backwards compatibility
+                    result = this["on" + eventName].call(this, e 
+                        || (e = new apf.Event(eventName, options))); //Backwards compatibility
     
                 if (arr = events_stack[eventName]) {
                     for (var i = 0; i < arr.length; i++) {
-                        rValue = arr[i].call(this, e);
+                        rValue = arr[i].call(this, e 
+                            || (e = new apf.Event(eventName, options)));
                         if (rValue != undefined)
                             result = rValue;
                     }
@@ -631,7 +631,8 @@ apf.Class = function(){
         
         //#ifdef __WITH_EVENT_BUBBLING
         if (e.bubbles && !e.cancelBubble && this != apf) {
-            rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e);
+            rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e 
+                || (e = new apf.Event(eventName, options)));
 
             if (rValue != undefined)
                 result = rValue;
