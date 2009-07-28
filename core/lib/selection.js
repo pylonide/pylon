@@ -660,8 +660,8 @@ apf.selection = function(oWin, oDoc, editor) {
         var oSel, range;
         
         //@todo Mike please check this!
-        //while (node.nodeType == 1 && node.firstChild)
-        //    node = node.firstChild;
+        while (node.nodeType == 1 && node.firstChild)
+            node = node.firstChild;
 
         if (apf.isIE) {
             oSel = this.get();

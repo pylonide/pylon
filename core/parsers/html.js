@@ -144,7 +144,7 @@ apf.htmlCleaner = (function() {
                             var last = useStrP ? strP : str;
                             if (!noMarginTags[btag]) {
                                 if (last[last.length - 1] == "<p>&nbsp;</p>")
-                                    last[last.length - 1] = "<p></p>";
+                                    last[last.length - 1] = "";//<p></p>"; //maybe make this a setting
                                 else if(useStrP && !bdepth.length)
                                     last.push("<p></p>");
                             }

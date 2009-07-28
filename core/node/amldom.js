@@ -39,7 +39,7 @@ var __WITH_AMLDOM__ = 1 << 14;
  * Example:
  * Ajax.org Markup Language
  * <code>
- *  <a:window id="winExample" title="Example">
+ *  <a:window id="winExample" title="Example" visible="true">
  *      <a:button id="tstButton" />
  *  </a:window>
  * </code>
@@ -62,11 +62,12 @@ var __WITH_AMLDOM__ = 1 << 14;
  * That would be the same as having the following aml:
  * <code>
  *  <a:window id="winExample"
- *    title = "Example"
- *    icon  = "icoFolder.gif"
- *    left  = "100">
- *      <a:label caption="Example" />
+ *    title   = "Example"
+ *    icon    = "icoFolder.gif"
+ *    left    = "100"
+ *    visible = "true">
  *      <a:button id="tstButton" caption="Click me"/>
+ *      <a:label caption="Example" />
  *  </a:window>
  * </code>
  * Remarks:

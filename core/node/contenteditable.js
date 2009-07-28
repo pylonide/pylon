@@ -692,7 +692,7 @@ apf.ContentEditable = function() {
             apf.addListener(_self.oExt, "mouseover", mouseOver = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
                 if (!el || el == _self.oExt || el == activeNode) 
@@ -702,7 +702,7 @@ apf.ContentEditable = function() {
             apf.addListener(_self.oExt, "mouseout",  mouseOut = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
                 if (!el || el == _self.oExt || el == activeNode) 
@@ -715,7 +715,7 @@ apf.ContentEditable = function() {
                 if (activeNode && _self.$selection && apf.isChildOf(activeNode, el, true))
                     _self.$selection.cache();
                 
-                while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
+                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
                 

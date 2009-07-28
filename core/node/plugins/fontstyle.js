@@ -533,9 +533,14 @@ apf.ContentEditable.plugin('blockformat', function() {
                         
                         if (addedNode) {
                             if (apf.isIE) {
-                                addedNode.parentNode.insertBefore(
+                                var prev = addedNode.previousSibling
+                                if (prev && prev.tagName == "P" && prev.innerHTML == "&nbsp;")
+                                    prev.parentNode.removeChild(prev);
+                                
+                                //@todo make this a setting?
+                                /*addedNode.parentNode.insertBefore(
                                     addedNode.ownerDocument.createElement("P"),
-                                    addedNode);
+                                    addedNode);*/
                             }
                             sel.selectNode(addedNode);
                         }
@@ -546,9 +551,14 @@ apf.ContentEditable.plugin('blockformat', function() {
                                .replace(blocksRE3, '') + '</' + sBlock + '>');
                        
                         if (apf.isIE) {
-                            addedNode.parentNode.insertBefore(
+                            var prev = addedNode.previousSibling
+                            if (prev && prev.tagName == "P" && prev.innerHTML == "&nbsp;")
+                                prev.parentNode.removeChild(prev);
+                                    
+                            //@todo make this a setting?
+                                /*addedNode.parentNode.insertBefore(
                                 addedNode.ownerDocument.createElement("P"),
-                                addedNode);
+                                addedNode);*/
                         }
                        
                         sel.selectNode(addedNode);
