@@ -32,14 +32,14 @@ apf.ContentEditable.plugin('visualaid', function(){
 
     this.execute = function(editor) {
         var state = this.queryState(editor);
-        editor.oDoc.body.className = (state == apf.ON) ? "" : "visualAid";
+        editor.$activeDocument.body.className = (state == apf.ON) ? "" : "visualAid";
         editor.$notifyButton(this.name);
 
         apf.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        this.state = apf[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
+        this.state = apf[editor.$activeDocument.body.className == "visualAid" ? "ON" : "OFF"];
         return this.state;
     };
 });

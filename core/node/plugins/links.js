@@ -74,7 +74,7 @@ apf.ContentEditable.plugin('link', function(){
         if (!this.oUrl.value.replace("http://", "")) return;
 
         this.editor.$execCommand("CreateLink", "javascript:apftmp(0);");
-        var oLink, aLinks = this.editor.oDoc.getElementsByTagName("a");
+        var oLink, aLinks = this.editor.$activeDocument.getElementsByTagName("a");
         for (var i = 0; i < aLinks.length && !oLink; i++)
             if (aLinks[i].href == "javascript:apftmp(0);")
                 oLink = aLinks[i];

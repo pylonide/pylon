@@ -77,7 +77,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
 
     this.contenteditable = true;
 
-    this.oDoc = this.oWin = null;
+    this.$activeDocument = this.oWin = null;
 
     /**** Properties and Attributes ****/
 
@@ -110,10 +110,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             this.$plugins["code"].update(this, html);
         }
         else {
-            this.oDoc.body.innerHTML = html;
+            this.$activeDocument.body.innerHTML = html;
 
             if (apf.isGecko) {
-                var oNode, oParent = this.oDoc.body;
+                var oNode, oParent = this.$activeDocument.body;
                 while (oParent.childNodes.length) {
                     oNode = oParent.firstChild;
                     if (oNode.nodeType == 1) {
@@ -129,11 +129,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                 }
             }
             else if (apf.isSafari) {
-                this.oDoc.designMode = "on";
+                this.$activeDocument.designMode = "on";
             }
             else if (apf.isIE) {
                 // yes, we fix hyperlinks...%&$#*@*!
-                var s, aLinks = this.oDoc.getElementsByTagName("a");
+                var s, aLinks = this.$activeDocument.getElementsByTagName("a");
                 for (var i = 0, j = aLinks.length; i < j; i++) {
                     s = aLinks[i].getAttribute("_apf_href");
                     if (s) { //prefix 'http://' if it's not there yet...
@@ -163,22 +163,21 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
         if (apf.isIE) {
             setTimeout(function() {
-                _self.oDoc.body.contentEditable = true;
+                _self.$activeDocument.body.contentEditable = true;
             });
         }
         else {
             try {
-                this.oDoc.designMode = "on";
+                this.$activeDocument.designMode = "on";
                 if (apf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                    this.oDoc.execCommand("enableObjectResizing", false, this.imagehandles);
+                    this.$activeDocument.execCommand("enableObjectResizing", false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
-                    this.oDoc.execCommand("enableInlineTableEditing", false, this.tablehandles);
+                    this.$activeDocument.execCommand("enableInlineTableEditing", false, this.tablehandles);
                 }
             }
             catch (e) {};
         }
-        this.$activeDocument = this.oDoc;
         
         if (justinited) {
             //this.$propHandlers["value"].call(this, "");
@@ -195,7 +194,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.getValue = function(bStrict) {
-        return (this.$value = apf.htmlCleaner.parse(this.oDoc.body.innerHTML, bStrict));
+        return (this.$value = apf.htmlCleaner.parse(this.$activeDocument.body.innerHTML, bStrict));
     };
 
     /**
@@ -231,7 +230,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      */
     function onPaste(e) {
         setTimeout(function() {
-            var s = this.oDoc.body.innerHTML;
+            var s = this.$activeDocument.body.innerHTML;
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
                 var o = _self.$plugins["pasteword"];
                 if (o)
@@ -337,7 +336,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {Boolean}
      */
     this.$isContentEditable = function(e){
-        return apf.isChildOf(this.oDoc, e.srcElement, true);
+        return apf.isChildOf(this.$activeDocument, e.srcElement, true);
     };
 
     /**
@@ -370,11 +369,11 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$addListeners = function() {
-        apf.AbstractEvent.addListener(this.oDoc, "mouseup", onClick);
-        //apf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
-        apf.AbstractEvent.addListener(this.oDoc, "keyup", apf.window.$keyup);
-        apf.AbstractEvent.addListener(this.oDoc, "keydown", apf.window.$keydown);
-        apf.AbstractEvent.addListener(this.oDoc, "mousedown", function(e){
+        apf.AbstractEvent.addListener(this.$activeDocument, "mouseup", onClick);
+        //apf.AbstractEvent.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
+        apf.AbstractEvent.addListener(this.$activeDocument, "keyup", apf.window.$keyup);
+        apf.AbstractEvent.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
+        apf.AbstractEvent.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
             apf.popup.forceHide();
@@ -382,19 +381,19 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             apf.window.$mousedown(e);
         });
 
-        apf.AbstractEvent.addListener(this.oDoc, "contextmenu", onContextmenu);
-        apf.AbstractEvent.addListener(this.oDoc, "focus", function(e) {
+        apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu);
+        apf.AbstractEvent.addListener(this.$activeDocument, "focus", function(e) {
             //if (!apf.isIE)
                 apf.window.$focus(_self); //TODO: ok?
         });
-        apf.AbstractEvent.addListener(this.oDoc, "blur", function(e) {
+        apf.AbstractEvent.addListener(this.$activeDocument, "blur", function(e) {
             //if (!apf.isIE)
                 apf.window.$blur(_self); //TODO: ok?
         });
 
-        this.oDoc.host = this;
+        this.$activeDocument.host = this;
 
-        apf.AbstractEvent.addListener(this.oDoc.body, "paste", onPaste);
+        apf.AbstractEvent.addListener(this.$activeDocument.body, "paste", onPaste);
     };
 
     //this.addEventListener("contextmenu", onContextmenu);
@@ -407,100 +406,100 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$draw = function() {
-        this.$editable();
+        this.$editable(function() {
+            //this.plugins   = new apf.editor.plugins(this.$plugins, this);
+            var oEditor = this.$getLayoutNode("main", "editor",  this.oExt);
 
-        //this.plugins   = new apf.editor.plugins(this.$plugins, this);
-        var oEditor = this.$getLayoutNode("main", "editor",  this.oExt);
+            this.iframe = document.createElement("iframe");
+            this.iframe.setAttribute("frameborder", "0");
+            this.iframe.setAttribute("border", "0");
+            this.iframe.setAttribute("marginwidth", "0");
+            this.iframe.setAttribute("marginheight", "0");
+            oEditor.appendChild(this.iframe);
+            this.oWin = this.iframe.contentWindow;
+            this.$activeDocument = this.oWin.document;
 
-        this.iframe = document.createElement("iframe");
-        this.iframe.setAttribute("frameborder", "0");
-        this.iframe.setAttribute("border", "0");
-        this.iframe.setAttribute("marginwidth", "0");
-        this.iframe.setAttribute("marginheight", "0");
-        oEditor.appendChild(this.iframe);
-        this.oWin = this.iframe.contentWindow;
-        this.oDoc = this.oWin.document;
+            this.$selection = new apf.selection(this.oWin, this.$activeDocument, this);
 
-        this.$selection = new apf.selection(this.oWin, this.oDoc, this);
+            // get the document style (CSS) from the skin:
+            // see: apf.presentation.getCssString(), where the following statement
+            // is derived from.
+            var sCss = apf.queryValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
+                "docstyle", apf.ns.aml)[0], "text()");
+            if (!sCss) {
+                sCss = "\
+                    html {\
+                        cursor: text;\
+                        border: 0;\
+                    }\
+                    body {\
+                        margin: 8px;\
+                        padding: 0;\
+                        border: 0;\
+                        color: #000;\
+                        font-family: Verdana,Arial,Helvetica,sans-serif;\
+                        font-size: 10pt;\
+                        background: #fff;\
+                        word-wrap: break-word;\
+                    }\
+                    .itemAnchor {\
+                        background:url(images/editor/items.gif) no-repeat left bottom;\
+                        line-height:6px;\
+                        overflow:hidden;\
+                        padding-left:12px;\
+                        width:12px;\
+                    }\
+                    .visualAid table,\
+                    .visualAid table td {\
+                        border: 1px dashed #bbb;\
+                    }\
+                    .visualAid table td {\
+                        margin: 8px;\
+                    }\
+                    h1 {\
+                        margin : 15px 0 15px 0;\
+                    }\
+                    p {\
+                        margin: 0;\
+                        padding: 0;\
+                    }\
+                    sub, sup {\
+                        line-height: 10px;\
+                    }";
+            }
 
-        // get the document style (CSS) from the skin:
-        // see: apf.presentation.getCssString(), where the following statement
-        // is derived from.
-        var sCss = apf.queryValue($xmlns(apf.skins.skins[this.skinName.split(":")[0]].xml,
-            "docstyle", apf.ns.aml)[0], "text()");
-        if (!sCss) {
-            sCss = "\
-                html {\
-                    cursor: text;\
-                    border: 0;\
-                }\
-                body {\
-                    margin: 8px;\
-                    padding: 0;\
-                    border: 0;\
-                    color: #000;\
-                    font-family: Verdana,Arial,Helvetica,sans-serif;\
-                    font-size: 10pt;\
-                    background: #fff;\
-                    word-wrap: break-word;\
-                }\
-                .itemAnchor {\
-                    background:url(images/editor/items.gif) no-repeat left bottom;\
-                    line-height:6px;\
-                    overflow:hidden;\
-                    padding-left:12px;\
-                    width:12px;\
-                }\
-                .visualAid table,\
-                .visualAid table td {\
-                    border: 1px dashed #bbb;\
-                }\
-                .visualAid table td {\
-                    margin: 8px;\
-                }\
-                h1 {\
-                    margin : 15px 0 15px 0;\
-                }\
-                p {\
-                    margin: 0;\
-                    padding: 0;\
-                }\
-                sub, sup {\
-                    line-height: 10px;\
-                }";
-        }
+            this.$activeDocument.open();
+            this.$activeDocument.write('<?xml version="1.0" encoding="UTF-8"?>\
+                <html>\
+                <head>\
+                    <title></title>\
+                    <style type="text/css">' + sCss + '</style>\
+                </head>\
+                <body class="visualAid"></body>\
+                </html>');
+            this.$activeDocument.close();
 
-        this.oDoc.open();
-        this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
-            <html>\
-            <head>\
-                <title></title>\
-                <style type="text/css">' + sCss + '</style>\
-            </head>\
-            <body class="visualAid"></body>\
-            </html>');
-        this.oDoc.close();
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (apf.hasFocusBug)
+                apf.sanitizeTextbox(this.$activeDocument.body);
+            //#endif
 
-        //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.oDoc.body);
-        //#endif
+            //#ifdef __WITH_LAYOUT
+            // setup layout rules:
+            //@todo add this to $destroy
+            apf.layout.setRules(this.oExt, this.uniqueId + "_editor",
+                "var o = apf.all[" + this.uniqueId + "];\
+                if (o) o.$resize()");
+            apf.layout.activateRules(this.oExt);
+            //#endif
 
-        //#ifdef __WITH_LAYOUT
-        // setup layout rules:
-        //@todo add this to $destroy
-        apf.layout.setRules(this.oExt, this.uniqueId + "_editor",
-            "var o = apf.all[" + this.uniqueId + "];\
-            if (o) o.$resize()");
-        apf.layout.activateRules(this.oExt);
-        //#endif
+            // do the magic, make the editor editable.
+            this.makeEditable();
 
-        // do the magic, make the editor editable.
-        this.makeEditable();
-
-        setTimeout(function() {
-            _self.setProperty("state", apf.DISABLED);
-        })
+            setTimeout(function() {
+                _self.setProperty("state", apf.DISABLED);
+            });
+        });
     };
 
     /**
@@ -546,14 +545,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             this.$propHandlers["realtime"].call(this);
         
         //apf.ed = this;
-        //apf.ed.iframe.contentWindow.document == apf.ed.oDoc
+        //apf.ed.iframe.contentWindow.document == apf.ed.$activeDocument
     };
 
     this.$destroy = function() {
         //this.plugins.$destroy();
         this.$selection.$destroy();
-        /*this.plugins = */this.$selection = this.oDoc.host = this.oToobar =
-            this.oDoc = this.oWin = this.iframe = null;
+        /*this.plugins = */this.$selection = this.$activeDocument.host = this.oToobar =
+            this.$activeDocument = this.oWin = this.iframe = null;
     };
 }).implement(
      //#ifdef __WITH_VALIDATION

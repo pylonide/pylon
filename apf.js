@@ -468,7 +468,6 @@ var apf = {
         var t = document.createElement("div");
         this.hasContentEditable        = (typeof t.contentEditable == "string"
                                        || typeof t.contentEditable == "boolean");
-        this.hasCommandIface           = apf.isIE;
         t = null;
         delete t;
 

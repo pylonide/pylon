@@ -75,7 +75,6 @@ apf.ContentEditable.searchPlugin = function(sName) {
 
         if (apf.isIE)
             this.editor.$selection.set();
-        //this.editor.oDoc.execCommand('SelectAll');
         //this.editor.$execCommand('SelectAll');
         this.editor.$selection.collapse(false);
         this.editor.$visualFocus();
@@ -90,7 +89,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
             var range = sel.getRange();
             if (!(found = range.findText(val, 1, flag))) {
                 // simulate 'wrapAround' search...
-                this.editor.oDoc.execCommand('SelectAll');
+                this.editor.$activeDocument.execCommand('SelectAll');
                 sel.collapse(true);
                 range = sel.getRange();
                 //no chaining of calls here, seems to b0rk selection in IE
@@ -186,7 +185,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
             this.editor.$selection.getRange().duplicate().pasteHTML(sRepl);
         }
         else
-            this.editor.oDoc.execCommand('InsertHTML', false, sRepl);
+            this.editor.$activeDocument.execCommand('InsertHTML', false, sRepl);
     };
 
     this.createPanelBody = function() {

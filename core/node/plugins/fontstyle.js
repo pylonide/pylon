@@ -78,11 +78,11 @@ apf.ContentEditable.plugin('fontstyle', function() {
                 // insert resulting CSS into container document AND inside the
                 // document of the editor's iframe
                 apf.importCssString(window.document, bCss.join(""));
-                apf.importCssString(editor.oDoc, aCss.join(""));
+                apf.importCssString(editor.$activeDocument, aCss.join(""));
                 if (apf.isIE) {
                     // removing text nodes from the HEAD section, which are added
                     // by IE in some cases.
-                    var nodes = editor.oDoc.getElementsByTagName('head')[0].childNodes;
+                    var nodes = editor.$activeDocument.getElementsByTagName('head')[0].childNodes;
                     var cnt   = nodes.length -  1;
                     while (cnt) {
                         if (nodes[cnt].nodeType == 3) //text
@@ -180,7 +180,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
                 if (sel.isCollapsed()) {
                     if (apf.isIE) {
                         var oNode = sel.getRange().parentElement();
-                        var p = this.editor.oDoc.createElement("span");
+                        var p = this.editor.$activeDocument.createElement("span");
                         p.className = sStyle;
                         p.innerHTML = oNode.innerHTML;
                         if (oNode.tagName == "BODY") {
@@ -451,7 +451,7 @@ apf.ContentEditable.plugin('blockformat', function() {
                         }
                     }
                     
-                    var p = this.editor.oDoc.createElement(sBlock);
+                    var p = this.editor.$activeDocument.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     if (oNode.tagName == "BODY") {
                         oNode.innerHTML = "";
@@ -477,7 +477,7 @@ apf.ContentEditable.plugin('blockformat', function() {
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
                 if (oNode.tagName.match(blocksRE4) && s.length == oNode[apf.hasInnerText ? 'innerText' : 'textContent'].length) {
-                    var p = this.editor.oDoc.createElement(sBlock);
+                    var p = this.editor.$activeDocument.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
                     oNode.parentNode.removeChild(oNode);

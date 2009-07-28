@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 var __CONTENTEDITABLE__  = 1 << 23;
 
 // #ifdef __WITH_CONTENTEDITABLE
@@ -29,7 +28,7 @@ apf.ContentEditable = function() {
      **************************************************************************/
     
     var lastActiveNode, wasFocussable, skipFocusOnce, lastTemplate, lastValue, 
-        mouseOver, mouseOut, mouseDown, docklet,
+        mouseOver, mouseOut, mouseDown, mouseUp, docklet,
         objectHandles = false,
         tableHandles  = false,
         bStandalone   = false,
@@ -40,7 +39,6 @@ apf.ContentEditable = function() {
         keyupTimer    = null,
         oToolbar      = null,
         oButtons      = {},
-        commandQueue  = [],
         _self         = this;
 
     this.addEventListener("focus", function(e){
@@ -67,7 +65,8 @@ apf.ContentEditable = function() {
         else if (activeNode) {
             var node = activeNode;
             setTimeout(function(){
-                _self.$selection.selectNode(node);
+                //_self.$selection.selectNode(node);
+                _self.$selection.set();
                 node.focus();
             }, 10);
         }
@@ -85,6 +84,8 @@ apf.ContentEditable = function() {
         if (pParent && pParent.editor == _self)
             apf.popup.forceHide();
 
+        if (_self.$selection)
+            _self.$selection.cache();
         removeEditor(activeNode, true);
 
         this.setProperty("state", apf.DISABLED);
@@ -116,11 +117,8 @@ apf.ContentEditable = function() {
         if (!this.contenteditable && !bStandalone)
             return;
 
-        if (_self.$selection)
-            _self.$selection.cache();
-
         e = e || window.event;
-        var isDone, code = e.which || e.keyCode;
+        var isDone, found, code = e.which || e.keyCode;
         if (!activeNode && !bStandalone) {
             //F2 starts editing
             if (code == 113) {
@@ -139,51 +137,15 @@ apf.ContentEditable = function() {
                 if (activeNode) {
                     activeNode.focus();
                     _self.$selection.selectNode(activeNode);
+                    _self.$selection.collapse();
+                    _self.$activeDocument.execCommand("SelectAll", false, true);
                 }
             }
 
             return;
         }
 
-        var el = _self.$selection.getSelectedNode(), found;
-
-        if (!bStandalone && !apf.hasContentEditable && !apf.isChildOf(activeNode, el, true)) {
-            // #ifdef __DEBUG
-            apf.console.log("ContentEditable - keyDown: no child of mine");
-            // #endif
-            var callback = null;
-            if (apf.isChildOf(this.oExt, el)) {
-                // #ifdef __DEBUG
-                apf.console.log("ContentEditable - keyDown: el IS a child of mine");
-                // #endif
-                while (el.parentNode && !(el.className && el != this.oExt
-                  && el.className.indexOf("contentEditable") != -1))
-                    el = el.parentNode;
-
-                if (el.className && el.className.indexOf("contentEditable") != -1) {
-                    callback = function() {
-                        createEditor(el);
-                        _self.$selection.selectNode(el);
-                    }
-                }
-            }
-            removeEditor(activeNode, false, callback); //no processing
-            if (callback) {
-                // most common case this happens: user navigated out of
-                // contentEditable area with the arrow keys
-                window.blur();
-                return;
-            }
-            e.returnValue = false;
-            return false;
-        }
-
         if (apf.isIE) {
-            if (commandQueue.length > 0 && activeNode.innerHTML.length > 0) {
-                for (i = 0; i < commandQueue.length; i++)
-                    _self.$execCommand(commandQueue[i][0], commandQueue[i][1]);
-                commandQueue = [];
-            }
             switch (code) {
                 case 66:  // B
                 case 98:  // b
@@ -300,6 +262,8 @@ apf.ContentEditable = function() {
                     else if (oNode.parentNode) { //lastTemplate
                         oNode.focus();
                         _self.$selection.selectNode(oNode);
+                        _self.$selection.collapse();
+                        _self.$activeDocument.execCommand("SelectAll", false, true);
                     }
                     found = true;
                 }
@@ -343,12 +307,12 @@ apf.ContentEditable = function() {
         if (!this.contenteditable && !bStandalone)
             return;
 
-        e = e || window.event;
-
         if (_self.$selection)
             _self.$selection.cache();
         if (keyupTimer != null)
             return;
+
+        e = e || window.event;
 
         function keyupHandler() {
             clearTimeout(keyupTimer);
@@ -381,6 +345,9 @@ apf.ContentEditable = function() {
             setTimeout(function(){
                 oNode.focus();
                 _self.$selection.selectNode(oNode);
+                // @todo need to select all contents here?
+                _self.$selection.collapse();
+                _self.$activeDocument.execCommand("SelectAll", false, true);
                 _self.getModel().validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
@@ -402,6 +369,7 @@ apf.ContentEditable = function() {
             oNode.innerHTML = lastValue[0] = apf.htmlCleaner.prepare((lastValue[1] = oNode.innerHTML)
                 .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
                 "<br _apf_marker='1' /><br _apf_marker='1' />"));
+            controlAgentBehavior(oNode);
         }
         else 
         //#endif
@@ -471,7 +439,6 @@ apf.ContentEditable = function() {
             // Disable the standard table editing features of Firefox.
             document.execCommand("enableInlineTableEditing", false, tableHandles);
         }
-        _self.$activeDocument = apf.hasCommandIface ? activeNode : document;
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
@@ -491,18 +458,17 @@ apf.ContentEditable = function() {
             docklet.setProperty("visible", showDocklet);
         _self.setProperty("state", apf.OFF);
 
-        _self.$selection.cache();
+        //_self.$selection.cache();
     }
 
     function removeEditor(oNode, bProcess, callback) {
         if (!oNode) oNode = activeNode;
         if (!oNode || oNode.nodeType != 1) return false;
         
-        var model = _self.getModel();
-        var xpath = oNode.getAttribute("xpath");
-        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath);
-        
-        var v, rule;
+        var model   = _self.getModel(),
+            xpath   = oNode.getAttribute("xpath"),
+            xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath),
+            v, rule;
         if (v = model.$validation)
             rule = v.getRule(xmlNode);
         
@@ -672,6 +638,48 @@ apf.ContentEditable = function() {
     }
 
     /**
+     * Corrects the default/ standard behavior of user agents that do not match
+     * our intentions or those of the user.
+     *
+     * @param {DOMElement} oParent ContentEditable element
+     * @type  void
+     * @private
+     */
+    function controlAgentBehavior(oParent) {
+        if (apf.isGecko) {
+            //var oParent = this.$activeDocument.body;
+            var oNode;
+            while (oParent.childNodes.length) {
+                oNode = oParent.firstChild;
+                if (oNode.nodeType == 1) {
+                    if (oNode.nodeName == "BR"
+                      && oNode.getAttribute("_moz_editor_bogus_node") == "TRUE") {
+                        _self.$selection.selectNode(oNode);
+                        _self.$selection.remove();
+                        _self.$selection.collapse(false);
+                        break;
+                    }
+                }
+                oParent = oNode;
+            }
+        }
+        else if (apf.isSafari) {
+            _self.$activeDocument.designMode = "on";
+        }
+        else if (apf.isIE) {
+            // yes, we fix hyperlinks...%&$#*@*!
+            var s, aLinks = oParent.getElementsByTagName("a");
+            for (var i = 0, j = aLinks.length; i < j; i++) {
+                s = aLinks[i].getAttribute("_apf_href");
+                if (s) { //prefix 'http://' if it's not there yet...
+                    aLinks[i].href = (s.indexOf("http://") == -1
+                        ? "http://" : "") + s;
+                }
+            }
+        }
+    }
+
+    /**
      * Firing change(), when the editor is databound, subsequently after each
      * keystroke, can have a VERY large impact on editor performance. That's why
      * we delay the change() call.
@@ -692,7 +700,7 @@ apf.ContentEditable = function() {
      **************************************************************************/
 
     this.$regbase        = this.$regbase | __CONTENTEDITABLE__;
-    this.$activeDocument = null;
+    this.$activeDocument = document;
     this.$state          = apf.ON;
     this.$selection      = null;
     this.$buttons        = ["Bold", "Italic", "Underline"];
@@ -733,9 +741,10 @@ apf.ContentEditable = function() {
                 apf.setStyleClass(el, null, ["contentEditable_over"]);
             });
             apf.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
-                if (_self.$selection)
-                    _self.$selection.cache();
                 var el = e.srcElement || e.target;
+                if (activeNode && _self.$selection && apf.isChildOf(activeNode, el, true))
+                    _self.$selection.cache();
+                
                 while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
@@ -752,7 +761,7 @@ apf.ContentEditable = function() {
                     apf.window.$mousedown({srcElement: activeNode});
                     setTimeout(function(){
                         //@todo Mike. The cursor position is lost!!! Please help me!
-                        _self.$selection.set();
+                        //_self.$selection.set();
                         if (activeNode)
                             activeNode.focus();
                     }, 10);
@@ -766,6 +775,11 @@ apf.ContentEditable = function() {
                 
                 return false;
             });
+            apf.addListener(_self.oExt, "mouseup", mouseUp = function(e) {
+                var el = e.srcElement || e.target;
+                if (activeNode && _self.$selection && apf.isChildOf(activeNode, el, true))
+                    _self.$selection.cache();
+            });
 
             wasFocussable = [this.$focussable, 
                 typeof this.focussable == "undefined" ? true : this.focussable];
@@ -776,6 +790,7 @@ apf.ContentEditable = function() {
             apf.removeListener(_self.oExt, "mouseover", mouseOver);
             apf.removeListener(_self.oExt, "mouseout",  mouseOut);
             apf.removeListener(_self.oExt, "mousedown", mouseDown);
+            apf.removeListener(_self.oExt, "mouseup",   mouseUp);
 
             this.$focussable = wasFocussable[0];
             this.setProperty("focussable", wasFocussable[1]);
@@ -851,9 +866,6 @@ apf.ContentEditable = function() {
         if (this.$plugins[name] || this.state == apf.DISABLED)
             return;
 
-        if (apf.isIE && !this.$sctiveDocument.innerHTML)
-            return commandQueue.push([name, param]);
-
         this.$selection.set();
         
         this.$visualFocus();
@@ -879,9 +891,7 @@ apf.ContentEditable = function() {
             }
         }
 
-        _self.$selection.cache();
-        (bStandalone ? this.oDoc : apf.hasCommandIface ? activeNode : document)
-            .execCommand(name, false, param);
+        this.$activeDocument.execCommand(name, false, param);
 
         // make sure that the command didn't leave any <P> tags behind (cleanup)
         name       = name.toLowerCase();
@@ -895,7 +905,7 @@ apf.ContentEditable = function() {
                 bNoSel = true;
                 if (this.$plugins["bullist"] && this.$plugins["numlist"]) {
                     if (this.$plugins["bullist"].queryState(_self) != apf.OFF
-                      && this.$plugins["numlist"].queryState(_self) != apf.OFF)
+                     && this.$plugins["numlist"].queryState(_self) != apf.OFF)
                         bNoSel = false;
                 }
                 var oNode = this.$selection.getSelectedNode();
@@ -904,12 +914,11 @@ apf.ContentEditable = function() {
             }
 
             if (bNoSel) {
-                /* #ifndef __WITH_PARSER_HTML
-                this.oDoc.body.innerHTML = this.oDoc.body.innerHTML;
-                #else*/
-                this.oDoc.body.innerHTML = apf.htmlCleaner.prepare(
-                    this.oDoc.body.innerHTML);
-                // #endif
+                var el = bStandalone ? this.$activeDocument.body : activeNode;
+                //#ifdef __WITH_PARSER_HTML
+                el.innerHTML = apf.htmlCleaner.prepare(el.innerHTML);
+                //#endif
+                controlAgentBehavior(el);
             }
             var r = this.$selection.getRange();
             if (r)
@@ -921,7 +930,7 @@ apf.ContentEditable = function() {
 
         setTimeout(function() {
             //_self.$notifyAllButtons(); // @todo This causes pain, find out why
-            //if (apf.isIE && !bNoSel)
+            if (!bNoSel)
                _self.$selection.set();
             _self.$visualFocus();
         });
@@ -1132,7 +1141,7 @@ apf.ContentEditable = function() {
      * @type  {void}
      */
     this.$buttonClick = function(e, oButton) {
-        _self.$selection.cache();
+        //_self.$selection.cache();
 
         apf.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
@@ -1292,7 +1301,7 @@ apf.ContentEditable = function() {
         }
     };
 
-    this.$editable = function() {
+    this.$editable = function(callback) {
         if (this.$aml.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
                 .call(this, this.$aml.getAttribute("plugins"));
@@ -1357,6 +1366,9 @@ apf.ContentEditable = function() {
             oToolbar.innerHTML = oToolbar.innerHTML;
         }
 
+        if (callback)
+            callback.call(this);
+
         if (oToolbar) {
             // fetch the DOM references of all toolbar buttons and let the
             // respective plugins finish initialization
@@ -1402,7 +1414,7 @@ apf.ContentEditable = function() {
         }
 
         //this.$selection.cache();
-        this.$selection.set();
+        //this.$selection.set();
         if (this.$visualFocus)
             this.$visualFocus();
 
@@ -1467,8 +1479,8 @@ apf.ContentEditable = function() {
      */
     this.$insertHtml = function(html, bNoParse, bNoFocus) {
         //removed check: if (inited && complete)
-        if (!bNoFocus)
-            this.$selection.set();
+        //if (!bNoFocus)
+        //    this.$selection.set();
         this.$visualFocus(true);
         // #ifdef __WITH_PARSER_HTML
         html = bNoParse ? html : apf.htmlCleaner.prepare(html);
@@ -1479,7 +1491,7 @@ apf.ContentEditable = function() {
 
         if (bNoFocus) return;
         setTimeout(function() {
-            _self.$selection.set();
+            //_self.$selection.set();
             _self.$visualFocus();
         });
     };

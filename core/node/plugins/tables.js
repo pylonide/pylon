@@ -45,7 +45,7 @@ apf.ContentEditable.plugin('table', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            oDoc = editor.useIframe ? document : editor.oDoc;
+            oDoc = editor.useIframe ? document : editor.$activeDocument;
             apf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         else
@@ -260,7 +260,7 @@ apf.ContentEditable.plugin('tablewizard', function() {
         if (!apf.editor.oMenu)
             this.createContextMenu();
         if (!oDoc)
-            oDoc = editor.useIframe ? document : editor.oDoc;
+            oDoc = editor.useIframe ? document : editor.$activeDocument;
         apf.editor.oMenu.tablePlugin = this;
 
         var pos = apf.getAbsolutePosition(editor.iframe);

@@ -115,10 +115,10 @@ apf.ContentEditable.colorPlugin = function(sName) {
             useSpan = true;
         // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
         try {
-            this.editor.oDoc.execCommand('styleWithCSS', false, useSpan);
+            this.editor.$activeDocument.execCommand('styleWithCSS', false, useSpan);
         }
         catch (ex) {
-            this.editor.oDoc.execCommand('useCSS', false, !useSpan);
+            this.editor.$activeDocument.execCommand('useCSS', false, !useSpan);
         }
     };
 
