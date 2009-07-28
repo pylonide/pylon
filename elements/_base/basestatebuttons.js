@@ -307,6 +307,7 @@ apf.BaseStateButtons = function(){
                           this.oExt.offsetHeight - verdiff]
                 };
 
+                var from = [htmlNode.offsetWidth, htmlNode.offsetHeight];
                 function setMax(){
                     var w = !apf.isIE && pNode == document.documentElement
                         ? window.innerWidth
@@ -337,9 +338,9 @@ apf.BaseStateButtons = function(){
                             tweens   : [
                                 {type: "left",   from: l,   to: -1 * marginBox[3]},
                                 {type: "top",    from: t,    to: -1 * marginBox[0]},
-                                {type: "width",  from: htmlNode.offsetWidth - hordiff, 
+                                {type: "width",  from: from[0] - hordiff, 
                                  to: (w - hordiff + marginBox[1] + marginBox[3])},
-                                {type: "height", from: htmlNode.offsetHeight - verdiff, 
+                                {type: "height", from: from[1] - verdiff, 
                                  to: (h - verdiff + marginBox[0] + marginBox[2])}
                             ],
                             oneach   : function(){

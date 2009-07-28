@@ -59,7 +59,7 @@ apf.modalwindow.widget = function(){
         htmlNode.style.top  = (e.clientY + nY) + "px";
         htmlNode.style.position = "absolute";
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
-        htmlNode.parentNode.style.position = "relative";
+        //htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
         apf.tween.fade(htmlNode, 0.8);
 
@@ -70,7 +70,7 @@ apf.modalwindow.widget = function(){
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
 
-            htmlNode.style.position = "static";//relative";
+            htmlNode.style.position = "";//relative";
             htmlNode.style.left     = 0;
             htmlNode.style.top      = 0;
             htmlNode.style.width    = lastSize[0];
@@ -81,15 +81,16 @@ apf.modalwindow.widget = function(){
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
             apf.tween.fade(htmlNode, 1);
+            if (!apf.supportOpacity)
+                htmlNode.style.filter = "";
 
-            //@todo please move this to datagrid internals
-            var grids = _self.getElementsByTagName("datagrid");
-            for(var i = 0; i < grids.length; i++) {
-                grids[i].updateWindowSize(true);
-            }
+            apf.layout.forceResize(_self.oInt);
 
             apf.dragmode.mode = null;
         };
+        
+        if (apf.isIE) //@todo hack to solve IE bug... should investigate
+            document.onmousemove();
 
         e.cancelBubble = true;
         return false;
