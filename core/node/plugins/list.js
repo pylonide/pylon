@@ -118,7 +118,7 @@ apf.ContentEditable.listPlugin = function(sName) {
     };
 
     this.queryState = function(editor) {
-        var state = editor.$queryCommand(this.name == "bullist"
+        var state = editor.$queryCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
         if (state == apf.DISABLED)

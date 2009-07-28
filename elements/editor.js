@@ -337,14 +337,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         });
 
         apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu);
-        apf.AbstractEvent.addListener(this.$activeDocument, "focus", function(e) {
-            //if (!apf.isIE)
-                apf.window.$focus(_self); //TODO: ok?
-        });
-        apf.AbstractEvent.addListener(this.$activeDocument, "blur", function(e) {
-            //if (!apf.isIE)
-                apf.window.$blur(_self); //TODO: ok?
-        });
+        apf.AbstractEvent.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
+        apf.AbstractEvent.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
 
         this.$activeDocument.host = this;
 

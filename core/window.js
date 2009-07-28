@@ -741,7 +741,7 @@ apf.window = new (function(){
         timer = null;
     }
 
-    apf.addListener(window, "focus", function(){
+    apf.addListener(window, "focus", this.$focusevent = function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
             return apf.window.dispatchEvent("focus");
@@ -759,7 +759,7 @@ apf.window = new (function(){
         }
     });
 
-    apf.addListener(window, "blur", function(){
+    apf.addListener(window, "blur", this.$blurevent = function(){
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone)
             return apf.window.dispatchEvent("blur");
@@ -908,7 +908,7 @@ apf.window = new (function(){
                 apf.window.$focusfix();
         }
         else if (!last) {
-            window.onfocus();
+            apf.window.$focusevent();
         }
         //#endif
         //#endif
@@ -1541,10 +1541,16 @@ apf.AmlDocument = function(){
     //#endif
 
     //#ifdef __WITH_CONTENTEDITABLE
-    this.queryCommand = function(cmd){
-       if (!apf.window.focussed || !apf.window.focussed.$queryCommand)
+    this.queryCommandState = function(cmd){
+       if (!apf.window.focussed || !apf.window.focussed.$queryCommandState)
            return;
-       apf.window.focussed.$queryCommand(cmd);
+       apf.window.focussed.$queryCommandState(cmd);
+    };
+
+    this.queryCommandValue = function(cmd){
+       if (!apf.window.focussed || !apf.window.focussed.$queryCommandValue)
+           return;
+       apf.window.focussed.$queryCommandValue(cmd);
     };
 
     this.execCommand = function(cmd, ui, val){

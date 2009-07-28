@@ -565,7 +565,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
                 apf.WinServer.setTop(_self);
 
-            if (this.$lastState.maximized)
+            if (_self.$lastState.maximized)
                 return false;
 
             //#ifdef __WITH_ALIGNMENT

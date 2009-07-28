@@ -138,7 +138,10 @@ apf.ContentEditable = function() {
                     activeNode.focus();
                     _self.$selection.selectNode(activeNode);
                     _self.$selection.collapse();
-                    _self.$activeDocument.execCommand("SelectAll", false, true);
+                    try {
+                        _self.$activeDocument.execCommand("SelectAll", false, true);
+                    }
+                    catch(e) {}
                 }
             }
 
@@ -263,7 +266,10 @@ apf.ContentEditable = function() {
                         oNode.focus();
                         _self.$selection.selectNode(oNode);
                         _self.$selection.collapse();
-                        _self.$activeDocument.execCommand("SelectAll", false, true);
+                        try {
+                            _self.$activeDocument.execCommand("SelectAll", false, true);
+                        }
+                        catch(e) {}
                     }
                     found = true;
                 }
@@ -347,7 +353,10 @@ apf.ContentEditable = function() {
                 _self.$selection.selectNode(oNode);
                 // @todo need to select all contents here?
                 _self.$selection.collapse();
-                _self.$activeDocument.execCommand("SelectAll", false, true);
+                try {
+                    _self.$activeDocument.execCommand("SelectAll", false, true);
+                }
+                catch(e) {}
                 _self.getModel().validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
@@ -605,7 +614,7 @@ apf.ContentEditable = function() {
         if (_self.state == apf.DISABLED)
             return apf.DISABLED;
 
-        return _self.$queryCommand(id);
+        return _self.$queryCommandState(id);
     }
 
     /**
@@ -797,7 +806,7 @@ apf.ContentEditable = function() {
      * @param {String} name
      * @type Number
      */
-    this.$queryCommand = function(name) {
+    this.$queryCommandState = function(name) {
         if (apf.isGecko && (name == "paste" || name == "copy" || name == "cut"))
             return apf.DISABLED;
         try {
@@ -811,6 +820,22 @@ apf.ContentEditable = function() {
         catch (e) {
             return apf.OFF;
         }
+    };
+
+    /**
+     * Get the value of a command
+     *
+     * @param {String} name
+     * @type Number
+     */
+    this.$queryCommandValue = function(name) {
+        var val;
+        try {
+            val = this.$activeDocument.queryCommand(name);
+        }
+        catch (e) {}
+
+        return val || null;
     };
 
     /**
@@ -856,7 +881,7 @@ apf.ContentEditable = function() {
         var bNoSel = (name == "selectall");
         if (apf.isIE) {
             if ((name == "insertunorderedlist" || name == "insertorderedlist")
-              && this.$queryCommand(name) == apf.OFF) {
+              && this.$queryCommandState(name) == apf.OFF) {
                 bNoSel = true;
             }
             else if (name == "outdent") {
@@ -1020,7 +1045,7 @@ apf.ContentEditable = function() {
             if (oPlugin && oPlugin.queryState)
                 state = oPlugin.queryState(this);
             else
-                state = this.$queryCommand(item);
+                state = this.$queryCommandState(item);
         }
 
         if (oButton.state === state)
