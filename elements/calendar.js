@@ -317,6 +317,13 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                + parseInt(apf.getStyle(oHtml, "padding-bottom"))];
     }
 
+    this.$resize = function() {
+        if(parseInt(this.oExt.style.width) > 0 && !inited) {
+            this.redraw(_month, _year);
+            inited = true;
+        }
+    }
+
     this.redraw = function(month, year) {
         /* Calculations */
         _currentMonth = month;
@@ -349,7 +356,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         /* Calculations - end */
 
         var ctDiff = apf.getDiff(this.oExt),
-            _width = (this.width || this.oExt.offsetWidth) - ctDiff[0];
+            _width = parseInt(this.oExt.offsetWidth || this.oExt.style.width || apf.getStyle(this.oExt, "width")) - ctDiff[0];
 
         /* Navigation buttons */
         var navi = this.oNavigation.childNodes;
@@ -361,6 +368,8 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 if (_width >= 300) {
                     navi[i].innerHTML = months[_currentMonth].name
                         + " " + _currentYear;
+                    navi[i].style.width = "100px";
+                    navi[i].style.marginLeft = "-50px";
                 }
                 else {
                     navi[i].innerHTML = (_currentMonth + 1)
@@ -391,7 +400,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     
                             cWidthf = Math.floor(rWidth / 8)
                                 - cDiff[0] - cDiff2[0];
-                            
+                            apf.console.info(cWidthf)
                             var width = cWidthf,
                                 height = cWidthf
                                 + (cDiff[1] > cDiff[0]
@@ -401,7 +410,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                                     ? cDiff2[0] - cDiff2[1]
                                     : 0),
                             paddingTop;
-    
+
                             var paddingBottom = 
                                 paddingTop = Math.ceil((height
                                     - this.$getFontSize(cells[j])) / 2);
@@ -505,9 +514,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 }
             }
         }
-
-        if((this.width || this.oExt.offsetWidth) && _width > 0)
-            inited = true;
     };
 
     this.selectDay = function(nr, type) {
@@ -638,6 +644,12 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         this.oNavigation = this.$getLayoutNode("main", "navigation",  this.oExt);
         this.oDow        = this.$getLayoutNode("main", "daysofweek",  this.oExt);
         this.oContent    = this.$getLayoutNode("main", "content",  this.oExt);
+        
+        
+        //#ifdef __WITH_LAYOUT
+        apf.layout.setRules(this.oExt, "resize", "var o = apf.all[" + this.uniqueId + "];\
+        if (o) o.$resize()", true);
+        //#endif
     };
 
     this.$loadAml = function(x) {
