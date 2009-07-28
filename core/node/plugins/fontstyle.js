@@ -101,6 +101,8 @@ apf.ContentEditable.plugin('fontstyle', function() {
         this.stylePreview.className += " fontstylepreview";
         var styleArrow = this.buttonNode.appendChild(document.createElement('span'));
         styleArrow.className = "selectarrow";
+
+        this.queryState(editor);
     };
 
     this.execute = function(editor) {
@@ -337,6 +339,8 @@ apf.ContentEditable.plugin('blockformat', function() {
         this.blockPreview.className += " blockformatpreview";
         var blockArrow = this.buttonNode.appendChild(document.createElement('span'));
         blockArrow.className = "selectarrow";
+
+        this.queryState(editor);
     };
 
     this.execute = function(editor) {

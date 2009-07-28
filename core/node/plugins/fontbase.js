@@ -56,6 +56,8 @@ apf.ContentEditable.plugin('fonts', function() {
             }
             oNode = oNode.nextSibling
         }
+
+        this.queryState(editor);
     };
 
     this.execute = function() {
@@ -157,6 +159,8 @@ apf.ContentEditable.plugin('fontsize', function() {
         var sizeArrow = this.buttonNode.insertBefore(document.createElement('span'),
             this.buttonNode.getElementsByTagName("div")[0]);
         sizeArrow.className = "selectarrow";
+
+        this.queryState(editor);
     };
 
     this.execute = function(editor) {
@@ -185,9 +189,8 @@ apf.ContentEditable.plugin('fontsize', function() {
         this.state = editor.$queryCommand('FontSize');
 
         var currValue = editor.$activeDocument.queryCommandValue('FontSize')
-        if (!currValue || this.sizePreview.innerHTML != currValue) {
+        if (!currValue || this.sizePreview.innerHTML != currValue)
             this.sizePreview.innerHTML = currValue ? currValue : "Size";
-        }
     };
 
     this.submit = function(e) {
