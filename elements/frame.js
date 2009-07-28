@@ -90,28 +90,6 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
         this.oCaption = this.oCaption.firstChild;
     };
     
-    var maximized = false;
-    this.$propHandlers["state"] = function(value){
-        //Set min or not
-        this.$setStyleClass(this.oExt, value.indexOf("minized") > -1
-            ? this.baseCSSname + "Min" : "", [this.baseCSSname + "Min"]);
-        
-        if (value.indexOf("maximized") > -1 && !maximized)
-            slideMaximize(this.something || this.parentNode.oInt);
-        else if (maximized)
-            slideRestore(this.something || this.parentNode.oInt);
-    }
-    
-    //move this to seperate lib
-    //@todo
-    this.slideMaximize = function(oRef) {
-        
-    };
-    
-    this.slideRestore = function(oRef) {
-        
-    };
-    
     /** 
      * Sets the text of the title of this element
      * @param {String} value the text of the title.
@@ -124,9 +102,12 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt     = this.$getExternal(); 
+        this.oExt     = this.$getExternal(null, null, function(oExt){
+            this.$initButtons(oExt);
+        });
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
+        this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
         
         this.oInt = this.oInt 
             ? apf.AmlParser.replaceNode(oInt, this.oInt) 
@@ -136,6 +117,9 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     this.$loadAml = function(x){
         // not implement now.
     };
-}).implement(apf.Presentation);
+}).implement(
+    apf.Presentation,
+    apf.BaseStateButtons
+);
 
 // #endif

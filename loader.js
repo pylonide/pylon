@@ -47,6 +47,7 @@ apf.Elements = [
     "_base/baselist",
     "_base/basesimple",
     "_base/basetab",
+    "_base/basestatebuttons",
 
     "actiontracker",
     "accordion",
