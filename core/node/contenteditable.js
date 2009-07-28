@@ -42,8 +42,10 @@ apf.ContentEditable = function() {
         _self         = this;
 
     this.addEventListener("focus", function(e){
-        if (!this.contenteditable || skipFocusOnce && !(skipFocusOnce = false))
+        if (!this.contenteditable || skipFocusOnce && !(skipFocusOnce = false)) {
+            lastActiveNode = null;
             return;
+        }
 
         this.setProperty("state", (this.$pluginsActive == "code")
             ? apf.DISABLED

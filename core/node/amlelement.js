@@ -1020,7 +1020,7 @@ apf.AmlElement.propHandlers = {
      * expression.
      */
     "left": function(value){
-        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative|fixed".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.left = value + "px";
     },
@@ -1031,7 +1031,7 @@ apf.AmlElement.propHandlers = {
      * expression.
      */
     "top": function(value){
-        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative|fixed".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.top = value + "px";
     },
@@ -1042,7 +1042,7 @@ apf.AmlElement.propHandlers = {
      * expression.
      */
     "right": function(value){
-        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative|fixed".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.right = value + "px";
     },
@@ -1053,7 +1053,7 @@ apf.AmlElement.propHandlers = {
      * expression.
      */
     "bottom": function(value){
-        if ("absolute|relative".indexOf(apf.getStyle(this.oExt, "position")) == -1)
+        if ("absolute|relative|fixed".indexOf(apf.getStyle(this.oExt, "position")) == -1)
             this.oExt.style.position = "absolute";
         this.oExt.style.bottom = value + "px";
     },

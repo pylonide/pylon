@@ -630,7 +630,7 @@ apf.Class = function(){
         }
         
         //#ifdef __WITH_EVENT_BUBBLING
-        if (e.bubbles && !e.cancelBubble && this != apf) {
+        if ((e && e.bubbles && !e.cancelBubble || options && options.bubbles) && this != apf) {
             rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e 
                 || (e = new apf.Event(eventName, options)));
 
