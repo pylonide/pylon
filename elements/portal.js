@@ -274,11 +274,13 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         dockletClass.init(dataNode, docklet);
         
         docklet.addEventListener("beforestatechange", function(e){
-            dockletClass.dispatchEvent("beforestatechange", e);
+            return dockletClass.dispatchEvent("beforestatechange", e);
         });
         docklet.addEventListener("afterstatechange", function(e){
-            dockletClass.dispatchEvent("afterstatechange", e);
+            return dockletClass.dispatchEvent("afterstatechange", e);
         });
+        
+        docklet.$refParent = this.oInt;
     }
 
     this.docklets     = [];

@@ -559,7 +559,8 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
             o[s[i]] = true;
-
+        o.value = value;
+        
         var styleClass = [];
 
         if (!o.maximized && !o.minimized)
@@ -567,8 +568,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         if (!reenter && _self.dispatchEvent("beforestatechange", {
           from : lastState, 
-          to   : o}) === false)
+          to   : o}) === false) {
+            this.state = lastState.value;
             return false;
+        }
 
         //Closed state
         if (o.closed == this.visible) {//change detected
@@ -696,9 +699,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                     this.baseCSSname + "Min",
                     this.baseCSSname + "Edit");
 
-                var pNode = (this.oExt.parentNode == document.body
-                    ? this.oExt.offsetParent || document.documentElement
-                    : this.oExt.parentNode);
+                var pNode = (this.$refParent || this.oExt.parentNode);
+                pNode = (pNode == document.body
+                    ? pNode.offsetParent || document.documentElement
+                    : pNode.parentNode);
 
                 _self.animstate = 0;
                 var hasAnimated = false, htmlNode = this.oExt;
