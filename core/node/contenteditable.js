@@ -691,6 +691,7 @@ apf.ContentEditable = function() {
         if (apf.isTrue(value)) {
             apf.addListener(_self.oExt, "mouseover", mouseOver = function(e) {
                 var el = e.srcElement || e.target;
+                if (!el) return;
                 while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
@@ -700,6 +701,7 @@ apf.ContentEditable = function() {
             });
             apf.addListener(_self.oExt, "mouseout",  mouseOut = function(e) {
                 var el = e.srcElement || e.target;
+                if (!el) return;
                 while ((!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.oExt) {
                     el = el.parentNode;
                 }
@@ -709,6 +711,7 @@ apf.ContentEditable = function() {
             });
             apf.addListener(_self.oExt, "mousedown", mouseDown = function(e) {
                 var el = e.srcElement || e.target;
+                if (!el) return;
                 if (activeNode && _self.$selection && apf.isChildOf(activeNode, el, true))
                     _self.$selection.cache();
                 
@@ -1106,6 +1109,9 @@ apf.ContentEditable = function() {
             }
             catch(e) {};
         }
+        else if (!bStandalone && activeNode) {
+            activeNode.focus();
+        }
 
         if (bCode) {
             this.$notifyAllButtons(apf.DISABLED);
@@ -1124,7 +1130,7 @@ apf.ContentEditable = function() {
      * @type  {void}
      */
     this.$buttonClick = function(e, oButton) {
-        //_self.$selection.cache();
+        _self.$selection.cache();
 
         apf.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
@@ -1397,7 +1403,7 @@ apf.ContentEditable = function() {
         }
 
         //this.$selection.cache();
-        //this.$selection.set();
+        this.$selection.set();
         if (this.$visualFocus)
             this.$visualFocus();
 
@@ -1462,13 +1468,13 @@ apf.ContentEditable = function() {
      */
     this.$insertHtml = function(html, bNoParse, bNoFocus) {
         //removed check: if (inited && complete)
-        //if (!bNoFocus)
-        //    this.$selection.set();
+        if (!bNoFocus)
+            this.$selection.set();
         this.$visualFocus(true);
         // #ifdef __WITH_PARSER_HTML
         html = bNoParse ? html : apf.htmlCleaner.prepare(html);
         // #endif
-        this.$selection.setContent(html);
+        this.$selection.setContent(html, true);
         // notify SmartBindings that we changed stuff...
         this.change(this.getValue());
 

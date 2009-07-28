@@ -531,13 +531,14 @@ apf.ContentEditable.plugin('blockformat', function() {
                             p.removeChild(oNode);
                         }
                         
-                        if (apf.isIE) {
-                            addedNode.parentNode.insertBefore(
-                                addedNode.ownerDocument.createElement("P"),
-                                addedNode);
+                        if (addedNode) {
+                            if (apf.isIE) {
+                                addedNode.parentNode.insertBefore(
+                                    addedNode.ownerDocument.createElement("P"),
+                                    addedNode);
+                            }
+                            sel.selectNode(addedNode);
                         }
-                                
-                        sel.selectNode(addedNode);
                     }
                     else {
                         var addedNode = sel.setContent('<' + sBlock + '>' 
