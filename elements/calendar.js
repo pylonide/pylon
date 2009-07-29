@@ -111,7 +111,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     var inited = false;
     var startDiffs = [];
     var prevWidth = 0;
-    var resizing = false;
 
 
     this.$booleanProperties["disableremove"] = true;
@@ -321,50 +320,123 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                + parseInt(apf.getStyle(oHtml, "padding-bottom"))];
     }
 
+    var rRows = [];
+    var rCells = [[], [], [], [], [], []];
+    var rDoW = [];
+    
     this.$resize = function() {
         var width = parseInt(this.oExt.style.width);
 
+        if (rRows.length == 0) {
+            var rows = this.oContent.childNodes;
+
+            for (var i = 0; i < rows.length; i++) {
+                if ((rows[i].className || "").indexOf("row") > -1) {
+                    rRows.push(rows[i]);
+
+                    var cells = rows[i].childNodes;
+                    for (var j = 0; j < cells.length; j++) {
+                        if ((cells[j].className || "").indexOf("cell") > -1) {
+                            rCells[rRows.length - 1].push(cells[j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (rDoW.length == 0) {
+            var daysofweek = this.oDow.childNodes;
+
+            for (var i = 0; i < daysofweek.length; i++) {
+                if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
+                    rDoW.push(daysofweek[i]);
+                }
+            }
+        }
+
         if (width > 0 && prevWidth !== width) {
             prevWidth = width;
-            resizing = true;
-            this.redraw(_month, _year);
-        }
-        else {
-            resizing = false;
+
+            var ctDiff = apf.getDiff(this.oExt);
+            var _width = parseInt(this.oExt.offsetWidth 
+                || this.oExt.style.width 
+                || apf.getStyle(this.oExt, "width")) - ctDiff[0];
+            
+            var rDiff = startDiffs[0], rDiff2 = startDiffs[1];
+            var cDiff = startDiffs[2], cDiff2 = startDiffs[3];
+            var eDiff = startDiffs[4];
+
+            var rWidth = _width - rDiff[0] - rDiff2[0];
+            var cWidthf = Math.floor(rWidth * 0.125) - cDiff[0] - cDiff2[0];
+            
+            var height = cWidthf
+                + (cDiff[1] > cDiff[0] ? cDiff[0] - cDiff[1] : 0) 
+                + (cDiff2[1] > cDiff2[0] ? cDiff2[0] - cDiff2[1] : 0);
+            var paddingBT;
+            var pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] 
+                - (cWidthf + cDiff[0] + cDiff2[0]) * 8) * 0.5);
+
+            for (var i = 0; i < rRows.length; i++) {
+                var row = rRows[i];
+
+                for (var j = 0; j < rCells[i].length; j++) {
+                    var cell = rCells[i][j];
+
+                    paddingBT = Math.ceil((height - this.$getFontSize(cell))*0.5);
+                    
+                    cell.style.width         = cWidthf + "px";
+                    cell.style.height        = (height - (2 * paddingBT - cDiff[1]))+ "px";
+                    cell.style.paddingTop    = (paddingBT > 0 ? paddingBT + 1 : 0) + "px";
+                    cell.style.paddingBottom = (paddingBT > 0 ? paddingBT - 1 : 0) + "px";
+                }
+
+                row.style.paddingLeft = pl + "px";
+
+                this.oExt.style.paddingBottom = (Math.floor(eDiff[1] * 0.5) + pl) + "px";
+            }
+
+            this.oDow.style.paddingLeft = pl + "px";
+    
+            for (var i = 0; i < rDoW.length; i++) {
+                var dof = rDoW[i];
+                dof.style.width  = cWidthf + "px";
+
+                if (cWidthf < 16) {
+                    dof.style.fontSize = "9px";
+                }
+            }
         }
     }
 
     this.redraw = function(month, year) {
         /* Calculations */
-        if (!resizing) {
-            _currentMonth = month;
-            _currentYear  = year;
-
-            var w_firstYearDay = new Date(year, 0, 1);
-            var w_dayInWeek    = w_firstYearDay.getDay();
-            var w_days         = w_dayInWeek;
-            
-            for (i = 0; i <= month; i++) {
-                if (isLeapYear(year) && i == 1) {
-                    w_days++;
-                }
-                w_days += months[i].number;
+        _currentMonth = month;
+        _currentYear  = year;
+        
+        var w_firstYearDay = new Date(year, 0, 1);
+        var w_dayInWeek    = w_firstYearDay.getDay();
+        var w_days         = w_dayInWeek;
+        
+        for (i = 0; i <= month; i++) {
+            if (isLeapYear(year) && i == 1) {
+                w_days++;
             }
-    
-            var w_weeks  = Math.ceil(w_days / 7);
-    
-            var date = new Date(year, month);
-    
-            _numberOfDays = months[date.getMonth()].number;
-            if (isLeapYear(year) && date.getMonth() == 1) 
-                _numberOfDays++;
-    
-            _dayNumber = new Date(year, month, 1).getDay();
-            var prevMonth     = month == 0 ? 11 : month - 1;
-            var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
-    
-            var nextMonthDays = 1;
+            w_days += months[i].number;
         }
+
+        var w_weeks  = Math.ceil(w_days / 7);
+
+        var date = new Date(year, month);
+
+        _numberOfDays = months[date.getMonth()].number;
+        if (isLeapYear(year) && date.getMonth() == 1) 
+            _numberOfDays++;
+
+        _dayNumber = new Date(year, month, 1).getDay();
+        var prevMonth     = month == 0 ? 11 : month - 1;
+        var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
+
+        var nextMonthDays = 1;
         /* Calculations - end */
 
         var ctDiff = apf.getDiff(this.oExt),
@@ -397,12 +469,8 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         var cWidthf, pl;
         for (var i = 0, z = 0, y = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") > -1) {
-                var rDiff = !inited 
-                    ? apf.getDiff(rows[i]) 
-                    : startDiffs[0];
-                var rDiff2 = !inited 
-                    ? this.$getMargin(rows[i]) 
-                    : startDiffs[1];
+                var rDiff = !inited ? apf.getDiff(rows[i]) : startDiffs[0];
+                var rDiff2 = !inited ? this.$getMargin(rows[i]) : startDiffs[1];
                 var rWidth = _width - rDiff[0] - rDiff2[0];
                 
                 if (!inited) {
@@ -414,18 +482,15 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 var cells = rows[i].childNodes;
                 for (var j = 0, disabledRow = 0; j < cells.length; j++) {
                     if ((cells[j].className || "").indexOf("cell") > -1) {
-                        var cDiff = !inited 
-                            ? apf.getDiff(cells[j]) 
-                            : startDiffs[2];
-                        var cDiff2 = !inited 
-                            ? this.$getMargin(cells[j]) 
-                            : startDiffs[3];
+                        var cDiff = !inited ? apf.getDiff(cells[j]) : startDiffs[2];
+                        var cDiff2 = !inited ? this.$getMargin(cells[j]) : startDiffs[3];
 
                         if (!inited) {
                             startDiffs[2] = cDiff
                             startDiffs[3] = cDiff2;
+                            
                         }
-                        cWidthf = Math.floor(rWidth*0.125)
+                        cWidthf = Math.floor(rWidth / 8)
                             - cDiff[0] - cDiff2[0];
                         var width = cWidthf,
                             height = cWidthf
@@ -439,60 +504,59 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
                         var paddingBottom = 
                             paddingTop = Math.ceil((height
-                                - this.$getFontSize(cells[j]))*0.5);
+                                - this.$getFontSize(cells[j])) / 2);
 
                         height -= (paddingTop + paddingBottom - cDiff[1]);
                         
-                        cells[j].style.width         = width + "px";
-                        cells[j].style.height        = height + "px";
+                        cells[j].style.width         = (width > 0 ? width : 0) + "px";
+                        cells[j].style.height        = (height > 0 ? height : 0) + "px";
                         cells[j].style.paddingTop    = (paddingTop > 0 ? paddingTop + 1 : 0) + "px";
                         cells[j].style.paddingBottom = (paddingBottom > 0 ? paddingBottom - 1 : 0) + "px";
 
                         // Drawing day numbers
+                        this.$setStyleClass(cells[j], "", ["weekend",
+                            "disabled", "active", "prev", "next", "weeknumber"]);
                         
-                        if (!resizing) {
-                            z++;
-                            cells[j].className = "cell";
-                            
-                            if ((z - 1) % 8 == 0) {
-                                cells[j].innerHTML = w_weeks 
-                                    - Math.ceil((months[_month].number + _dayNumber) / 7)
-                                    + 1 + (z - 1)*0.125;
-                                cells[j].className = "cell weeknumber";
+                        z++;
+                        if ((z - 1) % 8 == 0) {
+                            cells[j].innerHTML = w_weeks 
+                                - Math.ceil((months[_month].number + _dayNumber) / 7)
+                                + 1 + (z - 1) / 8;
+                            this.$setStyleClass(cells[j], "weeknumber");
+                        }
+                        else {
+                            y++;
+                            if (y <= _dayNumber) {
+                                cells[j].innerHTML = prevMonthDays++;
+                                this.$setStyleClass(cells[j], "disabled prev");
                             }
-                            else {
-                                y++;
-                                if (y <= _dayNumber) {
-                                    cells[j].innerHTML = prevMonthDays++;
-                                    cells[j].className = "cell disabled prev";
+                            else if (y > _dayNumber 
+                                && y <= _numberOfDays + _dayNumber) {
+                                cells[j].innerHTML = y - _dayNumber;
+        
+                                var dayNrWeek = new Date(year, month,
+                                    y - _dayNumber).getDay();
+        
+                                if (dayNrWeek == 0 || dayNrWeek == 6) {
+                                    this.$setStyleClass(cells[j], "weekend");
                                 }
-                                else if (y > _dayNumber 
-                                    && y <= _numberOfDays + _dayNumber) {
-                                    cells[j].innerHTML = y - _dayNumber;
-            
-                                    var dayNrWeek = new Date(year, month,
-                                        y - _dayNumber).getDay();
-            
-                                    if (dayNrWeek == 0 || dayNrWeek == 6) {
-                                        cells[j].className = "cell weekend";
-                                    }
-            
-                                    if (month == _month && year == _year
-                                        && y - _dayNumber == _day) {
-                                        cells[j].className = "cell active";
-                                    }
+        
+                                if (month == _month && year == _year
+                                    && y - _dayNumber == _day) {
+                                    this.$setStyleClass(cells[j], "active");
                                 }
-                                else if (y > _numberOfDays + _dayNumber) {
-                                    cells[j].innerHTML = nextMonthDays++;
-                                    cells[j].className = "cell disabled next";
-                                    disabledRow++;
-                                }
+                            }
+                            else if (y > _numberOfDays + _dayNumber) {
+                                cells[j].innerHTML = nextMonthDays++;
+                                this.$setStyleClass(cells[j], "disabled next");
+                                disabledRow++;
                             }
                         }
                     }
                 }
 
-                pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] - (cWidthf + cDiff[0] + cDiff2[0])*8)*0.5);
+                pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] 
+                    - (cWidthf + cDiff[0] + cDiff2[0])*8)/2);
                 rows[i].style.paddingLeft = pl + "px";
                 
                 var eDiff = !inited ? this.$getPadding(this.oExt) : startDiffs[4];
@@ -502,19 +566,18 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 }
                 
                 this.oExt.style.paddingBottom = 
-                    (Math.floor(eDiff[1]*0.5) + pl) + "px";
+                    (Math.floor(eDiff[1]/2) + pl) + "px";
                 
-                if(!resizing) {
-                    if (!this.height) {
-                        rows[i].style.display = disabledRow == 7
-                            ? "none"
-                            : "block";
-                    }
-                    else {
-                        rows[i].style.visibility = disabledRow == 7
-                            ? "hidden"
-                            : "visible";
-                    }
+                
+                if (!this.height) {
+                    rows[i].style.display = disabledRow == 7
+                        ? "none"
+                        : "block";
+                }
+                else {
+                    rows[i].style.visibility = disabledRow == 7
+                        ? "hidden"
+                        : "visible";
                 }
             }
         }
@@ -525,32 +588,30 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].style.width  = cWidthf + "px";
+                daysofweek[i].style.width  = (cWidthf > 0 ? cWidthf : 0) + "px";
 
                 if (cWidthf < 16) {
                     daysofweek[i].style.fontSize = "9px";
                 }
 
-                if (!resizing) {
-                    if (z > 0) {
-                        daysofweek[i].innerHTML = 
-                            days[z - 1].substr(0, cWidthf < 12
-                                ? 1 : (cWidthf < 16 ? 2
-                                : 3));
-                    }
-                    else {
-                        daysofweek[i].innerHTML = "&nbsp;";
-                    }
-                    z++;
+                if (z > 0) {
+                    daysofweek[i].innerHTML = 
+                        days[z - 1].substr(0, cWidthf < 12
+                            ? 1 : (cWidthf < 16 ? 2
+                            : 3));
                 }
+                else {
+                    daysofweek[i].innerHTML = "&nbsp;";
+                }
+                z++;
             }
         }
-
+        
+        
         inited = true;
     };
 
     this.selectDay = function(nr, type) {
-        resizing = false;
         var newMonth = type == "prev"
             ? _currentMonth
             : (type == "next"
@@ -576,7 +637,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * Change displayed year to next
      */
     this.nextYear = function() {
-        resizing = false;
         this.redraw(_currentMonth, _currentYear + 1);
     };
 
@@ -584,7 +644,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * Change displayed year to previous
      */
     this.prevYear = function() {
-        resizing = false;
         this.redraw(_currentMonth, _currentYear - 1);
     };
 
@@ -593,7 +652,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to next
      */
     this.nextMonth = function() {
-        resizing = false;
         this.redraw(
             _currentMonth > 10 ? 0 : _currentMonth + 1, 
             _currentMonth > 10 ? _currentYear + 1 : _currentYear
@@ -605,7 +663,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to previous
      */
     this.prevMonth = function() {
-        resizing = false;
         this.redraw(
             _currentMonth < 1 ? 11 : _currentMonth - 1, 
             _currentMonth < 1 ? _currentYear - 1 : _currentYear
@@ -616,7 +673,6 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * Select today's date on calendar component
      */
     this.today = function() {
-        resizing = false;
         this.setProperty("value", new Date().format(this.outputFormat));
     };
 
