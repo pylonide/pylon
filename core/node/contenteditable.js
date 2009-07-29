@@ -903,7 +903,7 @@ apf.ContentEditable = function() {
 
             if (bNoSel) {
                 var el = bStandalone ? this.$activeDocument.body : activeNode;
-                //#ifdef __WITH_PARSER_HTML
+                //#ifdef __PARSER_HTML
                 el.innerHTML = apf.htmlCleaner.prepare(el.innerHTML);
                 //#endif
                 this.$controlAgentBehavior(el);
@@ -1473,7 +1473,7 @@ apf.ContentEditable = function() {
         if (!bNoFocus)
             this.$selection.set();
         this.$visualFocus(true);
-        // #ifdef __WITH_PARSER_HTML
+        // #ifdef __PARSER_HTML
         html = bNoParse ? html : apf.htmlCleaner.prepare(html);
         // #endif
         this.$selection.setContent(html, true);
