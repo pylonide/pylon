@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-apf.ContentEditable.plugin('media', function(){
-    this.name        = 'media';
-    this.icon        = 'media';
+apf.ContentEditable.plugin("media", function(){
+    this.name        = "media";
+    this.icon        = "media";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+m';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+m";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {

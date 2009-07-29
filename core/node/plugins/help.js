@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-apf.ContentEditable.plugin('help', function(){
-    this.name        = 'help';
-    this.icon        = 'help';
+apf.ContentEditable.plugin("help", function(){
+    this.name        = "help";
+    this.icon        = "help";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+h';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+h";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {

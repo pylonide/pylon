@@ -26,7 +26,7 @@ apf.ContentEditable.directionPlugin = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
@@ -39,7 +39,7 @@ apf.ContentEditable.directionPlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin('ltr', apf.ContentEditable.directionPlugin);
-apf.ContentEditable.plugin('rtl', apf.ContentEditable.directionPlugin);
+apf.ContentEditable.plugin("ltr", apf.ContentEditable.directionPlugin);
+apf.ContentEditable.plugin("rtl", apf.ContentEditable.directionPlugin);
 
 // #endif

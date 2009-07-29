@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
-apf.ContentEditable.plugin('print', function(){
-    this.name        = 'print';
-    this.icon        = 'print';
+apf.ContentEditable.plugin("print", function(){
+    this.name        = "print";
+    this.icon        = "print";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+p';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+p";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
@@ -42,13 +42,13 @@ apf.ContentEditable.plugin('print', function(){
     };
 });
 
-apf.ContentEditable.plugin('preview', function(){
-    this.name        = 'preview';
-    this.icon        = 'preview';
+apf.ContentEditable.plugin("preview", function(){
+    this.name        = "preview";
+    this.icon        = "preview";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+p';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+p";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {

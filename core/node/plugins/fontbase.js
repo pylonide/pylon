@@ -21,12 +21,12 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.ContentEditable.plugin('fonts', function() {
-    this.name        = 'fonts';
-    this.icon        = 'fonts';
+apf.ContentEditable.plugin("fonts", function() {
+    this.name        = "fonts";
+    this.icon        = "fonts";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.buttonNode  = null;
     this.state       = apf.OFF;
     this.colspan     = 1;
@@ -36,9 +36,9 @@ apf.ContentEditable.plugin('fonts', function() {
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " fontpicker";
-        this.fontPreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.fontPreview = this.buttonNode.getElementsByTagName("span")[0];
         this.fontPreview.className += " fontpreview";
-        var fontArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var fontArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         fontArrow.className = "selectarrow";
 
@@ -46,9 +46,9 @@ apf.ContentEditable.plugin('fonts', function() {
 
         // parse fonts
         var l, j, font, fonts, node;
-        var oNode = editor.$getPluginOption('fonts').childNodes[0];
+        var oNode = editor.$getPluginOption("fonts").childNodes[0];
         while(oNode) {
-            fonts = oNode.nodeValue.splitSafe('(?:;|=)');
+            fonts = oNode.nodeValue.splitSafe("(?:;|=)");
             if (fonts[0]) {
                 for (j = 0, l = fonts.length; j < l; j++)
                     this.fontNames[fonts[j]] = fonts[++j];
@@ -77,9 +77,9 @@ apf.ContentEditable.plugin('fonts', function() {
     };
 
     this.queryState = function(editor) {
-        this.state = editor.$queryCommandState('FontName');
+        this.state = editor.$queryCommandState("FontName");
 
-        var currValue = editor.$queryCommandValue('FontName');
+        var currValue = editor.$queryCommandValue("FontName");
         if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue))
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
     };
@@ -88,7 +88,7 @@ apf.ContentEditable.plugin('fonts', function() {
         e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        var sFont = e.target.getAttribute('rel');
+        var sFont = e.target.getAttribute("rel");
         if (sFont) {
             apf.popup.forceHide();
             if (apf.isIE) {
@@ -96,18 +96,18 @@ apf.ContentEditable.plugin('fonts', function() {
                 if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
                     var r = this.editor.$selection.getRange();
-                    r.moveStart('character', -1);
+                    r.moveStart("character", -1);
                     r.select();
                 }
             }
-            this.editor.$execCommand('FontName', sFont);
+            this.editor.$execCommand("FontName", sFont);
             if (apf.isIE)
                 this.editor.$selection.collapse(false);
         }
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
         var aHtml = [];
@@ -116,9 +116,9 @@ apf.ContentEditable.plugin('fonts', function() {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
                 this.fontNames[i], ';" rel="', i,
                 '" href="javascript:;" onmouseup="apf.lookup(', this.uniqueId,
-                ').submit(event);">', i, '</a>');
+                ').submit(event);">', i, "</a>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     };
@@ -130,12 +130,12 @@ apf.ContentEditable.plugin('fonts', function() {
     };
 });
 
-apf.ContentEditable.plugin('fontsize', function() {
-    this.name        = 'fontsize';
-    this.icon        = 'fontsize';
+apf.ContentEditable.plugin("fontsize", function() {
+    this.name        = "fontsize";
+    this.icon        = "fontsize";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.buttonNode  = null;
     this.state       = apf.OFF;
 
@@ -143,20 +143,20 @@ apf.ContentEditable.plugin('fontsize', function() {
 
     // this hashmap maps font size number to it's equivalent in points (pt)
     var sizeMap = {
-        '1' : '8',
-        '2' : '10',
-        '3' : '12',
-        '4' : '14',
-        '5' : '18',
-        '6' : '24',
-        '7' : '36'
+        "1" : "8",
+        "2" : "10",
+        "3" : "12",
+        "4" : "14",
+        "5" : "18",
+        "6" : "24",
+        "7" : "36"
     };
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " fontsizepicker";
-        this.sizePreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.sizePreview = this.buttonNode.getElementsByTagName("span")[0];
         this.sizePreview.className += " fontsizepreview";
-        var sizeArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var sizeArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         sizeArrow.className = "selectarrow";
 
@@ -168,7 +168,7 @@ apf.ContentEditable.plugin('fontsize', function() {
             this.editor = editor;
 
             // parse font sizes
-            var i, node, oNode = editor.$getPluginOption('fontsizes');
+            var i, node, oNode = editor.$getPluginOption("fontsizes");
             for (i = 0; i < oNode.childNodes.length; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4)
@@ -186,9 +186,9 @@ apf.ContentEditable.plugin('fontsize', function() {
     };
 
     this.queryState = function(editor) {
-        this.state = editor.$queryCommandState('FontSize');
+        this.state = editor.$queryCommandState("FontSize");
 
-        var currValue = editor.$queryCommandValue('FontSize')
+        var currValue = editor.$queryCommandValue("FontSize")
         if (!currValue || this.sizePreview.innerHTML != currValue)
             this.sizePreview.innerHTML = currValue ? currValue : "Size";
     };
@@ -197,7 +197,7 @@ apf.ContentEditable.plugin('fontsize', function() {
         e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        var sSize = e.target.getAttribute('rel');
+        var sSize = e.target.getAttribute("rel");
         if (sSize) {
             apf.popup.forceHide();
             if (apf.isIE) {
@@ -205,11 +205,11 @@ apf.ContentEditable.plugin('fontsize', function() {
                 if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
                     var r = this.editor.$selection.getRange();
-                    r.moveStart('character', -1);
+                    r.moveStart("character", -1);
                     r.select();
                 }
             }
-            this.editor.$execCommand('FontSize', sSize);
+            this.editor.$execCommand("FontSize", sSize);
             if (apf.isIE)
                 this.editor.$selection.collapse(false);
         }
@@ -218,7 +218,7 @@ apf.ContentEditable.plugin('fontsize', function() {
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
         var aHtml = [];
@@ -226,12 +226,12 @@ apf.ContentEditable.plugin('fontsize', function() {
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
-                sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:',
+                sizeMap[aSizes[i]], "pt;height:", sizeMap[aSizes[i]], "pt;line-height:",
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
                 '" href="javascript:;" onmouseup="apf.lookup(', this.uniqueId,
-                ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
+                ').submit(event);">', aSizes[i], " (", sizeMap[aSizes[i]], "pt)</a>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     };

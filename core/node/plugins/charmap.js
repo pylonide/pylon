@@ -21,12 +21,12 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-apf.ContentEditable.plugin('charmap', function() {
-    this.name        = 'charmap';
-    this.icon        = 'charmap';
+apf.ContentEditable.plugin("charmap", function() {
+    this.name        = "charmap";
+    this.icon        = "charmap";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.buttonNode  = null;
     this.state       = apf.OFF;
     this.colspan     = 20;
@@ -35,7 +35,7 @@ apf.ContentEditable.plugin('charmap', function() {
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -91,7 +91,7 @@ apf.ContentEditable.plugin('charmap', function() {
         e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        var sCode = e.target.getAttribute('rel');
+        var sCode = e.target.getAttribute("rel");
         if (sCode) {
             apf.popup.forceHide();
             //this.storeSelection();
@@ -105,7 +105,7 @@ apf.ContentEditable.plugin('charmap', function() {
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
         var aHtml  = [];
@@ -116,12 +116,12 @@ apf.ContentEditable.plugin('charmap', function() {
             aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
                 chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="apf.lookup(',
                 this.uniqueId, ').submit(event);">\
-                <span>', chars[i],'</span>\
-                </a>');
+                <span>', chars[i],"</span>\
+                </a>");
             if (i % this.colspan == rowLen)
-                aHtml.push('</div>');
+                aHtml.push("</div>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
         return panelBody;
     };
 

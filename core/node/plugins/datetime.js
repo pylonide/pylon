@@ -26,8 +26,8 @@ apf.ContentEditable.dateTimePlugin = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = sName == "insertdate" ? 'ctrl+shift+d' : 'ctrl+shift+t';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = sName == "insertdate" ? "ctrl+shift+d" : "ctrl+shift+t";
     this.state       = apf.OFF;
     this.i18n        = { //default English (en_GB)
         date_format  :"%Y-%m-%d",
@@ -40,10 +40,10 @@ apf.ContentEditable.dateTimePlugin = function(sName) {
 
     this.execute = function(editor) {
         if (typeof this.i18n.months_long == "string") {
-            this.i18n.months_long  = this.i18n.months_long.split(',');
-            this.i18n.months_short = this.i18n.months_short.split(',');
-            this.i18n.days_long    = this.i18n.days_long.split(',');
-            this.i18n.days_short   = this.i18n.days_short.split(',');
+            this.i18n.months_long  = this.i18n.months_long.split(",");
+            this.i18n.months_short = this.i18n.months_short.split(",");
+            this.i18n.days_long    = this.i18n.days_long.split(",");
+            this.i18n.days_short   = this.i18n.days_short.split(",");
         }
         var d = new Date();
         var fmt = (this.name == "insertdate") ? this.i18n.date_format : this.i18n.time_format;
@@ -74,7 +74,7 @@ apf.ContentEditable.dateTimePlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin('insertdate', apf.ContentEditable.dateTimePlugin);
-apf.ContentEditable.plugin('inserttime', apf.ContentEditable.dateTimePlugin);
+apf.ContentEditable.plugin("insertdate", apf.ContentEditable.dateTimePlugin);
+apf.ContentEditable.plugin("inserttime", apf.ContentEditable.dateTimePlugin);
 
 // #endif

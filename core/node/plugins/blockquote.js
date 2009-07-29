@@ -21,24 +21,24 @@
 
 // #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
-apf.ContentEditable.plugin('blockquote', function(){
-    this.name        = 'blockquote';
-    this.icon        = 'blockquote';
+apf.ContentEditable.plugin("blockquote", function(){
+    this.name        = "blockquote";
+    this.icon        = "blockquote";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+b';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+b";
     this.buttonBuilt = false;
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        editor.$execCommand('FormatBlock', 'BLOCKQUOTE');
+        editor.$execCommand("FormatBlock", "BLOCKQUOTE");
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        return editor.$queryCommandState('FormatBlock');
+        return editor.$queryCommandState("FormatBlock");
     };
 });
 

@@ -26,26 +26,26 @@ apf.ContentEditable.subSupCommand = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = sName == "sub" ? 'ctrl+alt+s' : 'ctrl+shift+s';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = sName == "sub" ? "ctrl+alt+s" : "ctrl+shift+s";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        var other = this.name == "sub" ? 'Superscript' : 'Subscript';
+        var other = this.name == "sub" ? "Superscript" : "Subscript";
         if (editor.$queryCommandState(other) == apf.ON)
             editor.$execCommand(other);
-        editor.$execCommand(this.name == "sub" ? 'Subscript' : 'Superscript');
+        editor.$execCommand(this.name == "sub" ? "Subscript" : "Superscript");
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
         return editor.$queryCommandState(this.name == "sub"
-            ? 'Subscript'
-            : 'Superscript');
+            ? "Subscript"
+            : "Superscript");
     };
 }
-apf.ContentEditable.plugin('sub', apf.ContentEditable.subSupCommand);
-apf.ContentEditable.plugin('sup', apf.ContentEditable.subSupCommand);
+apf.ContentEditable.plugin("sub", apf.ContentEditable.subSupCommand);
+apf.ContentEditable.plugin("sup", apf.ContentEditable.subSupCommand);
 
 // #endif

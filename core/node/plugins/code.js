@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-apf.ContentEditable.plugin('code', function() {
-    this.name        = 'code';
-    this.icon        = 'code';
+apf.ContentEditable.plugin("code", function() {
+    this.name        = "code";
+    this.icon        = "code";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+h';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+h";
     this.state       = apf.OFF;
     this.noDisable   = true;
     this.regex       = null;
@@ -48,7 +48,7 @@ apf.ContentEditable.plugin('code', function() {
 
             editor.$pluginsActive = this.name;
             // disable the editor...
-            editor.setProperty('state', apf.DISABLED);
+            editor.setProperty("state", apf.DISABLED);
 
             // show the textarea and position it correctly...
             this.setSize(editor);
@@ -60,7 +60,7 @@ apf.ContentEditable.plugin('code', function() {
             editor.$pluginsActive = null;
             
             oCont.style.display = "none";
-            editor.setProperty('state', apf.OFF);
+            editor.setProperty("state", apf.OFF);
             
             propagateChange();
             
@@ -69,7 +69,7 @@ apf.ContentEditable.plugin('code', function() {
                 editor.$visualFocus();
             });
         }
-        editor.$notifyButton('code', this.queryState(editor));
+        editor.$notifyButton("code", this.queryState(editor));
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
@@ -93,10 +93,10 @@ apf.ContentEditable.plugin('code', function() {
         //if (lastLoaded == oPreview.value) return false;
         var html = apf.htmlCleaner.parse(oPreview.value
             .replace(/<\/p>/gi, "</p><p></p>")
-            .replace(/\n/g, ''));
+            .replace(/\n/g, ""));
 
         try{
-            apf.getXml('<source>' + html.replace(/&.{3,5};/g, "") + '</source>');
+            apf.getXml("<source>" + html.replace(/&.{3,5};/g, "") + "</source>");
         }
         catch(e){
             if (confirm("Er zit een fout in de html. Klik op OK om deze \
@@ -141,12 +141,12 @@ apf.ContentEditable.plugin('code', function() {
         this.editor = editor;
 
         //this.editor.$getNewContext("code");
-        oCont = editor.$getExternal('code', editor.oExt);
+        oCont = editor.$getExternal("code", editor.oExt);
 
-        oToolbar = oCont.getElementsByTagName('div')[0];
+        oToolbar = oCont.getElementsByTagName("div")[0];
         //oToolbar.className = "";
-        this.editor.$drawToolbars(oToolbar, 'codetoolbar',
-            'apf.all[' + this.uniqueId + '].$buttonClick(event, this);', true);
+        this.editor.$drawToolbars(oToolbar, "codetoolbar",
+            "apf.all[" + this.uniqueId + "].$buttonClick(event, this);", true);
         // @todo make this hack disappear...
         oToolbar.innerHTML = oToolbar.innerHTML;
         var btns = oToolbar.getElementsByTagName("div");
@@ -155,12 +155,12 @@ apf.ContentEditable.plugin('code', function() {
             if (!item) continue;
 
             oButtons[item] = btns[i];
-            apf.setStyleClass(btns[i], 'editor_enabled',
-                ['editor_selected', 'editor_disabled']);
+            apf.setStyleClass(btns[i], "editor_enabled",
+                ["editor_selected", "editor_disabled"]);
             btns[i].disabled = false;
         }
 
-        oPreview = oCont.getElementsByTagName('textarea')[0];//oCont.appendChild(document.createElement('textarea'));
+        oPreview = oCont.getElementsByTagName("textarea")[0];//oCont.appendChild(document.createElement("textarea"));
         // make selections in IE possible.
         if (apf.isIE)
             oPreview.onselectstart = function(e) {
@@ -270,10 +270,10 @@ apf.ContentEditable.plugin('code', function() {
 
         var sFmt = sHtml.replace(this.regex.protectedTags, protect);
         // Line breaks.
-        sFmt = sFmt.replace(this.regex.blocksOpener, '\n$&')
-                   .replace(this.regex.blocksCloser, '$&\n')
-                   .replace(this.regex.newLineTags,  '$&\n')
-                   .replace(this.regex.mainTags,     '\n$&\n');
+        sFmt = sFmt.replace(this.regex.blocksOpener, "\n$&")
+                   .replace(this.regex.blocksCloser, "$&\n")
+                   .replace(this.regex.newLineTags,  "$&\n")
+                   .replace(this.regex.mainTags,     "\n$&\n");
 
         // Indentation.
         var i, j,
@@ -285,16 +285,16 @@ apf.ContentEditable.plugin('code', function() {
             if (sLn.length == 0)
                 continue ;
             if (this.regex.decreaseIndent.test(sLn))
-                sIdt = sIdt.replace(this.regex.formatIndentatorRemove, '');
+                sIdt = sIdt.replace(this.regex.formatIndentatorRemove, "");
             sFmt += sIdt + sLn + "\n";
             if (this.regex.increaseIndent.test(sLn))
-                sIdt += '    ';
+                sIdt += "    ";
         }
 
         // Now we put back the protected data.
         for (i = 0, j = protectedData.length; i < j; i++) {
-            var oRegex = new RegExp('___JPFpd___' + i);
-            sFmt = sFmt.replace(oRegex, protectedData[i].replace(/\$/g, '$$$$'));
+            var oRegex = new RegExp("___JPFpd___" + i);
+            sFmt = sFmt.replace(oRegex, protectedData[i].replace(/\$/g, "$$$$"));
         }
 
         return sFmt.trim();

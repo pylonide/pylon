@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-apf.ContentEditable.plugin('link', function(){
-    this.name        = 'link';
-    this.icon        = 'link';
+apf.ContentEditable.plugin("link", function(){
+    this.name        = "link";
+    this.icon        = "link";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+l';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+l";
     this.state       = apf.OFF;
 
     var panelBody;
@@ -95,13 +95,13 @@ apf.ContentEditable.plugin('link', function(){
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idUrl    = 'editor_' + this.uniqueId + '_link_url';
-        var idTarget = 'editor_' + this.uniqueId + '_link_target';
-        var idTitle  = 'editor_' + this.uniqueId + '_link_title';
-        var idBtns   = 'editor_' + this.uniqueId + '_link_btns';
+        var idUrl    = "editor_" + this.uniqueId + "_link_url";
+        var idTarget = "editor_" + this.uniqueId + "_link_target";
+        var idTitle  = "editor_" + this.uniqueId + "_link_title";
+        var idBtns   = "editor_" + this.uniqueId + "_link_btns";
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idUrl + '">Link URL</label>\
@@ -142,7 +142,7 @@ apf.ContentEditable.plugin('link', function(){
 
         this.appendAmlNode(
             '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
-             <a:button caption="' + this.editor.$translate('insert') + '" \
+             <a:button caption="' + this.editor.$translate("insert") + '" \
                onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
              </a:bar></a:toolbar>',
           document.getElementById(idBtns))
@@ -159,13 +159,13 @@ apf.ContentEditable.plugin('link', function(){
     };
 });
 
-apf.ContentEditable.plugin('unlink', function(){
-    this.name        = 'unlink';
-    this.icon        = 'unlink';
+apf.ContentEditable.plugin("unlink", function(){
+    this.name        = "unlink";
+    this.icon        = "unlink";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+l';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+l";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
@@ -173,7 +173,7 @@ apf.ContentEditable.plugin('unlink', function(){
             return;
 
         if (apf.isIE) {
-            editor.$execCommand('Unlink');
+            editor.$execCommand("Unlink");
         }
         else {
             var sel = editor.$selection;

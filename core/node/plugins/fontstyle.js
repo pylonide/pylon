@@ -21,12 +21,12 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.ContentEditable.plugin('fontstyle', function() {
-    this.name         = 'fontstyle';
-    this.icon         = 'fontstyle';
+apf.ContentEditable.plugin("fontstyle", function() {
+    this.name         = "fontstyle";
+    this.icon         = "fontstyle";
     this.type         = apf.TOOLBARITEM;
     this.subType      = apf.TOOLBARPANEL;
-    this.hook         = 'ontoolbar';
+    this.hook         = "ontoolbar";
     this.buttonNode   = null;
     this.state        = apf.OFF;
 
@@ -35,7 +35,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
     function getStyles(editor) {
         if (!oStyles) {
             // parse font styles from skin definition
-            var node, aCss, bCss, oNode = editor.$getPluginOption('fontstyles');
+            var node, aCss, bCss, oNode = editor.$getPluginOption("fontstyles");
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(apf.formatErrorString(0, editor,
@@ -82,7 +82,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
                 if (apf.isIE) {
                     // removing text nodes from the HEAD section, which are added
                     // by IE in some cases.
-                    var nodes = editor.$activeDocument.getElementsByTagName('head')[0].childNodes;
+                    var nodes = editor.$activeDocument.getElementsByTagName("head")[0].childNodes;
                     var cnt   = nodes.length -  1;
                     while (cnt) {
                         if (nodes[cnt].nodeType == 3) //text
@@ -97,9 +97,9 @@ apf.ContentEditable.plugin('fontstyle', function() {
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " fontstylepicker";
-        this.stylePreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.stylePreview = this.buttonNode.getElementsByTagName("span")[0];
         this.stylePreview.className += " fontstylepreview";
-        var styleArrow = this.buttonNode.appendChild(document.createElement('span'));
+        var styleArrow = this.buttonNode.appendChild(document.createElement("span"));
         styleArrow.className = "selectarrow";
 
         this.queryState(editor);
@@ -149,7 +149,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
             e = new apf.AbstractEvent(e || window.event);
             while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
                 e.target = e.target.parentNode;
-            sStyle = e.target.getAttribute('rel');
+            sStyle = e.target.getAttribute("rel");
         }
 
         if (sStyle) {
@@ -171,7 +171,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
                 this.queryState(this.editor);
             }
             else if (o && (sel.isCollapsed() 
-              || sel.getContent('text') == o.node.innerHTML)
+              || sel.getContent("text") == o.node.innerHTML)
               && apf.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
                 apf.setStyleClass(o.node, sStyle, [o.cname]);
@@ -200,7 +200,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
                         range.setEndAfter(oCaret);
                         sel.setRange(range);
                         var htmlNode = sel.setContent('<span class="' + sStyle + '">'
-                            + sel.getContent() + '</span>');
+                            + sel.getContent() + "</span>");
                         sel.selectNode(htmlNode);
                     }
                 }
@@ -215,14 +215,14 @@ apf.ContentEditable.plugin('fontstyle', function() {
                             '<$1><span class="' + sStyle + '">$2</span></$3>')
                           .replace(/^([\s\S]*?)(<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)[\s\S]*<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>)([\s\S]*?)$/gi, 
                             function(m, m1, m2, m3){
-                                return (m1 ? '<span class="' + sStyle + '">' + m1 + '</span>' : '') + m2 + (m3 ? '<span class="' + sStyle + '">' + m3 + '</span>' : '');
+                                return (m1 ? '<span class="' + sStyle + '">' + m1 + "</span>" : "") + m2 + (m3 ? '<span class="' + sStyle + '">' + m3 + "</span>" : "");
                             })
                           .replace(/^\s*<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)(?:\s.*?|)>|<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>\s*$/gi, "");
                         if (apf.isIE) 
                             s = s.replace(/<\/P>/, "");
                     }
                     else {
-                        s = '<span class="' + sStyle + '">' + s + '</span>';
+                        s = '<span class="' + sStyle + '">' + s + "</span>";
                     }
                     
                     if (shouldPrefixSpan) 
@@ -253,7 +253,7 @@ apf.ContentEditable.plugin('fontstyle', function() {
     };
 
     this.createPanelBody = function(editor) {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
 
@@ -265,9 +265,9 @@ apf.ContentEditable.plugin('fontstyle', function() {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
                 i, '" href="javascript:;" onmouseup="apf.lookup(',
                 this.uniqueId, ').submit(event);"><span class="', i, '">',
-                oStyles[i].caption, '</span></a>')
+                oStyles[i].caption, "</span></a>")
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     };
@@ -281,12 +281,12 @@ apf.ContentEditable.plugin('fontstyle', function() {
 
 //##############################################################################
 
-apf.ContentEditable.plugin('blockformat', function() {
-    this.name         = 'blockformat';
-    this.icon         = 'blockformat';
+apf.ContentEditable.plugin("blockformat", function() {
+    this.name         = "blockformat";
+    this.icon         = "blockformat";
     this.type         = apf.TOOLBARITEM;
     this.subType      = apf.TOOLBARPANEL;
-    this.hook         = 'ontoolbar';
+    this.hook         = "ontoolbar";
     this.buttonNode   = null;
     this.state        = apf.OFF;
     this.node         = null;
@@ -295,23 +295,23 @@ apf.ContentEditable.plugin('blockformat', function() {
 
     // this hashmap maps font size number to it's equivalent in points (pt)
     blocksMap = {
-        'normal'  : 'Normal',
-        'p'       : 'Paragraph',
-        'pre'     : 'Preformatted',
-        'address' : 'Address',
-        'h1'      : 'Header 1',
-        'h2'      : 'Header 2',
-        'h3'      : 'Header 3',
-        'h4'      : 'Header 4',
-        'h5'      : 'Header 5',
-        'h6'      : 'Header 6'
+        "normal"  : "Normal",
+        "p"       : "Paragraph",
+        "pre"     : "Preformatted",
+        "address" : "Address",
+        "h1"      : "Header 1",
+        "h2"      : "Header 2",
+        "h3"      : "Header 3",
+        "h4"      : "Header 4",
+        "h5"      : "Header 5",
+        "h6"      : "Header 6"
     },
     blocksRE, blocksRE2, blocksRE3, blocksRE4, blockFormats;
 
     function getFormats(editor) {
         if (!blockFormats) {
             // parse font styles from skin definition
-            var i, j, node, oNode = editor.$getPluginOption('blockformats');
+            var i, j, node, oNode = editor.$getPluginOption("blockformats");
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
                 throw new Error(apf.formatErrorString(0, editor,
@@ -335,9 +335,9 @@ apf.ContentEditable.plugin('blockformat', function() {
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " blockformatpicker";
-        this.blockPreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.blockPreview = this.buttonNode.getElementsByTagName("span")[0];
         this.blockPreview.className += " blockformatpreview";
-        var blockArrow = this.buttonNode.appendChild(document.createElement('span'));
+        var blockArrow = this.buttonNode.appendChild(document.createElement("span"));
         blockArrow.className = "selectarrow";
 
         this.queryState(editor);
@@ -390,7 +390,7 @@ apf.ContentEditable.plugin('blockformat', function() {
             e = new apf.AbstractEvent(e || window.event);
             while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
                 e.target = e.target.parentNode;
-            sBlock = e.target.getAttribute('rel');
+            sBlock = e.target.getAttribute("rel");
         }
 
         if (sBlock) {
@@ -408,7 +408,7 @@ apf.ContentEditable.plugin('blockformat', function() {
                 var n = this.node.childNodes, p = this.node.parentNode;
                 
                 if (apf.isIE) {
-                    var textlength = sel.getContent('text').length;
+                    var textlength = sel.getContent("text").length;
                     var l = p.insertBefore(p.ownerDocument.createElement("p"), this.node);
                     
                     while (n.length) {
@@ -464,7 +464,7 @@ apf.ContentEditable.plugin('blockformat', function() {
                     sel.selectNode(p);
                 }
                 else {
-                    this.editor.$execCommand('FormatBlock', sBlock);
+                    this.editor.$execCommand("FormatBlock", sBlock);
                 }
                 
                 this.blockPreview.innerHTML = blocksMap[sBlock];
@@ -476,7 +476,7 @@ apf.ContentEditable.plugin('blockformat', function() {
 
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
-                if (oNode.tagName.match(blocksRE4) && s.length == oNode[apf.hasInnerText ? 'innerText' : 'textContent'].length) {
+                if (oNode.tagName.match(blocksRE4) && s.length == oNode[apf.hasInnerText ? "innerText" : "textContent"].length) {
                     var p = this.editor.$activeDocument.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
@@ -490,30 +490,30 @@ apf.ContentEditable.plugin('blockformat', function() {
                     if (oNode && oNode.tagName != "BODY") {
                         var s2;
                         if (oNode.tagName == "P" && apf.isIE) {
-                            s2 = '<' + sBlock + '>' + s.trim().replace(blocksRE3, '') + '</' + sBlock + '>';
+                            s2 = "<" + sBlock + ">" + s.trim().replace(blocksRE3, "") + "</" + sBlock + ">";
                             addedNode = sel.setContent(s2);
                         }
                         else {
-                            s2 = '<P __apf_placeholder="true">' + s + '</P>';
+                            s2 = '<P __apf_placeholder="true">' + s + "</P>";
                             sel.setContent(s2);
                             
                             var sBlock2 = oNode.tagName;
                             var html = [], first, last;
                             var strHtml = oNode.innerHTML.replace(s2, function(m, pos){
                                 return (pos != 0 
-                                        ? (first = true) && '</' + sBlock2 + '>' 
-                                        : '') +
-                                    '<' + sBlock + ' __apf_placeholder="true">' + s.replace(blocksRE3, '') + 
-                                    '</' + sBlock + '>' + 
+                                        ? (first = true) && "</" + sBlock2 + ">"
+                                        : "") +
+                                    "<" + sBlock + ' __apf_placeholder="true">' + s.replace(blocksRE3, "") +
+                                    "</" + sBlock + ">" +
                                     (pos < oNode.innerHTML.length - s.length 
-                                        ? (last = true) && '<' + sBlock2 + '>' 
-                                        : '');
+                                        ? (last = true) && "<" + sBlock2 + ">"
+                                        : "");
                             });
                             if (first)
-                                html.push('<' + sBlock2 + '>');
+                                html.push("<" + sBlock2 + ">");
                             html.push(strHtml);
                             if (last)
-                                html.push('</' + sBlock2 + '>');
+                                html.push("</" + sBlock2 + ">");
                             
                             oNode.innerHTML = html.join("");
                             var addedNode, n = oNode.getElementsByTagName(sBlock);
@@ -546,9 +546,9 @@ apf.ContentEditable.plugin('blockformat', function() {
                         }
                     }
                     else {
-                        var addedNode = sel.setContent('<' + sBlock + '>' 
+                        var addedNode = sel.setContent("<" + sBlock + ">"
                             + s.replace(/<p>(.*?)<\/p>(.)/gi, "$1<br />$2")
-                               .replace(blocksRE3, '') + '</' + sBlock + '>');
+                               .replace(blocksRE3, "") + "</" + sBlock + ">");
                        
                         if (apf.isIE) {
                             var prev = addedNode.previousSibling
@@ -574,7 +574,7 @@ apf.ContentEditable.plugin('blockformat', function() {
     };
 
     this.createPanelBody = function(editor) {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
 
@@ -583,10 +583,10 @@ apf.ContentEditable.plugin('blockformat', function() {
         for (var i = 0, j = aFormats.length; i < j; i++) {
             aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
                 aFormats[i], '" href="javascript:;" onmouseup="apf.lookup(',
-                this.uniqueId, ').submit(event);"><', aFormats[i], '>',
-                blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
+                this.uniqueId, ').submit(event);"><', aFormats[i], ">",
+                blocksMap[aFormats[i]], "</", aFormats[i], "></a>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     };

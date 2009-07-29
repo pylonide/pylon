@@ -21,20 +21,20 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-apf.ContentEditable.plugin('anchor', function() {
-    this.name        = 'anchor';
-    this.icon        = 'anchor';
+apf.ContentEditable.plugin("anchor", function() {
+    this.name        = "anchor";
+    this.icon        = "anchor";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+a';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+a";
     this.state       = apf.OFF;
 
     var panelBody;
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -64,7 +64,7 @@ apf.ContentEditable.plugin('anchor', function() {
     this.queryState = function(editor) {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = editor.$selection.getSelectedNode();
-        if (oNode.tagName == "A" && oNode.getAttribute('name'))
+        if (oNode.tagName == "A" && oNode.getAttribute("name"))
             return apf.ON;
 
         return this.state;
@@ -82,11 +82,11 @@ apf.ContentEditable.plugin('anchor', function() {
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idName   = 'editor_' + this.uniqueId + '_anchor_url';
-        var idButton = 'editor_' + this.uniqueId + '_anchor_button';
+        var idName   = "editor_" + this.uniqueId + "_anchor_url";
+        var idButton = "editor_" + this.uniqueId + "_anchor_button";
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idName + '">Anchor name</label>\

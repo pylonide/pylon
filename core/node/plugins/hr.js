@@ -21,20 +21,20 @@
 
 // #ifdef __ENABLE_EDITOR_HR || __INC_ALL
 
-apf.ContentEditable.plugin('hr', function(){
-    this.name        = 'hr';
-    this.icon        = 'hr';
+apf.ContentEditable.plugin("hr", function(){
+    this.name        = "hr";
+    this.icon        = "hr";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+h';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+h";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
         if (apf.isGecko || apf.isIE)
-            editor.$insertHtml('<hr />', true);
+            editor.$insertHtml("<hr />", true);
         else
-            editor.$execCommand('InsertHorizontalRule');
+            editor.$execCommand("InsertHorizontalRule");
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

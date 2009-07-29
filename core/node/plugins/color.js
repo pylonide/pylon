@@ -26,14 +26,14 @@ apf.ContentEditable.colorPlugin = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.buttonNode  = null;
     this.state       = apf.OFF;
     this.colspan     = 18;
 
     var panelBody;
 
-    var colorAtoms = ['00', '33', '66', '99', 'CC', 'FF'];
+    var colorAtoms = ["00", "33", "66", "99", "CC", "FF"];
     function generatePalette() {
         apf.ContentEditable.colorPlugin.palette = [];
         var r, g, b, iCol;
@@ -62,7 +62,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
      * @return RGB<-->BGR
      */
     function RGBToBGRToRGB(c) {
-        if (typeof c == 'string' && c.length > 0) {
+        if (typeof c == "string" && c.length > 0) {
             //c = c.parseColor();
             var tmp = [];
             var ch1 = c.charAt(0);
@@ -86,10 +86,10 @@ apf.ContentEditable.colorPlugin = function(sName) {
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
         var oArrow = this.buttonNode.getElementsByTagName("div")[0];
-        this.colorPreview = this.buttonNode.insertBefore(document.createElement('div'),
+        this.colorPreview = this.buttonNode.insertBefore(document.createElement("div"),
             oArrow);
         this.colorPreview.className = "colorpreview";
-        var colorArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var colorArrow = this.buttonNode.insertBefore(document.createElement("span"),
             oArrow);
         colorArrow.className = "selectarrow";
     };
@@ -115,17 +115,17 @@ apf.ContentEditable.colorPlugin = function(sName) {
             useSpan = true;
         // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
         try {
-            this.editor.$activeDocument.execCommand('styleWithCSS', false, useSpan);
+            this.editor.$activeDocument.execCommand("styleWithCSS", false, useSpan);
         }
         catch (ex) {
-            this.editor.$activeDocument.execCommand('useCSS', false, !useSpan);
+            this.editor.$activeDocument.execCommand("useCSS", false, !useSpan);
         }
     };
 
     this.queryState = function(editor) {
         var cmdName   = this.name == "forecolor"
-            ? 'ForeColor'
-            : apf.isIE ? 'BackColor' : 'HiliteColor';
+            ? "ForeColor"
+            : apf.isIE ? "BackColor" : "HiliteColor";
         this.state    = editor.$queryCommandState(cmdName);
         var currValue = "";
         try {
@@ -133,7 +133,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
         }
         catch (ex) {}
         if (apf.isIE)
-            currValue = '#' + RGBToBGRToRGB(int2Color(currValue));
+            currValue = "#" + RGBToBGRToRGB(int2Color(currValue));
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
     };
@@ -142,15 +142,15 @@ apf.ContentEditable.colorPlugin = function(sName) {
         e = new apf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        var sColor = e.target.getAttribute('rel');
+        var sColor = e.target.getAttribute("rel");
         if (sColor) {
             apf.popup.forceHide();
 //            if (this.name == "backcolor" && apf.isGecko)
 //                this.setStyleMethod(true);
             this.editor.$execCommand(this.name == "forecolor"
-                ? 'ForeColor'
-                : apf.isIE ? 'BackColor' : 'HiliteColor',
-                '#' + sColor);
+                ? "ForeColor"
+                : apf.isIE ? "BackColor" : "HiliteColor",
+                "#" + sColor);
 //            if (this.name == "backcolor" && apf.isGecko)
 //                this.setStyleMethod(false);
         }
@@ -160,7 +160,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
         if (!apf.ContentEditable.colorPlugin.palette)
             generatePalette();
 
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
         var aHtml = [];
@@ -178,9 +178,9 @@ apf.ContentEditable.colorPlugin = function(sName) {
                     ').submit(event);">\
                     &nbsp;</a>');
             }
-            aHtml.push('</div>');
+            aHtml.push("</div>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     }
@@ -193,7 +193,7 @@ apf.ContentEditable.colorPlugin = function(sName) {
 };
 apf.ContentEditable.colorPlugin.palette = null;
 
-apf.ContentEditable.plugin('forecolor', apf.ContentEditable.colorPlugin);
-apf.ContentEditable.plugin('backcolor', apf.ContentEditable.colorPlugin);
+apf.ContentEditable.plugin("forecolor", apf.ContentEditable.colorPlugin);
+apf.ContentEditable.plugin("backcolor", apf.ContentEditable.colorPlugin);
 
 // #endif

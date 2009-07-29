@@ -26,7 +26,7 @@ apf.ContentEditable.listPlugin = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = apf.OFF;
 
@@ -36,8 +36,8 @@ apf.ContentEditable.listPlugin = function(sName) {
 
     this.execute = function(editor) {
             editor.$execCommand(this.name == "bullist"
-                ? 'InsertUnorderedList'
-                : 'InsertOrderedList');
+                ? "InsertUnorderedList"
+                : "InsertOrderedList");
 
         this.correctLists(editor);
         editor.$visualFocus();
@@ -63,7 +63,7 @@ apf.ContentEditable.listPlugin = function(sName) {
 
     function getEmptyLi(oParent) {
         if (!oParent || oParent.nodeType != 1) return;
-        var sHtml, aNodes = oParent.getElementsByTagName('li');
+        var sHtml, aNodes = oParent.getElementsByTagName("li");
         for (var i = 0, j = aNodes.length; i < j; i++) {
             sHtml = aNodes[i].innerHTML.trim();
             if (sHtml == "" || sHtml == "&nbsp;" || sHtml.match(emptyRegex))
@@ -76,7 +76,7 @@ apf.ContentEditable.listPlugin = function(sName) {
         editor.$selection.set();
 
         var oNode = editor.$selection.getSelectedNode();
-        //window.console.log('correcting lists0: ', oNode);
+        //window.console.log("correcting lists0: ", oNode);
         //window.console.dir(editor.$selection.getRange());
         if (oNode.tagName != "LI") {
             oNode = getEmptyLi(oNode);
@@ -119,15 +119,15 @@ apf.ContentEditable.listPlugin = function(sName) {
 
     this.queryState = function(editor) {
         var state = editor.$queryCommandState(this.name == "bullist"
-            ? 'InsertUnorderedList'
-            : 'InsertOrderedList');
+            ? "InsertUnorderedList"
+            : "InsertOrderedList");
         if (state == apf.DISABLED)
             return apf.OFF;
         return state;
     };
 };
 
-apf.ContentEditable.plugin('bullist', apf.ContentEditable.listPlugin);
-apf.ContentEditable.plugin('numlist', apf.ContentEditable.listPlugin);
+apf.ContentEditable.plugin("bullist", apf.ContentEditable.listPlugin);
+apf.ContentEditable.plugin("numlist", apf.ContentEditable.listPlugin);
 
 // #endif

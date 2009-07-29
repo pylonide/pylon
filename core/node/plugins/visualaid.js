@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-apf.ContentEditable.plugin('visualaid', function(){
-    this.name        = 'visualaid';
-    this.icon        = 'visualaid';
+apf.ContentEditable.plugin("visualaid", function(){
+    this.name        = "visualaid";
+    this.icon        = "visualaid";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+v';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+v";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {

@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-apf.ContentEditable.plugin('scayt', function(){
-    this.name        = 'scayt';
-    this.icon        = 'scayt';
+apf.ContentEditable.plugin("scayt", function(){
+    this.name        = "scayt";
+    this.icon        = "scayt";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+h';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+h";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {

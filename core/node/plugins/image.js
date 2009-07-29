@@ -21,20 +21,20 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-apf.ContentEditable.plugin('image', function(){
-    this.name        = 'image';
-    this.icon        = 'image';
+apf.ContentEditable.plugin("image", function(){
+    this.name        = "image";
+    this.icon        = "image";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+alt+i';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+alt+i";
     this.state       = apf.OFF;
 
     var panelBody;
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -77,11 +77,11 @@ apf.ContentEditable.plugin('image', function(){
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idUrl  = 'editor_' + this.uniqueId + '_input';
-        var idBtns = 'editor_' + this.uniqueId + '_btns';
+        var idUrl  = "editor_" + this.uniqueId + "_input";
+        var idBtns = "editor_" + this.uniqueId + "_btns";
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idUrl + '">Image URL</label>\
@@ -116,13 +116,13 @@ apf.ContentEditable.plugin('image', function(){
     };
 });
 
-apf.ContentEditable.plugin('imagespecial', function() {
-    this.name        = 'imagespecial';
-    this.icon        = 'image';
+apf.ContentEditable.plugin("imagespecial", function() {
+    this.name        = "imagespecial";
+    this.icon        = "image";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+alt+j';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+alt+j";
     this.state       = apf.OFF;
 
     var winHandle;
@@ -130,7 +130,7 @@ apf.ContentEditable.plugin('imagespecial', function() {
     this.execute = function(editor) {
         if (!winHandle) {
             // get window handle from editor AML attribute
-            var s = (editor.$aml.getAttribute('imagewindow') || "").trim();
+            var s = (editor.$aml.getAttribute("imagewindow") || "").trim();
             if (s)
                 winHandle = self[s];
         }

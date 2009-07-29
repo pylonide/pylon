@@ -21,12 +21,12 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-apf.ContentEditable.plugin('emotions', function() {
-    this.name        = 'emotions';
-    this.icon        = 'emotions';
+apf.ContentEditable.plugin("emotions", function() {
+    this.name        = "emotions";
+    this.icon        = "emotions";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
+    this.hook        = "ontoolbar";
     this.buttonNode  = null;
     this.state       = apf.OFF;
     this.colspan     = 4;
@@ -36,7 +36,7 @@ apf.ContentEditable.plugin('emotions', function() {
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -47,7 +47,7 @@ apf.ContentEditable.plugin('emotions', function() {
             this.emotionsPath = editor.$getPluginOption("emotions", "path");
 
             // parse smiley images, or 'emotions'
-            var i, node, oNode = editor.$getPluginOption('emotions');
+            var i, node, oNode = editor.$getPluginOption("emotions");
             for (i = 0; i < oNode.childNodes.length; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4)
@@ -74,19 +74,19 @@ apf.ContentEditable.plugin('emotions', function() {
     this.submit = function(e) {
         e = new apf.AbstractEvent(e || window.event);
         this.editor.$visualFocus();
-        var icon = e.target.getAttribute('rel');
+        var icon = e.target.getAttribute("rel");
         // @todo still iffy...
         if (!icon || icon == null)
-            icon = e.target.parentNode.getAttribute('rel');
+            icon = e.target.parentNode.getAttribute("rel");
         if (!icon) return;
         apf.popup.forceHide();
         this.editor.$insertHtml('<img src="' + this.emotionsPath
-            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />', true);
+            + "/smiley-" + icon + ".gif" + '" alt="" border="0" />', true);
         //this.restoreSelection();
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
         var aHtml    = [];
@@ -99,12 +99,12 @@ apf.ContentEditable.plugin('emotions', function() {
             aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
                 emotions[i], '" href="javascript:;" onmousedown="apf.lookup(',
                 this.uniqueId, ').submit(event);">\
-                <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
+                <img border="0" src="', path, "/smiley-", emotions[i], '.gif" />\
                 </a>');
             if (i % this.colspan == rowLen)
-                aHtml.push('</div>');
+                aHtml.push("</div>");
         }
-        panelBody.innerHTML = aHtml.join('');
+        panelBody.innerHTML = aHtml.join("");
 
         return panelBody;
     };

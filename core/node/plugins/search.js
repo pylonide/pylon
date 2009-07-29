@@ -26,15 +26,15 @@ apf.ContentEditable.searchPlugin = function(sName) {
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = this.name == "search" ? 'ctrl+f' : 'ctrl+shift+f';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = this.name == "search" ? "ctrl+f" : "ctrl+shift+f";
     this.state       = apf.OFF;
 
     var panelBody;
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -75,7 +75,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
 
         if (apf.isIE)
             this.editor.$selection.set();
-        //this.editor.$execCommand('SelectAll');
+        //this.editor.$execCommand("SelectAll");
         this.editor.$selection.collapse(false);
         this.editor.$visualFocus();
 
@@ -89,7 +89,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
             var range = sel.getRange();
             if (!(found = range.findText(val, 1, flag))) {
                 // simulate 'wrapAround' search...
-                this.editor.$activeDocument.execCommand('SelectAll');
+                this.editor.$activeDocument.execCommand("SelectAll");
                 sel.collapse(true);
                 range = sel.getRange();
                 //no chaining of calls here, seems to b0rk selection in IE
@@ -145,7 +145,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
             return;
 
         // Move caret to beginning of text
-        this.editor.$execCommand('SelectAll');
+        this.editor.$execCommand("SelectAll");
         this.editor.$selection.collapse(true);
         this.editor.$visualFocus();
 
@@ -185,19 +185,19 @@ apf.ContentEditable.searchPlugin = function(sName) {
             this.editor.$selection.getRange().duplicate().pasteHTML(sRepl);
         }
         else
-            this.editor.$activeDocument.execCommand('InsertHTML', false, sRepl);
+            this.editor.$activeDocument.execCommand("InsertHTML", false, sRepl);
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idSearch     = 'editor_' + this.uniqueId + '_input';
-        var idReplace    = 'editor_' + this.uniqueId + '_replace';
-        var idReplBtn    = 'editor_' + this.uniqueId + '_replbtn';
-        var idReplAllBtn = 'editor_' + this.uniqueId + '_replallbtn';
-        var idCase       = 'editor_' + this.uniqueId + '_case';
-        var idBtns       = 'editor_' + this.uniqueId + '_btns';
+        var idSearch     = "editor_" + this.uniqueId + "_input";
+        var idReplace    = "editor_" + this.uniqueId + "_replace";
+        var idReplBtn    = "editor_" + this.uniqueId + "_replbtn";
+        var idReplAllBtn = "editor_" + this.uniqueId + "_replallbtn";
+        var idCase       = "editor_" + this.uniqueId + "_case";
+        var idBtns       = "editor_" + this.uniqueId + "_btns";
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
@@ -231,7 +231,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
                   onclick="apf.lookup(', this.uniqueId, ').onReplAllClick(event)" \
                   id="', idReplAllBtn, '" />');
         }
-        aAml.push('</a:bar></a:toolbar>');
+        aAml.push("</a:bar></a:toolbar>");
 
         this.appendAmlNode(aAml.join(""), document.getElementById(idBtns));
 
@@ -275,7 +275,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin('search',  apf.ContentEditable.searchPlugin);
-apf.ContentEditable.plugin('replace', apf.ContentEditable.searchPlugin);
+apf.ContentEditable.plugin("search",  apf.ContentEditable.searchPlugin);
+apf.ContentEditable.plugin("replace", apf.ContentEditable.searchPlugin);
 
 // #endif

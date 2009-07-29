@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-apf.ContentEditable.plugin('table', function() {
-    this.name        = 'table';
-    this.icon        = 'table';
+apf.ContentEditable.plugin("table", function() {
+    this.name        = "table";
+    this.icon        = "table";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+alt+shift+t';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+alt+shift+t";
     this.state       = apf.OFF;
 
     var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
@@ -37,7 +37,7 @@ apf.ContentEditable.plugin('table', function() {
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -74,17 +74,17 @@ apf.ContentEditable.plugin('table', function() {
 
         var i, j, k, l, aOut = ['<table border="0" width="50%">'];
         for (i = 0, j = oSize[0]; i < j; i++) {
-            aOut.push('<tr>');
+            aOut.push("<tr>");
             for (k = 0, l = oSize[1]; k < l; k++)
-                aOut.push('<td>', (apf.isIE ? '' : '&nbsp;<br _apf_placeholder="1" />'),'</td>');
-            aOut.push('</tr>')
+                aOut.push("<td>", (apf.isIE ? "" : '&nbsp;<br _apf_placeholder="1" />'),"</td>");
+            aOut.push("</tr>")
         }
-        aOut.push('</table>')
+        aOut.push("</table>")
 
         //this.restoreSelection();
         //if (apf.isIE)
         //this.editor.$selection.set();
-        this.editor.$insertHtml(aOut.join(''), true);
+        this.editor.$insertHtml(aOut.join(""), true);
         this.editor.$selection.collapse(false);
         this.editor.$visualFocus();
     };
@@ -163,7 +163,7 @@ apf.ContentEditable.plugin('table', function() {
             oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
             oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
             var sCaption = iCurrentY + " x " + iCurrentX + " " 
-                + _self.editor.$translate('table_noun');
+                + _self.editor.$translate("table_noun");
             if (sCurrentCaption != sCaption)
                 oStatus.innerHTML = sCurrentCaption = sCaption;
         }
@@ -175,7 +175,7 @@ apf.ContentEditable.plugin('table', function() {
         if (bMorphing) return;
         oTableSel.style.width = oTableSel.style.height = "0px";
         iCurrentX = iCurrentY = 0;
-        oStatus.innerHTML = sCurrentCaption = _self.editor.$translate('cancel');
+        oStatus.innerHTML = sCurrentCaption = _self.editor.$translate("cancel");
     }
 
     function statusClick(e) {
@@ -184,21 +184,21 @@ apf.ContentEditable.plugin('table', function() {
     }
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup editor_tablepopup";
         panelBody.style.display = "none";
 
-        var idTableCont = 'editor_' + this.uniqueId + '_tablecont';
-        var idTableSel  = 'editor_' + this.uniqueId + '_tablesel';
-        var idTable     = 'editor_' + this.uniqueId + '_table';
-        var idStatus    = 'editor_' + this.uniqueId + '_table_status';
+        var idTableCont = "editor_" + this.uniqueId + "_tablecont";
+        var idTableSel  = "editor_" + this.uniqueId + "_tablesel";
+        var idTable     = "editor_" + this.uniqueId + "_table";
+        var idStatus    = "editor_" + this.uniqueId + "_table_status";
         panelBody.innerHTML =
            '<div id="' + idTableCont + '" class="editor_paneltable_cont">\
                 <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
                 <div id="' + idTable + '" class="editor_paneltable"></div>\
             </div>\
             <div id="' + idStatus + '" class="editor_paneltablecancel">' 
-                + this.editor.$translate('cancel') + '</div>';
+                + this.editor.$translate("cancel") + '</div>';
 
         oTableCont = document.getElementById(idTableCont);
         oTableSel  = document.getElementById(idTableSel);
@@ -229,11 +229,11 @@ apf.ContentEditable.plugin('table', function() {
     };
 });
 
-apf.ContentEditable.plugin('tablewizard', function() {
-    this.name        = 'tablewizard';
-    this.icon        = 'tablewizard';
+apf.ContentEditable.plugin("tablewizard", function() {
+    this.name        = "tablewizard";
+    this.icon        = "tablewizard";
     this.type        = apf.CONTEXTPANEL;
-    this.hook        = 'context';
+    this.hook        = "context";
     this.state       = apf.OFF;
     this.oTable      = null;
     this.oRow        = null;
@@ -403,13 +403,13 @@ apf.ContentEditable.plugin('tablewizard', function() {
 
             switch (e.value) {
                 case "rowbefore":
-                    oRow = oDoc.createElement('tr');
+                    oRow = oDoc.createElement("tr");
                     _self.oRow.parentNode.insertBefore(oRow, _self.oRow);
                     for (i = 0, j = _self.oRow.cells.length; i < j; i++)
                         oRow.insertCell(0);
                     break;
                 case "rowafter":
-                    oRow = oDoc.createElement('tr');
+                    oRow = oDoc.createElement("tr");
                     _self.oRow.parentNode.insertBefore(oRow, _self.oRow.nextSibling);
                     for (i = 0, j = _self.oRow.cells.length; i < j; i++)
                         oRow.insertCell(0);
@@ -456,7 +456,7 @@ apf.ContentEditable.plugin('tablewizard', function() {
                             if (!apf.isIE)
                                 newTD.innerHTML = '<br _apf_placeholder="1"/>';
 
-                            _self.oRow.insertBefore(newTD, nextElm(_self.oCell, ['TD','TH']));
+                            _self.oRow.insertBefore(newTD, nextElm(_self.oCell, ["TD","TH"]));
 
                             if (rowspan > 1)
                                 addRows(newTD, _self.oRow, rowspan);
@@ -496,10 +496,10 @@ apf.ContentEditable.plugin('tablewizard', function() {
                                 rows[rows.length] = aRowCells;
 
                             oTd = getCell(grid, oCellPos.rowindex, oCellPos.cellindex);
-                            aBrs = oTd.getElementsByTagName('br');
+                            aBrs = oTd.getElementsByTagName("br");
                             if (aBrs.length > 1) {
                                 for (j = aBrs.length; j >= 1; j--) {
-                                    if (aBrs[j].getAttribute('_apf_placeholder'))
+                                    if (aBrs[j].getAttribute("_apf_placeholder"))
                                         aBrs[j].parentNode.removeChild(aBrs[j]);
                                 }
                             }
@@ -645,10 +645,10 @@ apf.ContentEditable.plugin('tablewizard', function() {
                     }
 
                     // Remove all but one bogus br
-                    aBrs = _self.oCell.getElementsByTagName('br');
+                    aBrs = _self.oCell.getElementsByTagName("br");
                     if (aBrs.length > 1) {
                         for (i = aBrs.length; i >= 1; i--) {
-                            if (aBrs[i] && aBrs[i].getAttribute('_apf_placeholder'))
+                            if (aBrs[i] && aBrs[i].getAttribute("_apf_placeholder"))
                                 aBrs[i].parentNode.removeChild(aBrs[i]);
                         }
                     }

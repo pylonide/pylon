@@ -21,20 +21,20 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-apf.ContentEditable.plugin('pastetext', function() {
-    this.name        = 'pastetext';
-    this.icon        = 'pastetext';
+apf.ContentEditable.plugin("pastetext", function() {
+    this.name        = "pastetext";
+    this.icon        = "pastetext";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+shift+v';
+    this.hook        = "ontoolbar";
+    this.keyBinding  = "ctrl+shift+v";
     this.state       = apf.OFF;
 
     var panelBody;
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
-        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+        var oArrow = this.buttonNode.insertBefore(document.createElement("span"),
             this.buttonNode.getElementsByTagName("div")[0]);
         oArrow.className = "selectarrow";
     };
@@ -71,14 +71,14 @@ apf.ContentEditable.plugin('pastetext', function() {
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
 
-        var rl = ['\u2122', '<sup>TM</sup>', '\u2026', '...', '\u201c|\u201d', 
-            '"', '\u2019,\'', '\u2013|\u2014|\u2015|\u2212', '-'];
+        var rl = ["\u2122", "<sup>TM</sup>", "\u2026", "...", "\u201c|\u201d",
+            "\"", "\u2019,'", "\u2013|\u2014|\u2015|\u2212", "-"];
         for (var i = 0; i < rl.length; i += 2)
-            sContent = sContent.replace(new RegExp(rl[i], 'gi'), rl[i+1]);
+            sContent = sContent.replace(new RegExp(rl[i], "gi"), rl[i+1]);
 
-        sContent = sContent.replace(/\r\n/g, '<br />')
-            .replace(/\r/g, '<br />')
-            .replace(/\n/g, '<br />');
+        sContent = sContent.replace(/\r\n/g, "<br />")
+            .replace(/\r/g, "<br />")
+            .replace(/\n/g, "<br />");
         this.editor.$insertHtml(sContent);
 
         if (e.stop)
@@ -89,14 +89,14 @@ apf.ContentEditable.plugin('pastetext', function() {
     };
 
     this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var idArea = 'editor_' + this.uniqueId + '_input';
-        var idBtns = 'editor_' + this.uniqueId + '_btns';
+        var idArea = "editor_" + this.uniqueId + "_input";
+        var idBtns = "editor_" + this.uniqueId + "_btns";
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
-           this.editor.$translate('paste_keyboardmsg').sprintf(apf.isMac ? 'CMD+V' : 'CTRL+V')
+           this.editor.$translate("paste_keyboardmsg").sprintf(apf.isMac ? "CMD+V" : "CTRL+V")
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
               cols="60" rows="10" class="editor_textarea"></textarea>\
@@ -116,7 +116,7 @@ apf.ContentEditable.plugin('pastetext', function() {
         }
         this.appendAmlNode(
            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
-            <a:button caption="' + this.editor.$translate('insert') + '" \
+            <a:button caption="' + this.editor.$translate("insert") + '" \
               onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
             </a:bar></a:toolbar>',
           document.getElementById(idBtns));
@@ -130,12 +130,12 @@ apf.ContentEditable.plugin('pastetext', function() {
         delete this.oArea;
     };
 });
-apf.ContentEditable.plugin('pasteword', function() {
-    this.name        = 'pasteword';
-    this.icon        = 'pasteword';
+apf.ContentEditable.plugin("pasteword", function() {
+    this.name        = "pasteword";
+    this.icon        = "pasteword";
     this.type        = apf.CMDMACRO;
-    this.hook        = 'onpaste';
-    this.keyBinding  = 'ctrl+shift+v';
+    this.hook        = "onpaste";
+    this.keyBinding  = "ctrl+shift+v";
     this.state       = apf.OFF;
     
     this.parse = function(sContent) {
@@ -143,19 +143,19 @@ apf.ContentEditable.plugin('pasteword', function() {
         var bull   = String.fromCharCode(8226);
         var middot = String.fromCharCode(183);
         // convert headers to strong typed character (BOLD)
-        sContent = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
-            .replace(new RegExp('tab-stops: list [0-9]+.0pt">', 'gi'), '">' + "--list--")
+        sContent = sContent.replace(new RegExp("<p class=MsoHeading.*?>(.*?)<\/p>", "gi"), "<p><b>$1</b></p>")
+            .replace(new RegExp("tab-stops: list [0-9]+.0pt\">", "gi"), '">' + "--list--")
             .replace(new RegExp(bull + "(.*?)<BR>", "gi"), "<p>" + middot + "$1</p>")
-            .replace(new RegExp('<SPAN style="mso-list: Ignore">', 'gi'), "<span>" + bull) // Covert to bull list
+            .replace(new RegExp('<SPAN style="mso-list: Ignore">', "gi"), "<span>" + bull) // Covert to bull list
             .replace(/<o:p><\/o:p>/gi, "")
-            .replace(new RegExp('<br style="page-break-before: always;.*>', 'gi'), '-- page break --') // Replace pagebreaks
-            .replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), "")  // Word comments
+            .replace(new RegExp('<br style="page-break-before: always;.*>', "gi"), "-- page break --") // Replace pagebreaks
+            .replace(new RegExp("<(!--)([^>]*)(--)>", "g"), "")  // Word comments
             .replace(/<\/?span[^>]*>/gi, "") //remove Word-generated superfluous spans
-            .replace(new RegExp('<(\\w[^>]*) style="([^"]*)"([^>]*)', 'gi'), "<$1$3") //remove inline style attributes
+            .replace(new RegExp('<(\\w[^>]*) style="([^"]*)"([^>]*)', "gi"), "<$1$3") //remove inline style attributes
             .replace(/<\/?font[^>]*>/gi, "")
             .replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") // Strips class attributes.
-            //.replace(new RegExp('<(\\w[^>]*) class="?mso([^ |>]*)([^>]*)', 'gi'), "<$1$3"); //MSO class attributes
-            //.replace(new RegExp('href="?' + this._reEscape("" + document.location) + '', 'gi'), 'href="' + this.editor.documentBaseURI.getURI());
+            //.replace(new RegExp('<(\\w[^>]*) class="?mso([^ |>]*)([^>]*)', "gi"), "<$1$3"); //MSO class attributes
+            //.replace(new RegExp('href="?' + this._reEscape("" + document.location) + "", "gi"), 'href="' + this.editor.documentBaseURI.getURI());
             .replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3")
             .replace(/<\\?\?xml[^>]*>/gi, "")
             .replace(/<\/?\w+:[^>]*>/gi, "")
@@ -165,15 +165,15 @@ apf.ContentEditable.plugin('pasteword', function() {
             .replace(/<\/?p[^>]*>/gi, "")
             .replace(/<\/?div[^>]*>/gi, "")
             .replace(/<TABLE[^>]*cellPadding=[^>]*>/gi, '<table border="0">') //correct tables
-            .replace(/<td[^>]*vAlign=[^>]*>/gi, '<td>');
+            .replace(/<td[^>]*vAlign=[^>]*>/gi, "<td>");
             //.replace(/\/?&nbsp;*/gi, ""); &nbsp;
-            //.replace(/<p>&nbsp;<\/p>/gi, '');
+            //.replace(/<p>&nbsp;<\/p>/gi, "");
             // Replace all headers with strong and fix some other issues
-        //sContent = sContent.replace(/<h[1-6]>&nbsp;<\/h[1-6]>/gi, '<p>&nbsp;&nbsp;</p>')
-        //    .replace(/<h[1-6]>/gi, '<p><b>')
-        //    .replace(/<\/h[1-6]>/gi, '</b></p>')
-        //    .replace(/<b>&nbsp;<\/b>/gi, '<b>&nbsp;&nbsp;</b>')
-        //    .replace(/^(&nbsp;)*/gi, '');
+        //sContent = sContent.replace(/<h[1-6]>&nbsp;<\/h[1-6]>/gi, "<p>&nbsp;&nbsp;</p>")
+        //    .replace(/<h[1-6]>/gi, "<p><b>")
+        //    .replace(/<\/h[1-6]>/gi, "</b></p>")
+        //    .replace(/<b>&nbsp;<\/b>/gi, "<b>&nbsp;&nbsp;</b>")
+        //    .replace(/^(&nbsp;)*/gi, "");
 
         // Convert all middlot lists to UL lists
         var div = document.createElement("div");
@@ -204,7 +204,7 @@ apf.ContentEditable.plugin('pasteword', function() {
 
             // Add the first one
             li = document.createElement("li");
-            li.innerHTML = p.innerHTML.replace(new RegExp('' + mdot + '|' + bull + '|--list--|&nbsp;', "gi"), '');
+            li.innerHTML = p.innerHTML.replace(new RegExp("" + mdot + "|" + bull + "|--list--|&nbsp;", "gi"), "");
             ul.appendChild(li);
 
             // Add the rest
@@ -212,20 +212,20 @@ apf.ContentEditable.plugin('pasteword', function() {
             while (np) {
                 // If the node is whitespace, then
                 // ignore it and continue on.
-                if (np.nodeType == 3 && new RegExp('^\\s$', 'm').test(np.nodeValue)) {
+                if (np.nodeType == 3 && new RegExp("^\\s$", "m").test(np.nodeValue)) {
                     np = np.nextSibling;
                     continue;
                 }
 
                 if (search == mdot) {
-                    if (np.nodeType == 1 && new RegExp('^o(\\s+|&nbsp;)').test(np.innerHTML)) {
+                    if (np.nodeType == 1 && new RegExp("^o(\\s+|&nbsp;)").test(np.innerHTML)) {
                         // Second level of nesting
                         if (!prevul) {
                             prevul = ul;
                             ul = document.createElement("ul");
                             prevul.appendChild(ul);
                         }
-                        np.innerHTML = np.innerHTML.replace(/^o/, '');
+                        np.innerHTML = np.innerHTML.replace(/^o/, "");
                     }
                     else {
                         // Pop the stack if we're going back up to the first level
@@ -246,7 +246,7 @@ apf.ContentEditable.plugin('pasteword', function() {
 
                 cp = np.nextSibling;
                 li = document.createElement("li");
-                li.innerHTML = np.innerHTML.replace(new RegExp('' + mdot + '|' + bull + '|--list--|&nbsp;', "gi"), '');
+                li.innerHTML = np.innerHTML.replace(new RegExp("" + mdot + "|" + bull + "|--list--|&nbsp;", "gi"), "");
                 np.parentNode.removeChild(np);
                 ul.appendChild(li);
                 np = cp;
