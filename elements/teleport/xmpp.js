@@ -269,6 +269,10 @@ apf.xmpp = function(){
         var aOut = ["<presence xmlns='", apf.xmpp.NS.jabber, "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
+        if (options.to)
+            aOut.push(" to='", options.to, "'");
+        if (options.from)
+            aOut.push(" from='", options.from, "'");
         aOut.push(">");
 
         // show An XMPP complient status indicator. See the class constants
@@ -486,12 +490,13 @@ apf.xmpp = function(){
      * @param {String} password
      * @type  {void}
      */
-    this.connect = function(username, password, callback) {
+    this.connect = function(username, password, reg, callback) {
         this.reset();
 
         register("username",       username);
         register("password",       password);
         register("login_callback", callback);
+        register("register",       reg || this.autoRegister);
         getVar("roster").registerAccount(username, this.domain);
 
         this.doXmlRequest(processConnect, this.isPoll
@@ -615,12 +620,70 @@ apf.xmpp = function(){
             }
         }
 
-        if (!found)
-            return onError(apf.xmpp.ERROR_AUTH, "No supported authentication protocol found. We cannot continue!");
+        if (!found) {
+            return onError(apf.xmpp.ERROR_AUTH, 
+                "No supported authentication protocol found. We cannot continue!");
+        }
 
+        return getVar("register") ? doRegRequest() : doAuthRequest();
+
+    }
+
+    /**
+     * In-Band registration support; allows for automatically registering a
+     * username to the Jabber server and direct login.
+     * @see http://xmpp.org/extensions/attic/jep-0077-2.0.html
+     * 
+     * @type {void}
+     * @private
+     */
+    function doRegRequest() {
+        var sIq = createIqBlock({
+                type  : "set",
+                id    : makeUnique("reg")
+            },
+            "<query xmlns='" + apf.xmpp.NS.register + "'><username>"
+                + getVar("username") + "</username><password>"
+                + getVar("password") + "</password></query>"
+        );
+        _self.doXmlRequest(function(oXml) {
+                if (oXml && oXml.nodeType) {
+                    var iq = oXml.getElementsByTagName("iq")[0];
+                    if ((iq && iq.getAttribute("type") == "error")
+                      || oXml.getElementsByTagName("error").length) {
+                        return onError(apf.xmpp.ERROR_AUTH,
+                            "New account registration for account '"
+                            + getVar("username") + " failed.");
+                    }
+                    // registration successful, proceed with authentication
+                    doAuthRequest();
+                }
+                //#ifdef __DEBUG
+                else if (!_self.isPoll)
+                    onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+                //#endif
+            }, _self.isPoll
+            ? createStreamTag(null, null, sIq)
+            : createBodyTag({
+                rid   : getRID(),
+                sid   : getVar("SID"),
+                xmlns : apf.xmpp.NS.httpbind
+            }, sIq)
+        );
+    }
+
+    /**
+     * Proceeds with the authentication process after establishing a connection
+     * or stream to the server OR after a successful In-Band registration
+     * @see doRegRequest
+     *
+     * @type {void}
+     */
+    function doAuthRequest() {
         // start the authentication process by sending a request
-        var sAuth = "<auth xmlns='" + apf.xmpp.NS.sasl + "' mechanism='" + getVar("AUTH_TYPE") + "'/>";
-        this.doXmlRequest(processAuthRequest, this.isPoll
+        var sAuth = "<auth xmlns='" + apf.xmpp.NS.sasl + "' mechanism='"
+            + getVar("AUTH_TYPE") + "'/>";
+        _self.doXmlRequest(processAuthRequest, _self.isPoll
             ? createStreamTag(null, null, sAuth)
             : createBodyTag({
                   rid   : getRID(),
@@ -1072,13 +1135,10 @@ apf.xmpp = function(){
             if (aIQs.length)
                 parseIqPackets(aIQs);
         }
-        else {
-            //#ifdef __DEBUG
-            if (!_self.isPoll)
-                onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
-                //apf.console.warn("!!!!! Exceptional state !!!!!", "xmpp");
-            //#endif
-        }
+        //#ifdef __DEBUG
+        else if (!_self.isPoll)
+            onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+        //#endif
     }
 
     /**
@@ -1104,8 +1164,8 @@ apf.xmpp = function(){
                     // #ifdef __DEBUG
                     apf.console.log("XMPP incoming chat message: " + oBody.firstChild.nodeValue, "xmpp");
                     // #endif
-                    var sFrom = aMessages[i].getAttribute("from");
-                    var sMsg  = oBody.firstChild.nodeValue
+                    var sFrom = aMessages[i].getAttribute("from"),
+                        sMsg  = oBody.firstChild.nodeValue
                     if (getVar("roster").updateMessageHistory(sFrom, sMsg)) {
                         _self.dispatchEvent("receivechat", {
                             from   : sFrom,
@@ -1150,11 +1210,20 @@ apf.xmpp = function(){
         for (var i = 0; i < aPresence.length; i++) {
             var sJID = aPresence[i].getAttribute("from");
             if (sJID) {
-                var oUser = getVar("roster").getUserFromJID(sJID);
+                var oRoster = getVar("roster"),
+                    oUser   = getVar("roster").getUserFromJID(sJID),
+                    sType   = aPresence[i].getAttribute("type");
+                    
+                if (sType == apf.xmpp.TYPE_SUBSCRIBE) {
+                    // incoming subscription request, deal with it!
+                    incomingAdd(aPresence[i].getAttribute("from"));
+                }
                 // record any status change...
-                if (oUser)
-                    getVar("roster").update(oUser,
-                        aPresence[i].getAttribute("type") || apf.xmpp.TYPE_AVAILABLE);
+                if (oUser) {
+                    getVar("roster").update(oUser, sType
+                        || apf.xmpp.TYPE_AVAILABLE);
+                }
+                
             }
         }
     }
@@ -1175,22 +1244,35 @@ apf.xmpp = function(){
         apf.console.info("parseIqPacket: " + aIQs.length, "xmpp");
         //#endif
 
-        for (var i = 0; i < aIQs.length; i++) {
+        for (var i = 0, l = aIQs.length; i < l; i++) {
             if (aIQs[i].getAttribute("type") != "result") continue;
             var aQueries = aIQs[i].getElementsByTagName("query");
-            for (var j = 0; j < aQueries.length; j++) {
+            for (var j = 0, l2 = aQueries.length; j < l2; j++) {
                 //@todo: support more query types...whenever we need them
                 switch (aQueries[j].getAttribute("xmlns")) {
                     case apf.xmpp.NS.roster:
-                        var aItems  = aQueries[j].getElementsByTagName("item");
-                        var oRoster = getVar("roster");
-                        for (var k = 0; k < aItems.length; k++) {
-                            //@todo: should we do something with the 'subscription' attribute?
-                            var sGroup = (aItems[k].childNodes.length > 0)
-                                ? aItems[k].firstChild.firstChild.nodeValue
-                                : "";
-                            oRoster.getUserFromJID(aItems[k].getAttribute("jid"), sGroup)
+                        var aItems  = aQueries[j].getElementsByTagName("item"),
+                            oRoster = getVar("roster"),
+                            pBlocks = [];
+                        for (var k = 0, l3 = aItems.length; k < l3; k++) {
+                            var sSubscr  = aItems[k].getAttribute("subscription"),
+                                sGroup   = (aItems[k].childNodes.length > 0)
+                                    ? aItems[k].firstChild.firstChild.nodeValue
+                                    : "",
+                                sJid     = aItems[k].getAttribute("jid");
+
+                            var oContact = oRoster.getUserFromJID(sJid, sSubscr,
+                                    sGroup);
+                            // now that we have a contact added to our roster,
+                            // it's time to ask for presence
+                            if (sSubscr == apf.xmpp.SUBSCR_TO
+                              || sSubscr == apf.xmpp.SUBSCR_BOTH)
+                                pBlocks.push(oContact);
+                            else if (oContact.subscription == apf.xmpp.TYPE_SUBSCRIBED)
+                                confirmAdd(oContact);
                         }
+                        if (pBlocks.length)
+                            _self.requestPresence(pBlocks);
                         break;
                     default:
                         break;
@@ -1224,6 +1306,201 @@ apf.xmpp = function(){
             }))
         );
     };
+
+    /**
+     * Provides the ability to request the presence of a contact from a users
+     * roster.
+     * 
+     * @param {mixed} from Contact to get the presence data from (object or JID string)
+     * @type  {void}
+     */
+    this.requestPresence = function(from) {
+        if (!getVar("connected")) return false;
+
+        var oRoster = getVar("roster");
+        if (typeof from == "string")
+            from = oRoster.getUserFromJID(from);
+        if (!from) return false;
+
+        var sPresence, aPresence = [];
+        if (apf.isArray(from)) {
+            for (var i = 0, l = from.length; i < l; i++) {
+                aPresence.push(createPresenceBlock({
+                    type: apf.xmpp.TYPE_PROBE,
+                    to  : from[i].jid,
+                    from: oRoster.jid
+                }));
+            }
+        }
+        else {
+            aPresence.push(createPresenceBlock({
+                type  : apf.xmpp.TYPE_PROBE,
+                to    : from.jid,
+                from  : oRoster.jid
+            }));
+        }
+        sPresence = aPresence.join("");
+
+        this.doXmlRequest(restartListener, _self.isPoll
+            ? createStreamTag(null, null, sPresence)
+            : createBodyTag({
+                rid   : getRID(),
+                sid   : getVar("SID"),
+                xmlns : apf.xmpp.NS.httpbind
+            }, sPresence)
+        );
+    };
+
+    /**
+     * Provides the ability to add a new contact to the roster of a user.
+     * Depending on the settings and/ or action of the contact, the add request
+     * will be accepted or denied.
+     * @see protocol description in RFC 3921
+     * @link http://tools.ietf.org/html/rfc3921#page-27
+     * 
+     * @param {String} jid Contact to de added to the user's Roster
+     * @type  {void}
+     */
+    this.addContact = function(jid) {
+        if (typeof jid != "string") return false;
+        var oRoster  = getVar("roster"),
+            oContact = oRoster.getUserFromJID(jid);
+        if (oContact && (oContact.subscription == apf.xmpp.SUBSCR_TO
+          || oContact.subscription == apf.xmpp.SUBSCR_BOTH))
+            return this.requestPresence(oContact);
+
+        // all clear, now we request a new roster item
+        var sIq = createIqBlock({
+                type  : "set",
+                id    : makeUnique("set")
+            },
+            "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + jid
+                + "' /></query>"
+        );
+        _self.doXmlRequest(function(oXml) {
+                parseData(oXml);
+                _self.listen();
+                // if all is well, a contact is added to the roster.
+                // <presence to='contact@example.org' type='subscribe'/>
+                var sPresence = createPresenceBlock({
+                    type  : apf.xmpp.TYPE_SUBSCRIBE,
+                    to    : jid
+                });
+                this.doXmlRequest(function(oXml) {
+                        if (!oXml || !oXml.nodeType) {
+                            return !_self.isPoll
+                                ? onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE)
+                                : null;
+                        }
+                        _self.listen();
+
+                        var oPresence = oXml.getElementsByTagName("presence")[0];
+                        if (oPresence.getAttribute("error")) {
+                            sPresence = createPresenceBlock({
+                                type  : apf.xmpp.TYPE_UNSUBSCRIBE,
+                                to    : jid
+                            });
+                            this.doXmlRequest(restartListener, _self.isPoll
+                                ? createStreamTag(null, null, sPresence)
+                                : createBodyTag({
+                                    rid   : getRID(),
+                                    sid   : getVar("SID"),
+                                    xmlns : apf.xmpp.NS.httpbind
+                                }, sPresence)
+                            );
+                            // @todo: nice error handling w/ events
+                        }
+                        // all other events should run through the parseData()
+                        // function and delegated to the Roster
+                    }, _self.isPoll
+                    ? createStreamTag(null, null, sPresence)
+                    : createBodyTag({
+                        rid   : getRID(),
+                        sid   : getVar("SID"),
+                        xmlns : apf.xmpp.NS.httpbind
+                    }, sPresence)
+                );
+            }, _self.isPoll
+            ? createStreamTag(null, null, sIq)
+            : createBodyTag({
+                rid   : getRID(),
+                sid   : getVar("SID"),
+                xmlns : apf.xmpp.NS.httpbind
+            }, sIq)
+        );
+    };
+
+    /**
+     * Handler function that takes care of responses to the Jabber server upon
+     * presence subscription request of the current user.
+     * Depending on the settings of {@link attribute.auto-accept} and
+     * {@link attribute.auto-deny} a contact will be denied to the Roster or
+     * added.
+     *
+     * @param {String} sJID Contact that requested a subscription the user's presence information
+     * @type  {void}
+     * @private
+     */
+    function incomingAdd(sJID) {
+        if (this.autoConfirm) {
+            var sMsg = createIqBlock({
+                    from  : getVar("JID"),
+                    type  : "get",
+                    id    : makeUnique("roster")
+                },
+                "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + sJID
+                    + "' /></query>"
+            ) +  createPresenceBlock({
+                type  : apf.xmpp.TYPE_SUBSCRIBED,
+                to    : sJID
+            });
+            this.doXmlRequest(restartListener, _self.isPoll
+                ? createStreamTag(null, null, sMsg)
+                : createBodyTag({
+                    rid   : getRID(),
+                    sid   : getVar("SID"),
+                    xmlns : apf.xmpp.NS.httpbind
+                }, sMsg)
+            );
+        }
+        if (this.autoDeny) {
+            // <presence to='user@example.com' type='unsubscribed'/>
+            var sPresence = createPresenceBlock({
+                type  : apf.xmpp.TYPE_UNSUBSCRIBED,
+                to    : sJID
+            });
+            this.doXmlRequest(restartListener, _self.isPoll
+                ? createStreamTag(null, null, sPresence)
+                : createBodyTag({
+                    rid   : getRID(),
+                    sid   : getVar("SID"),
+                    xmlns : apf.xmpp.NS.httpbind
+                }, sPresence)
+            );
+        }
+    }
+
+    /**
+     * Handler function that takes care of the final stage of adding a contact
+     * to the user's roster: confirmation of the subscription state.
+     *
+     * @param {Object} oContact Contact that has accepted the invitation to connect
+     * @type  {void}
+     */
+    function confirmAdd(oContact) {
+        var sPresence = createPresenceBlock({
+            type  : apf.xmpp.TYPE_SUBSCRIBED,
+            to    : oContact.jid
+        });
+        this.doXmlRequest(restartListener, _self.isPoll
+            ? createStreamTag(null, null, sPresence)
+            : createBodyTag({
+                rid   : getRID(),
+                sid   : getVar("SID"),
+                xmlns : apf.xmpp.NS.httpbind
+            }, sPresence)
+        );
+    }
 
     var statusMap = {
         "online"      : apf.xmpp.STATUS_ONLINE,
@@ -1372,6 +1649,9 @@ apf.xmpp = function(){
      *   bosh
      * @attribute {Number}   [poll-timeout]   The number of milliseconds between each poll-request
      * @attribute {String}   [resource]       Name that will identify this client as it logs on the the Jabber network. Defaults to the application name.
+     * @attribute {Boolean}  [auto-register]  Specifies if an entered username should be registered on the Jabber network automatically. Defaults to 'false'.
+     * @attribute {String}   [auto-accept]    Specifies if an icoming presence subscription request should be accepted automatically. Defaults to 'true'
+     * @attribute {String}   [auto-deny]      Specifies if an icoming presence subscription request should be denied automatically. Defaults to 'false'
      * @attribute {String}   model            Name of the model which will store the Roster items
      * @attribute {String}   [model-contents] Specifies the items that will be stored inside the model. Defaults to 'all'
      *   Possible values:
@@ -1379,6 +1659,9 @@ apf.xmpp = function(){
      *   roster
      *   chat
      *   typing
+     *   roster|typing
+     *   roster|chat
+     *   chat|typing
      *
      * @param     {XMLDom} x An XML document element that contains xmpp metadata
      * @type      {void}
@@ -1386,13 +1669,14 @@ apf.xmpp = function(){
      */
     this.load = function(x){
         this.server  = apf.parseExpression(x.getAttribute("url"));
-        var i, url   = new apf.url(this.server);
+        var i, l, url   = new apf.url(this.server);
 
         // do some extra startup/ syntax error checking
-        if (!url.host || !url.port || !url.protocol)
+        if (!url.host || !url.port || !url.protocol) {
             throw new Error(apf.formatErrorString(0, this, 
                 "XMPP initialization error", 
                 "Invalid XMPP server url provided."));
+        }
 
         this.domain  = url.host;
         this.tagName = "xmpp";
@@ -1405,20 +1689,24 @@ apf.xmpp = function(){
         if (this.isPoll)
             this.pollTimeout = parseInt(x.getAttribute("poll-timeout")) || 2000;
 
-        this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.resource = x.getAttribute("resource") || apf.appsettings.name;
+        this.timeout      = parseInt(x.getAttribute("timeout")) || this.timeout;
+        this.resource     = x.getAttribute("resource") || apf.appsettings.name;
+        this.autoRegister = apf.isTrue(x.getAttribute("auto-register"));
+        this.autoConfirm  = apf.isFalse(x.getAttribute("auto-confirm"));
+        this.autoDeny     = apf.isTrue(x.getAttribute("auto-deny"));
 
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
         var sModel        = x.getAttribute("model"),
-            aContents     = (x.getAttribute("model-contents") || "all").splitSafe("\\|", 0, true);
+            aContents     = (x.getAttribute("model-contents") || "all")
+                            .splitSafe("\\|", 0, true);
         this.modelContent = {
             roster: aContents[0] == "all",
             chat  : aContents[0] == "all",
             typing: aContents[0] == "all"
         };
-        for (i = 0; i < aContents.length; i++) {
+        for (i = 0, l = aContents.length; i < l; i++) {
             aContents[i] = aContents[i].trim();
             if (!this.modelContent[aContents[i]])
                 this.modelContent[aContents[i]] = true;
@@ -1434,7 +1722,7 @@ apf.xmpp = function(){
 
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
-        for (i = 0; i < attr.length; i++) {
+        for (i = 0, l = attr.length; i < l; i++) {
             if (attr[i].nodeName.indexOf("on") == 0)
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
@@ -1458,13 +1746,15 @@ apf.xmpp = function(){
  */
 apf.xmpp.Roster = function(model, modelContent, resource) {
     this.resource = resource;
-    this.username = this.domain = "";
+    this.username = this.domain = this.jid = "";
 
     var aUsers = [];
 
     this.registerAccount = function(username, domain) {
         this.username = username || "";
         this.domain   = domain   || "";
+        this.jid      = this.username + "@" + this.domain
+            + (this.resource ? "/" + this.resource : "");
     };
 
     /**
@@ -1515,8 +1805,12 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
      * @type  {Object}
      */
     this.getUserFromJID = function(jid) {
-        var resource = "", node,
-            sGroup = (arguments.length > 1) ? arguments[1] : "";
+        var resource = "", node;
+        if (arguments.length > 1) {
+            var sSubscr = arguments[1] || "",
+                sGroup  = arguments[2] || "";
+        }
+            
 
         if (jid.indexOf("/") != -1) {
             resource = jid.substring(jid.indexOf("/") + 1) || "";
@@ -1534,18 +1828,23 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oUser && node && domain) {
             // @todo: change the user-roster structure to be more 'resource-agnostic'
-            resource = resource || this.resource;
+            //resource = resource || this.resource;
             oUser = this.update({
-                node     : node,
-                domain   : domain,
-                resources: [resource],
-                jid      : node + "@" + domain + "/" + resource,
-                group    : sGroup,
-                status   : apf.xmpp.TYPE_UNAVAILABLE
+                node        : node,
+                domain      : domain,
+                resources   : [resource],
+                jid         : node + "@" + domain
+                              + (resource ? "/" + resource : ""),
+                subscription: sSubscr,
+                group       : sGroup,
+                status      : apf.xmpp.TYPE_UNAVAILABLE
             });
+
         }
         else if (oUser && oUser.group !== sGroup)
             oUser.group = sGroup;
+        else if (oUser && oUser.subscription !== sSubscr)
+            oUser.subscription = sSubscr;
 
         //fix a missing 'resource' property...
         if (resource && oUser && !oUser.resources.contains(resource)) {
@@ -1572,7 +1871,9 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
             aUsers.push(oUser);
             //Remote SmartBindings: update the model with the new User
             if (model && modelContent.roster) {
-                oUser.xml = model.data.ownerDocument.createElement(bIsAccount ?  "account" : "user");
+                oUser.xml = model.data.ownerDocument.createElement(bIsAccount 
+                    ? "account"
+                    : "user");
                 this.updateUserXml(oUser);
                 apf.xmldb.appendChild(model.data, oUser.xml);
             }
@@ -1683,6 +1984,7 @@ apf.xmpp.NS   = {
     bind    : "urn:ietf:params:xml:ns:xmpp-bind",
     session : "urn:ietf:params:xml:ns:xmpp-session",
     roster  : "jabber:iq:roster",
+    register: "jabber:iq:register",
     stream  : "http://etherx.jabber.org/streams"
 };
 
@@ -1692,8 +1994,18 @@ apf.xmpp.CONN_BOSH = 0x0002;
 apf.xmpp.ERROR_AUTH = 0x0004;
 apf.xmpp.ERROR_CONN = 0x0008;
 
-apf.xmpp.TYPE_AVAILABLE   = ""; //no need to send available
+apf.xmpp.SUBSCR_FROM = "from";
+apf.xmpp.SUBSCR_TO   = "to";
+apf.xmpp.SUBSCR_BOTH = "both";
+apf.xmpp.SUBSCR_NONE = "none";
+
+apf.xmpp.TYPE_AVAILABLE   = ""; //no need to send 'available'
 apf.xmpp.TYPE_UNAVAILABLE = "unavailable";
+apf.xmpp.TYPE_PROBE       = "probe";
+apf.xmpp.TYPE_SUBSCRIBED  = "subscribed";
+apf.xmpp.TYPE_SUBSCRIBE   = "subscribe";
+apf.xmpp.TYPE_UNSUBSCRIBE = "unsubscribe";
+apf.xmpp.TYPE_UNSUBSCRIBED= "unsubscribed";
 
 apf.xmpp.STATUS_ONLINE    = "online";
 apf.xmpp.STATUS_OFFLINE   = "offline";
@@ -1767,7 +2079,7 @@ apf.datainstr.xmpp = function(xmlContext, options, callback){
     var args = parsed.arguments;
     switch(name.shift()){
         case "login":
-            oXmpp.connect(args[0], args[1], callback);
+            oXmpp.connect(args[0], args[1], args[2] || false, callback);
             break;
         case "logout":
             //@todo
