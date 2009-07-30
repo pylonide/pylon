@@ -160,6 +160,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             }
             else col = this.$columns[i];
             
+            this.$setStyleClass(col, i == columns.length -1 
+                ? "collast" : "", ["collast"]);
             col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");;
         }
     }
