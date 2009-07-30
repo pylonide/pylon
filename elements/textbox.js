@@ -115,10 +115,9 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     //See validation
-    this.$propHandlers["maxlength"] = function(value){
-        this.$setRule("maxlength", value
-            ? "value.toString().length <= " + value
-            : null);
+    var oldPropHandler = this.$propHandlers["maxlength"];
+    this.$propHandlers["maxlength"] = function(value, prop){
+        oldPropHandler.call(this, value, prop);
 
         //Special validation support using nativate max-length browser support
         if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
