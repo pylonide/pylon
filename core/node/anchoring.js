@@ -68,7 +68,7 @@ apf.Anchoring = function(){
      *
      */
     this.disableAnchoring = function(activate){
-        if (!parsed || !inited || disabled)
+        if (!parsed || !inited || disabled || !this.pHtmlNode)
             return;
 
         l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
@@ -204,7 +204,7 @@ apf.Anchoring = function(){
     }
 
     this.$moveAnchoringRules = function(oldParent, updateNow){
-        var rules = l.removeRule(oldParent, this.uniqueId + "_anchors");
+        var rules = oldParent && l.removeRule(oldParent, this.uniqueId + "_anchors");
         if (rules)
             l.queue(oldParent);
 

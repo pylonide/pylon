@@ -1192,14 +1192,16 @@ apf.AmlParser = {
         this.modelInit = [];
         //#endif
 
-        //Call the onload event
-        //if (!apf.loaded) {
+        //Call the onload event (prevent recursion)
+        if (apf.loaded != 2) {
+            //@todo apf3.0 onload is being called too often
             var initalLoad = apf.loaded;
-            apf.loaded = true;
+            apf.loaded = 2;
             apf.dispatchEvent("load", {
                 initialLoad : initalLoad
             });
-        //}
+            apf.loaded = true;
+        }
 
         //#ifdef __WITH_XFORMS
         var models = apf.nameserver.getAll("model");

@@ -74,7 +74,8 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
         var oIcon = this.$getLayoutNode("main", "icon", this.oExt);
         if (!oIcon) return;
 
-        oIcon.style.display = value ? "block" : "none";
+        if (oIcon.nodeType == 1)
+            oIcon.style.display = value ? "block" : "none";
         apf.skins.setIcon(oIcon, value, this.iconPath);
     };
     

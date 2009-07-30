@@ -36,7 +36,7 @@ apf.modalwindow.widget = function(){
     this.dragStart = function(e){
         if (!e) e = event;
 
-        if (_self.state.indexOf("maximized") > -1)
+        if (_self.state.indexOf("maximized") > -1 || !_self.draggable)
             return;
 
         nX = _self.oExt.offsetLeft - e.clientX;
@@ -44,6 +44,8 @@ apf.modalwindow.widget = function(){
 
         var htmlNode = _self.oExt;
         var p        = _self.positionHolder;
+        if (!p)
+            var p = this.positionHolder = document.body.appendChild(document.createElement("div"));
         p.className  = "position_holder";
 
         htmlNode.parentNode.insertBefore(p, htmlNode);
@@ -150,29 +152,24 @@ apf.modalwindow.widget = function(){
     };
 
     this.$loadAml = function(x) {
-        apf.WinServer.setTop(this);
+        this.$aml = x;
 
-        var diff = apf.getDiff(this.oExt);
-        hordiff  = diff[0];
-        verdiff  = diff[1];
+        this.$init();
 
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         var oSettings = this.$getLayoutNode("main", "settings_content", this.oExt);
 
-        //Should be moved to an init function
-        this.positionHolder = document.body.appendChild(document.createElement("div"));
-
-        var oConfig = $xmlns(this.$aml, "config", apf.ns.aml)[0];
+        var oConfig = $xmlns(x, "config", apf.ns.aml)[0];
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(this.$aml, "body", apf.ns.aml)[0];
+        var oBody = $xmlns(x, "body", apf.ns.aml)[0];
         oBody.parentNode.removeChild(oBody);
 
-        apf.AmlParser.parseChildren(this.$aml, null, this);
+        apf.AmlParser.parseChildren(x, null, this);
 
         if (oConfig)
-            this.$aml.appendChild(oConfig);
-        this.$aml.appendChild(oBody);
+            x.appendChild(oConfig);
+        x.appendChild(oBody);
 
         if (oSettings && oConfig) {
             this.oSettings = this.oSettings
@@ -186,7 +183,15 @@ apf.modalwindow.widget = function(){
 
         if (oBody.getAttribute("class"))
             this.$setStyleClass(this.oInt, oBody.getAttribute("class"))
+    };
+    
+    this.$init = function(){
+        apf.WinServer.setTop(this);
 
+        var diff = apf.getDiff(this.oExt);
+        hordiff  = diff[0];
+        verdiff  = diff[1];
+        
         this.oDrag.onmousedown = this.dragStart;
 
         this.collapsedHeight = this.$getOption("Main", "collapsed-height");
@@ -199,6 +204,6 @@ apf.modalwindow.widget = function(){
 
         this.minwidth  = this.$getOption("Main", "min-width");
         this.minheight = this.$getOption("Main", "min-height");
-    };
+    }
 };
 //#endif

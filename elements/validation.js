@@ -61,7 +61,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
         //@todo Shouldn't allow async calls..., should always give a function
         for (var rule, i = 0, l = rules.length; i < l; i++) {
             var rule = rules[i];
-            if ((rule[1] || (rule[1] = (rule[5] = apf.jsltParser.compile(rule[0]))[0] || jpf.K))(xmlNode)) 
+            if ((rule[1] || (rule[1] = (rule[5] = apf.jsltParser.compile(rule[0]))[0] ||apf.K))(xmlNode)) 
                 return rule;
         }*/
 

@@ -322,7 +322,7 @@ apf.getData = function(instruction, xmlContext, options, callback){
             if (callback && callback(null, apf.ERROR, {
                 message : err.description || err.message,
                 error   : err
-            } === true))
+            }) === true)
                 return;
             
             throw err;

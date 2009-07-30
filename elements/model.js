@@ -139,6 +139,8 @@ apf.model = function(data, caching){
             defSubmission = value;
         else if (prop == "validation")
             apf.nameserver.get("validation", value).register(this); //@todo error handling
+        else if (prop == "actiontracker")
+            apf.AmlElement.propHandlers.actiontracker.call(this, value);
     }
     
     //#ifdef __WITH_MODEL_VALIDATION
@@ -693,6 +695,11 @@ apf.model = function(data, caching){
         if (x.getAttribute("validation"))
             apf.nameserver.get("validation", x.getAttribute("validation")).register(this);
 
+        if (x.getAttribute("actiontracker"))
+            apf.AmlElement.propHandlers.actiontracker.call(this, x.getAttribute("actiontracker"));
+
+        //@todo actions apf3.0
+
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-model-construct-done");
         //#endif
@@ -852,7 +859,7 @@ apf.model = function(data, caching){
                 if (callback && callback.apply(this, arguments) === true)
                     return true;
 
-                if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                if (extra.tpModule && extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                     return true;
 
                 throw oError;

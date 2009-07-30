@@ -223,7 +223,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
      * @param  {AmlNode}  beforeNode  the element which determines the insertion position of the element.
      * @return  {AmlNode}  the inserted node
      */
-    this.insertBefore = function(amlNode, beforeNode){
+    this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         //#ifdef __DEBUG
         if (!amlNode || !amlNode.nodeFunc || !amlNode.hasFeature(__WITH_AMLDOM__)){
             throw new Error(apf.formatErrorString(1072, this,
@@ -243,7 +243,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
         var isMoveWithinParent = amlNode.parentNode == this;
         var oldParentHtmlNode  = amlNode.pHtmlNode;
         if (amlNode.parentNode)
-            amlNode.removeNode(isMoveWithinParent);
+            amlNode.removeNode(isMoveWithinParent, noHtmlDomEdit);
         amlNode.parentNode = this;
 
         var index = -1;
@@ -307,7 +307,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
 
             //@todo this is a hack, a good solution should be found
             var containsIframe = amlNode.oExt && amlNode.oExt.getElementsByTagName("iframe").length > 0;
-            if (amlNode.oExt && !apf.isGecko && !containsIframe) {
+            if (!noHtmlDomEdit && amlNode.oExt && !apf.isGecko && !containsIframe) {
                 amlNode.pHtmlNode.insertBefore(amlNode.oExt,
                     beforeNode && beforeNode.oExt || null);
             }
@@ -329,7 +329,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
      * supported.
      *
      */
-    this.removeNode = function(doOnlyAdmin){
+    this.removeNode = function(doOnlyAdmin, noHtmlDomEdit){
         //#ifdef __DEBUG
         if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
             throw new Error(apf.formatErrorString(0, this,
@@ -355,7 +355,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
         if (this.$amlLoaded && !apf.isDestroying) {
             //this.parentNode.$aml.removeChild(this.$aml);
 
-            if (this.oExt && this.oExt.parentNode)
+            if (!noHtmlDomEdit && this.oExt && this.oExt.parentNode)
                 this.oExt.parentNode.removeChild(this.oExt);
 
             //Signal myself

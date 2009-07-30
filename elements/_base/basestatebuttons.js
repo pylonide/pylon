@@ -422,8 +422,9 @@ apf.BaseStateButtons = function(){
             }
         }
 
-        if (styleClass.length) {
-            this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
+        if (styleClass.length || o.closed != lastState.closed) {
+            if (styleClass.length)
+                this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
 
             _self.dispatchEvent("afterstatechange", {
               from : lastState, 
@@ -456,9 +457,9 @@ apf.BaseStateButtons = function(){
         //#ifdef __SUPPORT_IPHONE
         if (apf.isIphone) return;
         //#endif
-        var buttons = value.split("|");
+        var buttons = value && (value = value.replace(/(\|)\||\|$/, "$1")).split("|") || [];
         var nodes   = this.oButtons.childNodes;
-        var re      = new RegExp("(" + value + ")");
+        var re      = value && new RegExp("(" + value + ")");
         var found   = {};
 
         //Check if we can 'remove' buttons
@@ -467,7 +468,7 @@ apf.BaseStateButtons = function(){
             if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
                 continue;
 
-            if (!nodes[i].className || !nodes[i].className.match(re)) {
+            if (!value || !nodes[i].className || !nodes[i].className.match(re)) {
                 nodes[i].style.display = "none";
                 this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
                 idleNodes.push(nodes[i]);
@@ -478,6 +479,9 @@ apf.BaseStateButtons = function(){
 
         //Create new buttons if needed
         for (i = 0; i < buttons.length; i++) {
+            if (!buttons[i])
+                continue;
+            
             if (found[buttons[i]]) {
                 this.oButtons.insertBefore(found[buttons[i]], this.oButtons.firstChild);
                 continue;

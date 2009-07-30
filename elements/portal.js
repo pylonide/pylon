@@ -102,17 +102,16 @@
 apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
+    this.buttons         = "edit|min|close";
 
     this.$deInitNode = function(xmlNode, htmlNode){
-        if (!htmlNode)
-            return;
-
-        //Remove htmlNodes from tree
-        htmlNode.parentNode.removeChild(htmlNode);
+        cacheDocklet(apf.findHost(htmlNode));
     };
 
     this.$updateNode = function(xmlNode, htmlNode){
-        this.applyRuleSetOnNode("icon", xmlNode);
+        var docklet = apf.findHost(htmlNode);
+        docklet.setProperty("buttons", this.applyRuleSetOnNode("buttons", xmlNode) || "");
+        docklet.draggable = this.applyRuleSetOnNode("draggable", xmlNode);
     };
 
     this.$moveNode = function(xmlNode, htmlNode){
@@ -141,7 +140,31 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["columns"] = function(value){
         columns = value.splitSafe(",");
+        
+        var col;
+        while(this.$columns.length > columns.length) {
+            col = this.$columns.pop();
+            col.host = null;
+            apf.destroyHtmlNode(col);
+        }
+        
+        for (var col, size, i = 0; i < columns.length; i++) {
+            size = columns[i];
+            if (!this.$columns[i]) {
+                this.$getNewContext("column");
+                col = apf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
+                this.$columns.push(col);
+        
+                col.isColumn = true;
+                col.host = this;
+            }
+            else col = this.$columns[i];
+            
+            col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");;
+        }
     }
+    
+    this.$columns   = [];
 
     /**** Keyboard support ****/
 
@@ -165,22 +188,61 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Databinding and Caching ****/
 
-    this.$getCurrentFragment = function(){
-        //if(!this.value) return false;
+    function cacheDocklet(docklet){
+        var srcUrl = docklet.$srcUrl;
+        if (!srcUrl) throw new Error("Something went terribly wrong"); //@todo
+        
+        //Cache settings panel
+        var amlNodes = [], amlNode, widget = docklet_cache[srcUrl];
+        var nodes = docklet.oSettings.childNodes;
+        while(nodes.length) {
+            amlNode = apf.findHost(widget.fragSettings.appendChild(nodes[0]));
+            if (amlNode)
+                amlNodes.push(amlNode.removeNode(null, true));
+        }
+        
+        //Cache oInt
+        var nodes = docklet.oInt.childNodes;
+        while(nodes.length) {
+            amlNode = apf.findHost(widget.fragInt.appendChild(nodes[0]));
+            if (amlNode) 
+                amlNodes.push(amlNode.removeNode(null, true));
+        }
+        widget.childNodes = docklet.childNodes;
+        docklet.childNodes = [];
+        
+        widget.amlNodes = amlNodes;
+        docklet.oSettings = docklet.oInt = null;
+        dockwin_cache.push(docklet);
+        
+        //Remove from document
+        docklet.oExt.parentNode.removeChild(docklet.oExt);
+        
+        return srcUrl;
+    }
 
-        var fragment = document.createDocumentFragment();
-        while (this.$columns[0].childNodes.length) {
-            fragment.appendChild(this.$columns[0].childNodes[0]);
+    this.$getCurrentFragment = function(){
+        var col, fragment = [];
+        for (var i = 0, l = this.$columns.length; i < l; i++) {
+            col = this.$columns[i];
+            while (col.childNodes.length) {
+                fragment.push(cacheDocklet(apf.findHost(col.childNodes[0])));
+            }
         }
 
         return fragment;
     };
 
     this.$setCurrentFragment = function(fragment){
-        this.oInt.appendChild(fragment);
-
-        if (!apf.window.hasFocus(this))
-            this.blur();
+        var dataNode, pHtmlNode, srcUrl, docklet, nodes = this.getTraverseNodes();
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            dataNode  = nodes[i];
+            pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
+            srcUrl    = this.applyRuleSetOnNode("src", dataNode) || "file:"
+                        + this.applyRuleSetOnNode("url", dataNode);
+            docklet   = getDockwin(dataNode, pHtmlNode);
+            createWidget(srcUrl, null, docklet, dataNode); //assuming cache
+        }
     };
 
     this.$findNode = function(cacheNode, id){
@@ -205,133 +267,201 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         //else this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
 
-    var portalNode = this;
-    function createDocklet(strXml, docklet, dataNode){
-        var uId = apf.all.length;
-        var col = [];
-        strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
-          function(m, id1, id2){
-            var id = id1 || id2;
-            col.push(id);
-            if (id1) return 'id="' + id + "_" + uId + '"';
-            if (id2) return "id='" + id + "_" + uId + "'";
-          });
-        //@todo make the id's regexp safe
-        if (col.length) {
-            strXml = strXml.replace(new RegExp("\\b(" + col.join("|") + ")\\b", "g"), 
-              function(m, id){
-                return id + "_" + uId;
+    var _self = this;
+    var docklet_cache = {};
+    function createWidget(srcUrl, strXml, docklet, dataNode){
+        var widget;
+        //Caching
+        while(widget = docklet_cache[srcUrl]) {
+            if (!widget.fragInt.childNodes.length)
+                srcUrl += "_";
+            else break;
+        }
+
+        docklet.$getLayoutNode("main", "container", docklet.oExt)
+            .innerHTML = "";
+        docklet.$srcUrl = srcUrl;
+        
+        if (widget) {
+            var xmlNode = widget.xmlNode;
+            
+            if (xmlNode.getAttribute("width"))
+                docklet.setProperty("width", xmlNode.getAttribute("width"));
+            else
+                docklet.oExt.style.width = "auto";
+            
+            docklet.oSettings = docklet.$getLayoutNode("main", "settings_content", docklet.oExt);
+            docklet.oInt = docklet.$getLayoutNode("main", "container", docklet.oExt);
+            
+            docklet.oInt.appendChild(widget.fragInt);
+            docklet.oSettings.appendChild(widget.fragSettings);
+            
+            var amlNodes = widget.amlNodes;
+            for (var i = 0, l = amlNodes.length; i < l; i++)
+                docklet.appendChild(amlNodes[i], null, true);
+            
+            docklet.$dockletClass = widget.dockletClass;
+            
+            if (widget.dockletClass.load)
+                widget.dockletClass.load(dataNode, docklet);
+        }
+        else {
+            var uId = apf.all.length;
+            var col = [];
+            strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
+              function(m, id1, id2){
+                var id = id1 || id2;
+                col.push(id);
+                if (id1) return 'id="' + id + "_" + uId + '"';
+                if (id2) return "id='" + id + "_" + uId + "'";
               });
-        }
-        
-        var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
-        
-        /* Model replacement - needs to be build
-         var models = xmlNode.selectNodes("//model/@id");
-         for (var i = 0; i < models.lenth; i++) {
-             xmlNode.selectNodes("//node()[@model='" + models[i]
-         }
-         */
-        //also replace docklet id's
-        var name = xmlNode.getAttribute("name");
-
-        //Load docklet
-        docklet.$aml      = xmlNode;
-        docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
-        xmlNode.setAttribute("skinset", docklet.skinset);
-        docklet.skin      = "docklet";
-        docklet.skinName  = null;
-        docklet.$loadSkin();
-        docklet.draggable = false;
-
-        docklet.$draw();//name
-        
-        //docklet.setProperty("buttons", "edit|min|close");
-        docklet.setProperty("buttons", portalNode.applyRuleSetOnNode("buttons", dataNode) || "edit|min|close");
-        docklet.setProperty("title", portalNode.applyRuleSetOnNode("caption", dataNode));
-        docklet.setProperty("icon", portalNode.applyRuleSetOnNode("icon", dataNode));
-        
-        docklet.$loadAml(xmlNode, name);
-        apf.AmlParser.parseLastPass();
-
-        if (xmlNode.getAttribute("width"))
-            docklet.setProperty("width", xmlNode.getAttribute("width"));
-        else
-            docklet.oExt.style.width = "auto";
-        //if(xmlNode.getAttribute("height")) docklet.setHeight(xmlNode.getAttribute("height"));
-        //else docklet.oExt.style.height = "auto";
-
-        docklet.show();
-
-        //Create dockletClass
-        if (!self[name]) {
-            alert("could not find class '" + name + "'");
-        }
-
-        //instantiate class
-        var dockletClass = new self[name]();
-        portalNode.docklets.push(dockletClass);
-        dockletClass.init(dataNode, docklet);
-        
-        docklet.addEventListener("beforestatechange", function(e){
-            if (e.to.maximized)
-                docklet.oExt.parentNode.style.zIndex = 100000;
+            //@todo make the id's regexp safe
+            if (col.length) {
+                strXml = strXml.replace(new RegExp("\\b(" + col.join("|") + ")\\b", "g"), 
+                  function(m, id){
+                    return id + "_" + uId;
+                  });
+            }
             
-            return dockletClass.dispatchEvent("beforestatechange", e);
-        });
-        docklet.addEventListener("afterstatechange", function(e){
-            if (e.from.maximized)
-                docklet.oExt.parentNode.style.zIndex = 1;
+            var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
+            var name = xmlNode.getAttribute("name");
+
+            docklet.$loadAml(xmlNode, name);
+            apf.AmlParser.parseLastPass();
+    
+            if (xmlNode.getAttribute("width"))
+                docklet.setProperty("width", xmlNode.getAttribute("width"));
+            else
+                docklet.oExt.style.width = "auto";
+    
+            //Create dockletClass
+            if (!self[name])
+                throw new Error("could not find docklet class '" + name + "'"); //@todo proper error apf3.0
+    
+            //instantiate class
+            var dockletClass = new self[name]();
+            _self.docklets.push(dockletClass);
+            dockletClass.init(dataNode, docklet, _self);
+            if (dockletClass.load)
+                dockletClass.load(dataNode, docklet);
             
-            return dockletClass.dispatchEvent("afterstatechange", e);
-        });
+            docklet.$dockletClass = dockletClass;
+            
+            docklet_cache[srcUrl] = {
+                srcUrl       : srcUrl,
+                xmlNode      : xmlNode,
+                fragInt      : document.createDocumentFragment(),
+                fragSettings : document.createDocumentFragment(),
+                dockletClass : dockletClass
+            };
+        }
         
         docklet.$refParent = _self.oInt;
     }
+    
+    var dockwin_cache = [];
+    function getDockwin(dataNode, pHtmlNode){
+        var docklet;
+        if (docklet = dockwin_cache.pop()) {
+            pHtmlNode.appendChild(docklet.oExt);
+            
+            var skinset = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset");
+            if (docklet.skinset != skinset)
+                docklet.setAttribute("skinset", skinset); //@todo (apf3.0) or something like that
+        }
+        //Creating
+        else {
+            docklet = new apf.modalwindow(pHtmlNode, "window");
+            docklet.implement(apf.modalwindow.widget);
+    
+            docklet.parentNode = this;
+            docklet.implement(apf.AmlDom);
+            docklet.$amlLoaded = true;
+            
+            //Load docklet
+            docklet.$aml      = apf.getXml("<window />");
+            docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            docklet.$aml.setAttribute("skinset", docklet.skinset);
+            docklet.skin      = "docklet";
+            docklet.skinName  = null;
+            docklet.$loadSkin();
+            docklet.draggable = true;
+    
+            docklet.$draw();//name
+            docklet.$init();
+            
+            docklet.addEventListener("beforestatechange", function(e){
+                if (e.to.maximized)
+                    docklet.oExt.parentNode.style.zIndex = 100000;
+                
+                return this.$dockletClass.dispatchEvent("beforestatechange", e);
+            });
+            docklet.addEventListener("afterstatechange", function(e){
+                if (e.from.maximized)
+                    docklet.oExt.parentNode.style.zIndex = 1;
+                
+                this.$dockletClass.dispatchEvent("afterstatechange", e);
+
+                if (e.to.closed)
+                    _self.remove(this.dataNode);
+            });
+        }
+        
+        docklet.dataNode = dataNode;
+        apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), dataNode, docklet.oExt, _self)
+        
+        if (_self.bindingRules && _self.bindingRules.buttons) //@todo apf3.0
+            docklet.setProperty("buttons", _self.applyRuleSetOnNode("buttons", dataNode) || _self.buttons);
+        docklet.setProperty("state", _self.applyRuleSetOnNode("state", dataNode) || "normal");
+        docklet.setProperty("title", _self.applyRuleSetOnNode("caption", dataNode));
+        docklet.setProperty("icon", _self.applyRuleSetOnNode("icon", dataNode));
+        
+        docklet.show();
+        
+        return docklet;
+    }
 
     this.docklets     = [];
-    var docklet_cache = {}
+    var xml_cache     = {};
     this.$add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
         var pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
-        var docklet   = new apf.modalwindow(pHtmlNode, "window");
-        docklet.implement(apf.modalwindow.widget);
-
-        docklet.parentNode = this;
-        docklet.implement(apf.AmlDom);
-        //this.applyRuleSetOnNode("border", xmlNode);
-
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
             + this.applyRuleSetOnNode("url", dataNode);
 
-        if (docklet_cache[srcUrl]) {
-            var strXml = docklet_cache[srcUrl];
-            //if (apf.isSafariOld)
-                //xmlNode = apf.getAmlDocFromString(xmlNode).documentElement;
-            createDocklet(strXml, docklet, dataNode);
+        var docklet = getDockwin(dataNode, pHtmlNode);
+
+        if (xml_cache[srcUrl]) {
+            var strXml = xml_cache[srcUrl];
+            createWidget(srcUrl, strXml, docklet, dataNode);
         }
         else {
+            //@todo add loading to window
+            docklet.$getLayoutNode("main", "container", docklet.oExt)
+                .innerHTML = "<div class='loading'>Loading...</div>";
+            
+            //@todo this should be getData (apf3.0)
             apf.setModel(srcUrl, {
                 load: function(xmlNode){
                     if (!xmlNode || this.isLoaded)
                         return;
 
-                    //hmmm this is not as optimized as I'd like (going throught the xml parser twice)
+                    //hmmm this is not as optimized as I'd like (going through the xml parser twice)
                     var strXml = xmlNode.xml || xmlNode.serialize();
 
                     //#ifdef __SUPPORT_SAFARI2
                     if (apf.isSafariOld) {
                         strXml = strXml.replace(/name/, "name='"
                             + xmlNode.getAttribute("name") + "'");
-                        docklet_cache[srcUrl] = strXml;
+                        xml_cache[srcUrl] = strXml;
                     }
                     else 
                     //#endif
                     {
-                        docklet_cache[srcUrl] = strXml;//xmlNode.cloneNode(true);
+                        xml_cache[srcUrl] = strXml;//xmlNode.cloneNode(true);
                     }
 
-                    createDocklet(strXml, docklet, dataNode);
+                    createWidget(srcUrl, strXml, docklet, dataNode);
                     this.isLoaded = true;
                 },
 
@@ -345,6 +475,12 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     this.$fill = function(){
         
     };
+    
+    this.addEventListener("beforeload", function(e){
+        var columns = this.applyRuleSetOnNode("columns", e.xmlNode);
+        if (columns)
+            this.setProperty("columns", columns);
+    });
 
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
@@ -364,21 +500,6 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
 
-    var totalWidth = 0;
-    this.$columns   = [];
-    this.addColumn = function(size){
-        this.$getNewContext("column");
-        var col = apf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
-        var id = this.$columns.push(col) - 1;
-
-        //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
-        totalWidth += parseFloat(size);
-
-        col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");//"33.33%";
-        col.isColumn = true;
-        col.host = this;
-    };
-
     /**** Init ****/
 
     this.$draw = function(){
@@ -388,10 +509,6 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$loadAml = function(x){
-        for (var i = 0; i < columns.length; i++) {
-            this.addColumn(columns[i]);
-        }
-
         //if(this.$aml.childNodes.length) this.$loadInlineData(this.$aml);
         apf.AmlParser.parseChildren(x, null, this);
 
@@ -409,12 +526,12 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
  * @constructor
  */
 apf.portal.docklet = function(){
-    this.init = function(xmlSettings, oWidget){
+    this.init = function(xmlSettings, oWidget, oPortal){
         this.xmlSettings = xmlSettings
         this.oWidget = oWidget;
 
         if (this.$init)
-            this.$init(xmlSettings, oWidget);
+            this.$init(xmlSettings, oWidget, oPortal);
     };
 };
 

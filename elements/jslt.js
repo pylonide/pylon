@@ -135,13 +135,14 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = apf.isParsing && apf.isOnlyChild(this.$aml)
+        this.oInt = this.oExt = apf.isParsing && apf.isOnlyChild(this.$aml) && !this.pHtmlNode.childNodes.length
             ? this.pHtmlNode 
             : this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.host = this;
 
-        this.baseCSSname = this.oExt.className = 
-            (this.$aml.getAttribute("class") || "jslt");
+        this.baseCSSname = this.$aml.getAttribute("class") || "jslt";
+            
+        apf.setStyleClass(this.oExt, this.baseCSSname);
     };
     
     this.$loadAml = function(x){

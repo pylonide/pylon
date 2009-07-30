@@ -275,14 +275,15 @@ apf.DataBinding = function(){
             return apf.window.$at;
 
         var pNode = this, tracker = ignoreMe ? null : this.$at;
-        if (!tracker && this.connectId)
-            tracker = self[this.connectId].$at;
+        if (!tracker && this.dataParent)
+            tracker = this.dataParent.parent.$at; //@todo apf3.0 change this to be recursive??
 
         //apf.getInheritedAttribute(this.$aml, "actiontracker");
         while (!tracker) {
-            //if(!pNode.parentNode) throw new Error(apf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
-            if (!pNode.parentNode)
-                return apf.window.$at;
+            if (!pNode.parentNode) {
+                var model = this.getModel(true);
+                return model.$at || apf.window.$at;
+            }
 
             tracker = (pNode = pNode.parentNode).$at;
         }
