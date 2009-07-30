@@ -227,8 +227,11 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var col, fragment = [];
         for (var i = 0, l = this.$columns.length; i < l; i++) {
             col = this.$columns[i];
-            while (col.childNodes.length) {
-                fragment.push(cacheDocklet(apf.findHost(col.childNodes[0])));
+            for (var j = col.childNodes.length -1; j >= 0; j--) {
+                if (col.childNodes[0].nodeType != 1)
+                    continue;
+                
+                fragment.push(cacheDocklet(apf.findHost(col.childNodes[j])));
             }
         }
 
