@@ -229,7 +229,7 @@ apf.xmpp = function(){
         }
         var sOut = aOut.join("").replace(/,$/, "");
 
-        return "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
+        return "<response xmlns='" + apf.xmpp.NS.sasl + "'>"
             + apf.crypto.Base64.encode(sOut) + "</response>";
     }
 
@@ -343,10 +343,11 @@ apf.xmpp = function(){
      * @private
      */
     function unregister() {
-        for (var i = 0; i < arguments.length; i++) {
-            if (typeof serverVars[arguments[i]] != "undefined") {
-                serverVars[arguments[i]] = null;
-                delete serverVars[arguments[i]];
+        for (var i = 0, l = arguments.length, arg; i < l; i++) {
+            arg = arguments[i];
+            if (typeof serverVars[arg] != "undefined") {
+                serverVars[arg] = null;
+                delete serverVars[arg];
             }
         }
     }
@@ -545,8 +546,9 @@ apf.xmpp = function(){
                   })
             );
         }
-        else
+        else {
             this.reset();
+        }
     };
 
     /**
@@ -559,8 +561,6 @@ apf.xmpp = function(){
         // unregister ALL variables with a trick:
         for (var i in serverVars)
             unregister(i);
-        //if (this.oModel)
-           //this.oModel.load('<xmpp/>')
 
         // apply some initial values to the serverVars global scoped Array
         register("RID",        parseInt("".appendRandomNumber(10)));
@@ -568,7 +568,8 @@ apf.xmpp = function(){
         register("nc",         "00000001");
         register("bind_count", 1);
         register("connected",  false);
-        register("roster",     new apf.xmpp.Roster(this.oModel, this.modelContent, this.resource));
+        register("roster",     new apf.xmpp.Roster(this.oModel,
+                                   this.modelContent, this.resource));
         register("mess_count", 0);
     };
 
@@ -610,19 +611,23 @@ apf.xmpp = function(){
             register("AUTH_ID", oXml.firstChild.getAttribute("id"));
         }
 
+        var oMech = oXml.getElementsByTagName("mechanisms")[0],
+            sXmlns = oMech.getAttribute("xmlns");
+        register("AUTH_SASL", (sXmlns && sXmlns == apf.xmpp.NS.sasl));
+
         var aMechanisms = oXml.getElementsByTagName("mechanism"),
-            i, found = false;
+            sMech, i, found = false;
         for (i = 0; i < aMechanisms.length && !found; i++) {
-            // PLAIN type challenge not supported by us: insecure!!
-            if (aMechanisms[i].firstChild.nodeValue == "DIGEST-MD5") {
-                register("AUTH_TYPE", "DIGEST-MD5");
+            sMech = aMechanisms[i].firstChild.nodeValue;
+            if (sMech == "DIGEST-MD5" || sMech == "PLAIN") {
+                register("AUTH_TYPE", sMech);
                 found = true;
             }
         }
 
         if (!found) {
             return onError(apf.xmpp.ERROR_AUTH, 
-                "No supported authentication protocol found. We cannot continue!");
+             "No supported authentication protocol found. We cannot continue!");
         }
 
         return getVar("register") ? doRegRequest() : doAuthRequest();
@@ -631,7 +636,7 @@ apf.xmpp = function(){
 
     /**
      * In-Band registration support; allows for automatically registering a
-     * username to the Jabber server and direct login.
+     * username to the XMPP server and direct login.
      * @see http://xmpp.org/extensions/attic/jep-0077-2.0.html
      * 
      * @type {void}
@@ -675,22 +680,51 @@ apf.xmpp = function(){
     /**
      * Proceeds with the authentication process after establishing a connection
      * or stream to the server OR after a successful In-Band registration
-     * @see doRegRequest
+     * We also support Non-SASL Authentication
+     * @see http://xmpp.org/extensions/attic/jep-0078-1.7.html
      *
      * @type {void}
      */
     function doAuthRequest() {
-        // start the authentication process by sending a request
-        var sAuth = "<auth xmlns='" + apf.xmpp.NS.sasl + "' mechanism='"
-            + getVar("AUTH_TYPE") + "'/>";
-        _self.doXmlRequest(processAuthRequest, _self.isPoll
-            ? createStreamTag(null, null, sAuth)
-            : createBodyTag({
-                  rid   : getRID(),
-                  sid   : getVar("SID"),
-                  xmlns : apf.xmpp.NS.httpbind
-              }, sAuth)
-        );
+        if (getVar("AUTH_SASL")) {
+            // start the authentication process by sending a request
+            var sType = getVar("AUTH_TYPE"),
+                sAuth = "<auth xmlns='" + apf.xmpp.NS.sasl + "' mechanism='"
+                    + sType + (sType == "PLAIN"
+                        ? "'>" + getVar("username") + "@" + this.domain
+                            + String.fromCharCode(0) + getVar("username")
+                            + String.fromCharCode(0) + getVar("password")
+                            + "</auth>"
+                        : "'/>");
+            _self.doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
+                ? reOpenStream // skip a few steps...
+                : processAuthRequest, _self.isPoll
+                ? createStreamTag(null, null, sAuth)
+                : createBodyTag({
+                      rid   : getRID(),
+                      sid   : getVar("SID"),
+                      xmlns : apf.xmpp.NS.httpbind
+                  }, sAuth)
+            );
+        }
+        // do Non-SASL Authentication as described in JEP-0078
+        else {
+           var sIq = createIqBlock({
+                    type  : "get",
+                    id    : makeUnique("auth")
+                },
+                "<query xmlns='" + apf.xmpp.NS.auth + "'><username>"
+                    + getVar("username") + "</username></query>"
+            );
+            _self.doXmlRequest(processAuthRequest, _self.isPoll
+                ? createStreamTag(null, null, sIq)
+                : createBodyTag({
+                    rid   : getRID(),
+                    sid   : getVar("SID"),
+                    xmlns : apf.xmpp.NS.httpbind
+                }, sIq)
+            );
+        }
     }
 
     /**
@@ -728,11 +762,11 @@ apf.xmpp = function(){
 
         var oChallenge = oXml.getElementsByTagName("challenge")[0];
         if (oChallenge) {
-            var i, aChunk,
+            var i, l, aChunk,
                 b64_challenge = oChallenge.firstChild.nodeValue,
                 aParts        = apf.crypto.Base64.decode(b64_challenge).split(",");
 
-            for (i = 0; i < aParts.length; i++) {
+            for (i = 0, l = aParts.length; i < l; i++) {
                 aChunk = aParts[i].split("=");
                 register(aChunk[0], aChunk[1].trim().replace(/[\"\']/g, ""));
             }
@@ -762,50 +796,96 @@ apf.xmpp = function(){
      * @private
      */
     function processAuthRequest(oXml) {
-        if (!processChallenge(oXml))
-            return onError(apf.xmpp.ERROR_AUTH);
+        if (getVar("AUTH_SASL")) {
+            if (!processChallenge(oXml))
+                return onError(apf.xmpp.ERROR_AUTH);
 
-        if (!getVar("realm"))
-            register("realm", ""); //DEV: option to provide realm with a default
+            var sRealm = getVar("realm"),
+                md5    = apf.crypto.MD5;
+            if (!sRealm)
+                register("realm", sRealm = _self.domain); //DEV: option to provide realm with a default
 
-        if (getVar("realm"))
-            register("digest_uri", "xmpp/" + getVar("realm"));
+            if (sRealm)
+                register("digest-uri", "xmpp/" + sRealm);
 
-        // for the calculations of A1, A2 and sResp below, take a look at
-        // RFC 2617, Section 3.2.2.1
-        var A1 = apf.crypto.MD5.str_md5(getVar("username") + ":" + getVar("realm")
-            + ":" + getVar("password")) // till here we hash-up with MD5
-            + ":" + getVar("nonce") + ":" + getVar("cnonce");
+            //#ifdef __DEBUG
+            apf.console.info("auth - digest-uri: " + getVar("digest-uri"), "xmpp");
+            //#endif
 
-        var A2 = "AUTHENTICATE:" + getVar("digest_uri");
+            // for the calculations of A1, A2 and sResp below, take a look at
+            // RFC 2617, Section 3.2.2.1
+            var A1 = md5.str_md5(getVar("username") + ":" + _self.domain
+                    + ":" + getVar("password")) // till here we hash-up with MD5
+                    + ":" + getVar("nonce") + ":" + getVar("cnonce"),
 
-        var sResp = apf.crypto.MD5.hex_md5(apf.crypto.MD5.hex_md5(A1) + ":"
-            + getVar("nonce") + ":" + getVar("nc") + ":" + getVar("cnonce")
-            + ":" + getVar("qop") + ":" + apf.crypto.MD5.hex_md5(A2));
+                A2 = "AUTHENTICATE:" + getVar("digest-uri"),
 
-        //#ifdef __DEBUG
-        apf.console.info("response: " + sResp, "xmpp");
-        //#endif
+                sResp = md5.hex_md5(md5.hex_md5(A1) + ":"
+                    + getVar("nonce") + ":" + getVar("nc") + ":" + getVar("cnonce")
+                    + ":" + getVar("qop") + ":" + md5.hex_md5(A2));
 
-        var sAuth = createAuthBlock({
-            username   : getVar("username"),
-            realm      : getVar("realm"),
-            nonce      : getVar("nonce"),
-            cnonce     : getVar("cnonce"),
-            nc         : getVar("nc"),
-            qop        : getVar("qop"),
-            digest_uri : getVar("digest_uri"),
-            response   : sResp,
-            charset    : getVar("charset")
-        });
-        this.doXmlRequest(processFinalChallenge, _self.isPoll
-            ? createStreamTag(null, null, sAuth)
-            : createBodyTag({
-                  rid   : getRID(),
-                  sid   : getVar("SID"),
-                  xmlns : apf.xmpp.NS.httpbind
-              }, sAuth)
-        );
+            //#ifdef __DEBUG
+            apf.console.info("response: " + sResp, "xmpp");
+            //#endif
+
+            var sAuth = createAuthBlock({
+                username    : getVar("username"),
+                realm       : sRealm,
+                nonce       : getVar("nonce"),
+                cnonce      : getVar("cnonce"),
+                nc          : getVar("nc"),
+                qop         : getVar("qop"),
+                "digest-uri": getVar("digest-uri"),
+                response    : sResp,
+                charset     : getVar("charset")
+            });
+            _self.doXmlRequest(processFinalChallenge, _self.isPoll
+                ? createStreamTag(null, null, sAuth)
+                : createBodyTag({
+                      rid   : getRID(),
+                      sid   : getVar("SID"),
+                      xmlns : apf.xmpp.NS.httpbind
+                  }, sAuth)
+            );
+        }
+        else {
+            if (oXml && oXml.nodeType) {
+                var iq = oXml.getElementsByTagName("iq")[0];
+                if ((iq && iq.getAttribute("type") == "error")
+                  || oXml.getElementsByTagName("error").length) {
+                    return onError(apf.xmpp.ERROR_AUTH);
+                }
+                var aDigest,
+                    bDigest = (aDigest = oXml.getElementsByTagName("digest")
+                                && aDigest[0]),
+                    sIq     = createIqBlock({
+                        type  : "set",
+                        id    : makeUnique("auth")
+                    },
+                    "<query xmlns='" + apf.xmpp.NS.auth + "'><username>"
+                        + getVar("username") + "</username><resource>"
+                        + _self.resource + "</resource>" + (bDigest
+                            ? "<digest xmlns='" + apf.xmpp.NS.auth + ">"
+                                + apf.crypto.SHA1(getVar("AUTH_ID")
+                                + getVar("password")) + "</digest>"
+                            : "<password xmlns='" + apf.xmpp.NS.auth + "'>"
+                                + getVar("password") + "</password>")
+                        + "</query>"
+                );
+                _self.doXmlRequest(reOpenStream, _self.isPoll
+                    ? createStreamTag(null, null, sIq)
+                    : createBodyTag({
+                        rid   : getRID(),
+                        sid   : getVar("SID"),
+                        xmlns : apf.xmpp.NS.httpbind
+                    }, sIq)
+                );
+            }
+            //#ifdef __DEBUG
+            else if (!_self.isPoll)
+                onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+            //#endif
+        }
     }
 
     /**
@@ -832,9 +912,9 @@ apf.xmpp = function(){
 
         // the spec requires us to clear the password from our system(s)
         unregister("password");
-        
+
         var sAuth = createAuthBlock({});
-        this.doXmlRequest(reOpenStream, _self.isPoll
+        _self.doXmlRequest(reOpenStream, _self.isPoll
             ? createStreamTag(null, null, sAuth)
             : createBodyTag({
                   rid   : getRID(),
@@ -858,13 +938,30 @@ apf.xmpp = function(){
      * @private
      */
     function reOpenStream(oXml) {
-        if (!processChallenge(oXml))
-            return onError(apf.xmpp.ERROR_AUTH);
+        if (getVar("AUTH_SASL")) {
+            if (!processChallenge(oXml))
+                return onError(apf.xmpp.ERROR_AUTH);
+        }
+        else {
+            if (oXml && oXml.nodeType) {
+                var iq = oXml.getElementsByTagName("iq")[0];
+                if ((iq && iq.getAttribute("type") == "error")
+                  || oXml.getElementsByTagName("error").length) {
+                    return onError(apf.xmpp.ERROR_AUTH);
+                }
+                unregister("password");
+            }
+            //#ifdef __DEBUG
+            else if (!_self.isPoll)
+                onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+            //#endif
+        }
 
         //restart the stream request
         this.doXmlRequest(function(oXml) {
                 if (_self.isPoll || oXml.getElementsByTagName("bind").length) {
-                    // Stream restarted OK, so now we can actually start listening to messages!
+                    // Stream restarted OK, so now we can actually start
+                    // listening to messages!
                     _self.bind();
                 }
             }, _self.isPoll
@@ -1077,10 +1174,11 @@ apf.xmpp = function(){
                 parseData(arguments[0]);
         }
 
-        if (getVar("connected") && !bListening)
+        if (getVar("connected") && !bListening) {
             tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
+        }
     }
 
     /**
@@ -1100,10 +1198,11 @@ apf.xmpp = function(){
         bListening = false;
 
         // start listening again...
-        if (getVar("connected") && !bNoListener)
+        if (getVar("connected") && !bNoListener) {
             tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
+        }
     }
 
     /**
@@ -1211,7 +1310,7 @@ apf.xmpp = function(){
             var sJID = aPresence[i].getAttribute("from");
             if (sJID) {
                 var oRoster = getVar("roster"),
-                    oUser   = getVar("roster").getUserFromJID(sJID),
+                    oUser   = oRoster.getUserFromJID(sJID),
                     sType   = aPresence[i].getAttribute("type");
                     
                 if (sType == apf.xmpp.TYPE_SUBSCRIBE) {
@@ -1219,11 +1318,8 @@ apf.xmpp = function(){
                     incomingAdd(aPresence[i].getAttribute("from"));
                 }
                 // record any status change...
-                if (oUser) {
-                    getVar("roster").update(oUser, sType
-                        || apf.xmpp.TYPE_AVAILABLE);
-                }
-                
+                if (oUser)
+                    oRoster.update(oUser, sType || apf.xmpp.TYPE_AVAILABLE);
             }
         }
     }
@@ -1358,10 +1454,11 @@ apf.xmpp = function(){
      * @see protocol description in RFC 3921
      * @link http://tools.ietf.org/html/rfc3921#page-27
      * 
-     * @param {String} jid Contact to de added to the user's Roster
+     * @param {String}   jid        Contact to be added to the user's Roster
+     * @param {Function} [callback] Synchronisation callback for Datainstructions
      * @type  {void}
      */
-    this.addContact = function(jid) {
+    this.addContact = function(jid, callback) {
         if (typeof jid != "string") return false;
         var oRoster  = getVar("roster"),
             oContact = oRoster.getUserFromJID(jid);
@@ -1377,7 +1474,7 @@ apf.xmpp = function(){
             "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + jid
                 + "' /></query>"
         );
-        _self.doXmlRequest(function(oXml) {
+        this.doXmlRequest(function(oXml) {
                 parseData(oXml);
                 _self.listen();
                 // if all is well, a contact is added to the roster.
@@ -1386,7 +1483,7 @@ apf.xmpp = function(){
                     type  : apf.xmpp.TYPE_SUBSCRIBE,
                     to    : jid
                 });
-                this.doXmlRequest(function(oXml) {
+                _self.doXmlRequest(function(oXml) {
                         if (!oXml || !oXml.nodeType) {
                             return !_self.isPoll
                                 ? onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE)
@@ -1400,7 +1497,12 @@ apf.xmpp = function(){
                                 type  : apf.xmpp.TYPE_UNSUBSCRIBE,
                                 to    : jid
                             });
-                            this.doXmlRequest(restartListener, _self.isPoll
+                            _self.doXmlRequest(function(data, state, extra){
+                                if (callback)
+                                    callback.call(_self, data, state, extra);
+
+                                restartListener(data, state, extra);
+                            }, _self.isPoll
                                 ? createStreamTag(null, null, sPresence)
                                 : createBodyTag({
                                     rid   : getRID(),
@@ -1408,7 +1510,6 @@ apf.xmpp = function(){
                                     xmlns : apf.xmpp.NS.httpbind
                                 }, sPresence)
                             );
-                            // @todo: nice error handling w/ events
                         }
                         // all other events should run through the parseData()
                         // function and delegated to the Roster
@@ -1431,7 +1532,7 @@ apf.xmpp = function(){
     };
 
     /**
-     * Handler function that takes care of responses to the Jabber server upon
+     * Handler function that takes care of responses to the XMPP server upon
      * presence subscription request of the current user.
      * Depending on the settings of {@link attribute.auto-accept} and
      * {@link attribute.auto-deny} a contact will be denied to the Roster or
@@ -1442,7 +1543,7 @@ apf.xmpp = function(){
      * @private
      */
     function incomingAdd(sJID) {
-        if (this.autoConfirm) {
+        if (_self.autoConfirm) {
             var sMsg = createIqBlock({
                     from  : getVar("JID"),
                     type  : "get",
@@ -1454,7 +1555,7 @@ apf.xmpp = function(){
                 type  : apf.xmpp.TYPE_SUBSCRIBED,
                 to    : sJID
             });
-            this.doXmlRequest(restartListener, _self.isPoll
+            _self.doXmlRequest(restartListener, _self.isPoll
                 ? createStreamTag(null, null, sMsg)
                 : createBodyTag({
                     rid   : getRID(),
@@ -1463,13 +1564,13 @@ apf.xmpp = function(){
                 }, sMsg)
             );
         }
-        if (this.autoDeny) {
+        if (_self.autoDeny) {
             // <presence to='user@example.com' type='unsubscribed'/>
             var sPresence = createPresenceBlock({
                 type  : apf.xmpp.TYPE_UNSUBSCRIBED,
                 to    : sJID
             });
-            this.doXmlRequest(restartListener, _self.isPoll
+            _self.doXmlRequest(restartListener, _self.isPoll
                 ? createStreamTag(null, null, sPresence)
                 : createBodyTag({
                     rid   : getRID(),
@@ -1492,7 +1593,7 @@ apf.xmpp = function(){
             type  : apf.xmpp.TYPE_SUBSCRIBED,
             to    : oContact.jid
         });
-        this.doXmlRequest(restartListener, _self.isPoll
+        _self.doXmlRequest(restartListener, _self.isPoll
             ? createStreamTag(null, null, sPresence)
             : createBodyTag({
                 rid   : getRID(),
@@ -1538,10 +1639,11 @@ apf.xmpp = function(){
      * the following format:
      * 'apf.xmpp.MSG_*'
      *
-     * @param {String} to        Must be of the format 'node@domainname.ext'
-     * @param {String} message
-     * @param {String} [thread]  Optional.
-     * @param {String} [type]    Optional.
+     * @param {String}   to         Must be of the format 'node@domainname.ext'
+     * @param {String}   message
+     * @param {String}   [thread]   For threading messages, i.e. to log a conversation
+     * @param {String}   [type]     Message type, defaults to 'chat'
+     * @param {Function} [callback] Synchronisation callback for Datainstructions
      * @type  {void}
      */
     this.sendMessage = function(to, message, thread, type, callback) {
@@ -1603,7 +1705,7 @@ apf.xmpp = function(){
 
         this.doXmlRequest(function(data, state, extra){
                 if (callback)
-                    callback.call(this, data, state, extra)
+                    callback.call(this, data, state, extra);
 
                 restartListener(data, state, extra);
             },
@@ -1672,7 +1774,7 @@ apf.xmpp = function(){
         var i, l, url   = new apf.url(this.server);
 
         // do some extra startup/ syntax error checking
-        if (!url.host || !url.port || !url.protocol) {
+        if (!url.host || !url.protocol) {
             throw new Error(apf.formatErrorString(0, this, 
                 "XMPP initialization error", 
                 "Invalid XMPP server url provided."));
@@ -1983,6 +2085,7 @@ apf.xmpp.NS   = {
     jabber  : "jabber:client",
     bind    : "urn:ietf:params:xml:ns:xmpp-bind",
     session : "urn:ietf:params:xml:ns:xmpp-session",
+    auth    : "jabber:iq:auth",
     roster  : "jabber:iq:roster",
     register: "jabber:iq:register",
     stream  : "http://etherx.jabber.org/streams"
@@ -2087,6 +2190,8 @@ apf.datainstr.xmpp = function(xmlContext, options, callback){
         case "notify":
             oXmpp.sendMessage(args[1], args[0], args[2], args[3], callback);
             break;
+        case "add":
+            oXmpp.addContact(args[0], callback);
         default:
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(0, null, "Saving/Loading data", 
