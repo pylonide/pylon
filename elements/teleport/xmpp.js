@@ -631,7 +631,6 @@ apf.xmpp = function(){
         }
 
         return getVar("register") ? doRegRequest() : doAuthRequest();
-
     }
 
     /**
