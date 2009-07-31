@@ -106,7 +106,8 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
     /**
      * the parent in the tree of this element.
      */
-    this.parentNode = null;
+    if (!this.parentNode)
+        this.parentNode = null;
     
     /**
      * Returns the node immediately preceding the specified one in its parent's 

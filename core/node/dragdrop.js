@@ -752,6 +752,10 @@ apf.DragServer = {
 
         if (amlNode.hasEventListener("dragdata"))
             data = amlNode.dispatchEvent("dragdata", {data : data});
+        
+        for(var i = 0, l = data.length; i < l; i++) {
+            data[i] = apf.getCleanCopy(data[i]);
+        }
 
         this.dragdata = {
             rules       : srcRules,
@@ -871,13 +875,18 @@ apf.DragServer = {
           ? apf.xmldb.getNode(o.$findValueNode(el))
           : apf.xmldb.findXmlNode(el));
         var candrop = (o.isDropAllowed && o.xmlRoot)
-          ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
-          : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+          ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot) : false;
+         
+        if (this.dragdata.indicator)
+            this.dragdata.indicator.style.top = "10000px";
+         
+        if (!candrop) 
+            candrop = apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
               if (p.dropenabled) {
                   o = p;
                   return true;
               }
-           }));
+            }));
 
         //EVENT - cancellable: ondragdrop
         if (candrop) {
@@ -910,13 +919,14 @@ apf.DragServer = {
             return false;
         }
 
-        //Move XML
-        var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
-            action, isParent || candrop[0] == o.xmlRoot, this.dragdata.rules, e);
-        this.dragdata.resultNode = rNode;
-
-        //REQUIRED INTERFACE: __dragdrop()
-        if (o && o.$dragdrop) {
+        if (o.$dragDrop) {
+            //Move XML
+            var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
+                action, isParent || candrop[0] == o.xmlRoot, this.dragdata.rules, e);
+            this.dragdata.resultNode = rNode;
+        }
+        
+        if (o.$dragdrop) {
             o.$dragdrop(el, apf.extend({
                 htmlEvent : e,
                 xmlNode   : rNode

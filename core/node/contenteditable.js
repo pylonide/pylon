@@ -343,7 +343,7 @@ apf.ContentEditable = function() {
             _self.$selection = new apf.selection(window, document);
 
         if (activeNode) {
-            var lastPos = (tabStack || initTabStack()).indexOf(oNode);
+            var lastPos = initTabStack().indexOf(oNode);//tabStack can be old...
             removeEditor(activeNode, true);
             oNode = initTabStack()[lastPos];
             setTimeout(function(){oNode.focus();}, 10);

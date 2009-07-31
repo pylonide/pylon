@@ -156,7 +156,13 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         this.setProperty("icon", icon);
         return this;
     };
-
+    
+    //For modal elements
+    this.show = function(callback){
+        this.execAction = callback; //@todo Proper error handling??
+        this.setProperty("visible", true);
+    }
+    
     this.slideIn = function(sFrom, bSticky) {
         if (!sFrom)
             sFrom = "bottom";

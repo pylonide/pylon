@@ -725,7 +725,7 @@ apf.AmlElement = function(){
             // #endif
                 if (value === this.value 
                   || this.dispatchEvent("beforechange", {value : value}) === false)
-                    return;
+                    return false;
 
                 this.setProperty("value", value);
                 return this.dispatchEvent("afterchange", {value : value});
@@ -907,8 +907,8 @@ apf.AmlElement.propHandlers = {
             if (this.$show && !this.$noAlignUpdate)
                 this.$show();
             
-            if (apf.hasSingleRszEvent)
-                apf.layout.forceResize();//this.oInt
+            if (apf.layout && this.oInt) //apf.hasSingleRszEvent)
+                apf.layout.forceResize(this.oInt);//this.oInt
         }
     },
 

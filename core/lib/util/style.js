@@ -29,13 +29,15 @@
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */
 apf.setStyleRule = function(name, type, value, stylesheet, win){
+    name = name.toLowerCase();
+    
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
                 var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
-                    if (rules.item(i).selectorText == name) {
+                    if (rules.item(i).selectorText.toLowerCase() == name) {
                         rules.item(i).style[type] = value;
                         return true;
                     }
@@ -47,7 +49,7 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
     else {
         var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
-            if (rules.item(i).selectorText == name) {
+            if (rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
                 return true;
             }
@@ -64,13 +66,15 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
  * @param {String} [stylesheet] the name of the stylesheet to change.
  */
 apf.getStyleRule = function(name, type, stylesheet, win){
+    name = name.toLowerCase();
+    
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
                 var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
-                    if (rules.item(i).selectorText == name) {
+                    if (rules.item(i).selectorText.toLowerCase() == name) {
                         return rules.item(i).style[type];
                     }
                 }
@@ -81,7 +85,7 @@ apf.getStyleRule = function(name, type, stylesheet, win){
     else {
         var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
-            if (rules.item(i).selectorText == name) {
+            if (rules.item(i).selectorText.toLowerCase() == name) {
                 return rules.item(i).style[type];
             }
         }

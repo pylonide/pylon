@@ -81,6 +81,7 @@
         "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&",
         "ORBIN" : "|"
     },
+    
     parserx = new RegExp(),
     macro = {
         "each"     : "for(_t.push(n,_a,_i,_l),_a=(_a=(",

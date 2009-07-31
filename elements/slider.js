@@ -246,6 +246,10 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         this.min = parseInt(value) || 0;
         if (this.markers)
             this.$propHandlers["markers"].call(this, this.markers);
+        if (this.value < this.min || this.value != this.$value) { //@todo apf3.0
+            this.value = -1; //@todo apf3.0
+            this.setProperty("value", this.$value);
+        }
     }
 
     /**
@@ -256,6 +260,10 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         this.max = parseInt(value) || 1;
         if (this.markers)
             this.$propHandlers["markers"].call(this, this.markers);
+        if (this.value > this.min || this.value != this.$value) { //@todo apf3.0
+            this.value = -1; //@todo apf3.0
+            this.setProperty("value", this.$value);
+        }
     }
 
     /**
@@ -284,6 +292,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         if (dragging && !force && !_self.realtime)
             return;
 
+        this.$value = value;
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var max, min, offset;
         var multiplier = this.max == this.min 
@@ -526,12 +535,13 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
                 var knobValue = getKnobValue(o, e, _self.slideSnap);
                 if (_self.realtime) {
-                    _self.value = -1; //reset value
+                    //_self.value = -1; //reset value //@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
                     if (_self.slideDiscreet) {
                         this.$onlySetXml = true;//blrgh..
-                        _self.change(Math.round(knobValue / _self.step) * _self.step);
+                        var rValue = _self.change(Math.round(knobValue / _self.step) * _self.step);
                         this.$onlySetXml = false;
-                        _self.$propHandlers["value"].call(_self, knobValue, true);
+                        if (rValue !== false)
+                            _self.$propHandlers["value"].call(_self, knobValue, true);
                     }
                     else
                         _self.change(knobValue);
@@ -569,12 +579,12 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                 var knobValue = getKnobValue(o, e || window.event,
                     _self.slideDiscreet || _self.slideSnap);
 
-                _self.value = -1;
+                //_self.value = -1;//@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
                 //_self.$ignoreSignals = _self.realtime;
-                _self.change(knobValue);
+                var rValue = _self.change(knobValue);
                 //_self.$ignoreSignals = false;
                 
-                if (_self.slideDiscreet)
+                if (rValue !== false && _self.slideDiscreet)
                     _self.$propHandlers["value"].call(_self, knobValue, true);
 
                 apf.dragmode.mode    = 
@@ -598,6 +608,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                                 steps : 5,
                                 onfinish : function(){
                                     _self.oBalloon.style.display = "none";
+                                    _self.oBalloon.style.opacity = 1;
                                 }
                             })
                         }

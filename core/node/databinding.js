@@ -3151,8 +3151,15 @@ apf.MultiselectBinding = function(){
                     action = "update";
 
                 if (xmlNode == listenNode) {
-                    if (xmlNode == this.xmlRoot && action != "insert")
+                    if (xmlNode == this.xmlRoot && action != "insert") {
+                        //@todo apf3.0 - fix this for binding on properties
+                        this.dispatchEvent("xmlupdate", {
+                            action : action,
+                            xmlNode: xmlNode,
+                            UndoObj: UndoObj
+                        });
                         return;
+                    }
                     break;
                 }
 

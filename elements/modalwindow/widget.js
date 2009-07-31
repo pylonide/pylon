@@ -83,10 +83,13 @@ apf.modalwindow.widget = function(){
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
             apf.tween.fade(htmlNode, 1);
+            
+            _self.parentNode.$moveDocklet(_self);
+            
             if (!apf.supportOpacity)
                 htmlNode.style.filter = "";
 
-            apf.layout.forceResize(_self.oInt);
+            apf.layout.forceResize(_self.oInt); //@todo recursive
 
             apf.dragmode.mode = null;
         };

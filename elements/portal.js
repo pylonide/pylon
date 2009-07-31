@@ -120,6 +120,23 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     };
     this.select = function(){}
     
+    this.findColumnNr = function(x, y){
+        var el = document.elementFromPoint(x, y);
+
+        //search for element
+        while (!el.isColumn && el.parentNode) {
+            el = el.parentNode;
+        }
+
+        return el.isColumn && this.$columns.indexOf(el) || 0;
+    }
+    
+    this.$moveDocklet = function(docklet) {
+        var colNr = this.$columns.indexOf(docklet.oExt.parentNode) || 0;
+        //@todo hacky, should be via executeAction
+        docklet.dataNode.setAttribute("column", colNr);
+    }
+    
     this.columns = "33.33%,33.33%,33.33%";
     var columns  = this.columns.splitSafe(",");
     var _self    = this;
@@ -142,10 +159,23 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         if (!value) return;
         columns = value.splitSafe(",");
 
-        var col;
+        var col, nodes, pHtmlNode, amlNode, node;
         while(this.$columns.length > columns.length) {
             col = this.$columns.pop();
             col.host = null;
+            
+            nodes = col.childNodes
+            pHtmlNode = this.$columns[0];
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                if ((node = nodes[i]).nodeType != 1)
+                    continue;
+                    
+                pHtmlNode.appendChild(node);
+                amlNode = apf.findHost(node);
+                amlNode.pHtmlNode = pHtmlNode;
+                amlNode.dataNode.setAttribute("column", 0); //@todo wrong!! apf3.0
+            }
+            
             apf.destroyHtmlNode(col);
         }
         
@@ -163,7 +193,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             
             this.$setStyleClass(col, i == columns.length -1 
                 ? "collast" : "", ["collast"]);
-            col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");;
+
+            col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");
         }
     }
     
@@ -309,7 +340,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             
             var amlNodes = widget.amlNodes;
             for (var i = 0, l = amlNodes.length; i < l; i++)
-                docklet.appendChild(amlNodes[i], null, true);
+                if (amlNodes[i].hasFeature)
+                    docklet.appendChild(amlNodes[i], null, true);
             
             docklet.$dockletClass = widget.dockletClass;
             
@@ -319,12 +351,14 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         else {
             var uId = apf.all.length;
             var col = [];
-            strXml = strXml.replace(/\bid="([^"]*)"|id='([^']*)'/g, 
-              function(m, id1, id2){
-                var id = id1 || id2;
+            strXml = strXml.replace(/\bid="([^"]*)"|\bid='([^']*)'|\bactiontracker="([^"]*)"|\bactiontracker='([^']*)'/g, 
+              function(m, id1, id2, at1, at2){
+                var id = id1 || id2 || at1 || at2;
                 col.push(id);
                 if (id1) return 'id="' + id + "_" + uId + '"';
                 if (id2) return "id='" + id + "_" + uId + "'";
+                if (at1) return 'actiontracker="' + id + "_" + uId + '"';
+                if (at2) return "actiontracker='" + id + "_" + uId + "'";
               });
             //@todo make the id's regexp safe
             if (col.length) {
@@ -382,7 +416,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             _self.setProperty("columns", columns);
         
         if (docklet = dockwin_cache.pop()) {
-            docklet.parentNode = this;
+            docklet.parentNode = _self;
             pHtmlNode.appendChild(docklet.oExt);
             docklet.pHtmlNode = pHtmlNode;
             //docklet.setProperty("skin", _self.applyRuleSetOnNode("skin", dataNode) || "docklet"); //@todo (apf3.0) or something like that
@@ -397,8 +431,9 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             docklet = new apf.modalwindow(pHtmlNode, "window");
             docklet.implement(apf.modalwindow.widget);
     
-            docklet.parentNode = this;
+            docklet.parentNode = _self;
             docklet.implement(apf.AmlDom);
+            
             docklet.$amlLoaded = true;
             docklet.$drawn = true;
             
@@ -501,9 +536,12 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.addEventListener("xmlupdate", function(e){
-        if (e.action.match(/add|insert|move/)) {
+        if (e.action.match(/add|insert|move/))
             apf.AmlParser.parseLastPass();
-        }
+        
+        var cols = this.applyRuleSetOnNode("columns", this.xmlRoot)
+        if (cols && cols != this.columns)
+            this.setProperty("columns", cols);
     });
 
     this.$selectDefault = function(xmlNode){
