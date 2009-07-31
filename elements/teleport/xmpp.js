@@ -802,10 +802,10 @@ apf.xmpp = function(){
             var sRealm = getVar("realm"),
                 md5    = apf.crypto.MD5;
             if (!sRealm)
-                register("realm", sRealm = _self.domain); //DEV: option to provide realm with a default
+                register("realm", ""); //DEV: option to provide realm with a default
 
-            if (sRealm)
-                register("digest-uri", "xmpp/" + sRealm);
+            register("digest-uri", "xmpp" + (sRealm ? "/" + sRealm : "") + "/"
+                + _self.domain);
 
             //#ifdef __DEBUG
             apf.console.info("auth - digest-uri: " + getVar("digest-uri"), "xmpp");
@@ -2078,16 +2078,20 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
 
 // Collection of shorthands for all namespaces known and used by this class
 apf.xmpp.NS   = {
-    sasl    : "urn:ietf:params:xml:ns:xmpp-sasl",
-    httpbind: "http://jabber.org/protocol/httpbind",
-    bosh    : "urn:xmpp:xbosh",
-    jabber  : "jabber:client",
-    bind    : "urn:ietf:params:xml:ns:xmpp-bind",
-    session : "urn:ietf:params:xml:ns:xmpp-session",
-    auth    : "jabber:iq:auth",
-    roster  : "jabber:iq:roster",
-    register: "jabber:iq:register",
-    stream  : "http://etherx.jabber.org/streams"
+    sasl       : "urn:ietf:params:xml:ns:xmpp-sasl",
+    httpbind   : "http://jabber.org/protocol/httpbind",
+    bosh       : "urn:xmpp:xbosh",
+    jabber     : "jabber:client",
+    bind       : "urn:ietf:params:xml:ns:xmpp-bind",
+    session    : "urn:ietf:params:xml:ns:xmpp-session",
+    auth       : "jabber:iq:auth",
+    roster     : "jabber:iq:roster",
+    register   : "jabber:iq:register",
+    data       : "jabber:x:data",
+    stream     : "http://etherx.jabber.org/streams",
+    disco_info : "http://jabber.org/protocol/disco#info",
+    disco_items: "http://jabber.org/protocol/disco#items",
+    muc        : "http://jabber.org/protocol/muc"
 };
 
 apf.xmpp.CONN_POLL = 0x0001;
