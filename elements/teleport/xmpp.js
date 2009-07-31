@@ -568,7 +568,7 @@ apf.xmpp = function(){
         register("nc",         "00000001");
         register("bind_count", 1);
         register("connected",  false);
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         register("roster",     new apf.xmpp_roster(this.oModel,
                                    this.modelContent, this.resource));
         // #endif
@@ -1080,7 +1080,7 @@ apf.xmpp = function(){
                 register("connected", true);
                 _self.dispatchEvent("connected", {username: getVar("username")});
                 parseData(oXml);
-                // #ifdef __WITH_XMPP_ROSTER
+                // #ifdef __TP_XMPP_ROSTER
                 getRoster();
                 // #endif
             }, _self.isPoll
@@ -1092,7 +1092,7 @@ apf.xmpp = function(){
             }, sPresence)
         );
     }
-    // #ifdef __WITH_XMPP_ROSTER
+    // #ifdef __TP_XMPP_ROSTER
     /**
      * Retrieve the roster information from the XMPP server. The roster contains
      * a list of nodes to which user has subscribed to. Each roster item will
@@ -1257,7 +1257,7 @@ apf.xmpp = function(){
 
         for (i = 0; i < aMessages.length; i++) {
             sJID = aMessages[i].getAttribute("from");
-            // #ifdef __WITH_XMPP_ROSTER
+            // #ifdef __TP_XMPP_ROSTER
             if (sJID)
                 oUser = getVar("roster").getUserFromJID(sJID); //unsed var...yet?
 
@@ -1270,14 +1270,14 @@ apf.xmpp = function(){
                     // #endif
                     var sFrom = aMessages[i].getAttribute("from"),
                         sMsg  = oBody.firstChild.nodeValue
-                    // #ifdef __WITH_XMPP_ROSTER
+                    // #ifdef __TP_XMPP_ROSTER
                     if (getVar("roster").updateMessageHistory(sFrom, sMsg)) {
                     // #endif
                         _self.dispatchEvent("receivechat", {
                             from   : sFrom,
                             message: sMsg
                         });
-                    // #ifdef __WITH_XMPP_ROSTER
+                    // #ifdef __TP_XMPP_ROSTER
                     }
                     // #endif
                 }
@@ -1314,7 +1314,7 @@ apf.xmpp = function(){
         //#ifdef __DEBUG
         apf.console.info("parsePresencePacket: " + aPresence.length, "xmpp");
         //#endif
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         for (var i = 0; i < aPresence.length; i++) {
             var sJID = aPresence[i].getAttribute("from");
             if (sJID) {
@@ -1356,7 +1356,7 @@ apf.xmpp = function(){
             for (var j = 0, l2 = aQueries.length; j < l2; j++) {
                 //@todo: support more query types...whenever we need them
                 switch (aQueries[j].getAttribute("xmlns")) {
-                    // #ifdef __WITH_XMPP_ROSTER
+                    // #ifdef __TP_XMPP_ROSTER
                     case apf.xmpp.NS.roster:
                         var aItems  = aQueries[j].getElementsByTagName("item"),
                             oRoster = getVar("roster"),
@@ -1424,7 +1424,7 @@ apf.xmpp = function(){
      */
     this.requestPresence = function(from) {
         if (!getVar("connected")) return false;
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         var oRoster = getVar("roster");
         if (typeof from == "string")
             from = oRoster.getUserFromJID(from);
@@ -1472,7 +1472,7 @@ apf.xmpp = function(){
      * @type  {void}
      */
     this.addContact = function(jid, callback) {
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         if (typeof jid != "string") return false;
         var oRoster  = getVar("roster"),
             oContact = oRoster.getUserFromJID(jid);
@@ -1545,7 +1545,7 @@ apf.xmpp = function(){
         );
         // #endif
     };
-    // #ifdef __WITH_XMPP_ROSTER
+    // #ifdef __TP_XMPP_ROSTER
     /**
      * Handler function that takes care of responses to the XMPP server upon
      * presence subscription request of the current user.
@@ -1709,14 +1709,14 @@ apf.xmpp = function(){
         if (!getVar("connected")) return false;
 
         var oUser;
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         if (!to) { //What is the purpose of this functionality? (Ruben)
             oUser = getVar("roster").getLastAvailableUser();
             to    = oUser.jid;
         }
         // #endif
         if (!to) return false; //finally: failure :'(
-        // #ifdef __WITH_XMPP_ROSTER
+        // #ifdef __TP_XMPP_ROSTER
         if (!oUser)
             oUser = getVar("roster").getUserFromJID(to);
         // #endif
@@ -1969,8 +1969,10 @@ apf.datainstr.xmpp = function(xmlContext, options, callback){
         case "notify":
             oXmpp.sendMessage(args[1], args[0], args[2], args[3], callback);
             break;
+        // #ifdef __TP_XMPP_ROSTER
         case "add":
             oXmpp.addContact(args[0], callback);
+        // #endif
         default:
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(0, null, "Saving/Loading data", 

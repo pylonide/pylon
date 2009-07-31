@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __TP_XMPP && __WITH_XMPP_MUC
+// #ifdef __TP_XMPP_MUC
 // #define __WITH_TELEPORT 1
 
 /**

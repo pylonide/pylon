@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __TP_XMPP && __WITH_XMPP_ROSTER
+// #ifdef __TP_XMPP_ROSTER
 // #define __WITH_TELEPORT 1
 
 /**
