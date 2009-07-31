@@ -293,8 +293,12 @@ apf.Cache = function(){
         this.documentId = this.xmlRoot = this.cacheID = null;
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (!nomsg && this.hasFeature(__MULTISELECT__)) //@todo this is all wrong
-            this.setProperty("length", 0);
+        if (!nomsg) {
+            if (this.hasFeature(__MULTISELECT__)) //@todo this is all wrong
+                this.setProperty("length", 0);
+            //else 
+                //this.setProperty("value", ""); //@todo redo apf3.0
+        }
         //#endif
     };
 

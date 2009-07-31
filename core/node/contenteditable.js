@@ -69,7 +69,8 @@ apf.ContentEditable = function() {
             setTimeout(function(){
                 //_self.$selection.selectNode(node);
                 _self.$selection.set();
-                node.focus();
+                if (node.parentNode) //@todo why?
+                    node.focus();
             }, 10);
         }
     });
@@ -225,7 +226,7 @@ apf.ContentEditable = function() {
             if (!isDone) {
                 var model   = this.getModel(),
                     xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(activeNode.getAttribute("xpath")),
-                    rule    = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline: true};
+                    rule    = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline: false};
                 isDone      = !apf.isTrue(rule.multiline);
             }
         }
@@ -763,6 +764,11 @@ apf.ContentEditable = function() {
             apf.removeListener(_self.oExt, "mouseout",  mouseOut);
             apf.removeListener(_self.oExt, "mousedown", mouseDown);
             apf.removeListener(_self.oExt, "mouseup",   mouseUp);
+
+            if (docklet)
+                docklet.hide(); 
+            activeNode = null;
+            lastActiveNode = null;
 
             this.$focussable = wasFocussable[0];
             this.setProperty("focussable", wasFocussable[1]);
@@ -1346,6 +1352,7 @@ apf.ContentEditable = function() {
             docklet.setProperty("left", 500);
             docklet.setProperty("top", 100);
             docklet.setProperty("width", 400);
+            docklet.setProperty("zindex", 100000);
             
             var content, aNodes = docklet.oExt.getElementsByTagName("div");
             for (var j = 0, l = aNodes.length; j < l && !content; j++) {

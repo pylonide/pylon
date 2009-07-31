@@ -438,7 +438,7 @@ apf.Presentation = function(){
         if (!skinTimer) {
             clearTimeout(skinTimer);
             skinTimer = setTimeout(function(){
-                changeSkin.call(_self);
+                changeSkin.call(_self, value);
                 skinTimer = null;
             });
         }
@@ -493,7 +493,6 @@ apf.Presentation = function(){
 
         //Load the new skin
         this.skin = skin;
-        this.skinName = null;
         this.$loadSkin(skinset ? skinset + ":" + skin : null);
 
         //Draw
@@ -595,14 +594,14 @@ apf.Presentation = function(){
         //#endif
 
         //#ifdef __WITH_INTERACTIVE
-        if (this.draggable)
+        if (this.draggable && this.$propHandlers["draggable"]) //@todo move these to the event below apf3.0)
             this.$propHandlers["draggable"].call(this, this.draggable);
-        if (this.resizable)
+        if (this.resizable && this.$propHandlers["resizable"])
             this.$propHandlers["resizable"].call(this, this.resizable);
         //#endif
 
         if (this.$skinchange)
-            this.$skinchange();
+            this.$skinchange(); //@todo make this an event (apf3.0
 
         //Dispatch event
         //this.dispatchEvent("skinchange");
@@ -619,7 +618,8 @@ apf.Presentation = function(){
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
     this.$loadSkin = function(skinName){
-        this.baseSkin = skinName || this.skinName || (this.skinset || this.$aml
+        //this.skinName || //where should this go and why?
+        this.baseSkin = skinName || (this.skinset || this.$aml
             && apf.getInheritedAttribute(this.$aml, "skinset") 
             || apf.appsettings.skinset)
             + ":" + (this.skin || this.$aml

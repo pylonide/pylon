@@ -327,7 +327,8 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {String} title the text of the title.
      */
     this.$propHandlers["title"] = function(value){
-        this.oTitle.nodeValue = value;
+        if (this.oTitle)
+            this.oTitle.nodeValue = value;
     };
 
     /**
@@ -618,15 +619,17 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         //#ifdef __SUPPORT_IPHONE
         if (!apf.isIphone) {
         //#endif
-            (this.oTitle.nodeType != 1
-              ? this.oTitle.parentNode
-              : this.oTitle).ondblclick = function(e){
-                if (_self.state.indexOf("normal") == -1)
-                    _self.restore();
-                else if (_self.buttons.indexOf("max") > -1)
-                    _self.maximize();
-                else if (_self.buttons.indexOf("min") > -1)
-                    _self.minimize();
+            if (this.oTitle) {
+                (this.oTitle.nodeType != 1
+                  ? this.oTitle.parentNode
+                  : this.oTitle).ondblclick = function(e){
+                    if (_self.state.indexOf("normal") == -1)
+                        _self.restore();
+                    else if (_self.buttons.indexOf("max") > -1)
+                        _self.maximize();
+                    else if (_self.buttons.indexOf("min") > -1)
+                        _self.minimize();
+                }
             }
     
             if (typeof this.draggable == "undefined") {

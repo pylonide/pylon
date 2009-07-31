@@ -457,6 +457,9 @@ apf.BaseStateButtons = function(){
         //#ifdef __SUPPORT_IPHONE
         if (apf.isIphone) return;
         //#endif
+        if (!this.$hasLayoutNode("button"))
+            return;
+        
         var buttons = value && (value = value.replace(/(\|)\||\|$/, "$1")).split("|") || [];
         var nodes   = this.oButtons.childNodes;
         var re      = value && new RegExp("(" + value + ")");
@@ -468,7 +471,8 @@ apf.BaseStateButtons = function(){
             if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
                 continue;
 
-            if (!value || !nodes[i].className || !nodes[i].className.match(re)) {
+            if (nodes[i].getAttribute("button") && (!value 
+              || !nodes[i].className || !nodes[i].className.match(re))) {
                 nodes[i].style.display = "none";
                 this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
                 idleNodes.push(nodes[i]);
@@ -491,6 +495,7 @@ apf.BaseStateButtons = function(){
             if (!btn) {
                 this.$getNewContext("button");
                 btn = this.$getLayoutNode("button");
+                btn.setAttribute("button", "button");
                 setButtonEvents(btn);
                 btn = apf.xmldb.htmlImport(btn, this.oButtons);
             }
@@ -525,8 +530,11 @@ apf.BaseStateButtons = function(){
     }
     
     this.$initButtons = function(oExt){
+        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
+
         var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-        if (!oButtons || apf.isIphone || !this.$aml.getAttribute("buttons"))
+        if (!oButtons || apf.isIphone || !this.$aml.getAttribute("buttons") 
+          || !this.$hasLayoutNode("button"))
             return;
 
         var len = (this.$aml.getAttribute("buttons") || "").split("|").length;
@@ -535,8 +543,6 @@ apf.BaseStateButtons = function(){
             btn = oButtons.appendChild(this.$getLayoutNode("button"));
             setButtonEvents(btn);
         }
-        
-        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
     }
     
     this.$amlDestroyers.push(function(){

@@ -52,9 +52,9 @@ apf.modalwindow.widget = function(){
         //p.style.width = (htmlNode.offsetWidth - 2) + "px";
         p.style.height  = (htmlNode.offsetHeight - (apf.isIE6 ? 0 : apf.getHeightDiff(p))) + "px";
 
-        var diff     = apf.getDiff(htmlNode);
+        //var diff     = apf.getDiff(htmlNode);
         var lastSize = [htmlNode.style.width, htmlNode.style.height];
-        htmlNode.style.width = (htmlNode.offsetWidth - diff[0]) + "px";
+        htmlNode.style.width = (htmlNode.offsetWidth - apf.getWidthDiff(htmlNode)) + "px";
         //htmlNode.style.height = (htmlNode.offsetHeight - diff[1]) + "px";
 
         htmlNode.style.left = (e.clientX + nX) + "px";
@@ -131,20 +131,22 @@ apf.modalwindow.widget = function(){
         var ex  = e.clientX + document.documentElement.scrollLeft;
         var ey  = e.clientY + document.documentElement.scrollTop;
         var el  = document.elementFromPoint(ex, ey);
-
-        if (el.isColumn){
-            insertInColumn(el, ey);
-        }
-        else {
-            //search for element
-            while (el.parentNode && !el.isColumn) {
-                el = el.parentNode;
-            }
-
-            if (el.isColumn)
+        
+        if (el) {
+            if (el.isColumn){
                 insertInColumn(el, ey);
+            }
+            else {
+                //search for element
+                while (el.parentNode && !el.isColumn) {
+                    el = el.parentNode;
+                }
+    
+                if (el.isColumn)
+                    insertInColumn(el, ey);
+            }
         }
-
+        
         _self.oExt.style.left = (e.clientX + nX) + "px";
         _self.oExt.style.top  = (e.clientY + nY) + "px";
 
@@ -152,7 +154,7 @@ apf.modalwindow.widget = function(){
     };
 
     this.$loadAml = function(x) {
-        this.$aml = x;
+        //this.$aml = x;
 
         this.$init();
 
@@ -163,6 +165,7 @@ apf.modalwindow.widget = function(){
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
         var oBody = $xmlns(x, "body", apf.ns.aml)[0];
+        if (!oBody) return; //Skin change detection (apf3.0) found out why there is xml in the model attr of aml in the portal demo
         oBody.parentNode.removeChild(oBody);
 
         apf.AmlParser.parseChildren(x, null, this);

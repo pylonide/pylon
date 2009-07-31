@@ -140,7 +140,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["columns"] = function(value){
         columns = value.splitSafe(",");
-        
+
         var col;
         while(this.$columns.length > columns.length) {
             col = this.$columns.pop();
@@ -152,7 +152,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             size = columns[i];
             if (!this.$columns[i]) {
                 this.$getNewContext("column");
-                col = apf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
+                col = apf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt, this.oInt.lastChild);
                 this.$columns.push(col);
         
                 col.isColumn = true;
@@ -193,14 +193,16 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     function cacheDocklet(docklet){
         var srcUrl = docklet.$srcUrl;
         if (!srcUrl) throw new Error("Something went terribly wrong"); //@todo
-        
+
         //Cache settings panel
         var amlNodes = [], amlNode, widget = docklet_cache[srcUrl];
-        var nodes = docklet.oSettings.childNodes;
-        while(nodes.length) {
-            amlNode = apf.findHost(widget.fragSettings.appendChild(nodes[0]));
-            if (amlNode)
-                amlNodes.push(amlNode.removeNode(null, true));
+        if (docklet.oSettings) {
+            var nodes = docklet.oSettings.childNodes;
+            while(nodes.length) {
+                amlNode = apf.findHost(widget.fragSettings.appendChild(nodes[0]));
+                if (amlNode)
+                    amlNodes.push(amlNode.removeNode(null, true));
+            }
         }
         
         //Cache oInt
@@ -210,14 +212,16 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             if (amlNode) 
                 amlNodes.push(amlNode.removeNode(null, true));
         }
-        widget.childNodes = docklet.childNodes;
-        docklet.childNodes = [];
+        var nodes = docklet.childNodes;
+        for (var i = 0; i < nodes.length; i++)
+            amlNodes.push(nodes[i].removeNode(null, true));
         
         widget.amlNodes = amlNodes;
         docklet.oSettings = docklet.oInt = null;
         dockwin_cache.push(docklet);
         
         //Remove from document
+        docklet.parentNode = null;
         docklet.oExt.parentNode.removeChild(docklet.oExt);
         
         return srcUrl;
@@ -228,7 +232,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         for (var i = 0, l = this.$columns.length; i < l; i++) {
             col = this.$columns[i];
             for (var j = col.childNodes.length -1; j >= 0; j--) {
-                if (col.childNodes[0].nodeType != 1)
+                if (col.childNodes[j].nodeType != 1)
                     continue;
                 
                 fragment.push(cacheDocklet(apf.findHost(col.childNodes[j])));
@@ -299,7 +303,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             docklet.oInt = docklet.$getLayoutNode("main", "container", docklet.oExt);
             
             docklet.oInt.appendChild(widget.fragInt);
-            docklet.oSettings.appendChild(widget.fragSettings);
+            if (docklet.oSettings)
+                docklet.oSettings.appendChild(widget.fragSettings);
             
             var amlNodes = widget.amlNodes;
             for (var i = 0, l = amlNodes.length; i < l; i++)
@@ -331,8 +336,11 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
             var name = xmlNode.getAttribute("name");
 
+            var parsing = apf.isParsing;
+            apf.isParsing = true;
             docklet.$loadAml(xmlNode, name);
             apf.AmlParser.parseLastPass();
+            apf.isParsing = false;
     
             if (xmlNode.getAttribute("width"))
                 docklet.setProperty("width", xmlNode.getAttribute("width"));
@@ -367,12 +375,21 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     var dockwin_cache = [];
     function getDockwin(dataNode, pHtmlNode){
         var docklet;
+        
+        var columns = _self.applyRuleSetOnNode("columns", _self.xmlRoot);
+        if (columns != _self.columsn)
+            _self.setProperty("columns", columns);
+        
         if (docklet = dockwin_cache.pop()) {
+            docklet.parentNode = this;
             pHtmlNode.appendChild(docklet.oExt);
+            docklet.pHtmlNode = pHtmlNode;
+            //docklet.setProperty("skin", _self.applyRuleSetOnNode("skin", dataNode) || "docklet"); //@todo (apf3.0) or something like that
             
-            var skinset = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset");
-            if (docklet.skinset != skinset)
-                docklet.setAttribute("skinset", skinset); //@todo (apf3.0) or something like that
+            var skin = _self.applyRuleSetOnNode("dockskin", dataNode) || "docklet";
+            //if(skin == "dockblank") debugger;
+            if (docklet.skin != skin)
+                docklet.$forceSkinChange(docklet.skin = skin);
         }
         //Creating
         else {
@@ -382,12 +399,13 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             docklet.parentNode = this;
             docklet.implement(apf.AmlDom);
             docklet.$amlLoaded = true;
+            docklet.$drawn = true;
             
             //Load docklet
             docklet.$aml      = apf.getXml("<window />");
             docklet.skinset   = apf.getInheritedAttribute(_self.$aml.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             docklet.$aml.setAttribute("skinset", docklet.skinset);
-            docklet.skin      = "docklet";
+            docklet.skin      = _self.applyRuleSetOnNode("dockskin", dataNode) || "docklet";
             docklet.skinName  = null;
             docklet.$loadSkin();
             docklet.draggable = true;
@@ -481,12 +499,6 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         
     };
     
-    this.addEventListener("beforeload", function(e){
-        var columns = this.applyRuleSetOnNode("columns", e.xmlNode);
-        if (columns)
-            this.setProperty("columns", columns);
-    });
-
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
             apf.AmlParser.parseLastPass();
