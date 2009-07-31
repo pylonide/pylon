@@ -55,6 +55,7 @@ apf.runNonIe = function (){
     ****************************************************************************/
     if (typeof HTMLElement!="undefined") {
         if (!HTMLElement.prototype.insertAdjacentElement) {
+            Text.prototype.insertAdjacentElement =
             HTMLElement.prototype.insertAdjacentElement = function(where,parsedNode){
                 switch (where.toLowerCase()) {
                     case "beforebegin":
@@ -77,6 +78,7 @@ apf.runNonIe = function (){
         }
 
         if (!HTMLElement.prototype.insertAdjacentHTML) {
+            Text.prototype.insertAdjacentHTML =
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
                 r.setStartBefore(apf.isSafari ? document.body : (self.document ? document.body : this));
@@ -89,6 +91,7 @@ apf.runNonIe = function (){
             HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
     
         if (!HTMLElement.prototype.insertAdjacentText) {
+            Text.prototype.insertAdjacentText =
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
                 var parsedText = document.createTextNode(txtStr);
                 this.insertAdjacentElement(where,parsedText);
