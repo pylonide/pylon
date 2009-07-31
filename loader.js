@@ -266,19 +266,22 @@ apf.KernelModules = [
     "node/plugins/visualaid.js"
 ];
 apf.TelePortModules = [
-    "http.js",         // for simple HTTP transactions
-    //"socket.js",     // APF HTTP Socket Implementation
-    //"poll.js",         // APF Polling Engine
-    "rpc.js",         // RPC Baseclass (needs HTTP class)
-    "xmpp.js",        // XMPP class providing the XMPP comm layer
+    "http.js",            // for simple HTTP transactions
+    //"socket.js",        // APF HTTP Socket Implementation
+    //"poll.js",          // APF Polling Engine
+    "rpc.js",             // RPC Baseclass (needs HTTP class)
+    "xmpp.js",            // XMPP class providing the XMPP comm layer
     "webdav.js",
 
-    //RPC Modules (all need rpc.js)
-    "rpc/xmlrpc.js",    // XML-RPC
-    //"rpc/soap.js",     // SOAP
-    "rpc/jsonrpc.js",     // JSON
-    //"rpc/jphp.js",     // JPHP
-    "rpc/cgi.js"      // CGI
+    "ext/xmpp_muc.js",
+    "ext/xmpp_roster.js",
+
+    //RPC extensions (all need rpc.js)
+    "ext/xmlrpc.js",      // XML-RPC
+    //"ext/soap.js",      // SOAP
+    "ext/jsonrpc.js",     // JSON
+    //"ext/jphp.js",      // JPHP
+    "ext/cgi.js"          // CGI
 ]
 
 apf.Init.addConditional(function(){
