@@ -1435,16 +1435,16 @@ apf.xmpp = function(){
             for (var i = 0, l = from.length; i < l; i++) {
                 aPresence.push(createPresenceBlock({
                     type: apf.xmpp.TYPE_PROBE,
-                    to  : from[i].jid,
-                    from: oRoster.jid
+                    to  : from[i].fullJID,
+                    from: oRoster.fullJID
                 }));
             }
         }
         else {
             aPresence.push(createPresenceBlock({
                 type  : apf.xmpp.TYPE_PROBE,
-                to    : from.jid,
-                from  : oRoster.jid
+                to    : from.fullJID,
+                from  : oRoster.fullJID
             }));
         }
         sPresence = aPresence.join("");
@@ -1712,7 +1712,7 @@ apf.xmpp = function(){
         // #ifdef __TP_XMPP_ROSTER
         if (!to) { //What is the purpose of this functionality? (Ruben)
             oUser = getVar("roster").getLastAvailableUser();
-            to    = oUser.jid;
+            to    = oUser.fullJID;
         }
         // #endif
         if (!to) return false; //finally: failure :'(

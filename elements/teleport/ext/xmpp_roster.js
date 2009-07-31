@@ -36,16 +36,16 @@
  * @type {Object}
  * @constructor
  */
-apf.xmpp.Roster = function(model, modelContent, resource) {
+apf.xmpp_roster = function(model, modelContent, resource) {
     this.resource = resource;
-    this.username = this.domain = this.jid = "";
+    this.username = this.domain = this.fullJID = "";
 
     var aUsers = [];
 
     this.registerAccount = function(username, domain) {
         this.username = username || "";
         this.domain   = domain   || "";
-        this.jid      = this.username + "@" + this.domain
+        this.fullJID  = this.username + "@" + this.domain
             + (this.resource ? "/" + this.resource : "");
     };
 
@@ -80,7 +80,7 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
                     + (bResource ? "/" + resource : "");
 
         for (var i = 0; i < aUsers.length; i++) {
-            if (aUsers[i].jid.indexOf(sJID) === 0)
+            if (aUsers[i].fullJID.indexOf(sJID) === 0)
                 aResult.push(aUsers[i]);
         }
 
@@ -114,7 +114,8 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
         }
 
         var domain = jid,
-            oUser  = this.getUser(node, domain);//, resource);
+            oUser  = this.getUser(node, domain),
+            bareJID = node + "@" + domain;
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
@@ -125,8 +126,8 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
                 node        : node,
                 domain      : domain,
                 resources   : [resource],
-                jid         : node + "@" + domain
-                              + (resource ? "/" + resource : ""),
+                bareJID     : bareJID,
+                fullJID     : bareJID + (resource ? "/" + resource : ""),
                 subscription: sSubscr,
                 group       : sGroup,
                 status      : apf.xmpp.TYPE_UNAVAILABLE
@@ -141,7 +142,7 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
         //fix a missing 'resource' property...
         if (resource && oUser && !oUser.resources.contains(resource)) {
             oUser.resources.push(resource);
-            oUser.jid = node + "@" + domain + "/" + resource
+            oUser.fullJID = bareJID + "/" + resource
         }
 
         return oUser;
@@ -179,7 +180,7 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
         return this.updateUserXml(oUser);
     };
 
-    var userProps = ["node", "domain", "resource", "jid", "status"];
+    var userProps = ["node", "domain", "resource", "bareJID", "fullJID", "status"];
     /**
      * Propagate any change in the JID to the model to which the XMPP connection
      * is attached.
@@ -206,10 +207,10 @@ apf.xmpp.Roster = function(model, modelContent, resource) {
      * @type  {void}
      */
     this.updateMessageHistory = function(sJID, sMsg) {
-        if (!model || !modelContent.chat) return;
+        if (!model || !modelContent.chat) return false;
 
         var oUser = this.getUserFromJID(sJID);
-        if (!oUser || !oUser.xml) return;
+        if (!oUser || !oUser.xml) return false;
 
         var oDoc = model.data.ownerDocument,
             oMsg = oDoc.createElement("message");
