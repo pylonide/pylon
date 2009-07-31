@@ -437,6 +437,8 @@ apf.convertMethods = {
      * @return  {Object}  the created JSON object
      */
     "json": function(xml){
+        return apf.xml2json(xml);
+        /*
         var result = {}, filled = false, nodes = xml.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1)
@@ -457,7 +459,7 @@ apf.convertMethods = {
                 result[name] = this.json(sameNodes[j], result);
         }
 
-        return filled ? result : apf.queryValue(xml, "text()");
+        return filled ? result : apf.queryValue(xml, "text()");*/
     },
 
     "cgivars": function(xml, basename){
@@ -651,4 +653,46 @@ apf.getXmlString = function(xmlNode){
 apf.getXml = function(){
     return apf.xmldb.getXml.apply(apf.xmldb, arguments);
 };
+
+/**
+ * Formats an xml string with good indentation. Also known as pretty printing.
+ * @param {String} strXml the xml to format.
+ * @return {String} the formatted string.
+ */
+apf.formatXml = function(strXml){
+    strXml = strXml.trim();
+
+    var lines = strXml.split("\n");
+    for (var i = 0; i < lines.length; i++)
+        lines[i] = lines[i].trim();
+    lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
+        .replace(/\n\</g, "<").replace(/\</g, "\n<").split("\n");
+    lines.removeIndex(0);//test if this is actually always fine
+    lines.removeIndex(lines.length);
+
+    for (var depth = 0, i = 0; i < lines.length; i++)
+        lines[i] = "\t".repeat((lines[i].match(/^\s*\<\//)
+            ? (depth==0)?0:--depth
+            : (lines[i].match(/^\s*\<[^\?][^>]+[^\/]\>/) ? depth++ : depth))) + lines[i];
+    if (!strXml) return "";
+
+    return lines.join("\n");
+};
+
+/**
+ * Syntax highlights an xml string using html.
+ * @param {String} strXml the xml to highlight.
+ * @return {String} the highlighted string.
+ */
+apf.highlightXml = function(str){
+    return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
+       .replace(/>/g, "_@B@_")
+       .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
+       .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
+       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+       .replace(/\n/g, "<br />")
+       .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
+       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
+}
+
 // #endif

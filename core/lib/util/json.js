@@ -28,40 +28,69 @@
  * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
  * @return {XMLNode} the created xml document (NOT the root-node).
  */
+ 
+apf.jsonObjectConvert  = {};
+apf.jsonAttrConvert = {};
+
+ 
 apf.json2Xml = (function(){
-    var jsonToXml = function (v, name) {
-        var i, n, xml = [];
-        name = name.replace(/[^a-zA-z0-9_-]+/g, "_");
+    var jsonToXml = function (v, name, xml, notag) {
+        var i, n, m, t; 
+        // do an apf warn
+
+        if(!notag){
+            if(name != (m=name.replace(/[^a-zA-Z0-9_-]/g, "_")))
+                apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + name, "json2Xml");
+            name = m;
+        }    
         if (apf.isArray(v)) {
             for (i = 0, n = v.length; i < n; i++)
-                xml.push(jsonToXml(v[i], name));
+                jsonToXml(v[i],name,xml);
         }
         else if (typeof v == "object") {
             var hasChild = false;
-            xml.push("<", name);
+            if(!notag)xml.push("<", name);
             for (i in v) {
-                if (i.charAt(0) == "@")
-                    xml.push(" ", i.substr(1), "=\"", v[i].toString(), "\"");
-                else
-                    hasChild = true;
+                if (n=apf.jsonAttrConvert[i]){
+                    if(!notag)xml.push(" ", i, "=\"", v[i], "\"");
+                } else 
+                   hasChild = true;
             }
-            xml.push(hasChild ? ">" : "/>");
             if (hasChild) {
-                for (i in v) {
-                    if (i == "#text")
-                        xml.push(v[i]);
-                    else if (i == "#cdata")
-                        xml.push("<![CDATA[", v[i], "]]>");
-                    else if (i.charAt(0) != "@")
-                        xml.push(jsonToXml(v[i], i));
+                if(!notag)xml.push(">");
+                if(t=apf.jsonObjectConvert[name]){
+                    if(t==1) t = { child : name.replace(/(.*)s$/,"$1")||name, key : "name", value: "value"};
+                    for (i in v) {
+                        if( typeof(m = v[i]) =='object'){
+                            xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
+                            jsonToXml(m, i,xml,true);
+                            xml.push("</",t.child,">");
+                        } else {
+                            xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
+                            if(t.value){
+                             xml.push(t.value,"=\"",v[i],"\"/>");
+                            }else
+                             xml.push(">",v[i],"</",t.child,">");
+                        }
+                    }
+                    if(!notag)xml.push("</",name,">");
+                }else{
+                    for (i in v) {
+                        if (!apf.jsonAttrConvert[i]){
+                           if(i.match(/[^a-zA-Z0-9_-]/g)){
+                               apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + i, "json2Xml");
+                           }else
+                               jsonToXml(v[i], i, xml,false);
+                        }
+                    }
+                    if(!notag)xml.push("</", name, ">");
                 }
-                xml.push("</", name, ">");
-            }
+            }else if(!notag)xml.push("/>");
         }
-        else
-            xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
-    
-        return xml.join("");
+        else {
+            if(!notag)xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
+            else xml.push( v.toString().escapeHTML());
+       }
     }
         
     return function(strJson, noError, preserveWhiteSpace) {
@@ -69,12 +98,48 @@ apf.json2Xml = (function(){
           ? JSON.parse(strJson)//eval("(" + strJson + ")")
           : strJson,
             xml = [], i;
-        for (i in o)
-            xml.push(jsonToXml(o[i], i, ""));
-        return apf.getXmlDom("<jsonroot>" + xml.join("").replace(/\t|\n/g, "") 
-            + "</jsonroot>", noError, preserveWhiteSpace);
+        jsonToXml(o,"jsondoc", xml, false);
+        return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, preserveWhiteSpace);
     };
 })();
+
+apf.xml2json = function (xml, attrout) {
+        // alright! lets go and convert our xml back to json.
+        var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t; 
+        
+        if(attrout != 1){
+            if(m = (xml.attributes))
+            for(u = 0,v = m.length; u < v; u++){
+              if(apf.jsonAttrConvert[t=m[u].nodeName])
+                 (attrout||out)[t] = m[u].nodeValue;
+            }        
+        }
+        for (var i = 0, j = nodes.length;i<j; i++) {
+            if ((n = nodes[i]).nodeType != 1)
+                continue;
+            var name = n.tagName;
+            filled = true;
+            
+            if(t = apf.jsonObjectConvert[name]){
+                o = {};
+                if(t==1)t={key:'name',value:'value'};
+                // lets enumerate the children
+                for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
+                    if(w=(s=cn[u]).getAttribute(t.key))
+                        o[w] = s.getAttribute(t.value||'value') || apf.xml2json(s,1);
+                }
+            }else{
+                o =  apf.xml2json( n, out );
+            }
+            if(out[name] !== undefined){
+                if((s=out[name]).dataType!='array')
+                    out[name]=[s,o];
+                else out[name].push(o);
+            }else out[name] = o;
+       }
+       return filled ? out : apf.queryValue(xml, "text()");
+};
+
 //#endif
 
 //#ifdef __WITH_JSON_API

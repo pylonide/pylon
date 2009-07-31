@@ -21,46 +21,6 @@
 
 // #ifdef __WITH_UTILITIES
 
-/**
- * Formats an xml string with good indentation. Also known as pretty printing.
- * @param {String} strXml the xml to format.
- * @return {String} the formatted string.
- */
-apf.formatXml = function(strXml){
-    if (!strXml) return "";
-    strXml = strXml.trim();
-
-    var lines = strXml.split("\n");
-    for (var i = 0; i < lines.length; i++)
-        lines[i] = lines[i].trim();
-    lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
-        .replace(/\n\</g, "<").replace(/\</g, "\n<").split("\n");
-    lines.removeIndex(0);//test if this is actually always fine
-    lines.removeIndex(lines.length);
-
-    for (var depth = 0, i = 0; i < lines.length; i++)
-        lines[i] = "\t".repeat((lines[i].match(/^\s*\<\//)
-            ? --depth
-            : (lines[i].match(/^\s*\<[^\?][^>]+[^\/]\>/) ? depth++ : depth))) + lines[i];
-
-    return lines.join("\n");
-};
-
-/**
- * Syntax highlights an xml string using html.
- * @param {String} strXml the xml to highlight.
- * @return {String} the highlighted string.
- */
-apf.highlightXml = function(str){
-    return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
-       .replace(/>/g, "_@B@_")
-       .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
-       .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
-       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-       .replace(/\n/g, "<br />")
-       .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
-       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
-}
 
 /**
  * Syntax highlights a code string using html.
