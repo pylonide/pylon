@@ -139,6 +139,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
      * @todo make this dynamic
      */
     this.$propHandlers["columns"] = function(value){
+        if (!value) return;
         columns = value.splitSafe(",");
 
         var col;
