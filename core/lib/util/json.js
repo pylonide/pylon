@@ -29,9 +29,9 @@
  * @return {XMLNode} the created xml document (NOT the root-node).
  */
  
-apf.jsonObjectConvert  = {};
-apf.jsonAttrConvert = {};
-apf.jsonObjectAttrConvert = {};
+apf.json2xml_Obj  = {};
+apf.json2xml_Attr = {};
+apf.json2xml_ObjByAttr = {};
  
 apf.json2Xml = (function(){
     var jsonToXml = function (v, name, xml, notag) {
@@ -52,15 +52,15 @@ apf.json2Xml = (function(){
             
             if(!notag)xml.push("<", name);
             for (i in v) {
-                if ((n=apf.jsonAttrConvert[i]) || i.charAt(0)=='@'){
-                    if(!n && !objAttr) objAttr = apf.jsonObjectAttrConvert[i.slice(1)];
+                if ((n=apf.json2xml_Attr[i]) || i.charAt(0)=='@'){
+                    if(!n && !objAttr) objAttr = apf.json2xml_ObjByAttr[i.slice(1)];
                     if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", v[i], "\"");
                 } else 
                    hasChild = true;
             }
             if (hasChild) {
                 if(!notag)xml.push(">");
-                if(t=(objAttr || apf.jsonObjectConvert[name])){
+                if(t=(objAttr || apf.json2xml_Obj[name])){
                     if(t==1) t = { child : name.replace(/(.*)s$/,"$1")||name, key : "name", value: "value"};
                     for (i in v) {
                         if(i.charAt(0)!='@'){
@@ -71,7 +71,10 @@ apf.json2Xml = (function(){
                             } else {
                                 xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
                                 if(t.value){
-                                 xml.push(t.value,"=\"",v[i],"\"/>");
+                                    if(t.value==1)
+                                        xml.push("/>");
+                                    else
+                                        xml.push(t.value,"=\"",v[i],"\"/>");
                                 }else
                                  xml.push(">",v[i],"</",t.child,">");
                             }
@@ -80,7 +83,7 @@ apf.json2Xml = (function(){
                     if(!notag)xml.push("</",name,">");
                 }else{
                     for (i in v) {
-                        if (!apf.jsonAttrConvert[i]){
+                        if (!apf.json2xml_Attr[i]){
                            if(i.match(/[^a-zA-Z0-9_-]/g)){
                                apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + i, "json2Xml");
                            }else
@@ -115,7 +118,7 @@ apf.xml2json = function (xml, noattrs) {
         if(!noattrs){
             if(m = (xml.attributes))
             for(u = 0,v = m.length; u < v; u++){
-              t = apf.jsonAttrConvert[w=m[u].nodeName] || ('@'+w);
+              t = apf.json2xml_Attr[w=m[u].nodeName] || ('@'+w);
               if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue;
             }        
         }
@@ -126,7 +129,7 @@ apf.xml2json = function (xml, noattrs) {
             var name = n.tagName;
             filled = true;
             
-            if(t = apf.jsonObjectConvert[name]){
+            if(t = apf.json2xml_Obj[name]){
                 o = {};
                 if(t==1)t={key:'name',value:'value'};
                 // lets enumerate the children
