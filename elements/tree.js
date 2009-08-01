@@ -411,6 +411,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             ? prefix + "_multiple" : "", [prefix + "_multiple"]);
         
         document.body.appendChild(this.oDrag);
+        
         if (!multiple)
             this.$updateNode(this.selected, this.oDrag);
         
@@ -463,7 +464,10 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
 
         while(el && el.nodeType == 1 
           && !el.getAttribute(apf.xmldb.htmlIdTag)) {
-            el = el.parentNode;
+            if (el.previousSibling && el.previousSibling.nodeType == 1) //@todo hack!! apf3.0 fix this.
+                el = el.previousSibling;
+            else
+                el = el.parentNode;
         }
 
         return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
@@ -910,7 +914,8 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
             this.$removeClearMessage(pContainer);
 
         pContainer.insertBefore(htmlNode, beforeNode);
-        pContainer.insertBefore(container, beforeNode);
+        if (container)
+            pContainer.insertBefore(container, beforeNode);
         
         /*if (!this.startcollapsed) {
             pContainer.style.display = "block";
@@ -1291,6 +1296,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
+        if (!this.$selected) return false;
         var x = this.$getLayoutNode("item", "caption", this.$selected);
         return x.nodeType == 1 ? x : x.parentNode;
     };

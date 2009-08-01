@@ -1343,6 +1343,11 @@ var apf = {
           .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
             function(m){ return m.toLowerCase(); });
 
+        /* @todo apf3.0 integrate this
+        x.ownerDocument.setProperty("SelectionNamespaces",
+                                "xmlns:a='" + apf.ns.aml + "'");
+        */
+
         if (!this.supportNamespaces)
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
 
@@ -1676,7 +1681,7 @@ var apf = {
 
                         //#ifdef __DEBUG
                         apf.console.info("Found a piece of aml. Assuming \
-                                          namespace prefix 'j'. Starting \
+                                          namespace prefix 'a'. Starting \
                                           parsing now.");
                         //#endif
 

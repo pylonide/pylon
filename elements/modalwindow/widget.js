@@ -64,7 +64,9 @@ apf.modalwindow.widget = function(){
         //htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
         htmlNode.parentNode.style.minHeight = (htmlNode.parentNode.offsetHeight - apf.getHeightDiff(htmlNode.parentNode)) + "px";
-        //apf.tween.fade(htmlNode, 0.8);
+        
+        if (!apf.hasStyleFilters)
+            apf.tween.fade(htmlNode, 0.8);
 
         apf.dragmode.mode = true; //simulate using dragmode
 
@@ -92,7 +94,8 @@ apf.modalwindow.widget = function(){
             if (!apf.supportOpacity)
                 htmlNode.style.filter = "";
 
-            apf.layout.forceResize(_self.oInt); //@todo recursive
+            if (_self.oInt)
+                apf.layout.forceResize(_self.oInt); //@todo recursive
 
             apf.dragmode.mode = null;
         };

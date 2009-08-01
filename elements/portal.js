@@ -373,8 +373,13 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
             var name = xmlNode.getAttribute("name");
 
+            //@todo apf3.0 clean this
+            xmlNode.ownerDocument.setProperty("SelectionNamespaces",
+                "xmlns:a='" + apf.ns.aml + "'");
+
             var parsing = apf.isParsing;
             apf.isParsing = true;
+            apf.AmlParser.parseFirstPass([xmlNode]);
             docklet.$loadAml(xmlNode, name);
             apf.AmlParser.parseLastPass();
             apf.isParsing = false;

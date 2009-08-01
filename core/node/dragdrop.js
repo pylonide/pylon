@@ -555,11 +555,14 @@ apf.DragDrop = function(){
                     oParent = oParent.offsetParent;
                 }
                 
+                //@todo apf3.0 what is this??
                 if (apf.isIE8) {
-                    var loopEl = srcEl;
-                    while (!loopEl.getAttribute(apf.xmldb.htmlIdTag)) {
+                    var loopEl = srcEl, lastId;
+                    while (loopEl && loopEl.nodeType == 1 && !(lastId = loopEl.getAttribute(apf.xmldb.htmlIdTag))) {
                         loopEl = loopEl.parentNode;
                     }
+                    if (!lastId)
+                        return;
                     var pos = apf.getAbsolutePosition(loopEl);
                 }
 
@@ -753,9 +756,9 @@ apf.DragServer = {
         if (amlNode.hasEventListener("dragdata"))
             data = amlNode.dispatchEvent("dragdata", {data : data});
         
-        for(var i = 0, l = data.length; i < l; i++) {
+        /*for(var i = 0, l = data.length; i < l; i++) {
             data[i] = apf.getCleanCopy(data[i]);
-        }
+        }*/
 
         this.dragdata = {
             rules       : srcRules,

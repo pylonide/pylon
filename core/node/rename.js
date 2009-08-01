@@ -188,8 +188,10 @@ apf.Rename = function(){
         this.oTxt.host         = this;
 
         //this.oTxt.focus();
-        this.oTxt.focus();
-        this.oTxt.select();
+        try{
+            this.oTxt.focus();
+            this.oTxt.select();
+        }catch(e){}
     };
 
     /**
