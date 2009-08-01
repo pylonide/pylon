@@ -113,6 +113,23 @@ apf.DataBinding = function(){
     };
 
     /**
+     * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
+     *
+     * @param  {String}  xpath  the xpath used to select a XMLNode.
+     * @param  {String}  value  the value to set.
+     * @return  {XMLNode}  the changed XMLNode
+     */
+    this.setQueryValue = function(xpath, value, type){
+        var node = apf.createNodeFromXpath(this[type || 'xmlRoot'], xpath);
+        if (!node)
+            return null;
+
+        apf.setNodeValue(node, value, true);
+        //apf.xmldb.setTextNode(node, value);
+        return node;
+    };
+
+    /**
      * Queries the bound data for a string value
      *
      * @param {String} xpath  the xpath statement which queries on the data this element is bound on.

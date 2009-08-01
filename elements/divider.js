@@ -26,7 +26,7 @@
  * @define divider
  * @constructor
  */
-apf.divider = apf.subnode(apf.NODE_HIDDEN, function() {
+apf.divider = apf.component(apf.NODE_VISIBLE, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;
@@ -54,14 +54,20 @@ apf.divider = apf.subnode(apf.NODE_HIDDEN, function() {
     /**
      * @private
      */
-    this.loadAml = function(x, parentNode) {
+    this.$loadAml = function(x) {
         this.$aml = x;
-        if (parentNode)
-            this.$setParent(parentNode);
 
-        this.skinName = this.parentNode.skinName;
-        this.oExt = apf.xmldb.htmlImport(
-            this.parentNode.$getLayoutNode("divider"), this.pHtmlNode);
+        var parentNode = this.parentNode;
+        if (parentNode.$hasLayoutNode && parentNode.$hasLayoutNode("divider")) {
+            this.skinName = this.parentNode.skinName;
+            this.oExt = apf.xmldb.htmlImport(
+                this.parentNode.$getLayoutNode("divider"), this.pHtmlNode);
+        }
+        else {
+            this.implement(apf.Presentation);
+            this.$loadSkin();
+            this.oExt = this.$getExternal("main");
+        } 
     }
 });
 
