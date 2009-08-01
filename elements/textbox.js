@@ -80,7 +80,9 @@
  */
 apf.input    =
 apf.secret   =
+apf.password =
 apf.textarea =
+apf.email    = // HTML5 email element
 apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.$focussable       = true; // This object can get the focus
     var masking            = false;
