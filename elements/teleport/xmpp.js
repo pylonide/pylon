@@ -149,7 +149,7 @@ apf.xmpp = function(){
      * @type  {String}
      * @private
      */
-    function createBodyTag(options, content) {
+    function createBodyElement(options, content) {
         var i, aOut = ["<body "];
 
         for (i in options) {
@@ -172,7 +172,7 @@ apf.xmpp = function(){
      * @type  {String}
      * @private
      */
-    function createStreamTag(prepend, options, content) {
+    function createStreamElement(options, content) {
         if (!options)
             options = {};
         var aOut = [getVar("SID") || "0", ","];
@@ -194,6 +194,9 @@ apf.xmpp = function(){
 
         return aOut.join("");
     }
+
+    this.createBodyElement   = createBodyElement;
+    this.createStreamElement = createStreamElement;
 
     /**
      * A cnonce parameter is used by the SASL implementation to do some
@@ -319,6 +322,10 @@ apf.xmpp = function(){
         aOut.push("<body>", body, "</body></message>");
         return aOut.join("");
     }
+
+    this.createIqBlock       = createIqBlock;
+    this.createPresenceBlock = createPresenceBlock;
+    this.createMessageBlock  = createMessageBlock;
 
     /**
      * Simple helper function to store session variables in the private space.
@@ -501,14 +508,14 @@ apf.xmpp = function(){
         getVar("roster").registerAccount(username, this.domain);
 
         this.doXmlRequest(processConnect, this.isPoll
-            ? createStreamTag(null, {
+            ? createStreamElement(null, {
                 doOpen         : true,
                 to             : _self.domain,
                 xmlns          : apf.xmpp.NS.jabber,
                 "xmlns:stream" : apf.xmpp.NS.stream,
                 version        : "1.0"
               })
-            : createBodyTag({
+            : createBodyElement({
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
                 rid            : getVar("RID"),
@@ -535,10 +542,10 @@ apf.xmpp = function(){
     this.disconnect = function() {
         if (getVar("connected")) {
             this.doXmlRequest(processDisconnect, this.isPoll
-                ? createStreamTag(null, {
+                ? createStreamElement(null, {
                     doClose: true
                   })
-                : createBodyTag({
+                : createBodyElement({
                       pause : 120,
                       rid   : getRID(),
                       sid   : getVar("SID"),
@@ -669,8 +676,8 @@ apf.xmpp = function(){
                     onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
                 //#endif
             }, _self.isPoll
-            ? createStreamTag(null, null, sIq)
-            : createBodyTag({
+            ? createStreamElement(null, null, sIq)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -700,8 +707,8 @@ apf.xmpp = function(){
             _self.doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
                 ? reOpenStream // skip a few steps...
                 : processAuthRequest, _self.isPoll
-                ? createStreamTag(null, null, sAuth)
-                : createBodyTag({
+                ? createStreamElement(null, null, sAuth)
+                : createBodyElement({
                       rid   : getRID(),
                       sid   : getVar("SID"),
                       xmlns : apf.xmpp.NS.httpbind
@@ -718,8 +725,8 @@ apf.xmpp = function(){
                     + getVar("username") + "</username></query>"
             );
             _self.doXmlRequest(processAuthRequest, _self.isPoll
-                ? createStreamTag(null, null, sIq)
-                : createBodyTag({
+                ? createStreamElement(null, null, sIq)
+                : createBodyElement({
                     rid   : getRID(),
                     sid   : getVar("SID"),
                     xmlns : apf.xmpp.NS.httpbind
@@ -841,8 +848,8 @@ apf.xmpp = function(){
                 charset     : getVar("charset")
             });
             _self.doXmlRequest(processFinalChallenge, _self.isPoll
-                ? createStreamTag(null, null, sAuth)
-                : createBodyTag({
+                ? createStreamElement(null, null, sAuth)
+                : createBodyElement({
                       rid   : getRID(),
                       sid   : getVar("SID"),
                       xmlns : apf.xmpp.NS.httpbind
@@ -874,8 +881,8 @@ apf.xmpp = function(){
                         + "</query>"
                 );
                 _self.doXmlRequest(reOpenStream, _self.isPoll
-                    ? createStreamTag(null, null, sIq)
-                    : createBodyTag({
+                    ? createStreamElement(null, null, sIq)
+                    : createBodyElement({
                         rid   : getRID(),
                         sid   : getVar("SID"),
                         xmlns : apf.xmpp.NS.httpbind
@@ -916,8 +923,8 @@ apf.xmpp = function(){
 
         var sAuth = createAuthBlock({});
         _self.doXmlRequest(reOpenStream, _self.isPoll
-            ? createStreamTag(null, null, sAuth)
-            : createBodyTag({
+            ? createStreamElement(null, null, sAuth)
+            : createBodyElement({
                   rid   : getRID(),
                   sid   : getVar("SID"),
                   xmlns : apf.xmpp.NS.httpbind
@@ -966,14 +973,14 @@ apf.xmpp = function(){
                     _self.bind();
                 }
             }, _self.isPoll
-            ? createStreamTag(null, {
+            ? createStreamElement(null, {
                 doOpen         : true,
                 to             : _self.domain,
                 xmlns          : apf.xmpp.NS.jabber,
                 "xmlns:stream" : apf.xmpp.NS.stream,
                 version        : "1.0"
               })
-            : createBodyTag({
+            : createBodyElement({
                   rid            : getRID(),
                   sid            : getVar("SID"),
                   to             : _self.domain,
@@ -1002,8 +1009,8 @@ apf.xmpp = function(){
           "</bind>"
         );
         this.doXmlRequest(processBindingResult, _self.isPoll
-            ? createStreamTag(null, null, sIq)
-            : createBodyTag({
+            ? createStreamElement(null, null, sIq)
+            : createBodyElement({
                   rid   : getRID(),
                   sid   : getVar("SID"),
                   xmlns : apf.xmpp.NS.httpbind
@@ -1048,8 +1055,8 @@ apf.xmpp = function(){
                     parseData(oXml);
                     setInitialPresence();
                 }, _self.isPoll
-                ? createStreamTag(null, null, sIq)
-                : createBodyTag({
+                ? createStreamElement(null, null, sIq)
+                : createBodyElement({
                     rid   : getRID(),
                     sid   : getVar("SID"),
                     xmlns : apf.xmpp.NS.httpbind
@@ -1084,8 +1091,8 @@ apf.xmpp = function(){
                 getRoster();
                 // #endif
             }, _self.isPoll
-            ? createStreamTag(null, null, sPresence)
-            : createBodyTag({
+            ? createStreamElement(null, null, sPresence)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1123,8 +1130,8 @@ apf.xmpp = function(){
                     unregister("login_callback");
                 }
             }, _self.isPoll
-            ? createStreamTag(null, null, sIq)
-            : createBodyTag({
+            ? createStreamElement(null, null, sIq)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1149,8 +1156,8 @@ apf.xmpp = function(){
         //#endif
 
         this.doXmlRequest(processStream, _self.isPoll
-            ? createStreamTag()
-            : createBodyTag({
+            ? createStreamElement()
+            : createBodyElement({
                   rid   : getRID(),
                   sid   : getVar("SID"),
                   xmlns : apf.xmpp.NS.httpbind
@@ -1402,7 +1409,7 @@ apf.xmpp = function(){
     this.setPresence = function(type, status, custom) {
         if (!getVar("connected")) return false;
 
-        this.doXmlRequest(restartListener, createBodyTag({
+        this.doXmlRequest(restartListener, createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1450,8 +1457,8 @@ apf.xmpp = function(){
         sPresence = aPresence.join("");
 
         this.doXmlRequest(restartListener, _self.isPoll
-            ? createStreamTag(null, null, sPresence)
-            : createBodyTag({
+            ? createStreamElement(null, null, sPresence)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1517,8 +1524,8 @@ apf.xmpp = function(){
 
                                 restartListener(data, state, extra);
                             }, _self.isPoll
-                                ? createStreamTag(null, null, sPresence)
-                                : createBodyTag({
+                                ? createStreamElement(null, null, sPresence)
+                                : createBodyElement({
                                     rid   : getRID(),
                                     sid   : getVar("SID"),
                                     xmlns : apf.xmpp.NS.httpbind
@@ -1528,16 +1535,16 @@ apf.xmpp = function(){
                         // all other events should run through the parseData()
                         // function and delegated to the Roster
                     }, _self.isPoll
-                    ? createStreamTag(null, null, sPresence)
-                    : createBodyTag({
+                    ? createStreamElement(null, null, sPresence)
+                    : createBodyElement({
                         rid   : getRID(),
                         sid   : getVar("SID"),
                         xmlns : apf.xmpp.NS.httpbind
                     }, sPresence)
                 );
             }, _self.isPoll
-            ? createStreamTag(null, null, sIq)
-            : createBodyTag({
+            ? createStreamElement(null, null, sIq)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1571,8 +1578,8 @@ apf.xmpp = function(){
                 to    : sJID
             });
             _self.doXmlRequest(restartListener, _self.isPoll
-                ? createStreamTag(null, null, sMsg)
-                : createBodyTag({
+                ? createStreamElement(null, null, sMsg)
+                : createBodyElement({
                     rid   : getRID(),
                     sid   : getVar("SID"),
                     xmlns : apf.xmpp.NS.httpbind
@@ -1586,8 +1593,8 @@ apf.xmpp = function(){
                 to    : sJID
             });
             _self.doXmlRequest(restartListener, _self.isPoll
-                ? createStreamTag(null, null, sPresence)
-                : createBodyTag({
+                ? createStreamElement(null, null, sPresence)
+                : createBodyElement({
                     rid   : getRID(),
                     sid   : getVar("SID"),
                     xmlns : apf.xmpp.NS.httpbind
@@ -1609,8 +1616,8 @@ apf.xmpp = function(){
             to    : oContact.jid
         });
         _self.doXmlRequest(restartListener, _self.isPoll
-            ? createStreamTag(null, null, sPresence)
-            : createBodyTag({
+            ? createStreamElement(null, null, sPresence)
+            : createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1727,7 +1734,7 @@ apf.xmpp = function(){
 
                 restartListener(data, state, extra);
             },
-            createBodyTag({
+            createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind

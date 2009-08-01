@@ -36,8 +36,63 @@
  * @type {Object}
  * @constructor
  */
-apf.xmpp_muc = function(){
-    // @todo
+apf.xmpp_muc = function(oXmpp){
+    var oRooms = {},
+        _self  = this;
+
+    this.queryRooms = function(sServer) {
+        
+    };
+
+    this.queryRoomInfo = function(sRoom) {
+        
+    };
+
+    this.getRoom = function() {
+
+    };
+
+    this.joinRoom = function(sNick, sPassword) {
+
+    };
+
+    this.leaveRoom = function(sMsg) {
+
+    };
+
+    this.changeNick = function() {
+
+    };
+
+    this.invite = function(sReason) {
+
+    };
+
+    this.declineInvite = function(sReason) {
+
+    };
+
+    this.moderate = function(action, options) {
+
+    };
+
+    this.createRoom = function() {
+
+    };
+
+    this.destroyRoom = function() {
+
+    };
+
+    // @todo: implement room registration as per JEP-77
+    // @todo: implement all moderator features
+    // @todo: implement all admin & owner features
 };
+
+apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
+apf.xmpp_muc.ACTION_KICK    = 0x0002;
+apf.xmpp_muc.ACTION_BAN     = 0x0004;
+apf.xmpp_muc.ACTION_GRANT   = 0x0008;
+apf.xmpp_muc.ACTION_REVOKE  = 0x0010;
 
 // #endif
