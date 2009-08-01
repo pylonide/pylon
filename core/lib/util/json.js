@@ -113,24 +113,30 @@ apf.json2Xml = (function(){
 
 apf.xml2json = function (xml, noattrs) {
         // alright! lets go and convert our xml back to json.
-        var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t; 
-        
+        var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t,name; 
+
         if(!noattrs){
-            if(m = (xml.attributes))
-            for(u = 0,v = m.length; u < v; u++){
+            if(m = (xml.attributes))for(u = 0,v = m.length; u < v; u++){
               t = apf.json2xml_Attr[w=m[u].nodeName] || ('@'+w);
               if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue;
-            }        
+            }
         }
 
         for (var i = 0, j = nodes.length;i<j; i++) {
             if ((n = nodes[i]).nodeType != 1)
                 continue;
-            var name = n.tagName;
+             name = n.tagName;
             filled = true;
+
+            // scan for our special attribute
+            s = null,o = {};
+
+            if(m = (n.attributes))for(u = 0,v = m.length; u < v; u++){
+                if(s = apf.json2xml_ObjByAttr[w = m[u].nodeName])
+                    o['@'+w] = m[u].nodeValue;
+            }
             
-            if(t = apf.json2xml_Obj[name]){
-                o = {};
+            if(t = s || apf.json2xml_Obj[name]){
                 if(t==1)t={key:'name',value:'value'};
                 // lets enumerate the children
                 for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
