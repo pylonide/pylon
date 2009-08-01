@@ -31,7 +31,7 @@
  
 apf.jsonObjectConvert  = {};
 apf.jsonAttrConvert = {};
-
+apf.jsonObjectAttrConvert = {};
  
 apf.json2Xml = (function(){
     var jsonToXml = function (v, name, xml, notag) {
@@ -48,29 +48,33 @@ apf.json2Xml = (function(){
                 jsonToXml(v[i],name,xml);
         }
         else if (typeof v == "object") {
-            var hasChild = false;
+            var hasChild = false, objAttr = null;
+            
             if(!notag)xml.push("<", name);
             for (i in v) {
                 if ((n=apf.jsonAttrConvert[i]) || i.charAt(0)=='@'){
+                    if(!n && !objattr) objAttr = apf.jsonObjectAttrConvert[i.slice(1)];
                     if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", v[i], "\"");
                 } else 
                    hasChild = true;
             }
             if (hasChild) {
                 if(!notag)xml.push(">");
-                if(t=apf.jsonObjectConvert[name]){
+                if(t=(objAttr || apf.jsonObjectConvert[name])){
                     if(t==1) t = { child : name.replace(/(.*)s$/,"$1")||name, key : "name", value: "value"};
                     for (i in v) {
-                        if( typeof(m = v[i]) =='object'){
-                            xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
-                            jsonToXml(m, i,xml,true);
-                            xml.push("</",t.child,">");
-                        } else {
-                            xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
-                            if(t.value){
-                             xml.push(t.value,"=\"",v[i],"\"/>");
-                            }else
-                             xml.push(">",v[i],"</",t.child,">");
+                        if(i.charAt(0)!='@'){
+                            if( typeof(m = v[i]) =='object'){
+                                xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
+                                jsonToXml(m, i,xml,true);
+                                xml.push("</",t.child,">");
+                            } else {
+                                xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
+                                if(t.value){
+                                 xml.push(t.value,"=\"",v[i],"\"/>");
+                                }else
+                                 xml.push(">",v[i],"</",t.child,">");
+                            }
                         }
                     }
                     if(!notag)xml.push("</",name,">");
@@ -99,6 +103,7 @@ apf.json2Xml = (function(){
           : strJson,
             xml = [], i;
         jsonToXml(o,"jsondoc", xml, false);
+        
         return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, preserveWhiteSpace);
     };
 })();
