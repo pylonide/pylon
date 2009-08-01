@@ -52,7 +52,7 @@ apf.json2Xml = (function(){
             if(!notag)xml.push("<", name);
             for (i in v) {
                 if (n=apf.jsonAttrConvert[i]){
-                    if(!notag)xml.push(" ", i, "=\"", v[i], "\"");
+                    if(!notag)xml.push(" ", n, "=\"", v[i], "\"");
                 } else 
                    hasChild = true;
             }
@@ -103,17 +103,18 @@ apf.json2Xml = (function(){
     };
 })();
 
-apf.xml2json = function (xml, attrout) {
+apf.xml2json = function (xml, noattrs) {
         // alright! lets go and convert our xml back to json.
         var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t; 
         
-        if(attrout != 1){
+        if(!noattrs){
             if(m = (xml.attributes))
             for(u = 0,v = m.length; u < v; u++){
-              if(apf.jsonAttrConvert[t=m[u].nodeName])
-                 (attrout||out)[t] = m[u].nodeValue;
+              if(t=apf.jsonAttrConvert[m[u].nodeName])
+                 out[t] = m[u].nodeValue;
             }        
         }
+
         for (var i = 0, j = nodes.length;i<j; i++) {
             if ((n = nodes[i]).nodeType != 1)
                 continue;
@@ -129,7 +130,7 @@ apf.xml2json = function (xml, attrout) {
                         o[w] = s.getAttribute(t.value||'value') || apf.xml2json(s,1);
                 }
             }else{
-                o =  apf.xml2json( n, out );
+                o =  apf.xml2json( n );
             }
             if(out[name] !== undefined){
                 if((s=out[name]).dataType!='array')
