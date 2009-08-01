@@ -63,8 +63,9 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$supportedProperties.push("caption", "url");
     this.$propHandlers["caption"] = function(value){
-        if (this.oCaption) 
-            this.oCaption.nodeValue = value;
+        if (!this.oCaption) return;
+        
+        this.oCaption.innerHTML = value;
     };
     
     /**
@@ -80,10 +81,7 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.$propHandlers["url"] = function(value){
-        var node = this.oCaption.nodeType == 1 
-            ? this.oCaption 
-            : this.oCaption.parentNode;
-        
+        var node = this.oCaption;
         if (node.tagName == "A") node = node.parentNode;
         node.innerHTML = "<a href='" + value + "' " 
             + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
@@ -109,6 +107,12 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
+
+        if (this.oCaption) {
+            this.oCaption = this.oCaption.nodeType == 1 
+                ? this.oCaption 
+                : this.oCaption.parentNode;
+        }
         
         this.oInt = this.oInt 
             ? apf.AmlParser.replaceNode(oInt, this.oInt) 
