@@ -39,8 +39,8 @@ apf.modalwindow.widget = function(){
         if (_self.state.indexOf("maximized") > -1 || !_self.draggable)
             return;
 
-        nX = _self.oExt.offsetLeft - e.clientX;
-        nY = _self.oExt.offsetTop - e.clientY;
+        nX = _self.oExt.offsetLeft - e.clientX - document.documentElement.scrollLeft;
+        nY = _self.oExt.offsetTop - e.clientY - document.documentElement.scrollTop;
 
         var htmlNode = _self.oExt;
         var p        = _self.positionHolder;
@@ -63,6 +63,7 @@ apf.modalwindow.widget = function(){
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
         //htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
+        htmlNode.parentNode.style.minHeight = (htmlNode.parentNode.offsetHeight - apf.getHeightDiff(htmlNode.parentNode)) + "px";
         //apf.tween.fade(htmlNode, 0.8);
 
         apf.dragmode.mode = true; //simulate using dragmode
@@ -79,6 +80,8 @@ apf.modalwindow.widget = function(){
             //htmlNode.style.height = lastSize[1];
             htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 1;
             //htmlNode.parentNode.style.position = "static";
+
+            htmlNode.parentNode.style.minHeight = ""; //@todo apf3.0 animate here
 
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
@@ -131,8 +134,8 @@ apf.modalwindow.widget = function(){
         if (!e) e = event;
 
         _self.oExt.style.top = "10000px";
-        var ex  = e.clientX + document.documentElement.scrollLeft;
-        var ey  = e.clientY + document.documentElement.scrollTop;
+        var ex  = e.clientX;// + document.documentElement.scrollLeft;
+        var ey  = e.clientY;// + document.documentElement.scrollTop;
         var el  = document.elementFromPoint(ex, ey);
         
         if (el) {
@@ -150,8 +153,8 @@ apf.modalwindow.widget = function(){
             }
         }
         
-        _self.oExt.style.left = (e.clientX + nX) + "px";
-        _self.oExt.style.top  = (e.clientY + nY) + "px";
+        _self.oExt.style.left = (e.clientX + nX + document.documentElement.scrollLeft) + "px";
+        _self.oExt.style.top  = (e.clientY + nY + document.documentElement.scrollTop) + "px";
 
         e.cancelBubble = true;
     };
