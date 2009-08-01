@@ -126,9 +126,10 @@ apf.rest = function(){
     this.$load = function(x){
         var q = x.childNodes;
         for (var i = 0, l = q.length; i < l; i++) {
+            if (q[i].nodeType != 1) continue;
             reqMethods.push[q[i].getAttribute("name")] = {
                 method : (q[i].getAttribute("http-method") || "GET").toUpperCase(),
-                type   : q[i].getAtribute("content-type")  || ""
+                type   : q[i].getAttribute("content-type")  || ""
             }
         }
     };

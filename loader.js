@@ -281,7 +281,8 @@ apf.TelePortModules = [
     //"ext/soap.js",      // SOAP
     "ext/jsonrpc.js",     // JSON
     //"ext/jphp.js",      // JPHP
-    "ext/cgi.js"          // CGI
+    "ext/cgi.js",         // CGI
+    "ext/rest.js"         // REST
 ]
 
 apf.Init.addConditional(function(){
