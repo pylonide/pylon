@@ -63,7 +63,7 @@ apf.modalwindow.widget = function(){
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
         //htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
-        apf.tween.fade(htmlNode, 0.8);
+        //apf.tween.fade(htmlNode, 0.8);
 
         apf.dragmode.mode = true; //simulate using dragmode
 

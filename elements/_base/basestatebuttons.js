@@ -366,6 +366,10 @@ apf.BaseStateButtons = function(){
                             },
                             onfinish : function(){
                                 _self.animstate = 0;
+                                
+                                _self.dispatchEvent("afterstatechange", {
+                                  from : lastState, 
+                                  to   : o});
                             }
                         });
                     }
@@ -426,9 +430,11 @@ apf.BaseStateButtons = function(){
             if (styleClass.length)
                 this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
 
-            _self.dispatchEvent("afterstatechange", {
-              from : lastState, 
-              to   : o});
+            if (!o.maximized || lastState.maximized && _self.animate) {
+                _self.dispatchEvent("afterstatechange", {
+                  from : lastState, 
+                  to   : o});
+            }
             
             this.$lastState = o;
 

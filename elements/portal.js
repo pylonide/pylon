@@ -179,7 +179,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             apf.destroyHtmlNode(col);
         }
         
-        for (var col, size, i = 0; i < columns.length; i++) {
+        for (var last, col, size, i = 0; i < columns.length; i++) {
             size = columns[i];
             if (!this.$columns[i]) {
                 this.$getNewContext("column");
@@ -191,10 +191,12 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             }
             else col = this.$columns[i];
             
-            this.$setStyleClass(col, i == columns.length -1 
+            this.$setStyleClass(col, (last = (i == columns.length - 1)) 
                 ? "collast" : "", ["collast"]);
 
-            col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");
+            size.match(/(%|px|pt)/);
+            var unit = RegExp.$1 || "px";
+            col.style.width = (parseInt(size) - (apf.isIE < 8 && last ? 1 : 0)) + unit;
         }
     }
     
@@ -367,7 +369,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
                     return id + "_" + uId;
                   });
             }
-            
+
             var xmlNode = apf.getAmlDocFromString(strXml).documentElement;
             var name = xmlNode.getAttribute("name");
 
@@ -430,7 +432,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         else {
             docklet = new apf.modalwindow(pHtmlNode, "window");
             docklet.implement(apf.modalwindow.widget);
-    
+
             docklet.parentNode = _self;
             docklet.implement(apf.AmlDom);
             
@@ -488,6 +490,11 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
             + this.applyRuleSetOnNode("url", dataNode);
 
+        if (!pHtmlNode) {
+            throw new Error(apf.formatErrorString(0, this, "Building docklet",
+                "Cannot find column to hook docklet on. Seems like a timing error"));
+        }
+
         var docklet = getDockwin(dataNode, pHtmlNode);
 
         if (xml_cache[srcUrl]) {
@@ -534,6 +541,14 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     this.$fill = function(){
         
     };
+    
+    this.addEventListener("beforeload", function(e){
+        if (!this.$columns.length) {
+            var cols = this.applyRuleSetOnNode("columns", e.xmlNode)
+            if (cols && cols != this.columns)
+                this.setProperty("columns", cols);
+        }
+    });
     
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/))

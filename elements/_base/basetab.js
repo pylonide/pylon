@@ -164,8 +164,9 @@ apf.BaseTab = function(){
                         _self.setProperty("loading", false);
                     }
                     
-                    _self.add(null, null, "<a:page xmlns:a='" + apf.ns.apf 
-                        + "' id='" + next + "'>" + data + "</a:page>");
+                    var jml = apf.getAmlDocFromString("<a:page xmlns:a='" + apf.ns.apf 
+                        + "' id='" + next + "'>" + data + "</a:page>").documentElement;
+                    _self.add(null, null, jml);
                     _self.setProperty("activepage", next);
                     
                     if (callback) 

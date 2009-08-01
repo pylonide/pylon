@@ -141,7 +141,7 @@ apf.http = function(){
     this.saveCache = function(){
         // #ifdef __DEBUG
         if (!apf.serialize)
-            throw new Error(apf.formatErrorMessage(1079, this,
+            throw new Error(apf.formatErrorString(1079, this,
                 "HTTP save cache",
                 "Could not find JSON library."));
         // #endif
