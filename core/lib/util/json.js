@@ -51,8 +51,8 @@ apf.json2Xml = (function(){
             var hasChild = false;
             if(!notag)xml.push("<", name);
             for (i in v) {
-                if (n=apf.jsonAttrConvert[i]){
-                    if(!notag)xml.push(" ", n, "=\"", v[i], "\"");
+                if (n=apf.jsonAttrConvert[i] || i.charAt(0)=='@'){
+                    if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", v[i], "\"");
                 } else 
                    hasChild = true;
             }
@@ -110,8 +110,8 @@ apf.xml2json = function (xml, noattrs) {
         if(!noattrs){
             if(m = (xml.attributes))
             for(u = 0,v = m.length; u < v; u++){
-              if(t=apf.jsonAttrConvert[m[u].nodeName])
-                 out[t] = m[u].nodeValue;
+              t = apf.jsonAttrConvert[w=m[u].nodeName] || ('@'+w);
+              if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue;
             }        
         }
 
