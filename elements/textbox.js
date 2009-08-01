@@ -455,8 +455,9 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
             var mask = this.$aml.getAttribute("mask");
+            if ("secret|password".indexOf(this.tagName) > -1)
+                this.$aml.setAttribute("type", "password");
             if ((typeof mask == "string" && mask.toLowerCase() == "password")
-              || "secret|password".indexOf(this.tagName) > -1
               || this.$aml.getAttribute("type") == "password") {
                 this.$aml.removeAttribute("mask");
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
