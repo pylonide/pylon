@@ -877,8 +877,10 @@ apf.DragServer = {
         var candrop = (o.isDropAllowed && o.xmlRoot)
           ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot) : false;
          
-        if (this.dragdata.indicator)
+        if (this.dragdata.indicator) {
+            var lastTop = this.dragdata.indicator.style.top;
             this.dragdata.indicator.style.top = "10000px";
+        }
          
         if (!candrop) 
             candrop = apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
@@ -912,6 +914,9 @@ apf.DragServer = {
                 }
             }
         }
+        
+        if (this.dragdata.indicator)
+            this.dragdata.indicator.style.top = lastTop;
 
         //Exit if not allowed
         if (!candrop) {

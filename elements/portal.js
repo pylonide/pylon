@@ -196,7 +196,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
             size.match(/(%|px|pt)/);
             var unit = RegExp.$1 || "px";
-            col.style.width = (parseInt(size) - (apf.isIE < 8 && last ? 1 : 0)) + unit;
+            col.style.width = (parseInt(size) - (apf.isIE && apf.isIE < 8 && last ? 1 : 0)) + unit;
         }
     }
     
