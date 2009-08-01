@@ -103,10 +103,10 @@ apf.runIE = function(){
                     try {
                         xmlParser = apf.json2Xml(message, noError);
                     }
-                    catch(e) {
+                   catch(e) {
                         throw new Error(apf.formatErrorString(1051, null,
-                            "JSON to XML conversion error occurred.",
-                            "\nSource Text : " + message.replace(/\t/gi, " ")));
+                           "JSON to XML conversion error occurred."+e.message,
+                           "\nSource Text : " + message.replace(/\t/gi, " ")));
                     }
                 }
                 else

@@ -51,7 +51,7 @@ apf.json2Xml = (function(){
             var hasChild = false;
             if(!notag)xml.push("<", name);
             for (i in v) {
-                if (n=apf.jsonAttrConvert[i] || i.charAt(0)=='@'){
+                if ((n=apf.jsonAttrConvert[i]) || i.charAt(0)=='@'){
                     if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", v[i], "\"");
                 } else 
                    hasChild = true;
