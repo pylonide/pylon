@@ -1043,7 +1043,7 @@ apf.model = function(data, caching){
     this.serialize = function(type) {
         if (!type)
             return this.data.xml;
-        
+
         return apf.convertXml(this.data, type);
     };
 

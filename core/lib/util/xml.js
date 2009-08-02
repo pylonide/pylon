@@ -437,7 +437,7 @@ apf.convertMethods = {
      * @return  {Object}  the created JSON object
      */
     "json": function(xml){
-        return apf.xml2json(xml);
+        return JSON.stringify(apf.xml2json(xml));
         /*
         var result = {}, filled = false, nodes = xml.childNodes;
         for (var i = 0; i < nodes.length; i++) {

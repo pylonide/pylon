@@ -140,7 +140,8 @@ apf.xml2json = function (xml, noattrs) {
                 if(t==1)t={key:'name',value:'value'};
                 // lets enumerate the children
                 for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
-                    if(w=(s=cn[u]).getAttribute(t.key))
+                    if ((s = cn[u]).nodeType != 1) continue;
+                    if(w=s.getAttribute(t.key))
                         o[w] = s.getAttribute(t.value||'value') || apf.xml2json(s,1);
                 }
             }else{

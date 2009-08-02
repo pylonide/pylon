@@ -447,7 +447,7 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
      * a parser to recreate a copy of this node and it's children.
      * @return {String} the string representation of this element.
      */
-    this.serialize = function(returnXml, skipFormat, onlyMe){
+    this.toAmlString = function(returnXml, skipFormat, onlyMe){
         var node = this.$aml.cloneNode(false);
         for (var name, i = 0; i < (this.$supportedProperties || []).length; i++) {
             name = this.$supportedProperties[i];

@@ -220,7 +220,7 @@ apf.http = function(){
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
      */
-    this.get = function(url, callback, options, id){
+    this.get = this.$get = function(url, callback, options, id){
         if (!options)
             options = {};
 

@@ -188,7 +188,7 @@ apf.rpc = function(){
 
         // Sent the request
         var url  = apf.getAbsolutePath(this.baseurl, this.url);
-        var info = this.get(url, pCallback, apf.extend({
+        var info = this.$get(url, pCallback, apf.extend({
             async    : this[name].async,
             userdata : this[name].userdata,
             nocache  : true,
@@ -221,7 +221,7 @@ apf.rpc = function(){
             url = url + (url.match(/\?/) ? "&" : "?") + vars.join("&");
         }
 
-        var info = this.get(url, callback, {
+        var info = this.$get(url, callback, {
             async    : async,
             userdata : userdata,
             nocache  : true,
