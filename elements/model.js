@@ -1061,6 +1061,7 @@ apf.model = function(data, caching){
      * @todo: PUT ??
      * @todo: build in instruction support
      */
+     //@todo rewrite this for apf3.0
     this.submit = function(instruction, xmlNode, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
         /*if (!this.isValid()) {
@@ -1211,7 +1212,7 @@ apf.model = function(data, caching){
                 : apf.convertXml(apf.xmldb.getCleanCopy(xmlNode), 
                     type != "native" ? type : "cgivars");
 
-            if (instruction.match(/^rpc\:/)) {
+            /*if (instruction.match(/^rpc\:/)) {
                 var rpc  = rpc.split("."),
                     oRpc = self[rpc[0]];
                 oRpc.callWithString(rpc[1], data, cbFunc);
@@ -1219,12 +1220,12 @@ apf.model = function(data, caching){
                 //Find components with the same name
                 //Set arguments and call method
             }
-            else {
+            else {*/
                 if (instruction.match(/^url/))
                     instruction += (instruction.match(/\?/) ? "&" : "?") + data;
 
                 apf.saveData(instruction, xmlNode, null, cbFunc);
-            }
+            //}
         }
 
         this.dispatchEvent("aftersubmit");
