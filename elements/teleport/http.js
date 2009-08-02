@@ -414,6 +414,11 @@ apf.http = function(){
                         ? apf.getNoCacheUrl(httpUrl)
                         : httpUrl), async);
 
+                    http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                    if (!options.headers || !options.headers["Content-type"])
+                        http.setRequestHeader("Content-type", this.contentType
+                            || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
+
                     this.queue[id].http = http;
                     options.async     = true; //force async
                     useOtherXH        = true;

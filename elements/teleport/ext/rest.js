@@ -111,6 +111,8 @@ apf.rest = function(){
             url;
 
         this.method = options.method;
+        if (options.type)
+            this.contentType = options.type;
 
         this.url    = (url = this.urls[functionName]
             ? this.urls[functionName]
