@@ -49,7 +49,7 @@ apf.validator = {
         var m = this.macro, s = ["var temp, valid = true; \
             if (!validityState) \
                 validityState = new apf.validator.validityState(); "];
-        
+
         if (options.required) {
             s.push("if (checkRequired && (!value || value.toString().trim().length == 0)) {\
                 validityState.$reset();\
@@ -403,6 +403,7 @@ apf.Validation = function(){
     //#ifdef __PARSER_XSD
     this.$propHandlers["datatype"]   =
     //#endif
+    this.$propHandlers["required"]    = 
     this.$propHandlers["pattern"]    = 
     this.$propHandlers["min"]        = 
     this.$propHandlers["max"]        = 

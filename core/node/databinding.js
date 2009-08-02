@@ -2122,6 +2122,7 @@ apf.DataBinding = function(){
 
         var xmlNode = apf.nameserver.get("bindings", value);
         sb.addBindings(apf.getRules(xmlNode), xmlNode);
+        sb.markForUpdate(this, "bindings"); //@todo apf3.0 - dynamically bindings setting
     };
 
     /**

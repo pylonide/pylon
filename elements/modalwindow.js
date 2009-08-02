@@ -357,10 +357,8 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             // #endif
 
             if (this.oCover){
-                /*this.oCover.style.height = Math.max(document.body.scrollHeight,
-                    document.documentElement.offsetHeight) + 'px';
-                this.oCover.style.width  = Math.max(document.body.scrollWidth,
-                    document.documentElement.offsetWidth) + 'px';*/
+                this.oCover.style.height = this.oCover.offsetParent.scrollHeight + 'px';
+                this.oCover.style.width  = this.oCover.offsetParent.scrollWidth + 'px';
                 this.oCover.style.display = "block";
             }
 
