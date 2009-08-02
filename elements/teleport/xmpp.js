@@ -1352,6 +1352,7 @@ apf.xmpp = function(){
                     incomingAdd(aPresence[i].getAttribute("from"));
                 }
                 // record any status change...
+                apf.console.log("new status: " + sType + ", default: " + apf.xmpp.TYPE_AVAILABLE)
                 if (oUser)
                     oRoster.update(oUser, sType || apf.xmpp.TYPE_AVAILABLE);
             }

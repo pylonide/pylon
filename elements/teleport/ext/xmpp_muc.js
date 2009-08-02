@@ -86,24 +86,20 @@ apf.xmpp_muc = function(){
     };
 
     this.$addRoom = function(sJID, sName) {
-        
-        oRooms[sJID] = {
-            name     : sName,
-            occupants: []
-        };
+        return oRoster.getEntityByJID(sJID, sName);
     };
 
     this.$isRoom = function(sJID) {
-        return Boolean(oRooms[sJID]);
+        var parts = sJID.replace(/\/.*$/, "").split("@");
+        return oRoster.getItem(parts[0], parts[1], null, true) ? true : false;
     }
 
-    this.$addRoomContact = function(sRoom, sJID) {
-        if (!oRooms[sRoom]) return;
-        oRooms[sRoom].occupants.pushUnique(sJID);
+    this.$addRoomContact = function(sJID) {
+        return oRoster.getEntityByJID(sJID);
     }
 
     this.queryRoomInfo = function(sRoom) {
-        
+        // todo
     };
 
     this.getRoom = function(sRoom) {
