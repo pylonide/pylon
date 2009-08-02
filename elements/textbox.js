@@ -102,8 +102,9 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
 
     /**
      * @attribute {String} value the text of this element
+     * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
-    this.$propHandlers["value"] = function(value, initial){
+    this.$propHandlers["value"] = function(value, prop, initial){
         // Set Value
         if (this.isHTMLBox) {
             if (this.oInt.innerHTML != value)
@@ -211,7 +212,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             if (apf.hasFocusBug)
                 this.oInt.onblur();
             //#endif
-            this.$propHandlers["value"].call(this, this.initialMsg, true);
+            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
         }
     };
 
@@ -320,7 +321,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         this.value = "";//@todo what about property binding?
         
         if (this.initialMsg && apf.window.focussed != this) {
-            this.$propHandlers["value"].call(this, this.initialMsg, true);
+            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
             apf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
         }
         else {
@@ -383,7 +384,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
         if (this.initialMsg && this.oInt.value == this.initialMsg) {
-            this.$propHandlers["value"].call(this, "", true);
+            this.$propHandlers["value"].call(this, "", null, true);
             apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Initial"]);
         }
         
@@ -424,7 +425,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
 
         if (this.initialMsg && this.oInt.value == "") {
-            this.$propHandlers["value"].call(this, this.initialMsg, true);
+            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
             apf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
         }
 
@@ -465,11 +466,11 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             //#ifdef __WITH_HTML5
             else if (this.tagName == "email") {
                 this.datatype = "apf:email";
-                this.$propHandlers["datatype"].call(this, "apf:email");
+                this.$propHandlers["datatype"].call(this, "apf:email", "datatype");
             }
             else if (this.tagName == "url") {
                 this.datatype = "apf:url";
-                this.$propHandlers["datatype"].call(this, "apf:url");
+                this.$propHandlers["datatype"].call(this, "apf:url", "datatype");
             }
             //#endif
 

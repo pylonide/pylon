@@ -403,7 +403,7 @@ apf.Validation = function(){
     //#ifdef __PARSER_XSD
     this.$propHandlers["datatype"]   =
     //#endif
-    this.$propHandlers["required"]    = 
+    this.$propHandlers["required"]   = 
     this.$propHandlers["pattern"]    = 
     this.$propHandlers["min"]        = 
     this.$propHandlers["max"]        = 
