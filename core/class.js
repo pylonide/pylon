@@ -582,7 +582,7 @@ apf.Class = function(){
      */
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue;
-        
+
         /* #ifdef __WITH_EDITMODE
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
         #endif */

@@ -91,14 +91,14 @@
         "pack"     : "(function(){var s=[];",
         "pack_"    : "return s.join('');})()",
         "value"    : "((_v=(",
-        "value_"   : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')",
+        "value_"   : "))?(_v.nodeType==1?_v.firstChild||n:_v).nodeValue:'')",//@todo apf3.0 all wrong -> ||n
         "_value"   : "",
-        "_value_"  : "(n?(n.nodeType==1?n.firstChild:n).nodeValue:'')",
+        "_value_"  : "(n?(n.nodeType==1?n.firstChild||n:n).nodeValue:'')",//@todo apf3.0 all wrong -> ||n
         "xvalue"   : "(n?((_v=n.selectSingleNode(",
-        "xvalue_"  : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')",
+        "xvalue_"  : "))?(_v.nodeType==1?_v.firstChild||n:_v).nodeValue:''):'')",//@todo apf3.0 all wrong -> ||n
         "xvalue_1" : "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
         "xvalue_2" : "\"])?_v.data:0)?_v.selectSingleNode(",
-        "xvalue_3" : "):0)?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')",
+        "xvalue_3" : "):0)?(_v.nodeType==1?_v.firstChild||n:_v).nodeValue:'')", //@todo apf3.0 all wrong -> ||n
         "values"   : "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
         "values_"  : "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l;n=_a[++_i])_n[_n.length]=(n.nodeType==1?n.firstChild:n).nodeValue;return _n;})()",
         "_values"  : "",
