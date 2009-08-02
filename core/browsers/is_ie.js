@@ -231,7 +231,7 @@ apf.runIE = function(){
             var nodes = this.nodes[id];
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].getAttribute("find"))
-                    nodes[i].style.backgroundImage = nodes[i].getAttribute("find");
+                    nodes[i].style.backgroundImage = nodes[i].getAttribute("find").trim(); //@todo apf3.0 why is this needed?
             }
             this.nodes[id] = null;
         };
