@@ -110,7 +110,7 @@ apf.xmpp = function(){
     this.oModel         = null;
     this.modelContent   = null;
     this.TelePortModule = true;
-    this.isPoll         = false;
+    this.$isPoll         = false;
 
     if (!this.uniqueId) {
         apf.makeClass(this);
@@ -195,9 +195,6 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    this.createBodyElement   = createBodyElement;
-    this.createStreamElement = createStreamElement;
-
     /**
      * A cnonce parameter is used by the SASL implementation to do some
      * additional client-server key exchange. You can say that this is the
@@ -268,7 +265,7 @@ apf.xmpp = function(){
      * @type  {String}
      * @private
      */
-    function createPresenceBlock(options) {
+    function createPresenceBlock(options, content) {
         var aOut = ["<presence xmlns='", apf.xmpp.NS.jabber, "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
@@ -287,6 +284,8 @@ apf.xmpp = function(){
         // user is doing/ feels like currently.
         if (options.custom)
             aOut.push("<status>", options.custom, "</status>");
+
+        aOut.push(content || "");
 
         aOut.push("</presence>");
         return aOut.join("");
@@ -322,10 +321,6 @@ apf.xmpp = function(){
         aOut.push("<body>", body, "</body></message>");
         return aOut.join("");
     }
-
-    this.createIqBlock       = createIqBlock;
-    this.createPresenceBlock = createPresenceBlock;
-    this.createMessageBlock  = createMessageBlock;
 
     /**
      * Simple helper function to store session variables in the private space.
@@ -382,6 +377,16 @@ apf.xmpp = function(){
         return register("RID", getVar("RID") + 1);
     }
 
+    // expose functions to interfaces:
+    this.$makeUnique          = makeUnique;
+    this.$createBodyElement   = createBodyElement;
+    this.$createStreamElement = createStreamElement;
+    this.$createIqBlock       = createIqBlock;
+    this.$createPresenceBlock = createPresenceBlock;
+    this.$createMessageBlock  = createMessageBlock;
+    this.$getVar              = getVar;
+    this.$getRID              = getRID;
+
     /**
      * Generic function that provides a basic method for making HTTP calls to
      * the XMPP server and processing the response in retries, error messages
@@ -396,10 +401,10 @@ apf.xmpp = function(){
      * @exception {Error}    A general Error object
      * @type      {XMLHttpRequest}
      */
-    this.doXmlRequest = function(callback, body) {
+    this.$doXmlRequest = function(callback, body) {
         return this.get(this.server,
             function(data, state, extra) {
-                if (_self.isPoll) {
+                if (_self.$isPoll) {
                     if (!data || data.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") {
                         //state = apf.ERROR;
                         //extra.message = (extra.message ? extra.message + "\n" : "")
@@ -437,7 +442,7 @@ apf.xmpp = function(){
                     callback.call(_self, data, state, extra);
             }, {
                 nocache       : true,
-                useXML        : !this.isPoll,
+                useXML        : !this.$isPoll,
                 ignoreOffline : true,
                 data          : body || ""
             });
@@ -507,7 +512,7 @@ apf.xmpp = function(){
         register("register",       reg || this.autoRegister);
         getVar("roster").registerAccount(username, this.domain);
 
-        this.doXmlRequest(processConnect, this.isPoll
+        this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement(null, {
                 doOpen         : true,
                 to             : _self.domain,
@@ -537,11 +542,13 @@ apf.xmpp = function(){
      * 'pause' attribute when using BOSH. Poll-based connection only need to
      * stop polling.
      *
+     * @param {Function} callback Data instruction callback
      * @type {void}
      */
-    this.disconnect = function() {
+    this.disconnect = function(callback) {
         if (getVar("connected")) {
-            this.doXmlRequest(processDisconnect, this.isPoll
+            register("logout_callback", callback);
+            this.$doXmlRequest(processDisconnect, this.$isPoll
                 ? createStreamElement(null, {
                     doClose: true
                   })
@@ -555,6 +562,7 @@ apf.xmpp = function(){
         }
         else {
             this.reset();
+            callback(null, apf.SUCCESS);
         }
     };
 
@@ -610,7 +618,7 @@ apf.xmpp = function(){
             return onError(apf.xmpp.ERROR_CONN, extra.message, state);
 
         //apf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
-        if (!this.isPoll) {
+        if (!this.$isPoll) {
             register("SID", oXml.getAttribute("sid"));
             register("AUTH_ID", oXml.getAttribute("authid"));
         }
@@ -659,7 +667,7 @@ apf.xmpp = function(){
                 + getVar("username") + "</username><password>"
                 + getVar("password") + "</password></query>"
         );
-        _self.doXmlRequest(function(oXml) {
+        _self.$doXmlRequest(function(oXml) {
                 if (oXml && oXml.nodeType) {
                     var iq = oXml.getElementsByTagName("iq")[0];
                     if ((iq && iq.getAttribute("type") == "error")
@@ -672,10 +680,10 @@ apf.xmpp = function(){
                     doAuthRequest();
                 }
                 //#ifdef __DEBUG
-                else if (!_self.isPoll)
+                else if (!_self.$isPoll)
                     onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
                 //#endif
-            }, _self.isPoll
+            }, _self.$isPoll
             ? createStreamElement(null, null, sIq)
             : createBodyElement({
                 rid   : getRID(),
@@ -704,9 +712,9 @@ apf.xmpp = function(){
                             + String.fromCharCode(0) + getVar("password")
                             + "</auth>"
                         : "'/>");
-            _self.doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
+            _self.$doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
                 ? reOpenStream // skip a few steps...
-                : processAuthRequest, _self.isPoll
+                : processAuthRequest, _self.$isPoll
                 ? createStreamElement(null, null, sAuth)
                 : createBodyElement({
                       rid   : getRID(),
@@ -724,7 +732,7 @@ apf.xmpp = function(){
                 "<query xmlns='" + apf.xmpp.NS.auth + "'><username>"
                     + getVar("username") + "</username></query>"
             );
-            _self.doXmlRequest(processAuthRequest, _self.isPoll
+            _self.$doXmlRequest(processAuthRequest, _self.$isPoll
                 ? createStreamElement(null, null, sIq)
                 : createBodyElement({
                     rid   : getRID(),
@@ -748,11 +756,14 @@ apf.xmpp = function(){
      * @type  {void}
      * @private
      */
-    function processDisconnect(oXml) {
+    function processDisconnect(oXml, state, extra) {
         // #ifdef __DEBUG
         apf.console.dir(oXml);
         // #endif
+        var cb = getVar("logout_callback");
         this.reset();
+        if (cb)
+            cb(oXml, state, extra);
     }
 
     /**
@@ -847,7 +858,7 @@ apf.xmpp = function(){
                 response    : sResp,
                 charset     : getVar("charset")
             });
-            _self.doXmlRequest(processFinalChallenge, _self.isPoll
+            _self.$doXmlRequest(processFinalChallenge, _self.$isPoll
                 ? createStreamElement(null, null, sAuth)
                 : createBodyElement({
                       rid   : getRID(),
@@ -880,7 +891,7 @@ apf.xmpp = function(){
                                 + getVar("password") + "</password>")
                         + "</query>"
                 );
-                _self.doXmlRequest(reOpenStream, _self.isPoll
+                _self.$doXmlRequest(reOpenStream, _self.$isPoll
                     ? createStreamElement(null, null, sIq)
                     : createBodyElement({
                         rid   : getRID(),
@@ -890,7 +901,7 @@ apf.xmpp = function(){
                 );
             }
             //#ifdef __DEBUG
-            else if (!_self.isPoll)
+            else if (!_self.$isPoll)
                 onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
             //#endif
         }
@@ -922,7 +933,7 @@ apf.xmpp = function(){
         unregister("password");
 
         var sAuth = createAuthBlock({});
-        _self.doXmlRequest(reOpenStream, _self.isPoll
+        _self.$doXmlRequest(reOpenStream, _self.$isPoll
             ? createStreamElement(null, null, sAuth)
             : createBodyElement({
                   rid   : getRID(),
@@ -960,19 +971,19 @@ apf.xmpp = function(){
                 unregister("password");
             }
             //#ifdef __DEBUG
-            else if (!_self.isPoll)
+            else if (!_self.$isPoll)
                 onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
             //#endif
         }
 
         //restart the stream request
-        this.doXmlRequest(function(oXml) {
-                if (_self.isPoll || oXml.getElementsByTagName("bind").length) {
+        this.$doXmlRequest(function(oXml) {
+                if (_self.$isPoll || oXml.getElementsByTagName("bind").length) {
                     // Stream restarted OK, so now we can actually start
                     // listening to messages!
                     _self.bind();
                 }
-            }, _self.isPoll
+            }, _self.$isPoll
             ? createStreamElement(null, {
                 doOpen         : true,
                 to             : _self.domain,
@@ -1002,13 +1013,13 @@ apf.xmpp = function(){
         var sIq = createIqBlock({
             id    : "bind_" + register("bind_count", parseInt(getVar("bind_count")) + 1),
             type  : "set",
-            xmlns : this.isPoll ? null : apf.xmpp.NS.jabber
+            xmlns : this.$isPoll ? null : apf.xmpp.NS.jabber
           },
           "<bind xmlns='" + apf.xmpp.NS.bind + "'>" +
              "<resource>" + this.resource + "</resource>" +
           "</bind>"
         );
-        this.doXmlRequest(processBindingResult, _self.isPoll
+        this.$doXmlRequest(processBindingResult, _self.$isPoll
             ? createStreamElement(null, null, sIq)
             : createBodyElement({
                   rid   : getRID(),
@@ -1051,10 +1062,10 @@ apf.xmpp = function(){
                 },
                 "<session xmlns='" + apf.xmpp.NS.session + "'/>"
             );
-            _self.doXmlRequest(function(oXml) {
+            _self.$doXmlRequest(function(oXml) {
                     parseData(oXml);
                     setInitialPresence();
-                }, _self.isPoll
+                }, _self.$isPoll
                 ? createStreamElement(null, null, sIq)
                 : createBodyElement({
                     rid   : getRID(),
@@ -1083,14 +1094,14 @@ apf.xmpp = function(){
         var sPresence = createPresenceBlock({
             type: apf.xmpp.TYPE_AVAILABLE
         });
-        _self.doXmlRequest(function(oXml) {
+        _self.$doXmlRequest(function(oXml) {
                 register("connected", true);
                 _self.dispatchEvent("connected", {username: getVar("username")});
                 parseData(oXml);
                 // #ifdef __TP_XMPP_ROSTER
                 getRoster();
                 // #endif
-            }, _self.isPoll
+            }, _self.$isPoll
             ? createStreamElement(null, null, sPresence)
             : createBodyElement({
                 rid   : getRID(),
@@ -1119,9 +1130,9 @@ apf.xmpp = function(){
             },
             "<query xmlns='" + apf.xmpp.NS.roster + "'/>"
         );
-        _self.doXmlRequest(function(oXml) {
+        _self.$doXmlRequest(function(oXml) {
                 parseData(oXml);
-                _self.listen();
+                _self.$listen();
                 var cb = getVar("login_callback");
                 if (cb) {
                     cb(null, apf.SUCCESS, {
@@ -1129,7 +1140,7 @@ apf.xmpp = function(){
                     });
                     unregister("login_callback");
                 }
-            }, _self.isPoll
+            }, _self.$isPoll
             ? createStreamElement(null, null, sIq)
             : createBodyElement({
                 rid   : getRID(),
@@ -1146,7 +1157,7 @@ apf.xmpp = function(){
      *
      * @type {void}
      */
-    this.listen = function() {
+    this.$listen = function() {
         if (bListening === true) return;
 
         bListening = true;
@@ -1155,7 +1166,7 @@ apf.xmpp = function(){
         apf.console.info("XMPP: Listening for messages...", "xmpp");
         //#endif
 
-        this.doXmlRequest(processStream, _self.isPoll
+        this.$doXmlRequest(processStream, _self.$isPoll
             ? createStreamElement()
             : createBodyElement({
                   rid   : getRID(),
@@ -1171,25 +1182,30 @@ apf.xmpp = function(){
      * (hence the 'setTimeout' call).
      *
      * @see teleport.xmpp.methodlisten
+     * @param {mixed}  data
+     * @param {Number} state
+     * @param {Object} extra
      * @type {void}
      * @private
      */
-    function restartListener() {
+    function restartListener(data, state, extra) {
         clearTimeout(tListener);
         tListener = null;
-        if (arguments.length) {
-            if (arguments[1] != apf.SUCCESS)
-                return onError(apf.xmpp.ERROR_CONN, arguments[2].message, arguments[1]);
+        if (data || state) {
+            if (state != apf.SUCCESS)
+                return onError(apf.xmpp.ERROR_CONN, extra.message, state);
             else
-                parseData(arguments[0]);
+                parseData(data);
         }
 
         if (getVar("connected") && !bListening) {
             tListener = setTimeout(function() {
-                _self.listen();
+                _self.$listen();
             }, _self.pollTimeout || 0);
         }
     }
+
+    this.$restartListener = restartListener;
 
     /**
      * Handle the result of the stream listener and messages that arrived need
@@ -1210,7 +1226,7 @@ apf.xmpp = function(){
         // start listening again...
         if (getVar("connected") && !bNoListener) {
             tListener = setTimeout(function() {
-                _self.listen();
+                _self.$listen();
             }, _self.pollTimeout || 0);
         }
     }
@@ -1245,10 +1261,12 @@ apf.xmpp = function(){
                 parseIqPackets(aIQs);
         }
         //#ifdef __DEBUG
-        else if (!_self.isPoll)
+        else if (!_self.$isPoll)
             onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
         //#endif
     }
+
+    this.$parseData = parseData;
 
     /**
      * One or more (instant-)messages have are arrived that need to be processed
@@ -1266,7 +1284,7 @@ apf.xmpp = function(){
             sJID = aMessages[i].getAttribute("from");
             // #ifdef __TP_XMPP_ROSTER
             if (sJID)
-                oUser = getVar("roster").getUserFromJID(sJID); //unsed var...yet?
+                oUser = getVar("roster").getEntityByJID(sJID); //unsed var...yet?
 
             if (aMessages[i].getAttribute("type") == "chat") {
                 oBody = aMessages[i].getElementsByTagName("body")[0];
@@ -1326,7 +1344,7 @@ apf.xmpp = function(){
             var sJID = aPresence[i].getAttribute("from");
             if (sJID) {
                 var oRoster = getVar("roster"),
-                    oUser   = oRoster.getUserFromJID(sJID),
+                    oUser   = oRoster.getEntityByJID(sJID),
                     sType   = aPresence[i].getAttribute("type");
                     
                 if (sType == apf.xmpp.TYPE_SUBSCRIBE) {
@@ -1359,23 +1377,24 @@ apf.xmpp = function(){
 
         for (var i = 0, l = aIQs.length; i < l; i++) {
             if (aIQs[i].getAttribute("type") != "result") continue;
-            var aQueries = aIQs[i].getElementsByTagName("query");
+            var aQueries = aIQs[i].getElementsByTagName("query"),
+                sFrom    = aIQs[i].getAttribute("to");
             for (var j = 0, l2 = aQueries.length; j < l2; j++) {
-                //@todo: support more query types...whenever we need them
+                var aItems, k, l3;
                 switch (aQueries[j].getAttribute("xmlns")) {
                     // #ifdef __TP_XMPP_ROSTER
                     case apf.xmpp.NS.roster:
-                        var aItems  = aQueries[j].getElementsByTagName("item"),
-                            oRoster = getVar("roster"),
+                        aItems  = aQueries[j].getElementsByTagName("item");
+                        var oRoster = getVar("roster"),
                             pBlocks = [];
-                        for (var k = 0, l3 = aItems.length; k < l3; k++) {
+                        for (k = 0, l3 = aItems.length; k < l3; k++) {
                             var sSubscr  = aItems[k].getAttribute("subscription"),
                                 sGroup   = (aItems[k].childNodes.length > 0)
                                     ? aItems[k].firstChild.firstChild.nodeValue
                                     : "",
                                 sJid     = aItems[k].getAttribute("jid");
 
-                            var oContact = oRoster.getUserFromJID(sJid, sSubscr,
+                            var oContact = oRoster.getEntityByJID(sJid, sSubscr,
                                     sGroup);
                             // now that we have a contact added to our roster,
                             // it's time to ask for presence
@@ -1388,6 +1407,34 @@ apf.xmpp = function(){
                         if (pBlocks.length)
                             _self.requestPresence(pBlocks);
                         break;
+                    // #endif
+                    // #ifdef __TP_XMPP_MUC
+                    case apf.xmpp.NS.disco_items:
+                        if (!_self.canMuc) break;
+                        /*
+                         Room(s):
+                         <query xmlns='http://jabber.org/protocol/disco#items'>
+                            <item jid='test@conference.somedomain.com' name='test (1)'/>
+                         </query>
+                         Room Occupant(s):
+                         <query xmlns='http://jabber.org/protocol/disco#items'>
+                            <item jid='contact1@somedomain.com'/>
+                         </query>
+                         */
+                        aItems      = aQueries[j].getElementsByTagName("item");
+                        var bIsRoom = _self.$isRoom(sFrom),
+                            sJID;
+                        // @todo: add support for paging (<set> element)
+                        for (k = 0, l3 = aItems.length; k < l3; k++) {
+                            sJID  = aItems[k].getAttribute("jid");
+                            if (bIsRoom)
+                                _self.$addRoomOccupant(sFrom, sJID);
+                            else
+                                _self.$addRoom(sJID, aItems[k].getAttribute("name"));
+                        }
+                        break;
+                    case apf.xmpp.NS.muc_user:
+                        // @todo implement;
                     // #endif
                     default:
                         break;
@@ -1409,7 +1456,7 @@ apf.xmpp = function(){
     this.setPresence = function(type, status, custom) {
         if (!getVar("connected")) return false;
 
-        this.doXmlRequest(restartListener, createBodyElement({
+        this.$doXmlRequest(restartListener, createBodyElement({
                 rid   : getRID(),
                 sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
@@ -1434,7 +1481,7 @@ apf.xmpp = function(){
         // #ifdef __TP_XMPP_ROSTER
         var oRoster = getVar("roster");
         if (typeof from == "string")
-            from = oRoster.getUserFromJID(from);
+            from = oRoster.getEntityByJID(from);
         if (!from) return false;
 
         var sPresence, aPresence = [];
@@ -1456,7 +1503,7 @@ apf.xmpp = function(){
         }
         sPresence = aPresence.join("");
 
-        this.doXmlRequest(restartListener, _self.isPoll
+        this.$doXmlRequest(restartListener, _self.$isPoll
             ? createStreamElement(null, null, sPresence)
             : createBodyElement({
                 rid   : getRID(),
@@ -1482,7 +1529,7 @@ apf.xmpp = function(){
         // #ifdef __TP_XMPP_ROSTER
         if (typeof jid != "string") return false;
         var oRoster  = getVar("roster"),
-            oContact = oRoster.getUserFromJID(jid);
+            oContact = oRoster.getEntityByJID(jid);
         if (oContact && (oContact.subscription == apf.xmpp.SUBSCR_TO
           || oContact.subscription == apf.xmpp.SUBSCR_BOTH))
             return this.requestPresence(oContact);
@@ -1495,22 +1542,22 @@ apf.xmpp = function(){
             "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + jid
                 + "' /></query>"
         );
-        this.doXmlRequest(function(oXml) {
+        this.$doXmlRequest(function(oXml) {
                 parseData(oXml);
-                _self.listen();
+                _self.$listen();
                 // if all is well, a contact is added to the roster.
                 // <presence to='contact@example.org' type='subscribe'/>
                 var sPresence = createPresenceBlock({
                     type  : apf.xmpp.TYPE_SUBSCRIBE,
                     to    : jid
                 });
-                _self.doXmlRequest(function(oXml) {
+                _self.$doXmlRequest(function(oXml) {
                         if (!oXml || !oXml.nodeType) {
-                            return !_self.isPoll
+                            return !_self.$isPoll
                                 ? onError(apf.xmpp.ERROR_CONN, null, apf.OFFLINE)
                                 : null;
                         }
-                        _self.listen();
+                        _self.$listen();
 
                         var oPresence = oXml.getElementsByTagName("presence")[0];
                         if (oPresence.getAttribute("error")) {
@@ -1518,12 +1565,12 @@ apf.xmpp = function(){
                                 type  : apf.xmpp.TYPE_UNSUBSCRIBE,
                                 to    : jid
                             });
-                            _self.doXmlRequest(function(data, state, extra){
+                            _self.$doXmlRequest(function(data, state, extra){
                                 if (callback)
                                     callback.call(_self, data, state, extra);
 
                                 restartListener(data, state, extra);
-                            }, _self.isPoll
+                            }, _self.$isPoll
                                 ? createStreamElement(null, null, sPresence)
                                 : createBodyElement({
                                     rid   : getRID(),
@@ -1534,7 +1581,7 @@ apf.xmpp = function(){
                         }
                         // all other events should run through the parseData()
                         // function and delegated to the Roster
-                    }, _self.isPoll
+                    }, _self.$isPoll
                     ? createStreamElement(null, null, sPresence)
                     : createBodyElement({
                         rid   : getRID(),
@@ -1542,7 +1589,7 @@ apf.xmpp = function(){
                         xmlns : apf.xmpp.NS.httpbind
                     }, sPresence)
                 );
-            }, _self.isPoll
+            }, _self.$isPoll
             ? createStreamElement(null, null, sIq)
             : createBodyElement({
                 rid   : getRID(),
@@ -1577,7 +1624,7 @@ apf.xmpp = function(){
                 type  : apf.xmpp.TYPE_SUBSCRIBED,
                 to    : sJID
             });
-            _self.doXmlRequest(restartListener, _self.isPoll
+            _self.$doXmlRequest(restartListener, _self.$isPoll
                 ? createStreamElement(null, null, sMsg)
                 : createBodyElement({
                     rid   : getRID(),
@@ -1592,7 +1639,7 @@ apf.xmpp = function(){
                 type  : apf.xmpp.TYPE_UNSUBSCRIBED,
                 to    : sJID
             });
-            _self.doXmlRequest(restartListener, _self.isPoll
+            _self.$doXmlRequest(restartListener, _self.$isPoll
                 ? createStreamElement(null, null, sPresence)
                 : createBodyElement({
                     rid   : getRID(),
@@ -1615,7 +1662,7 @@ apf.xmpp = function(){
             type  : apf.xmpp.TYPE_SUBSCRIBED,
             to    : oContact.jid
         });
-        _self.doXmlRequest(restartListener, _self.isPoll
+        _self.$doXmlRequest(restartListener, _self.$isPoll
             ? createStreamElement(null, null, sPresence)
             : createBodyElement({
                 rid   : getRID(),
@@ -1718,36 +1765,38 @@ apf.xmpp = function(){
         var oUser;
         // #ifdef __TP_XMPP_ROSTER
         if (!to) { //What is the purpose of this functionality? (Ruben)
-            oUser = getVar("roster").getLastAvailableUser();
+            oUser = getVar("roster").getLastAvailableEntity();
             to    = oUser.fullJID;
         }
         // #endif
         if (!to) return false; //finally: failure :'(
         // #ifdef __TP_XMPP_ROSTER
         if (!oUser)
-            oUser = getVar("roster").getUserFromJID(to);
+            oUser = getVar("roster").getEntityByJID(to);
         // #endif
 
-        this.doXmlRequest(function(data, state, extra){
+        var sMsg = createMessageBlock({
+            type       : type || apf.xmpp.MSG_CHAT,
+            to         : oUser
+                ? oUser.node + "@" + oUser.domain + "/" + this.resource
+                : to,
+            thread     : thread,
+            "xml:lang" : "en"
+        },
+        "<![CDATA[" + message + "]]>");
+
+        this.$doXmlRequest(function(data, state, extra){
                 if (callback)
                     callback.call(this, data, state, extra);
 
                 restartListener(data, state, extra);
-            },
-            createBodyElement({
-                rid   : getRID(),
-                sid   : getVar("SID"),
+            }, this.$isPoll
+            ? createStreamElement(null, null, sMsg)
+            : createBodyElement({
+                rid   : this.$getRID(),
+                sid   : this.$getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
-            },
-            createMessageBlock({
-                type       : type || apf.xmpp.MSG_CHAT,
-                to         : oUser 
-                    ? oUser.node + "@" + oUser.domain + "/" + this.resource
-                    : to,
-                thread     : thread,
-                "xml:lang" : "en"
-            },
-            "<![CDATA[" + message + "]]>"))
+            }, sMsg)
         );
     };
 
@@ -1761,7 +1810,7 @@ apf.xmpp = function(){
      */
     this.$HeaderHook = function(http) {
         http.setRequestHeader("Host", this.domain);
-        http.setRequestHeader("Content-Type", this.isPoll
+        http.setRequestHeader("Content-Type", this.$isPoll
             ? "application/x-www-form-urlencoded"
             : "text/xml; charset=utf-8");
     };
@@ -1814,8 +1863,8 @@ apf.xmpp = function(){
             ? apf.xmpp.CONN_POLL
             : apf.xmpp.CONN_BOSH;
 
-        this.isPoll   = Boolean(this.xmppMethod & apf.xmpp.CONN_POLL);
-        if (this.isPoll)
+        this.$isPoll    = Boolean(this.xmppMethod & apf.xmpp.CONN_POLL);
+        if (this.$isPoll)
             this.pollTimeout = parseInt(x.getAttribute("poll-timeout")) || 2000;
 
         this.timeout      = parseInt(x.getAttribute("timeout")) || this.timeout;
@@ -1824,6 +1873,7 @@ apf.xmpp = function(){
         this.autoConfirm  = apf.isFalse(x.getAttribute("auto-confirm"));
         this.autoDeny     = apf.isTrue(x.getAttribute("auto-deny"));
 
+        // #ifdef __TP_XMPP_ROSTER
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
@@ -1848,6 +1898,29 @@ apf.xmpp = function(){
             this.oModel.name = sModel;
             this.oModel.load("<xmpp/>");
         }
+        // #endif
+
+        // #ifdef __TP_XMPP_MUC
+        // parse MUC parameters
+        this.mucDomain = x.getAttribute("muc-domain") || "conference."
+                         + this.domain;
+        var sMucModel  = x.getAttribute("muc-model");
+        if (sMucModel) {
+            this.canMuc    = true;
+            this.oMucModel = apf.setReference(sMucModel,
+                apf.nameserver.register("model", sMucModel, new apf.model()));
+            // set the root node for this model
+            this.oMucModel.id   =
+            this.oMucModel.name = sMucModel;
+            this.oMucModel.load("<xmpp_muc/>");
+
+            // magic!
+            this.implement(apf.xmpp_muc);
+        }
+        else {
+            this.canMuc = false;
+        }
+        // #endif
 
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
@@ -1874,7 +1947,8 @@ apf.xmpp.NS   = {
     stream     : "http://etherx.jabber.org/streams",
     disco_info : "http://jabber.org/protocol/disco#info",
     disco_items: "http://jabber.org/protocol/disco#items",
-    muc        : "http://jabber.org/protocol/muc"
+    muc        : "http://jabber.org/protocol/muc",
+    muc_user   : "http://jabber.org/protocol/muc#user"
 };
 
 apf.xmpp.CONN_POLL = 0x0001;
@@ -1971,7 +2045,7 @@ apf.datainstr.xmpp = function(xmlContext, options, callback){
             oXmpp.connect(args[0], args[1], args[2] || false, callback);
             break;
         case "logout":
-            //@todo
+            oXmpp.disconnect(callback);
             break;
         case "notify":
             oXmpp.sendMessage(args[1], args[0], args[2], args[3], callback);

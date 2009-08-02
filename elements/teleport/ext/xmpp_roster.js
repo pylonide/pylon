@@ -40,7 +40,7 @@ apf.xmpp_roster = function(model, modelContent, resource) {
     this.resource = resource;
     this.username = this.domain = this.fullJID = "";
 
-    var aUsers = [];
+    var aEntities = [];
 
     this.registerAccount = function(username, domain) {
         this.username = username || "";
@@ -60,7 +60,7 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * @param {String} resource
      * @type  {mixed}
      */
-    this.getUser = function(node, domain, resource) {
+    this.getEntity = function(node, domain, resource, bRoom) {
         if (typeof node == "undefined") return null;
 
         var aResult = [];
@@ -73,15 +73,13 @@ apf.xmpp_roster = function(model, modelContent, resource) {
             domain    = aTemp[1];
         }
 
-        var bDomain   = (typeof domain   != "undefined"),
-            bResource = (typeof resource != "undefined"),
+        var n, i, bResource = (typeof resource != "undefined");
 
-            sJID = node + (bDomain ? "@" + domain : "")
-                    + (bResource ? "/" + resource : "");
-
-        for (var i = 0; i < aUsers.length; i++) {
-            if (aUsers[i].fullJID.indexOf(sJID) === 0)
-                aResult.push(aUsers[i]);
+        for (i = 0; i < aEntities.length; i++) {
+            if (n = aEntities[i] && n.node == node && n.domain == domain
+              && (!bResource || node.resource == resource)
+              && (!bRoom || aEntities[i].isRoom))
+                aResult.push(aEntities[i]);
         }
 
         if (aResult.length === 0) return null;
@@ -93,16 +91,16 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * Lookup function; searches for a JID object with JID info provided in the
      * following, common, XMPP format: 'node@domain/resource'
      *
-     * @param {String} jid
+     * @param {String}  jid
+     * @param {String}  [sSubscr]
+     * @param {String}  [sGroup]
+     * @param {Boolean} [bRoom]
      * @type  {Object}
      */
-    this.getUserFromJID = function(jid) {
-        var resource = "", node;
-        if (arguments.length > 1) {
-            var sSubscr = arguments[1] || "",
-                sGroup  = arguments[2] || "";
-        }
-
+    this.getEntityByJID = function(jid, sSubscr, sGroup) {
+        var resource = null, node;
+        sSubscr = sSubscr || "";
+        sGroup  = sGroup  || "";
 
         if (jid.indexOf("/") != -1) {
             resource = jid.substring(jid.indexOf("/") + 1) || "";
@@ -113,39 +111,38 @@ apf.xmpp_roster = function(model, modelContent, resource) {
             jid  = jid.substring(jid.indexOf("@") + 1);
         }
 
-        var domain = jid,
-            oUser  = this.getUser(node, domain),
+        var domain  = jid,
+            oEnt    = this.getEntity(node, domain, resource),
             bareJID = node + "@" + domain;
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
-        if (!oUser && node && domain) {
-            // @todo: change the user-roster structure to be more 'resource-agnostic'
-            //resource = resource || this.resource;
-            oUser = this.update({
+        if (!oEnt && node && domain) {
+            oEnt = this.update({
                 node        : node,
                 domain      : domain,
                 resources   : [resource],
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
+                isRoom      : (modelContent.muc && !resource),
+                room        : (modelContent.muc && resource),
                 subscription: sSubscr,
                 group       : sGroup,
                 status      : apf.xmpp.TYPE_UNAVAILABLE
             });
-
         }
-        else if (oUser && oUser.group !== sGroup)
-            oUser.group = sGroup;
-        else if (oUser && oUser.subscription !== sSubscr)
-            oUser.subscription = sSubscr;
+        else if (oEnt && oEnt.group !== sGroup)
+            oEnt.group = sGroup;
+        else if (oEnt && oEnt.subscription !== sSubscr)
+            oEnt.subscription = sSubscr;
 
-        //fix a missing 'resource' property...
-        if (resource && oUser && !oUser.resources.contains(resource)) {
-            oUser.resources.push(resource);
-            oUser.fullJID = bareJID + "/" + resource
+        //adding of an additional 'resource'...except for chat rooms
+        if (resource && oEnt && !oEnt.isRoom && !oEnt.resources.contains(resource)) {
+            oEnt.resources.push(resource);
+            oEnt.fullJID = bareJID + "/" + resource;
         }
 
-        return oUser;
+        return oEnt;
     };
 
     /**
@@ -154,30 +151,30 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * It ensures that the Remote SmartBindings link with a model is synchronized
      * at all times.
      *
-     * @param {Object} oUser
+     * @param {Object} oEnt
      * @type  {Object}
      */
-    this.update = function(oUser) {
-        if (!this.getUser(oUser.node, oUser.domain, oUser.resource)) {
-            var bIsAccount = (oUser.node == this.username
-                              && oUser.domain == this.domain);
-            aUsers.push(oUser);
-            //Remote SmartBindings: update the model with the new User
+    this.update = function(oEnt) {
+        if (!this.getEntity(oEnt.node, oEnt.domain, oEnt.resource)) {
+            var bIsAccount = (oEnt.node == this.username
+                              && oEnt.domain == this.domain);
+            aEntities.push(oEnt);
+            // Update the model with the new User
             if (model && modelContent.roster) {
-                oUser.xml = model.data.ownerDocument.createElement(bIsAccount
+                oEnt.xml = model.data.ownerDocument.createElement(bIsAccount
                     ? "account"
-                    : "user");
-                this.updateUserXml(oUser);
-                apf.xmldb.appendChild(model.data, oUser.xml);
+                    : oEnt.isRoom ? "room" : "user");
+                this.updateEntityXml(oEnt);
+                apf.xmldb.appendChild(oEnt.room && !oEnt.isRoom
+                    ? this.getEntity(oEnt.node, oEnt.domain, null, true).xml
+                    : model.data, oEnt.xml);
             }
         }
 
         if (arguments.length > 1)
-            oUser.status = arguments[1];
+            oEnt.status = arguments[1];
 
-        // update all known properties for now (bit verbose, might be changed
-        // in the future)
-        return this.updateUserXml(oUser);
+        return this.updateEntityXml(oEnt);
     };
 
     var userProps = ["node", "domain", "resource", "bareJID", "fullJID", "status"];
@@ -185,17 +182,18 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * Propagate any change in the JID to the model to which the XMPP connection
      * is attached.
      *
-     * @param {Object} oUser
+     * @param {Object} oEnt
      * @type  {Object}
      */
-    this.updateUserXml = function(oUser) {
-        if (!oUser || !oUser.xml) return null;
-        userProps.forEach(function(item) {
-            oUser.xml.setAttribute(item, oUser[item]);
-        });
-        apf.xmldb.applyChanges("synchronize", oUser.xml);
+    this.updateEntityXml = function(oEnt) {
+        if (!oEnt || !oEnt.xml) return null;
+        for (var p, i = 0; i < 6; i++) { //6 = length of 'userProps' = CONSTANT
+            if (p = userProps[i] && oEnt[p])
+                oEnt.xml.setAttribute(p, oEnt[p]);
+        }
+        apf.xmldb.applyChanges("synchronize", oEnt.xml);
 
-        return oUser;
+        return oEnt;
     };
 
     /**
@@ -209,44 +207,35 @@ apf.xmpp_roster = function(model, modelContent, resource) {
     this.updateMessageHistory = function(sJID, sMsg) {
         if (!model || !modelContent.chat) return false;
 
-        var oUser = this.getUserFromJID(sJID);
-        if (!oUser || !oUser.xml) return false;
+        var oEnt = this.getEntityByJID(sJID);
+        if (!oEnt || !oEnt.xml) return false;
 
         var oDoc = model.data.ownerDocument,
             oMsg = oDoc.createElement("message");
         oMsg.setAttribute("from", sJID);
         oMsg.appendChild(oDoc.createTextNode(sMsg));
 
-        apf.xmldb.appendChild(oUser.xml, oMsg);
-        apf.xmldb.applyChanges("synchronize", oUser.xml);
+        apf.xmldb.appendChild(oEnt.xml, oMsg);
+        apf.xmldb.applyChanges("synchronize", oEnt.xml);
 
         // only send events to messages from contacts, not the acount itself
-        return !(oUser.node == this.username && oUser.domain == this.domain);
+        return !(oEnt.node == this.username && oEnt.domain == this.domain);
     };
 
     /**
      * Transform a JID object into a Stringified represention of XML.
      *
-     * @param {Object} oUser
+     * @param {Object} oEnt
      * @type  {String}
      */
-    this.userToXml = function(oUser) {
-        var aOut = ["<user "];
+    this.entityToXml = function(oEnt) {
+        var aOut = [oEnt.isRoom ? "<room " : "<user "];
 
         userProps.forEach(function(item) {
-            aOut.push(item, '="', oUser[item], '" ');
+            aOut.push(item, '="', oEnt[item], '" ');
         });
 
         return aOut.join("") + "/>";
-    };
-
-    /**
-     * API; return the last JID that has been appended to the Roster
-     *
-     * @type {Object}
-     */
-    this.getLastUser = function() {
-        return aUsers[aUsers.length - 1];
     };
 
     /**
@@ -254,17 +243,17 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      *
      * @type {Object}
      */
-    this.getLastAvailableUser = function() {
-        for (var i = aUsers.length - 1; i >= 0; i--) {
-            if (aUsers[i].status !== apf.xmpp.TYPE_UNAVAILABLE)
-                return aUsers[i];
+    this.getLastAvailableEntity = function() {
+        for (var i = aEntities.length - 1; i >= 0; i--) {
+            if (aEntities[i].status !== apf.xmpp.TYPE_UNAVAILABLE)
+                return aEntities[i];
         }
 
         return null;
     };
 
     this.getAllUsers = function() {
-        return aUsers;
+        return aEntities;
     };
 };
 
