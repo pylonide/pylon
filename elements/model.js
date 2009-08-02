@@ -1035,76 +1035,16 @@ apf.model = function(data, caching){
 
     /* *********** SUBMISSION ****************/
 
-    //Json
     /**
-     * Retrieves a json representation of the data in this model
-     * @return {Object}
-     * @todo rewrite this function
+     * Serialize the full XML DOM to a format specified by 'type'
+     * 
+     * @param {String} type  how to serialize the data
      */
-    this.getJsonObject = function(){
-        var data = {};
-
-        for (var p in this.elements) {
-            var name = this.elements[p].$aml.getAttribute("name") || this.elements[p].name;
-            if (name)
-                data[name] = this.elements[p].getValue();
-        }
-
-        return data;
-    };
-
-    //URL encoded
-    /**
-     * Retrieves a cgi string representation of the data in this model.
-     * @return {String}
-     */
-    this.getCgiString = function(){
-        //use components
-        var uniqueId, k, sel, oAmlNode, name, value, str = [];
-
-        for (uniqueId in amlNodes) {
-            oAmlNode = amlNodes[uniqueId][0];
-            //if(!elements[i].active) continue;
-            if (oAmlNode.disabled || !oAmlNode.change && !oAmlNode.hasFeature(__MULTISELECT__))
-                continue;
-            if (oAmlNode.tagName == "MultiBinding")
-                oAmlNode = oAmlNode.getHost();
-
-            if (oAmlNode.multiselect) {
-                sel = oAmlNode.getSelection();
-                for (k = 0; k < sel.length; k++) {
-                    name = oAmlNode.$aml.getAttribute("name");//oAmlNode.$aml.getAttribute("id")
-                    if (!name && oAmlNode.$aml.getAttribute("ref"))
-                        name = oAmlNode.$aml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
-                    if (!name)
-                        name = sel[k].tagName;
-                    if (!name.match(/\]$/))
-                        name += "[]";
-
-                    value = oAmlNode.applyRuleSetOnNode("value", sel[k])
-                        || oAmlNode.applyRuleSetOnNode("caption", sel[k]);
-                    if (value)
-                        str.push(name + "=" + encodeURIComponent(value));
-                }
-            }
-            else {
-                name = oAmlNode.$aml.getAttribute("name")
-                    || oAmlNode.$aml.getAttribute("id");
-                if (!name && oAmlNode.$aml.getAttribute("ref"))
-                    name = oAmlNode.$aml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
-                if (!name && oAmlNode.xmlRoot)
-                    name = oAmlNode.xmlRoot.tagName;
-
-                if (!name)
-                    continue;
-
-                value = oAmlNode.getValue();//oAmlNode.applyRuleSetOnNode(oAmlNode.mainBind, oAmlNode.xmlRoot);
-                if (value)
-                    str.push(name + "=" + encodeURIComponent(value));
-            }
-        }
-
-        return str.join("&");
+    this.serialize = function(type) {
+        if (!type)
+            return this.data.xml;
+        
+        return apf.convertXml(this.data, type);
     };
 
     /**
@@ -1258,10 +1198,10 @@ apf.model = function(data, caching){
             //this.hideLoader();
         }
 
-        if (type == "array" || type == "xml") {
-            var data = type == "array"
-                ? this.getJsonObject()
-                : apf.getXmlString(xmlNode);
+        if (type == "array" || type == "json" || type == "xml") {
+            var data = type == "xml"
+                ? apf.getXmlString(xmlNode)
+                : apf.convertXml(xmlNode, "json");
 
             apf.saveData(instruction, xmlNode, {args : [data]}, cbFunc);
         }
