@@ -113,23 +113,29 @@ apf.xmpp_roster = function(model, modelContent, resource) {
         }
 
         var domain  = jid,
-            oEnt    = this.getEntity(node, domain),
+            oEnt    = this.getEntity(node, domain,
+                        modelContent.muc ? resource : null),
             bareJID = node + "@" + domain;
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oEnt && node && domain) {
+            var bIsRoom = (modelContent.muc && !resource);
             oEnt = this.update({
                 node        : node,
                 domain      : domain,
-                resources   : resource ? [] : [resource],
+                resources   : resource ? [resource] : [],
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
-                isRoom      : (modelContent.muc && !resource),
+                isRoom      : bIsRoom,
                 room        : (modelContent.muc && resource),
                 subscription: sSubscr,
+                affiliation : null,
+                role        : null,
                 group       : sGroup,
-                status      : apf.xmpp.TYPE_UNAVAILABLE
+                status      : (bIsRoom) 
+                    ? apf.xmpp.TYPE_AVAILABLE
+                    : apf.xmpp.TYPE_UNAVAILABLE
             });
         }
         else if (oEnt && oEnt.group !== sGroup)
@@ -157,17 +163,17 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * @type  {Object}
      */
     this.update = function(oEnt, status) {
-        if (!this.getEntity(oEnt.node, oEnt.domain, oEnt.resource)) {
+        if (!oEnt.xml) {
             var bIsAccount = (oEnt.node == this.username
                               && oEnt.domain == this.domain);
             aEntities.push(oEnt);
             // Update the model with the new User
-            if (model && modelContent.roster) {
+            if (model && (modelContent.roster || modelContent.muc)) {
                 oEnt.xml = model.data.ownerDocument.createElement(bIsAccount
                     ? "account"
                     : oEnt.isRoom ? "room" : "user");
                 this.updateEntityXml(oEnt);
-                apf.xmldb.appendChild(oEnt.room && !oEnt.isRoom
+                apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
                     ? this.getEntity(oEnt.node, oEnt.domain, null, true).xml
                     : model.data, oEnt.xml);
             }
@@ -193,6 +199,12 @@ apf.xmpp_roster = function(model, modelContent, resource) {
             if (typeof oEnt[i] != "undefined")
                 oEnt.xml.setAttribute(i, oEnt[i]);
         }
+        if (modelContent.muc) {
+            oEnt.xml.setAttribute("name", oEnt.isRoom 
+                ? oEnt.subscription
+                : oEnt.resources[oEnt.resources.length - 1]);
+        }
+
         apf.xmldb.applyChanges("synchronize", oEnt.xml);
 
         return oEnt;
@@ -207,7 +219,7 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * @type  {void}
      */
     this.updateMessageHistory = function(sJID, sMsg) {
-        if (!model || !modelContent.chat) return false;
+        if (!model || !(modelContent.chat || modelContent.muc)) return false;
 
         var oEnt = this.getEntityByJID(sJID);
         if (!oEnt || !oEnt.xml) return false;

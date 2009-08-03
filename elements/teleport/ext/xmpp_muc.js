@@ -37,9 +37,8 @@
  * @constructor
  */
 apf.xmpp_muc = function(){
-    var _self   = this,
-        oRooms  = {},
-        oRoster = new apf.xmpp_roster(this.oModel, {muc: true}, this.resource);
+    var _self   = this;
+    this.$mucRoster = new apf.xmpp_roster(this.oMucModel, {muc: true}, this.resource);
 
     function doRequest(cb, sBody) {
         if (!cb || !sBody) return;
@@ -86,16 +85,16 @@ apf.xmpp_muc = function(){
     };
 
     this.$addRoom = function(sJID, sName) {
-        return oRoster.getEntityByJID(sJID, sName);
+        return this.$mucRoster.getEntityByJID(sJID.replace(/\/.*$/, ""), sName);
     };
 
     this.$isRoom = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");
-        return oRoster.getEntity(parts[0], parts[1], null, true) ? true : false;
+        return this.$mucRoster.getEntity(parts[0], parts[1], null, true) ? true : false;
     }
 
-    this.$addRoomContact = function(sJID) {
-        return oRoster.getEntityByJID(sJID);
+    this.$addRoomOccupant = function(sJID) {
+        return this.$mucRoster.getEntityByJID(sJID);
     }
 
     this.queryRoomInfo = function(sRoom) {
@@ -134,7 +133,7 @@ apf.xmpp_muc = function(){
         //       http://xmpp.org/extensions/xep-0045.html#reservednick
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
-            sNick = this.username;
+            sNick = this.$getVar("username");
         doRequest(function(oXml) {
                 _self.$parseData(oXml);
                 _self.$listen();
@@ -157,7 +156,7 @@ apf.xmpp_muc = function(){
         */
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
-            sNick = this.username;
+            sNick = this.$getVar("username");
         doRequest(function(oXml) {
                 _self.$parseData(oXml);
                 _self.$listen();

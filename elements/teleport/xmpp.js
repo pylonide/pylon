@@ -510,7 +510,12 @@ apf.xmpp = function(){
         register("password",       password);
         register("login_callback", callback);
         register("register",       reg || this.autoRegister);
+        // #ifdef __TP_XMPP_ROSTER
         getVar("roster").registerAccount(username, this.domain);
+        // #endif
+        // #ifdef __TP_XMPP_MUC
+        if (this.canMuc)
+            this.$mucRoster.registerAccount(username, this.domain);
 
         this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement(null, {
@@ -1278,15 +1283,16 @@ apf.xmpp = function(){
      * @private
      */
     function parseMessagePackets(aMessages) {
-        var i, sJID, oUser, oBody;
+        var i, sJID, oUser, oBody, bRoom;
 
         for (i = 0; i < aMessages.length; i++) {
             sJID = aMessages[i].getAttribute("from");
+            bRoom = (aMessages[i].getAttribute("type") == "groupchat");
             // #ifdef __TP_XMPP_ROSTER
-            if (sJID)
+            if (sJID && !bRoom)
                 oUser = getVar("roster").getEntityByJID(sJID); //unsed var...yet?
 
-            if (aMessages[i].getAttribute("type") == "chat") {
+            if (aMessages[i].getAttribute("type") == "chat" || bRoom) {
                 oBody = aMessages[i].getElementsByTagName("body")[0];
                 if (oBody && oBody.firstChild) {
                     // #ifdef __DEBUG
@@ -1296,7 +1302,7 @@ apf.xmpp = function(){
                     var sFrom = aMessages[i].getAttribute("from"),
                         sMsg  = oBody.firstChild.nodeValue
                     // #ifdef __TP_XMPP_ROSTER
-                    if (getVar("roster").updateMessageHistory(sFrom, sMsg)) {
+                    if ((bRoom ? _self.$mucRoster : getVar("roster")).updateMessageHistory(sFrom, sMsg)) {
                     // #endif
                         _self.dispatchEvent("receivechat", {
                             from   : sFrom,
@@ -1340,8 +1346,19 @@ apf.xmpp = function(){
         apf.console.info("parsePresencePacket: " + aPresence.length, "xmpp");
         //#endif
         // #ifdef __TP_XMPP_ROSTER
-        for (var i = 0; i < aPresence.length; i++) {
-            var sJID = aPresence[i].getAttribute("from");
+        for (var i = 0, l = aPresence.length; i < l; i++) {
+            var sJID = aPresence[i].getAttribute("from"),
+                aX   = aPresence[i].getElementsByTagName("x");
+            if (aX.length) {
+                for (var k = 0, l2 = aX.length; k < l2; k++) {
+                    switch (aX[k].getAttribute("xmlns")) {
+                        case apf.xmpp.NS.muc_user:
+                            // ignore real JIDs for now...
+                            return;
+                            //break;
+                    }
+                }
+            }
             if (sJID) {
                 var oRoster = getVar("roster"),
                     oUser   = oRoster.getEntityByJID(sJID),
@@ -1422,16 +1439,18 @@ apf.xmpp = function(){
                             <item jid='contact1@somedomain.com'/>
                          </query>
                          */
-                        aItems      = aQueries[j].getElementsByTagName("item");
-                        var bIsRoom = _self.$isRoom(sFrom),
+                        aItems = aQueries[j].getElementsByTagName("item");
+                        sFrom  = aIQs[i].getAttribute("from");
+                        var oRoom = _self.$addRoom(sFrom, sFrom.substr(0, sFrom.indexOf("@"))),
                             sJID;
                         // @todo: add support for paging (<set> element)
                         for (k = 0, l3 = aItems.length; k < l3; k++) {
                             sJID  = aItems[k].getAttribute("jid");
-                            if (bIsRoom)
-                                _self.$addRoomOccupant(sFrom, sJID);
-                            else
-                                _self.$addRoom(sJID, aItems[k].getAttribute("name"));
+                            if (sJID.indexOf("/") != -1)
+                                _self.$addRoomOccupant(sJID);
+                            else if (aItems[k].hasAttribute("name"))
+                                oRoom.subscription = aItems[k].getAttribute("name");
+
                         }
                         break;
                     case apf.xmpp.NS.muc_user:
@@ -1763,24 +1782,23 @@ apf.xmpp = function(){
 
         if (!getVar("connected")) return false;
 
-        var oUser;
+        var bRoom = (this.canMuc && type == "groupchat"),
+            oUser;
         // #ifdef __TP_XMPP_ROSTER
-        if (!to) { //What is the purpose of this functionality? (Ruben)
+        if (!to && !bRoom) { //What is the purpose of this functionality? (Ruben)
             oUser = getVar("roster").getLastAvailableEntity();
-            to    = oUser.fullJID;
+            to    = bRoom ? oUser.bareJID : oUser.fullJID;
         }
         // #endif
         if (!to) return false; //finally: failure :'(
         // #ifdef __TP_XMPP_ROSTER
-        if (!oUser)
+        if (!oUser && !bRoom)
             oUser = getVar("roster").getEntityByJID(to);
         // #endif
 
         var sMsg = createMessageBlock({
             type       : type || apf.xmpp.MSG_CHAT,
-            to         : oUser
-                ? oUser.node + "@" + oUser.domain + "/" + this.resource
-                : to,
+            to         : (oUser && !bRoom) ? oUser.fullJID : to,
             thread     : thread,
             "xml:lang" : "en"
         },
