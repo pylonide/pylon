@@ -63,7 +63,7 @@ apf.json2Xml = (function(){
                 if(t=(objAttr || apf.json2xml_Obj[name])){
                     if(t==1) t = { child : name.replace(/(.*)s$/,"$1")||name, key : "name", value: "value"};
                     for (i in v) {
-                        if(i.charAt(0)!='@'){
+                        if(i.charAt(0)!='@' && !apf.json2xml_Attr[i]){
                             if( typeof(m = v[i]) =='object'){
                                 xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
                                 jsonToXml(m, i,xml,true);
@@ -83,9 +83,9 @@ apf.json2Xml = (function(){
                     if(!notag)xml.push("</",name,">");
                 }else{
                     for (i in v) {
-                        if (!apf.json2xml_Attr[i]){
+                        if (!apf.json2xml_Attr[i] && i.charAt(0)!='@'){
                            if(i.match(/[^a-zA-Z0-9_-]/g)){
-                               apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + i, "json2Xml");
+                               apf.console.warn("Json2XML, invalid characters found in JSON tagname: '" + i, "json2Xml");
                            }else
                                jsonToXml(v[i], i, xml,false);
                         }
