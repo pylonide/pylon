@@ -331,6 +331,9 @@ apf.remote = function(name, xmlNode, parentNode){
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
 apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
+    if (!xmlNode) //@todo apf3.0
+        return "";
+    
     if (useJid && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
         return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
             + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
