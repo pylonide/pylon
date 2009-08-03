@@ -63,7 +63,7 @@ apf.xmpp_muc = function(){
         return false;
     }
 
-    this.queryRooms = function(sServer) {
+    this.queryRooms = function() {
         /*
          <iq from='hag66@shakespeare.lit/pda'
              id='disco2'
@@ -91,7 +91,7 @@ apf.xmpp_muc = function(){
 
     this.$isRoom = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");
-        return oRoster.getItem(parts[0], parts[1], null, true) ? true : false;
+        return oRoster.getEntity(parts[0], parts[1], null, true) ? true : false;
     }
 
     this.$addRoomContact = function(sJID) {
