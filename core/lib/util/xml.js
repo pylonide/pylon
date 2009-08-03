@@ -232,6 +232,23 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 };
 
 /**
+ * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
+ *
+ * @param  {String}  xpath  the xpath used to select a XMLNode.
+ * @param  {String}  value  the value to set.
+ * @return  {XMLNode}  the changed XMLNode
+ */
+apf.setQueryValue = function(xmlNode, xpath, value){
+    var node = apf.createNodeFromXpath(xmlNode, xpath);
+    if (!node)
+        return null;
+
+    apf.setNodeValue(node, value, true);
+    //apf.xmldb.setTextNode(node, value);
+    return node;
+};
+
+/**
  * Queries an xml node using xpath for a string value.
  * @param {XMLElement} xmlNode the xml element to query.
  * @param {String}     xpath   the xpath query.
@@ -434,7 +451,7 @@ apf.convertMethods = {
      * Gets a JSON object containing all the name/value pairs of the elements
      * using this element as it's validation group.
      *
-     * @return  {Object}  the created JSON object
+     * @return  {String}  the string representation of a the json object
      */
     "json": function(xml){
         return JSON.stringify(apf.xml2json(xml));

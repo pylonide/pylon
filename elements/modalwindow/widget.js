@@ -95,7 +95,7 @@ apf.modalwindow.widget = function(){
                 htmlNode.style.filter = "";
 
             if (_self.oInt)
-                apf.layout.forceResize(_self.oInt); //@todo recursive
+                apf.layout.forceResize(_self.oInt); //@todo recursive apf3.0
 
             apf.dragmode.mode = null;
         };

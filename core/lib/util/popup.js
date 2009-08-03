@@ -141,7 +141,7 @@ apf.popup = {
                 });
             }
             else {
-                var iVal, steps = apf.isIE8 ? 5 : 7, i = 0;
+                var iVal, steps = apf.isIE ? 1 : 7, i = 0;//@todo hack!!! apf3.0
                 
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
