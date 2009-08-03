@@ -64,7 +64,10 @@ apf.modalwindow.widget = function(){
         //htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
         htmlNode.parentNode.style.minHeight = (htmlNode.parentNode.offsetHeight - apf.getHeightDiff(htmlNode.parentNode)) + "px";
-        
+
+        if (apf.isIE < 8)
+            apf.setStyleClass(htmlNode, "dockletDrag"); //@todo mayor hack!! apf3.0
+
         if (!apf.hasStyleFilters)
             apf.tween.fade(htmlNode, 0.8);
 
@@ -88,7 +91,10 @@ apf.modalwindow.widget = function(){
             p.parentNode.insertBefore(htmlNode, p);
             p.parentNode.removeChild(p);
             apf.tween.fade(htmlNode, 1);
-            
+
+            if (apf.isIE < 8)
+                apf.setStyleClass(htmlNode, "", ["dockletDrag"]); //@todo see above apf3.0
+
             _self.parentNode.$moveDocklet(_self);
             
             if (!apf.supportOpacity)

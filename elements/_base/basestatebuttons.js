@@ -432,7 +432,8 @@ apf.BaseStateButtons = function(){
                 
             if (o.edit) { //@todo apf3.0
                 this.dispatchWatch("visible", true);
-                apf.layout.forceResize(_self.oSettings);
+                if(_self.oSettings)
+                    apf.layout.forceResize(_self.oSettings);
             }
 
             if (!o.maximized || lastState.maximized && _self.animate) {
