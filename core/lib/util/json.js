@@ -118,7 +118,7 @@ apf.xml2json = function (xml, noattrs) {
         if(!noattrs){
             if(m = (xml.attributes))for(u = 0,v = m.length; u < v; u++){
               t = apf.json2xml_Attr[w=m[u].nodeName] || ('@'+w);
-              if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue;
+              if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue, filled = true;
             }
         }
 
@@ -135,14 +135,13 @@ apf.xml2json = function (xml, noattrs) {
                 if(s = apf.json2xml_ObjByAttr[w = m[u].nodeName])
                     o['@'+w] = m[u].nodeValue;
             }
-            
             if(t = s || apf.json2xml_Obj[name]){
                 if(t==1)t={key:'name',value:'value'};
                 // lets enumerate the children
                 for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
                     if ((s = cn[u]).nodeType != 1) continue;
                     if(w=s.getAttribute(t.key))
-                        o[w] = s.getAttribute(t.value||'value') || apf.xml2json(s,1);
+                        o[w] = t.value==1?1:(s.getAttribute(t.value||'value') || apf.xml2json(s,1));
                 }
             }else{
                 o =  apf.xml2json( n );

@@ -90,6 +90,8 @@
         "_each_"   : "",
         "pack"     : "(function(){var s=[];",
         "pack_"    : "return s.join('');})()",
+        "last"     : "(_v?_v.nodeValue:'')",
+        "_last"    : "",
         "value"    : "((_v=(",
         "value_"   : "))?(_v.nodeType==1?_v.firstChild||n:_v).nodeValue:'')",//@todo apf3.0 all wrong -> ||n
         "_value"   : "",
