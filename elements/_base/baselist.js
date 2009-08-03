@@ -521,7 +521,7 @@ apf.BaseList = function(){
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.mode == "normal" && o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                 if (o.mode == "normal" && o.hasFeature(__DRAGDROP__) && (!isSelected || event.ctrlKey))\
                      o.select(this, event.ctrlKey, event.shiftKey)');
         } //@todo add DRAGDROP ifdefs
         else {

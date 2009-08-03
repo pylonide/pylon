@@ -1230,7 +1230,7 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
                 var o = apf.lookup(' + this.uniqueId + ');\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                 if (o.hasFeature(__DRAGDROP__) && (!isSelected || event.ctrlKey))\
                      o.select(this, event.ctrlKey, event.shiftKey);');
         } //@todo add DRAGDROP ifdefs
         else {

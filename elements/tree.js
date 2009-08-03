@@ -800,7 +800,7 @@ apf.tree = apf.component(apf.NODE_VISIBLE, function(){
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(__DRAGDROP__) && (isSelected || event.ctrlKey))\
+                 if (o.hasFeature(__DRAGDROP__) && (!isSelected || event.ctrlKey))\
                      o.select(this, event.ctrlKey, event.shiftKey);');
         }
         else 

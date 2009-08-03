@@ -217,8 +217,10 @@ apf.model = function(data, caching){
         }
         else {
             //amlNode.$model = this;
-            if (this.state == 1 && amlNode.clear)
-                amlNode.clear("loading");
+            if (this.state == 1 && amlNode.clear) {
+                if (!apf.isTrue(apf.getInheritedAttribute(amlNode, "noloading")))
+                    amlNode.clear("loading");//@todo apf3.0
+            }
             else if (this.data)
                 this.loadInAmlNode(amlNode, xpath);
         }
@@ -831,7 +833,9 @@ apf.model = function(data, caching){
             if (!amlNodes[uniqueId] || !amlNodes[uniqueId][0])
                 continue;
 
-            amlNodes[uniqueId][0].clear("loading");
+            //@todo apf3.0
+            if (!apf.isTrue(apf.getInheritedAttribute(amlNodes[uniqueId][0], "noloading")))
+                amlNodes[uniqueId][0].clear("loading");
         }
 
         this.state = 1;

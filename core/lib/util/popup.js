@@ -130,7 +130,7 @@ apf.popup = {
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
         // #endif
         
-        if (options.animate) {
+        if (options.animate && !apf.isIE) { //@todo hack!!! apf3.0
             if (options.animate == "fade") {
                 apf.tween.single(popup, {
                     type  : 'fade',
@@ -141,7 +141,7 @@ apf.popup = {
                 });
             }
             else {
-                var iVal, steps = apf.isIE ? 1 : 7, i = 0;//@todo hack!!! apf3.0
+                var iVal, steps = apf.isIE8 ? 5 : 7, i = 0;
                 
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
@@ -165,7 +165,9 @@ apf.popup = {
         else {
             if (options.height || o.height)
                 popup.style.height = (options.height || o.height) + "px";
-
+            popup.style.top = (top) + "px";
+            popup.style.display = "block";
+            
             if (options.callback)
                options.callback(popup);
         }

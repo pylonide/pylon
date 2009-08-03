@@ -299,7 +299,7 @@ apf.DataBinding = function(){
         while (!tracker) {
             if (!pNode.parentNode) {
                 var model = this.getModel(true);
-                return model.$at || apf.window.$at;
+                return model && model.$at || apf.window.$at;
             }
 
             tracker = (pNode = pNode.parentNode).$at;
@@ -1163,10 +1163,10 @@ apf.DataBinding = function(){
                             if (!o.firstChild || o.firstChild.nodeType == 1 || o.firstChild.nodeType > 4)
                                 return "";
     
-                            value = o.firstChild.nodeValue;
+                            value = (o.firstChild.nodeValue || "").trim(); //@apf3.0
                         }
                         else                        
-                            value = o.nodeValue;
+                            value = (o.nodeValue || "").trim(); //@apf3.0
                     }
 
                     //Mask Support
@@ -3560,9 +3560,10 @@ apf.MultiselectBinding = function(){
 
     this.addEventListener("afterdeselect", function(){
         var _self = this;
-        setTimeout(function(){
+        //@todo apf3.0
+        //setTimeout(function(){
             _self.setConnections(null);
-        }, 10);
+        //}, 10);
     });
 
     this.$loadInlineData = function(x){
