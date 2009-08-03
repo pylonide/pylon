@@ -107,7 +107,7 @@ apf.rest = function(){
             this.baseUrl = this.url;
 
         var options = reqMethods[functionName],
-            body    = "POST|PUT".indexOf(options.method) > -1 ? args.pop() : "",
+            body    = "POST|PUT|NOTIFY".indexOf(options.method) > -1 ? args.pop() : "",
             url;
 
         this.method = options.method;
