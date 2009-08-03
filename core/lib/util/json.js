@@ -102,12 +102,12 @@ apf.json2Xml = (function(){
         
     return function(strJson, noError, preserveWhiteSpace) {
         var o   = (typeof strJson == "string" && apf.isJson(strJson))
-          ? JSON.parse(strJson)//eval("(" + strJson + ")")
+          ? JSON.parse(strJson.replace(/""/g, '" "'))//eval("(" + strJson + ")")
           : strJson,
             xml = [], i;
         jsonToXml(o,"jsondoc", xml, false);
         
-        return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, preserveWhiteSpace);
+        return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, true);//preserveWhiteSpace);//@todo apf3.0
     };
 })();
 

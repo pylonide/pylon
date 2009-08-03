@@ -430,8 +430,10 @@ apf.BaseStateButtons = function(){
             if (styleClass.length)
                 this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
                 
-            if (o.edit)
+            if (o.edit) { //@todo apf3.0
                 this.dispatchWatch("visible", true);
+                apf.layout.forceResize(_self.oSettings);
+            }
 
             if (!o.maximized || lastState.maximized && _self.animate) {
                 _self.dispatchEvent("afterstatechange", {

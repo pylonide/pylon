@@ -65,7 +65,10 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     this.$propHandlers["caption"] = function(value){
         if (!this.oCaption) return;
         
-        this.oCaption.innerHTML = value;
+        if (this.oCaption.nodeType == 1)
+            this.oCaption.innerHTML = value;
+        else
+            this.oCaption.nodeValue = value;
     };
     
     /**
@@ -108,11 +111,11 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
 
-        if (this.oCaption) {
+        /*if (this.oCaption) {
             this.oCaption = this.oCaption.nodeType == 1 
                 ? this.oCaption 
                 : this.oCaption.parentNode;
-        }
+        }*/
         
         this.oInt = this.oInt 
             ? apf.AmlParser.replaceNode(oInt, this.oInt) 

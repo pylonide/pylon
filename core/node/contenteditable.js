@@ -224,7 +224,7 @@ apf.ContentEditable = function() {
         if (!bStandalone && code == 13) { //Enter
             isDone = e.ctrlKey || (apf.isMac && e.metaKey);
             if (!isDone) {
-                var model   = this.getModel(),
+                var model   = this.getModel(true),
                     xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(activeNode.getAttribute("xpath")),
                     rule    = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline: false};
                 isDone      = !apf.isTrue(rule.multiline);
@@ -360,13 +360,13 @@ apf.ContentEditable = function() {
                     _self.$activeDocument.execCommand("SelectAll", false, true);
                 }
                 catch(e) {}
-                _self.getModel().validate(xmlNode, false, _self.validityState, _self);
+                _self.getModel(true).validate(xmlNode, false, _self.validityState, _self);
             }, 10);
         }
 
         var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath")),
             v, rule;
-        if (v = _self.getModel().$validation)
+        if (v = _self.getModel(true).$validation)
             rule = v.getRule(xmlNode);
 
         if (!_self.hasFocus())
@@ -477,7 +477,7 @@ apf.ContentEditable = function() {
         if (!oNode) oNode = activeNode;
         if (!oNode || oNode.nodeType != 1) return false;
         
-        var model   = _self.getModel(),
+        var model   = _self.getModel(true),
             xpath   = oNode.getAttribute("xpath"),
             xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(xpath),
             v, rule;
