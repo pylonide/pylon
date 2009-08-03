@@ -1291,6 +1291,7 @@ apf.xmpp = function(){
             // #ifdef __TP_XMPP_ROSTER
             if (sJID && !bRoom)
                 oUser = getVar("roster").getEntityByJID(sJID); //unsed var...yet?
+            // #endif
 
             if (aMessages[i].getAttribute("type") == "chat" || bRoom) {
                 oBody = aMessages[i].getElementsByTagName("body")[0];
@@ -1298,10 +1299,13 @@ apf.xmpp = function(){
                     // #ifdef __DEBUG
                     apf.console.log("XMPP incoming chat message: " + oBody.firstChild.nodeValue, "xmpp");
                     // #endif
-                    // #endif
                     var sFrom = aMessages[i].getAttribute("from"),
                         sMsg  = oBody.firstChild.nodeValue
                     // #ifdef __TP_XMPP_ROSTER
+                    // #ifdef __TP_XMPP_MUC
+                    if (bRoom && sFrom == _self.$mucRoster.fullJID)
+                        return;
+                    // #endif
                     if ((bRoom ? _self.$mucRoster : getVar("roster")).updateMessageHistory(sFrom, sMsg)) {
                     // #endif
                         _self.dispatchEvent("receivechat", {
@@ -1348,18 +1352,30 @@ apf.xmpp = function(){
         // #ifdef __TP_XMPP_ROSTER
         for (var i = 0, l = aPresence.length; i < l; i++) {
             var sJID = aPresence[i].getAttribute("from"),
-                aX   = aPresence[i].getElementsByTagName("x");
-            if (aX.length) {
-                for (var k = 0, l2 = aX.length; k < l2; k++) {
+                aX   = aPresence[i].getElementsByTagName("x"),
+                bMuc = (sJID.indexOf(_self.mucDomain) > -1);
+            // #ifdef __TP_XMPP_MUC
+            if (aX.length && _self.$isRoom(sJID)) {
+                for (var o, k = 0, l2 = aX.length; k < l2; k++) {
                     switch (aX[k].getAttribute("xmlns")) {
                         case apf.xmpp.NS.muc_user:
-                            // ignore real JIDs for now...
-                            return;
-                            //break;
+                            // status code=110 means ME
+                            if (_self.$getStatusCode(aX[k], 110)) break;
+                            o = aX[k].getElementsByTagName("item")[0];
+                            if (!o) break;
+                            _self.$mucRoster.getEntityByJID(sJID, {
+                                roomJID    : o.getAttribute("jid"),
+                                affiliation: o.getAttribute("affiliation"),
+                                role       : o.getAttribute("role"),
+                                status     : aPresence[i].getAttribute("type")
+                                    || apf.xmpp.TYPE_AVAILABLE
+                            });
+                            break;
                     }
                 }
             }
-            if (sJID) {
+            // #endif
+            if (sJID && !bMuc) {
                 var oRoster = getVar("roster"),
                     oUser   = oRoster.getEntityByJID(sJID),
                     sType   = aPresence[i].getAttribute("type");
@@ -1412,8 +1428,10 @@ apf.xmpp = function(){
                                     : "",
                                 sJid     = aItems[k].getAttribute("jid");
 
-                            var oContact = oRoster.getEntityByJID(sJid, sSubscr,
-                                    sGroup);
+                            var oContact = oRoster.getEntityByJID(sJid, {
+                                subscription: sSubscr,
+                                group       : sGroup
+                            });
                             // now that we have a contact added to our roster,
                             // it's time to ask for presence
                             if (sSubscr == apf.xmpp.SUBSCR_TO

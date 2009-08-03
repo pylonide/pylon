@@ -36,17 +36,21 @@
  * @type {Object}
  * @constructor
  */
-apf.xmpp_roster = function(model, modelContent, resource) {
-    this.resource = resource;
+apf.xmpp_roster = function(model, modelContent, res) {
+    this.resource = res;
     this.username = this.domain = this.fullJID = "";
 
     var aEntities = [];
 
-    this.registerAccount = function(username, domain) {
+    this.registerAccount = function(username, domain, resource) {
+        if (!resource)
+            resource = this.resource;
+        else
+            this.resource = resource;
         this.username = username || "";
         this.domain   = domain   || "";
         this.fullJID  = this.username + "@" + this.domain
-            + (this.resource ? "/" + this.resource : "");
+            + (resource ? "/" + resource : "");
     };
 
     /**
@@ -73,17 +77,26 @@ apf.xmpp_roster = function(model, modelContent, resource) {
             domain    = aTemp[1];
         }
 
-        var n, i, bResource = (typeof resource != "undefined");
+        var n, i, l, oExact,
+            bResource = (resource && !bRoom),
+            fullJID   = node + "@" + domain + (resource ? "/" + resource : "");
 
-        for (i = 0; i < aEntities.length; i++) {
+        for (i = 0, l = aEntities.length; i < l; i++) {
             n = aEntities[i]
             if (n && n.node == node && n.domain == domain
-              && (!bResource || n.resource == resource)
-              && (!bRoom || n.isRoom))
+              && (!bResource || n.resources.contains(resource))
+              && (!bRoom || n.isRoom)) {
                 aResult.push(n);
+                if (n.fullJID == fullJID)
+                    oExact = n;
+            }
         }
 
-        if (aResult.length === 0) return null;
+        if (aResult.length === 0)
+            return null;
+
+        if (aResult.length > 1 && oExact)
+            return oExact;
 
         return (aResult.length == 1) ? aResult[0] : aResult;
     };
@@ -98,10 +111,10 @@ apf.xmpp_roster = function(model, modelContent, resource) {
      * @param {Boolean} [bRoom]
      * @type  {Object}
      */
-    this.getEntityByJID = function(jid, sSubscr, sGroup) {
+    this.getEntityByJID = function(jid, options) {
         var resource = null, node;
-        sSubscr = sSubscr || "";
-        sGroup  = sGroup  || "";
+        if (!options)
+            options = {};
 
         if (jid.indexOf("/") != -1) {
             resource = jid.substring(jid.indexOf("/") + 1) || "";
@@ -119,7 +132,7 @@ apf.xmpp_roster = function(model, modelContent, resource) {
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
-        if (!oEnt && node && domain) {
+        if (!oEnt) {// && node && domain) {
             var bIsRoom = (modelContent.muc && !resource);
             oEnt = this.update({
                 node        : node,
@@ -128,20 +141,20 @@ apf.xmpp_roster = function(model, modelContent, resource) {
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
                 isRoom      : bIsRoom,
-                room        : (modelContent.muc && resource),
-                subscription: sSubscr,
+                room        : (modelContent.muc && resource) ? bareJID : null,
+                roomJID     : null,
+                subscription: options.subscription || "",
                 affiliation : null,
                 role        : null,
-                group       : sGroup,
+                group       : options.group || "",
                 status      : (bIsRoom) 
                     ? apf.xmpp.TYPE_AVAILABLE
                     : apf.xmpp.TYPE_UNAVAILABLE
             });
         }
-        else if (oEnt && oEnt.group !== sGroup)
-            oEnt.group = sGroup;
-        else if (oEnt && oEnt.subscription !== sSubscr)
-            oEnt.subscription = sSubscr;
+        else {
+            this.update(apf.extend(oEnt, options));
+        }
 
         //adding of an additional 'resource'...except for chat rooms
         if (resource && oEnt && !oEnt.isRoom && !oEnt.resources.contains(resource)) {
@@ -203,6 +216,8 @@ apf.xmpp_roster = function(model, modelContent, resource) {
             oEnt.xml.setAttribute("name", oEnt.isRoom 
                 ? oEnt.subscription
                 : oEnt.resources[oEnt.resources.length - 1]);
+            if (!oEnt.isRoom && oEnt.room)
+                oEnt.xml.setAttribute("room", oEnt.room);
         }
 
         apf.xmldb.applyChanges("synchronize", oEnt.xml);
@@ -221,7 +236,10 @@ apf.xmpp_roster = function(model, modelContent, resource) {
     this.updateMessageHistory = function(sJID, sMsg) {
         if (!model || !(modelContent.chat || modelContent.muc)) return false;
 
-        var oEnt = this.getEntityByJID(sJID);
+        var oEnt, oRoom;
+        if (modelContent.muc)
+            oRoom = this.getEntityByJID(sJID.replace(/\/.*$/, ""));
+        oEnt = this.getEntityByJID(sJID);
         if (!oEnt || !oEnt.xml) return false;
 
         var oDoc = model.data.ownerDocument,
@@ -229,7 +247,7 @@ apf.xmpp_roster = function(model, modelContent, resource) {
         oMsg.setAttribute("from", sJID);
         oMsg.appendChild(oDoc.createTextNode(sMsg));
 
-        apf.xmldb.appendChild(oEnt.xml, oMsg);
+        apf.xmldb.appendChild((oRoom ? oRoom.xml : oEnt.xml), oMsg);
         apf.xmldb.applyChanges("synchronize", oEnt.xml);
 
         // only send events to messages from contacts, not the acount itself

@@ -52,7 +52,7 @@ apf.xmpp_muc = function(){
         );
     }
 
-    function getStatusCode(oXml, iStatus) {
+    this.$getStatusCode = function(oXml, iStatus) {
         var aStatuses = oXml.getElementsByTagName("status");
         for (var i = 0, l = aStatuses.length; i < l; i++) {
             if (aStatuses[i]
@@ -101,7 +101,7 @@ apf.xmpp_muc = function(){
         // todo
     };
 
-    this.getRoom = function(sRoom) {
+    this.getRoom = function(sRoom, callback) {
         /*
          <iq from='hag66@shakespeare.lit/pda'
             id='disco4'
@@ -111,8 +111,15 @@ apf.xmpp_muc = function(){
         </iq>
         */
         if (!this.canMuc || !this.$getVar("connected")) return;
-        doRequest(function(oXml) {
-                _self.$parseData(oXml);
+        doRequest(function(oXml, state) {
+                if (state == apf.SUCCESS) {
+                    var aErrors = oXml.getElementsByTagName("error");
+                    var bFail = aErrors.length ? true : false;
+                    if (!bFail)
+                        _self.$parseData(oXml);
+                    if (callback)
+                        callback(!bFail, bFail ? aErrors[0] : null);
+                }
                 _self.$listen();
             }, this.$createIqBlock({
                 from  : this.$getVar("JID"),
@@ -134,7 +141,9 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
-        doRequest(function(oXml) {
+        var parts = sRoom.split("@");
+        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
+        doRequest(function(oXml, state) {
                 _self.$parseData(oXml);
                 _self.$listen();
             }, this.$createPresenceBlock({
@@ -176,7 +185,9 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNewNick)
             sNewNick = this.username;
-        doRequest(function(oXml) {
+        var parts = sRoom.split("@");
+        this.$mucRoster.registerAccount(parts[0], parts[1], sNewNick);
+        doRequest(function(oXml, state) {
                 _self.$parseData(oXml);
                 _self.$listen();
             }, this.$createPresenceBlock({
@@ -270,7 +281,7 @@ apf.xmpp_muc = function(){
             sNick = this.$getVar("username");
         doRequest(function(oXml, state, extra) {
                 // @todo notify user
-                if (state != apf.SUCCESS || !getStatusCode(oXml, 201))
+                if (state != apf.SUCCESS || !this.$getStatusCode(oXml, 201))
                     return _self.$listen();
                 doRequest(function(oXml) {
                         _self.$parseData(oXml);
