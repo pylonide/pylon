@@ -63,14 +63,6 @@ apf.xmpp_muc = function(){
     }
 
     this.queryRooms = function() {
-        /*
-         <iq from='hag66@shakespeare.lit/pda'
-             id='disco2'
-             to='chat.shakespeare.lit'
-             type='get'>
-           <query xmlns='http://jabber.org/protocol/disco#items'/>
-         </iq>
-        */
         if (!this.canMuc || !this.$getVar("connected")) return;
         doRequest(function(oXml) {
                 _self.$parseData(oXml);
@@ -102,19 +94,11 @@ apf.xmpp_muc = function(){
     };
 
     this.getRoom = function(sRoom, callback) {
-        /*
-         <iq from='hag66@shakespeare.lit/pda'
-            id='disco4'
-            to='darkcave@chat.shakespeare.lit'
-            type='get'>
-          <query xmlns='http://jabber.org/protocol/disco#items'/>
-        </iq>
-        */
         if (!this.canMuc || !this.$getVar("connected")) return;
         doRequest(function(oXml, state) {
                 if (state == apf.SUCCESS) {
-                    var aErrors = oXml.getElementsByTagName("error");
-                    var bFail = aErrors.length ? true : false;
+                    var aErrors = oXml.getElementsByTagName("error"),
+                        bFail   = aErrors.length ? true : false;
                     if (!bFail)
                         _self.$parseData(oXml);
                     if (callback)
@@ -131,11 +115,6 @@ apf.xmpp_muc = function(){
     };
 
     this.joinRoom = function(sRoom, sPassword, sNick) {
-        /*
-         <presence
-            from='hag66@shakespeare.lit/pda'
-            to='darkcave@chat.shakespeare.lit/thirdwitch'/>
-        */
         // @todo check for reserved nickname as described in
         //       http://xmpp.org/extensions/xep-0045.html#reservednick
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
@@ -157,12 +136,6 @@ apf.xmpp_muc = function(){
     };
 
     this.leaveRoom = function(sRoom, sMsg, sNick) {
-        /*
-         <presence
-            from='hag66@shakespeare.lit/pda'
-            to='darkcave@chat.shakespeare.lit/thirdwitch'
-            type='unavailable'/>
-        */
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
@@ -177,11 +150,6 @@ apf.xmpp_muc = function(){
     };
 
     this.changeNick = function(sRoom, sNewNick) {
-        /*
-         <presence
-            from='hag66@shakespeare.lit/pda'
-            to='darkcave@chat.shakespeare.lit/thirdwitch'/>
-        */
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNewNick)
             sNewNick = this.username;
@@ -198,19 +166,6 @@ apf.xmpp_muc = function(){
     };
 
     this.invite = function(sRoom, sJID, sReason) {
-        /*
-         <message
-             from='crone1@shakespeare.lit/desktop'
-             to='darkcave@chat.shakespeare.lit'>
-           <x xmlns='http://jabber.org/protocol/muc#user'>
-             <invite to='hecate@shakespeare.lit'>
-               <reason>
-                 Hey Hecate, this is the place for all good witches!
-               </reason>
-             </invite>
-           </x>
-         </message>
-        */
         var oUser = this.$getVar("roster").getEntityByJID(sJID);
         if (!oUser) return;
 
@@ -226,19 +181,6 @@ apf.xmpp_muc = function(){
     };
 
     this.declineInvite = function(sRoom, sJID, sReason) {
-        /*
-         <message
-             from='hecate@shakespeare.lit/broom'
-             to='darkcave@chat.shakespeare.lit'>
-           <x xmlns='http://jabber.org/protocol/muc#user'>
-             <decline to='crone1@shakespeare.lit'>
-               <reason>
-                 Sorry, I'm too busy right now.
-               </reason>
-             </decline>
-           </x>
-         </message>
-        */
         var oUser = this.$getVar("roster").getEntityByJID(sJID);
         if (!oUser) return;
 
@@ -257,24 +199,7 @@ apf.xmpp_muc = function(){
 
     };
 
-    this.createRoom = function(sRoom, sNick) {
-        /*
-         <presence
-             from='crone1@shakespeare.lit/desktop'
-             to='darkcave@chat.shakespeare.lit/firstwitch'>
-           <x xmlns='http://jabber.org/protocol/muc'/>
-         </presence>
-
-         Instant Room creation
-         <iq from='crone1@shakespeare.lit/desktop'
-             id='create1'
-             to='darkcave@chat.shakespeare.lit'
-             type='set'>
-           <query xmlns='http://jabber.org/protocol/muc#owner'>
-             <x xmlns='jabber:x:data' type='submit'/>
-           </query>
-         </iq>
-        */
+    this.createRoom = function(sRoom, sNick, callback) {
         // @todo implement/ support Reserved Rooms
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
@@ -283,8 +208,14 @@ apf.xmpp_muc = function(){
                 // @todo notify user
                 if (state != apf.SUCCESS || !this.$getStatusCode(oXml, 201))
                     return _self.$listen();
-                doRequest(function(oXml) {
-                        _self.$parseData(oXml);
+                _self.$parseData(oXml);
+                doRequest(function(oXml2) {
+                        var aErrors = oXml2.getElementsByTagName("error"),
+                            bFail   = aErrors.length ? true : false;
+                        if (!bFail)
+                            _self.$parseData(oXml2);
+                        if (callback)
+                            callback(!bFail, bFail ? aErrors[0] : null);
                         _self.$listen();
                     }, this.$createIqBlock({
                         from  : this.$getVar("JID"),
@@ -303,19 +234,21 @@ apf.xmpp_muc = function(){
         );
     };
 
+    this.joinOrCreateRoom = function(sRoom, sNick) {
+        if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
+        if (!sNick)
+            sNick = this.$getVar("username");
+        this.getRoom(sRoom, function(bSuccess, oError) {
+            if (bSuccess) //@todo should we provide a password input prompt?
+                return _self.joinRoom(sRoom, null, sNick);
+            _self.createRoom(sRoom, sNick, function(bSuccess, oError) {
+                if (bSuccess)
+                    _self.joinRoom(sRoom, null, sNick);
+            });
+        });
+    }
+
     this.destroyRoom = function(sRoom, sReason) {
-        /*
-         <iq from='crone1@shakespeare.lit/desktop'
-             id='begone'
-             to='heath@chat.shakespeare.lit'
-             type='set'>
-           <query xmlns='http://jabber.org/protocol/muc#owner'>
-             <destroy jid='darkcave@chat.shakespeare.lit'>
-               <reason>Macbeth doth come.</reason>
-             </destroy>
-           </query>
-         </iq>
-        */
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         doRequest(this.$restartListener, this.$createIqBlock({
                 from  : this.$getVar("JID"),
