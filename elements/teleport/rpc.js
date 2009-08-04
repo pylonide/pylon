@@ -191,7 +191,7 @@ apf.rpc = function(){
         var info = this.$get(url, pCallback, apf.extend({
             async    : this[name].async,
             userdata : this[name].userdata,
-            nocache  : true,
+            nocache  : this.nocache === false ? false : true,
             data     : data,
             useXML   : this.useXML,
             caching  : this[name].caching,

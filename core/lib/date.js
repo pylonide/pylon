@@ -433,7 +433,7 @@ apf.date.dateFormat = (function () {
         // Passing date through Date applies Date.parse, if necessary
         date = date ? new Date(date) : new Date();
 
-        if (isNaN(date)) throw new SyntaxError("invalid date");
+        if (isNaN(date)) return "NaN";//throw new SyntaxError("invalid date");
 
         mask = String(dF.masks[mask] || mask || dF.masks["default"]);
 

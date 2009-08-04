@@ -83,6 +83,7 @@ apf.rest = function(){
     
     this.supportMulticall = false;
     this.namedArguments   = false;
+    this.nocache          = false;
 
     // Register Communication Module
     apf.teleport.register(this);
