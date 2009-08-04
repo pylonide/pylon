@@ -256,7 +256,7 @@ apf.auth = {
         for (i = 0; i < attr.length; i++) {
             if (attr[i].nodeName.substr(0,2) == "on")
                 this.addEventListener(attr[i].nodeName,
-                    new Function(attr[i].nodeValue));
+                    new Function("event", attr[i].nodeValue));
         }
 
         if (this.autoStart) {
@@ -371,6 +371,7 @@ apf.auth = {
                 apf.extend({
                     state   : state,
                     data    : data,
+                    service : service,
                     bubbles : true
                 }, extra));
 
@@ -394,6 +395,7 @@ apf.auth = {
 
                 if (_self.dispatchEvent("log" + type + "fail", apf.extend({
                     error   : commError,
+                    service : service,
                     state   : state,
                     bubbles : true
                 }, extra)) !== false)
@@ -428,6 +430,7 @@ apf.auth = {
 
             _self.dispatchEvent("log" + type + "success", apf.extend({
                 state   : state,
+                service : service,
                 data    : data,
                 bubbles : true
             }, extra));

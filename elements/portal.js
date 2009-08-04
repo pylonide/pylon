@@ -542,7 +542,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
                 //@todo retry
                 if (!data || state != apf.SUCCESS) {
-                    createWidget("error", "<a:docklet xmlns:a='" + apf.ns.apf + "' name='dockerror'><a:script><![CDATA[function dockerror(){this.init=function(x,d){d.setAttribute('icon', '');d.setAttribute('title', 'Error')}}]]></a:script><a:body><a:label>Error loading this widget</a:label></a:body></a:docklet>", docklet, dataNode);
+                    createWidget("error", "<a:docklet xmlns:a='" + apf.ns.apf + "' name='dockerror'><a:script><![CDATA[function dockerror(){this.init=this.load=function(x,d){d.setAttribute('buttons', '');d.setAttribute('icon', '');d.setAttribute('title', 'Error')}}]]></a:script><a:body><a:label>Error loading this widget</a:label></a:body></a:docklet>", docklet, dataNode);
                     return true;
                 }
 

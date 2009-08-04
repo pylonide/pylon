@@ -280,7 +280,11 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     /**
      * Selects the text in this element.
      */
-    this.select   = function(){ this.oInt.select(); };
+    this.select   = function(){ 
+        try {
+            this.oInt.select(); 
+        }catch(e){}
+    };
 
     /**
      * Deselects the text in this element.
