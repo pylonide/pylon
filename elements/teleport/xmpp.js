@@ -138,7 +138,8 @@ apf.xmpp = function(){
         serverVars = {},
         bListening = false,
         tListener  = null,
-        sAJAX_ID   = makeUnique("ajaxRSB");
+        sAJAX_ID   = makeUnique("ajaxRSB"),
+        retryCount = 0;
 
     /**
      * Constructs a <body> tag that will be used according to XEP-0206, and
@@ -463,6 +464,20 @@ apf.xmpp = function(){
      * @private
      */
     function onError(nType, sMsg, nState) {
+        if (nType & apf.xmpp.ERROR_CONN) {
+            if (retryCount == 3) {
+                retryCount = 0;
+                clearTimeout(tListener);
+                tListener = null;
+                return _self.connect(getVar("username"), getVar("password"),
+                    getVar("register") || _self.autoRegister)
+            }
+            retryCount++;
+        }
+        else {
+            retryCount = 0;
+        }
+
         // #ifdef __DEBUG
         apf.console.log("[XMPP-" + (nType & apf.xmpp.ERROR_AUTH
             ? "AUTH"
@@ -470,7 +485,7 @@ apf.xmpp = function(){
         // #endif
         clearTimeout(tListener);
         tListener = null;
-        unregister("password");
+        //unregister("password");
 
         var extra = {
             username : getVar("username"),
@@ -578,6 +593,13 @@ apf.xmpp = function(){
      * @type {void}
      */
     this.reset = function() {
+        var oRoster = getVar("roster");
+        if (oRoster)
+            oRoster.reset();
+        // #ifdef __TP_XMPP_MUC
+        if (this.canMuc && this.$mucRoster)
+            this.$mucRoster.reset();
+        // #endif
         // unregister ALL variables with a trick:
         for (var i in serverVars)
             unregister(i);
@@ -622,6 +644,8 @@ apf.xmpp = function(){
         if (state != apf.SUCCESS)
             return onError(apf.xmpp.ERROR_CONN, extra.message, state);
 
+        // reset retry/ connection counter
+        retryCount = 0;
         //apf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.$isPoll) {
             register("SID", oXml.getAttribute("sid"));
@@ -935,7 +959,7 @@ apf.xmpp = function(){
             return onError(apf.xmpp.ERROR_AUTH);
 
         // the spec requires us to clear the password from our system(s)
-        unregister("password");
+        //unregister("password");
 
         var sAuth = createAuthBlock({});
         _self.$doXmlRequest(reOpenStream, _self.$isPoll
@@ -1220,7 +1244,7 @@ apf.xmpp = function(){
      * @type  {void}
      * @private
      */
-    function processStream(oXml) {
+    function processStream(oXml, state) {
         clearTimeout(tListener);
         tListener = null;
         parseData(oXml);
@@ -1385,7 +1409,6 @@ apf.xmpp = function(){
                     incomingAdd(aPresence[i].getAttribute("from"));
                 }
                 // record any status change...
-                apf.console.log("new status: " + sType + ", default: " + apf.xmpp.TYPE_AVAILABLE)
                 if (oUser)
                     oRoster.update(oUser, sType || apf.xmpp.TYPE_AVAILABLE);
             }

@@ -271,6 +271,13 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.getAllUsers = function() {
         return aEntities;
     };
+
+    this.reset = function() {
+        if (model)
+            model.reset();
+        aEntities = [];
+        this.username = this.domain = this.fullJID = "";
+    };
 };
 
 // #endif
