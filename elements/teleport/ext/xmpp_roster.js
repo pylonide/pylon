@@ -278,6 +278,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
         aEntities = [];
         this.username = this.domain = this.fullJID = "";
     };
+
+    this.sanitizeJID = function(sJID) {
+        return sJID.replace(/[\"\s\&\\\/\:<>]+/, "");
+    }
 };
 
 // #endif

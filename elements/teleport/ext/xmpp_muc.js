@@ -204,6 +204,7 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
+        sRoom = this.$mucRoster.sanitizeJID(sRoom);
         doRequest(function(oXml, state, extra) {
                 // @todo notify user
                 if (state != apf.SUCCESS || !this.$getStatusCode(oXml, 201))
@@ -238,6 +239,7 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
+        sRoom = this.$mucRoster.sanitizeJID(sRoom);
         this.getRoom(sRoom, function(bSuccess, oError) {
             if (bSuccess) //@todo should we provide a password input prompt?
                 return _self.joinRoom(sRoom, null, sNick);
