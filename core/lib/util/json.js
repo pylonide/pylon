@@ -65,9 +65,13 @@ apf.json2Xml = (function(){
                     for (i in v) {
                         if(i.charAt(0)!='@' && !apf.json2xml_Attr[i]){
                             if( typeof(m = v[i]) =='object'){
-                                xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
-                                jsonToXml(m, i,xml,true);
-                                xml.push("</",t.child,">");
+                                if(apf.json2xml_Obj[i]){
+                                    jsonToXml(m,i,xml);
+                                }else {
+                                    xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
+                                    jsonToXml(m, i,xml,true);
+                                    xml.push("</",t.child,">");
+                                }
                             } else {
                                 xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
                                 if(t.value){
@@ -113,7 +117,7 @@ apf.json2Xml = (function(){
 
 apf.xml2json = function (xml, noattrs) {
         // alright! lets go and convert our xml back to json.
-        var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t,name; 
+        var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t,cn1,u1,v1,t1,name; 
 
         if(!noattrs){
             if(m = (xml.attributes))for(u = 0,v = m.length; u < v; u++){
@@ -140,9 +144,21 @@ apf.xml2json = function (xml, noattrs) {
                 // lets enumerate the children
                 for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
                     if ((s = cn[u]).nodeType != 1) continue;
-                    if(w=s.getAttribute(t.key)){
-                        o[w] = (t.value==1?(s.childNodes.length?apf.xml2json(s,1):1):(s.getAttribute(t.value||'value')) || apf.xml2json(s,1));
-                    }
+                    
+                    if(t1 = apf.json2xml_Obj[s.nodeName]){
+                        var o2={};
+                        for(cn1 = s.childNodes, u1=0,v1 = cn1.length;u1<v1;u1++){
+                            if ((s1 = cn1[u1]).nodeType != 1) continue;
+                             if(w=s1.getAttribute(t1.key)){
+                                o2[w] = (t1.value==1?(s1.childNodes.length?apf.xml2json(s1,1):1):(s1.getAttribute(t1.value||'value')) || apf.xml2json(s1,1));
+                            }
+                        }
+                        o[s.nodeName]=o2;
+                    } else {
+                        if(w=s.getAttribute(t.key)){
+                            o[w] = (t.value==1?(s.childNodes.length?apf.xml2json(s,1):1):(s.getAttribute(t.value||'value')) || apf.xml2json(s,1));
+                        }
+                   }
                 }
             }else{
                 o =  apf.xml2json( n );
