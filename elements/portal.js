@@ -519,8 +519,14 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             + this.applyRuleSetOnNode("url", dataNode);
 
         if (!pHtmlNode) {
-            throw new Error(apf.formatErrorString(0, this, "Building docklet",
-                "Cannot find column to hook docklet on. Seems like a timing error"));
+            var cols = this.applyRuleSetOnNode("columns", this.xmlRoot)
+            if (cols && cols != this.columns)
+                this.setProperty("columns", cols);
+            pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
+            
+            if (!pHtmlNode) //@todo
+                throw new Error(apf.formatErrorString(0, this, "Building docklet",
+                    "Cannot find column to hook docklet on. Seems like a timing error"));
         }
 
         var docklet = getDockwin(dataNode, pHtmlNode);

@@ -440,10 +440,11 @@ apf.MultiselectCache = function(){
         }
         
         //@todo apf3.0 cleanup?
-        if (lastHeight)
-            oEmpty.style.height = Math.max(10, (lastHeight 
-                - apf.getHeightDiff(oEmpty) 
-                - apf.getHeightDiff(this.oExt))) + "px";
+        oEmpty.style.height = lastHeight && className != "empty"
+         ? (Math.max(10, (lastHeight 
+            - apf.getHeightDiff(oEmpty) 
+            - apf.getHeightDiff(this.oExt))) + "px")
+         : "";
 
         var empty = this.$getLayoutNode("empty", "caption", oEmpty);
 
