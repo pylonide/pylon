@@ -37,7 +37,9 @@ apf.json2Xml = (function(){
     var jsonToXml = function (v, name, xml, notag) {
         var i, n, m, t; 
         // do an apf warn
-
+        function cleanString(s){
+            return s.replace(/&/g,"&amp;").replace(/\</g,'&lt;').replace(/\>/g,'&gt;');
+        }
         if(!notag){
             if(name != (m=name.replace(/[^a-zA-Z0-9_-]/g, "_")))
                 apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + name, "json2Xml");
@@ -54,7 +56,7 @@ apf.json2Xml = (function(){
             for (i in v) {
                 if ((n=apf.json2xml_Attr[i]) || i.charAt(0)=='@'){
                     if(!n && !objAttr) objAttr = apf.json2xml_ObjByAttr[i.slice(1)];
-                    if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", v[i], "\"");
+                    if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", cleanString(v[i].toString()), "\"");
                 } else 
                    hasChild = true;
             }
@@ -68,9 +70,9 @@ apf.json2Xml = (function(){
                                 if(apf.json2xml_Obj[i]){
                                     jsonToXml(m,i,xml);
                                 }else {
-                                    xml.push("<",t.child," ",t.key,"=\"",i,"\" >");
+                                    xml.push("<",t.child," ",t.key,"=\"",cleanString(i.toString()),"\" >");
                                     jsonToXml(m, i,xml,true);
-                                    xml.push("</",t.child,">");
+                                    xml.push("</",t.child,">\n");
                                 }
                             } else {
                                 xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
@@ -78,13 +80,13 @@ apf.json2Xml = (function(){
                                     if(t.value==1)
                                         xml.push("/>");
                                     else
-                                        xml.push(t.value,"=\"",v[i],"\"/>");
+                                        xml.push(t.value,"=\"",cleanString(v[i].toString()),"\"/>");
                                 }else
-                                 xml.push(">",v[i],"</",t.child,">");
+                                 xml.push(">",cleanString(v[i].toString()),"</",t.child,">");
                             }
                         }
                     }
-                    if(!notag)xml.push("</",name,">");
+                    if(!notag)xml.push("</",name,">\n");
                 }else{
                     for (i in v) {
                         if (!apf.json2xml_Attr[i] && i.charAt(0)!='@'){
@@ -99,8 +101,8 @@ apf.json2Xml = (function(){
             }else if(!notag)xml.push("/>");
         }
         else {
-            if(!notag)xml.push("<", name, ">", v.toString().escapeHTML(), "</", name, ">");
-            else xml.push( v.toString().escapeHTML());
+            if(!notag)xml.push("<", name, ">", apf.xmlentities(v.toString()), "</", name, ">");
+            else xml.push( apf.xmlentities(v.toString()));
        }
     }
         
