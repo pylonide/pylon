@@ -226,7 +226,8 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
 
     function cacheDocklet(docklet){
         var srcUrl = docklet.$srcUrl;
-        if (!srcUrl) throw new Error("Something went terribly wrong"); //@todo
+        if (!srcUrl)
+            throw new Error("Something went terribly wrong"); //@todo
 
         //Cache settings panel
         var amlNodes = [], amlNode, widget = docklet_cache[srcUrl];
@@ -252,6 +253,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         
         widget.amlNodes = amlNodes;
         docklet.oSettings = docklet.oInt = null;
+        docklet.childNodes = [];//@todo hack!! apf3.0 - the childNodes array isnt cleaned correctly. The parsing sees this as that all the children are already rendered
         dockwin_cache.push(docklet);
         
         //Remove from document
@@ -262,7 +264,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     }
 
     this.$getCurrentFragment = function(){
-        var col, fragment = [];
+        var fr, col, fragment = [];
         for (var i = 0, l = this.$columns.length; i < l; i++) {
             col = this.$columns[i];
             for (var j = col.childNodes.length -1; j >= 0; j--) {
@@ -294,8 +296,23 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         return cacheNode.getElementById(id);
     };
 
+    var oEmpty;
     this.$setClearMessage = function(msg){
-        var oEmpty = apf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
+         if (!oEmpty) {
+            if (!this.$hasLayoutNode("empty"))
+                return;
+            
+            this.$getNewContext("empty");
+
+            var xmlEmpty = this.$getLayoutNode("empty");
+            if (!xmlEmpty) return;
+
+            oEmpty = apf.xmldb.htmlImport(xmlEmpty, this.oInt);
+        }
+        else {
+            this.oInt.appendChild(oEmpty);
+        }
+        
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
             apf.setNodeValue(empty, msg || "");
@@ -320,6 +337,11 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
                 srcUrl += "_";
             else break;
         }
+        
+        if (!widget && !strXml) {
+            srcUrl = "error";
+            widget = docklet_cache["error"];
+        }
 
         docklet.$getLayoutNode("main", "container", docklet.oExt)
             .innerHTML = "";
@@ -340,7 +362,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             if (docklet.oSettings)
                 docklet.oSettings.appendChild(widget.fragSettings);
             
-            var amlNodes = widget.amlNodes;
+            var amlNodes = widget.amlNodes || [];//@todo temp workaround apf3.0
             for (var i = 0, l = amlNodes.length; i < l; i++)
                 if (amlNodes[i].hasFeature)
                     docklet.appendChild(amlNodes[i], null, true);
@@ -432,6 +454,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             //if(skin == "dockblank") debugger;
             if (docklet.skin != skin)
                 docklet.$forceSkinChange(docklet.skin = skin);
+            docklet.show();
         }
         //Creating
         else {
@@ -512,33 +535,34 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
                 .innerHTML = "<div class='loading'>Loading...</div>";
             
             //@todo this should be getData (apf3.0)
-            apf.setModel(srcUrl, {
-                load: function(xmlNode){
-                    if (!xmlNode || this.isLoaded)
-                        return;
+            var model = new apf.model();
+            model.loadFrom(srcUrl, null, null, function(data, state, extra){
+                //if (this.isLoaded)
+                    //return true;
 
-                    //hmmm this is not as optimized as I'd like (going through the xml parser twice)
-                    var strXml = xmlNode.xml || xmlNode.serialize();
-
-                    //#ifdef __SUPPORT_SAFARI2
-                    if (apf.isSafariOld) {
-                        strXml = strXml.replace(/name/, "name='"
-                            + xmlNode.getAttribute("name") + "'");
-                        xml_cache[srcUrl] = strXml;
-                    }
-                    else 
-                    //#endif
-                    {
-                        xml_cache[srcUrl] = strXml;//xmlNode.cloneNode(true);
-                    }
-
-                    createWidget(srcUrl, strXml, docklet, dataNode);
-                    this.isLoaded = true;
-                },
-
-                setModel: function(model, xpath){
-                    model.register(this, xpath);
+                //@todo retry
+                if (!data || state != apf.SUCCESS) {
+                    createWidget("error", "<a:docklet xmlns:a='" + apf.ns.apf + "' name='dockerror'><a:script><![CDATA[function dockerror(){this.init=function(x,d){d.setAttribute('icon', '');d.setAttribute('title', 'Error')}}]]></a:script><a:body><a:label>Error loading this widget</a:label></a:body></a:docklet>", docklet, dataNode);
+                    return true;
                 }
+
+                //hmmm this is not as optimized as I'd like (going through the xml parser twice)
+                var strXml = data;//xmlNode.xml || xmlNode.serialize();
+
+                //#ifdef __SUPPORT_SAFARI2
+                if (apf.isSafariOld) {
+                    strXml = strXml.replace(/name/, "name='"
+                        + xmlNode.getAttribute("name") + "'");
+                    xml_cache[srcUrl] = strXml;
+                }
+                else 
+                //#endif
+                {
+                    xml_cache[srcUrl] = strXml;//xmlNode.cloneNode(true);
+                }
+
+                createWidget(srcUrl, strXml, docklet, dataNode);
+                this.isLoaded = true;
             });
         }
     };

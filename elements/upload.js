@@ -171,7 +171,7 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
      * Opens the browse window which allows the user to choose a file to upload.
      */
     this.browse = function(){
-        if (this.disabled)
+        if (this.disabled || !this.oExt.parentNode.offsetHeight) //@todo apf3.0
             return;
 
         this.inpFile.click();

@@ -229,6 +229,7 @@ apf.ContentEditable = function() {
                     rule    = model && model.$validation && model.$validation.getRule(xmlNode) || {multiline: false};
                 isDone      = !apf.isTrue(rule.multiline);
             }
+            e.returnValue = true;
         }
 
         _self.$visualFocus();

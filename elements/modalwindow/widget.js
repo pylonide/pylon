@@ -97,7 +97,7 @@ apf.modalwindow.widget = function(){
 
             _self.parentNode.$moveDocklet(_self);
             
-            if (!apf.supportOpacity)
+            if (!apf.supportOpacity || htmlNode.className.indexOf("dockblank") > -1) //@todo hack apf3.0
                 htmlNode.style.filter = "";
 
             if (_self.oInt)

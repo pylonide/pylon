@@ -74,7 +74,8 @@ apf.BaseTab = function(){
         this.setProperty("activepage", page);
     }
 
-    var inited = false,
+    var isLoading = {},
+        inited = false,
         ready  = false,
         _self  = this;
 
@@ -140,11 +141,15 @@ apf.BaseTab = function(){
 
         if (!page) {
             if (this.load) {
+                if (isLoading[next])
+                    return;
+                
                 if (this.$findPage("loading", {}))
                     this.$propHandlers["activepage"].call(this, "loading");
                 
                 this.setProperty("loading", true);
                 
+                isLoading[next] = true;
                 apf.getData(this.load, null, {
                     page : next
                 }, function(data, state, extra){

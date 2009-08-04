@@ -75,6 +75,8 @@ apf.jslt = apf.component(apf.NODE_VISIBLE, function(){
     
     var lastMsg, lastClass, changedHeight;
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
+        this.value = null;//@todo hack apf3.0
+        
         if (lastClass)
             this.$removeClearMessage();
         apf.setStyleClass(this.oExt, 
