@@ -248,7 +248,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
                 amlNodes.push(amlNode.removeNode(null, true));
         }
         var nodes = docklet.childNodes;
-        for (var i = 0; i < nodes.length; i++)
+        for (var i = nodes.length - 1; i >= 0; i--)
             amlNodes.push(nodes[i].removeNode(null, true));
         
         widget.amlNodes = amlNodes;
