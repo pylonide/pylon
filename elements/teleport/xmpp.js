@@ -1905,7 +1905,8 @@ apf.xmpp = function(){
             this.pollTimeout = parseInt(x.getAttribute("poll-timeout")) || 2000;
 
         this.timeout      = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.resource     = x.getAttribute("resource") || apf.appsettings.name;
+        this.resource     = apf.parseExpression(x.getAttribute("resource"))
+                             || apf.appsettings.name;
         this.autoRegister = apf.isTrue(x.getAttribute("auto-register"));
         this.autoConfirm  = apf.isFalse(x.getAttribute("auto-confirm"));
         this.autoDeny     = apf.isTrue(x.getAttribute("auto-deny"));
