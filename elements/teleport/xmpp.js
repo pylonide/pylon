@@ -516,7 +516,7 @@ apf.xmpp = function(){
         // #ifdef __TP_XMPP_MUC
         if (this.canMuc)
             this.$mucRoster.registerAccount(username, this.domain);
-
+        // #endif
         this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement(null, {
                 doOpen         : true,
