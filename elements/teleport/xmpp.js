@@ -805,7 +805,7 @@ apf.xmpp = function(){
      * @private
      */
     function processChallenge(oXml) {
-        if (oXml.getElementsByTagName("failure").length)
+        if (!oXml || oXml.getElementsByTagName("failure").length)
             return false; // authentication failed!
 
         var oChallenge = oXml.getElementsByTagName("challenge")[0];
