@@ -338,12 +338,12 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
 
         if (apf.isIE) return;
         
-        setTimeout(function() {
+        var timer = setInterval(function() {
             var oNode = _self.rel ? self[_self.rel] : null;
 
             _self.inpFile.onchange = function() { _self.browse(); };
 
-            if (oNode && oNode.oExt && oNode.oExt.style.position) {
+            if (oNode && oNode.oExt && oNode.oExt.offsetHeight) {
                 if (oNode.oExt.offsetWidth == 0 || oNode.oExt.offsetHeight == 0)
                     return;
                 var z = parseInt(oNode.oExt.style.zIndex) || 1;
@@ -356,8 +356,10 @@ apf.upload = apf.component(apf.NODE_VISIBLE, function(){
                 _self.inpFile.style.top      = oNode.oExt.offsetTop    + "px";
                 _self.inpFile.style.left     = oNode.oExt.offsetLeft   + "px";
                 // @todo: resize/ move on browser resize
+                
+                clearInterval(timer);
             }
-        });
+        }, 500);
     };
 
     /**

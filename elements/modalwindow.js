@@ -357,12 +357,12 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             // #endif
 
             if (this.oCover){
-			if (this.oCover && this.oCover.offsetParent) {
-                //@todo apf3.0 ie8 too high...
-                this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
-                    document.documentElement.offsetHeight) + 'px';
-                this.oCover.style.width  = this.oCover.offsetParent.scrollWidth + 'px';
-			}
+    			if (this.oCover.offsetParent) {
+                    //@todo apf3.0 ie8 too high...
+                    this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
+                        document.documentElement.offsetHeight) + 'px';
+                    this.oCover.style.width  = this.oCover.offsetParent.scrollWidth + 'px';
+    			}
                 this.oCover.style.display = "block";
             }
 
