@@ -37,12 +37,57 @@
  * @constructor
  */
 apf.xmpp_muc = function(){
-    var _self   = this;
+    var _self   = this,
+        mucVars = {};
     this.$mucRoster = new apf.xmpp_roster(this.oMucModel, {muc: true}, this.resource);
 
-    function doRequest(cb, sBody) {
-        if (!cb || !sBody) return;
-        _self.$doXmlRequest(cb, _self.$isPoll
+    /**
+     * Simple helper function to store session variables in the private space.
+     *
+     * @param {String} name
+     * @param {mixed}  value
+     * @type  {mixed}
+     * @private
+     */
+    function register(name, value) {
+        mucVars[name] = value;
+
+        return value;
+    }
+
+    /**
+     * Simple helper function to complete remove variables that have been
+     * stored in the private space by register()
+     *
+     * @param {String} name
+     * @type  {void}
+     * @private
+     */
+    function unregister() {
+        for (var i = 0, l = arguments.length, arg; i < l; i++) {
+            arg = arguments[i];
+            if (typeof mucVars[arg] != "undefined") {
+                mucVars[arg] = null;
+                delete mucVars[arg];
+            }
+        }
+    }
+
+    /**
+     * Simple helper function that retrieves a variable, stored in the private
+     * space.
+     *
+     * @param {String} name
+     * @type  {mixed}
+     * @private
+     */
+    function getVar(name) {
+        return mucVars[name] || "";
+    }
+
+    function doRequest(sBody) {
+        if (!sBody) return;
+        _self.$doXmlRequest(_self.$restartListener, _self.$isPoll
             ? _self.$createStreamElement(null, null, sBody)
             : _self.$createBodyElement({
                 rid   : _self.$getRID(),
@@ -64,10 +109,7 @@ apf.xmpp_muc = function(){
 
     this.queryRooms = function() {
         if (!this.canMuc || !this.$getVar("connected")) return;
-        doRequest(function(oXml) {
-                _self.$parseData(oXml);
-                _self.$listen();
-            }, this.$createIqBlock({
+        doRequest(this.$createIqBlock({
                 from  : this.$getVar("JID"),
                 to    : this.mucDomain,
                 type  : "get",
@@ -90,22 +132,13 @@ apf.xmpp_muc = function(){
     }
 
     this.queryRoomInfo = function(sRoom) {
-        // todo
+        // @todo Room info querying
     };
 
     this.getRoom = function(sRoom, callback) {
         if (!this.canMuc || !this.$getVar("connected")) return;
-        doRequest(function(oXml, state) {
-                if (state == apf.SUCCESS) {
-                    var aErrors = oXml.getElementsByTagName("error"),
-                        bFail   = aErrors.length ? true : false;
-                    if (!bFail)
-                        _self.$parseData(oXml);
-                    if (callback)
-                        callback(!bFail, bFail ? aErrors[0] : null);
-                }
-                _self.$listen();
-            }, this.$createIqBlock({
+        register("room_cb_" + sRoom, callback);
+        doRequest(this.$createIqBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom,
                 type  : "get",
@@ -113,6 +146,23 @@ apf.xmpp_muc = function(){
             }, "<query xmlns='" + apf.xmpp.NS.disco_items + "'/>")
         );
     };
+
+    this.$mucSignal = function(iType, sRoom) {
+        sRoom  = sRoom.replace(/\/.*$/, "");
+        var f  = "room_cb_" + sRoom,
+            cb = getVar(f);
+        unregister(f);
+        if (typeof cb != "function") return;
+        switch (iType) {
+            case apf.xmpp_muc.ROOM_CREATE:
+            case apf.xmpp_muc.ROOM_EXISTS:
+                cb(true);
+                break;
+            case apf.xmpp_muc.ROOM_NOTFOUND:
+                cb(false);
+                break;
+        }
+    }
 
     this.joinRoom = function(sRoom, sPassword, sNick) {
         // @todo check for reserved nickname as described in
@@ -122,10 +172,7 @@ apf.xmpp_muc = function(){
             sNick = this.$getVar("username");
         var parts = sRoom.split("@");
         this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
-        doRequest(function(oXml, state) {
-                _self.$parseData(oXml);
-                _self.$listen();
-            }, this.$createPresenceBlock({
+        doRequest(this.$createPresenceBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom + "/" + sNick
             },
@@ -139,10 +186,7 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
-        doRequest(function(oXml) {
-                _self.$parseData(oXml);
-                _self.$listen();
-            }, this.$createPresenceBlock({
+        doRequest(this.$createPresenceBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom + "/" + sNick
             }, sMsg ? "<status>" + sMsg + "</status>" : "")
@@ -155,10 +199,7 @@ apf.xmpp_muc = function(){
             sNewNick = this.username;
         var parts = sRoom.split("@");
         this.$mucRoster.registerAccount(parts[0], parts[1], sNewNick);
-        doRequest(function(oXml, state) {
-                _self.$parseData(oXml);
-                _self.$listen();
-            }, this.$createPresenceBlock({
+        doRequest(this.$createPresenceBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom + "/" + sNewNick
             })
@@ -169,7 +210,7 @@ apf.xmpp_muc = function(){
         var oUser = this.$getVar("roster").getEntityByJID(sJID);
         if (!oUser) return;
 
-        doRequest(this.$restartListener, createMessageBlock({
+        doRequest(createMessageBlock({
                 from : _self.$getVar("JID"),
                 to   : sRoom
             },
@@ -184,7 +225,7 @@ apf.xmpp_muc = function(){
         var oUser = this.$getVar("roster").getEntityByJID(sJID);
         if (!oUser) return;
 
-        doRequest(this.$restartListener, createMessageBlock({
+        doRequest(createMessageBlock({
                 from : _self.$getVar("JID"),
                 to   : sRoom
             },
@@ -196,7 +237,7 @@ apf.xmpp_muc = function(){
     };
 
     this.moderate = function(action, options) {
-
+        // @todo
     };
 
     this.createRoom = function(sRoom, sNick, callback) {
@@ -205,29 +246,33 @@ apf.xmpp_muc = function(){
         if (!sNick)
             sNick = this.$getVar("username");
         sRoom = this.$mucRoster.sanitizeJID(sRoom);
-        doRequest(function(oXml, state, extra) {
-                // @todo notify user
-                if (state != apf.SUCCESS || !this.$getStatusCode(oXml, 201))
-                    return _self.$listen();
-                _self.$parseData(oXml);
-                doRequest(function(oXml2) {
-                        var aErrors = oXml2.getElementsByTagName("error"),
-                            bFail   = aErrors.length ? true : false;
-                        if (!bFail)
-                            _self.$parseData(oXml2);
-                        if (callback)
-                            callback(!bFail, bFail ? aErrors[0] : null);
-                        _self.$listen();
-                    }, this.$createIqBlock({
-                        from  : this.$getVar("JID"),
-                        to    : sRoom,
-                        type  : "set",
-                        id    : this.$makeUnique("create")
-                    },
-                    "<query xmlns='" + apf.xmpp.NS.muc_owner + "'><x xmlns='"
-                    + apf.xmpp.NS.data + "' type='submit'/></query>")
-                );
-            }, this.$createPresenceBlock({
+        var parts = sRoom.split("@"),
+            f     = "room_cb_" + sRoom;
+        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
+
+        register(f, function(bSuccess) {
+            // @todo notify user
+            unregister(f);
+            if (!bSuccess)
+                return (typeof callback == "function" ? callback(bSuccess) : false);
+            register(f, function(bSuccess) {
+                unregister(f);
+                _self.$addRoom(sRoom, sRoom.substr(0, sRoom.indexOf("@")));
+                if (callback)
+                    callback(bSuccess);
+            });
+            doRequest(_self.$createIqBlock({
+                    from  : _self.$getVar("JID"),
+                    to    : sRoom,
+                    type  : "set",
+                    id    : _self.$makeUnique("create")
+                },
+                "<query xmlns='" + apf.xmpp.NS.muc_owner + "'><x xmlns='"
+                + apf.xmpp.NS.data + "' type='submit'/></query>")
+            );
+        });
+
+        doRequest(this.$createPresenceBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom + "/" + sNick
             },
@@ -239,12 +284,14 @@ apf.xmpp_muc = function(){
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
         if (!sNick)
             sNick = this.$getVar("username");
+        var parts = sRoom.split("@");
+        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
         sRoom = this.$mucRoster.sanitizeJID(sRoom);
-        this.getRoom(sRoom, function(bSuccess, oError) {
+        this.getRoom(sRoom, function(bSuccess) {
             if (bSuccess) //@todo should we provide a password input prompt?
                 return _self.joinRoom(sRoom, null, sNick);
-            _self.createRoom(sRoom, sNick, function(bSuccess, oError) {
-                if (bSuccess)
+            _self.createRoom(sRoom, sNick, function(bSuccess2) {
+                if (bSuccess2)
                     _self.joinRoom(sRoom, null, sNick);
             });
         });
@@ -252,7 +299,7 @@ apf.xmpp_muc = function(){
 
     this.destroyRoom = function(sRoom, sReason) {
         if (!sRoom || !this.canMuc || !this.$getVar("connected")) return;
-        doRequest(this.$restartListener, this.$createIqBlock({
+        doRequest(this.$createIqBlock({
                 from  : this.$getVar("JID"),
                 to    : sRoom,
                 type  : "set",
@@ -270,6 +317,12 @@ apf.xmpp_muc = function(){
     // @todo: implement all moderator features
     // @todo: implement all admin & owner features
 };
+
+apf.xmpp_muc.ROOM_CREATE    = 1;
+apf.xmpp_muc.ROOM_EXISTS    = 2;
+apf.xmpp_muc.ROOM_NOTFOUND  = 3;
+apf.xmpp_muc.ROOM_JOINED    = 4;
+apf.xmpp_muc.ROOM_LEFT      = 5;
 
 apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
 apf.xmpp_muc.ACTION_KICK    = 0x0002;

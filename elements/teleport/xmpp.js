@@ -386,6 +386,7 @@ apf.xmpp = function(){
     this.$createPresenceBlock = createPresenceBlock;
     this.$createMessageBlock  = createMessageBlock;
     this.$getVar              = getVar;
+    this.$regVar              = register;
     this.$getRID              = getRID;
 
     /**
@@ -1379,12 +1380,17 @@ apf.xmpp = function(){
                 aX   = aPresence[i].getElementsByTagName("x"),
                 bMuc = (sJID.indexOf(_self.mucDomain) > -1);
             // #ifdef __TP_XMPP_MUC
-            if (aX.length && _self.$isRoom(sJID)) {
+            if (aX.length) {
                 for (var o, k = 0, l2 = aX.length; k < l2; k++) {
                     switch (aX[k].getAttribute("xmlns")) {
                         case apf.xmpp.NS.muc_user:
+                            if (_self.$getStatusCode(aX[k], 201)) {
+                                _self.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sJID);
+                                break;
+                            }
                             // status code=110 means ME
-                            if (_self.$getStatusCode(aX[k], 110)) break;
+                            if (!_self.$isRoom(sJID) || _self.$getStatusCode(aX[k], 110))
+                                break;
                             o = aX[k].getElementsByTagName("item")[0];
                             if (!o) break;
                             _self.$mucRoster.getEntityByJID(sJID, {
@@ -1433,9 +1439,10 @@ apf.xmpp = function(){
         //#endif
 
         for (var i = 0, l = aIQs.length; i < l; i++) {
-            if (aIQs[i].getAttribute("type") != "result") continue;
+            if (aIQs[i].getAttribute("type") != "result"
+              && aIQs[i].getAttribute("type") != "error") continue;
             var aQueries = aIQs[i].getElementsByTagName("query"),
-                sFrom    = aIQs[i].getAttribute("to");
+                sFrom    = aIQs[i].getAttribute("from");
             for (var j = 0, l2 = aQueries.length; j < l2; j++) {
                 var aItems, k, l3;
                 switch (aQueries[j].getAttribute("xmlns")) {
@@ -1470,20 +1477,22 @@ apf.xmpp = function(){
                     // #ifdef __TP_XMPP_MUC
                     case apf.xmpp.NS.disco_items:
                         if (!_self.canMuc) break;
-                        /*
-                         Room(s):
-                         <query xmlns='http://jabber.org/protocol/disco#items'>
-                            <item jid='test@conference.somedomain.com' name='test (1)'/>
-                         </query>
-                         Room Occupant(s):
-                         <query xmlns='http://jabber.org/protocol/disco#items'>
-                            <item jid='contact1@somedomain.com'/>
-                         </query>
-                         */
+
+                        var aErrors = aIQs[i].getElementsByTagName("error");
+                        if (aErrors.length
+                          && parseInt(aErrors[0].getAttribute("code")) == 404) {
+                            // room not found, signal failure...
+                            _self.$mucSignal(apf.xmpp_muc.ROOM_NOTFOUND, sFrom);
+                            break;
+                        }
+
+                        // no error found, we continue...
                         aItems = aQueries[j].getElementsByTagName("item");
-                        sFrom  = aIQs[i].getAttribute("from");
-                        var oRoom = _self.$addRoom(sFrom, sFrom.substr(0, sFrom.indexOf("@"))),
+                        var oRoom = _self.$addRoom(sFrom, sFrom.split("@")[0]),
                             sJID;
+
+                        _self.$mucSignal(apf.xmpp_muc.ROOM_EXISTS, sFrom);
+
                         // @todo: add support for paging (<set> element)
                         for (k = 0, l3 = aItems.length; k < l3; k++) {
                             sJID  = aItems[k].getAttribute("jid");
@@ -1491,11 +1500,14 @@ apf.xmpp = function(){
                                 _self.$addRoomOccupant(sJID);
                             else if (aItems[k].hasAttribute("name"))
                                 oRoom.subscription = aItems[k].getAttribute("name");
-
                         }
                         break;
                     case apf.xmpp.NS.muc_user:
                         // @todo implement;
+                        break;
+                    case apf.xmpp.NS.muc_owner:
+                        _self.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sFrom);
+                        break;
                     // #endif
                     default:
                         break;
@@ -2009,7 +2021,8 @@ apf.xmpp.NS   = {
     disco_info : "http://jabber.org/protocol/disco#info",
     disco_items: "http://jabber.org/protocol/disco#items",
     muc        : "http://jabber.org/protocol/muc",
-    muc_user   : "http://jabber.org/protocol/muc#user"
+    muc_user   : "http://jabber.org/protocol/muc#user",
+    muc_owner  : "http://jabber.org/protocol/muc#owner"
 };
 
 apf.xmpp.CONN_POLL = 0x0001;

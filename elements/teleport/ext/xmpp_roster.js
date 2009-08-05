@@ -40,7 +40,9 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.resource = res;
     this.username = this.domain = this.fullJID = "";
 
-    var aEntities = [];
+    var aEntities = [],
+        userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
+                     "fullJID": 1, "status": 1};
 
     this.registerAccount = function(username, domain, resource) {
         if (!resource)
@@ -147,7 +149,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 affiliation : null,
                 role        : null,
                 group       : options.group || "",
-                status      : (bIsRoom) 
+                status      : (bIsRoom || (modelContent.muc && resource))
                     ? apf.xmpp.TYPE_AVAILABLE
                     : apf.xmpp.TYPE_UNAVAILABLE
             });
@@ -178,7 +180,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.update = function(oEnt, status) {
         if (!oEnt.xml) {
             var bIsAccount = (oEnt.node == this.username
-                              && oEnt.domain == this.domain);
+                              && oEnt.domain == this.domain
+                              && (!modelContent.muc || oEnt.resources.contains(this.resource)));
             aEntities.push(oEnt);
             // Update the model with the new User
             if (model && (modelContent.roster || modelContent.muc)) {
@@ -198,7 +201,6 @@ apf.xmpp_roster = function(model, modelContent, res) {
         return this.updateEntityXml(oEnt);
     };
 
-    var userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1, "fullJID": 1, "status": 1};
     /**
      * Propagate any change in the JID to the model to which the XMPP connection
      * is attached.
@@ -281,7 +283,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
 
     this.sanitizeJID = function(sJID) {
         return sJID.replace(/[\"\s\&\\\/\:<>]+/, "");
-    }
+    };
 };
 
 // #endif
