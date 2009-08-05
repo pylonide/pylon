@@ -101,9 +101,10 @@ apf.json2Xml = (function(){
             }else if(!notag)xml.push("/>");
         }
         else {
-            if(!notag)xml.push("<", name, ">", apf.xmlentities(v.toString()), "</", name, ">");
-            else xml.push( apf.xmlentities(v.toString()));
+            if(!notag)xml.push("<", name, ">", cleanString(v.toString()), "</", name, ">");
+            else xml.push( cleanString(v.toString()));
        }
+     
     }
         
     return function(strJson, noError, preserveWhiteSpace) {
@@ -112,7 +113,7 @@ apf.json2Xml = (function(){
           : strJson,
             xml = [], i;
         jsonToXml(o,"jsondoc", xml, false);
-        
+
         return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, true);//preserveWhiteSpace);//@todo apf3.0
     };
 })();

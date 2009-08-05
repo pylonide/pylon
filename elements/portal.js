@@ -441,8 +441,10 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var docklet;
         
         var columns = _self.applyRuleSetOnNode("columns", _self.xmlRoot);
-        if (columns != _self.columsn)
+        if (columns != _self.columsn) {
             _self.setProperty("columns", columns);
+            pHtmlNode = _self.$columns[_self.applyRuleSetOnNode("column", dataNode) || 0];
+        }
         
         if (docklet = dockwin_cache.pop()) {
             docklet.parentNode = _self;

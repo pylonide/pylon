@@ -469,7 +469,7 @@ apf.http = function(){
         function send(isLocal){
             var hasError;
 
-            if (isLocal && false) //@apf 3.0 determine the right behaviour
+            if (isLocal) //@apf 3.0 determine the right behaviour
                 http.send(data);
             else {
                 try{
