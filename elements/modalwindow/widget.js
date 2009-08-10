@@ -70,6 +70,9 @@ apf.modalwindow.widget = function(){
 
         if (!apf.hasStyleFilters)
             apf.tween.fade(htmlNode, 0.8);
+            
+        //if (_self.oInt && apf.hasSingleResizeEvent)
+            //apf.layout.forceResize(_self.oInt); //@todo recursive apf3.0
 
         apf.dragmode.mode = true; //simulate using dragmode
 
@@ -100,8 +103,8 @@ apf.modalwindow.widget = function(){
             if (!apf.supportOpacity || htmlNode.className.indexOf("dockblank") > -1) //@todo hack apf3.0
                 htmlNode.style.filter = "";
 
-            if (_self.oInt)
-                apf.layout.forceResize(_self.oInt); //@todo recursive apf3.0
+            if (_self.oExt) //apf.hasSingleResizeEvent)
+                apf.layout.forceResize(_self.oExt); //@todo recursive apf3.0
 
             apf.dragmode.mode = null;
         };

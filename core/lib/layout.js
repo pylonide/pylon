@@ -1465,6 +1465,12 @@ apf.layout = {
         var rsz = oHtml.onresize;
         if (rsz)
             rsz();
+
+        var els = oHtml.getElementsByTagName("*");
+        for (var i = 0, l = els.length; i < l; i++) {
+            if (els[i].onresize)
+                els[i].onresize();
+        }
     },
 
     paused : {},

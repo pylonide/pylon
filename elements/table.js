@@ -181,6 +181,28 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         update = true;
     });
     
+    this.$domHandlers["remove"].push(function(doOnlyAdmin){
+        if (!isWaitingOnDisplay)
+            return;
+
+        var p = _self;
+        while (p) {
+            p.unwatch("visible", propChange);
+            p = p.parentNode;
+        }
+    });
+    
+    this.$domHandlers["reparent"].push(function(doOnlyAdmin){
+        if (!isWaitingOnDisplay)
+            return;
+
+        var p = _self;
+        while (p) {
+            p.watch("visible", propChange);
+            p = p.parentNode;
+        }
+    });
+    
     //#ifdef __WITH_PROPERTY_WATCH
     function propChange(name, old, value){
         if (update && apf.isTrue(value) && _self.oExt.offsetHeight) {
@@ -192,6 +214,8 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
                 p.unwatch("visible", propChange);
                 p = p.parentNode;
             }
+            
+            isWaitingOnDisplay = false;
         }
     };
     //#endif
@@ -205,13 +229,16 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
             : expr;
     }
     
+    var isWaitingOnDisplay = false;
     this.$updateTable = function(){
         if (!update)
             return;
 
         //@todo when not visible make all property settings rule based
+        //@todo isnt there a better way for doing this? (faster)
         //#ifdef __WITH_PROPERTY_WATCH
         if (!this.oExt.offsetHeight) {
+            isWaitingOnDisplay = true;
             this.watch("visible", propChange);
             
             var p = this.parentNode;
