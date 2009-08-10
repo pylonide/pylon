@@ -152,11 +152,13 @@ Function.prototype.extend = function() {
  * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this, args = Array.prototype.slice.call(arguments), 
-        o  = args.shift(),
-        ev = args.shift();
+    var __method = this, 
+        args     = Array.prototype.slice.call(arguments),
+        o        = args.shift(),
+        ev       = args.shift();
     return function(event) {
-        if (!event) event = window.event;
+        if (!event)
+            event = window.event;
         // #ifdef __WITH_ABSTRACTEVENT
         if (ev !== false)
             event = new apf.AbstractEvent(event, window);
@@ -306,7 +308,7 @@ Array.prototype.pushUnique = function(item){
 };
 
 /**
- * Ruben: could you please comment on this function? Seems to serve a very
+ * @todo: Ruben: could you please comment on this function? Seems to serve a very
  * specific purpose...
  *
  * I also could not find an occurrence in our codebase.
@@ -362,7 +364,7 @@ Array.prototype.remove = function(obj){
  * @return {mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
-    if (!this.length) return;
+    if (!this.length) return null;
     return this.splice(i, 1);
 };
 
@@ -454,19 +456,9 @@ Array.prototype.join = Array.prototype.join || function(connect){
 
 //#endif
 
-/**
- * Transform a number to a string and pad it with a zero digit its length is one.
- *
- * @type {String}
- */
-Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
-    var n = this.toString();
-    return (n.length == 1) ? "0" + n : n;
-};
-
-/**
+/*
  * Attempt to fully comply (in terms of functionality) with the JS specification,
- * up till version 1.7:
+ * up 'till version 1.7:
  * @link http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array
  */
 
@@ -581,13 +573,16 @@ Math.hexToDec = function(value){
  *   >>> Math.uuid(8, 16) // 8 character ID (base=16)
  *   "098F4D35"
  *
- * @param {Number} length - the desired number of characters
- * @param {Number} radix  - the number of allowable values for each character.
+ * @param {Number} [len]   The desired number of characters. Defaults to rfc4122, version 4 form
+ * @param {Number} [radix] The number of allowable values for each character.
  * @type  {String}
  */
-Math.uuid = function (len, radix) {
-    var i, chars = Math.uuid.CHARS, uuid = [], rnd = Math.random;
-    radix = radix || chars.length;
+Math.uuid = function(len, radix) {
+    var i,
+        chars = Math.uuid.CHARS,
+        uuid  = [],
+        rnd   = Math.random;
+    radix     = radix || chars.length;
 
     if (len) {
         // Compact form
@@ -598,8 +593,8 @@ Math.uuid = function (len, radix) {
         // rfc4122, version 4 form
         var r;
         // rfc4122 requires these characters
-        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-        uuid[14] = '4';
+        uuid[8] = uuid[13] = uuid[18] = uuid[23] = "-";
+        uuid[14] = "4";
 
         // Fill in random data.  At i==19 set the high bits of clock sequence as
         // per rfc4122, sec. 4.1.5
@@ -611,12 +606,22 @@ Math.uuid = function (len, radix) {
         }
     }
 
-    return uuid.join('');
+    return uuid.join("");
 };
 //Public array of chars to use
-Math.uuid.CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+Math.uuid.CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
 
 // #endif
+
+/**
+ * Transform a number to a string and pad it with a zero digit its length is one.
+ *
+ * @type {String}
+ */
+Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
+    var n = this.toString();
+    return (n.length == 1) ? "0" + n : n;
+};
 
 RegExp.prototype.getNativeFlags = function() {
     return (this.global     ? "g" : "") +
@@ -633,14 +638,6 @@ RegExp.prototype.getNativeFlags = function() {
  */
 RegExp.prototype.addFlags = function(flags){
     return new RegExp(this.source, (flags || "") + this.getNativeFlags());
-    // unused XRegExp stuff:
-    /*if (this._x) {
-        regex._x = {
-            source:       this._x.source,
-            captureNames: this._x.captureNames ? this._x.captureNames.slice(0) : null
-        };
-    }
-    return regex;*/
 };
 
 /**
@@ -688,7 +685,7 @@ String.prototype.count = function(str){
  * @type {String}
  */
 String.prototype.stripTags = function() {
-    return this.replace(/<\/?[^>]+>/gi, '');
+    return this.replace(/<\/?[^>]+>/gi, "");
 };
 
 /**
@@ -720,14 +717,14 @@ if (typeof window != "undefined" && typeof window.document != "undefined"
      * @type {String}
      */
     String.prototype.unescapeHTML = function() {
-        var div = document.createElement('div');
+        var div = document.createElement("div");
         div.innerHTML = this.stripTags();
         if (div.childNodes[0]) {
             if (div.childNodes.length > 1) {
                 var out = [];
                 for (var i = 0; i < div.childNodes.length; i++)
                     out.push(div.childNodes[i].nodeValue);
-                return out.join('');
+                return out.join("");
             }
             else
                 return div.childNodes[0].nodeValue;
@@ -735,26 +732,26 @@ if (typeof window != "undefined" && typeof window.document != "undefined"
         return "";
     };
 
-    String.prototype.escapeHTML.div  = document.createElement('div');
-    String.prototype.escapeHTML.text = document.createTextNode('');
+    String.prototype.escapeHTML.div  = document.createElement("div");
+    String.prototype.escapeHTML.text = document.createTextNode("");
     String.prototype.escapeHTML.div.appendChild(String.prototype.escapeHTML.text);
 
-    if ('<\n>'.escapeHTML() !== '&lt;\n&gt;')
+    if ("<\n>".escapeHTML() !== "&lt;\n&gt;")
         String.prototype.escapeHTML = null;
 
-    if ('&lt;\n&gt;'.unescapeHTML() !== '<\n>')
+    if ("&lt;\n&gt;".unescapeHTML() !== "<\n>")
         String.prototype.unescapeHTML = null;
 }
 
 if (!String.prototype.escapeHTML) {
     String.prototype.escapeHTML = function() {
-        return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return this.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     };
 }
 
 if (!String.prototype.unescapeHTML) {
     String.prototype.unescapeHTML = function() {
-        return this.stripTags().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+        return this.stripTags().replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
     };
 }
 
@@ -774,10 +771,11 @@ String.prototype.truncate = function(nr, ellipsis){
 
 /**
  * Pad a string at the right or left end with a string 'pad' to a specific
- * number of characters.
+ * number of characters. Highly optimized version for speed, not readability.
  *
- * @param {Number} len
- * @param {String} pad
+ * @param {Number}  len   Specifies the amount of characters required to pad to.
+ * @param {String}  pad   Specifies the character(s) to pad the string with
+ * @param {Boolean} [dir] Specifies at which end to append the 'pad' character (left or right).
  * @type  {String}
  */
 String.prototype.pad = function(len, pad, dir) {
@@ -803,76 +801,6 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
         .split(new RegExp("[\\s ]*" + separator + "[\\s ]*", "g"), limit || 999);
 };
 
-var _oldSplit = String.prototype.split;
-/**
- * A consistent cross-browser, ECMA-262 v3 compliant split method
- * Fixes to native object:
- *   - Internet Explorer excludes almost all empty values from the resulting
- *     array (e.g. when two delimiters appear next to each other in the data,
- *     or when a delimiter appears at the start or end of the data).
- *     This behavior differs when using a string as the delimiter.
- *   - Internet Explorer and Safari do not splice the values of capturing groups
- *     into the returned array.
- *   - Firefox does not splice undefined values into the returned array as the
- *     result of non-participating capturing groups.
- *   - Internet Explorer, Safari, and Opera have various additional edge-case
- *     bugs where they do not follow the split specification.
- * @link http://stevenlevithan.com/regex/xregexp/#split
- *
- * @param {mixed} s        Seperator pattern can be either a String or RegExp
- * @param {Number} [limit] Limit the result set of the split action to a specific number
- * @type  {Array}
- 
-String.prototype.split = function(s, limit) {
-    // if separator is not a regex, use the native split method
-    if (!(s instanceof RegExp))
-        return _oldSplit.apply(this, arguments);
-
-    var output = [],
-        origLastIndex = s.lastIndex,
-        lastLastIndex = 0,
-        i = 0, match, lastLength;
-
-    // behavior for limit: if it's...
-    //    - undefined: no limit
-    //    - NaN or zero: return an empty array
-    //    - a positive number: use limit after dropping any decimal
-    //    - a negative number: no limit
-    //    - other: type-convert, then use the above rules
-    if (limit === undefined || +limit < 0) {
-        limit = false;
-    }
-    else {
-        limit = Math.floor(+limit);
-        if (!limit)
-            return [];
-    }
-
-    if (s.global)
-        s.lastIndex = 0;
-    else
-        s = s.addFlags("g");
-
-    while ((!limit || i++ <= limit) && (match = s.exec(this))) { // run the altered exec!
-        if (s.lastIndex > lastLastIndex) {
-            output = output.concat(this.slice(lastLastIndex, match.index));
-            if (1 < match.length && match.index < this.length)
-                output = output.concat(match.slice(1));
-            lastLength = match[0].length; // only needed if s.lastIndex === this.length
-            lastLastIndex = s.lastIndex;
-        }
-        if (!match[0].length)
-            s.lastIndex++; // avoid an infinite loop
-    }
-
-    // since this uses test(), output must be generated before restoring lastIndex
-    output = lastLastIndex === this.length ?
-        (s.test("") && !lastLength ? output : output.concat("")) :
-        (limit ? output : output.concat(this.slice(lastLastIndex)));
-    s.lastIndex = origLastIndex; // only needed if s.global, else we're working with a copy of the regex
-    return output;
-};*/
-
 /**
  * Appends a random number with a specified length to this String instance.
  *
@@ -881,12 +809,10 @@ String.prototype.split = function(s, limit) {
  * @type  {String}
  */
 String.prototype.appendRandomNumber = function(length) {
+    for (var arr = [], i = 1; i <= length; i++)
+        arr.push(apf.randomGenerator.generate(1, 9));
     // Create a new string from the old one, don't just create a copy
-    var source = this.toString();
-    for (var i = 1; i <= length; i++) {
-        source += apf.randomGenerator.generate(1, 9);
-    }
-    return source;
+    return this.toString() + arr.join("");
 };
 
 /**
@@ -897,12 +823,10 @@ String.prototype.appendRandomNumber = function(length) {
  * @type  {String}
  */
 String.prototype.prependRandomNumber = function(length) {
+    for (var arr = [], i = 1; i <= length; i++)
+        arr.push(apf.randomGenerator.generate(1, 9));
     // Create a new string from the old one, don't just create a copy
-    var source = this.toString();
-    for (var i = 1; i <= length; i++) {
-        source = apf.randomGenerator.generate(1, 9) + source;
-    }
-    return source;
+    return arr.join("") + this.toString();
 };
 
 /**
@@ -914,12 +838,13 @@ String.prototype.prependRandomNumber = function(length) {
  */
 String.prototype.sprintf = function() {
     // Create a new string from the old one, don't just create a copy
-    var str = this.toString();
-    var i = 0, inx = str.indexOf('%s');
+    var str = this.toString(),
+        i   = 0,
+        inx = str.indexOf("%s");
     while (inx >= 0) {
-        var replacement = arguments[i++] || ' ';
+        var replacement = arguments[i++] || " ";
         str = str.substr(0, inx) + replacement + str.substr(inx + 2);
-        inx = str.indexOf('%s');
+        inx = str.indexOf("%s");
     }
     return str;
 };

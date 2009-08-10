@@ -139,7 +139,8 @@ apf.xmpp = function(){
         bListening = false,
         tListener  = null,
         sAJAX_ID   = makeUnique("ajaxRSB"),
-        retryCount = 0;
+        retryCount = 0,
+        RID        = null;
 
     /**
      * Constructs a <body> tag that will be used according to XEP-0206, and
@@ -375,7 +376,9 @@ apf.xmpp = function(){
      * @private
      */
     function getRID() {
-        return register("RID", getVar("RID") + 1);
+        if (RID === null)
+            RID = parseInt("".appendRandomNumber(10));
+        return ++RID;
     }
 
     // expose functions to interfaces:
@@ -544,7 +547,7 @@ apf.xmpp = function(){
             : createBodyElement({
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
-                rid            : getVar("RID"),
+                rid            : RID,
                 to             : _self.domain,
                 route          : "xmpp:jabber.org:9999",
                 secure         : "true",
@@ -606,7 +609,7 @@ apf.xmpp = function(){
             unregister(i);
 
         // apply some initial values to the serverVars global scoped Array
-        register("RID",        parseInt("".appendRandomNumber(10)));
+        RID = null;
         register("cnonce",     generateCnonce(14));
         register("nc",         "00000001");
         register("bind_count", 1);
@@ -662,14 +665,21 @@ apf.xmpp = function(){
             sXmlns = oMech.getAttribute("xmlns");
         register("AUTH_SASL", (sXmlns && sXmlns == apf.xmpp.NS.sasl));
 
-        var aMechanisms = oXml.getElementsByTagName("mechanism"),
+        var aNodes = oXml.getElementsByTagName("mechanism"),
             sMech, i, found = false;
-        for (i = 0; i < aMechanisms.length && !found; i++) {
-            sMech = aMechanisms[i].firstChild.nodeValue;
+        for (i = 0; i < aNodes.length && !found; i++) {
+            sMech = aNodes[i].firstChild.nodeValue;
             if (sMech == "DIGEST-MD5" || sMech == "PLAIN") {
                 register("AUTH_TYPE", sMech);
                 found = true;
             }
+        }
+
+        // feature detection:
+        aNodes = oXml.getElementsByTagName("register");
+        for (i = 0; i < aNodes.length; i++) {
+            register("AUTH_REG",
+                (aNodes[i].getAttribute("xmlns") == apf.xmpp.NS.feature_reg));
         }
 
         if (!found) {
@@ -677,7 +687,9 @@ apf.xmpp = function(){
              "No supported authentication protocol found. We cannot continue!");
         }
 
-        return getVar("register") ? doRegRequest() : doAuthRequest();
+        return (getVar("AUTH_REG") && getVar("register"))
+            ? doRegRequest()
+            : doAuthRequest();
     }
 
     /**
@@ -1865,8 +1877,8 @@ apf.xmpp = function(){
             }, this.$isPoll
             ? createStreamElement(null, null, sMsg)
             : createBodyElement({
-                rid   : this.$getRID(),
-                sid   : this.$getVar("SID"),
+                rid   : getRID(),
+                sid   : getVar("SID"),
                 xmlns : apf.xmpp.NS.httpbind
             }, sMsg)
         );
@@ -2007,22 +2019,23 @@ apf.xmpp = function(){
 
 // Collection of shorthands for all namespaces known and used by this class
 apf.xmpp.NS   = {
-    sasl       : "urn:ietf:params:xml:ns:xmpp-sasl",
-    httpbind   : "http://jabber.org/protocol/httpbind",
-    bosh       : "urn:xmpp:xbosh",
-    jabber     : "jabber:client",
-    bind       : "urn:ietf:params:xml:ns:xmpp-bind",
-    session    : "urn:ietf:params:xml:ns:xmpp-session",
-    auth       : "jabber:iq:auth",
-    roster     : "jabber:iq:roster",
-    register   : "jabber:iq:register",
-    data       : "jabber:x:data",
-    stream     : "http://etherx.jabber.org/streams",
-    disco_info : "http://jabber.org/protocol/disco#info",
-    disco_items: "http://jabber.org/protocol/disco#items",
-    muc        : "http://jabber.org/protocol/muc",
-    muc_user   : "http://jabber.org/protocol/muc#user",
-    muc_owner  : "http://jabber.org/protocol/muc#owner"
+    sasl        :  "urn:ietf:params:xml:ns:xmpp-sasl",
+    httpbind    : "http://jabber.org/protocol/httpbind",
+    feature_reg : "http://jabber.org/features/iq-register",
+    bosh        : "urn:xmpp:xbosh",
+    jabber      : "jabber:client",
+    bind        : "urn:ietf:params:xml:ns:xmpp-bind",
+    session     : "urn:ietf:params:xml:ns:xmpp-session",
+    auth        : "jabber:iq:auth",
+    roster      : "jabber:iq:roster",
+    register    : "jabber:iq:register",
+    data        : "jabber:x:data",
+    stream      : "http://etherx.jabber.org/streams",
+    disco_info  : "http://jabber.org/protocol/disco#info",
+    disco_items : "http://jabber.org/protocol/disco#items",
+    muc         : "http://jabber.org/protocol/muc",
+    muc_user    : "http://jabber.org/protocol/muc#user",
+    muc_owner   : "http://jabber.org/protocol/muc#owner"
 };
 
 apf.xmpp.CONN_POLL = 0x0001;
