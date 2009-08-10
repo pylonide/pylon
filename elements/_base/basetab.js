@@ -1386,8 +1386,9 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
                   page.canHaveChildren = true;');
 
             var nameOrId = this.$aml.getAttribute("id") || this.$aml.getAttribute("name");
-            
-            if (this.parentNode.buttons == "close" && nameOrId) {
+            var closebtn = this.$aml.getAttribute("closebtn");
+
+            if ((closebtn == "true" || (this.parentNode.buttons == "close" && closebtn == null)) && nameOrId) {
                 var btncontainer = this.parentNode.$getLayoutNode("button", "btncontainer");
 
                 this.parentNode.$getNewContext("btnclose");
