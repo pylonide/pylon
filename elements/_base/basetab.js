@@ -329,11 +329,6 @@ apf.BaseTab = function(){
         var page = this.$findPage(nameOrId);
         if (!page)
             return false;
-
-        var pages = this.getPages();
-        if (pages.length == 1) {
-            this.$removeTabFooter();
-        }
         
         page.removeNode();
 
@@ -342,19 +337,6 @@ apf.BaseTab = function(){
         // #endif
         return page;
     };
-    
-    this.$removeTabFooter = function() {
-        var nodes = this.oExt.childNodes, l = nodes.length;
-        
-        for (var i = 0; i < l; i++) {
-            if ((nodes[i].className || "").indexOf("tabFooter") > -1) {
-                nodes[i].parentNode.removeChild(nodes[i]);
-                return true;
-            }
-        }
-        
-        return false;
-    }
 
     // #ifdef __ENABLE_TABSCROLL
     
@@ -1092,6 +1074,8 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
     this.visible         = true;
     this.canHaveChildren = true;
     this.$focussable     = false;
+    this.buttons         = false;
+    this.closebtn        = false;
 
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
@@ -1136,7 +1120,17 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
-    this.$supportedProperties.push("fake", "caption", "icon", "type");
+    this.$booleanProperties["closebtn"] = true;
+    this.$supportedProperties.push("fake", "caption", "icon", 
+        "type", "buttons", "closebtn");
+
+    this.$propHandlers["buttons"] = function(value){
+        this.buttons = value;
+    };
+    
+    this.$propHandlers["closebtn"] = function(value){
+        this.closebtn = value;
+    };
 
     /**
      * @attribute {String} caption the text displayed on the button of this element.
@@ -1390,12 +1384,25 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
                   o.$setStyleClass(this, "", ["over"]);\
                   var page = apf.lookup(' + this.uniqueId + ');\
                   page.canHaveChildren = true;');
-            
+
             var nameOrId = this.$aml.getAttribute("id") || this.$aml.getAttribute("name");
-            var elBtnClose = this.parentNode.$getLayoutNode("button", "btnClose");
-            elBtnClose.setAttribute("onclick",
-                'var page = apf.lookup(' + this.uniqueId + ');\
-                 page.parentNode.remove(' + nameOrId + ');');
+            
+            if (this.parentNode.buttons == "close" && nameOrId) {
+                var btncontainer = this.parentNode.$getLayoutNode("button", "btncontainer");
+
+                this.parentNode.$getNewContext("btnclose");
+                var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
+                
+                if (!elBtnClose)
+                    return;
+                    
+                elBtnClose.setAttribute("onclick",
+                    'var page = apf.lookup(' + this.uniqueId + ');\
+                     page.parentNode.remove(' + nameOrId + ');');
+                     
+                btncontainer.appendChild(elBtnClose);
+            }
+            
 
             this.oButton = apf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
 
@@ -1437,7 +1444,6 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
         if (this.oButton) {
             this.oButton.host = null;
             this.oButton = null;
-            this.$first();
         }
     };
 }).implement(
