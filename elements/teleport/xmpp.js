@@ -571,7 +571,12 @@ apf.xmpp = function(){
      */
     this.disconnect = function(callback) {
         if (getVar("connected")) {
-            register("logout_callback", callback);
+            if (callback)
+                register("logout_callback", callback);
+            // #ifdef __TP_XMPP_MUC
+            if (this.canMuc)
+                this.leaveAllRooms();
+            // #endif
             this.$doXmlRequest(processDisconnect, this.$isPoll
                 ? createStreamElement(null, {
                     doClose: true
@@ -586,7 +591,8 @@ apf.xmpp = function(){
         }
         else {
             this.reset();
-            callback(null, apf.SUCCESS);
+            if (callback)
+                callback(null, apf.SUCCESS);
         }
     };
 
@@ -2015,6 +2021,10 @@ apf.xmpp = function(){
                     new Function(attr[i].nodeValue));
         }
     };
+
+    this.$desroy = function() {
+        this.disconnect();
+    };
 };
 
 // Collection of shorthands for all namespaces known and used by this class
@@ -2043,6 +2053,7 @@ apf.xmpp.CONN_BOSH = 0x0002;
 
 apf.xmpp.ERROR_AUTH = 0x0004;
 apf.xmpp.ERROR_CONN = 0x0008;
+apf.xmpp.ERROR_MUC  = 0x0010;
 
 apf.xmpp.SUBSCR_FROM = "from";
 apf.xmpp.SUBSCR_TO   = "to";

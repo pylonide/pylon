@@ -188,9 +188,19 @@ apf.xmpp_muc = function(){
             sNick = this.$getVar("username");
         doRequest(this.$createPresenceBlock({
                 from  : this.$getVar("JID"),
-                to    : sRoom + "/" + sNick
+                to    : sRoom + "/" + sNick,
+                type  : apf.xmpp.TYPE_UNAVAILABLE
             }, sMsg ? "<status>" + sMsg + "</status>" : "")
         );
+    };
+
+    this.leaveAllRooms = function(sMsg, sNick) {
+        if (!this.canMuc || !this.$getVar("connected")) return;
+        if (!sNick)
+            sNick = this.$getVar("username");
+        var i, l, aRooms = this.$mucRoster.getRooms();
+        for (i = 0, l = aRooms.length; i < l; i++)
+            this.leaveRoom(aRooms[i].node, sMsg, sNick);
     };
 
     this.changeNick = function(sRoom, sNewNick) {

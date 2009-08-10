@@ -27,6 +27,7 @@
  * The Roster is a centralised registry for Jabber ID's (JID) to which
  * the user subscribed. Whenever the presence info of a JID changes, the roster
  * will get updated accordingly.
+ * @todo implement removal of entities
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -41,6 +42,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.username = this.domain = this.fullJID = "";
 
     var aEntities = [],
+        aRooms    = [],
         userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
                      "fullJID": 1, "status": 1};
 
@@ -183,6 +185,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
                               && oEnt.domain == this.domain
                               && (!modelContent.muc || oEnt.resources.contains(this.resource)));
             aEntities.push(oEnt);
+            if (oEnt.isRoom)
+                aRooms.push(oEnt);
             // Update the model with the new User
             if (model && (modelContent.roster || modelContent.muc)) {
                 oEnt.xml = model.data.ownerDocument.createElement(bIsAccount
@@ -268,6 +272,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
         }
 
         return null;
+    };
+
+    this.getRooms = function() {
+        return aRooms;
     };
 
     this.getAllUsers = function() {
