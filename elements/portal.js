@@ -229,6 +229,9 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         if (!srcUrl)
             throw new Error("Something went terribly wrong"); //@todo
 
+        if (docklet.$dockletClass.$unload)
+            docklet.$dockletClass.$unload();
+
         //Cache settings panel
         var amlNodes = [], amlNode, widget = docklet_cache[srcUrl];
         if (docklet.oSettings) {

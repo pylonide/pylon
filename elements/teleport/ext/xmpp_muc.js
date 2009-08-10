@@ -200,7 +200,7 @@ apf.xmpp_muc = function(){
             sNick = this.$getVar("username");
         var i, l, aRooms = this.$mucRoster.getRooms();
         for (i = 0, l = aRooms.length; i < l; i++)
-            this.leaveRoom(aRooms[i].node, sMsg, sNick);
+            this.leaveRoom(aRooms[i].bareJID, sMsg, sNick);
     };
 
     this.changeNick = function(sRoom, sNewNick) {
