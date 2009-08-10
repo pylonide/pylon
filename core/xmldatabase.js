@@ -460,7 +460,8 @@ apf.XmlDatabase = function(){
         if (undoObj)
             this.cleanNode(xmlNode);
 
-        if (apf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument)
+        // @todo: only do this once!
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         //Add xmlNode to parent pNode or one selected by xpath statement
