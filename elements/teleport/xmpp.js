@@ -378,7 +378,7 @@ apf.xmpp = function(){
     function getRID() {
         if (RID === null)
             RID = parseInt("".appendRandomNumber(10));
-        return ++RID;
+        return RID++;
     }
 
     // expose functions to interfaces:
@@ -547,7 +547,7 @@ apf.xmpp = function(){
             : createBodyElement({
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
-                rid            : RID,
+                rid            : getRID(),
                 to             : _self.domain,
                 route          : "xmpp:jabber.org:9999",
                 secure         : "true",
