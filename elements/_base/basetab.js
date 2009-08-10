@@ -330,13 +330,31 @@ apf.BaseTab = function(){
         if (!page)
             return false;
 
-        page.removeNode();
+        var pages = this.getPages();
+        if (pages.length == 1) {
+            this.$removeTabFooter();
+        }
         
+        page.removeNode();
+
         // #ifdef __ENABLE_TABSCROLL
         this.setScrollerState();
         // #endif
         return page;
     };
+    
+    this.$removeTabFooter = function() {
+        var nodes = this.oExt.childNodes, l = nodes.length;
+        
+        for (var i = 0; i < l; i++) {
+            if ((nodes[i].className || "").indexOf("tabFooter") > -1) {
+                nodes[i].parentNode.removeChild(nodes[i]);
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     // #ifdef __ENABLE_TABSCROLL
     
@@ -1372,6 +1390,13 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
                   o.$setStyleClass(this, "", ["over"]);\
                   var page = apf.lookup(' + this.uniqueId + ');\
                   page.canHaveChildren = true;');
+            
+            var nameOrId = this.$aml.getAttribute("id") || this.$aml.getAttribute("name");
+            var elBtnClose = this.parentNode.$getLayoutNode("button", "btnClose");
+            elBtnClose.setAttribute("onclick",
+                'var page = apf.lookup(' + this.uniqueId + ');\
+                 page.parentNode.remove(' + nameOrId + ');');
+
             this.oButton = apf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
@@ -1412,6 +1437,7 @@ apf.page = apf.component(apf.NODE_HIDDEN, function(){
         if (this.oButton) {
             this.oButton.host = null;
             this.oButton = null;
+            this.$first();
         }
     };
 }).implement(
