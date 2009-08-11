@@ -109,9 +109,9 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
         else 
             oItem.setAttribute("onmousedown", "apf.lookup(" + this.uniqueId 
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
-        
+
         oItem = apf.xmldb.htmlImport(oItem, oContainer, null, true);
-        this.$getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
+        this.$getLayoutNode("item", "background", oItem).style.backgroundColor = "#"+clr;
     };
     
     this.$setCustom = function(oItem, clr){
