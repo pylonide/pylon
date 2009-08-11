@@ -322,8 +322,12 @@ apf.language = {
     #endif
     */
     addElement: function(key, oEl){
-        if (this.words[key] && oEl.amlNode && oEl.prop)
-            oEl.amlNode.setProperty(oEl.prop, this.words[key], null, true);
+        if (this.words[key] && oEl.amlNode) {
+            if (oEl.prop)
+                oEl.amlNode.setProperty(oEl.prop, this.words[key], null, true);
+            else
+                oEl.htmlNode.innerHTML = this.words[key];
+        }
 
         if (!this.elements[key])
             this.elements[key] = [];
