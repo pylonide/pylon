@@ -161,8 +161,14 @@ apf.language = {
             prefix = xmlNode.getAttribute("id") || "";
 
         if (xmlNode.tagName == "key") {
-            prefix += "." + xmlNode.getAttribute("id");
-            this.update(prefix, xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "");
+            var val     = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "",
+                aliases = xmlNode.getAttribute("aliases");
+            this.update(prefix + "." + xmlNode.getAttribute("id"), val);
+            if (aliases) {
+                aliases = aliases.splitSafe(",");
+                for (var i = 0, l = aliases.length; i < l; i++)
+                    this.update(prefix + "." + aliases[i], val);
+            }
             return;
         }
 
@@ -171,8 +177,8 @@ apf.language = {
             prefix += (prefix ? "." : "") + xmlNode.getAttribute("id");
 
         var nodes = xmlNode.childNodes;
-        for (var i = 0; i < nodes.length; i++)
-            this.parseSection(nodes[i], prefix);
+        for (var j = 0; j < nodes.length; j++)
+            this.parseSection(nodes[j], prefix);
     },
     
     $marked : {},
