@@ -467,11 +467,11 @@ apf.Class = function(){
                 
                 delete this.$isMultiLang[prop];
             }
-            
-            if (/^\$(.*)\$$/.test(value)) {
-                this.$isMultiLang[prop] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
+            var m = (typeof value == "string") ? value.match(/^\$(.*)\$$/) : null;
+            if (m && m[1]) {
+                this.$isMultiLang[prop] = [m[1], apf.language.addElement(m[1], {
                     amlNode: this,
-                    prop : prop
+                    prop   : prop
                 })];
                 return;
             }
