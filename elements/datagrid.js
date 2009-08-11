@@ -1136,6 +1136,16 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 
             //nodes.push(oHead);
             h.htmlNode = apf.xmldb.htmlImport(oHead, this.oHead);
+            
+            //#ifdef __WITH_LANG_SUPPORT
+            /^\$(.*)\$$/.test(h.caption)
+            if (RegExp.$1) {
+                apf.language.addElement(RegExp.$1, {
+                    amlNode  : this,
+                    htmlNode : this.$getLayoutNode("headitem", "caption", h.htmlNode)
+                });
+            }
+            //#endif
         }
         
         //apf.xmldb.htmlImport(nodes, this.oHead);

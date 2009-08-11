@@ -552,7 +552,7 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
                     .replace(/<\/\s*[^>]*>$/, "");
             }
 
-            this.$handlePropSet("label", content);
+            this.setProperty("label", content);
         }
 
         if (!this.radiogroup) {

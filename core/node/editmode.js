@@ -325,6 +325,8 @@ apf.language = {
         if (this.words[key] && oEl.amlNode) {
             if (oEl.prop)
                 oEl.amlNode.setProperty(oEl.prop, this.words[key], null, true);
+            else if (oEl.htmlNode.nodeType == 3)
+                oEl.htmlNode.nodeValue = this.words[key];
             else
                 oEl.htmlNode.innerHTML = this.words[key];
         }
