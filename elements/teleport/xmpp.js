@@ -118,7 +118,7 @@ apf.xmpp = function(){
         this.implement(apf.BaseComm, apf.http);
     }
 
-    /**
+    /*
      * Append any string with an underscore '_' followed by a five character
      * long random number sequence.
      *
@@ -142,7 +142,7 @@ apf.xmpp = function(){
         retryCount = 0,
         RID        = null;
 
-    /**
+    /*
      * Constructs a <body> tag that will be used according to XEP-0206, and
      * the more official RFCs.
      *
@@ -164,7 +164,7 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    /**
+    /*
      * Constructs a <stream> tag that will be used when polling is active instead
      * of the regular BOSH implementation.
      *
@@ -197,7 +197,7 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    /**
+    /*
      * A cnonce parameter is used by the SASL implementation to do some
      * additional client-server key exchange. You can say that this is the
      * part of the handshake that is powered by the client (i.e. 'us').
@@ -214,7 +214,7 @@ apf.xmpp = function(){
         return sCnonce;
     }
 
-    /**
+    /*
      * Create a <response> tag completely according to the SASL rules as
      * described in RFC 2617.
      *
@@ -235,7 +235,7 @@ apf.xmpp = function(){
             + apf.crypto.Base64.encode(sOut) + "</response>";
     }
 
-    /**
+    /*
      * Create an <iq> message node which is part of the XMPP standard base
      * specification and may contain session data, bind/ stream information
      * and presence.
@@ -258,7 +258,7 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    /**
+    /*
      * Create a <presence> message which is part of the XMPP standard base
      * specification and is used to transfer presence information (state of a
      * user) across the roster.
@@ -293,7 +293,7 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    /**
+    /*
      * Create a <presence> message which is part of the XMPP standard base
      * specification and may contain text messages, usually for instant
      * messaging applications.
@@ -324,7 +324,7 @@ apf.xmpp = function(){
         return aOut.join("");
     }
 
-    /**
+    /*
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
@@ -338,7 +338,7 @@ apf.xmpp = function(){
         return value;
     }
 
-    /**
+    /*
      * Simple helper function to complete remove variables that have been
      * stored in the private space by register()
      *
@@ -356,7 +356,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * Simple helper function that retrieves a variable, stored in the private
      * space.
      *
@@ -368,7 +368,7 @@ apf.xmpp = function(){
         return serverVars[name] || "";
     }
 
-    /**
+    /*
      * Special version of getVar('RID'), because RID needs to upped by one each
      * time a request is sent to the XMPP server.
      *
@@ -392,7 +392,7 @@ apf.xmpp = function(){
     this.$regVar              = register;
     this.$getRID              = getRID;
 
-    /**
+    /*
      * Generic function that provides a basic method for making HTTP calls to
      * the XMPP server and processing the response in retries, error messages
      * or through a custom callback.
@@ -453,7 +453,7 @@ apf.xmpp = function(){
             });
     };
 
-    /**
+    /*
      * ERROR_AUTH: Something went wrong during the authentication process; this function
      *             provides a central mechanism for dealing with this situation
      *
@@ -518,8 +518,12 @@ apf.xmpp = function(){
      * Connect to the XMPP server with a username and password combination
      * provided.
      *
-     * @param {String} username
-     * @param {String} password
+     * @param {String}   username   Name of the user on the XMPP server Virtual
+     *                              Host
+     * @param {String}   password   Password of the user
+     * @param {Boolean}  [reg]      Specifies whether to auto-register a new user
+     * @param {Function} [callback] Function that will be called after the Async
+     *                              login request
      * @type  {void}
      */
     this.connect = function(username, password, reg, callback) {
@@ -539,7 +543,7 @@ apf.xmpp = function(){
         this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement(null, {
                 doOpen         : true,
-                to             : _self.domain,
+                to             : this.domain,
                 xmlns          : apf.xmpp.NS.jabber,
                 "xmlns:stream" : apf.xmpp.NS.stream,
                 version        : "1.0"
@@ -548,7 +552,7 @@ apf.xmpp = function(){
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
                 rid            : getRID(),
-                to             : _self.domain,
+                to             : this.domain,
                 route          : "xmpp:jabber.org:9999",
                 secure         : "true",
                 wait           : "120",
@@ -566,7 +570,8 @@ apf.xmpp = function(){
      * 'pause' attribute when using BOSH. Poll-based connection only need to
      * stop polling.
      *
-     * @param {Function} callback Data instruction callback
+     * @param {Function} callback Data instruction callback that will be called
+     *                            after the Async request
      * @type {void}
      */
     this.disconnect = function(callback) {
@@ -627,7 +632,7 @@ apf.xmpp = function(){
         register("mess_count", 0);
     };
 
-    /**
+    /*
      * A new stream has been created, now we need to process the response body.
      *
      * Example:
@@ -698,7 +703,7 @@ apf.xmpp = function(){
             : doAuthRequest();
     }
 
-    /**
+    /*
      * In-Band registration support; allows for automatically registering a
      * username to the XMPP server and direct login.
      * @see http://xmpp.org/extensions/attic/jep-0077-2.0.html
@@ -741,7 +746,7 @@ apf.xmpp = function(){
         );
     }
 
-    /**
+    /*
      * Proceeds with the authentication process after establishing a connection
      * or stream to the server OR after a successful In-Band registration
      * We also support Non-SASL Authentication
@@ -791,7 +796,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * The connection has been terminated (set to state 'paused'). Theoretically
      * it could be resumed, but doing a complete reconnect would be more secure
      * and stable for RSB and other implementations that rely on stable stream
@@ -814,7 +819,7 @@ apf.xmpp = function(){
             cb(oXml, state, extra);
     }
 
-    /**
+    /*
      * Check the response from the server to a challenge our connection manager
      * set up. When a <failure> node is detected, it means that the challenge
      * failed and thereby the authentication as well.
@@ -846,7 +851,7 @@ apf.xmpp = function(){
         return true;
     }
 
-    /**
+    /*
      * The first challenge result should be be processed here and the second
      * challenge is sent to the server
      *
@@ -955,7 +960,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * The second a last part of the authentication process (handshake) should
      * be processed here. If the handshake was successful, we can close the
      * authentication/ handshake process.
@@ -991,7 +996,7 @@ apf.xmpp = function(){
         );
     }
 
-    /**
+    /*
      * Check if the authentication process has been closed and confirmed by the
      * XMPP server. If successful, we can start listening for incoming messages.
      *
@@ -1077,7 +1082,7 @@ apf.xmpp = function(){
         );
     };
 
-    /**
+    /*
      * Checks if the request to bind the message stream with the the current
      * user was successful and if YES, then we store the full Jabber ID (JID)
      * and can start listening for incoming messages.
@@ -1128,7 +1133,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * On connect, the presence of the user needs to be broadcasted to all the
      * nodes in the roster to 'available' (or whatever the default status is).
      * The response of this presence callback is also the indicator for any
@@ -1159,7 +1164,7 @@ apf.xmpp = function(){
         );
     }
     // #ifdef __TP_XMPP_ROSTER
-    /**
+    /*
      * Retrieve the roster information from the XMPP server. The roster contains
      * a list of nodes to which user has subscribed to. Each roster item will
      * contain presence information and optionally group metadata.
@@ -1224,7 +1229,7 @@ apf.xmpp = function(){
         );
     };
 
-    /**
+    /*
      * If there is no proof that the 'listener' thread (or http connection) is
      * still open, reconnect it after the current callback sequence has completed
      * (hence the 'setTimeout' call).
@@ -1255,7 +1260,7 @@ apf.xmpp = function(){
 
     this.$restartListener = restartListener;
 
-    /**
+    /*
      * Handle the result of the stream listener and messages that arrived need
      * to be processed.
      *
@@ -1279,7 +1284,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * Parse the XML envelope received from the XMPP server. Since one XML
      * envelope may contain more than one message type, no if...else block can
      * be found (we check for all possible message types).
@@ -1297,10 +1302,6 @@ apf.xmpp = function(){
 
             var aPresence = oXml.getElementsByTagName("presence");
             
-            //#ifdef __DEBUG
-            apf.console.info("Number of <PRESENCE> elements: " + aPresence.length, "xmpp");
-            //#endif
-            
             if (aPresence.length)
                 parsePresencePackets(aPresence);
 
@@ -1316,7 +1317,7 @@ apf.xmpp = function(){
 
     this.$parseData = parseData;
 
-    /**
+    /*
      * One or more (instant-)messages have are arrived that need to be processed
      * and parsed to eventually show up in the GUI
      *
@@ -1326,14 +1327,14 @@ apf.xmpp = function(){
      * @private
      */
     function parseMessagePackets(aMessages) {
-        var i, sJID, oUser, oBody, bRoom;
+        var i, sJID, oBody, bRoom;
 
         for (i = 0; i < aMessages.length; i++) {
             sJID = aMessages[i].getAttribute("from");
             bRoom = (aMessages[i].getAttribute("type") == "groupchat");
             // #ifdef __TP_XMPP_ROSTER
             if (sJID && !bRoom)
-                oUser = getVar("roster").getEntityByJID(sJID); //unsed var...yet?
+                getVar("roster").getEntityByJID(sJID); //unsed var...yet?
             // #endif
 
             if (aMessages[i].getAttribute("type") == "chat" || bRoom) {
@@ -1378,7 +1379,7 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * One or more Presence messages have arrived that indicate something has
      * changed in the roster, e.g. the status of a node changed, a node was
      * disconnected, etc. All of these messages will update the local Roster.
@@ -1390,7 +1391,7 @@ apf.xmpp = function(){
      */
     function parsePresencePackets(aPresence) {
         //#ifdef __DEBUG
-        apf.console.info("parsePresencePacket: " + aPresence.length, "xmpp");
+        apf.console.info("parsePresencePackets: " + aPresence.length, "xmpp");
         //#endif
         // #ifdef __TP_XMPP_ROSTER
         for (var i = 0, l = aPresence.length; i < l; i++) {
@@ -1440,7 +1441,7 @@ apf.xmpp = function(){
         // #endif
     }
 
-    /**
+    /*
      * One or more Iq messages have arrived that notify the user of system wide
      * events and results of its actions, e.g. the failure or success of setting
      * presence, connection errors, probe for supported features of nodes results,
@@ -1453,7 +1454,7 @@ apf.xmpp = function(){
      */
     function parseIqPackets(aIQs) {
         //#ifdef __DEBUG
-        apf.console.info("parseIqPacket: " + aIQs.length, "xmpp");
+        apf.console.info("parseIqPackets: " + aIQs.length, "xmpp");
         //#endif
 
         for (var i = 0, l = aIQs.length; i < l; i++) {
@@ -1691,14 +1692,15 @@ apf.xmpp = function(){
         // #endif
     };
     // #ifdef __TP_XMPP_ROSTER
-    /**
+    /*
      * Handler function that takes care of responses to the XMPP server upon
      * presence subscription request of the current user.
      * Depending on the settings of {@link attribute.auto-accept} and
      * {@link attribute.auto-deny} a contact will be denied to the Roster or
      * added.
      *
-     * @param {String} sJID Contact that requested a subscription the user's presence information
+     * @param {String} sJID Contact that requested a subscription the user's
+     *                      presence information
      * @type  {void}
      * @private
      */
@@ -1741,12 +1743,13 @@ apf.xmpp = function(){
         }
     }
 
-    /**
+    /*
      * Handler function that takes care of the final stage of adding a contact
      * to the user's roster: confirmation of the subscription state.
      *
      * @param {Object} oContact Contact that has accepted the invitation to connect
      * @type  {void}
+     * @private
      */
     function confirmAdd(oContact) {
         var sPresence = createPresenceBlock({
@@ -1788,7 +1791,7 @@ apf.xmpp = function(){
      * @type  {void}
      */
     this.setStatus = function(sStatus) {
-        sStatus = statusMap[sStatus] || "online";
+        sStatus = statusMap[sStatus] || apf.xmpp.STATUS_ONLINE;
         
         return this.setPresence(sStatus, sStatus);
     };
@@ -2022,7 +2025,13 @@ apf.xmpp = function(){
         }
     };
 
-    this.$desroy = function() {
+    /**
+     * Shutdown and disconnect properly from the (running) XMPP session.
+     * Disconnect and Garbage Collect.
+     *
+     * @type {void}
+     */
+    this.$destroy = function() {
         this.disconnect();
     };
 };

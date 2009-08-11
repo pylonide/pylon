@@ -41,7 +41,7 @@ apf.xmpp_muc = function(){
         mucVars = {};
     this.$mucRoster = new apf.xmpp_roster(this.oMucModel, {muc: true}, this.resource);
 
-    /**
+    /*
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
@@ -55,7 +55,7 @@ apf.xmpp_muc = function(){
         return value;
     }
 
-    /**
+    /*
      * Simple helper function to complete remove variables that have been
      * stored in the private space by register()
      *
@@ -73,7 +73,7 @@ apf.xmpp_muc = function(){
         }
     }
 
-    /**
+    /*
      * Simple helper function that retrieves a variable, stored in the private
      * space.
      *
@@ -85,6 +85,14 @@ apf.xmpp_muc = function(){
         return mucVars[name] || "";
     }
 
+    /*
+     * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are 
+     * asynchronous - responses to each call return via the message poll/ push -
+     * the only variable left for each request is the text body.
+     * 
+     * @param {String} sBody
+     * @private
+     */
     function doRequest(sBody) {
         if (!sBody) return;
         _self.$doXmlRequest(_self.$restartListener, _self.$isPoll
@@ -97,6 +105,15 @@ apf.xmpp_muc = function(){
         );
     }
 
+    /**
+     * Get the status code from a server response XML document and compare it
+     * with an expected status 'iStatus'. Status codes are usually located in a
+     * 'code' attribute on a <status> stanza.
+     *
+     * @param {XMLDocument} oXml    Document that may contain <status> nodes
+     * @param {Number}      iStatus Expected status code
+     * @type  {mixed}
+     */
     this.$getStatusCode = function(oXml, iStatus) {
         var aStatuses = oXml.getElementsByTagName("status");
         for (var i = 0, l = aStatuses.length; i < l; i++) {
@@ -107,6 +124,11 @@ apf.xmpp_muc = function(){
         return false;
     }
 
+    /**
+     * Get a list of available chat rooms from the XMPP server.
+     * 
+     * @type {void}
+     */
     this.queryRooms = function() {
         if (!this.canMuc || !this.$getVar("connected")) return;
         doRequest(this.$createIqBlock({
@@ -118,19 +140,46 @@ apf.xmpp_muc = function(){
         );
     };
 
+    /**
+     * Adds/ registers a room to the local Roster instance.
+     * 
+     * @param {String} sJID    Jabber ID of the room we're adding
+     * @param {String} [sName] Optional name of the room
+     */
     this.$addRoom = function(sJID, sName) {
         return this.$mucRoster.getEntityByJID(sJID.replace(/\/.*$/, ""), sName);
     };
 
+    /**
+     * Checks if a specified Jabber ID is registered locally as a chatroom.
+     * 
+     * @param {String} sJID Jabber ID to check
+     * @type  {void}
+     */
     this.$isRoom = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");
-        return this.$mucRoster.getEntity(parts[0], parts[1], null, true) ? true : false;
+        return this.$mucRoster.getEntity(parts[0], parts[1], null, true) 
+            ? true
+            : false;
     }
 
+    /**
+     * Add a Jabber ID - who most probably just joined - to a chatroom and 
+     * thereby to the Roster.
+     * 
+     * @param {String} sJID Jabber ID that just joined a chatroom
+     * @type  {Object}
+     */
     this.$addRoomOccupant = function(sJID) {
         return this.$mucRoster.getEntityByJID(sJID);
     }
 
+    /**
+     * Provided a room, get all its info and capabilities.
+     * Not implemented yet.
+     * 
+     * @param {String} sRoom
+     */
     this.queryRoomInfo = function(sRoom) {
         // @todo Room info querying
     };
