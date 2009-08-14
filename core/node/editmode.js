@@ -177,8 +177,10 @@ apf.language = {
             prefix += (prefix ? "." : "") + xmlNode.getAttribute("id");
 
         var nodes = xmlNode.childNodes;
-        for (var j = 0; j < nodes.length; j++)
-            this.parseSection(nodes[j], prefix);
+        for (var j = 0; j < nodes.length; j++) {
+            if (nodes[j].nodeType == 1)
+                this.parseSection(nodes[j], prefix);
+        }
     },
     
     $marked : {},
