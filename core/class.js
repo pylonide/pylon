@@ -236,7 +236,7 @@ apf.Class = function(){
 
         #--endif */
 
-        bObject.$handlePropSet(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
+        bObject.setProperty(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
     };
 
     /**
