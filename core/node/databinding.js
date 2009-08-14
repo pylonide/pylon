@@ -952,7 +952,7 @@ apf.DataBinding = function(){
      * @return  {String} the calculated value
      * @see  element.smartbinding
      */
-    this.applyRuleSetOnNode = function(setname, cnode, def){
+    this.applyRuleSetOnNode = function(setname, cnode, def, noTranslate){
         if (!cnode) return "";
 
         var returnValue;
@@ -987,7 +987,7 @@ apf.DataBinding = function(){
             
             //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
-            if (typeof returnValue == "string") {
+            if (typeof returnValue == "string" && !noTranslate) {
                 var keys = apf.language.getBinding(this, this.cacheID);
                 returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
                     keys[m1] = true;
@@ -1191,11 +1191,13 @@ apf.DataBinding = function(){
         if (returnValue) {
             //#ifdef __WITH_LANG_SUPPORT_BINDING
             //@todo speed optimize
-            var keys = apf.language.getBinding(this, this.cacheID);
-            returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
-                keys[m1] = true;
-                return apf.language.getWord(m1);
-            });
+            if (!noTranslate) {
+                var keys = apf.language.getBinding(this, this.cacheID);
+                returnValue = returnValue.replace(/\$([\w\.]+)\$/g, function(m, m1){
+                    keys[m1] = true;
+                    return apf.language.getWord(m1);
+                });
+            }
             //#endif
             
             return returnValue;

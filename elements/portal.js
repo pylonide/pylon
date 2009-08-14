@@ -507,7 +507,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         if (_self.bindingRules && _self.bindingRules.buttons) //@todo apf3.0
             docklet.setProperty("buttons", _self.applyRuleSetOnNode("buttons", dataNode) || _self.buttons);
         docklet.setProperty("state", _self.applyRuleSetOnNode("state", dataNode) || "normal");
-        docklet.setProperty("title", _self.applyRuleSetOnNode("caption", dataNode));
+        docklet.setProperty("title", _self.applyRuleSetOnNode("caption", dataNode, null, true));
         docklet.setProperty("icon", _self.applyRuleSetOnNode("icon", dataNode));
         
         docklet.show();
