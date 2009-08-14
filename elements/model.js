@@ -354,6 +354,16 @@ apf.model = function(data, caching){
 
         apf.xmldb.appendChild(this.data, xmlNode);
     };
+    
+    this.removeXml = function(xmlNode){
+        if (typeof xmlNode == "string")
+            xmlNode = this.data.selectNodes(xmlNode);
+        else if (!xmlNode.length)
+            xmlNode = [xmlNode];
+        
+        if (xmlNode)
+            apf.xmldb.removeNodeList(xmlNode);
+    };
 
     //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
     /**
