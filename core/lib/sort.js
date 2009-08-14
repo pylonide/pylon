@@ -145,15 +145,15 @@ apf.Sort = function(xmlNode){
             var sort_dateReplace = settings.dateReplace;
             var sort_dateFmtStr = settings.sort_dateFmtStr;
             
-            if (!sort_dateFormat || (args && sort_dateFmtStr != args[0])) 
-                sort_dateFmt(args ? args[0] : "*");
-            
-            var d;
-            if (sort_dateFmtStr == '*') 
+            var d;//|| (args && sort_dateFmtStr != args[0])
+            if (!sort_dateFormat) {
+                d = new Date(t);
+            }
+            else if (sort_dateFmtStr == '*') 
                 d = Date.parse(t);
             else 
                 d = (new Date(t.replace(sort_dateFormat, sort_dateReplace))).getTime();
-            t = "" + parseInt(d);
+            t = "" + d.getTime();//parseInt(d);
             if (t == "NaN") 
                 t = "0";
             return (t.length < sort_intmask.length ? sort_intmask[sort_intmask.length

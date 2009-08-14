@@ -547,9 +547,11 @@ Math.decToHex = function(value){
  * @type  {Number}
  */
 Math.hexToDec = function(value){
-    if (!/(.)(.)/.exec(value.toUpperCase()))
-        return false;
-    return this.hexlist.indexOf(RegExp.$1) * 16 + this.hexlist.indexOf(RegExp.$2);
+    var total = 0;
+    for (var i = 0, l = value.length; i < l; i++) {
+        total += this.hexlist.indexOf(value.charAt(i)) * Math.pow(16, l - i - 1);
+    }
+    return total;
 };
 
 // #ifdef __WITH_UUID

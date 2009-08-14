@@ -623,8 +623,8 @@ var apf = {
                                 ? []
                                 : {}, n = v.replace(/^["\'](.*)["\']$/,"$1");
                 n != '-1'
-                    ? o[n] = decodeURI(m[3])
-                    : o[o.length] = decodeURI(m[3]);
+                    ? o[n] = unescape(decodeURI(m[3]))
+                    : o[o.length] = unescape(decodeURI(m[3]));
             }
         //#endif
 
