@@ -32,6 +32,18 @@ apf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     this.pHtmlDoc  = document;
     this.pHtmlNode = pHtmlNode;
     
+    this.implement(apf.Class);
+    
+    this.$booleanProperties = {};
+    this.$supportedProperties = [];
+    this.$propHandlers = {};
+     this.$domHandlers  = {
+        "remove"      : [],
+        "insert"      : [],
+        "reparent"    : [],
+        "removechild" : []
+    };
+    
     // #ifdef __WITH_ANCHORING
     this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
     // #endif

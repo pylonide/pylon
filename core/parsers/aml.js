@@ -590,7 +590,7 @@ apf.AmlParser = {
                       || x.getAttribute(prefix + "right")
                       || x.getAttribute(prefix + "bottom")
                       || x.getAttribute(prefix + "anchoring") == "true") {
-                        html.getDiff();
+                        //html.getDiff();
                         html.setHorizontal(x.getAttribute(prefix + "left"),
                             x.getAttribute(prefix + "right"),
                             x.getAttribute(prefix + "width"));
