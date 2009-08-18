@@ -153,6 +153,12 @@ apf.textbox.masking = function(){
         if (setCharacter(chr))
             setPosition(lastPos + 1);
 
+        var value, pos = lastPos;
+        if (this.realtime && (value = this.getValue()) != this.value) {
+            this.change(value);
+            setPosition(pos);
+        }
+
         if (apf.isCharacter(e.keyCode) || stop)
             return false;
     }, true);

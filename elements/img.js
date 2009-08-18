@@ -76,7 +76,6 @@
  *  <a:img ref="@src" />
  * </code>
  */
-
 apf.img = apf.component(apf.NODE_VISIBLE, function(){
     // #ifdef __WITH_EDITMODE
     this.editableParts = {"main" : [["image","@src"]]};

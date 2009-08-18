@@ -192,7 +192,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             masking = true;
             this.implement(apf.textbox.masking);
             this.focusselect = false;
-            this.realtime    = false;
+            //this.realtime    = false;
         }
 
         this.setMask(this.mask);

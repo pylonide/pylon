@@ -181,7 +181,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
         if (apf.isIE) {
-            this.editor.$selection.set();
+            //this.editor.$selection.set(); //Change by RLD
             this.editor.$selection.getRange().duplicate().pasteHTML(sRepl);
         }
         else

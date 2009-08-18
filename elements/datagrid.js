@@ -1434,7 +1434,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
 
         var type = this.selected.getAttribute("type");
 
-        if (this.namevalue && wasSelected && lastcell 
+        //wasSelected && 
+        if (this.namevalue && lastcell 
           && lastcell.parentNode == htmlNode.parentNode 
           && htmlNode == htmlNode.parentNode.lastChild) {
             lastcell = htmlNode;

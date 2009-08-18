@@ -334,7 +334,7 @@ apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (!xmlNode) //@todo apf3.0
         return "";
     
-    if (useJid && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
+    if (useJid === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
         return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
             + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
     }

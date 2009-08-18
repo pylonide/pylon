@@ -362,7 +362,10 @@ apf.getInheritedAttribute = function(xml, attr, func){
  * @todo generalize this to include attributes in if format []
  */
 apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
-    var xmlNode, foundpath = "", paths = xPath.split("\|")[0].split("/");
+    var xmlNode, foundpath = "", paths = xPath.replace(/('.*?')|(".*?")|\|/g, function(m, m1, m2){
+        if (m1 || m2) return m1 || m2;
+        return "-%-|-%-";
+    }).split("-%-|-%-")[0].split("/");
     if (!forceNew && (xmlNode = contextNode.selectSingleNode(xPath)))
         return xmlNode;
     
@@ -415,7 +418,8 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     if (!foundpath)
         foundpath = ".";
 
-    var newNode, lastpath = paths[len];
+    var newNode, lastpath = paths[len], 
+        doc = contextNode.nodeType == 9 ? contextNode : contextNode.ownerDocument;
     do {
         if (lastpath.match(/^\@(.*)$/)) {
             (newNode || contextNode.selectSingleNode(foundpath))
@@ -429,7 +433,7 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
             var hasId = lastpath.match(/(\w+)\[@([\w-]+)=(\w+)\]/);
             if (hasId) lastpath = hasId[1];
             newNode = (newNode || contextNode.selectSingleNode(foundpath))
-                .appendChild(contextNode.ownerDocument.createElement(lastpath));
+                .appendChild(doc.createElement(lastpath));
             if (hasId)
                 newNode.setAttribute(hasId[2], hasId[3]);
             

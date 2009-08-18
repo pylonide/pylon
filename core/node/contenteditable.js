@@ -365,7 +365,7 @@ apf.ContentEditable = function() {
             }, 10);
         }
 
-        var xmlNode = _self.xmlRoot.ownerDocument.selectSingleNode(oNode.getAttribute("xpath")),
+        var xmlNode = apf.createNodeFromXpath(_self.xmlRoot.ownerDocument, oNode.getAttribute("xpath")),
             v, rule;
         if (v = _self.getModel(true).$validation)
             rule = v.getRule(xmlNode);

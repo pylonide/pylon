@@ -1077,8 +1077,8 @@ apf.DataBinding = function(){
                             if (!jsltEditable) {
                                 jsltEditable = new apf.JsltImplementation()
                                     .extendMacros({
-                                        "xvalue"  : "('<span class=\"contentEditable\" xpath=\"' + (n?apf.remote.xmlToXpath((_v=n.selectSingleNode(",
-                                        "xvalue_" : ")), null, true):'') + '\">'+(_v?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')+'</span>')"
+                                        "xvalue"  : "('<span class=\"contentEditable\" xpath=\"' + (n ? apf.remote.xmlToXpath(n, null, 2) + '/' : '') + (_w=",
+                                        "xvalue_" : ") + '\">'+((_v=n?n.selectSingleNode(_w):null)?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')+'</span>')"
                                     });
                             }
                             x = jsltEditable.apply(rule, o);
