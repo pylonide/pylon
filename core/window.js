@@ -1205,7 +1205,7 @@ apf.window = new (function(){
 
         //apf.dispatchEvent("keydown", null, eInfo);
 
-        if (!e.returnValue && e.preventDefault)
+        if (e.returnValue === false && e.preventDefault)
             e.preventDefault();
 
         return e.returnValue;
