@@ -1073,13 +1073,16 @@ apf.window = new (function(){
         if (apf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
+            if (e.stopPropagation)
+                e.stopPropagation();
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
                 catch(e) {}
             }
-            e.returnValue = false;
+            if (e.preventDefault)
+                e.preventDefault();
             return false;
         }
         //#endif
@@ -1117,6 +1120,8 @@ apf.window = new (function(){
                 }
                 catch(e) {}
             }
+            if (e.preventDefault)
+                e.preventDefault();
             return false;
         }
 
@@ -1127,7 +1132,8 @@ apf.window = new (function(){
             if (e.ctrlKey && apf.window.focussed) {
                 var w = apf.window.focussed.$focusParent;
                 if (w.modal) {
-                    e.returnValue = false;
+                    if (e.preventDefault)
+                        e.preventDefault();
                     return false;
                 }
 
@@ -1142,7 +1148,8 @@ apf.window = new (function(){
             else if(!apf.window.focussed || apf.window.focussed.tagName != "menu")
                 apf.window.moveNext(e.shiftKey);
 
-            e.returnValue = false;
+            if (e.preventDefault)
+                e.preventDefault();
             return false;
         }
         //#endif
@@ -1197,6 +1204,9 @@ apf.window = new (function(){
         }
 
         //apf.dispatchEvent("keydown", null, eInfo);
+
+        if (!e.returnValue && e.preventDefault)
+            e.preventDefault();
 
         return e.returnValue;
         //#endif
