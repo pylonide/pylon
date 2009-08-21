@@ -1064,6 +1064,7 @@ apf.model = function(data, caching){
     /**
      * Submit the data of the model to a data source.
      * @param {String} instruction  the id of the submission element or the data instruction on how to sent data to the data source.
+     * @param {XMLElement} xmlNode  the data node to send to the server.
      * @param {String} type         how to serialize the data, and how to sent it.
      *   Possible values:
      *   post            sent xml using the http post protocol. (application/xml)

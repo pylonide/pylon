@@ -1099,6 +1099,7 @@ apf.AmlElement.propHandlers = {
     },
     //#endif
 
+    //#ifdef __WITH_CONTEXTMENU
     /**
      * @attribute {String} contextmenu the name of the menu element that will
      * be shown when the user right clicks or uses the context menu keyboard
@@ -1114,6 +1115,7 @@ apf.AmlElement.propHandlers = {
     "contextmenu": function(value){
         this.contextmenus = [value];
     },
+    //#endif
 
     //#ifdef __WITH_INTERACTIVE
     "resizable": function(value){
