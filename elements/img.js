@@ -113,7 +113,6 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
         
         //@todo resize should become a generic thing
         if (this.oImage.nodeType == 2 && !this.$resize.done) {
-            this.oImg = this.oInt.getElementsByTagName("img")[0];
             if (this.oImg) {
                 //#ifdef __WITH_LAYOUT
                 //@todo add this to $destroy
@@ -156,6 +155,7 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
         this.oImage = this.$getLayoutNode("main", "image", this.oExt);
+        this.oImg = this.oInt.getElementsByTagName("img")[0];
     };
     
     this.$resize = function(){
