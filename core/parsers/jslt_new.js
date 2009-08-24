@@ -317,7 +317,7 @@
                 }else
                     o[ol++] = andorlut[tok] || tok;
             break;
-            case 4: // -------- textblock --------
+            case 4: // -------- stringquotes --------
                 if (ol == out_begin)
                     o[ol++] = "s[s.length]=";
                 parse_mode = 4, b = [b_tok = tok], bl = 1;
@@ -436,7 +436,7 @@
                 else if(ol == seg_begin) o[ol++] = "\"";
                 o[ol++] = unesc_lut[tok] || tok;
                 break;
-            case 4:
+            case 4: // -------- stringquotes --------
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
                 else if(ol == seg_begin) o[ol++] = "\"";
                 o[ol++] = "\\";
@@ -482,7 +482,7 @@
                         o[ol++] = "\ns.push(\"";
                     o[ol++] = unesc_lut[tok] || tok;
                 }               
-            case 4: // -------- textblock --------
+            case 4: // -------- stringquotes --------
                 if(ol==st_begin && !(st[stl-2]&0x70000000)){
                     // we came from code. pop stack and get back to code mode.
                     
@@ -523,7 +523,7 @@
             case 2: // -------- misc --------
                 b[bl++] = unesc_str[tok] || tok;
                 break;                        
-            case 4: // -------- textblock --------
+            case 4: // -------- stringquotes --------
                 b[bl++] = tok;
                 if (parse_mode == 4 && b_tok == tok)
                     parse_mode = 0;// go back to code parse_mode
