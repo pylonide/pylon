@@ -59,9 +59,9 @@
         "&": "xcopy", "*": "xcopies", "#": "xcount", "$": "xlang"
     },
     xpath_macro_default = { // which autoxpath to use when doing macro({xpath})
-        "each_" : "xnodes", "local_": "xnode", "value_" : "xnode", 
-        "values_" : "xnodes",  "copies_" : "xnodes", "_node_": "xnode",
-        "nodes_" : "xnodes", "count_" : "xnodes", "copy_" : "xnode"
+        "each" : "xnodes", "local": "xnode", "value_n" : "xnode", 
+        "values" : "xnodes",  "copies" : "xnodes", "node_n": "xnode",
+        "nodes" : "xnodes", "count" : "xnodes", "copy" : "xnode"
     },    
     unesc_lut = { // unescape in code and xpath mode
         "\\\"": "\"", "\\\'": "\'", "\\{": "{", "\\}": "}",
@@ -79,6 +79,37 @@
     },
     parserx,
     macro_o={},macro_c={},macro_m={},
+    xpath_assign_lut={}, // used to find the macro used in an {xpath} = 
+    async_lut={          // used to figure out if the thing before the. is an async obj
+        'comm' :1,
+        'rpc'  :1,
+        'http' :1
+    },
+    
+    c_node_mode,    // guess 'node' as the type for {} xpaths, 1 = node, 2 = nodes
+    c_node_create,  // use create xpaths on xpath fetch in codemode
+    c_precalc,      // all calls are async (precalc parse_mode)
+    o, ol,          // output and output len
+    s, sl,          // scopestack and scopestack len
+    s_begin,        // ol where this scope started
+    out_begin,      // the ol when [ or ] started text or code
+    seg_begin,      // the ol of a text-segment
+    start_tok,      // the token a string or comment was started with
+    code_level,     // the [] count to switch between code/text
+    last_tok,       // last token
+    last_type,      // last type
+    last_dot,       // . pos when last token was a word
+    last_model,     // last model found
+    line_no, line_pos, // line/pos to give nice errors
+    v, n,           // random tempvars
+    parse_mode,     // the parse parse_mode 
+    comment_parse_mode,// the parse mode outside the comment
+    async_calls,    // number of async calls
+    prop_last,       // last js property found
+    has_statements,  // the code contains statements (so you cant use it as an expression)
+    xpaths,    // all xpaths and their models in pairs
+    props;     // the js properties found
+    
     // the macro open middle close hashes 
     // _n = {.} noop-xpath optimized, 
     // _m = 3 part xpath on remote model
@@ -88,24 +119,24 @@
     macro_o.each      = "\nfor(_t.push(_n,_a,_i,_l),_a=(_a=(",
     macro_c.each      = "))?_a:[],_l=_a.length,_n=_a[_i=0];_i<_l||(_l=_t.pop(),_i=_t.pop(),_a=_t.pop(),_n=_t.pop(),0);_n=_a[++_i])",
 
-    macro_o.pack      = "(function(_o,_n){_o=[];",
-    macro_c.pack      = "\nreturn _o.join('');})(_o,_n)",
+    macro_o.pack      = "(function(_n,_o,_lo){_o=[],_ol=0;",
+    macro_c.pack      = "\nreturn _o.join('');})(_n)",
 
     macro_o.value     = "((_v=(",
     macro_c.value     = "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')",
 
     macro_o.value_n   = "",
     macro_c.value_n   = "(_n?(_n.nodeType==1?_n.firstChild:_n).nodeValue:'')",
-    macro_c.value_na  = "(_n?(_n.nodeType==1?_n.firstChild:_n):{}).nodeValue",
+    macro_c.a_value_n  = "(_n?(_n.nodeType==1?_n.firstChild:_n):{}).nodeValue",
 
     macro_o.xvalue    = "(_n?((_v=_n.selectSingleNode(_w=",
     macro_c.xvalue    = "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')",
-    macro_c.xvalue_a  = "))?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_n,_w)):{}).nodeValue",
+    macro_c.a_xvalue  = "))?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_n,_w)):{}).nodeValue",
 
     macro_o.xvalue_m  = "((_v=(_u=_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xvalue_m  = "\"])?_v.data:0)?_v.selectSingleNode(_w=",
     macro_c.xvalue_m  = "):0)?(_v.nodeType==1?_v.firstChild:_v).nodeValue:'')",
-    macro_c.xvalue_ma = "):0)?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_u,_w)).nodeValue",
+    macro_c.a_xvalue_m = "):0)?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_u,_w)).nodeValue",
 
     macro_o.values    = "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
     macro_c.values    = "))?_a:[],_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_n[_n.length]=(_n.nodeType==1?_n.firstChild:_n).nodeValue;return _n;})()",
@@ -120,90 +151,66 @@
 
     macro_o.xcount    = "(_n?_n.selectNodes(",
     macro_c.xcount    = ").length:0)",
-
     macro_o.xcount_m  = "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xcount_m  = "\"])?_v.data:0)?_v.selectNodes(",
     macro_c.xcount_m  = "):0)?v.length:0)",
 
     macro_o.node      = "(",
     macro_c.node      = ")",
-    macro_o.node_n     = "",
-    macro_c.node_n     = "(_n)",
-    macro_c.node_na   = "(_n?(_n.nodeType==1?_n.firstChild:_n):{}).nodeValue",
+    macro_o.node_n    = "",
+    macro_c.node_n    = "(_n)",
+    macro_c.a_node_n  = "(_n?(_n.nodeType==1?_n.firstChild:_n):{}).nodeValue",
 
     macro_o.xnode     = "(_n?((_v=_n.selectSingleNode(_w=",
     macro_c.xnode     = "))):null)",
-    macro_c.xnode_a   = "))?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_n,_w)):{}).nodeValue",
-
+    macro_c.a_xnode   = "))?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_n,_w)):{}).nodeValue",
     macro_o.xnode_m   = "((_v=(_u=_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xnode_m   = "\"])?_v.data:0)?_v.selectSingleNode(_w=",
     macro_c.xnode_m   = "):0))",
-    macro_c.xnode_ma  = "):0)?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_u,_w)).nodeValue",        
+    macro_c.a_xnode_m = "):0)?(_v.nodeType==1?_v.firstChild:_v):apf.createNodeFromXpath(_u,_w)).nodeValue",        
 
     macro_o.nodes     = "(",
     macro_c.nodes     = ")",
     macro_o.nodes_n   = "",
     macro_c.nodes_n   = "[_n]",
+    
     macro_o.xnodes    = "(_n?_n.selectNodes(",
     macro_c.xnodes    = "):[])",
     macro_o.xnodes_m  = "((_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xnodes_m  = "\"])?_v.data:0)?_v.selectNodes(",
     macro_c.xnodes_m  = "):[])",
+    
     macro_o.copy      = "((_v=(",
     macro_c.copy      = "))?_v.xml:'')",        
     macro_o.copy_n    = "",
     macro_c.copy_n    = "(_n?_n.xml:'')",        
+    
     macro_o.xcopy     = "(_n?((_v=_n.selectSingleNode(",
     macro_c.xcopy     = "))?_v.xml:''):'')",
     macro_o.xcopy_m   = "((_v=(_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xcopy_m   = "\"])?_v.data:0)?_v.selectSingleNode(",
     macro_c.xcopy_m   = "):null)?_v.xml:'')",
+    
     macro_o.copies    = "(function(){var _a,_i,_l,_n=[];for(a=(_a=(",
     macro_c.copies    = "))?_a:[],_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_n[_n.length]=_n.xml;return _n;})()",
     macro_o.copies_n  = "",
     macro_c.copies_n  = "(_n?_n.xml:'')",
-    macro_o.xcopies   = "(function(){var _a,_i,_l,_o=[];for(_a=_n?_n.selectNodes(",
-    macro_c.xcopies   = "):[],_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_o[_o.length]=_n.xml;return _o.join('')})()",
-    macro_o.xcopies_m = "(function(){var _a,_i,_l,_o=[];for(_a=((_v=(_v=apf.nameserver.lookup.model[\"",
+    
+    macro_o.xcopies   = "(function(){var _a,_i,_l,_o=[],_ol=0;for(_a=_n?_n.selectNodes(",
+    macro_c.xcopies   = "):[],_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_o[_ol++]=_n.xml;return _o.join('')})()",
+    macro_o.xcopies_m = "(function(){var _a,_i,_l,_o=[],_ol=0;for(_a=((_v=(_v=apf.nameserver.lookup.model[\"",
     macro_m.xcopies_m = "\"])?_v.data:0)?_v.selectNodes(",
-    macro_c.xcopies_m = "):[]),_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_o[_o.length]=_n.xml;return _o.join('')})()",
+    macro_c.xcopies_m = "):[]),_l=_a.length,_n=_a[_i=0];_i<_l;_n=_a[++_i])_o[_ol++]=_n.xml;return _o.join('')})()",
+    
     macro_o.local     = "\nfor(_t.push(_n,_i), _n=(",
     macro_c.local     = ");_i<1 || (_i=_t.pop(),_n=_t.pop(),0);_i++)",
     macro_o.local_n   = "",
     macro_c.local_n   = "",
+
     macro_o._async    = "((typeof(_v=async[async.id?++async.id:(async.id=2)])!='undefined')?_v:apf.JsltInstance.asyncCall(_n,_lang,_opts,_self,async,this,",
     macro_c._async    = "]))",
     macro_o.xlang     = "apf.$lfind(_lang,",
     macro_c.xlang     = ")",
-    
-    xpath_assign_lut={}, // used to find the macro used in an {xpath} = 
-    async_lut={     // used to figure out if the thing before the. is an async obj
-        'comm' :1,
-        'rpc'  :1,
-        'http' :1
-    },
-    
-    f_node_mode,    // guess 'node' as the type for {} xpaths, 1 = node, 2 = nodes
-    f_node_create,  // use create xpaths on xpath fetch in codemode
-    f_all_async,    // all calls are async (precalc parse_mode)
-    o, ol,          // output and output len
-    s, sl,          // scopestack and scopestack len
-    s_begin,        // ol where this scope started
-    out_begin,      // the ol when [ or ] started text or code
-    seg_begin,      // the ol of a text-segment
-    start_tok,      // the token a string or comment was started with
-    code_level,     // the [] count to switch between code/text
-    last_tok,       // last token
-    last_type,      // last type
-    last_dot,       // . pos when last token was a word
-    line_no, line_pos, // line/pos to give nice errors
-    v, n,           // random tempvars
-    parse_mode,     // the parse parse_mode 
-    last_parse_mode,// last parse parse_mode
-    async_calls,    // number of async calls
-    js_props,       // the js properties found
-    js_prop_last,   // last js property found
-    has_statements; // the code contains statements (so you cant use it as an expression)
     
     xpath_assign_lut[macro_c.xvalue_]  = 'xvalue_a'
     xpath_assign_lut[macro_c.xvalue_3] = 'xvalue_3a';
@@ -268,10 +275,10 @@
         return '';
     };
 
-    parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
-
+    parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==|$)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
+        
     function parser(tok, rx_lut, rx_white, rx_word, rx_misc, pos){
-        type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : 2));
+        type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : (tok?2:12)));
         //apf.console.log(type+" "+tok+"\n");
         switch(parse_mode){
         case 0: // ============= code parse_mode =============
@@ -286,8 +293,10 @@
                 if(tok == '='){
                     if(last_type == 3 && last_dot>0){
                         if(o[--ol]==' ')ol--;
-                        o[ol++]='(',o[ol++]=v,
-                        o[ol++]=last_tok.substring(0,last_dot),
+                        if(out_begin==ol-1) // remove output-insert
+                            o[ol-1]="";                        
+                        o[ol++]='(',
+                        o[ol++]=v=last_tok.substring(0,last_dot),
                         o[ol++]='.$setter?',o[ol++]=v,o[ol++]='.$setter():',
                         o[ol++]=v,o[ol++]=').',
                         o[ol++]=last_tok.slice(last_dot+1),
@@ -298,44 +307,49 @@
                         o[ol++] = '=';
                    }else o[ol++] = unesc_lut[tok] || tok;
                 }else if (tok == "%")
-                    o[ol++] = "\n_o[_o.length]=";
+                    o[ol++] = "\n_o[_ol++]=";
                 else o[ol++] = unesc_lut[tok] || tok;
              break;
             case 3: // -------- word --------
                 if (ol == out_begin){
                     if (!statement_lut[tok])
-                        o[ol++] = "\n_o[_o.length]=";
+                        o[ol++] = "\n_o[_ol++]=";
                     else
-                        has_statements = 1;
+                        o[ol++] = "\n",has_statements = 1;
                 }
                 else if (!has_statements && statement_lut[tok])
                      has_statements = 1;
                      
                 if ((last_dot = tok.lastIndexOf(".")) != -1){
-                    js_props[o[ol++] = js_prop_last = tok] = 1;
+                    props[o[ol++] = prop_last = tok] = 1;
                 }else
                     o[ol++] = andorlut[tok] || tok;
             break;
             case 4: // -------- stringquotes --------
                 if (ol == out_begin)
-                    o[ol++] = "\n_o[_o.length]=";
-                parse_mode = 4, start_tok = tok; 
-            break;
+                    o[ol++] = "\n_o[_ol++]=";
+                parse_mode = 3, start_tok = tok;
+                break;
             case 5: // -------- comment -------- 
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                parse_mode = 5, last_parse_mode = 0, start_tok = tok;
+                parse_mode = 4, comment_parse_mode = 0, start_tok = tok;
                 break;
             case 6: // -------- { --------
-                // lets see if we should switch to xpath parse_mode
-                //logw("XPATH MODE" +count);
                 if(last_tok != ')'){
-                    // check what parse_mode to start the xpath in
-                    
-                    // startup xpath parse_mode
+                    if (ol == out_begin)
+                        o[ol++] = "\n_o[_ol++]=";                
+                    if( v = xpath_incode_lut[last_tok] ){
+                        if(--ol == out_begin) o[ol++] = "\n";
+                    }else 
+                        v = xpath_macro_default[s[sl-1]] || 'xnode';
+
+                    o[ol++] = macro_o[v];
+                    s[sl++] = s_begin, s[sl++] = v, seg_begin = s_begin = ol;
+                    parse_mode = 2;
                 }
                 else {
-                    s[sl++] = s_begin, s[sl++] = o[s_begin = ol++] = tok;
+                    s[sl++] = s_begin, s[sl++] = o[ol++] = tok, s_begin = ol;
                 }
                 break;
             case 7: // -------- } --------
@@ -345,7 +359,7 @@
                 o[ol++] = "\n";
                 break;
             case 8: // -------- [ --------
-                s[sl++] = s_begin, s[sl++] = o[s_begin =ol++] = tok;
+                s[sl++] = s_begin, s[sl++] = o[ol++] = tok,seg_begin = s_begin = ol;
                 break;
             case 9: // -------- ] --------
                 if (!--code_level) {
@@ -364,49 +378,46 @@
                 break;
             case 10: // -------- ( --------
                 if (ol == out_begin)
-                    o[ol++] = "\n_o[_o.length]=";
+                    o[ol++] = "\n_o[_ol++]=";
                 if (n = macro_o[last_tok]) {
                     if(o[ol-1]==" ") ol--;
                     o[ol-1] = n;
-                    s[sl++] = s_begin, s_begin = ol, s[sl++] = last_tok;
+                    s[sl++] = s_begin, s[sl++] = last_tok, s_begin = ol;
                 }
                 else{
                     if(last_type == 3 ){
                         if(o[ol-3]=='function'){
-                            s[sl++] = s_begin;
                             o[ol-3] = "var ",o[ol-2]=last_tok,o[ol-1]="=self.",
-                            o[ol++] = last_tok, o[s_begin =ol++] = "=function(";
-                            s[sl++] = tok;
-                        }else if((f_all_async && last_dot!=0) || 
+                            o[ol++] = last_tok, o[ol++] = "=function(";
+                            s[sl++] = s_begin, s_begin = ol, s[sl++] = tok;
+                        }else if((c_precalc && last_dot!=0) || 
                                  (last_dot>1 && async_lut[v = 
                                   last_tok.substring(0,last_dot)])){
                             if(o[--ol]==' ')ol--;
                             
-                            if(f_all_async){
-                                o[ol++] = macro_o._async,
-                                o[ol++] = last_dot>1
-                                    ?(n=last_tok.slice(last_dot+1),
-                                     last_tok.substring(0,last_dot))
-                                    :(n='',last_tok), 
-                                o[ol++] = ",'", o[ol++] = n, 
-                                o[ol++] "',_opt.args[async.id]||[");
+                            if(c_precalc){
+                                o[ol++] = macro_o._async;
+                                if(last_dot>1) o[ol++] = (n=last_tok.slice(last_dot+1),
+                                                          last_tok.substring(0,last_dot))
+                                else o[ol++] = (n='',last_tok);
+                                o[ol++] = ",'", o[ol++] = n;
+                                o[ol++] = "',_opt.args[async.id]||[";
                             }else{
-                                o[ol++] = macro_o._async,
-                                o[ol++] = v, o[ol++] = ",'",
-                                o[ol++] = last_tok.slice(last_dot+1),
+                                o[ol++] = macro_o._async;
+                                o[ol++] = v, o[ol++] = ",'";
+                                o[ol++] = last_tok.slice(last_dot+1);
                                 o[ol++] = "',[";
                             }
-                            s[sl++] = s_begin, s_begin = ol, s[sl++] = '_async';
+                            s[sl++] = s_begin, s[sl++] = '_async', s_begin = ol;
                             c_async_calls++;
                         }else{
-                            s[sl++] = s_begin, s[s_begin = sl++] = o[ol++] = tok;
+                            s[sl++] = s_begin, s[sl++] = o[ol++] = tok, s_begin = ol;
                         }
                     }else{
-                        s[sl++] = s_begin, s[sl++] = o[s_begin = ol++] = tok;
+                        s[sl++] = s_begin, s[sl++] = o[ol++] = tok, s_begin = ol;
                      }
-                     if (last_tok == js_prop_last)
-                         delete js_props[last_tok];// was a call
-                     
+                     if (last_tok == prop_last)
+                         delete props[last_tok];// was a call
                 }
                 break;
             case 11: // -------- ) --------
@@ -416,11 +427,15 @@
                 else if (v != type_close[o[ol++] = tok]) {
                     throw {t:"Cannot close " + v + " with " + tok, p: pos};
                 }
-                if((s_begin = s[--sl])&0x7000000){
+                if((s_begin = s[--sl])&0x70000000){
                     // we have a different parsemode to return to
-                    parse_mode = s_begin&0x70000000;
+                    parse_mode = s_begin>>28;
                     s_begin = s_begin&0x0fffffff;
+                    seg_begin = ol;
                 };
+                break;
+            case 12:    // end of string
+                    
                 break;
             }
             break;
@@ -430,60 +445,97 @@
                 line_no++, line_pos = pos;
                 break;
             case 2: // -------- misc --------
-                if(ol == out_begin) o[ol++] = "\n_o.push(\"";
-                else if(ol == seg_begin) o[ol++] = ",\"";
+                if(ol == out_begin)
+                    o[ol++] = "\n_o[_ol++]=\"";
+                else if(ol == seg_begin)
+                    o[ol++] = ",\n_o[_ol++]=\"";
                 o[ol++] = unesc_lut[tok] || tok;
                 break;
             case 4: // -------- stringquotes --------
-                if(ol == out_begin) o[ol++] = "\n_o.push(\"";
-                else if(ol == seg_begin) o[ol++] = ",\"";
-                o[ol++] = "\\";
-                o[ol++] = tok;            
+                if(ol == out_begin)
+                    o[ol++] = "\n_o[_ol++]=\"";
+                else if(ol == seg_begin)
+                    o[ol++] = ",\n_o[_ol++]=\"";
+                if(tok=='"')o[ol++] = "\\\"";
+                else o[ol++] = "'";            
                 break;
-            case 6: // -------- { -------- 
-                if(ol == out_begin) o[ol++] = "\n_o.push(";
-                else o[ol++] = (ol == seg_begin)?",":"\",";
-                break;  
             case 5: // -------- comment --------
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                parse_mode = 3, last_parse_mode = 1, start_tok = tok;
+                parse_mode = 3, comment_parse_mode = 1, start_tok = tok;
                 break;
+            case 6: // -------- { -------- 
+                if( v = xpath_intext_lut[last_tok] )
+                    ol--;
+                else 
+                    v = xpath_macro_default[s[sl-1]] || 'xnode';
+            
+                if(ol == out_begin)     
+                    o[ol++] = "\n_o[_ol++]=";
+                else
+                    o[ol++] = (ol == seg_begin)?",\n_o[_ol++]=":"\",\n_o[_ol++]=";
+                
+                o[ol++] = macro_o[v];
+                s[sl++] = s_begin|0x10000000, s[sl++] = v, seg_begin = s_begin = ol;
+                parse_mode = 2;
+                break;
+            case 12:
             case 8: // -------- [ --------
-                if(ol != seg_begin)
+                if(ol != out_begin && ol != seg_begin)
                     o[ol++] = "\"";
-                o[ol++] = ")\n";
-                parse_mode = 0, out_begin = ol;
-                break;                
+                parse_mode = 0, seg_begin = out_begin = ol, code_level=1;
+                break;
             default: // -------- default --------
-                if(ol == out_begin) o[ol++] = "\n_o.push(\"";
-                else if(ol == seg_begin) o[ol++] = ",\"";
+                if(ol == out_begin)
+                    o[ol++] = "\n_o[_ol++]=\"";
+                else if(ol == seg_begin)
+                    o[ol++] = ",\n_o[_ol++]=\"";
                 o[ol++] = tok;
             }
             break;
         case 2: // ============= xpath parse_mode =============
             switch(type){
             case 0: // -------- whitespace -------- 
-                if(ol!=s_begin) // strip initial spaces
+                
+                if(ol != s_begin){ // strip initial spaces
+                    if(ol == seg_begin) 
+                        o[ol++] = "+\n  \"";
                     o[ol++] = tok;
+                }
                 break;
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
                 break;          
              case 2: // -------- misc --------
-                if (tok == ":" && s_begin==ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
-                    // alternate model
-                    // this xpath might be bound on a special node
-                }else{
-                    if (s_begin==ol)
-                        o[ol++] = "\n_o.push(\"";
-                    o[ol++] = unesc_lut[tok] || tok;
-                }               
-            case 4: // -------- stringquotes --------
-                if(ol==s_begin && !(s[sl-2]&0x70000000)){
-                    // we came from code. pop s and get back to code mode.
+                logw(s_begin+" "+ol+" "+tok);
+                if (tok == ":" && s_begin == ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
+                    ol -=4;
+                    // lets output a new macro with our _m extension for model
+                    o[ol++] = macro_o[v=(s[sl-1]+="_m")];
+                    o[ol++] = last_model = n;
+                    o[ol++] = macro_m[v];
+                    seg_begin = s_begin = ol;
                     
                 }else{
+                    if (s_begin == ol)
+                        o[ol++] = "\"";
+                    else if(ol == seg_begin)
+                        o[ol++] = "+\n  \"";
+                    o[ol++] = unesc_lut[tok] || tok;
+                }
+                break;                
+            case 4: // -------- stringquotes --------
+                if(ol == s_begin && !(s[sl-2]&0x70000000)){
+                    // we came from code. pop s and get back to code mode.
+                    ol--, sl -= 2, s_begin = s[sl], parse_mode = 0, last_model = 0;
+                    if (ol == out_begin-1) // pop auto-output off
+                        ol--;
+                    o[ol++] = '{';
+                }else{
+                    if (s_begin == ol)
+                        o[ol++] = "\"";
+                    else if(ol == seg_begin) 
+                        o[ol++] = "+\n  \"";
                     o[ol++] = "\\";
                     o[ol++] = tok;
                 }
@@ -491,23 +543,61 @@
             case 5: // -------- comment --------
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                last_parse_mode = 2, parse_mode = 4, start_tok = tok;
+                comment_parse_mode = 2, parse_mode = 4, start_tok = tok;
                 break; 
             case 6: // -------- { --------
-                // a nested xpath was found
-                    // push up a proper xpath macro and a returnmode 2
+                // nested xpath
+                if (s_begin != ol)
+                    o[ol++] = (ol == seg_begin)?"+\n  ":"\"+\n  ";
+
+                s[sl++] = s_begin|0x20000000;
+                o[ol++] = macro_o[s[sl++] ='xvalue'];
+                seg_begin = s_begin = ol;
+                parse_mode = 2;             
+                if(last_model){
+                    xpaths[xpaths.length] = [last_model,0];
+                    last_model = 0;
+                }
                 break;
             case 7: // -------- } --------
                 // lets pop the s and see where to return to
+                if( ol == s_begin ) // todo optimize this?
+                    o[ol++] = "\"\"";
+                else if( ol != seg_begin){
+                    o[ol++] = "\"";
+                }
+                if(seg_begin == s_begin)
+                    xpaths[xpaths.length] = [last_model,o.slice(s_begin+1,-1).join('')], last_model = 0;
+                else if(last_model)
+                    xpaths[xpaths.length] = [last_model,0], last_model = 0;
+                    
+                o[ol++] = macro_c[n=s[--sl]];
+                parse_mode = (s_begin = s[--sl])>>28;
+                s_begin    = s_begin&0x0fffffff;
+                seg_begin  = ol;
+
                 break;
             case 10: // -------- ( --------
                 // perhaps go into code-in-xpath parse_mode
-                if(ol == s_begin){
-                    //lets push up a ( on the s with a returnmode 2
-                    
+                if(ol == s_begin){ // accept code-in-xpath here
+                    s[sl++] = s_begin|0x20000000, s[sl++] = o[ol++] = '(', s_begin = ol;
+                    parse_mode = 0;
+                }else{
+                    if (ol == s_begin)
+                        o[ol++] = "\"";
+                    else if(ol == seg_begin)
+                        o[ol++] = "+\n  \"";            
+                    o[ol++] = tok;
                 }
                 break;
+            case 12:    // end of string
+                throw {t: "Unexpected end whilst parsing xpath", p: pos};
+                break;
             default: // -------- default --------
+                if (ol == s_begin)
+                    o[ol++] = "\"";
+                else if(ol == seg_begin)
+                    o[ol++] = "+\n  \"";            
                 o[ol++] = tok;
                 break;
             }
@@ -520,11 +610,14 @@
                 break;
             case 2: // -------- misc --------
                 o[ol++] = unesc_str[tok] || tok;
-                break;                        
+                break;
             case 4: // -------- stringquotes --------
                 o[ol++] = tok;
                 if (start_tok == tok)
                     parse_mode = 0;// go back to code parse_mode
+                break;
+            case 12:    // end of string
+                throw {t: "Unexpected end whilst parsing string", p: pos};
                 break;
             default: // -------- default --------
                 o[ol++] = tok;
@@ -539,345 +632,39 @@
             case 5: // -------- comment --------
                 if ((start_tok == "/*" && tok == "*/") ||
                    (start_tok == "<!--" && tok == "-->"))
-                    parse_mode = last_parse_mode;
+                    parse_mode = comment_parse_mode;
                 break;
             }
+            case 12:    // end of string
+                throw {t: "Unexpected end whilst parsing comment", p: pos};
+                break;
             break;
         }
-        /*
-        else {
-                switch (type) {
-                    case 8:// [
-                        if(!s_xpath){
-                            if (count) {
-                                if (!xpathsegs && count >= 1 || count > 1)
-                                    textsegs++;
-                                o[ol++] = '");';
-                            }
-                            s_block = count = 0;
-                            code    = 1;
-                            codesegs++;
-                        }else o[ol++] = tok;
-                        break;
-                    case 4: // textblock
-                        // switch back to code parse_mode if we are the first character
-                        if (s_xpathincode && last_tok == "{" && count < 3) {
-                            if (count>1)
-                                o.length--;
-                            if (s_popauto) 
-                                o.length--;
-                            o.length -= 2;
-                            ol        = o.length;
-                            o[ol++]   = s[s.length-1] = "{";
-                            
-                            b = [tblock = tok],bl = 1;
-                            s_block = 2;
-                            s_xpath   = s_xpathincode = 0;
-                            count     = xstack.pop();
-                        }
-                        else {
-                            if (!count++ && !s_xpath)
-                                o[ol++] = "\ns.push(\"";
-                            o[ol++] = "\\" + tok;
-                        }
-                        break;
-                    case 5: // comment
-                        if (tok == "*\/")
-                            throw {t: "Unmatched comment *\/", p: pos};
-                        s_block  = 3;
-                        b    = [tblock = tok];
-                        bl       = 1;
-                        s_pblock = 1;
-                        break;
-                    case 6: // {
-                        if (!s_xpath) { // switch to xpath parse_mode
-
-                            if (v = xpath_intext_lut[last_tok]) {
-                                ol = --o.length;
-                                if (count < 2) {
-                                    o.length--;
-                                    count--;
-                                }
-                            }
-                            else {
-                                v = xpath_macro_default[s[s.length - 1]]
-                                    || "xvalue";
-                            }
-                            if(v =='xlang')
-                                langsegs++;
-                            else xpathsegs++; 
-                            textsegs++;
-                            o.push((count++) ? (textsegs++, '",') : "\ns.push(",
-                                macro[v], '"');
-                            s.push(v + "_");
-                            xstack.push(count);
-                            count         = 1;
-                            s_xpath       = 1;
-                            s_xpathincode = 0;
-                            xpathbegin = ol = o.length;
-                        }
-                        else {
-                            // someone put an extra { in our xpath... we might
-                            // be in a reference-
-                            o[ol++] = (!count++) ? "\ns.push(\"{" : "{";
-                        }
-                        break;
-                    case 7: // }
-                        if (s_xpath) { // end xpath parse_mode
-                        
-                            // optimize the {} case and {.} case
-                            if( (count==1 || (count==2 && last_type==6)) && s_xpathincode && !s_codeinxpath){
-                               ol = (o.length-=2);
-                               o[ol++]="{}";
-                               s_block = 0;
-                               s.pop();
-                            } else {
-                                if (last_tok == "." && o[ol-2] == '"') {
-                                    ol = (o.length-=3);
-                                    o[ol++] = macro[v = "_" + s.pop()
-                                        .substring(1, v.length)];
-                                    s.push(v + "_");
-                                    complexcode = s_codeinxpath = 1; // no " insertion
-                                    // make sure it doesnt get optimized as pure xpath also
-                                }
-                                if (s_xpathincode) {
-                                    o.push(s_codeinxpath ? "" : '"', 
-                                        macro[v = s.pop()], "\n");
-                                    s_block = 0;
-                                }
-                                else {
-                                    if (s_xpathwithmodel) { // add our xpath too
-                                        jsmodels[jsmodels.length] =
-                                            o.slice(s_xpathwithmodel, ol).join("");
-                                        s_xpathwithmodel = 0;
-                                    }
-                                    o.push(s_codeinxpath ? "" : '"',
-                                        macro[v = s.pop()], ',"');
-                                }
-                            }
-                            s_codeinxpath = s_xpath = s_xpathincode = 0;
-                            ol            = o.length;
-                            count         = 1;
-                            xstack.pop();
-                        }
-                        else {
-                            o[ol++] = (!count++) ? "\ns.push(\"}" : "}";
-                        }
-                        break;
-                    case 10: // (
-                        // we are going into inner-code parse_mode.
-                        if (s_xpath && count < 2 && last_tok=="{") {
-                                                                           
-                            if (o[ol - 1] != '"')
-                                throw {t: "Invalid code-in-xpath" + v, p: pos};
-                            // remove quote and go into code parse_mode
-                            ol      = --o.length;
-                            s.push(s_xpathincode 
-                                ? "codeinxpathincode"
-                                : "codeinxpath");
-                            s_block = s_xpath = s_xpathincode = 0;
-                            count   = 1;
-                        }
-                        else {
-                            if (!count++)
-                                o[ol++] = "\ns.push(\"";
-                            o[ol++] = "(";
-                        }
-                        break;
-                    case 11: // )
-                        if (!count++)
-                            o[ol++] = "\ns.push(\"";
-                        o[ol++] = ")";
-                        break;
-                    case 1: // newline
-                        line_no++;
-                        line_pos = pos;
-                        break;
-                    case 2: // misc
-                        if (s_xpath && count > 2 && tok == ":" 
-                          && last_tok == ":" && !xpath_axes[n = o[ol - 2]]) {
-                            if (xpathbegin <= ol - 3) {
-                                n = o.slice(xpathbegin,ol-1).join('');
-                            }
-                            // we have to skip back to the length when starting
-                            // the xpath macro.
-                            ol = o.length = xpathbegin - 2;
-                            s_xpathwithmodel = ol + 2;
-                            (jsmodels || (jsmodels = [])).push(n);
-                            // lets find the right macro for our new 3 state
-                            // shiznizzleshiz
-                            o[ol++] = macro[(v = s.pop()) + "1"] + n
-                                + (n = macro[v + "2"]);
-                            o[ol++] = "\"";
-                            if (!n){
-                                if(v.match(/\d+$/))
-                                    throw {t: "Found triple or more :: in model connection in xpath " + v, p: pos};
-                                throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
-                            }
-                            s.push(v + "3");
-                            // this xpath might be bound on a special node
-                        }
-                        else {
-                            if (!count++)
-                                o[ol++] = "\ns.push(\"";
-                            o[ol++] = unesc_lut[tok] || tok;
-                        }
-                        break;
-                    default:
-                        if (!count++ && !s_xpath)
-                            o[ol++] = "\ns.push(\"";
-                        o[ol++] = tok;
-                        break;
-                }
-            }
-            else {
-               
-            }
-        }*/
         if (type > 1)
             last_tok = tok, last_type = type;
     }
-
-    // pass in an extension object for our macro table
-    this.extendMacros = function(exts){
-        // extend / overwrite the macro table
-        for(n in exts) 
-            macro[n] = exts[n];
-        // MIKE: Example of extension
-        // { "xvalue"  : "('<div class=\'editable\'>'+(n?((_v=n.selectSingleNode(",
-        //   "xvalue_" : "))?(_v.nodeType==1?_v.firstChild:_v).nodeValue:''):'')+'</div>')" }           
-    },
     
     // always_async creates code which always calls the async callback and returns 'null'
     // precalc_calls essentially makes all calls async and uses the options storage area for args and .precalc
     // jslt is optimized to return objects and real values where possible
     
-    this.compile = function(str, with_options, is_eventhandler, always_async, precalc_calls){
+    this.compile = function(str, with_options, node_mode, node_create, precalc ){
         try {      
- 
-            always_async = 1;
-            all_async = precalc_calls;
-            ol   = 1;
-            code = s_codeinxpath = s_xpathincode = s_xpath = complexcode = 
-                xpathsegs = s_popauto = bl = type =  line_no = line_pos =
-                codesegs = textsegs = count = last_tok = s_xpathwithmodel =
-                last_type = jsmodels = async_calls = langsegs = 0;
-            s_block = 1;
-            
-            if(is_eventhandler){
-                s_block = 0, code =1,
-                codesegs++;
-            }
-            
-            s    = [];
-            xstack   = [];
-            jsobjs   = {};
+            c_node_mode = node_mode, c_node_create = node_create, c_precalc = precalc;
+            o = [], s = [], props = {}, xpaths = [];
+            ol = sl =  s_begin = out_begin = seg_begin = code_level = last_tok = last_model = 
+            last_type = last_dot = line_no = line_pos = async_calls = has_statements = 0;
+
+            parse_mode = 1;
             str.replace(parserx, parser);
             
-            if (s_block == 1 && count > 0)
-                o[ol++] = '");';
-//            if (!xpathsegs && count >= 1)
-//                textsegs++;
-
-            // lets check our simplification cases
-            var s;
-            if (s_block != 1) {
-                switch (s_block) {
-                    case 0:
-                        if(is_eventhandler)break;
-                        s = "code b [";
-                        break;
-                    case 2:
-                        s = "string quote " + tblock;
-                        break;
-                    case 3:
-                        if (tblock != "//")
-                            s = "comment " + tblock;
-                        break;
-                }
-                if (s)
-                    throw {t: "Unclosed " + s + " found at eof", p: str.length};
+            for(i=0;i<xpaths.length;i++){
+                logw("Xpath found:" + xpaths[i][0] + " " + xpaths[i][1] );
             }
+            for(i in props){
+                logw("Prop found:" + i );
+            }            
             
-            if (s.length) {
-                // lets check our macro
-                s = s[s.length-1];
-                if (macro[s])
-                    s = s.charAt(0) == "x" ? "xpath {" : "macro ( from " + s;
-                throw {t: "Unclosed " + s + " found at eof", p: str.length};
-            }
-            
-            // pick the right function ending
-            if(always_async){
-                 o[ol++] = async_calls 
-                    ? "\n;async.id=1;if(!async.queue)async(((_v=s.join('')).indexOf('$'))!=-1?(apf.$llut=_lang,_v.replace(apf.$lrx,apf.$lrep)):_v);return null;"
-                    : "\n;async((_v=s.join('')).indexOf('$')!=-1?(apf.$llut=_lang,_v.replace(apf.$lrx,apf.$lrep)):_v);return null;";
-            }else {
-                o[ol++] = async_calls 
-                    ? "\n;if(!async)return ((_v=s.join('')).indexOf('$'))!=-1?(apf.$llut=_lang,_v.replace(apf.$lrx,apf.$lrep)):_v;async.id=1;if(!async.queue)async(((_v=s.join('')).indexOf('$'))!=-1?(apf.$llut=_lang,_v.replace(apf.$lrx,apf.$lrep)):_v);return null;"
-                    : "\n;return ((_v=s.join('')).indexOf('$'))!=-1?apf.languageParse(_v,_lang):_v;";
-            }
-            //logw(complexcode +" xpath "+xpathsegs+" code "+codesegs+" text "+textsegs+" language "+langsegs);
-            // simplification and optimization cases:            
-            if (!complexcode) {
-                // we only have one codesegment
-                if (!textsegs) {
-                    if (codesegs == 1) { // clean up code for async parse_mode
-                        if(xpathsegs == 0 && o.length<=3) o = [with_options ? "with(_opts){return '';" : "return '';"];
-                        else{
-                            if(always_async){
-                                o[0] = with_options ? "with(_opts){var _u,_v,_w,ret = " : "var ret = ";
-                                if(o[1]=='\ns[s.length]=')o[1]='';
-                                o[o.length-1] = "\n;async.id=1;if(!async.queue)async((typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret);return null;"
-                            }else{
-                                if(!async_calls){
-                                    o[0] = with_options ? "with(_opts){var _u,_v,_w,ret = " : "var _u,_v,_w, ret = ";
-                                    if(o[1]=='\ns[s.length]=')o[1]='';
-                                    o[o.length-1] = "\n;return (typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret;";
-                                }else{
-                                    o[0] = with_options ? "with(_opts){var _u,_v,_w,ret = " : "var _u,_v,_w,ret = ";
-                                    if(o[1]=='\ns[s.length]=')o[1]='';
-                                    o[o.length-1] = "\n;if(!async)return (typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret;async.id=1;if(!async.queue)async((typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret);return null;"
-                                }
-                            }
-                        }
-                    }
-                    else if (!codesegs) {
-                        return [0, "", 0, null, null];
-                    }
-                }
-                else if (xpathsegs == 0 &&  textsegs == 1 && !codesegs) {
-                    // always return text even if you are async
-                    return [0, o.slice(2, o.length - 2).join("")
-                        .replace(/\\(["'])/g, "$1"), 0, null, jsmodels];
-                }
-                else if (xpathsegs == 1 && textsegs == 1 && codesegs == 0) {
-                    if(always_async){
-                        o[0] = with_options ? "with(_opts){var _u,_v,_w,ret = ":"var _u,_v,_w, ret = ";
-                        if(o[1]=='\ns.push(')o[1]='';
-                        o.length -= 3;
-                        o[o.length] = "\n;async.id=1;async((typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret);return null;"
-                    }
-                    else{
-                        o[0] = with_options ? "with(_opts){var _u,_v,_w, ret = ":"var _u,_v,_w, ret = ";
-                        if(o[1]=='\ns.push(')o[1]='';
-                        o.length -= 3;
-                        o[o.length] = "\n;return (typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret;"
-                        /*return [0, o.slice(4, o.length - 5).join('')
-                            .replace(/\\(["'])/g, "$1"), 1, null, jsmodels];*/
-                    }
-                }
-            }
-            
-            if(with_options) o[ol++] = '}'            
-            
-            var func = is_eventhandler
-                ?(with_options
-                    ? new Function("e","n", "_lang", "_opts", "_self", "async", o = o.join(""))
-                    : new Function("e","n", "_lang", "_self", "async", o = o.join("")))
-                :(with_options
-                    ? new Function("n", "_lang", "_opts", "_self", "async", o = o.join(""))
-                    : new Function("n", "_lang", "_self", "async", o = o.join("")));
         }
         catch(e) {
             // TODO: make a proper JPF exception with this information:
@@ -893,7 +680,7 @@
         }
         // TODO check API: xpathsegs counts how many xpaths are in here,
         // jsobjs has all the used jsobjects, o is the compiled string
-        return [func, o, xpathsegs, jsobjs, jsmodels];
+        return [null, o.join('')];
     };
 
    /* ***********************************************
