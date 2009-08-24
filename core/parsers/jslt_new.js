@@ -187,8 +187,8 @@
     f_node_create,  // use create xpaths on xpath fetch in codemode
     f_all_async,    // all calls are async (precalc parse_mode)
     o, ol,          // output and output len
-    c, cl,          // scopestack and scopestack len
-    c_begin,        // ol where this scope started
+    s, sl,          // scopestack and scopestack len
+    s_begin,        // ol where this scope started
     out_begin,      // the ol when [ or ] started text or code
     seg_begin,      // the ol of a text-segment
     start_tok,      // the token a string or comment was started with
@@ -335,31 +335,31 @@
                     // startup xpath parse_mode
                 }
                 else {
-                    c[cl++] = c_begin, c[cl++] = o[c_begin = ol++] = tok;
+                    s[sl++] = s_begin, s[sl++] = o[s_begin = ol++] = tok;
                 }
                 break;
             case 7: // -------- } --------
-                if ((v = c[--cl]) != type_close[o[ol++] = tok])// ERROR
+                if ((v = s[--sl]) != type_close[o[ol++] = tok])// ERROR
                     throw {t: "Cannot close " + v + " with " + tok, p: pos};
-                c_begin = c[--cl];
+                s_begin = s[--sl];
                 o[ol++] = "\n";
                 break;
             case 8: // -------- [ --------
-                c[cl++] = c_begin, c[cl++] = o[c_begin =ol++] = tok;
+                s[sl++] = s_begin, s[sl++] = o[s_begin =ol++] = tok;
                 break;
             case 9: // -------- ] --------
                 if (!--code_level) {
-                    if (cl>0 && c[cl-1] != '{') {
+                    if (sl>0 && s[sl-1] != '{') {
                         throw {t: "Cannot go to text mode whilst not in {}", p: pos};
                     }
                     parse_mode = 1;
                     seg_begin = out_begin = ol;
                 }
                 else {
-                    if ((v = c[--cl]) != type_close[o[ol++] = tok]) {
+                    if ((v = s[--sl]) != type_close[o[ol++] = tok]) {
                         throw {t: "Cannot close " + v + " with " + tok, p: pos};
                     }
-                    c_begin = c[--cl];
+                    s_begin = s[--sl];
                 }
                 break;
             case 10: // -------- ( --------
@@ -368,15 +368,15 @@
                 if (n = macro_o[last_tok]) {
                     if(o[ol-1]==" ") ol--;
                     o[ol-1] = n;
-                    c[cl++] = c_begin, c_begin = ol, c[cl++] = last_tok;
+                    s[sl++] = s_begin, s_begin = ol, s[sl++] = last_tok;
                 }
                 else{
                     if(last_type == 3 ){
                         if(o[ol-3]=='function'){
-                            c[cl++] = c_begin;
+                            s[sl++] = s_begin;
                             o[ol-3] = "var ",o[ol-2]=last_tok,o[ol-1]="=self.",
-                            o[ol++] = last_tok, o[c_begin =ol++] = "=function(";
-                            c[cl++] = tok;
+                            o[ol++] = last_tok, o[s_begin =ol++] = "=function(";
+                            s[sl++] = tok;
                         }else if((f_all_async && last_dot!=0) || 
                                  (last_dot>1 && async_lut[v = 
                                   last_tok.substring(0,last_dot)])){
@@ -396,13 +396,13 @@
                                 o[ol++] = last_tok.slice(last_dot+1),
                                 o[ol++] = "',[";
                             }
-                            c[cl++] = c_begin, c_begin = ol, c[cl++] = '_async';
+                            s[sl++] = s_begin, s_begin = ol, s[sl++] = '_async';
                             c_async_calls++;
                         }else{
-                            c[cl++] = c_begin, c[c_begin = cl++] = o[ol++] = tok;
+                            s[sl++] = s_begin, s[s_begin = sl++] = o[ol++] = tok;
                         }
                     }else{
-                        c[cl++] = c_begin, c[cl++] = o[c_begin = ol++] = tok;
+                        s[sl++] = s_begin, s[sl++] = o[s_begin = ol++] = tok;
                      }
                      if (last_tok == js_prop_last)
                          delete js_props[last_tok];// was a call
@@ -410,16 +410,16 @@
                 }
                 break;
             case 11: // -------- ) --------
-                if (n = macro_c[v = c[--cl]]) {
+                if (n = macro_c[v = s[--sl]]) {
                     o[ol++] = n;
                 }
                 else if (v != type_close[o[ol++] = tok]) {
                     throw {t:"Cannot close " + v + " with " + tok, p: pos};
                 }
-                if((c_begin = c[--cl])&0x7000000){
+                if((s_begin = s[--sl])&0x7000000){
                     // we have a different parsemode to return to
-                    parse_mode = c_begin&0x70000000;
-                    c_begin = c_begin&0x0fffffff;
+                    parse_mode = s_begin&0x70000000;
+                    s_begin = s_begin&0x0fffffff;
                 };
                 break;
             }
@@ -464,24 +464,24 @@
         case 2: // ============= xpath parse_mode =============
             switch(type){
             case 0: // -------- whitespace -------- 
-                if(ol!=c_begin) // strip initial spaces
+                if(ol!=s_begin) // strip initial spaces
                     o[ol++] = tok;
                 break;
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
                 break;          
              case 2: // -------- misc --------
-                if (tok == ":" && c_begin==ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
+                if (tok == ":" && s_begin==ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
                     // alternate model
                     // this xpath might be bound on a special node
                 }else{
-                    if (c_begin==ol)
+                    if (s_begin==ol)
                         o[ol++] = "\n_o.push(\"";
                     o[ol++] = unesc_lut[tok] || tok;
                 }               
             case 4: // -------- stringquotes --------
-                if(ol==c_begin && !(c[cl-2]&0x70000000)){
-                    // we came from code. pop c and get back to code mode.
+                if(ol==s_begin && !(s[sl-2]&0x70000000)){
+                    // we came from code. pop s and get back to code mode.
                     
                 }else{
                     o[ol++] = "\\";
@@ -498,12 +498,12 @@
                     // push up a proper xpath macro and a returnmode 2
                 break;
             case 7: // -------- } --------
-                // lets pop the c and see where to return to
+                // lets pop the s and see where to return to
                 break;
             case 10: // -------- ( --------
                 // perhaps go into code-in-xpath parse_mode
-                if(ol == c_begin){
-                    //lets push up a ( on the c with a returnmode 2
+                if(ol == s_begin){
+                    //lets push up a ( on the s with a returnmode 2
                     
                 }
                 break;
@@ -568,7 +568,7 @@
                                 o.length--;
                             o.length -= 2;
                             ol        = o.length;
-                            o[ol++]   = c[c.length-1] = "{";
+                            o[ol++]   = s[s.length-1] = "{";
                             
                             b = [tblock = tok],bl = 1;
                             s_block = 2;
@@ -600,7 +600,7 @@
                                 }
                             }
                             else {
-                                v = xpath_macro_default[c[c.length - 1]]
+                                v = xpath_macro_default[s[s.length - 1]]
                                     || "xvalue";
                             }
                             if(v =='xlang')
@@ -609,7 +609,7 @@
                             textsegs++;
                             o.push((count++) ? (textsegs++, '",') : "\ns.push(",
                                 macro[v], '"');
-                            c.push(v + "_");
+                            s.push(v + "_");
                             xstack.push(count);
                             count         = 1;
                             s_xpath       = 1;
@@ -630,19 +630,19 @@
                                ol = (o.length-=2);
                                o[ol++]="{}";
                                s_block = 0;
-                               c.pop();
+                               s.pop();
                             } else {
                                 if (last_tok == "." && o[ol-2] == '"') {
                                     ol = (o.length-=3);
-                                    o[ol++] = macro[v = "_" + c.pop()
+                                    o[ol++] = macro[v = "_" + s.pop()
                                         .substring(1, v.length)];
-                                    c.push(v + "_");
+                                    s.push(v + "_");
                                     complexcode = s_codeinxpath = 1; // no " insertion
                                     // make sure it doesnt get optimized as pure xpath also
                                 }
                                 if (s_xpathincode) {
                                     o.push(s_codeinxpath ? "" : '"', 
-                                        macro[v = c.pop()], "\n");
+                                        macro[v = s.pop()], "\n");
                                     s_block = 0;
                                 }
                                 else {
@@ -652,7 +652,7 @@
                                         s_xpathwithmodel = 0;
                                     }
                                     o.push(s_codeinxpath ? "" : '"',
-                                        macro[v = c.pop()], ',"');
+                                        macro[v = s.pop()], ',"');
                                 }
                             }
                             s_codeinxpath = s_xpath = s_xpathincode = 0;
@@ -672,7 +672,7 @@
                                 throw {t: "Invalid code-in-xpath" + v, p: pos};
                             // remove quote and go into code parse_mode
                             ol      = --o.length;
-                            c.push(s_xpathincode 
+                            s.push(s_xpathincode 
                                 ? "codeinxpathincode"
                                 : "codeinxpath");
                             s_block = s_xpath = s_xpathincode = 0;
@@ -706,7 +706,7 @@
                             (jsmodels || (jsmodels = [])).push(n);
                             // lets find the right macro for our new 3 state
                             // shiznizzleshiz
-                            o[ol++] = macro[(v = c.pop()) + "1"] + n
+                            o[ol++] = macro[(v = s.pop()) + "1"] + n
                                 + (n = macro[v + "2"]);
                             o[ol++] = "\"";
                             if (!n){
@@ -714,7 +714,7 @@
                                     throw {t: "Found triple or more :: in model connection in xpath " + v, p: pos};
                                 throw {t: "Don't support alternative model for this xpath macro: " + v, p: pos};
                             }
-                            c.push(v + "3");
+                            s.push(v + "3");
                             // this xpath might be bound on a special node
                         }
                         else {
@@ -769,7 +769,7 @@
                 codesegs++;
             }
             
-            c    = [];
+            s    = [];
             xstack   = [];
             jsobjs   = {};
             str.replace(parserx, parser);
@@ -799,9 +799,9 @@
                     throw {t: "Unclosed " + s + " found at eof", p: str.length};
             }
             
-            if (c.length) {
+            if (s.length) {
                 // lets check our macro
-                s = c[c.length-1];
+                s = s[s.length-1];
                 if (macro[s])
                     s = s.charAt(0) == "x" ? "xpath {" : "macro ( from " + s;
                 throw {t: "Unclosed " + s + " found at eof", p: str.length};
