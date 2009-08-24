@@ -193,6 +193,7 @@
     b_tok,          // the token a block output was started with 
     code_level,     // the [] count to switch between code/text
     out_begin,      // the ol when [ or ] started text or code
+    seg_begin,      // the ol of a text-segment
     last_tok,       // last token
     last_type,      // last type
     last_dot,       // . pos when last token was a word
@@ -354,7 +355,7 @@
                         throw {t: "Cannot go to text mode whilst not in {}", p: pos};
                     }
                     parse_mode = 1;
-                    out_begin = ol;
+                    seg_begin = out_begin = ol;
                 }
                 else {
                     if ((v = st[--stl]) != type_close[o[ol++] = tok]) {
@@ -432,17 +433,18 @@
                 break;
             case 2: // misc
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
+                else if(ol == seg_begin) o[ol++] = "\"";
                 o[ol++] = unesc_lut[tok] || tok;
                 break;
             case 4:
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
+                else if(ol == seg_begin) o[ol++] = "\"";
                 o[ol++] = "\\";
                 o[ol++] = tok;            
                 break;
             case 6: // -------- { -------- 
                 if(ol == out_begin) o[ol++] = "\ns.push(";
-                else o[ol++] = "\",";
-                
+                else o[ol++] = (ol == seg_begin)?",":"\",";
                 break;  
             case 5: // -------- comment --------
                 if (tok == "*/" || tok== "-->")
@@ -450,8 +452,15 @@
                 parse_mode = 3, b = [b_tok = tok],  bl = 1;
                 last_parse_mode = 2;
                 break;
+            case 8: // -------- [ --------
+                if(ol != seg_begin)
+                    o[ol++] = "\"";
+                o[ol++] = ")\n";
+                parse_mode = 0, out_begin = ol;
+                break;                
             default:
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
+                else if(ol == seg_begin) o[ol++] = "\"";
                 o[ol++] = tok;
             }
             break;
