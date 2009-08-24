@@ -203,7 +203,7 @@
     async_calls,    // number of async calls
     js_props,       // the js properties found
     js_prop_last,   // last js property found
-    has_statements; //
+    has_statements; // the code contains statements (so you cant use it as an expression)
     
     xpath_assign_lut[macro_c.xvalue_]  = 'xvalue_a'
     xpath_assign_lut[macro_c.xvalue_3] = 'xvalue_3a';
@@ -268,9 +268,6 @@
         return '';
     };
 
-    // Also you would need to add a cmdline arg to 'compile' to switch between
-    // the macro_edit and macro_default things
-    
     parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
 
     function parser(tok, rx_lut, rx_white, rx_word, rx_misc, pos){
@@ -305,7 +302,6 @@
                 else o[ol++] = unesc_lut[tok] || tok;
              break;
             case 3: // -------- word --------
-                // check our distance to the output in this token level
                 if (ol == out_begin){
                     if (!statement_lut[tok])
                         o[ol++] = "\ns[s.length]=";
@@ -354,6 +350,9 @@
                 break;
             case 9: // -------- ] --------
                 if (!--code_level) {
+                    if (stl>0 && st[stl-1] != '{') {
+                        throw {t: "Cannot go to text mode whilst not in {}", p: pos};
+                    }
                     parse_mode = 1;
                     out_begin = ol;
                 }
@@ -442,6 +441,7 @@
                 break;
             case 6: // -------- { -------- 
                 if(ol == out_begin) o[ol++] = "\ns.push(";
+                else o[ol++] = "\",";
                 
                 break;  
             case 5: // -------- comment --------
@@ -487,20 +487,19 @@
                     throw {t: "Unmatched comment "+tok, p: pos};
                 last_parse_mode = 2, parse_mode = 4, b = [b_tok = tok], bl = 1;
                 break; 
-            case 10: // -------- ( --------
-                // perhaps go into code-in-xpath parse_mode
-                if(ol == st_begin){
-                    //lets push up a ( on the stack with a parsemode 2
-                    
-                }
-                break;
             case 6: // -------- { --------
                 // a nested xpath was found
                     // push up a proper xpath macro and a returnmode 2
                 break;
             case 7: // -------- } --------
                 // lets pop the stack and see where to return to
-                
+                break;
+            case 10: // -------- ( --------
+                // perhaps go into code-in-xpath parse_mode
+                if(ol == st_begin){
+                    //lets push up a ( on the stack with a returnmode 2
+                    
+                }
                 break;
             default: // -------- default --------
                 o[ol++] = tok;
