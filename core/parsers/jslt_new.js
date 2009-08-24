@@ -84,8 +84,7 @@
     // _m = 3 part xpath on remote model
     // x* : xpath in textblock
     // _a* : macro used in assign {xpath} = operation
-    macro_o["("]      = 0, 
-    macro_c[")"]      = 0,
+    macro_c["("]      = 0,
     macro_o.each      = "\nfor(_t.push(n,_a,_i,_l),_a=(_a=(",
     macro_c.each      = "))?_a:[],_l=_a.length,n=_a[_i=0];_i<_l||(_l=_t.pop(),_i=_t.pop(),_a=_t.pop(),n=_t.pop(),0);n=_a[++_i])",
 
@@ -187,13 +186,13 @@
     f_node_mode,    // guess 'node' as the type for {} xpaths, 1 = node, 2 = nodes
     f_node_create,  // use create xpaths on xpath fetch in codemode
     f_all_async,    // all calls are async (precalc parse_mode)
-    o, ol, b, bl,   // output and block array
+    o, ol,   // output and block array
     st,stl,         // stack and stacklength
     st_begin,       // ol where this stack block started
-    b_tok,          // the token a block output was started with 
-    code_level,     // the [] count to switch between code/text
     out_begin,      // the ol when [ or ] started text or code
     seg_begin,      // the ol of a text-segment
+    b_tok,          // the token a block output was started with 
+    code_level,     // the [] count to switch between code/text
     last_tok,       // last token
     last_type,      // last type
     last_dot,       // . pos when last token was a word
@@ -319,14 +318,13 @@
             break;
             case 4: // -------- stringquotes --------
                 if (ol == out_begin)
-                    o[ol++] = "s[s.length]=";
-                parse_mode = 4, b = [b_tok = tok], bl = 1;
+                    o[ol++] = "\ns[s.length]=";
+                parse_mode = 4; 
             break;
             case 5: // -------- comment -------- 
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                parse_mode = 5, b = [b_tok = tok],  bl = 1;
-                last_parse_mode = 0;
+                parse_mode = 5, last_parse_mode = 0;
                 break;
             case 6: // -------- { --------
                 // lets see if we should switch to xpath parse_mode
@@ -431,14 +429,14 @@
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
                 break;
-            case 2: // misc
+            case 2: // -------- misc --------
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
-                else if(ol == seg_begin) o[ol++] = "\"";
+                else if(ol == seg_begin) o[ol++] = ",\"";
                 o[ol++] = unesc_lut[tok] || tok;
                 break;
             case 4: // -------- stringquotes --------
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
-                else if(ol == seg_begin) o[ol++] = "\"";
+                else if(ol == seg_begin) o[ol++] = ",\"";
                 o[ol++] = "\\";
                 o[ol++] = tok;            
                 break;
@@ -449,8 +447,7 @@
             case 5: // -------- comment --------
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                parse_mode = 3, b = [b_tok = tok],  bl = 1;
-                last_parse_mode = 2;
+                parse_mode = 3, last_parse_mode = 1;
                 break;
             case 8: // -------- [ --------
                 if(ol != seg_begin)
@@ -458,22 +455,22 @@
                 o[ol++] = ")\n";
                 parse_mode = 0, out_begin = ol;
                 break;                
-            default:
+            default: // -------- default --------
                 if(ol == out_begin) o[ol++] = "\ns.push(\"";
-                else if(ol == seg_begin) o[ol++] = "\"";
+                else if(ol == seg_begin) o[ol++] = ",\"";
                 o[ol++] = tok;
             }
             break;
         case 2: // ============= xpath parse_mode =============
             switch(type){
-            case 0:
+            case 0: // -------- whitespace -------- 
                 if(ol!=st_begin) // strip initial spaces
                     o[ol++] = tok;
                 break;
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
                 break;          
-             case 2: // misc
+             case 2: // -------- misc --------
                 if (tok == ":" && st_begin==ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
                     // alternate model
                     // this xpath might be bound on a special node
@@ -494,7 +491,7 @@
             case 5: // -------- comment --------
                 if (tok == "*/" || tok== "-->")
                     throw {t: "Unmatched comment "+tok, p: pos};
-                last_parse_mode = 2, parse_mode = 4, b = [b_tok = tok], bl = 1;
+                last_parse_mode = 2, parse_mode = 4;
                 break; 
             case 6: // -------- { --------
                 // a nested xpath was found
@@ -513,29 +510,36 @@
             default: // -------- default --------
                 o[ol++] = tok;
                 break;
+            }
             break;
-        default: // ============= string or comment parse_mode =============
+        case 3: // ============= string parse_mode =============
             switch (type) {
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
-                b[bl++] = "\\n";
+                o[ol++] = "\\n";
                 break;
             case 2: // -------- misc --------
-                b[bl++] = unesc_str[tok] || tok;
+                o[ol++] = unesc_str[tok] || tok;
                 break;                        
             case 4: // -------- stringquotes --------
-                b[bl++] = tok;
-                if (parse_mode == 4 && b_tok == tok)
+                o[ol++] = tok;
+                if (b_tok == tok)
                     parse_mode = 0;// go back to code parse_mode
-                o[ol++] = b.join("");
-                break;
-            case 5: // -------- comment --------
-                if (parse_mode == 5 && ((b_tok == "/*" && tok == "*/")
-                    || (b_tok == "<!--" && tok == "-->")))
-                    parse_mode = last_parse_mode;
                 break;
             default: // -------- default --------
-                b[bl++] = tok;
+                o[ol++] = tok;
+                break;
+            }
+            break;
+        case 4: // ============= comment parse_mode =============
+            switch (type) {
+            case 1: // -------- newline --------
+                line_no++, line_pos = pos;
+                break;            
+            case 5: // -------- comment --------
+                if ((b_tok == "/*" && tok == "*/") ||
+                   (b_tok == "<!--" && tok == "-->"))
+                    parse_mode = last_parse_mode;
                 break;
             }
             break;
