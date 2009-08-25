@@ -67,6 +67,7 @@ apf.runSafari = function(){
         };
         
         //Element.selectNodes
+        Text.prototype.selectNodes =
         Element.prototype.selectNodes = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
@@ -78,6 +79,7 @@ apf.runSafari = function(){
         };
         
         //Element.selectSingleNode
+        Text.prototype.selectSingleNode =
         Element.prototype.selectSingleNode = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };

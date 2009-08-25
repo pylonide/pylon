@@ -47,6 +47,7 @@ apf.runGecko = function(){
     };
     
     //Element.selectNodes
+    Text.prototype.selectNodes =
     Element.prototype.selectNodes = function(sExpr){
        return this.ownerDocument.selectNodes(sExpr, this);
     };
@@ -58,6 +59,7 @@ apf.runGecko = function(){
     };
     
     //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
     Element.prototype.selectSingleNode = function(sExpr){
         return this.ownerDocument.selectSingleNode(sExpr, this);
     };
