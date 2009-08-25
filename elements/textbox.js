@@ -630,7 +630,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             this.$propHandlers["realtime"].call(this);
 
         if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
+            this.setProperty("value", x.firstChild.nodeValue.trim());
         else if (!ac)
             apf.AmlParser.parseChildren(this.$aml, null, this);
     };

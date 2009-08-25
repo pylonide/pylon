@@ -359,7 +359,7 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
             this.$setClearMessage(this["empty-message"]);
         
         if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
+            this.setProperty("value", x.firstChild.nodeValue.trim());
         else
             apf.AmlParser.parseChildren(this.$aml, null, this);
     };
