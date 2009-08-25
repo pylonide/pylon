@@ -32,7 +32,7 @@
  * @version     %I%, %G%
  * @since       3.0
  */
- apf.JsltImplementation = function(){
+ apf.jslt = new (function(){
 
     var statement_lut = { // all js statements to see its NOT an expression
         "var": 1, "for": 1, "while": 1, "do": 1, "if": 1, "else": 1,
@@ -207,7 +207,7 @@
     macro_o.local_n   = "",
     macro_c.local_n   = "",
 
-    macro_o._async    = "((typeof(_v=async[async.id?++async.id:(async.id=2)])!='undefined')?_v:apf.JsltInstance.asyncCall(_n,_lang,_opts,_self,async,this,",
+    macro_o._async    = "((typeof(_v=async[async.id?++async.id:(async.id=2)])!='undefined')?_v:apf.$async(_n,_lang,_opts,_self,async,this,",
     macro_c._async    = "]))",
     macro_o.xlang     = "apf.$lfind(_lang,",
     macro_c.xlang     = ")",
@@ -229,7 +229,7 @@
     };
     apf.$llut = 0;
 
-    this.asyncCall = function(n,_lang,_opts,_self,async,_this,obj,func,args){
+    apf.$async = function(n,_lang,_opts,_self,async,_this,obj,func,args){
         // lets increase the queue
         if(!async) return ''; // JPF ERROR
         var id = async.id, v, n;
@@ -328,6 +328,7 @@
             case 4: // -------- stringquotes --------
                 if (ol == out_begin)
                     o[ol++] = "\n_o[_ol++]=";
+                o[ol++] = tok;
                 parse_mode = 3, start_tok = tok;
                 break;
             case 5: // -------- comment -------- 
@@ -409,7 +410,7 @@
                                 o[ol++] = "',[";
                             }
                             s[sl++] = s_begin, s[sl++] = '_async', s_begin = ol;
-                            c_async_calls++;
+                            async_calls++;
                         }else{
                             s[sl++] = s_begin, s[sl++] = o[ol++] = tok, s_begin = ol;
                         }
@@ -434,8 +435,9 @@
                     seg_begin = ol;
                 };
                 break;
-            case 12:    // end of string
-                    
+            case 12: // -------- end --------
+                if(sl)
+                    throw {t: "Unclosed " + s[sl-1] + " found at end in codemode", p: pos};
                 break;
             }
             break;
@@ -443,6 +445,9 @@
             switch (type) {
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
+                // only if we want newlines in text output...
+                if(ol != out_begin && ol != seg_begin)
+                   o[ol++] = "\\n";
                 break;
             case 2: // -------- misc --------
                 if(ol == out_begin)
@@ -465,9 +470,10 @@
                 parse_mode = 3, comment_parse_mode = 1, start_tok = tok;
                 break;
             case 6: // -------- { -------- 
-                if( v = xpath_intext_lut[last_tok] )
+                if( v = xpath_intext_lut[last_tok] ){
                     ol--;
-                else 
+                    if(ol-1 == out_begin) ol --;
+                }else 
                     v = xpath_macro_default[s[sl-1]] || 'xnode';
             
                 if(ol == out_begin)     
@@ -479,8 +485,10 @@
                 s[sl++] = s_begin|0x10000000, s[sl++] = v, seg_begin = s_begin = ol;
                 parse_mode = 2;
                 break;
-            case 12:
-            case 8: // -------- [ --------
+            case 12: // -------- end --------
+                if(sl)
+                    throw {t: "Unclosed " + s[sl-1] + " found at end in textmode", p: pos};
+            case 8:  // -------- [ --------
                 if(ol != out_begin && ol != seg_begin)
                     o[ol++] = "\"";
                 parse_mode = 0, seg_begin = out_begin = ol, code_level=1;
@@ -554,18 +562,16 @@
                 o[ol++] = macro_o[s[sl++] ='xvalue'];
                 seg_begin = s_begin = ol;
                 parse_mode = 2;             
-                if(last_model){
-                    xpaths[xpaths.length] = [last_model,0];
-                    last_model = 0;
-                }
+                if(last_model)
+                    xpaths[xpaths.length] = [last_model,0], last_model = 0;
                 break;
             case 7: // -------- } --------
                 // lets pop the s and see where to return to
                 if( ol == s_begin ) // todo optimize this?
                     o[ol++] = "\"\"";
-                else if( ol != seg_begin){
+                else if( ol != seg_begin)
                     o[ol++] = "\"";
-                }
+  
                 if(seg_begin == s_begin)
                     xpaths[xpaths.length] = [last_model,o.slice(s_begin+1,-1).join('')], last_model = 0;
                 else if(last_model)
@@ -590,7 +596,7 @@
                     o[ol++] = tok;
                 }
                 break;
-            case 12:    // end of string
+            case 12: // -------- end --------
                 throw {t: "Unexpected end whilst parsing xpath", p: pos};
                 break;
             default: // -------- default --------
@@ -616,7 +622,7 @@
                 if (start_tok == tok)
                     parse_mode = 0;// go back to code parse_mode
                 break;
-            case 12:    // end of string
+            case 12: // -------- end --------
                 throw {t: "Unexpected end whilst parsing string", p: pos};
                 break;
             default: // -------- default --------
@@ -635,7 +641,7 @@
                     parse_mode = comment_parse_mode;
                 break;
             }
-            case 12:    // end of string
+            case 12: // -------- end --------
                 throw {t: "Unexpected end whilst parsing comment", p: pos};
                 break;
             break;
@@ -644,44 +650,97 @@
             last_tok = tok, last_type = type;
     }
     
-    // always_async creates code which always calls the async callback and returns 'null'
-    // precalc_calls essentially makes all calls async and uses the options storage area for args and .precalc
-    // jslt is optimized to return objects and real values where possible
+    function jsltReset(i_ol, i_parse_mode){
+        c_node_mode = multiple, c_node_create = node_create, c_precalc = precalc;
+        s = [], props = {}, xpaths = [];
+        
+        sl = code_level = last_tok = last_model = last_type = last_dot = line_no = 
+        line_pos = async_calls = has_statements = 0;
+        
+        s_begin = out_begin = seg_begin = ol = i_ol;
+        
+        parse_mode = i_parse_mode;
+    }
     
-    this.compile = function(str, with_options, node_mode, node_create, precalc ){
-        try {      
-            c_node_mode = node_mode, c_node_create = node_create, c_precalc = precalc;
-            o = [], s = [], props = {}, xpaths = [];
-            ol = sl =  s_begin = out_begin = seg_begin = code_level = last_tok = last_model = 
-            last_type = last_dot = line_no = line_pos = async_calls = has_statements = 0;
-
-            parse_mode = 1;
-            str.replace(parserx, parser);
+    function handleError(e,line_pos){
+        // TODO: make a proper JPF exception with this information:
+        if (e.t) {
+            apf.console.error("Parse exception: " + e.t + " on line:"
+                + line_no + " col:" + (e.p - line_pos - 2));
+        }
+        else {
+            apf.console.error("Compile exception: " + e.message + "\nCode: " + o);
+        }
+    }
+    
+    this.compileDataInstruction = function(str, with_options, precalc ){
+       try {   
+            //new Function("n", "_lang", "_opts", "_self", "async", o = o.join(""))
+        } catch(e) {
+            handleError(e,line_pos);
+        }
+        return [null, o.join('')];
+    }
+    
+    this.compileValue = function(str, node_create ){
+       try {   
+            //new Function("n", "_lang", "_self", "async", o = o.join("")));
+        } catch(e) {
+            handleError(e,line_pos);
+        }
+        return [null, o.join('')];
+    }
+    
+    this.compileNode = function(str, multiple, node_create ){
+       try {      
+            jsltReset(1,1);
+        
+            o = ["var _t=[],_u,_v,_w,_i,_a,_l;"];
             
+            str.replace(parserx, parser);
+               
+            // if we have no xpaths and no code: pure string
+            if(seg_begin == 1 && !xpaths.length){
+                // pure string
+            }
+            // lets see if we should simplify the xpath or the code to a single statement
+            // then we slap on the different function endings
+            // and whooptido.
+            // all the variations in end-code
+            //"\n;async.id=1;if(!async.queue)async((typeof(ret)=='string')?(ret.indexOf('$')!=-1?(apf.$llut=_lang,ret.replace(apf.$lrx,apf.$lrep)):ret):ret);return null;"
             for(i=0;i<xpaths.length;i++){
                 logw("Xpath found:" + xpaths[i][0] + " " + xpaths[i][1] );
             }
             for(i in props){
                 logw("Prop found:" + i );
-            }            
+            }
             
+            //new Function("n", "_lang", "_self", "async", o = o.join("")));
         }
         catch(e) {
-            // TODO: make a proper JPF exception with this information:
-            
-            if (e.t) {
-                apf.console.error("Parse exception: " + e.t + " on line:"
-                    + line_no + " col:" + (e.p - line_pos - 2));
-            }
-            else {
-                apf.console.error("Compile exception: " + e.message + "\nCode: " + o);
-            }
-            
+            handleError(e,line_pos);
         }
-        // TODO check API: xpathsegs counts how many xpaths are in here,
-        // jsobjs has all the used jsobjects, o is the compiled string
         return [null, o.join('')];
     };
+    
+    this.compileEvent = function(str, node_create ){
+        try {   
+
+            //new Function("e","n", "_lang", "_self", "async", o = o.join("")))
+        } catch(e) {
+            handleError(e,line_pos);
+        }
+        return [null, o.join('')];
+    }
+    
+    this.compileMatch = function(str, matches, node_create ){
+       try {   
+            //new Function("n", "_lang", "_self", "async", o = o.join("")));
+        } catch(e) {
+            handleError(e,line_pos);
+        }
+        return [null, o.join('')];
+    }    
 
    /* ***********************************************
      //you can interchange nodes and strings
@@ -690,7 +749,11 @@
      
      returns string or false
      ************************************************/
+    
+    /*
+    // please rewrite this to match jslt API
     this.cache = [];
+    
     
     this.apply = function(jsltNode, xmlNode){
         var jsltFunc, cacheId, jsltStr, doTest;
@@ -761,14 +824,14 @@
         /* #ifndef __DEBUG
         try {
         #endif */
-            if (!xmlNode) 
+         /*   if (!xmlNode) 
                 return '';
             
             // #ifdef __DEBUG
             var str = jsltFunc[0](xmlNode);
             if (doTest) 
                 apf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
-            return str;
+            return str;*/
             /* #else
             return jsltFunc[0](xmlNode);
             #endif */
@@ -779,8 +842,7 @@
             throw new Error(apf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
         #endif */
-    };
-};
-apf.JsltInstance = new apf.JsltImplementation();
+    /*};*/
+})();
 
 // #endif
