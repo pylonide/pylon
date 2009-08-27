@@ -30,9 +30,19 @@
 ****************************************************************/
 
 // #ifndef __PACKAGED
-
-if (!apf.basePath)
-    apf.basePath = "./";
+if (!apf.basePath) {
+    var snodes = document.getElementsByTagName("script");
+    for (var src, i = 0; i < snodes.length; i++) {
+        src = snodes[i].getAttribute("src");
+        if (src && src.match(/^(.*)loader\.js$/)) {
+            apf.basePath = RegExp.$1;
+            break;
+        }
+    }
+    
+    if (!apf.basePath)
+        apf.basePath = "./";
+}
 
 apf.Modules = [
     "DataBinding",

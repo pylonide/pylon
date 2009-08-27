@@ -250,7 +250,9 @@ var apf = {
      * String specifying the basepath for loading apf from seperate files.
      * @type {String}
      */
+    /*#ifdef __PACKAGED
     basePath      : "./",
+    #endif*/
 
     //#ifdef __PARSER_AML
     /**

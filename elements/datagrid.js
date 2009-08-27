@@ -2526,6 +2526,8 @@ apf.datagrid    = apf.component(apf.NODE_VISIBLE, function(){
             
             if (headings[target.getAttribute("hid")].sortable)
                 _self.sortColumn(parseInt(target.getAttribute("hid")));
+            
+            _self.dispatchEvent("sortcolumn", headings[target.getAttribute("hid")]);
         };
         
         this.oHead.onmousedown = function(e){

@@ -181,6 +181,8 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
                     self[this.group].setProperty(attr[i].nodeName,
                         attr[i].nodeValue);
                 }
+                
+                jpf.StateServer.groups[this.group].pState.dispatchEvent("change");
             }
 
             this.dispatchEvent("change");
