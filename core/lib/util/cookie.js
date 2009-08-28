@@ -44,7 +44,7 @@ apf.setcookie = function(name, value, expire, path, domain, secure) {
     if (expire) ck += "expires=" + new Date(expire
         + new Date().getTimezoneOffset() * 60).toGMTString() + ";";
     if (path)   ck += "path=" + path + ";";
-    if (domain) ck += "domain=" + domain;
+    if (domain) ck += "domain=" + domain + ";";
     if (secure) ck += "secure";
 
     document.cookie = ck;
