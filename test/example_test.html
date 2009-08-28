@@ -5,9 +5,11 @@
   <title>JavaScript unit test file</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="assets/jsunittest.js" type="text/javascript"></script>
-
-  <!-- TODO: REPLACE "example_library_to_test" throughout file with name of file to test -->
-  <script src="../src/example_library_to_test.js" type="text/javascript"></script>
+  
+  <script src="../apf.js"></script>
+  <script>apf.basePath = "../"</script>
+  <script src="../loader.js"></script>
+  <script src="../alert_r.js"></script>
   
   <link rel="stylesheet" href="assets/unittest.css" type="text/css" />
 </head>
@@ -32,18 +34,53 @@
 
 <script type="text/javascript">
 // <![CDATA[
+
+  //core/lub/util/xml.js
+  var div1 = document.createElement("div");
+  var div2 = document.createElement("div");
+  var div3 = document.createElement("div");
+  div1.appendChild(div3);
+  
+  var xml1 = apf.getXml("<lang></lang>");
+  var xml2 = apf.getXml("<polish></polish>");
+  var xml3 = apf.getXml("<english></english>");
+
+  
+
+  /*apf.onload = function() {
+      alert("ok");
+  }*/
+
   new Test.Unit.Runner({
-    setup: function() {
-    },
-    
-    teardown: function() {
-      
-    },
-    
-    testTruth: function() { with(this) {
-      assert(true);
+    testCoreLibUtilXml_isChildOf : function() { with(this) {
+        assertTypeOf("boolean", apf.isChildOf(div1, div2, true));
+        assertTypeOf("boolean", apf.isChildOf(div1, div3, true));
+        assertTypeOf("boolean", apf.isChildOf(div1, document.body, true));
+        assertTypeOf("boolean", apf.isChildOf(document.body, div1, true));
+        assertTypeOf("boolean", apf.isChildOf(div1, document.body, false));
+        assertTypeOf("boolean", apf.isChildOf(document.body, div1, false));
+        
     }},
-  }); 
+    testCoreLibUtilXml_isOnlyChild : function() { with(this) {
+        assertTypeOf("boolean", apf.isOnlyChild(div1, div2));
+        //assertTypeOf("boolean", apf.isOnlyChild(null, undefined));
+        //assertTypeOf("boolean", apf.isOnlyChild(undefined, undefined));
+        assertTypeOf("boolean", apf.isOnlyChild(div1, [1, 2, 3]));
+        assertTypeOf("boolean", apf.isOnlyChild(div1, []));
+    }},
+    testCoreLibUtilXml_mergeXml : function() { with(this) {
+        assertTypeOf("object", apf.mergeXml(xml1, xml2));
+    }},
+    testCoreLibUtilXml_setNodeValue : function() { with(this) {
+        apf.setNodeValue(xml2, 666);
+        assertEqual(666, apf.queryValue(xml2));
+        
+        xml1.appendChild(xml3);
+        apf.flow.alert_r(xml1);
+        apf.setQueryValue(xml1, "lang/english", 668);
+        assertEqual(668, apf.queryValue(xml1));
+    }}
+  });
 // ]]>
 </script>
 </body>

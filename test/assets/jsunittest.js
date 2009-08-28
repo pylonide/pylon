@@ -713,6 +713,44 @@ JsUnitTest.Unit.Assertions = {
     message = this.buildMessage(message || 'assertNotInstanceOf', '<?> was an instance of the expected type', actual);
     this.assertBlock(message, function() { return !(actual instanceof expected) });
   },
+  
+  /**
+   * Checks that returned data by function has correct type 
+   * 
+   * @param {Object} expected   type of returned data
+   * Possible values:
+   *     number
+   *     string
+   *     boolean
+   *     object
+   *     function
+   *     undefined
+   * @param {Object} actual     data returned by function which is checking
+   * @param {Object} message    error message
+   */
+  assertTypeOf: function(expected, actual, message) {
+    message = this.buildMessage(message || 'assertTypeOf', '<?> was not have the expected type', actual);
+    this.assertBlock(message, function() { return typeof actual == expected });
+  },
+  
+  /**
+   * Checks that returned data by function has differrnt type than defined
+   * 
+   * @param {Object} expected   type of returned data
+   * Possible values:
+   *     number
+   *     string
+   *     boolean
+   *     object
+   *     function
+   *     undefined
+   * @param {Object} actual     data returned by function which is checking
+   * @param {Object} message    error message
+   */
+  assertNotTypeOf: function(expected, actual, message) {
+    message = this.buildMessage(message || 'assertNotTypeOf', '<?> was have the expected type', actual);
+    this.assertBlock(message, function() { return !(typeof actual == expected) });
+  },
 
   assertRespondsTo: function(method, obj, message) {
     message = this.buildMessage(message || 'assertRespondsTo', 'object doesn\'t respond to <?>', method);
