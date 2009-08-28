@@ -157,7 +157,7 @@ apf.Validation = function(){
      */
     this.isValid = function(checkRequired){
         (validationOptions.isValid || (validationOptions.isValid 
-          = apf.validator.compile(validationOptions)))(
+          = apf.validator.compile(validationOptions))).call(this,
             typeof this.getValue == "function" ? this.getValue(null, true) : null, 
             checkRequired, this.validityState || 
             (this.validityState = new apf.validator.validityState()));
