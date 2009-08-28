@@ -213,6 +213,13 @@ apf.appsettings = {
         "baseurl" : function(value){
             this.baseurl = apf.parseExpression(value);
         },
+        "language" : function(value){
+            this.language = apf.parseExpression(value);
+            
+            //#ifdef __WITH_LANG_SUPPORT
+            setTimeout("apf.language.loadFrom(apf.appsettings.language);");
+            //#endif
+        },
         "resource-path" : function(value){
             this.resourcePath = apf.parseExpression(value || "")
               .replace(/resources\/?|\/$/g, '');
@@ -364,11 +371,6 @@ apf.appsettings = {
             shell.norefresh = true;
         //#endif
         
-        //#ifdef __WITH_LANG_SUPPORT
-        if (this.language)
-            setTimeout("apf.language.loadFrom(apf.appsettings.language);");
-        //#endif
-
         //#ifdef __WITH_STORAGE
         if (this.storage)
             apf.storage.init(this.storage);
