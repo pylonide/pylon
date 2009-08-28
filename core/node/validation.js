@@ -405,6 +405,7 @@ apf.Validation = function(){
     //#endif
     this.$propHandlers["required"]   = 
     this.$propHandlers["pattern"]    = 
+    this.$propHandlers["custom"]    = 
     this.$propHandlers["min"]        = 
     this.$propHandlers["max"]        = 
     this.$propHandlers["maxlength"]  = 
