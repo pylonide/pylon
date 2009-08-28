@@ -526,34 +526,6 @@ Array.prototype.some = Array.prototype.some || function(fn, bind){
     return false;
 };
 
-Math.hexlist  = "0123456789ABCDEF";
-/**
- * Convert a number (or float) from decimal to hexadecimal notation.
- *
- * @param {Number} value
- * @type  {String}
- */
-Math.decToHex = function(value){
-    var hex = this.floor(value / 16);
-    hex = (hex > 15 ? this.decToHex(hex) : this.hexlist.charAt(hex));
-
-    return hex + "" + this.hexlist.charAt(this.floor(value % 16));
-};
-
-/**
- * Convert a String from hexadecimal to decimal notation.
- *
- * @param {String} value
- * @type  {Number}
- */
-Math.hexToDec = function(value){
-    var total = 0;
-    for (var i = 0, l = value.length; i < l; i++) {
-        total += this.hexlist.indexOf(value.charAt(i)) * Math.pow(16, l - i - 1);
-    }
-    return total;
-};
-
 // #ifdef __WITH_UUID
 /**
  * Generate a random uuid. Usage: Math.uuid(length, radix)

@@ -257,6 +257,9 @@ apf.setQueryValue = function(xmlNode, xpath, value){
 apf.queryValue = function (xmlNode, xpath){
     if (!xmlNode) 
         return "";
+    if (xmlNode.nodeType == 2) 
+        return xmlNode.nodeValue;
+
     if (xpath) {
         xmlNode = xmlNode.selectSingleNode(xpath);
         if (!xmlNode) 
