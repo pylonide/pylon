@@ -26,6 +26,17 @@
  * Calendar returns a date in chosen date format. Minimal size of calendar is
  * 150px.
  * 
+ * Remarks:
+ * The language variables possible to use of this component:
+ * <groups>
+ *     <english id="sub">
+ *         <group id="caldropdown">
+ *             <key id="shortToday">T</key>
+ *             <key id="today">Today</key>
+ *         </group>
+ *     </english>
+ * </groups>
+ * 
  * @constructor
  * @define caldropdown
  * @addnode elements
@@ -578,12 +589,16 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
                 if (_width < 300) {
-                    rows[i].innerHTML   = "T";
+                    var shortTodayText = apf.language.getWord("sub.calendar.shortToday") || "T";
+                    rows[i].innerHTML   = shortTodayText;
                     rows[i].style.width = "8px";
+                    rows[i].setAttribute("title", shortTodayText);
                 }
                 else {
-                    rows[i].innerHTML   = "Today";
+                    var TodayText = apf.language.getWord("sub.calendar.today") || "Today";
+                    rows[i].innerHTML   = TodayText;
                     rows[i].style.width = "32px";
+                    rows[i].setAttribute("title", TodayText);
                 }
             }
             else if ((rows[i].className || "").indexOf("status") != -1) {

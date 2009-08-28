@@ -26,6 +26,20 @@
  * With a mouse buttons, the mousewheel or keyboard arrows. The thumbnails allow 
  * the user to quickly select the image from the displayed list.
  * 
+ * Remarks:
+ * The language variables possible to use of this component:
+ * <groups>
+ *     <english id="sub">
+ *         <group id="slideshow">
+ *             <key id="loadmsg">Loading...</key>
+ *             <key id="defaulttitle">Default title</key>
+ *             <key id="image">Picture</key>
+ *             <key id="of">of</key>
+ *         </group>
+ *     </english>
+ * </groups>
+ * 
+ * 
  * Example:
  * Slideshow component with 3 pictures. Each image has its own thumbnail 
  * and description. A new image is shown every 5 seconds.
@@ -83,10 +97,10 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;
     this.title          = "number";
     this.thumbheight    = 50;
-    this.loadmsg        = "Loading...";
+    this.loadmsg        = null;
     this.defaultthumb   = null;
     this.defaultimage   = null;
-    this.defaulttitle   = "No description";
+    this.defaulttitle   = null;
     this.delay          = 5;
     this.scalewidth     = false;
 
@@ -189,7 +203,6 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         this.oImage.src            = "about:blank";
         this.oBody.style.height    = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
-        this.oLoading.innerHTML    = this.loadmsg;
 
         /* Removes window scrollbars */
         //this.lastOverflow = document.documentElement.style.overflow;
@@ -220,6 +233,10 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                     var im                         = _self.oImage;
                     this.style.display             = "none";
                     _self.oThumbnails.style.height = _self.thumbheight + "px";
+                    
+                    _self.oLoading.innerHTML = _self.loadmsg 
+                        || apf.language.getWord("sub.slideshow.loadmsg") 
+                        || "loading...";
 
                     if (current)
                         _self.addSelection(); 
@@ -373,11 +390,17 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (_self.getPos() + 1) + " of "
+                        ? "<b>" 
+                            + (apf.language.getWord("sub.slideshow.image") || "Image")
+                            + " "
+                            + (_self.getPos() + 1) 
+                            + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
                             + _self.getTraverseNodes().length
                             + "</b><br />"
                             + (_self.applyRuleSetOnNode("title", current)
-                                || _self.defaulttitle)
+                                || (_self.defaulttitle 
+                                    ? _self.defaulttitle 
+                                    : (apf.language.getWord("sub.slideshow.defaulttitle") || "No description")))
                         : "Image " + (_self.getPos() + 1)
                             + " of " + _self.getTraverseNodes().length);
             }
@@ -553,11 +576,16 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (_self.getPos() + 1) + " of "
+                        ? "<b>" + (apf.language.getWord("sub.slideshow.image") || "Image")
+                            + " "
+                            + (_self.getPos() + 1) 
+                            + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
                             + _self.getTraverseNodes().length
                             + "</b><br />"
                             + (_self.applyRuleSetOnNode("title", current)
-                               || _self.defaulttitle)
+                               || (_self.defaulttitle 
+                                   ? _self.defaulttitle 
+                                   : apf.language.getWord("sub.slideshow.defaulttitle") || "No description" ))
                         : "Image " + (_self.getPos() + 1) + " of "
                             + _self.getTraverseNodes().length);
             }
