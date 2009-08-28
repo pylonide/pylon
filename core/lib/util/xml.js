@@ -80,10 +80,10 @@ apf.isOnlyChild = function(node, nodeType){
  *   Properties:
  *   {Boolean} [copyAttributes] whether the attributes of xmlNode are copied as well.
  *   {Boolean} [clearContents]  whether the contents of parent is cleared.
- *   {Boolean} [start]          This feature is used for the virtual viewport. More information will follow.
- *   {Boolean} [length]         This feature is used for the virtual viewport. More information will follow.
- *   {Boolean} [documentId]     This feature is used for the virtual viewport. More information will follow.
- *   {Boolean} [marker]         This feature is used for the virtual viewport. More information will follow.
+ *   {Number}  [start]          This feature is used for the virtual viewport. More information will follow.
+ *   {Number}  [length]         This feature is used for the virtual viewport. More information will follow.
+ *   {Number}  [documentId]     This feature is used for the virtual viewport. More information will follow.
+ *   {XMLElement} [marker]      This feature is used for the virtual viewport. More information will follow.
  * @return  {XMLNode}  the created xml node
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){

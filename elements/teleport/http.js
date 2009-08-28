@@ -381,7 +381,7 @@ apf.http = function(){
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
             if (!apf.isSafari)
-                http.setRequestHeader("User-Agent", "Ajax.org Teleport 2.0"); //@deprecated
+                http.setRequestHeader("User-Agent", "Ajax.org Teleport 3.0"); //@deprecated
             http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             if (!options.headers || !options.headers["Content-type"])
                 http.setRequestHeader("Content-type", this.contentType
