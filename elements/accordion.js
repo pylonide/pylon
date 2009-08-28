@@ -494,7 +494,15 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                 var oIcon = this.$getLayoutNode("bar", "icon", bar.oExt);
                 
                 apf.setUniqueHtmlId(oTitle);
-                (oCaption || oTitle).appendChild(document.createTextNode(node.getAttribute("title")))
+                
+                bar.$propHandlers["title"] = function(value) {
+                    var oTitle = this.$getLayoutNode("bar", "title", this.oExt);
+                    var oCaption = this.$getLayoutNode("bar", "caption", this.oExt);
+                    
+                    (oCaption || oTitle).innerHTML = value;
+                }
+                
+                bar.setProperty("title", node.getAttribute("title"));
 
                 //this.$setStyleClass(oTitle, "NotActive");
 
