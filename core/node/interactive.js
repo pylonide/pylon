@@ -74,7 +74,7 @@ apf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, lMin, 
         tMin, w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
-        dragOutline, resizeOutline;
+        dragOutline, resizeOutline, myPos;
 
     this.$regbase = this.$regbase | __INTERACTIVE__;
 
@@ -217,7 +217,7 @@ apf.Interactive = function(){
         document.onmousemove = dragMove;
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
-            
+
             //#ifdef __WITH_DRAGMODE
             apf.dragmode.mode = false;
             //#endif
@@ -226,17 +226,39 @@ apf.Interactive = function(){
             if (posAbs && !_self.aData)
                 apf.plane.hide();
             //#endif
+            
+            var htmlNode = dragOutline
+                ? oOutline
+                : _self.oExt;
 
             if (overThreshold) {
                 if (_self.setProperty) {
-                    if(l) _self.setProperty("left", l);
-                    if(t) _self.setProperty("top", t);
+                    if (_self.right || _self.bottom) {
+                        var pHtmlNode = _self.oExt.offsetParent;
+                        if (pHtmlNode.tagName == "BODY")
+                            pHtmlNode = document.documentElement;
+                    }
+                    
+                    if (_self.right)
+                        _self.setProperty("right", pHtmlNode.offsetWidth 
+                            - htmlNode.offsetLeft - htmlNode.offsetWidth);
+                    
+                    if (_self.bottom)
+                        _self.setProperty("bottom", pHtmlNode.offsetHeight 
+                            - htmlNode.offsetTop - htmlNode.offsetHeight);
+                    
+                    if (l && (!_self.right || _self.left)) 
+                        _self.setProperty("left", l);
+                    if (t && (!_self.bottom || _self.top))
+                        _self.setProperty("top", t);
                 }
                 else if (dragOutline) {
                     _self.oExt.style.left = l + "px";
                     _self.oExt.style.top  = t + "px";
                 }
             }
+            
+            l = t = w = h = null;
             
             if (!posAbs)
                 _self.oExt.style.position = "relative";
@@ -250,7 +272,9 @@ apf.Interactive = function(){
             apf.dragmode.isDragging = false;
             
             if (_self.dispatchEvent)
-                _self.dispatchEvent("drag");
+                _self.dispatchEvent("drag", {
+                    htmlNode : htmlNode
+                });
         };
         
         if (apf.isIE)
@@ -315,6 +339,7 @@ apf.Interactive = function(){
         startPos = apf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
+        myPos    = apf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
         
         var sLeft = 0;//;
         var sTop = 0;//;
@@ -342,8 +367,17 @@ apf.Interactive = function(){
         apf.popup.forceHide();
         //#endif
 
-        if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
-            _self.disableAnchoring();
+        //if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
+            //_self.disableAnchoring();
+        
+        if (_self.oExt.style.right) {
+            _self.oExt.style.left = _self.oExt.offsetLeft + "px";
+            _self.oExt.style.right = "";
+        }
+        if (_self.oExt.style.bottom) {
+            _self.oExt.style.top = _self.oExt.offsetTop + "px";
+            _self.oExt.style.bottom = "";
+        }
 
         apf.dragmode.isDragging = true;
         overThreshold           = false;
@@ -422,12 +456,35 @@ apf.Interactive = function(){
             
             if (_self.setProperty) {
                 if (posAbs) {
-                    if (l) _self.setProperty("left", l);
-                    if (t) _self.setProperty("top", t);
+                    var htmlNode = _self.oExt;
+                    if (_self.right || _self.bottom) {
+                        var pHtmlNode = htmlNode.offsetParent;
+                        if (pHtmlNode.tagName == "BODY")
+                            pHtmlNode = document.documentElement;
+                    }
+
+                    if (_self.right && _self.right != _self.setProperty("right", 
+                          pHtmlNode.offsetWidth - htmlNode.offsetLeft 
+                          - htmlNode.offsetWidth)) {
+                        htmlNode.style.left = "";
+                    }
+                    
+                    if (_self.bottom && _self.bottom != _self.setProperty("bottom", 
+                          pHtmlNode.offsetHeight - htmlNode.offsetTop 
+                          - htmlNode.offsetHeight)) {
+                        htmlNode.style.top = "";
+                    }
+                
+                    if (l && (!_self.right || _self.left)) 
+                        _self.setProperty("left", l);
+                    if (t && (!_self.bottom || _self.top)) 
+                        _self.setProperty("top", t);
                 }
                 
-                if (w) _self.setProperty("width", w + hordiff) 
-                if (h) _self.setProperty("height", h + verdiff); 
+                if (w && (!_self.left || !_self.right)) 
+                    _self.setProperty("width", w + hordiff) 
+                if (h && (!_self.top || !_self.bottom)) 
+                    _self.setProperty("height", h + verdiff); 
             }
             
             l = t = w = h = null;
@@ -485,18 +542,18 @@ apf.Interactive = function(){
         var sTop = document.documentElement.scrollTop;
         
         if (we) {
-            oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX + sLeft))) + "px";
+            oHtml.style.left = (l = max(lMin, min(lMax, myPos[0] + e.clientX - oX + sLeft))) + "px";
             oHtml.style.width = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
-                    startPos[2] - (e.clientX - startPos[0]) + rX + sLeft
-                    ) - hordiff) + sLeft) + "px"; //@todo
+                    startPos[2] - (e.clientX - oX) + sLeft
+                    ) - hordiff)) + "px"; //@todo
         }
         
         if (no) {
-            oHtml.style.top = (t = max(tMin, min(tMax, e.clientY - rY + sTop))) + "px";
+            oHtml.style.top = (t = max(tMin, min(tMax, myPos[1] + e.clientY - oY + sTop))) + "px";
             oHtml.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
-                    startPos[3] - (e.clientY - startPos[1]) + rY + sTop
+                    startPos[3] - (e.clientY - oY) + sTop
                     ) - verdiff)) + "px"; //@todo
         }
 
@@ -576,7 +633,7 @@ apf.Interactive = function(){
         
         oOutline.style.position = "absolute";
         oOutline.style.display  = "none";
-        oOutline.style.zIndex   = 100000000;
+        oOutline.style.zIndex   = 2000000;
     }
     oOutline.refCount++;
     //#endif

@@ -140,7 +140,10 @@ apf.Anchoring = function(){
 
         this.$propHandlers["left"]  =
         this.$propHandlers["width"] =
-        this.$propHandlers["right"] = function(value){
+        this.$propHandlers["right"] = function(value, force, prop){
+            if (prop == "width" && !value)
+                this.oExt.style.width = "";
+            
             if (!updateQueue && (!apf.isParsing || apf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | HORIZONTAL;
@@ -148,7 +151,10 @@ apf.Anchoring = function(){
 
         this.$propHandlers["top"]    =
         this.$propHandlers["height"] =
-        this.$propHandlers["bottom"] = function(value){
+        this.$propHandlers["bottom"] = function(value, force, prop){
+            if (prop == "height" && !value)
+                this.oExt.style.height = "";
+            
             if (!updateQueue && (!apf.isParsing || apf.parsingFinalPass))
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | VERTICAL;
@@ -296,7 +302,6 @@ apf.Anchoring = function(){
         }
 
         var rules;
-
         if (updateQueue & HORIZONTAL) {
             rules = [];
 

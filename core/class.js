@@ -472,7 +472,7 @@ apf.Class = function(){
                     amlNode: this,
                     prop   : prop
                 })];
-                return;
+                return value;
             }
         }
         //#endif
@@ -519,7 +519,7 @@ apf.Class = function(){
         
         //#ifdef __WITH_PROPERTY_BINDING
         var nodes = boundObjects[prop];
-        if (!nodes) return;
+        if (!nodes) return value;
 
         //#--ifdef __DEBUG
         var id, ovalue = this[prop];//value;

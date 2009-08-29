@@ -253,12 +253,21 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;
 
+    if (apf.isIE8 && refParent) {
+        bw = this.getStyle(o, "borderLeftWidth");
+        wt -= (apf.isIE && o.currentStyle.borderLeftStyle != "none" 
+          && bw == "medium" ? 2 : parseInt(bw) || 0);
+        bh = this.getStyle(o, "borderTopWidth");
+        ht -= (apf.isIE && o.currentStyle.borderTopStyle != "none" 
+          && bh == "medium" ? 2 : parseInt(bh) || 0);
+    }
+
     var bw, bh, fl;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
         bw = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, apf.descPropJs
             ? "borderLeftWidth" : "border-left-width");
-        
+
         wt += (apf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
@@ -313,7 +322,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         o = o.offsetParent;
     }
 
-    return [wt - (apf.isIE && !apf.isIE8 ? 0 : 0), ht];
+    return [wt, ht];
 };
 
 /**
