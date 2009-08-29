@@ -1213,8 +1213,13 @@ apf.AmlElement.propHandlers = {
         this.insertMarkup(value);
         this.$isSelfLoading = true;
     },
-
+    
     //#ifdef __WITH_CONTENTEDITABLE
+    "editable": function(value){
+        this.implement(apf.ContentEditable2);
+        this.$propHandlers["editable"].apply(this, arguments);
+    },
+
     "contenteditable": function(value) {
         this.implement(apf.ContentEditable);
         if (!this.hasFeature(__VALIDATION__))

@@ -105,17 +105,6 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
     if (!oHtml || this.disabled)
         return;
 
-    if (!className) className = " ";
-
-    if (exclusion)
-        exclusion.push(className);
-    else
-        exclusion = [className];
-
-    //Remove defined classes
-    var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
-    //var re = new RegExp("(?:(?:^| +)(?:" + exclusion.join("|") + ")(?:$| +))", "gi");
-
     //#ifdef __DEBUG
     if (oHtml.nodeFunc) {
         throw new Error(apf.formatErrorString(0, this,
@@ -125,11 +114,21 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
     }
     //#endif
 
+    if (className) {
+        if (exclusion)
+            exclusion[exclusion.length] = className;
+        else
+            exclusion = [className];
+    }
+    
+    //Create regexp to remove classes
+    var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
+
     //Set new class
     oHtml.className != null
-        ? (oHtml.className = oHtml.className.replace(re, " ") + " " + className)
+        ? (oHtml.className = oHtml.className.replace(re, " ") + (className ? " " + className : ""))
         : oHtml.setAttribute("class", (oHtml.getAttribute("class") || "")
-            .replace(re, " ") + " " + className);
+            .replace(re, " ") + (className ? " " + className : ""));
 
     return oHtml;
 };

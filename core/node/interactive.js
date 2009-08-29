@@ -156,7 +156,7 @@ apf.Interactive = function(){
             return;
         
         //#ifdef __WITH_OUTLINE
-        dragOutline = !(_self.dragOutline == false || !apf.appsettings.dragOutline);
+        dragOutline = _self.dragOutline == true || apf.appsettings.dragOutline;
         /*#else
         dragOutline = false;        
         #endif */
@@ -169,8 +169,10 @@ apf.Interactive = function(){
         //#endif
         
         posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.oExt, "position")) > -1;
-        if (!posAbs)
-            _self.oExt.style.position = "relative";
+        if (!posAbs) {
+            _self.oExt.style.position = (posAbs = _self.dragSelection) 
+                ? "absolute" : "relative";
+        }
 
         //@todo not for docking
         //#ifdef __WITH_PLANE
@@ -202,9 +204,12 @@ apf.Interactive = function(){
             oOutline.style.top     = pos[1] + "px";
             oOutline.style.width   = (_self.oExt.offsetWidth - diffOutline[0]) + "px";
             oOutline.style.height  = (_self.oExt.offsetHeight - diffOutline[1]) + "px";
+            
+            if (_self.dragSelection)
+                oOutline.style.display = "block";
         }
         //#endif
-
+        
         //#ifdef __WITH_DRAGMODE
         apf.dragmode.mode = true;
         //#endif
@@ -257,6 +262,9 @@ apf.Interactive = function(){
     function dragMove(e){
         if(!e) e = event;
         
+        if (_self.dragSelection)
+            overThreshold = true;
+        
         if (!overThreshold && _self.showdragging)
             apf.setStyleClass(_self.oExt, "dragging");
         
@@ -284,7 +292,8 @@ apf.Interactive = function(){
         overThreshold = true;
     };
     
-    function resizeStart(e){
+    this.$resizeStart = resizeStart;
+    function resizeStart(e, options){
         if (!e) e = event;
 
         if (!_self.resizable)
@@ -312,7 +321,12 @@ apf.Interactive = function(){
         var x = (oX = e.clientX) - startPos[0] + sLeft + document.documentElement.scrollLeft;
         var y = (oY = e.clientY) - startPos[1] + sTop + document.documentElement.scrollTop;
 
-        var resizeType = getResizeType.call(_self.oExt, x, y);
+        if (options && options.resizeType) {
+            posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.oExt, "position")) > -1;
+            var resizeType = options.resizeType;
+        }
+        else
+            var resizeType = getResizeType.call(_self.oExt, x, y);
         rX = x;
         rY = y;
 
@@ -334,11 +348,10 @@ apf.Interactive = function(){
         apf.dragmode.isDragging = true;
         overThreshold           = false;
 
-        var r = "|" + resizeType + "|"
-        we = "|w|nw|sw|".indexOf(r) > -1;
-        no = "|n|ne|nw|".indexOf(r) > -1;
-        ea = "|e|se|ne|".indexOf(r) > -1;
-        so = "|s|se|sw|".indexOf(r) > -1;
+        we = resizeType.indexOf("w") > -1;
+        no = resizeType.indexOf("n") > -1;
+        ea = resizeType.indexOf("e") > -1;
+        so = resizeType.indexOf("s") > -1;
         
         if (!_self.minwidth)  _self.minwidth  = 0;
         if (!_self.minheight) _self.minheight = 0;
@@ -376,10 +389,12 @@ apf.Interactive = function(){
         }
         //#endif
         
-        if (lastCursor === null)
-            lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
-        document.body.style.cursor = resizeType + "-resize";
-
+        if (!options || !options.nocursor) {
+            if (lastCursor === null)
+                lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
+            document.body.style.cursor = resizeType + "-resize";
+        }
+        
         //#ifdef __WITH_DRAGMODE
         apf.dragmode.mode = true;
         //#endif

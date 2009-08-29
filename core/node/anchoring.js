@@ -131,7 +131,7 @@ apf.Anchoring = function(){
             "left", "top", "height", "anchors");
 
         this.$propHandlers["anchors"]  = function(value){
-            this.$anchors = value.splitSafe("(?:, *| )");
+            this.$anchors = value ? value.splitSafe("(?:, *| )") : [];
 
             if (!updateQueue && apf.loaded)
                 l.queue(this.pHtmlNode, this);

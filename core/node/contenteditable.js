@@ -27,6 +27,8 @@ apf.ContentEditable = function() {
      * PRIVATE
      **************************************************************************/
     
+    this.$regbase = this.$regbase | __DRAGDROP__;
+    
     var lastActiveNode, wasFocussable, skipFocusOnce, lastTemplate, lastValue, 
         mouseOver, mouseOut, mouseDown, mouseUp, docklet,
         objectHandles = false,

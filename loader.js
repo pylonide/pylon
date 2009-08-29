@@ -234,6 +234,7 @@ apf.KernelModules = [
     "node/anchoring.js",
     "node/cache.js",
     "node/contenteditable.js",
+    "node/contenteditable2.js",
     "node/databinding.js",
     "node/delayedrender.js",
     "node/docking.js",
