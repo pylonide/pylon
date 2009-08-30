@@ -77,7 +77,7 @@
         "LT" : "<", "GT" : ">", "AND" : "&&", "OR": "||", "ANDBIN" : "&",
         "ORBIN" : "|"
     },
-    parserx,
+    parserx,selfrx,
     macro_o={},macro_c={},macro_m={},
     xpath_assign_lut={}, // used to find the macro used in an {xpath} = 
     async_lut={          // used to figure out if the thing before the. is an async obj
@@ -112,7 +112,6 @@
     prop_last,       // last js property found
     has_statements,  // the code contains statements (so you cant use it as an expression)
     xpaths,    // all xpaths and their models in pairs
-    old_xpaths, old_ol, 
     texts,     // all pure text chunks
     props,     // the js properties found
     func;
@@ -245,16 +244,16 @@
     apf.$async = function(_n,_self,_st,_this,obj,func,args){
         // lets increase the queue
         if(!_st) return ''; // JPF ERROR
-        var id = _st.async_id, v, opts = _st.opts;
+        var id = _st.async_id, v;
         
-        if(opts && opts.precalc !== undefined){
-            if(opts.precalc){
+        if(_st && _st.precalc !== undefined){
+            if(_st.precalc){
                 // call no-args stuff in precalc only if it is not async
                 if(args.length==0 && !obj.exec){
                     return (func)?obj[func].call(obj):obj.call(obj);
                 }
-                if(!(v = opts.args))
-                    v = opts.args = [];
+                if(!(v = _st.precalc_args))
+                    v = _st.precalc_args = [];
                 v[id] = args;
                 return '';
             }else{
@@ -289,7 +288,8 @@
     };
 
     parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==|$)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
-        
+    selfrx = new RegExp("(^|\\|)(?!\\@|[\\w-]+:)", "g");
+
     function parser(tok, rx_lut, rx_white, rx_word, rx_misc, pos){
         type = rx_lut ? type_lut[rx_lut] : (rx_white ? 0 : (rx_word ? 3 : (tok?2:12)));
         //apf.console.log(type+" "+tok+"\n");
@@ -301,6 +301,7 @@
                 break;
             case 1: // -------- newline --------
                 line_no++, line_pos = pos;
+                o[ol++] = "\n";
                 break;
             case 2: // -------- misc --------
                 if(tok == '='){
@@ -434,7 +435,7 @@
                                                           last_tok.substring(0,last_dot))
                                 else o[ol++] = (n='',last_tok);
                                 o[ol++] = ",'", o[ol++] = n;
-                                o[ol++] = "',_opt.args[async.id]||[";
+                                o[ol++] = "',(_st.precalc_args&&_st.precalc_args[_st.async_id])||[";
                             }else{
                                 o[ol++] = macro_o.async_;
                                 o[ol++] = v, o[ol++] = ",'";
@@ -550,7 +551,6 @@
                 line_no++, line_pos = pos;
                 break;          
              case 2: // -------- misc --------
-                logw(s_begin+" "+ol+" "+tok);
                 if (tok == ":" && s_begin == ol-3 &&  last_tok == ":" && !xpath_axes[n = o[ol - 2]]){
                     ol -=4;
                     // lets output a new macro with our _m extension for model
@@ -598,7 +598,7 @@
                 seg_begin = s_begin = ol;
                 parse_mode = 2;             
                 if(last_model)
-                    xpaths[xpaths.length] = [last_model,0], last_model = 0;
+                    xpaths[xpaths.length] = [last_model,0, s[sl-3]], last_model = 0;
                 break;
             case 7: // -------- } --------
                 // lets pop the s and see where to return to
@@ -607,15 +607,22 @@
                 else if( ol != seg_begin)
                     o[ol++] = "\"";
   
-                if(seg_begin == s_begin)
-                    xpaths[xpaths.length] = [last_model,o.slice(s_begin+1,-1).join('')], last_model = 0;
-                else xpaths[xpaths.length] = [last_model,0], last_model = 0;
-                    
                 o[ol++] = macro_c[n=s[--sl]];
+
+                if(seg_begin == s_begin){
+                    v = o.slice(s_begin+1,-2).join('');
+                    if(c_inject_self && !last_model && v != (u = v.replace(selfrx, "$1self::"))){
+                        o[s_begin+1] = u;
+                        for(u = s_begin+2;u<ol-2;u++)o[u]="";
+                    }
+                    xpaths[xpaths.length] = [last_model,v,n], last_model = 0;
+                }
+                else xpaths[xpaths.length] = [last_model,0,n], last_model = 0;
+
                 parse_mode = (s_begin = s[--sl])>>28;
                 s_begin    = s_begin&0x0fffffff;
                 seg_begin  = ol;
-                
+
                 if(c_node_create && parse_mode == 0 && (n == 'xnode' || n == 'xnode_m')){
                     o[ol-1] = macro_c[ 'c_'+n ];
                 }
@@ -703,30 +710,31 @@
         }
     }
 
-    this.compileValue = function(str){
+    this.compileValue = function(str, with_options, precalc){
        try {
-            c_output = "\n%_o[_ol++]=", 
-            c_node_mode =  c_node_create = c_precalc = c_inject_self =
+            c_output = "\n%_o[_ol++]=", c_precalc = precalc,
+            c_node_mode =  c_node_create =  c_inject_self =
             sl = code_level = last_tok = last_model = last_type = last_dot = line_no = 
             line_pos = async_calls = has_statements = texts = func = 0, 
             s = [], props = {}, xpaths = [];
-            c_allow_template = parse_mode = 
-            s_begin = out_begin = seg_begin = ol = 1;            
-                
-            o = [""];
+            c_allow_template = parse_mode = 1;
+            s_begin = out_begin = seg_begin = ol = 2;            
+            
+            o = with_options?["with(_st.opts){"]:[""];
+
             str.replace(parserx, parser);
             // string only
-            if(!(u=xpaths.length) && out_begin == 1 && parse_mode==1){
-                return o.slice(2,-1).join('');
+            if(!(u=xpaths.length) && out_begin == 2 && parse_mode==1){
+                return o.slice(3,-1).join('');
             }// simple statement code
             else if(u==0 && !has_statements){
-                o[0] = "var _u,_v,_w, _r = ", o[1] = "", v = 1;
+                o[1] = "var _u,_v,_w, _r = ", o[2] = "", v = 1;
             }// xpath only
-            else if(u==1 && !texts && out_begin == 1){
-                o[0] = "var _u,_v,_w, _r = ", o[1] = "", v = 0;
+            else if(u==1 && !texts && out_begin == 2){
+                o[1] = "var _u,_v,_w, _r = ", o[2] = "", v = 0;
             }// other code
             else {
-                o[0] = (async_calls)
+                o[1] = (async_calls)
                     ?"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;_st.async_id=1;"
                     :"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;";
                 o[ol++] = ";\n_r = _o.join('');", v = 0;
@@ -740,6 +748,7 @@
                   ?"\n;if(!_st.async_queue&&_st.async)_st.async(_r.indexOf('$')!=-1?(apf.$llut=_st.lang,_r.replace(apf.$lrx,apf.$lrep)):_r);return null;"
                   :";\nif(_r.indexOf('$')!=-1)apf.$llut=_st.lang,_r=_r.replace(apf.$lrx,apf.$lrep);return (_u=_st.async)?(_u(_r),null):_r;"
             }
+            if(with_options)o[ol++]="}";
             func = new Function("_n", "_self", "_st", o = o.join(""));          
         } catch(e) {
             handleError(e,line_pos);
@@ -750,12 +759,12 @@
     this.compileNode = function(str, multiple, node_create, inject_self ){
        try {
             c_output = "\n_r=", c_node_mode = multiple?2:1, c_node_create = node_create, 
-            c_precalc = c_allow_template = parse_mode = c_inject_self = 
+            c_inject_self = inject_self, c_precalc = c_allow_template = parse_mode = 
             sl = code_level = last_tok = last_model = last_type = last_dot = line_no = 
             line_pos = async_calls = has_statements = texts = func = 0;
             str_len = str.length, s = [], props = {}, xpaths = [];
             s_begin = out_begin = seg_begin = ol = 1;
-
+            
             if(multiple && node_create){
                 throw {t: "Cannot do multiple and node_create", p:0};
             }
@@ -781,12 +790,14 @@
        try {    
             s = [], props = {}, xpaths = [];
             sl = code_level = async_calls = has_statements = texts = func = 0;
-            s_begin = out_begin = seg_begin = ol = 1;    
+            ol = 1;
 
             o = ["var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;"];
             
+            var old_xpaths, old_ol;
+            
             for(var i = 0,l = str.length,sv,sp = str[0];i<l;sp=str[++i]){
-                // create the match
+                // compile the match
                 if(sv = sp[0]){
                     c_output = "\n_r=", c_node_mode = c_inject_self = 1, str_len = sv.length,
                     c_node_create = c_precalc = c_allow_template = parse_mode = 
@@ -799,7 +810,7 @@
                     
                     o[ol++] = ";\nif(_r){";
                 }
-                
+                // compile value
                 if(sv = sp[1]){
                     c_output = "\n_o[_ol++]=", 
                     c_node_mode = c_node_create =  c_precalc = c_inject_self = 
@@ -823,11 +834,11 @@
                     }else{
                         o[ol++] = ";\nreturn ((_r=_o.join('')).indexOf('$')!=-1)?(apf.$llut=_st.lang,_r.replace(apf.$lrx,apf.$lrep)):_r;";
                     }  
-                    if(!sp[0]) break; // was terminating match since it has no value
+                    if(!sp[0]) break; // was terminating value since it had no match
                     o[ol++] = "\n}";
 
                 } else { // no value
-                    if(!t[0]) // no match either
+                    if(!sp[0]) // no match either
                         throw {t: "No match and value specified", p: 0};
                     // use value from match
                     o[ol++] = ";\nreturn ((_r="
@@ -847,25 +858,29 @@
         return [func, xpaths, props];
     }    
     
-    this.compileEvent = function(str, node_create ){
+    this.compileEvent = function(str ){
         try {   
+            c_output = "", c_node_mode = 1, c_node_create = 
+            c_inject_self = c_precalc = c_allow_template = parse_mode = 
+            sl = code_level = last_tok = last_model = last_type = last_dot = line_no = 
+            line_pos = async_calls = has_statements = texts = func = 0;
+            str_len = str.length, s = [], props = {}, xpaths = [];
+            s_begin = out_begin = seg_begin = ol = 1;
+
+            o = ["var _t=[],_u,_v,_w,_i,_a,_l,_r;"];
             
-            //new Function("e","n", "_lang", "_self", "async", o = o.join("")))
+            str.replace(parserx, parser);
+            
+            if(async_calls)
+                 throw {t: "Async calls not supported in events? why not?"};
+                       
+            func = new Function("e", "_n", "_self", "_st", o = o.join(""));
         } catch(e) {
             handleError(e,line_pos);
         }
-        return [null, o.join('')];
+        return [func]; // no xpaths no nothing.
     }
     
-    this.compileDataInstruction = function(str, with_options, precalc ){
-       try {
-            //new Function("n", "_lang", "_opts", "_self", "async", o = o.join(""))
-        } catch(e) {
-            handleError(e,line_pos);
-        }
-        return [null, o.join('')];
-    }
-
    /* ***********************************************
      //you can interchange nodes and strings
      apply(jsltStr, xmlStr);
@@ -875,7 +890,7 @@
      ************************************************/
     
     /*
-    // please rewrite this to match jslt API
+    // RUBEN: please rewrite this / change this to match what you want.
     this.cache = [];
     
     

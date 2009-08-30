@@ -98,12 +98,13 @@
                     //var dt = (new Date()).getTime();
                     //for(var i = 0;i<1000;i++)
                     var call = 'compileValue', opts = [];
-                    jslt = jslt.replace(/^(\d+|\w+)\s*(\(.*?\))?/i,function(m,a,o){
+                    jslt = jslt.replace(/^(\d+|\w+)\s*(\(.*?\))\s*[\r\n]+?/i,function(m,a,o){
                         call = 
-                        ({value:'compileValue',node:'compileNode',event:'compileEvent',di:'compileDataInstruction',match:'match',
+                        ({value:'compileValue',node:'compileNode',event:'compileEvent',di:'compileDataInstruction',match:'compileMatch',
                         0:'compileValue',    1:'compileNode',   2:'compileEvent',    3:'compileDataInstruction', 4:'match'})[a];
                         if(!call){ call = 'compileValue'; return m;}
                         opts = o?o.slice(1,-1).split(/,/):[];
+                        for(var i = 0,j = opts.length;i<j;i++)if(parseInt(opts[i])==opts[i])opts[i] = parseInt(opts[i]);
                         return "";
                     });
                     var v, args = (v=apf.jslt[call].toString().match(/function\(\s*str\s*,\s*(.*?)\)/))?v[1].split(','):[];
@@ -112,14 +113,22 @@
                         s.push(args[i]+' = '+(opts[i]===undefined?'undefined':opts[i]));
                     logw("apf.jslt."+call+"(str = '..', "+s.join(', ')+")");
                     opts.unshift(jslt);
-                    jsltCode = apf.jslt[call].apply(apf.jslt,opts);
-                 
+                    
+                    if(call == 'compileMatch'){
+                        opts[0] = opts[0].split(/[\r\n]+/);
+                        for(i = 0;i<opts[0].length;i++){
+                            opts[0][i] = opts[0][i].split('#');
+                        }
+                        jsltCode = apf.jslt[call].apply(apf.jslt,opts);
+                    }else{
+                        jsltCode = apf.jslt[call].apply(apf.jslt,opts);
+                    }
                  //catch(e){
                     //setResult("JSLT Compilation occured:\n"+e.message);
                     //jsltCode = null;
                     //return;
                 //}
-                setCode(jsltCode[1]);
+                setCode(apf.jslt.lastCode());
             }
 
             // do the processing
@@ -168,9 +177,12 @@
 
             var apf = {
                 console:{error:logw},
-                createNodeFromXpath:function(a,b){ return {};}
+                createNodeFromXpath:function(a,b){ return {};},
+                nameserver:{lookup:{model:{}}}
             };
-
+            function test(){
+            
+            }
         
         //]]></script>
 		<script src='../core/parsers/jslt_new.js'></script>
