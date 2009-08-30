@@ -69,7 +69,10 @@
     },
     unesc_str = { // unescape in string mode
         "\\{": "{", "\\}": "}", "\\[": "[", "\\]": "]", "\\(": "(", "\\)": ")",
-        "\\\\": "\\"
+    },
+    unesc_txt = { // unescape in text mode
+        "\\{": "{", "\\}": "}", "\\[": "[", "\\]": "]", "\\(": "(", "\\)": ")",
+        "\\\\": "\\\\\\\\", "\\":"\\\\",
     },
     andorlut = { // word to operand lookup table for easy use in xml
         "lte" : "<=", "gte" : ">=", "lt" : "<", "gt" : ">", "and" : "&&", 
@@ -287,7 +290,7 @@
         return '';
     };
 
-    parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==|$)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>])", "g");
+    parserx = new RegExp("([\"'{(\\[\\])}\\]]|\\r?[\\n]|\\/\\*|\\*\\/|\\<\\!\\-\\-|\\-\\-\\>|==|$)|([ \t]+)|([\\w._])+|(\\\\?[\\w._?,:;!=+-\\\\/^&|*\"'[\\]{}()%$#@~`<>]?)", "g");
     selfrx = new RegExp("(^|\\|)(?!\\@|[\\w-]+:)", "g");
 
     function parser(tok, rx_lut, rx_white, rx_word, rx_misc, pos){
@@ -487,7 +490,8 @@
                     o[ol++] = "\n_o[_ol++]=\"";
                 else if(ol == seg_begin)
                     o[ol++] = ",\n_o[_ol++]=\"";
-                o[ol++] = unesc_lut[tok] || tok;
+                logw(unesc_txt[tok]);
+                o[ol++] = unesc_txt[tok] || tok;
                 break;
             case 4: // -------- stringquotes --------
                 if(ol == out_begin)
@@ -712,7 +716,7 @@
 
     this.compileValue = function(str, with_options, precalc){
        try {
-            c_output = "\n%_o[_ol++]=", c_precalc = precalc,
+            c_output = "\n_o[_ol++]=", c_precalc = precalc,
             c_node_mode =  c_node_create =  c_inject_self =
             sl = code_level = last_tok = last_model = last_type = last_dot = line_no = 
             line_pos = async_calls = has_statements = texts = func = 0, 
@@ -727,23 +731,22 @@
             if(!(u=xpaths.length) && out_begin == 2 && parse_mode==1){
                 return o.slice(3,-1).join('');
             }// simple statement code
-            else if(u==0 && !has_statements){
-                o[1] = "var _u,_v,_w, _r = ", o[2] = "", v = 1;
-            }// xpath only
-            else if(u==1 && !texts && out_begin == 2){
-                o[1] = "var _u,_v,_w, _r = ", o[2] = "", v = 0;
-            }// other code
-            else {
-                o[1] = (async_calls)
-                    ?"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;_st.async_id=1;"
-                    :"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;";
-                o[ol++] = ";\n_r = _o.join('');", v = 0;
-            }
-            if(v){ // variable return type possible
+            else if(u==0 && !texts && !has_statements){
+                o[1] = "var _u,_v,_w, _r = ", o[2] = "";
                 o[ol++] = (async_calls)
                   ?";\nif(!_st.async_queue && (_u=_st.async))_u((typeof(_r)=='string' && _r.indexOf('$')!=-1)?(apf.$llut=_st.lang,_r.replace(apf.$lrx,apf.$lrep)):_r);return null;"
-                  :";\nif(typeof(_r)=='string' && _r.indexOf('$')!=-1?)apf.$llut=_st.lang,_r=_r.replace(apf.$lrx,apf.$lrep);return (_u=_st.async)?(_u(_r),null):_r;"
-            }else{
+                  :";\nif(typeof(_r)=='string' && _r.indexOf('$')!=-1)apf.$llut=_st.lang,_r=_r.replace(apf.$lrx,apf.$lrep);return (_u=_st.async)?(_u(_r),null):_r;"                
+            }// xpath only
+            else{
+                if(u==1 && !texts && out_begin == 2){
+                    o[1] = "var _u,_v,_w, _r = ", o[2] = "";
+                }// other code
+                else {
+                    o[1] = (async_calls)
+                    ?"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;_st.async_id=1;"
+                    :"var _t=[],_u,_v,_w,_i,_a,_l,_r,_o=[],_ol=0;";
+                    o[ol++] = ";\n_r = _o.join('');";
+                }
                 o[ol++] = (async_calls)
                   ?"\n;if(!_st.async_queue&&_st.async)_st.async(_r.indexOf('$')!=-1?(apf.$llut=_st.lang,_r.replace(apf.$lrx,apf.$lrep)):_r);return null;"
                   :";\nif(_r.indexOf('$')!=-1)apf.$llut=_st.lang,_r=_r.replace(apf.$lrx,apf.$lrep);return (_u=_st.async)?(_u(_r),null):_r;"
@@ -824,7 +827,7 @@
                     if((u=xpaths.length) == old_xpaths && out_begin == old_ol && parse_mode==1){
                         o[old_ol] = "\nreturn \"";
                     }// simple expression
-                    else if(u==old_xpaths && !has_statements){
+                    else if(u==old_xpaths && !texts && !has_statements){
                         o[old_ol] = "\n_r=";
                         o[ol++] = ";\nreturn (typeof(_r)=='string' && _r.indexOf('$')!=-1)?(apf.$llut=_st.lang,_r.replace(apf.$lrx,apf.$lrep)):_r;";
                     }// xpath only
