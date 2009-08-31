@@ -505,3 +505,5 @@ apf.ElementDrawer = function (){
 apf.Selection = function(){
     
 }
+
+//#endif

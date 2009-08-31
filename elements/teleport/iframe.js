@@ -29,7 +29,7 @@
  */
 apf.USEIFRAME = false;
 function runTpIframe(){
-    function XMLHttpRequest(){
+    self.XMLHttpRequest = self.XMLHttpRequest || function(){
         this.uniqueId = apf.all.push(this);
         var _self     = this;
         
