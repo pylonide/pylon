@@ -626,6 +626,23 @@ JsUnitTest.Unit.Assertions = {
     };
     this.assertBlock(message, block);
   },
+  
+  assertNodeListEqual: function(expected, actual, message) {
+    message = this.buildMessage(message || 'assertNodeListEqual', 'expected <?>, actual: <?>', expected, actual);
+
+    var block = function() {
+        if(expected.length !== actual.length) 
+            return false;
+            
+        for (var i = 0; i < actual.length; i++) {
+            if (actual[i] != expected[i])
+                return false;
+        }
+    
+        return true;
+    };
+    this.assertBlock(message, block);
+  },
 
   assertIdentical: function(expected, actual, message) {
     message = this.buildMessage(message || 'assertIdentical', 'expected <?>, actual: <?>', expected, actual);
