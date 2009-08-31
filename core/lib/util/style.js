@@ -122,7 +122,7 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
     }
     
     //Create regexp to remove classes
-    var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
+    var re = new RegExp("(?:(^| +)" + (exclusion ? exclusion.join("|") : "") + "($| +))", "gi");
 
     //Set new class
     oHtml.className != null
