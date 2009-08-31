@@ -133,8 +133,22 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$moveDocklet = function(docklet) {
         var colNr = this.$columns.indexOf(docklet.oExt.parentNode) || 0;
+        
+        var dataNode = docklet.dataNode;
+        
         //@todo hacky, should be via executeAction
-        docklet.dataNode.setAttribute("column", colNr);
+        dataNode.setAttribute("column", colNr);
+        
+        //more hack stuff
+        //determine docklet xml position by the html position
+        var nr = apf.xmldb.getChildNumber(docklet.oExt), 
+        	  nodes = dataNode.selectNodes("../node()[@column='" + colNr + "']");
+        if (nodes[nr] != dataNode) {
+        		var jmlNode = apf.findHost(docklet.oExt.nextSibling);
+        		dataNode.parentNode.insertBefore(dataNode, jmlNode && jmlNode.dataNode || null);
+        }
+        
+        this.dispatchEvent("widgetmove");
     }
     
     this.columns = "33.33%,33.33%,33.33%";

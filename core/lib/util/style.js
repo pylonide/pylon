@@ -251,7 +251,7 @@ apf.getPositionedParent = function(o){
  */
 apf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
-    o = inclSelf ? o : o.offsetParent;
+    o = inclSelf ? o : o.offsetParent || o.parentNode ;
 
     if (apf.isIE8 && refParent) {
         bw = this.getStyle(o, "borderLeftWidth");
