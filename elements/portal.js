@@ -395,14 +395,12 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         else {
             var uId = apf.all.length;
             var col = [];
-            strXml = strXml.replace(/\bid="([^"]*)"|\bid='([^']*)'|\bactiontracker="([^"]*)"|\bactiontracker='([^']*)'/g, 
-              function(m, id1, id2, at1, at2){
-                var id = id1 || id2 || at1 || at2;
+            strXml = strXml.replace(/\b(id|actiontracker|group)="([^"]*)"|\b(id|actiontracker|group)='([^']*)''/g, 
+              function(m, n1, id1, n2, id2){
+                var id = id1 || id2;
                 col.push(id);
-                if (id1) return 'id="' + id + "_" + uId + '"';
-                if (id2) return "id='" + id + "_" + uId + "'";
-                if (at1) return 'actiontracker="' + id + "_" + uId + '"';
-                if (at2) return "actiontracker='" + id + "_" + uId + "'";
+                if (id1) return n1 + '="' + id + "_" + uId + '"';
+                if (id2) return n2 + "='" + id + "_" + uId + "'";
               });
             //@todo make the id's regexp safe
             if (col.length) {
