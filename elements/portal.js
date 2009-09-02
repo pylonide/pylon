@@ -205,7 +205,7 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             }
             else {
                 col = this.$columns[i];
-                this.oInt.appendChild(col);
+                this.oInt.insertBefore(col, this.oInt.lastChild);
             }
             
             this.$setStyleClass(col, (last = (i == columns.length - 1)) 
