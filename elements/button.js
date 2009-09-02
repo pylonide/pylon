@@ -371,7 +371,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$enable = function(){
         if (this["default"]) {
-            setDefault({});
+            //setDefault({});
             if (apf.window.focussed)
                 apf.window.focussed.focus(true);
         }
