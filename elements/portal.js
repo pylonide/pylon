@@ -203,7 +203,10 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
                 col.isColumn = true;
                 col.host = this;
             }
-            else col = this.$columns[i];
+            else {
+                col = this.$columns[i];
+                this.oInt.appendChild(col);
+            }
             
             this.$setStyleClass(col, (last = (i == columns.length - 1)) 
                 ? "collast" : "", ["collast"]);
@@ -537,10 +540,13 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
             + this.applyRuleSetOnNode("url", dataNode);
 
-        if (!pHtmlNode) {
+        //@todo this should be much nicer
+        if (!pHtmlNode || !pHtmlNode.parentNode || pHtmlNode.parentNode.nodeType != 1) {
             var cols = this.applyRuleSetOnNode("columns", this.xmlRoot)
-            if (cols && cols != this.columns)
+            if (cols) { // && cols != this.columns)
+                this.columns = !cols;
                 this.setProperty("columns", cols);
+            }
             pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
             
             if (!pHtmlNode) //@todo

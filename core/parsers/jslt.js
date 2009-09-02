@@ -351,7 +351,7 @@
                         if (!s_xpath) { // switch to xpath mode
 
                             xpathsegs++;
-                            if (v = xpath_intext_lut[last]) {
+                            if (v = xpath_intext_lut[last] && o[o.length-1]==last) {
                                 ol = --o.length;textsegs++;
                                 if (count < 2) {
                                     o.length--;
