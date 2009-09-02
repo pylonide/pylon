@@ -309,7 +309,10 @@ apf.Cache = function(){
         if (this.clearSelection)
             this.clearSelection(null, true);
 
-        this.oInt.innerHTML = "";
+        if (this.$clear)
+            this.$clear();
+        else
+            this.oInt.innerHTML = "";
         this.$setClearMessage(msg || this["empty-message"], className || "empty");
         this.setConnections();
         

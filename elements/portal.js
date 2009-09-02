@@ -529,6 +529,9 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
         
         return docklet;
     }
+    
+    //@todo hack to prevent oInt.innerHTML to be cleared
+    this.$clear = function(){}
 
     this.docklets     = [];
     var xml_cache     = {};
@@ -539,12 +542,10 @@ apf.portal = apf.component(apf.NODE_VISIBLE, function(){
             + this.applyRuleSetOnNode("url", dataNode);
 
         //@todo this should be much nicer
-        if (!pHtmlNode || !pHtmlNode.parentNode || pHtmlNode.parentNode.nodeType != 1) {
+        if (!pHtmlNode) {
             var cols = this.applyRuleSetOnNode("columns", this.xmlRoot)
-            if (cols) { // && cols != this.columns)
-                this.columns = !cols;
+            if (cols && cols != this.columns)
                 this.setProperty("columns", cols);
-            }
             pHtmlNode = this.$columns[this.applyRuleSetOnNode("column", dataNode) || 0];
             
             if (!pHtmlNode) //@todo
