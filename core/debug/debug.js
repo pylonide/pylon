@@ -26,8 +26,8 @@
  *
  * @param {mixed} obj the object to investigate
  */
-apf.dump=
-apf.vardump = function(obj, depth, norecur, stack){
+apf.dump2 =
+apf.vardump2 = function(obj, depth, norecur, stack){
     if (apf.isChrome || apf.isSafari) //@todo RIK please fix this issue.
         return "";
     
@@ -54,7 +54,7 @@ apf.vardump = function(obj, depth, norecur, stack){
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
                     (norecur && depth > 0 ? "{/*"+typeof(obj[i])+"*/}" :
-                    apf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
+                    apf.vardump2(obj[i], depth + 1, norecur, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -82,7 +82,7 @@ apf.vardump = function(obj, depth, norecur, stack){
                     if(str.length>1)str.push(",\n");
                     str.push( "\t".repeat(depth+1), propname, ": ",
                       (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
-                        apf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
+                        apf.vardump2(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
                 } catch(e) {
                     str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
                 }
@@ -105,8 +105,63 @@ apf.vardump = function(obj, depth, norecur, stack){
     }
 }
 
+/**
+ * Returns a string giving more detailed informations on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.dump =
+apf.vardump = function (obj, depth, recur, stack){
+    if(!obj) return obj + "";
+    if(!depth) depth = 0;
+
+    switch(obj.dataType){
+        case "string":    return "\"" + obj + "\"";
+        case "number":    return obj;
+        case "boolean": return obj ? "true" : "false";
+        case "date": return "Date[" + new Date() + "]";
+        case "array":
+            var str = "{\n";
+            for(var i=0;i < obj.length;i++){
+                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : apf.vardump(obj[i], depth+1, !recur)) + "\n";
+            }
+            str += "     ".repeat(depth) + "}";
+            
+            return str;
+        default:
+            if(typeof obj == "function") return "function";
+            //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
+            if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+            
+            if(!recur && depth>0) return "object";
+        
+            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
+            var str = "{\n";
+            for(prop in obj){
+                try{
+                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : apf.vardump(obj[prop], depth+1, !recur)) + "\n";
+                }catch(e){
+                    str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
+                }
+            }
+            str += "     ".repeat(depth) + "}";
+            
+            return str;
+    }
+}
+
 String.prototype.s = function(){
     return this.replace(/[\r\n]/g, "");
+}
+
+/**
+ * Alerts string giving information on a javascript object.
+ * This is older version of this function
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.alert_r = function(obj, recur){
+    alert(apf.vardump(obj, null, recur));
 }
 
 /**
@@ -114,8 +169,8 @@ String.prototype.s = function(){
  *
  * @param {mixed} obj the object to investigate
  */
-apf.alert_r = function(obj, recur){
-    alert(apf.vardump(obj, null, !recur));
+apf.alert_r2 = function(obj, recur){
+    alert(apf.vardump2(obj, null, !recur));
 }
 
 /**
