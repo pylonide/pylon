@@ -218,6 +218,37 @@ apf.ProfilerClass = function(nostart){
         this.start();
 };
 
-apf.Latometer      = new apf.ProfilerClass(true);//backward compatibility
+apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
+
+if (navigator.userAgent.indexOf("Opera") != -1) {
+    window.console = {};
+    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
+        window.console[type] = function() {
+            if (typeof arguments === "undefined") return null;
+            if (arguments.length === 1) { // single argument provided
+                opera.postError(type + ": " + arguments[0]);
+                return type + ": " + arguments[0];
+            }
+            var s      = arguments[0],
+                // string substitution patterns of firebug console
+                regexp = /%([sdifo])/g,
+                i      = 0,
+                match  = null;
+            // replace found matches with given arguments
+            while (match = regexp.exec(s)) {
+                s = s.replace(match[0], String(arguments[++i]));
+            }
+            // display log messages
+            var len = arguments.length;
+            while (len > i++) {
+                if (arguments[i]) {
+                    s += ' ';
+                    s += String(arguments[i]);
+                }
+            }
+            opera.postError(type + ": " + s);
+        };
+    });
+}
 
 // #endif
