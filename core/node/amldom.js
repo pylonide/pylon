@@ -339,7 +339,8 @@ apf.AmlDom = function(tagName, parentNode, nodeFunc, aml, content){
         }
         //#endif
 
-        if (!this.parentNode || !this.parentNode.childNodes)
+        if (!this.parentNode || !this.parentNode.childNodes
+          || !this.parentNode.childNodes.length)
             return this;
 
         //#ifdef __DEBUG
