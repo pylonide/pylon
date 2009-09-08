@@ -135,7 +135,7 @@ apf.ContentEditable.plugin("pasteword", function() {
     this.icon        = "pasteword";
     this.type        = apf.CMDMACRO;
     this.hook        = "onpaste";
-    this.keyBinding  = "ctrl+shift+v";
+    //this.keyBinding  = "ctrl+shift+v";
     this.state       = apf.OFF;
     
     this.parse = function(sContent) {
@@ -255,6 +255,108 @@ apf.ContentEditable.plugin("pasteword", function() {
             return true;
         }
         return false;
+    };
+});
+
+apf.ContentEditable.plugin("pasteworddialog", function() {
+    this.name        = "pasteworddialog";
+    this.icon        = "pasteword";
+    this.type        = apf.TOOLBARITEM;
+    this.subType     = apf.TOOLBARPANEL;
+    this.hook        = "ontoolbar";
+    //this.keyBinding  = "ctrl+shift+v";
+    this.state       = apf.OFF;
+
+    var panelBody;
+
+    this.init = function() {
+        this.buttonNode.className = this.buttonNode.className + " dropdown_small";
+        this.buttonNode.insertBefore(document.createElement("span"),
+            this.buttonNode.getElementsByTagName("div")[0])
+          .className = "selectarrow";
+    };
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            apf.popup.setContent(this.uniqueId, this.createPanelBody());
+        }
+
+        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+
+        this.editor.$showPopup(this, this.uniqueId, this.buttonNode, 300, 270);
+        if (panelBody.style.visibility == "hidden")
+            panelBody.style.visibility = "visible";
+        var _self = this;
+        setTimeout(function() {
+            _self.oArea.focus();
+        }, 100); // 100ms, because of the $focusfix code...
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+
+    this.queryState = function(editor) {
+        return this.state;
+    };
+
+    this.submit = function(e) {
+        apf.popup.forceHide();
+
+        var sContent = this.oArea.value;
+        if (!sContent || sContent.length == 0) return;
+
+        this.editor.$insertHtml(this.editor.$plugins["pasteword"].parse(sContent));
+
+        if (e.stop)
+            e.stop();
+        else
+            e.cancelBubble = true;
+        return false;
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement("div"));
+        panelBody.className = "editor_popup";
+        panelBody.style.display = "none";
+        var idArea = "editor_" + this.uniqueId + "_input",
+            idBtns = "editor_" + this.uniqueId + "_btns";
+        panelBody.innerHTML =
+           '<label for="' + idArea + '">' +
+           this.editor.$translate("paste_keyboardmsg").sprintf(apf.isMac ? "CMD+V" : "CTRL+V")
+           + '</label>\
+            <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
+              cols="60" rows="10" class="editor_textarea"></textarea>\
+            <div class="editor_panelrow" style="position:absolute;bottom:0;width:100%" id="' + idBtns + '"></div>';
+
+        this.oArea = document.getElementById(idArea);
+
+        //#ifdef __WITH_WINDOW_FOCUS
+        apf.sanitizeTextbox(this.oArea);
+        // #endif
+
+        if (apf.isIE) {
+            this.oArea.onselectstart = this.oArea.onpaste = function(e) {
+                e = e || window.event;
+                e.cancelBubble = true;
+            };
+        }
+        this.appendAmlNode(
+           '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
+            <a:button caption="' + this.editor.$translate("insert") + '" \
+              onclick="apf.lookup(' + this.uniqueId + ').submit(event)" />\
+            </a:bar></a:toolbar>',
+          document.getElementById(idBtns));
+
+        return panelBody;
+    };
+
+    this.destroy = function() {
+        panelBody = this.oArea = null;
+        delete panelBody;
+        delete this.oArea;
     };
 });
 
