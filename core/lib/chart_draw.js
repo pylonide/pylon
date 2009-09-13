@@ -662,6 +662,7 @@ apf.chart_draw = {
     },
     line2D : function( l, d, s ){
         if(!s.graph) return new Function('');
+		
         var wrap = s.graph.weight*8, e = apf.draw;
         var clipy = s.graph.fillout?"db":"ty";
         var c = e.optimize([
@@ -691,7 +692,8 @@ apf.chart_draw = {
             e.endLayer()
             ].join(''));
         try{
-           // c = apf.formatJS(c);
+			logw(apf.formatJS(c));
+            //c = apf.formatJS(c);
 			return new Function('l','v','m',c);
         }catch(x){
             alert("Failed to compile:\n"+c);return 0;

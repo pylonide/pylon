@@ -379,7 +379,7 @@ apf.namespace("draw.canvas",{
                 s.push("_c.strokeStyle=",this.getColor(style.stroke),";");
             
             if(this.isDynamic(style.weight) || pstyle.weight != style.weight)
-                s.push("_c.strokeWidth=",style.weight,";");
+                s.push("_c.lineWidth=",style.weight,";");
         }
         this.fillopacity = "";
         this.strokeopacity = "";

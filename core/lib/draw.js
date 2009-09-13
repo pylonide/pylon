@@ -348,7 +348,7 @@ apf.namespace("draw", {
 
         // parse styles
         ovl = ovl?this.parseJSS(ovl.item?ovl.join(''):ovl,err):{};
-            
+        //    logw(apf.dump(ovl));
         // we need to integrate style into o.
         function stylecopy(dst, src, key){
             // copy into the destination 
@@ -581,17 +581,17 @@ apf.namespace("draw", {
     
     getFlat : function( m ){
         if(typeof(m)=='object' && m.sort) return m.join('');
-        return m;
-    },
-    
-    getColor : function (a) {
-        if(a.match(/\(/)) return a;
-        if(a.match(/^#/)) return "'"+a+"'";
-        var b = a.toLowerCase();
-        return (this.colors[b])?"'"+this.colors[b]+"'":a;
-    },
-    getX : function( s, pre, val, post, def){    
-        var v; return (typeof(v=s[val+'-x'])=='undefined' && 
+			return m;
+		},
+		
+		getColor : function (a) {
+			if(a.match(/\(/)) return a;
+			if(a.match(/^#/)) return "'"+a+"'";
+			var b = a.toLowerCase();
+			return (this.colors[b])?"'"+this.colors[b]+"'":a;
+		},
+		getX : function( s, pre, val, post, def){    
+			var v; return (typeof(v=s[val+'-x'])=='undefined' && 
                (typeof(v=s[val])!='object' || typeof(v=v[0])=='undefined'))?
                (typeof(def)!='undefined'?def:''):(pre+v+post);
     },
@@ -746,7 +746,9 @@ apf.namespace("draw", {
                 if(openobj){
                     if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
                     lp = pos+m.length; sn.push(ln=5);
-                    (openobj = openobj.split(/\s/)).length>1?(openobj=openobj[1]+'@'+openobj[0]):openobj=openobj[0];
+
+					//logw(apf.dump(openobj)+openobj.split(' ').length);
+                    (openobj = openobj.replace(/^\s*/,'').replace(/\s*$/,'').split(' ')).length>1?(openobj=openobj[1]+'@'+openobj[0]):openobj=openobj[0];
                     sobj.push(obj); obj = (typeof(t=obj[openobj])=='object')?t:(obj[openobj]={});
                     return m;
                 }

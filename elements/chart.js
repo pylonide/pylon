@@ -797,6 +797,7 @@ apf.graph = apf.component(apf.NODE_VISIBLE, function(){
             // go and reparse style
            if(!_style)_style = 
                     apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style, err );
+		    
             if(_style.graph && _style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
                     if(t=c[i]){
