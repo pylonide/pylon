@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+    xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Ajax.org Platform Elements</title>
+	<script><![CDATA[
+		var ts=[],ti;
+		function logw(txt){
+			var e = document.getElementById('dbgLog');
+			if(!e){
+			  if(txt===undefined)return txt;
+			  ts.push(txt);ts.push('\n');
+			  window.setTimeout("logw()",100);
+			  return txt;
+			}
+			
+			if(txt===undefined){if(!ts)return txt;txt = ts.join('');ts=null;}
+			var t = (txt+'').replace(/ /g, "&nbsp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\n/g, "<br/>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;")+"<br/>";
+			e.innerHTML += t;
+		  //  e.insertAdjacentHTML("beforeend", t);
+			e.scrollTop = e.scrollHeight;
+			return txt;
+		}	
+	//]]>
+	</script>	
+    <script src="../apf.js"></script>
+    <script src="../loader.js"></script>
+</head>
+<body>
+    <a:skin 
+      src        = "../../../skins/platform/trunk/xml/skins.xml" 
+      icon-path  = "icons/" 
+      media-path = "images/"></a:skin>
+    <a:chart width="300" height="200" >
+        <a:axis mode="2D" lockyzoom="1" x1="-1" y1="-1" x2="10000" y2="4" 
+          style="
+            plane{fill:white;stroke:#ebebeb};
+            tiles{fill:white;stroke:#ebebeb;};
+            label{color:black} 
+            tick{stroke:#ebebeb;fill:null;}
+          ">
+            <a:graph 
+              smartbinding = "sbZoomChart2" 
+              model        = "mdlZoomChart2" 
+              dataslice    = "1XM"
+              mipstep      = "2" 
+              mipset       = "avg" 
+              mipthres     = "100" 
+              mipmin       = "1"
+              mode         = "line"
+              style        = "
+                graph {
+                  stroke      : #0aa1e9;
+                  weight    : 2;
+                  fill      : #25a8e7;
+                  opacity     : 1;
+                  fillopacity : 0.7;
+                  scale     : _div*0.5,1;
+                  offset    : 0,0;
+                }
+              ">
+            </a:graph>
+        </a:axis>
+    </a:chart>
+    <a:model id="mdlZoomChart2">
+        <data><series>1</series></data>
+    </a:model>    
+    <a:smartbinding id="sbZoomChart2">
+        <a:bindings>
+            <a:series 
+              formula   = "abs(1.5*(t+=random()*0.1-0.05)+0.5*sin(v*0.1))" 
+              length    = "10000" 
+              select    = "series/text()" 
+              delimiter = " " 
+              split     = "," 
+              css       = "#" />
+        </a:bindings>
+    </a:smartbinding>
+    <div id='dbgLog' style="width:100%;height:500px;overflow-y:scroll;overflow-x:scroll;white-space:break-word;background-color:black;color:gray;font-family:courier;font-size:8pt;">
+    </div>
+	
+</body>
+</html>
