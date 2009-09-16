@@ -1,6 +1,7 @@
 function fade(name,steps){
 	if(!steps)steps = 3;
-	apf.tween.single(document.getElementById(name), {
+	//document.getElementById(name)
+	apf.tween.single(pgPres.getPage().oExt.firstChild, {
 		type: "fade",
 		from: 0,
 		to: 1,
@@ -64,19 +65,34 @@ var presentation = [
 
 var curPage = 0;
 function goNext(){
-    if (curPage > presentation.length - 2)
+    if (curPage > pgPres.childNodes.length - 2)
         return;
     
-    presentation[++curPage].next();
+    //presentation[++curPage].next();
+	pgPres.set(++curPage);
+	fade();
+	if(curPage < 2){
+		demochart.hide();
+	}else demochart.show();
+	
 }
 
 function goBack(){
     if (curPage < 1) 
         return;
-    if(!presentation[--curPage].back)
+		
+    /*if(!presentation[--curPage].back) 
 		presentation[curPage].next();
 	else 
-		presentation[curPage].back();
+		presentation[curPage].back();*/
+	
+	
+	pgPres.set(--curPage);
+	fade(curPage);
+	if(curPage < 2){
+		demochart.hide();
+	}else demochart.show();
+
 }
 
 apf.onload = function(){
@@ -84,10 +100,6 @@ apf.onload = function(){
         if (!e) e = event;
         //mnuNav.display(e.x, e.y);
     }
-
-	while(initpage>0){
-		goNext(); initpage--;
-	}
     
     //document.onclick = function(e){
     //    if (!e) e = event;
@@ -100,6 +112,9 @@ apf.onload = function(){
             goNext();
         else if (e.keyCode == 37)
             goBack();
+		if(e.keyCode == 81){
+			chartaxis33.setProperty('mode',chartaxis33.mode=='3D'?'2D':'3D')
+		}
     }
 }
 

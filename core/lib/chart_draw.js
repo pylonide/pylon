@@ -692,7 +692,7 @@ apf.chart_draw = {
             e.endLayer()
             ].join(''));
         try{
-			logw(apf.formatJS(c));
+			//logw(apf.formatJS(c));
             //c = apf.formatJS(c);
 			return new Function('l','v','m',c);
         }catch(x){
@@ -751,7 +751,7 @@ apf.chart_draw = {
             e.endLayer()]);
         try{        
             //c = apf.formatJS(c);
-            //logw(apf.highlightCode2(c));
+            //logw(apf.formatJS(c));
             return new Function('l','v','m',c);
         }catch(x){
 //            window.open().document.write("<script>function(){" + apf.formatJS(c) + "}</script>");
