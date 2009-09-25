@@ -560,7 +560,7 @@ apf.convertMethods = {
                     if (lnodes[j].nodeType != 1)
                         continue;
                     
-                    nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + count++ + "]";
+                    nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + i + "]";
                     value = this.cgiobjects(lnodes[j], nm, true);
                     if (value)
                         str.push(value);
