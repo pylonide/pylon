@@ -397,6 +397,7 @@ apf.auth = {
                     error   : commError,
                     service : service,
                     state   : state,
+                    data    : data,
                     bubbles : true
                 }, extra)) !== false)
                     throw commError; //@todo ouch, too harsh?
@@ -529,7 +530,8 @@ apf.auth = {
                 the developer will call apf.auth.login() at a later date.
             */
             var result = this.dispatchEvent("authrequired", apf.extend({
-                bubbles : true
+                bubbles : true,
+                data    : options.data,
             }, options));
         }
 

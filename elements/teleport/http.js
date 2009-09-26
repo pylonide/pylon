@@ -632,7 +632,7 @@ apf.http = function(){
             extra.message = errorMessage.join("\n");
 
             // Send callback error state
-            if (!callback || !callback(null, apf.ERROR, extra))
+            if (!callback || !callback(extra.data, apf.ERROR, extra))
                 this.clearQueueItem(id);
 
             return;
