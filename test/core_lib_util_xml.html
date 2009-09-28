@@ -51,14 +51,27 @@
             assertTypeOf("boolean", apf.isChildOf(document.body, div1, false));
         }},
         testCoreLibUtilXml_isOnlyChild : function() { with(this) {
+            //Test 1
             var div1 = document.createElement("div");
             var div2 = document.createElement("div");
+            var div3 = document.createElement("div");
+
+            div3.appendChild(div1);
+            div3.appendChild(div2);
+
+            assertEqual(false, apf.isOnlyChild(div1, [1])); //ELEMENT_NODE
+            assertEqual(false, apf.isOnlyChild(div2, [1])); //ELEMENT_NODE
             
-            assertTypeOf("boolean", apf.isOnlyChild(div1, div2));
-            //assertTypeOf("boolean", apf.isOnlyChild(null, undefined));
-            //assertTypeOf("boolean", apf.isOnlyChild(undefined, undefined));
-            assertTypeOf("boolean", apf.isOnlyChild(div1, [1, 2, 3]));
-            assertTypeOf("boolean", apf.isOnlyChild(div1, []));
+            //Test 2
+            var div4 = document.createElement("div");
+            var div5 = document.createElement("div");
+            
+            div5.appendChild(div4);
+            assertEqual(true, apf.isOnlyChild(div4, [1])); //ELEMENT_NODE
+            
+            //Test 3
+            assertEqual(false, apf.isOnlyChild(div4, [3])); //TEXT_NODE
+            
         }},
         testCoreLibUtilXml_mergeXml : function() { with(this) {
             var xml1 = apf.getXml("<lang></lang>");
@@ -68,10 +81,17 @@
             assertTypeOf("object", apf.mergeXml(xml1, xml2));
         }},
         testCoreLibUtilXml_setNodeValue : function() { with(this) {
+            //Test 1
             var xml2 = apf.getXml("<polish></polish>");
             
             apf.setNodeValue(xml2, 666);
             assertEqual(666, apf.queryValue(xml2));
+
+            //Test 2
+            var xml2 = apf.getXml("<polish><lang /></polish>");
+            
+            apf.setNodeValue(xml2.childNodes[0], "Some test");
+            assertEqual("Some test", apf.queryValue(xml2.childNodes[0]));
         }},
         testCoreLibUtilXml_setQueryValue : function() { with(this) {
             var xml2 = apf.getXml("<polish></polish>");
