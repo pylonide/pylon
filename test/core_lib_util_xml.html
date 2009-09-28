@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>JavaScript unit test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="assets/jsunittest.js" type="text/javascript"></script>
+  
+  <script src="../apf.js"></script>
+  <script>apf.basePath = "../"</script>
+  <script src="../loader.js"></script>
+  
+  <link rel="stylesheet" href="assets/unittest.css" type="text/css" />
+</head>
+<body>
+
+<div id="content">
+
+  <div id="header">
+    <h1>JavaScript unit test file</h1>
+    <p>
+      This file tests <strong>core/lib/util/xml.js</strong>.
+    </p>
+  </div>
+
+  <!-- Log output (one per Runner, via {testLog: "testlog"} option)-->
+  <div id="testlog"></div>
+  
+  <!-- Put sample/test html here -->
+  <div id="sample">
+  </div>
+</div>
+
+<script type="text/javascript">
+// <![CDATA[
+  apf.onload = function() {
+      
+  }
+    new Test.Unit.Runner({
+        testCoreLibUtilXml_isChildOf : function() { with(this) {
+            var div1 = document.createElement("div");
+            var div2 = document.createElement("div");
+            var div3 = document.createElement("div");
+            div1.appendChild(div3);
+            
+            assertTypeOf("boolean", apf.isChildOf(div1, div2, true));
+            assertTypeOf("boolean", apf.isChildOf(div1, div3, true));
+            assertTypeOf("boolean", apf.isChildOf(div1, document.body, true));
+            assertTypeOf("boolean", apf.isChildOf(document.body, div1, true));
+            assertTypeOf("boolean", apf.isChildOf(div1, document.body, false));
+            assertTypeOf("boolean", apf.isChildOf(document.body, div1, false));
+        }},
+        testCoreLibUtilXml_isOnlyChild : function() { with(this) {
+            var div1 = document.createElement("div");
+            var div2 = document.createElement("div");
+            
+            assertTypeOf("boolean", apf.isOnlyChild(div1, div2));
+            //assertTypeOf("boolean", apf.isOnlyChild(null, undefined));
+            //assertTypeOf("boolean", apf.isOnlyChild(undefined, undefined));
+            assertTypeOf("boolean", apf.isOnlyChild(div1, [1, 2, 3]));
+            assertTypeOf("boolean", apf.isOnlyChild(div1, []));
+        }},
+        testCoreLibUtilXml_mergeXml : function() { with(this) {
+            var xml1 = apf.getXml("<lang></lang>");
+            var xml2 = apf.getXml("<polish></polish>");
+      
+            //var node = apf.mergeXml(xml1, xml2);
+            assertTypeOf("object", apf.mergeXml(xml1, xml2));
+        }},
+        testCoreLibUtilXml_setNodeValue : function() { with(this) {
+            var xml2 = apf.getXml("<polish></polish>");
+            
+            apf.setNodeValue(xml2, 666);
+            assertEqual(666, apf.queryValue(xml2));
+        }},
+        testCoreLibUtilXml_setQueryValue : function() { with(this) {
+            var xml2 = apf.getXml("<polish></polish>");
+            var xml4 = apf.getXml("<dutch><lang /></dutch>");
+            var xml5 = apf.getXml("<english><word><goodbye /></word></english>");
+            
+            apf.setQueryValue(xml2, '.', "some_value");
+            assertEqual("some_value", apf.queryValue(xml2));
+            
+            apf.setQueryValue(xml4, 'lang', "some_value2");
+            assertEqual("some_value2", apf.queryValue(xml4, "lang"));
+            
+            apf.setQueryValue(xml5, 'word/goodbye', "some_value3");
+            assertEqual("some_value3", apf.queryValue(xml5, "word/goodbye"));
+        }},
+        testCoreLibUtilXml_queryValues : function() { with(this) {
+            var xml1 = apf.getXml('<english><word>val1</word><word>val2</word><word>val3</word></english>');
+            assertHashEqual(["val1", "val2", "val3"], apf.queryValues(xml1, 'word'), "These arrays are not equal");
+            
+            var xml1 = apf.getXml('<english><word><say><goodbye>val1</goodbye><goodbye>val2</goodbye></say></word></english>');
+            assertHashEqual(["val1", "val2"], apf.queryValues(xml1, 'word/say/goodbye'), "These arrays are not equal");
+        }},
+        testCoreLibUtilXml_queryNodes : function() { with(this) {
+            var xml1   = apf.getXml('<english><word>val1</word><word>val2</word><word>val3</word></english>');
+
+            assertNodeListEqual(xml1.childNodes, apf.queryNodes('/english/word', xml1), "These arrays are not equal");
+        }},
+        testCoreLibUtilXml_queryNode : function() { with(this) {
+            var xml1 = apf.getXml('<english><word>val1</word><word>val2</word><word>val3</word></english>');
+            assertNodeListEqual(xml1.childNodes[0], apf.queryNode('/english/word', xml1), "These arrays are not equal");
+        }},
+        
+        testCoreLibUtilXml_getInheritedAttribute : function() { with(this) {
+            var xml1 = apf.getXml('<english test="done"><word><say></say></word><word></word><word>val3</word></english>');
+            var node = xml1.childNodes[0];
+            
+            assertEqual("done", apf.getInheritedAttribute(node.childNodes[0], "test"));
+            
+            var xml1 = apf.getXml('<english><word><say test="busy"></say></word><word></word><word>val3</word></english>');
+            var node = xml1.childNodes[0];
+            
+            assertEqual("busy", apf.getInheritedAttribute(node.childNodes[0], "test"));
+        }},
+        testCoreLibUtilXml_createNodeFromXpath : function() { with(this) {
+            var xml1 = apf.getXml('<english test="done"><word><say></say></word><word></word><word>val3</word></english>');
+            
+            var node = xml1.childNodes[0].childNodes[0];
+            assertEqual(node, apf.createNodeFromXpath(xml1, "/english/word[1]/say"));
+            
+            var node2 = xml1.childNodes[2].firstChild.nodeValue;
+            var func = apf.createNodeFromXpath(xml1, "/english/word[3]/text()");
+            assertEqual(node2, func.nodeValue);
+            
+            var node3 = xml1.getAttribute("test");
+                func = apf.createNodeFromXpath(xml1, "/english/@test");
+            assertEqual(node3, func.nodeValue);
+        }},
+        testCoreLibUtilXml_convertMethods_JSON : function() { with(this) {
+            var xml1 = apf.getXml('<english test="done"></english>');
+            var res = '{"@test":"done"}';
+            assertEqual(res, apf.convertMethods["json"](xml1));
+            
+            var xml1 = apf.getXml('<english test="done" test2="done2"></english>');
+            var res = '{"@test":"done","@test2":"done2"}';
+            assertEqual(res, apf.convertMethods["json"](xml1));
+            
+            var xml1 = apf.getXml('<english test="done" test2="done2"><polish /><polish /><polish yes="tak" /></english>');
+            var res = '{"@test":"done","@test2":"done2","polish":["","",{"@yes":"tak"}]}';
+            assertEqual(res, apf.convertMethods["json"](xml1));
+            
+            var xml1 = apf.getXml('<english test="done"><word test2="value2"><say></say></word><word></word><word>val3</word></english>');
+            var res = '{"@test":"done","word":[{"@test2":"value2","say":""},"","val3"]}';
+            assertEqual(res, apf.convertMethods["json"](xml1));
+        }},
+        testCoreLibUtilXml_convertMethods_CGIVARS : function() { with(this) {
+            var xml1 = apf.getXml('<english test="done"><polish yes="tak" no="nie"><woj name="pomorskie"><pow>starogard</pow></woj></polish></english>');
+            var res = 'polishwojpow=starogard&polishwoj[name]=pomorskie&polish[yes]=tak&polish[no]=nie&test=done';
+            assertEqual(res, apf.convertMethods["cgivars"](xml1));
+            
+            var xml1 = apf.getXml('<lang><polish yes="tak" no="nie"></polish><english yes="yes" no="no"></english><deutsch yes="ja" no="nein"></deutsch></lang>');
+            var res = 'polish[yes]=tak&polish[no]=nie&english[yes]=yes&english[no]=no&deutsch[yes]=ja&deutsch[no]=nein';
+            assertEqual(res, apf.convertMethods["cgivars"](xml1));
+        }},
+        testCoreLibUtilXml_convertMethods_CGIOBJECTS : function() { with(this) {
+            var xml1 = apf.getXml('<english test="done"><polish yes="tak" no="nie"><woj name="pomorskie"><pow>starogard</pow></woj></polish></english>');
+            var res = 'polish_yes=tak&polish_no=nie';
+            assertEqual(res, apf.convertMethods["cgiobjects"](xml1));
+            
+            var xml1 = apf.getXml('<lang><polish yes="tak" no="nie"></polish><english yes="yes" no="no"></english><deutsch yes="ja" no="nein"></deutsch></lang>');
+            var res = 'polish_yes=tak&polish_no=nie&english_yes=yes&english_no=no&deutsch_yes=ja&deutsch_no=nein';
+            assertEqual(res, apf.convertMethods["cgiobjects"](xml1));
+        }},
+        testCoreLibUtilXml_convertXml : function() { with(this) {
+            //this function is using last three functions above, that's why i made only one test for it
+            var xml1 = apf.getXml('<english test="done"><polish yes="tak" no="nie"><woj name="pomorskie"><pow>starogard</pow></woj></polish></english>');
+            var res = '{"@test":"done","polish":{"@yes":"tak","@no":"nie","woj":{"@name":"pomorskie","pow":"starogard"}}}';
+            assertEqual(res, apf.convertXml(xml1, "json"));
+        }},
+        testCoreLibUtilXml_getTextNode : function() { with(this) {
+            //Test 1
+            var xml1 = apf.getXml('<english>Some data</english>');
+            var node = apf.getTextNode(xml1);
+            assertEqual("Some data", node.nodeValue);
+            
+            //Test 2
+            var xml1 = apf.getXml('<root> </root>');
+            var node = apf.getTextNode(xml1);
+
+            assertEqual(" ", node.nodeValue);
+            
+            //Test 3
+            var xml1 = apf.getXml('<root></root>');
+            var node = apf.getTextNode(xml1);
+            assertEqual(false, node);
+        }},
+        testCoreLibUtilXml_getBoundValue : function() { with(this) {
+            //i left it, i don't know how to test it
+        }},
+        testCoreLibUtilXml_getArrayFromNodelist : function() { with(this) {
+            //Test 1
+            var xml1 = apf.getXml('<english><polish /><polish /></english>');
+            for (var nodes = [], j = 0; j < xml1.childNodes.length; j++)
+                nodes.push(xml1.childNodes[j]);
+            assertEnumEqual(nodes, apf.getArrayFromNodelist(xml1.childNodes));
+            
+            //Test 2
+            var div1 = document.createElement("div");
+            var div2 = document.createElement("div");
+            div1.appendChild(div2);
+            
+            for (var nodes = [], j = 0; j < div1.childNodes.length; j++)
+                nodes.push(div1.childNodes[j]);
+            assertEnumEqual(nodes, apf.getArrayFromNodelist(div1.childNodes));
+        }},
+        testCoreLibUtilXml_getXmlString : function() { with(this) {
+            //Test 1
+            var xmlString = '<english><polish/><polish/></english>';
+            var xmlNode = apf.getXml(xmlString);
+            assertEqual(xmlString, apf.getXmlString(xmlNode));
+            
+            //Test 2
+            var xmlString = '<english><polish/><polish/><polish><yes>tak</yes><no>nie</no></polish></english>';
+            var xmlNode = apf.getXml(xmlString);
+            assertEqual(xmlString, apf.getXmlString(xmlNode));
+            
+            //Test 3
+            var xmlString = '<english version="en"><polish/><polish canon="i350"/><polish><yes>tak</yes><no>nie</no></polish></english>';
+            var xmlNode = apf.getXml(xmlString);
+            assertEqual(xmlString, apf.getXmlString(xmlNode));
+        }},
+        testCoreLibUtilXml_getXml : function() { with(this) {
+            //i left it
+        }}/*,
+        testCoreLibUtilXml_formatXml : function() { with(this) {
+            var xmlString = '<english><polish/><polish/></english>';
+            var xmlNode = apf.getXml(xmlString);
+            var xmlFormated = '<english>\n\r<polish/>\n\r<polish/>\n</english>';
+            apf.alert_r(apf.formatXml(xmlString))
+            
+            assertEqual(xmlFormated, apf.formatXml(xmlString));
+        }}*/
+    
+
+
+
+    });
+// ]]>
+</script>
+</body>
+</html>
