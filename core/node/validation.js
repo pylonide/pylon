@@ -155,7 +155,7 @@ apf.Validation = function(){
      * @see  baseclass.validationgroup
      * @see  element.submitform
      */
-    this.isValid = function(checkRequired){
+    this.isValid = function(checkRequired, nosetGroup){
         (validationOptions.isValid || (validationOptions.isValid 
           = apf.validator.compile(validationOptions))).call(this,
             typeof this.getValue == "function" ? this.getValue(null, true) : null, 
@@ -170,7 +170,10 @@ apf.Validation = function(){
         
         if (!valid)
             this.dispatchEvent("invalid", this.validityState);
-            
+
+        if (!nosetGroup && this.$validgroup){
+            this.$validgroup.isValid(!checkRequired);}
+
         return valid;
     };
 
@@ -599,7 +602,7 @@ apf.ValidationGroup = function(name){
                 continue;
             if (!oEl.disabled
               && (!this.validateVisibleOnly && oEl.visible || !oEl.oExt || oEl.oExt.offsetHeight)
-              && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid(!ignoreReq))) {
+              && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid(!ignoreReq, true))) {
                 //|| !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0)
                 
                 if (!nosetError) {
@@ -689,6 +692,8 @@ apf.ValidationGroup = function(name){
         //
         if (!found)
             found = this.dispatchEvent("validation");
+
+        this.setProperty("valid", !found);
 
         return !found;
     };

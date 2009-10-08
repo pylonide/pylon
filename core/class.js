@@ -285,6 +285,7 @@ apf.Class = function(){
     this.dispatchWatch = function(prop, value) {
         var cb = watchCallbacks[prop];
         if (cb) {
+            cb = cb.slice(); 
             for (var i = 0; i < cb.length; i++)
                 cb[i].call(this, prop, null, value);
         }
