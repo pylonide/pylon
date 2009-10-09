@@ -42,7 +42,7 @@ apf.validator = {
         "minlength"   : "value.toString().length >= ",
         "notnull"     : "value.toString().length > 0",
         "checkequal"  : "!(temp = ",
-        "checkequal_" : ").isValid() || temp.getValue() == value"
+        "checkequal_" : ").isValid(null, true) || temp.getValue() == value"
     },
     
     compile : function(options){
@@ -171,8 +171,8 @@ apf.Validation = function(){
         if (!valid)
             this.dispatchEvent("invalid", this.validityState);
 
-        if (!nosetGroup && this.$validgroup){
-            this.$validgroup.isValid(!checkRequired);}
+        if (!nosetGroup && this.$validgroup)
+            this.$validgroup.isValid(!checkRequired);
 
         return valid;
     };
