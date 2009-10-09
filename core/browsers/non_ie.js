@@ -394,9 +394,14 @@ apf.runNonIe = function (){
             }
             else {
                 //firefox bug??
-                if (xmlNode.tagName.match(/tbody|td|tr/))
-                    pNode.insertBefore(pNode.ownerDocument
+                if (xmlNode.tagName.match(/tbody|thead|th|td|tr/)) {
+                    o = pNode.insertBefore(pNode.ownerDocument
                         .createElement(xmlNode.tagName.toLowerCase()), beforeNode || null);
+                    var attr = xmlNode.attributes;
+                    for(var j = 0; j < attr.length; j++)
+                        o.setAttribute(attr[j].nodeName, attr[j].nodeValue);
+                    return o;
+                }
                 else {
                     pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 }
