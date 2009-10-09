@@ -577,7 +577,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             }
 
             //#ifdef __WITH_VALIDATION
-            if (_self.isValid() && e.keyCode != 13 && e.keyCode != 17)
+            if (_self.isValid(null, true) && e.keyCode != 13 && e.keyCode != 17)
                 _self.clearError();
             //#endif
         };
