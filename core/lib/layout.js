@@ -1598,12 +1598,12 @@ apf.layoutParser = function(parentNode, pMargin){
 
         this.preparse(root);
         this.parserules(root);
-        
+        // #ifdef __WITH_SPLITTERS
         if (this.createSplitters) {
             apf.layout.clearSplitters(this);
             this.parsesplitters(root);
         }
-
+        // #endif
         //Sort by checking dependency structure
         this.RULES = new DepTree().calc(this.RULES);
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
