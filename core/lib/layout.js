@@ -984,9 +984,10 @@ apf.layout = {
             this.removeRule(aData.pHtml, "layout");
 
             var l = this.layouts[aData.pHtml.getAttribute("id")];
+            // #ifdef __WITH_SPLITTERS
             if (l)
                 apf.layout.clearSplitters(l.layout);
-
+            //#endif
             return;
         }
 
