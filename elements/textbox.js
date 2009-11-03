@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JTEXTBOX || __JSECRET || __JTEXTAREA || __JINPUT || __INC_ALL
+// #ifdef __AMLTEXTBOX || __AMLSECRET || __AMLTEXTAREA || __AMLINPUT || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 //@todo DOCUMENT the modules too
@@ -27,7 +27,7 @@
 /**
  * Element displaying a rectangular area wich allows a
  * user to type information. The information typed can be
- * restricted by using masking. The information can also
+ * restricted by using this.$masking. The information can also
  * be hidden from view when used in password mode. By adding an 
  * {@link element.autocomplete autocomplete element} as a child the 
  * value for the textbox can be looked up as you type. By setting the 
@@ -44,9 +44,7 @@
  * @allowchild autocomplete, {smartbinding}
  * @addnode elements
  *
- * @inherits apf.DataBinding
- * @inherits apf.Presentation
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
  * @inherits apf.XForms
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -78,23 +76,58 @@
  *   {Number}  keyCode   which key was pressed. This is an ascii number.
  * @event clear     Fires when the content of this element is cleared. 
  */
-apf.input    =
-apf.secret   =
-apf.password =
-apf.textarea =
-apf.email    = // HTML5 email element
-apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
-    this.$focussable       = true; // This object can get the focus
-    var masking            = false;
-    var _self              = this;
+apf.input    = function(struct, tagName){
+    this.$init(tagName || "input", apf.NODE_VISIBLE, struct);
+};
 
-    /**** Properties and Attributes ****/
+apf.secret   = function(struct, tagName){
+    this.$init(tagName || "secret", apf.NODE_VISIBLE, struct);
+};
+
+apf.password = function(struct, tagName){
+    this.$init(tagName || "password", apf.NODE_VISIBLE, struct);
+};
+
+apf.textarea = function(struct, tagName){
+    this.$init(tagName || "textarea", apf.NODE_VISIBLE, struct);
+    
+    this.multiline = true;
+};
+
+// HTML5 email element
+apf.email    = function(struct, tagName){
+    this.$init(tagName || "email", apf.NODE_VISIBLE, struct);
+};
+
+apf.textbox  = function(struct, tagName){
+    this.$init(tagName || "textbox", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
+    this.$focussable       = true; // This object can get the focus
+    this.$masking          = false;
+
+    this.$childProperty    = "value";
 
     //this.realtime          = false;
     this.value             = "";
     this.isContentEditable = true;
-    this.multiline         = this.tagName == "textarea" ? true : false;
+    this.multiline         = false;
 
+    /**
+     * @attribute {Boolean} realtime whether the value of the bound data is
+     * updated as the user types it, or only when this element looses focus or
+     * the user presses enter.
+     */
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial",
@@ -105,26 +138,31 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value, prop, initial){
+        if (!this.$int || !initial && this.getValue() == value)
+            return;
+
         // Set Value
         if (this.isHTMLBox) {
-            if (this.oInt.innerHTML != value)
-                this.oInt.innerHTML = value;
+            if (this.$int.innerHTML != value)
+                this.$int.innerHTML = value;
         }
-        else if (this.oInt.value != value)
-            this.oInt.value = value;
+        else if (this.$int.value != value)
+            this.$int.value = value;
         
-        if (this.oButton)
-            this.oButton.style.display = value && !initial ? "block" : "none";
+        if (this.$button)
+            this.$button.style.display = value && !initial ? "block" : "none";
     };
 
     //See validation
-    var oldPropHandler = this.$propHandlers["maxlength"];
+    //var oldPropHandler = this.$propHandlers["maxlength"];
     this.$propHandlers["maxlength"] = function(value, prop){
-        oldPropHandler.call(this, value, prop);
+        //oldPropHandler.call(this, value, prop);
+        if (this.hasFeature(apf.__VALIDATION__))
+            apf.Validation.prototype.$propHandlers["maxlength"].call(this, value, prop);
 
         //Special validation support using nativate max-length browser support
-        if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
-            this.oInt.maxLength = parseInt(value) || null;
+        if (this.$int.tagName.toLowerCase().match(/input|textarea/))
+            this.$int.maxLength = parseInt(value) || null;
     };
 
     /**
@@ -188,8 +226,8 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             throw new Error("Not Implemented");
         }
 
-        if (!masking) {
-            masking = true;
+        if (!this.$masking) {
+            this.$masking = true;
             this.implement(apf.textbox.masking);
             this.focusselect = false;
             //this.realtime    = false;
@@ -198,33 +236,24 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         this.setMask(this.mask);
     };
 
+    //this.$propHandlers["ref"] = function(value) {
+    //    this.$int.setAttribute("name",  value.split("/").pop().split("::").pop()
+    //        .replace(/[\@\.\(\)]*/g, ""));
+    //};
+
     /**
      * @attribute {String} initial-message the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent
      * nodes. When none is found it is looked for on the appsettings element.
      */
     this.$propHandlers["initial-message"] = function(value){
-        this.initialMsg = value
-            || apf.getInheritedAttribute(this.$aml, "initial-message");
-
-        if (this.initialMsg) {
+        if (value) {
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)
-                this.oInt.onblur();
+                this.$int.onblur();
             //#endif
-            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
+            this.$propHandlers["value"].call(this, value, null, true);
         }
-    };
-
-    /**
-     * @attribute {Boolean} realtime whether the value of the bound data is
-     * updated as the user types it, or only when this element looses focus or
-     * the user presses enter.
-     */
-    this.$propHandlers["realtime"] = function(value){
-        this.realtime = typeof value == "boolean"
-            ? value
-            : apf.isTrue(apf.getInheritedAttribute(this.$aml, "realtime")) || false;
     };
 
     /**
@@ -232,12 +261,13 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
      * selected when this element receives focus.
      */
     this.$propHandlers["focusselect"] = function(value){
-        this.oInt.onmousedown = function(){
+        var _self = this;
+        this.$int.onmousedown = function(){
             _self.focusselect = false;
         };
 
-        this.oInt.onmouseup  =
-        this.oInt.onmouseout = function(){
+        this.$int.onmouseup  =
+        this.$int.onmouseout = function(){
             _self.focusselect = value;
         };
     };
@@ -259,42 +289,60 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public Methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        return this.setProperty("value", value);
+        return this.setProperty("value", value, false, true);
     };
+    
+    //@todo cleanup and put initial-message behaviour in one location
+    this.clear = function(){
+        if (this["initial-message"]) {
+            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
+        }
+        else {
+            this.$propHandlers["value"].call(this, "");
+        }
+        
+        this.dispatchEvent("clear");//@todo this should work via value change
+    }
 
     /**
      * Returns the current value of this element.
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
-        return v == this.initialMsg ? "" : v.replace(/\r/g, "");
+        var v = this.isHTMLBox ? this.$int.innerHTML : this.$int.value;
+        return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
     };
+    
+    //#endif
 
     /**
      * Selects the text in this element.
      */
     this.select   = function(){ 
         try {
-            this.oInt.select(); 
-        }catch(e){}
+            this.$int.select(); 
+        }
+        catch(e){}
     };
 
     /**
      * Deselects the text in this element.
      */
-    this.deselect = function(){ this.oInt.deselect(); };
+    this.deselect = function(){ this.$int.deselect(); };
 
     /**** Private Methods *****/
 
-    this.$enable  = function(){ this.oInt.disabled = false; };
-    this.$disable = function(){ this.oInt.disabled = true; };
+    this.$enable  = function(){ this.$int.disabled = false; };
+    this.$disable = function(){ this.$int.disabled = true; };
 
     this.$insertData = function(str){
         return this.setValue(str);
@@ -306,7 +354,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     this.insert = function(text){
         if (apf.hasMsRangeObject) {
             try {
-                this.oInt.focus();
+                this.$int.focus();
             }
             catch(e) {}
             var range = document.selection.createRange();
@@ -317,22 +365,22 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             range.select();
         }
         else {
-            this.oInt.value += text;
+            this.$int.value += text;
         }
     };
 
-    this.$clear = function(){
+    this.addEventListener("$clear", function(){
         this.value = "";//@todo what about property binding?
         
-        if (this.initialMsg && apf.window.focussed != this) {
-            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
-            apf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
+        if (this["initial-message"] && apf.document.activeElement != this) {
+            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
         else {
             this.$propHandlers["value"].call(this, "");
         }
         
-        if (!this.oInt.tagName.toLowerCase().match(/input|textarea/i)) {
+        if (!this.$int.tagName.toLowerCase().match(/input|textarea/i)) {
             if (apf.hasMsRangeObject) {
                 try {
                     var range = document.selection.createRange();
@@ -344,11 +392,11 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             }
         }
         
-        this.dispatchEvent("clear");
-    };
+        this.dispatchEvent("clear"); //@todo apf3.0
+    });
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.oButton && key == 27) {
+        if (this.$button && key == 27) {
             this.clear();
             this.blur();
         }
@@ -370,7 +418,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             if (!text)
                 text = window.clipboardData.getData("Text");
 
-            this.oInt.focus();
+            this.$int.focus();
             var range = document.selection.createRange();
             range.text = "";
             range.collapse();
@@ -382,20 +430,21 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
 
     var fTimer;
     this.$focus = function(e){
-        if (!this.oExt || this.oExt.disabled)
+        if (!this.$ext || this.$ext.disabled)
             return;
 
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        if (this.initialMsg && this.oInt.value == this.initialMsg) {
+        if (this["initial-message"] && this.$int.value == this["initial-message"]) {
             this.$propHandlers["value"].call(this, "", null, true);
-            apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Initial"]);
+            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
         
+        var _self = this;
         function delay(){
             try {
-                if (!fTimer || document.activeElement != _self.oInt) {
-                    _self.oInt.focus();
+                if (!fTimer || document.activeElement != _self.$int) {
+                    _self.$int.focus();
                 }
                 else {
                     clearInterval(fTimer);
@@ -404,7 +453,7 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             }
             catch(e) {}
 
-            if (masking)
+            if (_self.$masking)
                 _self.setPosition();
 
             if (_self.focusselect)
@@ -420,34 +469,34 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$blur = function(e){
-        if (!this.oExt)
+        if (!this.$ext)
             return;
         
         if (!this.realtime)
             this.change(this.getValue());
 
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
-        if (this.initialMsg && this.oInt.value == "") {
-            this.$propHandlers["value"].call(this, this.initialMsg, null, true);
-            apf.setStyleClass(this.oExt, this.baseCSSname + "Initial");
+        if (this["initial-message"] && this.$int.value == "") {
+            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
 
         /*if (apf.hasMsRangeObject) {
-            var r = this.oInt.createTextRange();
+            var r = this.$int.createTextRange();
             r.collapse();
             r.select();
         }*/
 
         try {
             if (apf.isIE || !e || e.srcElement != apf.window)
-                this.oInt.blur();
+                this.$int.blur();
         }
         catch(e) {}
 
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
-            setTimeout("var o = apf.lookup(" + this.uniqueId + ");\
+            setTimeout("var o = apf.lookup(" + this.$uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
         
@@ -457,22 +506,24 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
     /**** Init ****/
 
     this.$draw = function(){
+        var _self = this;
+        
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt){
-            var mask = this.$aml.getAttribute("mask");
-            if ("secret|password".indexOf(this.tagName) > -1)
-                this.$aml.setAttribute("type", "password");
+        this.$ext = this.$getExternal(null, null, function(oExt){
+            var mask = this.getAttribute("mask");
+            if ("secret|password".indexOf(this.localName) > -1)
+                this.$aml.setAttribute("type", "password"); //@todo apf3.0 test this (dependency on $aml should be removed)
             if ((typeof mask == "string" && mask.toLowerCase() == "password")
-              || this.$aml.getAttribute("type") == "password") {
-                this.$aml.removeAttribute("mask");
+              || this.getAttribute("type") == "password") {
+                this.$aml.removeAttribute("mask"); //@todo apf3.0 test this (dependency on $aml should be removed)
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             //#ifdef __WITH_HTML5
-            else if (this.tagName == "email") {
+            else if (this.localName == "email") {
                 this.datatype = "apf:email";
                 this.$propHandlers["datatype"].call(this, "apf:email", "datatype");
             }
-            else if (this.tagName == "url") {
+            else if (this.localName == "url") {
                 this.datatype = "apf:url";
                 this.$propHandlers["datatype"].call(this, "apf:url", "datatype");
             }
@@ -482,40 +533,40 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
             oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
         });
-        this.oInt    = this.$getLayoutNode("main", "input", this.oExt);
-        this.oButton = this.$getLayoutNode("main", "button", this.oExt);
+        this.$int    = this.$getLayoutNode("main", "input", this.$ext);
+        this.$button = this.$getLayoutNode("main", "button", this.$ext);
 
-        if (!apf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
-            var node  = this.oInt;
-            this.oInt = node.parentNode.insertBefore(document.createElement("textarea"), node);
+        if (!apf.hasContentEditable && "input|textarea".indexOf(this.$int.tagName.toLowerCase()) == -1) {
+            var node  = this.$int;
+            this.$int = node.parentNode.insertBefore(document.createElement("textarea"), node);
             node.parentNode.removeChild(node);
-            this.oInt.className = node.className;
-            if (this.oExt == node)
-                this.oExt = this.oInt;
+            this.$int.className = node.className;
+            if (this.$ext == node)
+                this.$ext = this.$int;
         }
         
-        if (this.oButton) {
-            this.oButton.onmousedown = function(){
+        if (this.$button) {
+            this.$button.onmousedown = function(){
                 _self.clear();
                 _self.focus({mouse:true});
             }
         }
 
         //@todo for skin switching this should be removed
-        if (this.oInt.tagName.toLowerCase() == "textarea") {
+        if (this.$int.tagName.toLowerCase() == "textarea") {
             this.addEventListener("focus", function(e){
                 //if (this.multiline != "optional")
                     //e.returnValue = false
             });
         }
 
-        this.oInt.onselectstart = function(e){
+        this.$int.onselectstart = function(e){
             if (!e) e = event;
             e.cancelBubble = true;
         }
-        this.oInt.host = this;
+        this.$int.host = this;
 
-        this.oInt.onkeydown = function(e){
+        this.$int.onkeydown = function(e){
             e = e || window.event;
             
             if (this.disabled) {
@@ -529,8 +580,8 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
                 if (e.keyCode == 13 && value != this.value)
                     _self.change(value);
             }
-            else if (apf.isSafari && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
-                setTimeout("var o = apf.lookup(" + _self.uniqueId + ");\
+            else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
+                setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
@@ -549,26 +600,27 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
                 });
             }
 
-            //Non masking
+            //Non this.$masking
             if (!_self.mask) {
                 return _self.$keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
             }
         };
 
-        this.oInt.onkeyup = function(e){
+        this.$int.onkeyup = function(e){
             if (!e)
                 e = event;
 
             var keyCode = e.keyCode;
             
-            if (_self.oButton)
-                _self.oButton.style.display = this.value ? "block" : "none";
+            if (_self.$button)
+                _self.$button.style.display = this.value ? "block" : "none";
 
             if (_self.realtime) {
                 setTimeout(function(){
-                    if (!_self.mask && _self.getValue() != _self.value)
-                        _self.change(_self.getValue()); //this is a hack
+                    var v;
+                    if (!_self.mask && (v = _self.getValue()) != _self.value)
+                        _self.change(v); 
                     _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
                 });
             }
@@ -577,34 +629,34 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
             }
 
             //#ifdef __WITH_VALIDATION
-            if (_self.isValid(null, true) && e.keyCode != 13 && e.keyCode != 17)
+            if (_self.isValid && _self.isValid() && e.keyCode != 13 && e.keyCode != 17)
                 _self.clearError();
             //#endif
         };
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.oInt);
+            apf.sanitizeTextbox(this.$int);
         //#endif
 
         if (apf.hasAutocompleteXulBug)
-            this.oInt.setAttribute("autocomplete", "off");
+            this.$int.setAttribute("autocomplete", "off");
 
-        if (!this.oInt.tagName.toLowerCase().match(/input|textarea/)) {
+        if (!this.$int.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;
 
-            this.oInt.unselectable    = "Off";
-            this.oInt.contentEditable = true;
-            this.oInt.style.width     = "1px";
+            this.$int.unselectable    = "Off";
+            this.$int.contentEditable = true;
+            this.$int.style.width     = "1px";
 
-            this.oInt.select = function(){
+            this.$int.select = function(){
                 var r = document.selection.createRange();
                 r.moveToElementText(this);
                 r.select();
             }
         };
 
-        this.oInt.deselect = function(){
+        this.$int.deselect = function(){
             if (!document.selection) return;
 
             var r = document.selection.createRange();
@@ -613,51 +665,46 @@ apf.textbox  = apf.component(apf.NODE_VISIBLE, function(){
         };
     };
 
-    this.$loadAml = function(x){
-        //Autocomplete
-        var ac = $xmlns(x, "autocomplete", apf.ns.aml)[0];
-        if (ac) {
-            this.implement(apf.textbox.autocomplete);
-            this.initAutocomplete(ac);
-        }
-
-        if (this.ref)
-            this.oInt.setAttribute("name", 
-              this.ref.split("/").pop().split("::").pop()
-                .replace(/[\@\.\(\)]*/g, ""));
+    this.$loadAml = function() {
+        if (typeof this["initial-message"] == "undefined")
+            this.$setInheritedAttribute("initial-message");
 
         if (typeof this.realtime == "undefined")
-            this.$propHandlers["realtime"].call(this);
+            this.$setInheritedAttribute("realtime");
+    }
 
-        if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.setProperty("value", x.firstChild.nodeValue.trim());
-        else if (!ac)
-            apf.AmlParser.parseChildren(this.$aml, null, this);
-    };
-
-    this.$destroy = function(){
-        if (this.oButton)
-            this.oButton.onmousedown = null;
+    this.addEventListener("DOMNodeRemovedFromDocument", function(){
+        if (this.$button)
+            this.$button.onmousedown = null;
         
-        this.oInt.onkeypress     =
-        this.oInt.onmouseup      =
-        this.oInt.onmouseout     =
-        this.oInt.onmousedown    =
-        this.oInt.onkeydown      =
-        this.oInt.onkeyup        =
-        this.oInt.onselectstart  = null;
-    };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    //#ifdef __WITH_VALIDATION
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+        if (this.$int) {
+            this.$int.onkeypress     =
+            this.$int.onmouseup      =
+            this.$int.onmouseout     =
+            this.$int.onmousedown    =
+            this.$int.onkeydown      =
+            this.$int.onkeyup        =
+            this.$int.onselectstart  = null;
+        }
+    });
+// #ifdef __WITH_DATABINDING
+}).call(apf.textbox.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.textbox.prototype = new apf.Presentation());
+#endif*/
 
+apf.config.$inheritProperties["initial-message"] = 1;
+apf.config.$inheritProperties["realtime"]        = 1;
+
+apf.input.prototype    =
+apf.secret.prototype   =
+apf.password.prototype =
+apf.textarea.prototype =
+apf.email.prototype    = apf.textbox.prototype;
+
+apf.aml.setElement("input",    apf.input);
+apf.aml.setElement("secret",   apf.secret);
+apf.aml.setElement("password", apf.password);
+apf.aml.setElement("textarea", apf.textarea);
+apf.aml.setElement("textbox",  apf.textbox);
 // #endif

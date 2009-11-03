@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JHBOX || __JVBOX || __INC_ALL
+// #ifdef __AMLHBOX || __AMLVBOX || __INC_ALL
 
 /**
  * @define vbox Container that stacks it's children vertically.
@@ -52,16 +52,19 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.hbox = 
-apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
-    this.canHaveChildren = true;
+apf.hbox = function(struct, tagName){
+    this.$init(tagName || "hbox", apf.NODE_VISIBLE, struct);
+};
+apf.vbox = function(struct, tagName){
+    this.$init(tagName || "vbox", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     this.$focussable     = false;
     
-    var _self = this;
-
     /**** DOM Hooks ****/
     
-    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
+    this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
         
@@ -74,37 +77,37 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
         //#endif
     });
     
-    this.$domHandlers["insert"].push(function(amlNode, bNode, withinParent){
+    this.addEventListener("AMLInsert",function(amlNode, bNode, withinParent){
         if (withinParent)
             return;
         
-        if (!amlNode.hasFeature(__ALIGNMENT__)) {
+        if (!amlNode.hasFeature(apf.__ALIGNMENT__)) {
             amlNode.implement(apf.Alignment);
-            if (amlNode.hasFeature(__ANCHORING__))
-                amlNode.disableAnchoring();
+            if (amlNode.hasFeature(apf.__ANCHORING__))
+                amlNode.$disableAnchoring();
         }
         
         amlNode.enableAlignment();
     });
     
-    this.$domHandlers["reparent"].push(
+    this.addEventListener("AMLReparent", 
         function(bNode, pNode, withinParent, oldParentHtmlNode){
             if (withinParent)
                 return;
             
-            if (oldParentHtmlNode == this.oExt) {
-                pNode.oInt.insertBefofore(
+            if (oldParentHtmlNode == this.$ext) {
+                pNode.$int.insertBefofore(
                     document.createElement("div"),
-                    bNode && bNode.oExt || null
+                    bNode && bNode.$ext || null
                 );
             }
         });
     
-    this.$domHandlers["remove"].push(function(doOnlyAdmin){
+    this.addEventListener("AMLRemove", function(doOnlyAdmin){
         if (!doOnlyAdmin)
         
-        if (this.pHtmlNode != this.oExt && this.oExt.parentNode)
-            this.oExt.parentNode.removeChild(this.oExt);
+        if (this.$pHtmlNode != this.$ext && this.$ext.parentNode)
+            this.$ext.parentNode.removeChild(this.$ext);
     });
 
     /**** Init ****/
@@ -115,42 +118,37 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
           || "vbox|hbox".indexOf(this.parentNode.tagName) == -1;
 
         if (isParentOfChain) {
-            var x = this.$aml;
-            
-            this.oInt = 
-            this.oExt = false && apf.isParsing && apf.isOnlyChild(x)
-                ? this.pHtmlNode 
-                : this.pHtmlNode.appendChild(document.createElement("div"));
+            this.$int = 
+            this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+            this.$int.style.minHeight = "1px";
            
-            if ("absolute|relative".indexOf(apf.getStyle(this.oInt, "position")) == -1)
-                this.oInt.style.position = "relative";
-            this.oInt.style.overflow = "hidden";
+            if ("absolute|relative".indexOf(apf.getStyle(this.$int, "position")) == -1)
+                this.$int.style.position = "relative";
+            this.$int.style.overflow = "hidden";
             
-            this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
-            this.enableAnchoring();
+            //@todo shouldn't this be generic?
+            //this.implement(apf.Anchoring); /** @inherits apf.Anchoring */
+            //this.enableAnchoring();
         }
     }
     
     this.$loadAml = function(x){
-        var l = apf.layout.get(this.oInt || this.pHtmlNode, apf.getBox(this.margin || ""));
-        var aData = apf.layout.parseXml(x, l, null, true);
-        
+        var l     = apf.layout.get(this.$int || this.$pHtmlNode, apf.getBox(this.margin || "")),
+            aData = apf.layout.parseXml(this, l, null, true);
+
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
-            
-            apf.AmlParser.parseChildren(x, this.oInt, this);
-            
-            if (this.pData.children.length && !apf.isParsing) 
-                apf.layout.compileAlignment(this.pData);
-            //if(apf.AmlParser.loaded) 
-            //apf.layout.activateRules(this.oInt);
-            
+
+            if (this.childNodes.length)
+                apf.layout.queue(this.$int || this.$pHtmlNode, null, l.root);
+
             //#ifdef __WITH_PROPERTY_WATCH
-            if (!this.oInt.offsetHeight) {
+            if (!this.$int.offsetHeight) {
+                var _self = this;
                 function propChange(name, old, value){
-                    if (apf.isTrue(value) && _self.oExt.offsetHeight) {
-                        apf.layout.forceResize(_self.oInt);
+                    if (apf.isTrue(value) && _self.$ext.offsetHeight) {
+                        apf.layout.forceResize(_self.$int);
                         
                         var p = _self;
                         while (p) {
@@ -179,10 +177,12 @@ apf.vbox = apf.component(apf.NODE_HIDDEN, function(){
             this.aData = aData;
             this.aData.stackId = pData.children.push(this.aData) - 1;
             this.aData.parent  = pData;
-            
-            apf.AmlParser.parseChildren(x, this.pHtmlNode, this);
         }
     };
-});
+}).call(apf.vbox.prototype = new apf.GuiElement());
 
+apf.hbox.prototype = apf.vbox.prototype;
+
+apf.aml.setElement("hbox", apf.hbox);
+apf.aml.setElement("vbox", apf.vbox);
 // #endif

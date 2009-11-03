@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//#ifdef __JSTATE || __INC_ALL
+//#ifdef __AMLSTATE || __INC_ALL
 
 /**
  * @private
@@ -44,9 +44,9 @@ apf.StateServer = {
         if (!this.groups[name]) {
             this.groups[name] = [];
 
-            var pState = new apf.state(null, "state");
+            var pState = new apf.state("state", null, null, true);
             pState.parentNode = pNode;
-            pState.implement(apf.AmlDom);
+            pState.implement(apf.AmlNode);
             pState.name   = name;
             pState.toggle = function(){
                 for (var next = 0, i = 0; i < apf.StateServer.groups[name].length; i++) {
@@ -132,8 +132,11 @@ apf.StateServer = {
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.state = apf.component(apf.NODE_HIDDEN, function(){
+apf.state = function(struct, tagName){
+    this.$init(tagName || "state", apf.NODE_HIDDEN, struct);
+};
 
+(function(){
     /**** Properties and Attributes ****/
 
     this.$supportedProperties.push("active");
@@ -174,7 +177,7 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
             }
 
             if (this.group) {
-                var attr = this.$aml.attributes;
+                var attr = this.attributes;
                 for (var i = 0; i < attr.length; i++) {
                     if (attr[i].nodeName.match(/^on|^(?:group|id)$|^.*\..*$/))
                         continue;
@@ -205,6 +208,8 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
 
     /**** Public methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
@@ -212,7 +217,7 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
      */
     this.setValue = function(value){
         this.active = 9999;
-        this.setProperty("active", value);
+        this.setProperty("active", value, false, true);
     };
 
     /**
@@ -221,7 +226,7 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
      */
     this.activate = function(){
         this.active = 9999;
-        this.setProperty("active", true);
+        this.setProperty("active", true, false, true);
     };
 
     /**
@@ -230,43 +235,60 @@ apf.state = apf.component(apf.NODE_HIDDEN, function(){
      * active.
      */
     this.deactivate = function(){
-        this.setProperty("active", false);
+        this.setProperty("active", false, false, true);
     };
+    
+    //#endif
 
     /**** Init ****/
 
     this.$signalElements = [];
+    this.$groupAdded     = {};
+    this.$locationAdded  = '';
+    
+    var _self = this;
+    
+    this.$propHandlers["group"] = function(value){  
+        if (value) {
+            apf.StateServer.addGroup(value, this);
+            _self.$groupAdded = {'value' : value, elState : this};
+        }
+        else {
+            apf.StateServer.removeGroup(_self.$groupAdded.value, _self.$groupAdded.elState);
+            _self.$groupAdded     = {};
+        }
+    }
 
-    this.$loadAml = function(x){
+    this.$propHandlers["location"] = function(value){
+        if (value) {
+            apf.StateServer.locs[value] = this;
+            _self.$locationAdded = value;
+        }
+        else {
+            delete apf.StateServer.locs[_self.$locationAdded];
+            _self.$locationAdded = '';
+        }
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         apf.StateServer.addState(this);
 
-        this.group = x.getAttribute("group");
-        if (this.group)
-            apf.StateServer.addGroup(this.group, this);
-
-        if (x.getAttribute("location"))
-            apf.StateServer.locs[x.getAttribute("location")] = this;
-
         //Properties initialization
-        var attr = x.attributes;
+        var attr = this.attributes;
         for (var s, i = 0; i < attr.length; i++) {
-            if (attr[i].nodeName.match(/^on|^(?:group|id)$/))
-                continue;
-
             s = attr[i].nodeName.split(".");
             if (s.length == 2)
                 this.$signalElements.push(s);
-
-            this[attr[i].nodeName] = attr[i].nodeValue;
         }
-    };
+    });
 
-    this.$destroy = function(){
+    this.addEventListener("DOMNodeRemovedFromDocument", function(){
         this.$signalElements = null;
         apf.StateServer.removeState(this);
         if (this.group)
             apf.StateServer.removeGroup(this.group, this);
-    };
-});
+    });
+}).call(apf.state.prototype = new apf.AmlElement());
 
+apf.aml.setElement("state", apf.state);
 // #endif

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JAUDIO || __INC_ALL
+// #ifdef __AMLAUDIO || __INC_ALL
 
 /**
  * Element displaying a Flash audio
@@ -39,13 +39,13 @@ apf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.isNine              = apf.flash.isAvailable('9.0.0');
 
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "elements/audio/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (apf.appsettings.resourcePath || apf.basePath) + "elements/audio/null.mp3";
+    this.NULL_MP3_PATH       = (apf.config.resourcePath || apf.basePath) + "elements/audio/null.mp3";
     /* #else
-    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "resources/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (apf.appsettings.resourcePath || apf.basePath) + "resources/null.mp3";
+    this.NULL_MP3_PATH       = (apf.config.resourcePath || apf.basePath) + "resources/null.mp3";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/audioplayer"
@@ -57,9 +57,9 @@ apf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.inited = false;
 
     // Div name, flash name, and container name
-    this.divName      = oAudio.uniqueId;
+    this.divName      = oAudio.$uniqueId;
     this.htmlElement  = oNode;
-    this.name         = "soundmgr_" + oAudio.uniqueId;
+    this.name         = "soundmgr_" + oAudio.$uniqueId;
 
     // Audio props
     this.audioPath  = options.src;
@@ -208,37 +208,15 @@ apf.audio.TypeFlash.prototype = {
      * @type {Object}
      */
     callMethod: function() {
-        if (this.inited && this.player && this.player.callMethod) {
-            var args = arguments, l = args.length;
-            switch (l) {
-            case 1:
-                this.player.callMethod(args[0]);
-                break;
-            case 2:
-                this.player.callMethod(args[0], args[1]);
-                break;
-            case 3:
-                this.player.callMethod(args[0], args[1], args[2]);
-                break;
-            case 4:
-                this.player.callMethod(args[0], args[1], args[2], args[3]);
-                break;
-            case 5:
-                this.player.callMethod(args[0], args[1], args[2], args[3], args[4]); // function.apply does not work on the flash object
-                break;
-            case 6:
-                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5]);
-                break;
-            case 7:
-                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-                break;
-            case 8:
-                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-                break;
-            }
-        }
-        else
+        if (!this.inited || !this.player || !this.player.callMethod) {
             this.delayCalls.push(arguments);
+        }
+        else {
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(this.player, "callMethod");
+            apf.flash.remote.apply(null, args);
+        }
+            
         return this;
     },
 
@@ -383,22 +361,23 @@ apf.audio.TypeFlash.prototype = {
         div.style.width    = "1px";
         div.style.height   = "1px";
         div.style.left     = "-2000px";
-        div.innerHTML      = apf.flash.buildContent(
-            "src",              this.DEFAULT_SWF_PATH,
-            "width",            "1",
-            "height",           "1",
-            "align",            "middle",
-            "id",               this.name,
-            "quality",          "high",
-            "bgcolor",          "#000000",
-            "allowFullScreen",  "true",
-            "name",             this.name,
-            "flashvars",        "playerID=" + this.id,
-            "allowScriptAccess","always",
-            "type",             "application/x-shockwave-flash",
-            "pluginspage",      "http://www.adobe.com/go/getflashplayer",
-            "menu",             "true");
-        this.player        = this.getElement(this.name);
+        div.innerHTML      = apf.flash.buildContent({
+            src              : this.DEFAULT_SWF_PATH,
+            width            : "1",
+            height           : "1",
+            align            : "middle",
+            id               : this.name,
+            quality          : "high",
+            bgcolor          : "#000000",
+            allowFullScreen  : "true",
+            name             : this.name,
+            flashvars        : "playerID=" + this.id,
+            allowScriptAccess: "always",
+            type             : "application/x-shockwave-flash",
+            pluginspage      : "http://www.adobe.com/go/getflashplayer",
+            menu             : "true"
+        });
+        this.player        = apf.flash.getElement(this.name);
 
         return this;
     },

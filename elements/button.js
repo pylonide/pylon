@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __JBUTTON || __INC_ALL
+// #ifdef __AMLBUTTON || __INC_ALL
 // #define __WITH_PRESENTATION 1
-// #define __JBASEBUTTON 1
+// #define __AMLBASEBUTTON 1
 
 /**
  * Element displaying a clickable rectangle that visually confirms to the
@@ -38,27 +38,124 @@
  * @inherits apf.Presentation
  * @inherits apf.BaseButton
  */
-apf.submit  =
-apf.trigger =
-apf.reset   =
-apf.button  = apf.component(apf.NODE_VISIBLE, function(){
-    var useExtraDiv;
-    var _self = this;
+apf.submit  = function(struct, tagName){
+    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+};
 
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {
-        "main": [["caption", "text()"]]
-    };
-    // #endif
+apf.trigger = function(struct, tagName){
+    this.$init(tagName || "trigger", apf.NODE_VISIBLE, struct);
+};
 
-    /* #ifdef __WITH_EDITMODE
-     this.editableEvents = {"click":true}
-    #endif */
+apf.reset   = function(struct, tagName){
+    this.$init(tagName || "reset", apf.NODE_VISIBLE, struct);
+};
+
+apf.button  = function(struct, tagName){
+    this.$init(tagName || "button", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$useExtraDiv;
+    this.$childProperty  = "caption";
+    this.$inited         = false;
+    this.$isLeechingSkin = false;
+    this.$canLeechSkin   = true;
 
     /**** Properties and Attributes ****/
 
     this.$focussable = true; // This object can get the focus
     this.value       = null;
+    
+    this.$init(function(){
+        //@todo reparenting
+        var forceFocus, _self = this;
+        this.$propHandlers["default"] = function(value){
+            if (!this.focussable && value || forceFocus)
+                this.setAttribute("focussable", forceFocus = value);
+
+            this.parentNode.removeEventListener("focus", setDefault);
+            this.parentNode.removeEventListener("blur", removeDefault);
+    
+            if (!value)
+                return;
+    
+            //Currrently only support for parentNode, this might need to be expanded
+            this.parentNode.addEventListener("focus", setDefault);
+            this.parentNode.addEventListener("blur", removeDefault);
+        };
+    
+        function setDefault(e){
+            if (e.defaultButtonSet || e.returnValue === false)
+                return;
+    
+            e.defaultButtonSet = true;
+    
+            if (this.$useExtraDiv)
+                _self.$ext.appendChild(apf.button.$extradiv);
+    
+            _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Default");
+    
+            if (e.srcElement != _self && _self.$focusParent) {
+                _self.$focusParent.addEventListener("keydown", btnKeyDown);
+            }
+        }
+    
+        function removeDefault(e){
+            if (this.$useExtraDiv && apf.button.$extradiv.parentNode == _self.$ext)
+                _self.$ext.removeChild(apf.button.$extradiv);
+    
+            _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Default"]);
+    
+            if (e.srcElement != _self && _self.$focusParent) {
+                _self.$focusParent.removeEventListener("keydown", btnKeyDown);
+            }
+        }
+    
+        function btnKeyDown(e){
+            var ml;
+    
+            var f = apf.document.activeElement;
+            if (f) {
+                if (f.hasFeature(apf.__MULTISELECT__))
+                    return;
+    
+                ml = f.multiline;
+            }
+    
+            if (!_self.$ext.onmouseup)
+                return;
+    
+            if (ml && ml != "optional" && e.keyCode == 13
+              && e.ctrlKey || (!ml || ml == "optional")
+              && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey)
+                _self.$ext.onmouseup(e.htmlEvent, true);
+        }
+    
+        this.addEventListener("focus", setDefault);
+        this.addEventListener("blur", removeDefault);
+        
+        this.$enable = function(){
+            if (this["default"]) {
+                setDefault({});
+                if (apf.document.activeElement)
+                    apf.document.activeElement.focus(true);
+            }
+            if (this.state && this.value) {
+                this.$setState("Down", {});
+            }
+    
+            this.$doBgSwitch(1);
+        };
+    
+        this.$disable = function(){
+            if (this["default"])
+                removeDefault({});
+    
+            this.$doBgSwitch(4);
+            this.$setStyleClass(this.$ext, "",
+                [this.$baseCSSname + "Over", this.$baseCSSname + "Down"]);
+        };
+    });
 
     /**
      * @attribute {String}  icon     the url from which the icon image is loaded.
@@ -98,9 +195,9 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
         #endif */
 
         if (value)
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Icon");
         else
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
 
         apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
@@ -117,7 +214,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$propHandlers["tooltip"] = function(value){
-        this.oExt.setAttribute("title", value);
+        this.$ext.setAttribute("title", value);
     };
 
     this.$propHandlers["state"] = function(value){
@@ -131,89 +228,22 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$propHandlers["caption"] = function(value){
         if (value)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Empty"]);
         else
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Empty");
 
         if (this.oCaption)
             this.oCaption.nodeValue = String(value || "").trim();
     };
 
-    //@todo reparenting
-    var forceFocus;
-    this.$propHandlers["default"] = function(value){
-        if (!this.focussable && value || forceFocus)
-            this.setAttribute("focussable", forceFocus = value);
-        
-        this.parentNode.removeEventListener("focus", setDefault);
-        this.parentNode.removeEventListener("blur", removeDefault);
-
-        if (!value)
-            return;
-
-        //Currrently only support for parentNode, this might need to be expanded
-        this.parentNode.addEventListener("focus", setDefault);
-        this.parentNode.addEventListener("blur", removeDefault);
-    };
-
-    function setDefault(e){
-        if (e.defaultButtonSet || e.returnValue === false)
-            return;
-
-        e.defaultButtonSet = true;
-
-        if (useExtraDiv)
-            _self.oExt.appendChild(apf.button.$extradiv);
-
-        _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
-
-        if (e.srcElement != _self && _self.$focusParent) {
-            _self.$focusParent.addEventListener("keydown", btnKeyDown);
-        }
-    }
-
-    function removeDefault(e){
-        if (useExtraDiv && apf.button.$extradiv.parentNode == _self.oExt)
-            _self.oExt.removeChild(apf.button.$extradiv);
-
-        _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
-
-        if (e.srcElement != _self && _self.$focusParent) {
-            _self.$focusParent.removeEventListener("keydown", btnKeyDown);
-        }
-    }
-
-    function btnKeyDown(e){
-        var ml;
-
-        var f = apf.window.focussed;
-        if (f) {
-            if (f.hasFeature(__MULTISELECT__))
-                return;
-
-            ml = f.multiline;
-        }
-
-        if (!_self.oExt.onmouseup)
-            return;
-
-        if (ml && ml != "optional" && e.keyCode == 13
-          && e.ctrlKey || (!ml || ml == "optional")
-          && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey)
-            _self.oExt.onmouseup(e.htmlEvent, true);
-    }
-
-    this.addEventListener("focus", setDefault);
-    this.addEventListener("blur", removeDefault);
-
-    //#ifdef __JTOOLBAR || __INC_ALL
+    //#ifdef __AMLTOOLBAR || __INC_ALL
 
     //@todo move this to menu.js
     function menuKeyHandler(e){
         return;
         var key = e.keyCode;
 
-        var next, nr = apf.xmldb.getChildNumber(this);
+        var next, nr = apf.getChildNumber(this);
         if (key == 37) { //left
             next = nr == 0
                 ? this.parentNode.childNodes.length - 1
@@ -260,10 +290,10 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
         this.parentNode.menuIsPressed = this;
 
-        var pos = apf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
         menu.display(pos[0],
-            pos[1] + this.oExt.offsetHeight, false, this,
-            null, null, this.oExt.offsetWidth - 2);
+            pos[1] + this.$ext.offsetHeight, false, this,
+            null, null, this.$ext.offsetWidth - 2);
 
         this.parentNode.hasMoved = false;
 
@@ -295,11 +325,11 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
         }
         //#endif
 
-        var pos = apf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
         menu.display(pos[0],
-            pos[1] + this.oExt.offsetHeight, true, this,
-            null, null, this.oExt.offsetWidth - 2);
+            pos[1] + this.$ext.offsetHeight, true, this,
+            null, null, this.$ext.offsetWidth - 2);
 
         //apf.window.$focus(this);
         this.$focus();
@@ -337,13 +367,15 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public Methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -353,7 +385,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
      * @see    baseclass.validation
      */
     this.setCaption = function(value){
-        this.setProperty("caption", value);
+        this.setProperty("caption", value, false, true);
     };
 
     /**
@@ -364,40 +396,20 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
      * @see    element.modalwindow
      */
     this.setIcon = function(url){
-        this.setProperty("icon", url);
+        this.setProperty("icon", url, false, true);
     };
+    
+    //#endif
 
     /**** Private state methods ****/
-
-    this.$enable = function(){
-        if (this["default"]) {
-            //setDefault({});
-            if (apf.window.focussed)
-                apf.window.focussed.focus(true);
-        }
-        if (this.state && this.value) {
-            this.$setState("Down", {});
-        }
-
-        this.$doBgSwitch(1);
-    };
-
-    this.$disable = function(){
-        if (this["default"])
-            removeDefault({});
-
-        this.$doBgSwitch(4);
-        this.$setStyleClass(this.oExt, "",
-            [this.baseCSSname + "Over", this.baseCSSname + "Down"]);
-    };
 
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
         this.isBoolean = true;
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Bool");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Bool");
 
         if (this.value) {
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
             this.$doBgSwitch(this.states["Down"]);
         }
     };
@@ -405,7 +417,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     this.$setNormalBehaviour = function(){
         this.value     = null;
         this.isBoolean = false;
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Bool"]);
     };
 
     this.$setState = function(state, e, strEvent){
@@ -416,13 +428,13 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
             return;
 
         this.$doBgSwitch(this.states[state]);
-        var bs = this.baseCSSname;
-        this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""),
+        var bs = this.$baseCSSname;
+        this.$setStyleClass(this.$ext, (state != "Out" ? bs + state : ""),
             [(this.value ? "" : bs + "Down"), bs + "Over"]);
 
         if (this.submenu) {
-            bs = this.baseCSSname + "menu";
-            this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""),
+            bs = this.$baseCSSname + "menu";
+            this.$setStyleClass(this.$ext, (state != "Out" ? bs + state : ""),
             [(this.value ? "" : bs + "Down"), bs + "Over"]);
         }
 
@@ -438,7 +450,7 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
 
-    //#ifdef __JTOOLBAR || __INC_ALL
+    //#ifdef __AMLTOOLBAR || __INC_ALL
     this.$submenu = function(hide, force){
         if (hide) {
             this.setValue(false);
@@ -448,71 +460,40 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     };
     //#endif
 
-    /**** DOM Hooks ****/
-
-    //@todo can't we make this generic for button, bar, page, divider and others, maybe in presentation
-    this.$domHandlers["reparent"].push(
-        function(beforeNode, pNode, withinParent){
-            if (!this.$amlLoaded)
-                return;
-
-            var skinName;
-            if (isUsingParentSkin && !withinParent
-              && this.skinName != pNode.skinName
-              || !isUsingParentSkin && (skinName = this.parentNode.$getOption
-              && this.parentNode.$getOption("main", "button-skin"))) {
-                isUsingParentSkin = true;
-                this.$forceSkinChange(this.parentNode.skinName.split(":")[0] + ":" + skinName);
-            }
-        });
-
     /**** Init ****/
 
-    var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
-        if (typeof this.focussable == "undefined") {
-            if (this.parentNode.parentNode
-              && this.parentNode.parentNode.tagName == "toolbar"
-              && !this.$aml.getAttribute("focussable"))
+        var pNode, isToolbarButton = (pNode = this.parentNode).localName == "toolbar" 
+            || pNode.parentNode && pNode.parentNode.localName == "toolbar";
+        
+        if (isToolbarButton) {
+            if (typeof this.focussable == "undefined")
                 this.focussable = false;
-        }
-
-        var skinName;
-        if (this.parentNode && (skinName = this.parentNode.$getOption
-          && this.parentNode.$getOption("main", "button-skin"))) {
-            isUsingParentSkin = true;
-            skinName = this.parentNode.skinName.split(":")[0] + ":" + skinName;
-            if (this.skinName != skinName)
-                this.$loadSkin(skinName);
+            
             this.$focussable = apf.KEYBOARD;
-        }
-        else if(isUsingParentSkin){
-            isUsingParentSkin = false;
-            this.$loadSkin();
-            this.$focussable = true;
         }
 
         //Build Main Skin
-        this.oExt     = this.$getExternal();
-        this.oIcon    = this.$getLayoutNode("main", "icon", this.oExt);
-        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
+        this.$ext     = this.$getExternal();
+        this.oIcon    = this.$getLayoutNode("main", "icon", this.$ext);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
 
-        useExtraDiv = apf.isTrue(this.$getOption("main", "extradiv"));
-        if (!apf.button.$extradiv && useExtraDiv) {
+        this.$useExtraDiv = apf.isTrue(this.$getOption("main", "extradiv"));
+        if (!apf.button.$extradiv && this.$useExtraDiv) {
             (apf.button.$extradiv = document.createElement("div"))
                 .className = "extradiv"
         }
 
-        if (this.tagName == "submit")
+        if (this.localName == "submit")
             this.action = "submit";
-        else if (this.tagName == "reset")
+        else if (this.localName == "reset")
             this.action = "reset";
 
         this.$setupEvents();
     };
 
     //#ifdef __WITH_SKIN_CHANGE
-    this.$skinchange = function(){
+    this.addEventListener("$skinchange", function(){
         if (this.caption)
             this.$propHandlers["caption"].call(this, this.caption);
 
@@ -524,20 +505,8 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
         //if (this.$focussable !== true && this.hasFocus())
             //apf.window.$focusLast(this.$focusParent);
-    }
+    });
     //#endif
-
-    this.$loadAml = function(x){
-        if (!this.caption && x.firstChild)
-            this.setProperty("caption", x.firstChild.nodeValue);
-        else if (typeof this.caption == "undefined")
-            this.$propHandlers["caption"].call(this, "");
-
-        if (!inited) {
-            apf.AmlParser.parseChildren(this.$aml, null, this);
-            inited = true;
-        }
-    };
 
     //#ifdef __ENABLE_BUTTON_ACTIONS
     //@todo solve how this works with XForms
@@ -546,9 +515,10 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
 
         //#-ifdef __WITH_HTML5
         if (!action)
-            action = this.tagName;
+            action = this.localName;
         //#-endif
 
+        var _self = this;
         setTimeout(function(){
             (apf.button.actions[action] || apf.K).call(_self);
         });
@@ -558,14 +528,14 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     /* #ifdef __WITH_XFORMS
 
     //XForms support
-    if (this.tagName == "trigger") {
+    if (this.localName == "trigger") {
         this.addEventListener("click", function(e){
             this.dispatchXFormsEvent("DOMActivate", e);
         });
     }
 
     //XForms support
-    this.action = (this.tagName == "submit")
+    this.action = (this.localName == "submit")
         ? "submit"
         : x.getAttribute("action");
     this.target = x.getAttribute("target");
@@ -638,10 +608,23 @@ apf.button  = apf.component(apf.NODE_VISIBLE, function(){
     //this.form.registerButton(this.action, this);
 
     #endif*/
-}).implement(apf.Presentation, apf.BaseButton);
+}).call(apf.button.prototype = new apf.BaseButton());
+
+// submit, trigger, reset, button
+apf.submit.prototype  =
+apf.trigger.prototype =
+apf.reset.prototype   = apf.button.prototype;
+
+apf.aml.setElement("submit",  apf.submit);
+apf.aml.setElement("trigger", apf.trigger);
+apf.aml.setElement("reset",   apf.reset);
+apf.aml.setElement("button",  apf.button);
 
 //#ifdef __ENABLE_BUTTON_ACTIONS
-apf.button.actions = {
+apf.submit.action   =
+apf.trigger.actions =
+apf.reset.actions   =
+apf.button.actions  = {
     // #ifdef __WITH_ACTIONTRACKER
     "undo" : function(action){
         var tracker;
@@ -711,13 +694,13 @@ apf.button.actions = {
             for (var node, i = 0, l = nodes.length; i < l; i++) {
                 node = nodes[i];
 
-                if (node.hasFeature(__VALIDATION__)
+                if (node.hasFeature(apf.__VALIDATION__)
                   && !node.$validgroup && !node.form) {
                     node.setProperty("validgroup", vg);
                 }
 
-                if (node.$aml.getAttribute("type"))
-                    vars[node.$aml.getAttribute("type")] = node.getValue();
+                if (node.type)
+                    vars[node.type] = node.getValue();
 
                 if (vars.username && vars.password)
                     return;
@@ -741,11 +724,20 @@ apf.button.actions = {
             return;
         }
 
-        apf.auth.login(vars.username, vars.password);
+        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf,"auth")[0];
+        if (!auth)
+            return;
+       
+        auth.loginFn(vars.username, vars.password);
+        //apf.auth.login(vars.username, vars.password);
     },
 
     "logout" : function(){
-        apf.auth.logout();
+        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        if (!auth)
+            return;
+
+        auth.logoutFn();
     },
     //#endif
 
@@ -788,13 +780,16 @@ apf.button.actions = {
             loopChildren(parent.childNodes);
 
             if (!model) {
-                //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
-                    "Finding a model to submit",
-                    "Could not find a model to submit."));
-                //#endif
-
-                return;
+                model = apf.globalModel;
+                if (!model) {
+                    //#ifdef __DEBUG
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Finding a model to submit",
+                        "Could not find a model to submit."));
+                    //#endif
+    
+                    return;
+                }
             }
         }
 
@@ -823,11 +818,11 @@ apf.button.actions = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(__TRANSACTION__)) {
+            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(apf.__TRANSACTION__))
                 return;
         }
 
@@ -843,11 +838,11 @@ apf.button.actions = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(__TRANSACTION__)) {
+            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(apf.__TRANSACTION__))
                 return;
         }
 
@@ -864,11 +859,11 @@ apf.button.actions = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(__TRANSACTION__)) {
+            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(__TRANSACTION__))
+            if (node && !node.hasFeature(apf.__TRANSACTION__))
                 return;
         }
 

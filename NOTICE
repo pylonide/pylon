@@ -1,8 +1,8 @@
-﻿Javeline Platform (JPF)
-Copyright 2000-2008 Javeline BV
+﻿Ajax.org Platform (APF)
+Copyright 2000-2009 Javeline
 
 This product includes software developed by
-Javeline BV (http://www.ajax.org/).
+Javeline (http://www.ajax.org/).
 
 The Javascript URI parser is open source software from Steven Levithan
 (http://stevenlevithan.com/) and licensed under the MIT License.
@@ -68,6 +68,9 @@ non-standard license.
 The JSON parser is a modified version of the json-sans-eval JSON parser, rev. 8,
 copyighted by Google Inc. 2008 (http://code.google.com/p/json-sans-eval/) and
 licensed under the Apache License, Version 2.0.
+
+The LABjs :: Loading And Blocking JavaScript library is copyrighted by Kyle 
+Simpson and licensed under the MIT License.
 
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the

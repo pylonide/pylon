@@ -35,7 +35,7 @@
  *
  * @default_private
  */
-apf.namespace("offline.models", {
+apf.offline.models = {
     enabled   : false,
     timer     : null,
     models    : {},
@@ -43,7 +43,7 @@ apf.namespace("offline.models", {
     realtime  : true,
 
     init      : function(aml){
-        this.namespace = apf.appsettings.name + ".apf.offline.models";
+        this.namespace = apf.config.name + ".apf.offline.models";
 
         if (aml.nodeType && aml.getAttribute("realtime"))
             this.realtime = !apf.isFalse(aml.getAttribute("realtime"));
@@ -60,7 +60,7 @@ apf.namespace("offline.models", {
     },
 
     markForUpdate : function(model){
-       this.models[model.uniqueId] = model;
+       this.models[model.$uniqueId] = model;
 
         if(!this.timer){
             var _self = this;
@@ -82,7 +82,7 @@ apf.namespace("offline.models", {
     },
 
     removeModel : function(model){
-        var name = model.name || model.uniqueId + ".model";
+        var name = model.name || model.$uniqueId + ".model";
 
         //Remove recorded data of this model
         apf.offline.storage.remove(name, this.namespace);
@@ -92,7 +92,7 @@ apf.namespace("offline.models", {
     },
 
     updateModel : function(model){
-        var name = model.name || model.uniqueId + ".model";
+        var name = model.name || model.$uniqueId + ".model";
 
         //#ifdef __DEBUG
         apf.console.info("Updating model '" + name + "'");
@@ -111,7 +111,7 @@ apf.namespace("offline.models", {
     },
 
     loadModel : function(model){
-        var name = model.name || model.uniqueId + ".model";
+        var name = model.name || model.$uniqueId + ".model";
 
         var data = apf.offline.storage.get(name, this.namespace);
         if (!data) return false;
@@ -134,10 +134,10 @@ apf.namespace("offline.models", {
 
         var done = {}, models = apf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++) {
-            if (done[models[i].uniqueId])
+            if (done[models[i].$uniqueId])
                 continue;
 
-            done[models[i].uniqueId] = true;
+            done[models[i].$uniqueId] = true;
             this.updateModel(models[i]);
         }
 
@@ -176,6 +176,6 @@ apf.namespace("offline.models", {
             });
         }
     }
-});
+};
 
 // #endif

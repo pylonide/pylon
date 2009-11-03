@@ -37,38 +37,35 @@ apf.Sort = function(xmlNode){
     var settings = {};
     //order, xpath, type, method, getNodes, dateFormat, dateReplace, sort_dateFmtStr, getValue;
     
-    //use this function to parse the traverse node
-    this.parseXml = function(xmlNode, clear){ 
+    //use this function to parse the each node
+    this.parseXml = function(xmlNode, clear){
         if (clear) settings = {};
-        
-        settings.order       = xmlNode.getAttribute("order");
-        settings.xpath       = xmlNode.getAttribute("sort");
-        settings.getNodes    = self[xmlNode.getAttribute("nodes-method")];
-        settings.getValue    = function(item){
-            return apf.queryValue(item, settings.xpath);
-        }
+
+        settings.order     = xmlNode.order;
+        settings.getValue  = xmlNode.csort || xmlNode.compile("sort");
+        settings.getNodes  = self[xmlNode["nodes-method"]];
 
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
-        settings.order = null;
+        settings.order     = null;
 
-        if (xmlNode.getAttribute("data-type")) 
-            settings.method = sort_methods[xmlNode.getAttribute("data-type")];
-        else if (xmlNode.getAttribute("sort-method")) {
-            settings.method = self[xmlNode.getAttribute("sort-method")];
+        if (xmlNode["data-type"])
+            settings.method = sort_methods[xmlNode["data-type"]];
+        else if (xmlNode["sort-method"]) {
+            settings.method = self[xmlNode["sort-method"]];
             
             //#ifdef __DEBUG
             if (!settings.method) {
                 throw new Error(apf.formatErrorString(0, null, 
                     "Sorting nodes",
                     "Invalid or missing sort function name provided '" 
-                    + xmlNode.getAttribute("sort-method") + "'", xmlNode));
+                    + xmlNode["sort-method"] + "'", xmlNode));
             }
             //#endif
         }
         else
             settings.method = sort_methods["alpha"];
         
-        var str = xmlNode.getAttribute("date-format");
+        var str = xmlNode["date-format"];
         if (str) {
             settings.sort_dateFmtStr = str;
             settings.method = sort_methods["date"];

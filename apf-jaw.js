@@ -58,8 +58,6 @@ apf = {
         //this.importClass(runJaw, true);
         apf.runJaw();
         
-        apf.xmldb = new apf.XmlDatabase();
-        
         this.implement(apf.Class);
     },
     
@@ -134,20 +132,6 @@ apf = {
         }
         
         return this;
-    },
-    
-    /**
-    * This method transforms an object into a Ajax.org Class
-    * @param {Object}    oBlank Required Object to be transformed into a Ajax.org Class
-    * @method
-    */
-    makeClass : function(oBlank){
-        if (oBlank.implement) return;
-        
-        oBlank.implement = this.implement;
-        oBlank.implement(apf.Class);
-        
-        oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
     
     lookup : function(uniqueId){
@@ -267,7 +251,7 @@ apf = {
         if (control)
             str.push("Control: '" 
                 + (control.name 
-                    || (control.$aml ? control.$aml.getAttribute("id") : null) 
+                    || (control.$aml ? control.getAttribute("id") : null) 
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -350,7 +334,7 @@ Function.prototype.toHTMLNode = function(highlight){
                 return TYPE_DOMNODE;
         }
         
-        if (variable.dataType == undefined)
+        if (typeof variable.dataType == "undefined")
             return TYPE_OBJECT;
         
         return variable.dataType;

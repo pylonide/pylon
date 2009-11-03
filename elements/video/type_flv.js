@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __AMLVIDEO || __INC_ALL
 
 /**
  * Element displaying a Flash video
@@ -36,9 +36,9 @@
 apf.video.TypeFlv = function(oVideo, node, options) {
     this.oVideo              = oVideo;
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "elements/video/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "elements/video/FAVideo.swf";
     /* #else
-    this.DEFAULT_SWF_PATH    = (apf.appsettings.resourcePath || apf.basePath) + "resources/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "resources/FAVideo.swf";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/videoplayer.swf";
@@ -51,9 +51,9 @@ apf.video.TypeFlv = function(oVideo, node, options) {
     this.resizeTimer  = null;
 
     // Div name, flash name, and container name
-    this.divName      = this.oVideo.uniqueId;
+    this.divName      = this.oVideo.$uniqueId;
     this.htmlElement  = node;
-    this.name         = "FAVideo_" + this.oVideo.uniqueId;
+    this.name         = "FAVideo_" + this.oVideo.$uniqueId;
 
     // Video props
     this.videoPath    = options.src;
@@ -226,19 +226,20 @@ apf.video.TypeFlv.prototype = {
     /**
      * All public methods use this proxy to make sure that methods called before
      * initialization are properly called after the player is ready.
-     * Supply three arguments maximum, because function.apply does not work on
-     * the flash object.
      *
-     * @param {String} param1
-     * @param {String} param2
-     * @param {String} param3
      * @type {Object}
      */
-    callMethod: function(param1, param2, param3) {
-        if (this.inited && this.player && this.player.callMethod)
-            this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
-        else
+    callMethod: function() {
+        if (!this.inited || !this.player || !this.player.callMethod) {
             this.delayCalls.push(arguments);
+        }
+        else {
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(this.player, "callMethod");
+            apf.flash.remote.apply(null, args);
+        }
+
+        return this;
     },
 
     /**
@@ -247,7 +248,7 @@ apf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     makeDelayCalls: function() {
-        for (var i = 0; i < this.delayCalls.length; i++)
+        for (var i = 0, l = this.delayCalls.length; i < l; i++)
             this.callMethod.apply(this, this.delayCalls[i]);
         return this;
     },
@@ -341,7 +342,7 @@ apf.video.TypeFlv.prototype = {
 
                 this.oVideo.$initHook({type:"init"});
                 this.onResize();
-                var node = this.oVideo.oInt;
+                var node = this.oVideo.$int;
                 setTimeout(function() {
                     apf.layout.forceResize(node);
                 }, 1000);
@@ -386,12 +387,12 @@ apf.video.TypeFlv.prototype = {
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
             "previewImagePath"];
 
-        apf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo",
-            "(apf.all[" + this.oVideo.uniqueId + "].player && apf.all["
-            + this.oVideo.uniqueId + "].player.onResize \
-                ? apf.all[" + this.oVideo.uniqueId + "].player \
+        apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo",
+            "(apf.all[" + this.oVideo.$uniqueId + "].player && apf.all["
+            + this.oVideo.$uniqueId + "].player.onResize \
+                ? apf.all[" + this.oVideo.$uniqueId + "].player \
                 : {onResize:apf.K}).onResize()");
-        apf.layout.activateRules(this.oVideo.oExt);
+        apf.layout.queue(this.oVideo.$ext);
 
         return this;
     },
@@ -402,25 +403,26 @@ apf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        var content = apf.flash.buildContent(
-            "src",              this.DEFAULT_SWF_PATH,
-            "width",            "100%",
-            "height",           "100%",
-            "align",            "middle",
-            "id",               this.name,
-            "quality",          "high",
-            "bgcolor",          "#000000",
-            "allowFullScreen",  "true",
-            "name",             this.name,
-            "flashvars",        "playerID=" + this.id + "&volume=" + this.volume
+        var content = apf.flash.buildContent({
+            src              : this.DEFAULT_SWF_PATH,
+            width            : "100%",
+            height           : "100%",
+            align            : "middle",
+            id               : this.name,
+            quality          : "high",
+            bgcolor          : "#000000",
+            allowFullScreen  : "true",
+            name             : this.name,
+            flashvars        : "playerID=" + this.id + "&volume=" + this.volume
             /* #ifdef __WITH_CDN
             + "&secureDomain=" + window.location.protocol + "//" + window.location.host
             #endif */
             ,
-            "allowScriptAccess","always",
-            "type",             "application/x-shockwave-flash",
-            "pluginspage",      "http://www.adobe.com/go/getflashplayer",
-            "menu",             "true");
+            allowScriptAccess: "always",
+            type             : "application/x-shockwave-flash",
+            pluginspage      : "http://www.adobe.com/go/getflashplayer",
+            menu             : "true"
+        });
 
         if (this.htmlElement == null) return this;
 
@@ -490,7 +492,7 @@ apf.video.TypeFlv.prototype = {
     },
 
     $destroy: function() {
-        apf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_favideo");
+        apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
         if (this.player) {
             try {
                 this.stop();

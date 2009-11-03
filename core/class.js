@@ -81,7 +81,8 @@
  * using apf you will find that some of these concepts have
  * been implemented in a way that enables the core developers of apf to think in
  * those concepts. The most important one is class inheritance. Because of the
- * freedoms that javascript allows, it is possible to implement {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
+ * freedoms that javascript allows, it is possible to implement
+ * {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
  * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
  * 
  * Usage:
@@ -98,38 +99,106 @@
  *
  * Class:
  * The apf.Class baseclass provides all basic features a apf element needs, such
- * as event system, property binding and a constructor / destructor.
- * By calling {@link core.apf.method.makeClass} an object is created that implements
- * all <i title="an inherited characteristic (merriam-webster)">traits</i> from
- * apf.Class. 
- * More importantly two functions are added that help with dealing with multiple
- * inheritance.
+ * as event system, property binding and multiple inheritance with state defined
+ * by each baseclass.
+ * By setting the prototype of a function to an instance of apf.Class 
+ * these  <i title="an inherited characteristic (merriam-webster)">traits</i> are
+ * transferred to your class.
  *
  * API:
- * The first method is the one that tells an object to implement traits from a baseclass.
+ * The first method is the one that tells an object to implement traits from a
+ * baseclass.
  * It works as follows:
  * <code>
- *  myObj.implement(apf.Presentation);
+ *  var myClass = function(){
+ *      this.$init();
+ *  }
+ *  myClass.prototype = new apf.Class();
  * </code>
- * That lines causes all traits of apf.Presentation to be added to myObj. Now we
- * can check if myObj actually has implemented this baseclass.
+ * There is a class tree that you can use to create your own elements. For 
+ * instance to create a visible element that uses skinning you can inherit from
+ * apf.Presentation:
  * <code>
- *  myObj.hasFeature(__PRESENTATION__);
+ *  var myElement = function(){
+ *      this.$init();
+ *  }
+ *  myElement.prototype = new apf.Presentation();
  * </code>
- * Another way to set up inheritance is using the implement method on a class
- * generated using the apf.component function.
+ * Please find a full description of the inheritance tree below.
+ *
+ * To check whether an object has inherited from baseclass use the following
+ * syntax:
  * <code>
- *  var x = apf.component(apf.NODE_VISIBLE, function(){
- *      //code
- *  }).implement(
- *      apf.Presentation,
- *      apf.Rename
- *  );
+ *  myObj.hasFeature(apf.__PRESENTATION__);
+ * </code>
+ * Where the constant is the name of the baseclass in all caps.
+ *
+ * Apf supports multiple inheritance. Use the implement method to add a 
+ * baseclass to your class that is not part of the inheritance tree:
+ * <code>
+ *  var myElement = function(){
+ *      this.$init();
+ *
+ *      this.implement(apf.Rename);
+ *  }
+ *  myElement.prototype = new apf.MultiSelect();
+ * </code>
+ * 
+ * Inheritance Tree:
+ * <code>
+ *  - apf.Class
+ *      - apf.AmlNode
+ *          - apf.AmlElement
+ *              - apf.Teleport
+ *              - apf.GuiElement
+ *                  - apf.Presentation
+ *                      - apf.BaseTab
+ *                      - apf.DataBinding
+ *                          - apf.StandardBinding
+ *                              - apf.BaseButton
+ *                              - apf.BaseSimple
+ *                              - apf.Media
+ *                          - apf.MultiselectBinding
+ *                              - apf.MultiSelect
+ *                                  - apf.BaseList
+ * </code>
+ * Generally elements inherit from AmlElement, Presentation, StandardBinding, 
+ * MultiselectBinding, or one of the leafs.
+ *
+ * The following classes are implemented using the implement method:
+ * <code>
+ * - apf.Cache
+ * - apf.ChildValue
+ * - apf.ContentEditable
+ * - apf.DataAction
+ * - apf.Media
+ * - apf.MultiCheck
+ * - apf.Rename
+ * - apf.Xforms
+ * </code>
+ *
+ * The following classes are automatically implemented when needed by apf.GuiElement.
+ * <code>
+ * - apf.Alignment
+ * - apf.Anchoring
+ * - apf.Docking
+ * - apf.DelayedRender
+ * - apf.DragDrop
+ * - apf.Focussable
+ * - apf.Interactive
+ * - apf.Transaction
+ * - apf.Validation
+ * </code>
+ *
+ * The following class is automatically implemented by apf.MultiselectBinding
+ * <code>
+ * - apf.VirtualViewport
  * </code>
  */
 
 /**
- * All elements that implemented this {@link term.baseclass baseclass} have {@link term.propertybinding property binding},
+ * All elements that implemented this {@link term.baseclass baseclass} have
+ * {@link term.propertybinding property binding},
  * event handling and constructor & destructor hooks. The event system is 
  * implemented following the W3C specification, similar to the 
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
@@ -148,168 +217,359 @@
  *     {Mixed}  value         the value it has after the change
  *
  */
-apf.Class = function(){
-    this.$amlLoaders   = [];
-    this.$addAmlLoader = function(func){
-        if (!this.$amlLoaders)
-            func.call(this, this.$aml);
-        else
-            this.$amlLoaders.push(func);
-    };
+apf.Class = function(){};
 
-    this.$amlDestroyers   = [];
-
-    this.$regbase         = 0;
+apf.Class.prototype = new (function(){
+    this.$regbase   = 0;
     /**
      * Tests whether this object has implemented a {@link term.baseclass baseclass}.
      * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
      */
-    this.hasFeature       = function(test){
-        return this.$regbase&test;
+    this.hasFeature = function(test){
+        return this.$regbase & test;
     };
+    
+    this.$initStack    = [];
+    this.$bufferEvents = [];
+    this.$init = function(callback, nodeFunc, struct){
+        if (typeof callback == "function" || callback === true) {
+            this.$bufferEvents = this.$bufferEvents.slice();
+            
+            if (callback === true)
+                return this;
+            
+            this.$initStack = this.$initStack.slice(); //Our own private stack
+            this.$initStack.push(callback);
+            
+            return this;
+        }
 
-    /* ***********************
-        PROPERTY BINDING
-    ************************/
+        this.addEventListener = realAddEventListener;
+        this.$removalQueue = [];
 
+        if (this.nodeType != 2) //small little hack
+            this.$uniqueId = apf.all.push(this) - 1;
+
+        this.$captureStack = {};
+        this.$eventsStack  = {};
+        this.$funcHandlers = {};
+
+        var i = 0, l = this.$initStack.length;
+        for (; i < l; i++)
+            this.$initStack[i].apply(this, arguments);
+        
+        for (i = 0, l = this.$bufferEvents.length; i < l; i++)
+            this.addEventListener.apply(this, this.$bufferEvents[i]);
+        
+        delete realAddEventListener;
+        delete this.$initStack;
+        delete this.$bufferEvents;
+        
+        if (struct && struct.htmlNode) {
+            this.$pHtmlNode = struct.htmlNode;
+            this.ownerDocument.$domParser.$continueParsing(this);
+            apf.queue.empty();
+        }
+        
+        return this;
+    };
+    
+    this.implement = apf.implement;
+
+    /**** Property Binding ****/
+
+    this.$handlePropSet = function(prop, value){
+        this[prop] = value;
+    };
+    
     //#ifdef __WITH_PROPERTY_BINDING
-
-    //#ifdef __WITH_PROPERTY_WATCH
-    var watchCallbacks     = {};
-    //#endif
-
-    var boundObjects       = {};
-    var myBoundPlaces      = {};
     
-    if (!this.$handlePropSet) {
-        this.$handlePropSet    = function(prop, value){
-            this[prop] = value;
-        };
-    }
-    
-    /*
-    for (var i = 0; i < this.$supportedProperties.length;i++) {
-        var p = uCaseFirst(this.$supportedProperties[i]);
-        this["set" + p] = function(prop){return function(value){
-            this.setProperty(prop, value);
-        }}(this.$supportedProperties[i]);
-
-        this["get" + p] = function(prop){return function(){
-            return this.getProperty(prop);
-        }}(this.$supportedProperties[i]);
-    }
-    */
-
     /**
      * Bind a property of another compontent to a property of this element.
      *
-     * @param  {String} myProp           the name of the property of this element of which the value is communicated to <code>bObject</code>.
-     * @param  {Class}  bObject          the object which will receive the property change message.
-     * @param  {String} bProp            the property of <code>bObject</code> which will be set using the value of <code>myProp</code> optionally processed using <code>strDynamicProp</code>.
-     * @param  {String} [strDynamicProp] a javascript statement which contains the value of <code>myProp</code>. The string is used to calculate a new value.
+     * @param  {String} myProp           the name of the property of this element
+     *                                   of which the value is communicated to
+     *                                   <code>bObject</code>.
+     * @param  {Class}  bObject          the object which will receive the property
+     *                                   change message.
+     * @param  {String} bProp            the property of <code>bObject</code> which
+     *                                   will be set using the value of
+     *                                   <code>myProp</code> optionally
+     *                                   processed using <code>strDynamicProp</code>.
+     * @param  {String} [strDynamicProp] a javascript statement which contains the
+     *                                   value of <code>myProp</code>. The string
+     *                                   is used to calculate a new value.
      * @private
      */
-    this.bindProperty = function(myProp, bObject, bProp, strDynamicProp){
-        //#--ifdef __DEBUG
-        if (!boundObjects[myProp])
-            boundObjects[myProp] = {};
-        if (!boundObjects[myProp][bObject.uniqueId])
-            boundObjects[myProp][bObject.uniqueId] = [];
+    this.$bindProperty = function(myProp, bObject, bProp, fParsed){
+        if (!fParsed)
+            return bObject.$handlePropSet(bProp, this[myProp]);
 
-        if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
-            //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
-                "Property-binding",
-                "Already bound " + bObject.name + "." + bProp + " to " + myProp));
+        var eventName = "prop." + myProp, eFunc, isBeingCalled, isLang;
+        (this.$eventsStack[eventName] || (this.$eventsStack[eventName] = [])).push(eFunc = function(e){
+            if (isBeingCalled) //Prevent circular refs
+                return;
+            
+            //#ifdef __WITH_LANG_SUPPORT
+            apf.$lm_has_lang = false;
             //#endif
-            return;
-        }
-
-        if (strDynamicProp)
-            boundObjects[myProp][bObject.uniqueId].push([bProp, strDynamicProp]);
-        else
-            boundObjects[myProp][bObject.uniqueId].pushUnique([bProp]); //The new array is always unique... right?
-        /* #--else
-
-        if(!boundObjects[myProp]) boundObjects[myProp] = [];
-        boundObjects[myProp].push([bObject, bProp, strDynamicProp]);
-
-        #--endif */
-
-        bObject.setProperty(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
-    };
-
-    /**
-     * Remove the binding of a property of another compontent to a property of this element.
-     *
-     * @param  {String} myProp  the name of the property of this element for which the property bind was registered.
-     * @param  {Class}  bObject the object receiving the property change message.
-     * @param  {String} bProp   the property of <code>bObject</code>.
-     * @private
-     */
-    this.unbindProperty = function(myProp, bObject, bProp){
-        //#--ifdef __DEBUG
-        boundObjects[myProp][bObject.uniqueId].remove(bProp);
-        /* #--else
-
-        if(!boundObjects[myProp]) return;
-        for(var i=0;i<boundObjects[myProp].length;i++){
-                if(boundObjects[myProp][0] == bObject && boundObjects[myProp][1] == bProp){
-                        return boundObjects[myProp].removeIndex(i);
+            isBeingCalled = true;
+            
+            try {
+                if (fParsed.asyncs) { //if async
+                    return fParsed.call(bObject, bObject.xmlRoot, function(value){
+                        bObject.setProperty(bProp, value, true, false, 10);
+                        
+                        //#ifdef __WITH_LANG_SUPPORT
+                        //@todo apf3.0
+                        if (apf.$lm_has_lang && !isLang) {
+                            isLang = true;
+                            //@todo should auto remove
+                            apf.language.addProperty(bObject, bProp, fParsed);
+                        }
+                        //#endif
+                    }); 
                 }
-        }
+                else {
+                    var value = fParsed.call(bObject, bObject.xmlRoot);
+                }
+            }
+            catch(e) {
+                apf.console.warn("[331] Could not execute binding for property "
+                    + bProp + "\n\n" + e.message);
+                
+                isBeingCalled = false;
+                
+                return;
+            }
 
-        #--endif */
+            //Can't do this when using xml nodes, doesnt seem needed anyway
+            //if (bObject[bProp] != value)
+                bObject.setProperty(bProp, value, true, false, 10);//e.initial ? 0 : 
+            
+            //#ifdef __WITH_LANG_SUPPORT
+            //@todo apf3.0
+            if (apf.$lm_has_lang && !isLang) {
+                isLang = true;
+                //@todo should auto remove
+                apf.language.addProperty(bObject, bProp, fParsed);
+            }
+            //#endif
+            
+            isBeingCalled = false;
+        });
+        
+        //eFunc({initial: true});
+        
+        return eFunc;
     };
     
+    /**
+     * Sets a dynamic property from a string.
+     * The string used for this function is the same as used in AML to set a
+     * dynamic property:
+     * <a:button visible="[rbTest.value == 'up']" />
+     *
+     * @param  {String}  prop   the name of the property of this element to set
+     *                          using a dynamic rule.
+     * @param  {String}  pValue the dynamic property binding rule.
+     */
+    this.$attrExcludePropBind = false;
+    this.$setDynamicProperty = function(prop, pValue){
+        var exclNr = this.$attrExcludePropBind[prop],
+            options;
+        //@todo apf3.0, please generalize this - cache objects, seems slow
+        if ("selected|selection".indexOf(prop) > -1) {
+            options = {
+                xpathmode : 2,
+                parsecode : true
+            }
+        }
+        else if (exclNr == 2) {
+            options = {nostring : true};
+        }
+        else if (exclNr === 0) {
+            options = {parsecode : true};
+        }
+
+        //Compile pValue through JSLT parser
+        var fParsed = apf.lm.compile(pValue, options);
+
+        //Special case for model due to needed extra signalling
+        if (prop == "model")
+            (this.$modelParsed = fParsed).instruction = pValue
+
+        //if it's only text return setProperty()
+        if (fParsed.type == 2) {
+            this[prop] = !pValue; //@todo apf3.0 is this needed?
+            return this.setProperty(prop, fParsed.str);
+        }
+
+        //if there's xpath: Add apf.DataBinding if not inherited. 
+        //Add compiled binding rule. Load databinding if not loaded. 
+        //#ifdef __WITH_DATABINDING
+        if (exclNr == 2 || fParsed.xpaths.length && exclNr != 1) {
+            if (!this.hasFeature(apf.__DATABINDING__))
+                this.implement(apf.StandardBinding);
+            
+            this.$addAttrBind(prop, fParsed, pValue);
+        }
+        //#endif
+
+        //if there's prop binding: Add generated function to each obj/prop in the list
+        var matches = exclNr && exclNr != 3 && prop != "model" ? {} : fParsed.props, //@todo apf3.0 sign of broken abstraction, please fix this with a bit mask
+            found   = false,
+            o, node, bProp, p;
+
+        for (p in matches) {
+            //#ifdef __SUPPORT_SAFARI2
+            if (typeof matches[p] == "function")
+                continue;
+            //#endif
+
+            o = p.split(".");
+            if (o.length > 2) { //apf.offline.syncing
+                bProp = o.pop();
+                try{
+                    node  = eval(o.join("."));
+                }
+                catch(e){
+                    apf.console.warn("[287] Could not execute binding test : "
+                        + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
+                    continue;
+                }
+
+                if (typeof node != "object" || !node.$regbase) {
+                    bProp = o[1];
+                    node  = self[o[0]];
+                }
+                else {
+                    o.push(bProp);
+                }
+            }
+            else {
+                bProp = o[1];
+                node  = self[o[0]] || o[0] == "this" && this;
+            }
+
+            if (!node || !node.$bindProperty)
+                continue;  //return
+
+            if (!this.$funcHandlers[prop])
+                this.$funcHandlers[prop] = [];
+            this.$funcHandlers[prop].push({
+                amlNode : node, 
+                prop    : bProp, 
+                handler : node.$bindProperty(bProp, this, prop, fParsed)
+            });
+            found = true;
+        }
+
+        if (found) {
+            this.$funcHandlers[prop][0].handler({initial: true});
+        }
+        else {
+            //@todo optimize this
+            if (exclNr)
+                return this.setProperty(prop, pValue);
+            
+            //#ifdef __WITH_LANG_SUPPORT
+            apf.$lm_has_lang = false;
+            //#endif
+            
+            try {
+                if (fParsed.asyncs) { //if async
+                    var _self = this;
+                    return fParsed.call(this, this.xmlRoot, function(value){
+                        _self.setProperty(prop, value, true);
+    
+                        //#ifdef __WITH_LANG_SUPPORT
+                        //@todo apf3.0
+                        if (apf.$lm_has_lang)
+                            apf.language.addProperty(this, prop, fParsed); //@todo should auto remove
+                        //#endif
+                    }); 
+                }
+                else {
+                    var value = fParsed.call(this, this.xmlRoot);
+                }
+            }
+            catch(e){
+                apf.console.warn("[331] Could not execute binding test: "
+                    + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
+                return;
+            }
+            
+            this[prop] = !value; //@todo isnt this slow and unneccesary?
+            this.setProperty(prop, value, true);
+
+            //#ifdef __WITH_LANG_SUPPORT
+            //@todo apf3.0
+            if (apf.$lm_has_lang)
+                apf.language.addProperty(this, prop, fParsed); //@todo should auto remove
+            //#endif
+        }
+    };
+    
+    //@todo setAttribute should delete this from apf.language when not doing
+    //$setDynamicProperty
+    this.$clearDynamicProperty = function(prop){
+        if (this.$removeAttrBind)
+            this.$removeAttrBind(prop);
+        
+        //#ifdef __WITH_LANG_SUPPORT
+        //@todo apf3.0
+        apf.language.removeProperty(this, prop);
+        //#endif
+        
+        if (prop == "model")
+            this.$modelParsed = null;
+        
+        //Remove any bounds if relevant
+        var f, i, l, h = this.$funcHandlers[prop];
+        if (h && typeof h != "function") {
+            for (i = 0, l = h.length; i < l; i++) {
+                (f = h[i]).amlNode.removeEventListener("prop." + f.prop, f.handler);
+            }
+            delete this.$funcHandlers[prop];
+        }
+    };
+
     //#ifdef __WITH_PROPERTY_WATCH
     /**
      * Adds a listener to listen for changes to a certain property. 
-     * Implemented as Mozilla suggested see {https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
+     * Implemented as Mozilla suggested see
+     * {@link https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
      */
     this.watch = function(propName, callback){
-        (watchCallbacks[propName] || (watchCallbacks[propName] = []))
-            .push(callback);
-    }
+        var eventName = "prop." + propName,
+            wrapper   = function(e){
+                callback.call(this, propName, e.oldvalue, e.value);
+            };
+        wrapper.callback = callback;
+        
+        (this.$eventsStack[eventName] || (this.$eventsStack[eventName] = []))
+            .push(wrapper);
+    };
     
     /**
      * Removes a listener to listen for changes to a certain property. 
      */
     this.unwatch = function(propName, callback){
-        if (!watchCallbacks[propName])
+        var list, eventName = "prop." + propName;
+        if (!(list = this.$eventsStack[eventName]))
             return;
         
-        watchCallbacks[propName].remove(callback);
-    }
-    
-    this.dispatchWatch = function(prop, value) {
-        var cb = watchCallbacks[prop];
-        if (cb) {
-            cb = cb.slice(); 
-            for (var i = 0; i < cb.length; i++)
-                cb[i].call(this, prop, null, value);
-        }
-    }
-    //#endif
-
-    /**
-     * Unbinds all bound properties for this component.
-     * @private
-     */
-    this.unbindAllProperties = function(){
-        var prop;
-        for (prop in myBoundPlaces) {
-            //Remove any bounds if relevant
-            if (myBoundPlaces[prop] && typeof myBoundPlaces[prop] != "function") {
-                for (var i = 0; i < myBoundPlaces[prop].length; i++) {
-                    if (!self[myBoundPlaces[prop][i][0]]) continue;
-
-                    self[myBoundPlaces[prop][i][0]]
-                        .unbindProperty(myBoundPlaces[prop][i][1], this, prop);
-                }
+        for (var i = 0, l = list.length; i < l; i++) {
+            if (list[i].callback == callback) {
+                list.remove(i);
+                return;
             }
         }
     };
+    //#endif
+
+    // #endif
 
     /**
      * Gets an array of properties for this element which can be bound.
@@ -319,243 +579,125 @@ apf.Class = function(){
     };
 
     /**
-     * Sets a dynamic property from a string.
-     * The string used for this function is the same as used in AML to set a dynamic property:
-     * <a:button visible="{rbTest.value == 'up'}" />
-     *
-     * @param  {String}  prop   the name of the property of this element to set using a dynamic rule.
-     * @param  {String}  pValue the dynamic property binding rule.
-     */
-    this.setDynamicProperty = function(prop, pValue){
-        //pValue.match(/^([{\[])(.*)[}\]]$/); // Find dynamic or calculated property
-        var pStart = pValue.substr(0,1);
-
-        // #ifdef __DEBUG
-        var pEnd = pValue.substr(pValue.length-1, 1);
-        if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Dynamic Property Binding",
-                "Invalid binding found: " + pValue));
-        }
-        // #endif
-
-        //Remove any bounds if relevant
-        if (myBoundPlaces[prop]) {
-            for (var i = 0; i < myBoundPlaces[prop].length; i++) {
-                self[myBoundPlaces[prop][i][0]].unbindProperty(myBoundPlaces[prop][i][1], this, prop);
-            }
-        }
-
-        //Two Way property binds
-        if (pStart == "[") {
-            var p = pValue.substr(1,pValue.length-2).split(".");
-            if (!self[p[0]]) return;
-
-            if (!p[1])
-                p[1] = self[p[0]].$supportedProperties[0]; // Default state property
-
-            //Two way property binding
-            self[p[0]].bindProperty(p[1], this, prop);
-            myBoundPlaces[prop] = [p];
-            this.bindProperty(prop, self[p[0]], p[1]);
-        }
-        else if (pStart == "{") { //One Way Dynamic Properties
-            var o, node, bProp, p, matches = {};
-            pValue = pValue.substr(1, pValue.length - 2);
-            pValue.replace(/["'](?:\\.|[^"']+)*["']|\\(?:\\.|[^\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+(?:\.\w+)*)(?!\()(?:\W|$)/gi,
-                function(m, m1){
-                    if(m1) matches[m1] = true;
-                });
-
-            pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");  //.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
-            myBoundPlaces[prop] = [];
-
-            var found = false;
-            for (p in matches) {
-                //#ifdef __SUPPORT_SAFARI2
-                if (typeof matches[p] == "function")
-                    continue;
-                //#endif
-
-                o = p.split(".");
-                if (o.length > 2) { //apf.offline.syncing
-                    bProp = o.pop();
-                    try{
-                        node  = eval(o.join("."));
-                    }
-                    catch(e){
-                        apf.console.warn("Could not execute binding test: "
-                            + pValue);
-                        continue;
-                    }
-
-                    if (typeof node != "object" || !node.$regbase) {
-                        bProp = o[1];
-                        node  = self[o[0]];
-                    }
-                    else
-                        o.push(bProp);
-                }
-                else {
-                    bProp = o[1];
-                    node  = self[o[0]];
-                }
-
-                if (!node || !node.bindProperty)
-                    continue;  //return
-
-                node.bindProperty(bProp, this, prop, pValue);
-                myBoundPlaces[prop].push(o);
-                found = true;
-            }
-
-            ///!WARNING, bound properties got a set-call twice, no idea why it was commented out before
-            if (!found){
-                //this.$handlePropSet(prop, eval(pValue));
-                try{
-                    var value = eval(pValue);
-                }
-                catch(e){
-                    apf.console.warn("Could not execute binding test: "
-                        + pValue);
-                    return;
-                }
-
-                this[prop] = !value;
-                this.setProperty(prop, value);
-            }
-        }
-        else {
-            //this.$handlePropSet(prop, pValue);
-            try{
-                var value = eval(pValue);
-            }
-            catch(e){
-                apf.console.warn("Could not execute binding test: "
-                    + pValue);
-                return;
-            }
-
-            this[prop] = !value;
-            this.setProperty(prop, value);
-        }
-    }
-
-    // #endif
-
-    //#ifdef __WITH_LANG_SUPPORT
-    this.$isMultiLang = {};
-    //#endif
-
-    /**
      * Sets the value of a property of this element.
-     * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
+     * Note: Only the value is set, dynamic properties will remain bound and the
+     * value will be overridden.
      *
-     * @param  {String}  prop        the name of the property of this element to set using a dynamic rule.
+     * @param  {String}  prop        the name of the property of this element to
+     *                               set using a dynamic rule.
      * @param  {String}  value       the value of the property to set.
-     * @param  {Boolean} [reqValue]  Whether the method should return when value is null.
-     * @param  {Boolean} [forceOnMe] Whether the property should be set even when its the same value.
+     * @param  {Boolean} [forceOnMe] whether the property should be set even when
+     *                               its the same value.
      */
-    this.setProperty = function(prop, value, reqValue, forceOnMe){
-        if (reqValue && !value || !apf || this.$ignoreSignals)
-            return;
+    this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
+        var s, r, arr, e, i, l,
+            oldvalue = this[prop],
+            isChanged = (typeof value == "object")
+                ? value != (typeof oldvalue == "object" ? oldvalue : null)
+                : String(oldvalue) !== String(value),
+            eventName = "prop." + prop;//@todo prop event should be called too;
+        
+        //Check if property has changed
+        if (isChanged) {
+            if (!forceOnMe) { //Recursion protection
+                //Check if this property is bound to data
+                if (this.xmlRoot && typeof value != "object" 
+                  && (!(s = this.$attrExcludePropBind[prop]))// || s == 2
+                  && (r = (this.$attrBindings && this.$attrBindings[prop] 
+                  || prop != "value" && this.$bindings[prop] && this.$bindings[prop][0]))) {
 
-        //#ifdef __WITH_LANG_SUPPORT
-        if (!forceOnMe) {
-            if (this.$isMultiLang[prop]) {
-                apf.language.removeElement(this.$isMultiLang[prop][0], 
-                  this.$isMultiLang[prop][1]);
-                
-                delete this.$isMultiLang[prop];
+                    //Check if rule has single xpath
+                    if (r.cvalue.type == 3) {
+                        //Set the xml value
+                        return apf.setNodeValue(
+                            this.$getDataNode(prop.toLowerCase(), this.xmlRoot, true),
+                            value, true);
+                    }
+                }
+                //#ifdef __WITH_OFFLINE_STATE_REALTIME
+                else if (typeof apf.offline != "undefined") {
+                    if (apf.loaded && apf.offline.state.enabled) {
+                        apf.offline.state.set(this, prop, typeof value == "object"
+                            ? value.name
+                            : value);
+                    }
+                    else if (apf.offline.enabled) {
+    
+                    }
+                }
+                //#endif
             }
-            if (/^\$(.*)\$$/.test(value)) {
-                this.$isMultiLang[prop] = [RegExp.$1, apf.language.addElement(RegExp.$1, {
-                    amlNode: this,
-                    prop   : prop
-                })];
-                return value;
-            }
+
+            if (this.$handlePropSet(prop, value, forceOnMe) === false)
+                return;
+            
+            value = this[prop];
+            
+            if (setAttr)
+                this.setAttribute(prop, value, true);
         }
-        //#endif
-
-        var oldvalue = this[prop];
-        if (String(this[prop]) !== String(value) || typeof value == "object") {
-            //#ifdef __WITH_OFFLINE_STATE_REALTIME
-            if (typeof apf.offline != "undefined") {
-                if (apf.loaded && apf.offline.state.enabled
-                  && (!this.bindingRules || !this.bindingRules[prop]
-                  || this.traverse)) {
-                    apf.offline.state.set(this, prop, typeof value == "object"
-                        ? value.name
-                        : value);
+        
+        //Optimized event calling
+        if (arr = this.$eventsStack[eventName]) {
+            for (i = 0, l = arr.length; i < l; i++) {
+                if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
+                    prop     : prop, 
+                    value    : value, 
+                    oldvalue : oldvalue
+                }))) === false) {
+                    e.returnValue = false;
                 }
-                else if (apf.offline.enabled) {
-
-                }
-            }
-            //#endif
-            if (this.$handlePropSet(prop, value, forceOnMe) === false) {
-                this[prop] = oldvalue;
-                return false;
             }
         }
         
-        // #ifdef __WITH_PROPERTY_WATCH
-        var cb = watchCallbacks[prop];
-        if (cb) {
-            for (var i = 0; i < cb.length; i++)
-                cb[i].call(this, prop, oldvalue, value);
-        }
-        //#endif
-        
-        // #ifdef __WITH_PROPERTY_CHANGE
-        if (this["onpropertychange"] || events_stack["propertychange"]) {
-            this.dispatchEvent("propertychange", {
-                name          : prop,
-                value         : value,
-                originalvalue : oldvalue
-            });
-        }
-        //#endif
-        
-        //#ifdef __WITH_PROPERTY_BINDING
-        var nodes = boundObjects[prop];
-        if (!nodes) return value;
+        //#ifdef __WITH_PROPERTY_INHERITANCE
+        /*
+            States:
+                    -1 Set
+             undefined Pass through
+                     2 Inherited
+                    10 Dynamic property
+        */
+        //@todo fix DOM mutation icw property inheritance
+        //@todo this whole section should be about attribute inheritance and moved
+        //      to AmlElement
+        //@todo the check on $amlLoaded is not as optimized as can be because
+        //      $loadAml is not called yet
+        if ((aci || (aci = apf.config.$inheritProperties))[prop] && this.$amlLoaded) {
+            //@todo this is actually wrong. It should be about removing attributes.
+            if (inherited != 10 && !value) {
+                delete this.$inheritProperties[prop];
+                if (this.$setInheritedAttribute(prop))
+                    return;
+            }
+            else if (inherited != 10) { //Keep the current setting (for dynamic properties)
+                this.$inheritProperties[prop] = inherited || -1;
+            }
 
-        //#--ifdef __DEBUG
-        var id, ovalue = this[prop];//value;
-        for (id in nodes) {
-            if (apf.isSafari && (typeof nodes[id] != "object" || !nodes[id]))
-                continue;
-
-            for (var o = apf.lookup(id), i = nodes[id].length - 1; i >= 0; --i) {
-                try {
-                    value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
-                }
-                catch(e) {
-                    apf.console.warn("Could not execute binding test: "
-                        + nodes[id][i][1]);
-                    continue;
-                }
-
-                if (typeof o != "undefined" && o[nodes[id][i][0]] != value)
-                    o.setProperty(nodes[id][i][0], value);//__handlePropSet
+            //cancelable, needed for transactions
+            if ((!e || e.returnValue !== false) && this.childNodes) {
+                (function recur(nodes) {
+                    var i, l, node, n;
+                    for (i = 0, l = nodes.length; i < l; i++) {
+                        node = nodes[i];
+                        if (node.nodeType != 1)
+                            continue;
+                        
+                        //Pass through
+                        if (!(n = node.$inheritProperties[prop]))
+                            recur(node.childNodes);
+                        //Set inherited property
+                        else if(n > 0)
+                            node.setProperty(prop, value, false, false, 2); //This is recursive already
+                    }
+                })(this.childNodes);
             }
         }
-        /* #--else
-
-        for(var i=0;i<nodes.length;i++){
-        try{
-            nodes[i][0].$handlePropSet(nodes[i][1],
-            nodes[i][2] ? eval(nodes[i][2]) : value);
-        }catch(e){}
-        }
-        #--endif */
-
         //#endif
-
+        
         return value;
     };
+    var aci;
 
     /**
      * Gets the value of a property of this element.
@@ -566,11 +708,10 @@ apf.Class = function(){
         return this[prop];
     };
 
-    /* ***********************
-        EVENT HANDLING
-    ************************/
+    /**** Event Handling ****/
 
-    var capture_stack = {}, events_stack = {};
+    apf.eventDepth = 0;
+
     /**
      * Calls all functions that are registered as listeners for an event.
      *
@@ -578,52 +719,50 @@ apf.Class = function(){
      * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
      *   Properties:
      *   {Boolean} bubbles  whether the event should bubble up to it's parent
+     *   {Boolean} captureOnly whether only the captured event handlers should be executed
      * @return {mixed} return value of the event
      */
+    var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
-        var arr, result, rValue;
+        var arr, result, rValue, i, l;
 
-        /* #ifdef __WITH_EDITMODE
-        if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
-        #endif */
-
-        //#ifdef __WITH_LAYOUT || __WITH_XMLDATABASE
-        if (!apf.eventDepth) 
-            apf.eventDepth = 0;
-        apf.eventDepth++ 
-        //#endif
+        apf.eventDepth++;
 
         e = options && options.name ? options : e;
 
-        if (this.disabled)
+        if (this.disabled && !allowEvents[eventName]) {
             result = false;
+        }
         else {
-            if (!e || !e.originalElement) {
-                (e || (e = new apf.Event(eventName, options)))
-                    .originalElement = this;
+            if (!e || !e.currentTarget) {
+                if (!(options || (options = {})).currentTarget)
+                    options.currentTarget = this;
     
                 //Capture support
-                if (arr = capture_stack[eventName]) {
-                    for (var i = 0; i < arr.length; i++) {
-                        rValue = arr[i].call(this, e);
-                        if (rValue != undefined)
+                if (arr = this.$captureStack[eventName]) {
+                    for (i = 0, l = arr.length; i < l; i++) {
+                        rValue = arr[i].call(this, e || (e = new apf.AmlEvent(eventName, options)));
+                        if (typeof rValue != "undefined")
                             result = rValue;
                     }
                 }
             }
             
-            if (options && options.captureOnly)
-                return e && e.returnValue || rValue;
+            if (options && options.captureOnly) {
+                return e && typeof e.returnValue != "undefined" ? e.returnValue : result;
+            }
             else {
-                if (this["on" + eventName])
+                if (this["on" + eventName]) {
                     result = this["on" + eventName].call(this, e 
-                        || (e = new apf.Event(eventName, options))); //Backwards compatibility
+                        || (e = new apf.AmlEvent(eventName, options))); //Backwards compatibility
+                }
     
-                if (arr = events_stack[eventName]) {
-                    for (var i = 0; i < arr.length; i++) {
+                if (arr = this.$eventsStack[eventName]) {
+                    for (i = 0, l = arr.length; i < l; i++) {
+                        if (!arr[i]) continue;
                         rValue = arr[i].call(this, e 
-                            || (e = new apf.Event(eventName, options)));
-                        if (rValue != undefined)
+                            || (e = new apf.AmlEvent(eventName, options)));
+                        if (typeof rValue != "undefined")
                             result = rValue;
                     }
                 }
@@ -633,67 +772,71 @@ apf.Class = function(){
         //#ifdef __WITH_EVENT_BUBBLING
         if ((e && e.bubbles && !e.cancelBubble || options && options.bubbles) && this != apf) {
             rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e 
-                || (e = new apf.Event(eventName, options)));
+                || (e = new apf.AmlEvent(eventName, options)));
 
-            if (rValue != undefined)
+            if (typeof rValue != "undefined")
                 result = rValue;
         }
         //#endif
         
-        //#ifdef __WITH_LAYOUT || __WITH_XMLDATABASE
-        //A bit of hackery for optimizing user ignorance...
-        //@todo should unify queues and filter events (add better heuristics)
-        if (--apf.eventDepth == 0 && !apf.isParsing
-            //#ifdef __DEBUG
-            && eventName != "debug"
-            //#endif
-        ) {
-            //#ifdef __WITH_LAYOUT
-            if (apf.layout && apf.layout.$hasQueue)
-                apf.layout.processQueue();
-            //#endif
-            //#ifdef __WITH_XMLDATABASE
-            if (apf.xmldb && apf.xmldb.$hasQueue)
-                apf.xmldb.notifyQueued();
-            //#endif
+        var p;
+        while (this.$removalQueue.length) {
+            p = this.$removalQueue.shift();
+            p[0].remove(p[1]); 
         }
-        //#endif
         
-        return e && e.returnValue !== undefined ? e.returnValue : result;
+        if (--apf.eventDepth == 0 && this.ownerDocument 
+          && !this.ownerDocument.$domParser.$parseContext
+          && !apf.isDestroying
+          //#ifdef __DEBUG
+          && eventName != "debug"
+          //#endif
+          && apf.queue
+        ) {
+            apf.queue.empty();
+        }
+
+        return e && typeof e.returnValue != "undefined" ? e.returnValue : result;
     };
 
     /**
      * Add a function to be called when a event is called.
      *
-     * @param  {String}   eventName the name of the event for which to register a function.
+     * @param  {String}   eventName the name of the event for which to register
+     *                              a function.
      * @param  {function} callback  the code to be called when event is dispatched.
      */
-    this.addEventListener = function(eventName, callback, useCapture){
+    this.addEventListener = function(a, b, c){
+        this.$bufferEvents.push([a,b,c]);
+    };
+    
+    var realAddEventListener = function(eventName, callback, useCapture){
         //#ifdef __PROFILER
         if (apf.profiler)
             apf.profiler.wrapFunction(Profiler_functionTemplate());
         //#endif
 
-        if (eventName.indexOf("on") == 0)
+        if (eventName.substr(0, 2) == "on")
             eventName = eventName.substr(2);
 
-        var stack = useCapture ? capture_stack : events_stack;
+        var stack = useCapture ? this.$captureStack : this.$eventsStack;
         if (!stack[eventName])
             stack[eventName] = [];
         if (stack[eventName].indexOf(callback) == -1)
             stack[eventName].unshift(callback);
-    }
+    };
 
     /**
      * Remove a function registered for an event.
      *
-     * @param  {String}   eventName the name of the event for which to unregister a function.
+     * @param  {String}   eventName the name of the event for which to unregister
+     *                              a function.
      * @param  {function} callback  the function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
-        var stack = useCapture ? capture_stack : events_stack;
+        var stack = useCapture ? this.$captureStack : this.$eventsStack;
         if (stack[eventName])
-            stack[eventName].remove(callback);
+            this.$removalQueue.push([stack[eventName], callback]);
     };
 
     /**
@@ -703,7 +846,7 @@ apf.Class = function(){
      * @return {Boolean} whether the event has listeners
      */
     this.hasEventListener = function(eventName){
-        return (events_stack[eventName] && events_stack[eventName].length > 0);
+        return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
 
     /**
@@ -713,43 +856,63 @@ apf.Class = function(){
      * @param {Boolean} deep whether the children of this element should be destroyed.
      * @method
      */
-    this.destroy = this.destroy || function(deep){
-        if (!this.$amlDestroyers) //@todo check why this happens
+    this.destroy = function(deep, clean){
+        //Remove from apf.all
+        if (typeof this.$uniqueId == "undefined" && this.nodeType != 2)
             return;
-
+        
+        //#ifdef __DEBUG
+        this.$amlLoaded    = false;
+        this.$amlDestroyed = true;
+        //#endif
+        
         if (this.$destroy)
             this.$destroy();
 
-        for (var i = this.$amlDestroyers.length - 1; i >= 0; i--)
-            this.$amlDestroyers[i].call(this);
-        this.$amlDestroyers = undefined;
+        this.dispatchEvent("DOMNodeRemoved");
+        this.dispatchEvent("DOMNodeRemovedFromDocument");
 
-        //Remove from apf.all
-        if (typeof this.uniqueId == "undefined")
-            return;
+        apf.all[this.$uniqueId] = undefined;
 
-        apf.all[this.uniqueId] = undefined;
-
-        if (!this.nodeFunc) { //If this is not a AmlNode, we're done.
+        if (!this.nodeFunc && this.nodeType != 2) { //If this is not a AmlNode, we're done.
             //Remove id from global js space
-            if (this.id || this.name)
-                self[this.id || this.name] = null;
+            try {
+                if (this.id || this.name)
+                    self[this.id || this.name] = null;
+            }
+            catch (ex) {}
             return;
         }
 
-        if (this.oExt && !this.oExt.isNative && this.oExt.nodeType == 1) {
-            this.oExt.oncontextmenu = this.oExt.host = null;
+        if (this.$ext && !this.$ext.isNative && this.$ext.nodeType == 1 && this.localName != "a") {
+            this.$ext.oncontextmenu = this.$ext.host = null;
+            if (clean) {
+                if (this.localName != "collection")
+                    this.$ext.parentNode.removeChild(this.$ext);
+            }
         }
-        if (this.oInt && !this.oExt.isNative && this.oInt.nodeType == 1)
-            this.oInt.host = null;
+        if (this.$int && !this.$int.isNative && this.$int.nodeType == 1 && this.localName != "a")
+            this.$int.host = null;
 
-        if (this.$aml && this.$aml.parentNode)
-            this.$aml.parentNode.removeChild(this.$aml);
+        //if (this.$aml && this.$aml.parentNode)
+            //this.$aml.parentNode.removeChild(this.$aml);
         this.$aml = null;
+
+        //Clear all children too
+        if (deep && this.childNodes) {
+            var nodes = this.childNodes;
+            for (i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i].destroy)
+                    nodes[i].destroy(true, clean && this.localName == "collection");
+            }
+            this.childNodes = null;
+        }
 
         //Remove from DOM tree if we are still connected
         if (this.parentNode && this.removeNode)
             this.removeNode();
+        else if (this.ownerElement && !this.ownerElement.$amlDestroyed)
+            this.ownerElement.removeAttributeNode(this);
 
         //Remove from focus list - Should be in AmlNode
         if (this.$focussable && this.focussable)
@@ -757,90 +920,50 @@ apf.Class = function(){
 
         //#ifdef __WITH_PROPERTY_BINDING
         //Remove dynamic properties
-        this.unbindAllProperties();
-        //#endif
-
-        //Clear all children too
-        if (deep && this.childNodes) {
-            var i, nodes = this.childNodes;
-            for (i = nodes.length - 1; i >= 0; i--) {
-                if (nodes[i].destroy)
-                    nodes[i].destroy(true);
+        /*var f, i, l, h;
+        for (prop in this.$funcHandlers) {
+            h = this.$funcHandlers[prop];
+            
+            //Remove any bounds if relevant
+            if (h && typeof h != "function") {
+                for (i = 0, l = h.length; i < l; i++) {
+                    (f = h[i]).amlNode.removeEventListener("prop." + f.prop, f.handler);
+                }
             }
-            this.childNodes = null;
+        }*/
+        //#endif
+        
+        if (this.attributes) {
+            var attr = this.attributes;
+            for (var i = attr.length - 1; i >= 0; i--) {
+                //#ifdef __WITH_PROPERTY_BINDING
+                this.$clearDynamicProperty(attr[i].nodeName);
+                //#endif
+                attr[i].destroy();
+            }
         }
 
         //#ifdef __DEBUG
-        if (deep !== false && this.childNodes) {
-            apf.console.warn("You have destroyed a Aml Node without destroying\
-                              it's children. Please be aware that if you don't\
-                              maintain a reference, memory might leak");
+        if (deep !== false && this.childNodes && this.childNodes.length) {
+            apf.console.warn("You have destroyed an Aml Node without destroying "
+                           + "it's children. Please be aware that if you don't "
+                           + "maintain a reference, memory might leak");
         }
         //#endif
         
-        //#ifdef __WITH_LANG_SUPPORT
-        for (var prop in this.$isMultiLang) {
-            apf.language.removeElement(this.$isMultiLang[prop][0], 
-                this.$isMultiLang[prop][1]);
-        }
-        
-        apf.language.clear(this.uniqueId);
-        //#endif
-
         //Remove id from global js space
-        if (this.id || this.name)
-            self[this.id || this.name] = null;
+        try {
+            if (this.id || this.name)
+                self[this.id || this.name] = null;
+        }
+        catch (ex) {}
         
         //#ifdef __WITH_NAMESERVER
-        apf.nameserver.remove(this.tagName, this);
+        apf.nameserver.remove(this.localName, this);
         //#endif
     };
-};
+})();
 
-/**
- * Implementation of W3C event object. An instance of this class is passed as
- * the first argument of any event handler. Per event it will contain different
- * properties giving context based information about the event.
- * @constructor
- * @default_private
- */
-apf.Event = function(name, data){
-    this.name = name;
-
-    // #ifdef __WITH_EVENT_BUBBLING
-    this.bubbles = false;
-    this.cancelBubble = false;
-    // #endif
-
-    /**
-     * Cancels the event if it is cancelable, without stopping further 
-     * propagation of the event. 
-     */
-    this.preventDefault = function(){
-        this.returnValue = false;
-    };
-
-    // #ifdef __WITH_EVENT_BUBBLING
-    /**
-     * Prevents further propagation of the current event. 
-     */
-    this.stopPropagation = function(){
-        this.cancelBubble = true;
-    };
-    // #endif
-
-    this.stop = function() {
-        this.returnValue = false;
-        // #ifdef __WITH_EVENT_BUBBLING
-        this.cancelBubble = true;
-        // #endif
-    };
-    
-    apf.extend(this, data);
-    //this.returnValue = undefined;
-};
-
-apf.implement(apf.Class);
-apf.Init.run('class');
-
+apf.extend(apf, new apf.Class().$init());
+apf.Init.run("class");
 // #endif

@@ -18,8 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JLABEL || __INC_ALL
-// #define __JBASESIMPLE 1
+// #ifdef __AMLLABEL || __INC_ALL
+// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying a text in the user interface, usually specifying
@@ -68,18 +68,23 @@
  *  <a:label ref="@text" />
  * </code>
  */
+apf.label = function(struct, tagName){
+    this.$init(tagName || "label", apf.NODE_VISIBLE, struct);
+};
 
-apf.label = apf.component(apf.NODE_VISIBLE, function(){
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+    );
+
     var _self = this;
     
     this.$focussable = false;
     var forElement;
     
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {
-        "main": [["caption", "text()"]]
-    };
-    // #endif
+    //#ifdef __WITH_CONVENIENCE_API
     
     /**
      * Sets the value of this element. This should be one of the values
@@ -87,7 +92,7 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
     
     /**
@@ -97,6 +102,8 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
     this.getValue = function(){
         return this.value;
     }
+    
+    //#endif
     
     /** 
      * @attribute {String} value the text displayed in the area defined by this 
@@ -109,7 +116,7 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("caption", "value", "for");
     this.$propHandlers["caption"] = 
     this.$propHandlers["value"]   = function(value){
-        this.oInt.innerHTML = value;
+        this.$int.innerHTML = value;
     };
     this.$propHandlers["for"] = function(value){
         forElement = typeof value == "string" ? self[value] : value;
@@ -117,28 +124,20 @@ apf.label = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "caption", this.oExt);
-        if (this.oInt.nodeType != 1) 
-            this.oInt = this.oInt.parentNode;
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "caption", this.$ext);
+        if (this.$int.nodeType != 1) 
+            this.$int = this.$int.parentNode;
         
-        this.oExt.onmousedown = function(){
+        this.$ext.onmousedown = function(){
             if (forElement && forElement.$focussable && forElement.focussable)
                 forElement.focus();
         }
     };
     
-    this.$loadAml = function(x){
-        if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.setProperty("value", x.firstChild.nodeValue.trim());
-        else
-            apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
-    };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    apf.BaseSimple
-)
+    this.$childProperty = "value";
+    
+}).call(apf.label.prototype = new apf.BaseSimple());
 
+apf.aml.setElement("label", apf.label);
 //#endif

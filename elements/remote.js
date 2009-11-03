@@ -52,7 +52,7 @@
  *
  *  <a:list id="lstPersons" model="mdlPersons" width="200" height="100">
  *      <a:bindings>
- *          <a:traverse select="person" />
+ *          <a:each select="person" />
  *          <a:caption select="text()" />
  *          <a:icon value="icoUsers.gif" />
  *      </a:bindings>
@@ -145,47 +145,56 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
  */
-apf.remote = function(name, xmlNode, parentNode){
-    this.name   = name;
-    this.lookup = {};
-    this.select = [];
-    this.models = [];
-    
-    //#ifdef __WITH_AMLDOM_FULL
-    this.parentNode = parentNode;
-    apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
-    //#endif
+apf.remote = function(struct, tagName){
+    this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+    this.lookup     = {};
+    this.select     = [];
+    this.models     = [];
+    this.queueTimer = null;
     
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;
     //#endif
-    
-    var _self = this;
+
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        match : 1
+    }, this.$attrExcludePropBind);
     
     this.sendChange = function(args, model){
-        if (!apf.xmldb.disableRSB)
+        if (apf.xmldb.disableRSB)
             return;
+
+        clearTimeout(this.queueTimer);
         
         var message = [this.buildMessage(args, model)];
         
         //#ifdef __DEBUG
-        apf.console.info('Sending RSB message\n' + apf.serialize(message));
+        apf.console.info("Sending RSB message\n" + apf.serialize(message));
         //#endif
         
-        this.transport.sendMessage(null, apf.serialize(message),
-            null, apf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
+        var _self = this;
+        this.queueMessage(args, model, this);
+        // use a timeout to batch consecutive calls into one RSB call
+        this.queueTimer = setTimeout(function() {
+            _self.processQueue();
+        });
+        //this.transport.sendRSB(apf.serialize(message));
     };
     
     this.buildMessage = function(args, model){
-        for (var i = 0; i < args.length; i++)
-            if(args[i] && args[i].nodeType) 
+        for (var i = 0, l = args.length; i < l; i++)
+            if (args[i] && args[i].nodeType)
                 args[i] = this.xmlToXpath(args[i], model.data);
         
         return {
             model     : model.name,
             args      : args,
             timestamp : new Date().toGMTString()
-        }
+        };
     };
     
     this.queueMessage = function(args, model, qHost){
@@ -198,31 +207,17 @@ apf.remote = function(name, xmlNode, parentNode){
     };
     
     this.processQueue = function(qHost){
-        if (!apf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
+        if (apf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
             return;
         
         //#ifdef __DEBUG
-        apf.console.info('Sending RSB message\n' + apf.serialize(qHost.rsbQueue));
+        apf.console.info("Sending RSB message\n" + apf.serialize(qHost.rsbQueue));
         //#endif
         
-        this.transport.sendMessage(null, apf.serialize(qHost.rsbQueue), 
-            null, apf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
+        this.transport.sendRSB(apf.serialize(qHost.rsbQueue));
         
         qHost.rsbQueue = [];
     };
-    
-    //#ifdef __WITH_OFFLINE
-    if (apf.offline.enabled) {
-        var queue = [];
-        apf.offline.addEventListener("afteronline", function(){
-            for (var i = 0; i < queue.length; i++) {
-                _self.receiveChange(queue[i]);
-            }
-            
-            queue.length = 0;
-        });
-    }
-    //#endif
     
     this.receiveChange = function(message){
         if (apf.xmldb.disableRSB)
@@ -239,23 +234,32 @@ apf.remote = function(name, xmlNode, parentNode){
         if (message.timestamp < this.discardBefore)
             return;
         
-        var model = apf.nameserver.get("model", message.model);
-        var q = message.args;
+        var model = apf.nameserver.get("model", message.model),
+            q     = message.args;
         
         //#ifdef __DEBUG
         if (!model) {
             //Maybe make this a warning?
             throw new Error(apf.formatErrorString(0, this, 
-                "Remote Smartbinding Received", "Could not find model when \
-                 receiving data for it with name '" + message.model + "'"));
+                "Remote Smartbinding Received", "Could not find model when "
+              + "receiving data for it with name '" + message.model + "'"));
         }
         //#endif
         
         //Maybe make this an error?
         var xmlNode = this.xpathToXml(q[1], model.data);
+        //#ifdef __DEBUG
+        if (!xmlNode) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Remote Smartbinding Received", "Could get XML node from model "
+              + "with Xpath '" + q[1] + "'"));
+        }
+        /*#else
         if (!xmlNode) return;
+        #endif*/
         
-        var disableRSB       = apf.xmldb.disableRSB;
+        var disableRSB       = apf.xmldb.disableRSB,
+            beforeNode;
         apf.xmldb.disableRSB = 2; //Feedback prevention
 
         switch (q[0]) {
@@ -270,12 +274,14 @@ apf.remote = function(name, xmlNode, parentNode){
                     this.xpathToXml(q[4], model.data), q[5]);
                 break;
             case "appendChild":
-                var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
+                beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
+                if (typeof q[2] == "string")
+                    q[2] = apf.getXml(q[2]);
                 apf.xmldb.appendChild(xmlNode, //@todo check why there's cleanNode here
                     apf.xmldb.cleanNode(q[2]), beforeNode, q[4], q[5]);
                 break;
             case "moveNode":
-                var beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
+                beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
                 var sNode = this.xpathToXml(q[2], model.data);
                 apf.xmldb.appendChild(xmlNode, sNode, beforeNode,
                     q[4], q[5]);
@@ -288,121 +294,58 @@ apf.remote = function(name, xmlNode, parentNode){
         apf.xmldb.disableRSB = disableRSB;
     };
     
-    this.xmlToXpath = apf.remote.xmlToXpath;
-    this.xpathToXml = apf.remote.xpathToXml;
+    this.xmlToXpath = apf.xmlToXpath;
+    this.xpathToXml = apf.xpathToXml;
     
-    //#ifdef __DEBUG
-    apf.console.info(name
-        ? "Creating remote [" + name + "]"
-        : "Creating implicitly assigned remote");
-    //#endif
-    
-    this.loadAml = function(x){
-        this.name = x.getAttribute("id");
-        this.$aml  = x;
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        //#ifdef __DEBUG
+        apf.console.info(this.id
+            ? "Creating remote [" + this.id + "]"
+            : "Creating implicitly assigned remote");
+        //#endif
+
+        var _self = this;
+
+        //#ifdef __WITH_OFFLINE
+        if (apf.offline.enabled) {
+            var queue = [];
+            apf.offline.addEventListener("afteronline", function(){
+                for (var i = 0, l = queue.length; i < l; i++)
+                    _self.receiveChange(queue[i]);
+
+                queue.length = 0;
+            });
+        }
+        //#endif
         
         /**
          * @attribute {String} transport the id of the teleport module instance 
          * that provides a means to sent change messages to other clients.
          */
-        this.transport = self[x.getAttribute("transport")];
-        this.transport.addEventListener('datachange', function(e){
-            var data = apf.unserialize(e.data); //@todo error check here.. invalid message
-            for (var i = 0; i < data.length; i++)
+        this.transport = self[this["transport"]];
+        this.transport.addEventListener("datachange", function(e){
+            var data = apf.unserialize(e.data),
+                i    = 0,
+                l    = data.length;//@todo error check here.. invalid message
+            for (; i < l; i++)
                 _self.receiveChange(data[i]);
         });
         
-        var nodes = x.childNodes;
+        /*var nodes = this.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) continue;
             
-            if (nodes[i].getAttribute("select")) 
+            if (nodes[i].getAttribute("select"))  //@todo apf3.0 this should become match
                 this.select.push(nodes[i].getAttribute("select"),
                     nodes[i].getAttribute("unique"));
             else 
                 this.lookup[nodes[i][apf.TAGNAME]] = nodes[i].getAttribute("unique");
-        }
-    };
-    
-    if (xmlNode)
-        this.loadAml(xmlNode);
-}
+        }*/
+    });
+}).call(apf.remote.prototype = new apf.AmlElement());
 
-//@todo this function needs to be 100% proof, it's the core of the system
-//for RSB: xmlNode --> Xpath statement
-apf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
-    if (!xmlNode) //@todo apf3.0
-        return "";
-    
-    if (useJid === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
-        return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
-            + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
-    }
+apf.aml.setElement("remote", apf.remote);
+apf.aml.setElement("unique", apf.BindingRule);
 
-    if (this.lookup && this.select) {
-        var def = this.lookup[xmlNode.tagName];
-        if (def) {
-            //unique should not have ' in it... -- can be fixed...
-            var unique = xmlNode.selectSingleNode(def).nodeValue;
-            return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
-        }
-        
-        for (var i = 0; i < this.select.length; i++) {
-            if (xmlNode.selectSingleNode(this.select[i][0])) {
-                var unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
-                return "//" + this.select[i][0] + "[" + this.select[i][1]
-                    + "='" + unique + "']";
-            }
-        }
-    }
-
-    if (xmlNode == xmlContext)
-        return ".";
-
-    if (!xmlNode.parentNode) {
-        //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null, 
-            "Converting XML to Xpath", 
-            "Error xml node without parent and non matching context cannot\
-             be converted to xml.", xmlNode));
-        //#endif
-        
-        return false;
-    }
-
-    var str = [], lNode = xmlNode;
-    if (lNode.nodeType == 2) {
-        str.push("@" + lNode.nodeName);
-        lNode = lNode.ownerElement || xmlNode.selectSingleNode("..");
-    }
-    
-    var id;
-    do {
-        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
-            + "[" + (useJid && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
-                ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.xmldb.getChildNumber(lNode, true) + 1))
-             + "]");
-        lNode = lNode.parentNode;
-    } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
-
-    return str.join("/");
-};
-    
-//for RSB: Xpath statement --> xmlNode
-apf.remote.xpathToXml = function(xpath, xmlNode){
-    if (!xmlNode) {
-        //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null, 
-            "Converting Xpath to XML", 
-            "Error context xml node is empty, thus xml node cannot \
-             be found for '" + xpath + "'"));
-        //#endif
-        
-        return false;
-    }
-    
-    return xmlNode.selectSingleNode(xpath);
-};
 
 // #endif

@@ -18,8 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JLIST || __JSELECT || __JSELECT1 || __INC_ALL
-// #define __JBASELIST 1
+// #ifdef __AMLLIST || __AMLSELECT || __AMLSELECT1 || __INC_ALL
+// #define __AMLBASELIST 1
 
 /**
  * Element displaying a skinnable list of options which can be selected.
@@ -42,16 +42,16 @@
  * Example:
  * A databound list with items loaded from an xml file.
  * <code>
- *  <a:list model="url:users.xml" traverse="user" caption="@name" />
+ *  <a:list model="users.xml" each="user" caption="@name" />
  * </code>
  * Example:
  * A databound list using the bindings element
  * <code>
- *  <a:list model="url:users.xml">
+ *  <a:list model="users.xml">
  *      <a:bindings>
  *          <a:caption  select="@name" />
  *          <a:css      select="self::node()[@type='friend']" value="friend" />
- *          <a:traverse select="users" />
+ *          <a:each select="users" />
  *      </a:bindings>
  *  </a:list>
  * </code>
@@ -78,13 +78,13 @@
  *              <img src="{img}" />
  *              <p>{decs}</p>
  *          ]]></a:caption>
- *          <a:traverse select="product" />
+ *          <a:each select="product" />
  *      </a:bindings>
  *  </a:list>
  *
  *  <a:script>
  *      function search(){
- *          mdlSearch.loadFrom("url:search.php?keyword=" + txtSearch.getValue());
+ *          mdlSearch.$loadFrom("search.php?keyword=" + txtSearch.getValue());
  *      }
  *  </a:script>
  * </code>
@@ -98,18 +98,28 @@
  *
  * @inherits apf.BaseList
  * @inherits apf.Rename
- * @inherits apf.DragDrop
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.thumbnail = 
-apf.select    = 
-apf.select1   = 
-apf.list      = apf.component(apf.NODE_VISIBLE, function(){
-    var _self = this;
+apf.thumbnail = function(struct, tagName){
+    this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
+};
 
+apf.select    = function(struct, tagName){
+    this.$init(tagName || "select", apf.NODE_VISIBLE, struct);
+};
+
+apf.select1   = function(struct, tagName){
+    this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
+};
+
+apf.list      = function(struct, tagName){
+    this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     // #ifdef __WITH_RENAME
     if (!apf.isIphone)
         this.implement(apf.Rename);
@@ -117,19 +127,19 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
-        if (!(this.$indicator || this.$selected))
+        if (!(this.$caret || this.$selected))
             return;
         
-        var x = this.$getLayoutNode("item", "caption", this.$indicator || this.$selected);
+        var x = this.$getLayoutNode("item", "caption", this.$caret || this.$selected);
         if (!x) 
             return;
         return x.nodeType == 1 ? x : x.parentNode;
     };
     // #endif
     
-    // #ifdef __JSUBMITFORM || __INC_ALL
+    // #ifdef __AMLSUBMITFORM || __INC_ALL
     this.addEventListener("afterselect", function(e){
-        if (this.hasFeature(__VALIDATION__)) 
+        if (this.hasFeature(apf.__VALIDATION__)) 
             this.validate(true);
     });
     // #endif
@@ -200,14 +210,8 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
+    //@todo apf3.0 retest this completely
     function $afterRenameMode(){
-        var sb = this.$getMultiBind();
-        if (!sb) 
-            return;
-        
-        //Make sure that the old value is removed and the new one is entered
-        sb.$updateSelection();
-        //this.reselect(this.selected);
     }
     
     //#ifdef __WITH_RENAME
@@ -227,7 +231,7 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
      *      <a:bindings>
      *          <a:caption select="text()" />
      *          <a:value select="text()" />
-     *          <a:traverse select="answer" />
+     *          <a:each select="answer" />
      *      </a:bindings>
      *      <a:actions>
      *          <a:rename select="self::node()[@custom='1']" />
@@ -250,7 +254,7 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
             this.$setClearMessage    = function(msg){
                 if (!this.moreItem)
                     this.$fill();
-                this.oInt.appendChild(this.moreItem);
+                this.$int.appendChild(this.moreItem);
             };
             this.$updateClearMessage = function(){}
             this.$removeClearMessage = function(){};
@@ -264,15 +268,15 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     function $xmlUpdate(e){
-        if (!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1)
-            this.oInt.appendChild(this.moreItem);
+        if ((!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1) && this.moreItem)
+            this.$int.appendChild(this.moreItem);
     }
     
     /*function $afterRenameMore(){
-        var caption = this.applyRuleSetOnNode("caption", this.indicator)
+        var caption = this.$applyBindRule("caption", this.caret)
         var xmlNode = this.findXmlNodeByValue(caption);
 
-        var curNode = this.indicator;
+        var curNode = this.caret;
         if (xmlNode != curNode || !caption) {
             if (xmlNode && !this.isSelected(xmlNode)) 
                 this.select(xmlNode);
@@ -287,7 +291,7 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
         //This is a hack
         if (e.xmlNode && this.isSelected(e.xmlNode) 
           && e.xmlNode.getAttribute('custom') == '1') {
-            this.setIndicator(e.xmlNode);
+            this.setCaret(e.xmlNode);
             this.selected = e.xmlNode;
             debugger;
             setTimeout(function(){
@@ -304,159 +308,43 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     this.addEventListener("keydown", this.$keyHandler, true);
     //#endif
     
-    /**** Drag & Drop ****/
-    
-    // #ifdef __WITH_DRAGDROP
-    var diffX, diffY, multiple;
-    this.$showDragIndicator = function(sel, e){
-        multiple = sel.length > 1;
-        
-        if (multiple) {
-            diffX = e.scrollX;
-            diffY = e.scrollY;
-        }
-        else {
-            diffX = -1 * e.offsetX;
-            diffY = -1 * e.offsetY;
-        }
-        
-        var prefix = this.oDrag.className.split(" ")[0]
-        this.$setStyleClass(this.oDrag, multiple
-            ? prefix + "_multiple" : "", [prefix + "_multiple"]);
-        
-        document.body.appendChild(this.oDrag);
-        if (!multiple)
-            this.$updateNode(this.selected, this.oDrag);
-        
-        return this.oDrag;
-    };
-    
-    this.$hideDragIndicator = function(success){
-        if (!multiple && !success) {
-            var pos = apf.getAbsolutePosition(this.$selected);
-            apf.tween.multi(this.oDrag, {
-                anim     : apf.tween.EASEIN,
-                steps    : 15,
-                interval : 10,
-                tweens   : [
-                    {type: "left", from: this.oDrag.offsetLeft, to: pos[0]},
-                    {type: "top",  from: this.oDrag.offsetTop,  to: pos[1]}
-                ],
-                onfinish : function(){
-                    _self.oDrag.style.display = "none";
-                }
-            });
-        }
-        else
-            this.oDrag.style.display = "none";
-    };
-    
-    this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX + diffX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top  = (e.clientY + diffY + (multiple ? 15 : 0)) + "px";// - this.oDrag.startY
-    };
-    
-    this.$initDragDrop = function(){
-        if (!this.$hasLayoutNode("dragindicator")) 
-            return;
-
-        this.oDrag = apf.xmldb.htmlImport(
-            this.$getLayoutNode("dragindicator"), document.body);
-
-        this.oDrag.style.zIndex   = 1000000;
-        this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor   = "default";
-        this.oDrag.style.display  = "none";
-    };
-    
-    this.$findValueNode = function(el){
-        if (!el) return null;
-
-        while(el && el.nodeType == 1 
-          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
-            el = el.parentNode;
-        }
-
-        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
-            ? el 
-            : null;
-    };
-    
-    var lastel;
-    this.$dragout  =
-    this.$dragdrop = function(el, dragdata, extra){
-        if (lastel)
-            this.$setStyleClass(lastel, "", ["dragDenied", "dragInsert",
-                "dragAppend", "selected", "indicate"]);
-        
-        var sel = this.$getSelection(true);
-        for (var i = 0, l = sel.length; i < l; i++) 
-            this.$setStyleClass(sel[i], "selected", ["dragDenied",
-                "dragInsert", "dragAppend", "indicate"]);
-        
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Drop"]);
-        
-        lastel = null;
-    };
-
-    this.$dragover = function(el, dragdata, extra){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Drop");
-        
-        //if (el == this.oExt)
-            //return;
-
-        var sel = this.$getSelection(true);
-        for (var i = 0, l = sel.length; i < l; i++) 
-            this.$setStyleClass(sel[i], "", ["dragDenied",
-                "dragInsert", "dragAppend", "selected", "indicate"]);
-        
-        if (lastel)
-            this.$setStyleClass(lastel, "", ["dragDenied",
-                "dragInsert", "dragAppend", "selected", "indicate"]);
-        
-        this.$setStyleClass(lastel = this.$findValueNode(el), extra 
-            ? (extra[1] && extra[1].getAttribute("action") == "insert-before" 
-                ? "dragInsert" 
-                : "dragAppend") 
-            : "dragDenied");
-    };
-    // #endif
-    
     /**** Init ****/
     
     this.$draw = function(){
-        this.appearance = this.$aml.getAttribute("appearance") || "compact";
-        var mode = this.$aml.getAttribute("mode");
+        this.appearance = this.getAttribute("appearance") || "compact";
+        var mode = this.getAttribute("mode");
 
-        if (this.tagName == "select" && (this.appearance == "full" 
+        //@todo apf3.0 checkmode, radiomode
+        /*if (this.localName == "select" && (this.appearance == "full" 
           || this.appearance == "minimal") || mode == "check") {
             this.$aml.setAttribute("mode", "check");
-            if (!this.$aml.getAttribute("skin")) {
+            if (!this.getAttribute("skin")) {
                 this.skinName = null;
                 this.skin = "checklist"
                 this.$loadSkin();
             }
         }
-        else if (this.tagName == "select1" && this.appearance == "full"
+        else if (this.localName == "select1" && this.appearance == "full"
           || mode == "radio") {
             this.$aml.setAttribute("mode", "radio");
-            if (!this.$aml.getAttribute("skin")) {
+            if (!this.getAttribute("skin")) {
                 this.skinName = null;
                 this.skin = "radiolist";
                 this.$loadSkin();
             }
         }
-        else if (this.tagName == "select1" && this.appearance == "compact") 
-            this.multiselect = false;
+        else if (this.localName == "select1" && this.appearance == "compact") 
+            this.multiselect = false;*/
         
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
         
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
-        this.oExt.onclick = function(e){
+        var _self = this;
+        this.$ext.onclick = function(e){
             _self.dispatchEvent("click", {
                 htmlEvent: e || event
             });
@@ -473,19 +361,22 @@ apf.list      = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.$loadAml = function(x){
-        if (this.$aml.childNodes.length) 
-            this.$loadInlineData(this.$aml);
     };
     
     this.$destroy = function(){
-        this.oExt.onclick = null;
+        if (this.$ext)
+            this.$ext.onclick = null;
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).implement(
-    // #ifdef __WITH_DRAGDROP
-    apf.DragDrop, 
-    // #endif
-    apf.BaseList
-);
+}).call(apf.list.prototype = new apf.BaseList());
+
+apf.thumbnail.prototype =
+apf.select.prototype    =
+apf.select1.prototype   = apf.list.prototype;
+
+apf.aml.setElement("thumbnail", apf.thumbnail);
+apf.aml.setElement("select",    apf.select);
+apf.aml.setElement("select1",   apf.select1);
+apf.aml.setElement("list",      apf.list);
 // #endif

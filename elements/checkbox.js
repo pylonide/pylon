@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __JCHECKBOX || __INC_ALL
+// #ifdef __AMLCHECKBOX || __INC_ALL
 // #define __WITH_PRESENTATION 1
-// #define __JBASEBUTTON 1
+// #define __AMLBASEBUTTON 1
 
 /**
  * Element displaying a clickable rectangle having two states which
@@ -40,11 +40,9 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
  * @inherits apf.BaseButton
- * @inherits apf.Validation
  * @inherits apf.XForms
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -63,15 +61,25 @@
  *  <a:checkbox ref="@answer" />
  * </code>
  */
-apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"main" : [["label","text()"]]};
-    // #endif
+apf.checkbox = function(struct, tagName){
+    this.$init(tagName || "checkbox", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_XFORMS
+        //apf.XForms
+        //#endif
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+    );
 
     //Options
     this.$notfromext = true;
     this.$focussable = true; // This object can get the focus
     this.checked     = false;
+    this.$values     = [1, 0]
 
     /**** Properties and Attributes ****/
 
@@ -88,9 +96,9 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
             && value.toString() == this.$values[0].toString());
 
         if (value !== null && value.toString() == this.$values[0].toString())
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         else
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
     };
 
     /**
@@ -98,8 +106,8 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["checked"] = function(value) {
         if (!this.$values) {
-            if (this.$aml.getAttribute("values"))
-                this.$propHandler["values"].call(this, this.$aml.getAttribute("values"));
+            if (this.getAttribute("values"))
+                this.$propHandler["values"].call(this, this.getAttribute("values"));
             else
                 this.$values = [false, true];
         }
@@ -111,8 +119,11 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      * the meaning of the checked state of this element is.
      */
     this.$propHandlers["label"] = function(value){
+        if (!this.$ext)
+            return;
+
         apf.setNodeValue(
-            this.$getLayoutNode("main", "label", this.oExt), value);
+            this.$getLayoutNode("main", "label", this.$ext), value);
     };
 
     /**
@@ -128,6 +139,8 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public Methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
@@ -135,7 +148,7 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.setValue = function(value){
         if (!this.$values) return;
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -149,29 +162,31 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
      * Sets the checked state and related value
      */
     this.check = function(){
-        this.setProperty("value", this.$values[0]);
+        this.setProperty("value", this.$values[0], false, true);
     };
 
     /**
      * Sets the unchecked state and related value
      */
     this.uncheck = function(){
-        this.setProperty("value", this.$values[1]);
+        this.setProperty("value", this.$values[1], false, true);
     };
+    
+    //#endif
 
     /**** Private state handling methods ****/
 
-    this.$clear = function(){
+    this.addEventListener("$clear", function(){
         this.setProperty("value", this.$values[1]);
-    }
+    });
 
     this.$enable = function(){
-        if (this.oInt) this.oInt.disabled = false;
+        if (this.$int) this.$int.disabled = false;
         this.$doBgSwitch(1);
     };
 
     this.$disable = function(){
-        if (this.oInt) this.oInt.disabled = true;
+        if (this.$int) this.$int.disabled = true;
         this.$doBgSwitch(4);
     };
 
@@ -179,8 +194,8 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
         if (this.disabled) return;
 
         this.$doBgSwitch(this.states[state]);
-        this.$setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
-            [this.baseCSSname + "Down", this.baseCSSname + "Over"]);
+        this.$setStyleClass(this.$ext, (state != "Out" ? this.$baseCSSname + state : ""),
+            [this.$baseCSSname + "Down", this.$baseCSSname + "Over"]);
         this.state = state; // Store the current state so we can check on it coming here again.
 
         this.dispatchEvent(strEvent, e);
@@ -194,11 +209,12 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
     this.$clickHandler = function(){
         //this.checked = !this.checked;
         this.change(this.$values[(!this.checked) ? 0 : 1]);
-        
+
         //#ifdef __WITH_VALIDATION
-        this.validate(true);
+        if (this.validate) //@todo rewrite button
+            this.validate(true);
         //#endif
-        
+
         return true;
     };
 
@@ -206,38 +222,21 @@ apf.checkbox = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "input", this.oExt);
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "input", this.$ext);
 
         this.$setupEvents();
     };
 
-    this.$loadAml = function(x){
-        if (!this.label && x.firstChild)
-            this.setProperty("label", x.firstChild.nodeValue);
-
-        if (this.$values === undefined)
-            this.$values = [1, 0];
-    };
+    this.$childProperty = "label";
 
     //#ifdef __WITH_SKIN_CHANGE
-    this.$skinchange = function(){
+    this.addEventListener("$skinchange", function(){
         if (this.label)
             this.$propHandlers["label"].call(this, this.label);
-    }
+    })
     //#endif
-}).implement(
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    // #endif
-    apf.Presentation,
-    apf.BaseButton
-);
+}).call(apf.checkbox.prototype = new apf.BaseButton());
 
+apf.aml.setElement("checkbox", apf.checkbox);
 // #endif

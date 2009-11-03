@@ -19,293 +19,415 @@
  *
  */
 
-/* ***************************************************************
-**
-**      Bootloader for Ajax.org Platform
-**
-**      First include apf.js, then include this file (loader.js)
-**      Then just go about it as you would with the packaged version
-**      Adapt this file to include your preferred modules
-**
-****************************************************************/
+/**
+ * Bootloader for Ajax.org Platform
+ *
+ * Include apf.js, then just go about it as you would with the 
+ * packaged version. Adapt this file to include your preferred modules
+ */
 
 // #ifndef __PACKAGED
-if (!apf.basePath) {
-    var snodes = document.getElementsByTagName("script");
-    for (var src, i = 0; i < snodes.length; i++) {
-        src = snodes[i].getAttribute("src");
-        if (src && src.match(/^(.*)loader\.js$/)) {
-            apf.basePath = RegExp.$1;
-            break;
-        }
-    }
-    
-    if (!apf.basePath)
-        apf.basePath = "./";
+
+if (location.protocol != "file:") {
+    apf.console.warn("You are serving multiple files from a (local)\
+           webserver - please consider using the file:// protocol to \
+           load your files, because that will make your application \
+           load several times faster.\
+           On a webserver, we recommend using a release or debug build \
+           of Ajax.org Platform.");
 }
 
-apf.Modules = [
-    "DataBinding",
-    "AmlElement",
-    "AmlParser",
-    "Presentation",
-    "window",
-    "XmlDatabase"
-];
-apf.Elements = [
-    "_base/basebutton",
-    "_base/baselist",
-    "_base/basesimple",
-    "_base/basetab",
-    "_base/basestatebuttons",
+apf.$loader
+    .setGlobalDefaults({
+        BasePath: apf.basePath, 
+        //AlwaysPreserveOrder: true,
+        AllowDuplicates : true
+        //UsePreloading : false
+    })
 
-    "actiontracker",
-    "accordion",
-    "appsettings",
-    "audio",
-    "bar",
-    "browser",
-    "button",
-    "calendar",
-    "caldropdown",
-    "chart",
-    //"presenter",
-    "checkbox",
-    "collection",
-    "colorpicker",
-    //"container",
-    "datagrid",
-    //"datastore",
-    "divider",
-    //"draw",
-    "dropdown",
-    "editor",
-    "errorbox",
-    "upload",
-    "flashplayer",
-    "flowchart",
-    "frame",
-    "table",
-    "htmlwrapper",
-    "hbox",
-    "insert",
-    "jslt",
-    "label",
-    //"layoutbuilder",
-    "list",
-    "menu",
-    "modalwindow",
-    "model",
-    "notifier",
-    "palette",
-    "img",
-    "pager",
-    "portal",
-    "progressbar",
-    "radiobutton",
-    "remote",
-    "repeat",
-    //"richtexteditor",
-    "repeat",
-    "slider",
-    "slideshow",
-    "smartbinding",
-    "spinner",
-    "splitter",
-    "state",
-    "statusbar",
-    "submitform",
-    "tab",
-    "teleport",
-    "template",
-    "text",
-    "textbox",
-    "toc",
-    "toolbar",
-    "tree",
-    "markupedit",
-    "validation",
-    "video",
-    "xslt",
+apf.$x = apf.$loader
+    .script(
+        "core/class.js",
+    
+        "core/crypto/base64.js",
+        "core/crypto/md5.js",
+    
+        "core/lib/util/abstractevent.js",
+        "core/lib/util/utilities.js",
+        "core/lib/util/color.js",
+        "core/lib/util/cookie.js",
+        "core/lib/util/style.js",
+        "core/lib/util/ecmaext.js",
+        "core/lib/util/flash.js",
+        "core/lib/util/hotkey.js",
+        "core/lib/util/iepngfix.js",
+        "core/lib/util/json.js",
+        "core/lib/util/nameserver.js",
+        "core/lib/util/plane.js",
+        "core/lib/util/popup.js",
+        "core/lib/util/silverlight.js",
+        "core/lib/util/xml.js",
+        "core/lib/util/xmldiff.js",
+    
+        "core/lib/tween.js",
+        "core/lib/date.js",
+        "core/lib/data.js",
+        "core/lib/flow.js",
+        
+        "core/lib/history.js",
+        "core/lib/html.js",
+        "core/lib/layout.js",
+        "core/lib/printer.js",
+        "core/lib/queue.js",
+        "core/lib/resize.js",
+        "core/lib/selection.js",
+        "core/lib/sort.js",
+        "core/lib/skins.js",
+        "core/lib/language.js",
+        "core/lib/xmldb.js",
+        
+        "core/lib/teleport/http.js", // for simple HTTP transactions
+        "core/lib/teleport/iframe.js", // for IE secure environments
+        
+        "core/lib/draw.js",
+        "core/lib/draw/canvas.js",
+        "core/lib/draw/vml.js",
+        "core/lib/draw/chartdraw.js",
+        
+        "core/browsers/is_gecko.js",
+        "core/browsers/is_ie.js",
+        "core/browsers/is_opera.js",
+        "core/browsers/is_safari.js",
+        "core/browsers/non_ie.js",
+        "core/browsers/is_gears.js"
+    )
+    .wait()
+    .script(
+        "core/window.js",
+        "core/lib/config.js",
+        
+        "core/lib/offline.js",
+        "core/lib/storage.js",
+    
+        "core/parsers/xpath.js",
+        //"parsers/jslt_2.0.js",
+        "core/parsers/livemarkup.js",
+        "core/parsers/js.js",
+        "core/parsers/url.js",
+        
+        "core/markup/domparser.js",
+        /*"markup/html5.js",
+        "core/markup/xforms.js",*/
+        "core/markup/xslt/xslt.js",
+        
+        "core/markup/aml.js",
+        "core/markup/xhtml.js",
+        "core/markup/xsd.js"
+    )
+    .wait()
+    .script(
+        "core/lib/offline/transactions.js",
+        "core/lib/offline/models.js",
+        "core/lib/offline/state.js",
+        "core/lib/offline/queue.js",
+        "core/lib/offline/detector.js",
+        "core/lib/offline/application.js",
+        "core/lib/offline/gears.js",
+    
+        "core/lib/storage/air.js",
+        "core/lib/storage/air.file.js",
+        "core/lib/storage/air.sql.js",
+        "core/lib/storage/flash.js",
+        "core/lib/storage/gears.js",
+        "core/lib/storage/html5.js",
+        "core/lib/storage/memory.js",
+        //"lib/storage/deskrun.js",
+        //"lib/storage/deskrun.file.js",
+        //"lib/storage/deskrun.sql.js",
+    
+        "core/markup/aml/node.js"
+    )
+    .wait()
+    .script(
+        "core/markup/aml/element.js"
+    )
+    .wait()
+    .script(
+        "core/markup/aml/characterdata.js",
+        "core/markup/aml/text.js",
+        "core/markup/aml/namednodemap.js",
+        "core/markup/aml/attr.js",
+        "core/markup/aml/cdatasection.js",
+        "core/markup/aml/comment.js",
+        "core/markup/aml/configuration.js",
+        "core/markup/aml/document.js",
+        "core/markup/aml/documentfragment.js",
+        "core/markup/aml/event.js",
+        "core/markup/aml/textrectangle.js",
+        "core/markup/aml/processinginstruction.js",
+        
+        "core/markup/xhtml/element.js",
+        "core/markup/xsd/element.js"
+    )
+    .wait()
+    .script(
+        "core/markup/xhtml/ignore.js",
+        "core/markup/xhtml/option.js",
+        "core/markup/xhtml/body.js",
+        "core/markup/xhtml/html.js",
+        "core/markup/xhtml/skipchildren.js",
+        
+        "core/markup/xinclude.js",
+        "core/markup/xinclude/include.js",
+        //"markup/xinclude/fallback.js",
+        
+        "core/markup/xsd/enumeration.js",
+        "core/markup/xsd/fractiondigits.js",
+        "core/markup/xsd/length.js",
+        "core/markup/xsd/list.js",
+        "core/markup/xsd/maxexclusive.js",
+        "core/markup/xsd/maxinclusive.js",
+        "core/markup/xsd/maxlength.js",
+        "core/markup/xsd/maxscale.js",
+        "core/markup/xsd/minexclusive.js",
+        "core/markup/xsd/mininclusive.js",
+        "core/markup/xsd/minlength.js",
+        "core/markup/xsd/minscale.js",
+        "core/markup/xsd/pattern.js",
+        "core/markup/xsd/restriction.js",
+        "core/markup/xsd/schema.js",
+        "core/markup/xsd/simpletype.js",
+        "core/markup/xsd/totaldigits.js",
+        "core/markup/xsd/union.js",
+        
+        "core/debug/debug.js",
+        "core/debug/debugwin.js",
+        //"debug/profiler.js",
+    
+        "core/baseclasses/alignment.js",
+        "core/baseclasses/anchoring.js",
+        "core/baseclasses/guielement.js",
+        "core/baseclasses/interactive.js",
+        "core/baseclasses/childvalue.js",
+        "core/baseclasses/cache.js",
+        "core/baseclasses/presentation.js",
+        
+        "core/baseclasses/databinding.js",
+        "core/baseclasses/databinding/standard.js",
+        "core/baseclasses/databinding/multiselect.js",
+        "core/baseclasses/validation.js",
+        
+        "core/baseclasses/dataaction.js",
+        "core/baseclasses/delayedrender.js",
+        "core/baseclasses/docking.js",
+        "core/baseclasses/dragdrop.js",
+        "core/baseclasses/focussable.js",
+        "core/baseclasses/media.js",
+        "core/baseclasses/multicheck.js",
+        "core/baseclasses/multiselect.js",
+        "core/baseclasses/rename.js",
+        "core/baseclasses/teleport.js",
+        "core/baseclasses/transaction.js",
+        "core/baseclasses/virtualviewport.js",
+        //"baseclasses/xforms.js",
+        "core/baseclasses/contenteditable.js",
+        "core/baseclasses/contenteditable2.js",
+        
+        "core/baseclasses/basebutton.js",
+        "core/baseclasses/baselist.js",
+        "core/baseclasses/basesimple.js",
+        "core/baseclasses/basetab.js",
+        "core/baseclasses/basestatebuttons.js",
+    
+        "core/baseclasses/contenteditable/anchor.js",
+        "core/baseclasses/contenteditable/blockquote.js",
+        "core/baseclasses/contenteditable/charmap.js",
+        "core/baseclasses/contenteditable/clipboard.js",
+        "core/baseclasses/contenteditable/code.js",
+        "core/baseclasses/contenteditable/color.js",
+        "core/baseclasses/contenteditable/datetime.js",
+        "core/baseclasses/contenteditable/directions.js",
+        "core/baseclasses/contenteditable/emotions.js",
+        "core/baseclasses/contenteditable/fontbase.js",
+        "core/baseclasses/contenteditable/fontstyle.js",
+        "core/baseclasses/contenteditable/help.js",
+        "core/baseclasses/contenteditable/hr.js",
+        "core/baseclasses/contenteditable/image.js",
+        "core/baseclasses/contenteditable/links.js",
+        "core/baseclasses/contenteditable/list.js",
+        "core/baseclasses/contenteditable/media.js",
+        "core/baseclasses/contenteditable/printing.js",
+        "core/baseclasses/contenteditable/search.js",
+        "core/baseclasses/contenteditable/subsup.js",
+        "core/baseclasses/contenteditable/tables.js",
+        "core/baseclasses/contenteditable/visualaid.js"
+    )
+    .wait()
+    .script(
+        "elements/accordion.js",
+        "elements/actions.js",
+        "elements/actionrule.js",
+        "elements/actiontracker.js",
+        "elements/application.js",
+        "elements/appsettings.js",
+        "elements/audio.js",
+        "elements/audio/type_flash.js",
+        "elements/auth.js",
+        "elements/axis.js",
+        "elements/bar.js",
+        "elements/bindings.js",
+        "elements/bindingrule.js",
+        "elements/body.js",
+        "elements/browser.js",
+        "elements/button.js",
+        "elements/calendar.js",
+        "elements/caldropdown.js",
+        "elements/chart.js",
+        "elements/checkbox.js",
+        "elements/collection.js",
+        //"colorpicker.js",
+        "elements/colorpicker2.js",
+        "elements/datagrid.js",
+        "elements/defaults.js",
+        "elements/divider.js",
+        "elements/dropdown.js",
+        "elements/editor.js",
+        "elements/errorbox.js",
+        "elements/flashplayer.js",
+        "elements/flowchart.js",
+        "elements/frame.js",
+        "elements/graph.js",
+        "elements/hbox.js",
+        "elements/iconmap.js",
+        "elements/img.js",
+        "elements/item.js",
+        "elements/label.js",
+        "elements/list.js",
+        "elements/loader.js",
+        "elements/menu.js",
+        "elements/modalwindow.js",
+        "elements/modalwindow/widget.js",
+        "elements/model.js",
+        "elements/notifier.js",
+        "elements/page.js",
+        "elements/pager.js",
+        "elements/palette.js",
+        "elements/portal.js",
+        "elements/progressbar.js",
+        "elements/propedit.js",
+        "elements/radiobutton.js",
+        "elements/remote.js",
+        "elements/script.js",
+        "elements/scrollbar.js",
+        "elements/skin.js",
+        "elements/slider.js",
+        "elements/slideshow.js",
+        "elements/smartbinding.js",
+        "elements/source.js",
+        "elements/spinner.js",
+        "elements/splitter.js",
+        "elements/state.js",
+        "elements/state-group.js",
+        "elements/statusbar.js",
+        "elements/style.js",
+        "elements/tab.js",
+        "elements/table.js",
+        "elements/teleport.js",
+        "elements/template.js",
+        "elements/text.js",
+        "elements/textbox.js",
+        "elements/textbox/masking.js",
+        "elements/textbox/autocomplete.js",
+        "elements/toc.js",
+        "elements/toolbar.js",
+        "elements/tree.js",
+        "elements/upload.js",
+        
+        "elements/rpc.js",             // RPC Baseclass (needs HTTP class)
+        "elements/method.js",
+        "elements/param.js",
+    
+        "elements/video.js",
+        
+        
+        "elements/webdav.js",
+    
+        "elements/xmpp.js"             // XMPP class providing the XMPP comm layer
+        /*
+        "elements/repeat.js",
+        "elements/submitform.js",
+        "elements/markupedit.js",
+        "elements/validation"*/
+    )
+    .wait()
+    .script(
+        //RPC extensions (all need rpc.js)
+        "elements/rpc/xmlrpc.js",      // XML-RPC
+        //"rpc/soap.js",      // SOAP
+        "elements/rpc/jsonrpc.js",     // JSON
+        //"rpc/jphp.js",      // JPHP
+        "elements/rpc/cgi.js",         // CGI
+        "elements/rpc/rest.js",        // REST
+        "elements/rpc/yql.js",         // YQL
+        
+        "elements/video/type_flv.js",
+        "elements/video/type_qt.js",
+        "elements/video/type_silverlight.js",
+        "elements/video/type_vlc.js",
+        "elements/video/type_wmp.js",
+        
+        "elements/xmpp/muc.js",
+        "elements/xmpp/roster.js",
+        
+        "elements/bindingdndrule.js",
+        "elements/bindingloadrule.js",
+        "elements/bindingcolumnrule.js",
+        //"bindingcolorrule.js",
+        "elements/bindingseriesrule.js",
+        "elements/bindingeachrule.js",
+        "processinginstructions/livemarkup.js"
+    )  
+    
+    //Let's start APF
+    .wait(function(){
+        apf.start();
+    })
+    
+    .script(apf.$required);
 
-    "appsettings/iepngfix",
+apf.require = function(){
+    var dir = apf.getDirname(location.href), req = [];
+    for (var i = 0; i < arguments.length; i++) {
+        apf.$x.script(apf.getAbsolutePath(dir, arguments[i]));
+    }
+}
 
-    "audio/type_flash",
-
-    "textbox/masking",
-    "textbox/autocomplete",
-
-    "modalwindow/widget",
-
-    "video/type_flv",
-    "video/type_qt",
-    "video/type_silverlight",
-    //"video/type_vlc",
-    "video/type_wmp"
-];
-apf.KernelModules = [
-    "class.js",
-    "component.js",
-    "datainstructions.js",
-    "window.js",
-    "xmldatabase.js",
-
-    "crypto/base64.js",
-    "crypto/md5.js",
-
-    "lib/util/abstractevent.js",
-    "lib/util/utilities.js",
-    "lib/util/cookie.js",
-    "lib/util/style.js",
-    "lib/util/dragmode.js",
-    "lib/util/ecmaext.js",
-    "lib/util/flash.js",
-    "lib/util/hotkey.js",
-    "lib/util/json.js",
-    "lib/util/nameserver.js",
-    "lib/util/plane.js",
-    "lib/util/popup.js",
-    "lib/util/silverlight.js",
-    "lib/util/xml.js",
-
-    "lib/tween.js",
-    "lib/colors.js",
-    "lib/date.js",
-    "lib/flow.js",
-    "lib/history.js",
-    "lib/layout.js",
-    "lib/printer.js",
-    "lib/resize.js",
-    "lib/scrollbar.js",
-    "lib/selection.js",
-    "lib/sort.js",
-    "lib/draw.js",
-    "lib/draw_canvas.js",
-    "lib/draw_vml.js",
-    "lib/chart_draw.js",
-
-    //"lib/sql.js",
-    //"lib/vector.js",
-    "lib/auth.js",
-
-    "lib/offline.js",
-    "lib/offline/transactions.js",
-    "lib/offline/models.js",
-    "lib/offline/state.js",
-    "lib/offline/queue.js",
-    "lib/offline/detector.js",
-    "lib/offline/application.js",
-    "lib/offline/gears.js",
-
-    "lib/storage.js",
-    "lib/storage/air.js",
-    "lib/storage/air.file.js",
-    "lib/storage/air.sql.js",
-    "lib/storage/flash.js",
-    "lib/storage/gears.js",
-    "lib/storage/html5.js",
-    "lib/storage/memory.js",
-    //"lib/storage/deskrun.js",
-    //"lib/storage/deskrun.file.js",
-    //"lib/storage/deskrun.sql.js",
-
-    "browsers/is_gecko.js",
-    "browsers/is_ie.js",
-    "browsers/is_opera.js",
-    "browsers/is_safari.js",
-    "browsers/non_ie.js",
-    "browsers/is_gears.js",
-
-    "parsers/xpath.js",
-    "parsers/xslt.js",
-    "parsers/jslt.js",
-    "parsers/js.js",
-    "parsers/url.js",
-    "parsers/xsd.js",
-    "parsers/aml.js",
-    "parsers/html.js",
-
-    "debug/debug.js",
-    "debug/debugwin.js",
-    "debug/profiler.js",
-
-    "node/amlelement.js",
-    "node/alignment.js",
-    "node/anchoring.js",
-    "node/cache.js",
-    "node/contenteditable.js",
-    "node/contenteditable2.js",
-    "node/databinding.js",
-    "node/delayedrender.js",
-    "node/docking.js",
-    "node/dragdrop.js",
-    "node/editmode.js",
-    "node/amldom.js",
-    "node/media.js",
-    "node/multicheck.js",
-    "node/multilevelbinding.js",
-    "node/multiselect.js",
-    "node/presentation.js",
-    "node/rename.js",
-    "node/transaction.js",
-    "node/validation.js",
-    "node/virtualviewport.js",
-    "node/xforms.js",
-    "node/interactive.js",
-
-    "node/plugins/anchor.js",
-    "node/plugins/blockquote.js",
-    "node/plugins/charmap.js",
-    "node/plugins/clipboard.js",
-    "node/plugins/code.js",
-    "node/plugins/color.js",
-    "node/plugins/datetime.js",
-    "node/plugins/directions.js",
-    "node/plugins/emotions.js",
-    "node/plugins/fontbase.js",
-    "node/plugins/fontstyle.js",
-    "node/plugins/help.js",
-    "node/plugins/hr.js",
-    "node/plugins/image.js",
-    "node/plugins/links.js",
-    "node/plugins/list.js",
-    "node/plugins/media.js",
-    "node/plugins/printing.js",
-    "node/plugins/search.js",
-    "node/plugins/subsup.js",
-    "node/plugins/tables.js",
-    "node/plugins/visualaid.js"
-];
-apf.TelePortModules = [
-    "http.js",            // for simple HTTP transactions
-    //"socket.js",        // APF HTTP Socket Implementation
-    //"poll.js",          // APF Polling Engine
-    "rpc.js",             // RPC Baseclass (needs HTTP class)
-    "xmpp.js",            // XMPP class providing the XMPP comm layer
-    "webdav.js",
-
-    "ext/xmpp_muc.js",
-    "ext/xmpp_roster.js",
-
-    //RPC extensions (all need rpc.js)
-    "ext/xmlrpc.js",      // XML-RPC
-    //"ext/soap.js",      // SOAP
-    "ext/jsonrpc.js",     // JSON
-    //"ext/jphp.js",      // JPHP
-    "ext/cgi.js",         // CGI
-    "ext/rest.js"         // REST
-]
-
+//Conditional compilation workaround... (can this be improved??)
+/*if (0 && document.all) {
+    var oldWinError = window.onerror;
+    window.onerror = function(m){
+        if (!arguments.caller)
+            return true;
+    }
+}
 apf.Init.addConditional(function(){
+    if (0 && document.all) //Conditional compilation workaround... (can this be improved??)
+        window.onerror = oldWinError;
+    
     apf.dispatchEvent("domready");
-}, null, ["body", "class"]);
+}, null, ["body", "class"]);*/
 
 /*if(document.body)
-    apf.Init.run('body');
+    apf.Init.run("body");
 else*/
     apf.addDomLoadEvent(function(){apf.Init.run('body');});
 
-//Load depencies & start
-apf.startDependencies();
+//A way to prevent parsing body
+/*window.onerror = function(){
+    window.onerror = null;
+    return true;
+}
+
+document.documentElement.appendChild(document.createElement("body"));*/
 
 // #endif

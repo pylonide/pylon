@@ -25,19 +25,16 @@
  * @constructor
  * @private
  */
+apf.splitter = function(struct, tagName){
+    this.$init(tagName || "splitter", apf.NODE_VISIBLE, struct);
+    
+    // #ifdef __WITH_PLANE
+    apf.plane.init();
+    // #endif
+};
 
-apf.splitter = function(pHtmlNode){
-    apf.register(this, "splitter", apf.NODE_VISIBLE);/** @inherits apf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    var amlNode      = this;
+(function() {
     this.$focussable = true; // This object can get the focus
-    
-    /* ***********************
-            Inheritance
-    ************************/
-    this.implement(apf.Presentation); /** @inherits apf.Presentation */
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -61,10 +58,10 @@ apf.splitter = function(pHtmlNode){
                 pos        : "top"
               };
         
-        this.oExt.offsetTop; //@weird somehow this will fix a problem in IE8
+        this.$ext.offsetTop; //@weird somehow this will fix a problem in IE8
         
-        var amlNode  = this.refNode;
-        var htmlNode = this.refHtml;
+        this.$amlNode = this.refNode;
+        var htmlNode  = this.refHtml;
 
         var v          = apf.layout.vars;
         var oItem      = this.oItem;
@@ -92,7 +89,7 @@ apf.splitter = function(pHtmlNode){
                 }
             }
             
-            var diff  = this.oExt[b.offsetPos] - itemStart - itemSize;
+            var diff  = this.$ext[b.offsetPos] - itemStart - itemSize;
             var rEach = (rSize - diff)/rTotal;
             
             for (var i = 0; i < oItem.stackId; i++) {
@@ -109,8 +106,8 @@ apf.splitter = function(pHtmlNode){
             var isNumber     = oItem[b.fsize] ? oItem[b.fsize].match(/^\d+$/) : false;
             var isPercentage = oItem[b.fsize] ? oItem[b.fsize].match(/^([\d\.]+)\%$/) : false;
             if (isNumber || isPercentage || !oItem[b.fsize]) {
-                var diff      = this.oExt[b.offsetPos] - itemStart - itemSize;
-                var newHeight = this.oExt[b.offsetPos] - itemStart;
+                var diff      = this.$ext[b.offsetPos] - itemStart - itemSize;
+                var newHeight = this.$ext[b.offsetPos] - itemStart;
                 
                 for (var total = 0, size = 0, i = oItem.stackId + 1; i < row.length; i++) {
                     if (!row[i][b.fsize]) {
@@ -167,14 +164,14 @@ apf.splitter = function(pHtmlNode){
 
         if (needRecalc) {
             /*
-            var l = apf.layout.layouts[this.oExt.parentNode.getAttribute("id")];
+            var l = apf.layout.layouts[this.$ext.parentNode.getAttribute("id")];
             apf.layout.compileAlignment(l.root);
-            apf.layout.activateRules(this.oExt.parentNode);
+            apf.layout.activateRules(this.$ext.parentNode);
 
             */
             
-            apf.layout.compile(this.oExt.parentNode);
-            apf.layout.activateRules(this.oExt.parentNode);
+            apf.layout.compile(this.$ext.parentNode);
+            apf.layout.activateRules(this.$ext.parentNode);
             
             if (apf.hasSingleRszEvent)
                 apf.layout.forceResize();
@@ -182,54 +179,18 @@ apf.splitter = function(pHtmlNode){
             return;
         }
 
-        apf.layout.forceResize(this.oExt.parentNode);
+        apf.layout.forceResize(this.$ext.parentNode);
     };
     
-    this.onmouseup = function(){
-        amlNode.$setStyleClass(amlNode.oExt, "", ["moving"]);
-
-        // #ifdef __WITH_PLANE
-        apf.plane.hide();
-        // #endif
-
-        amlNode.update();
-        amlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
-        
-        apf.dragmode.clear();
-    };
-    
-    this.onmousemove = function(e){
-        if(!e) e = event;
-
-        if (amlNode.type == "vertical") {
-            if (e.clientX >= 0) {
-                var pos = apf.getAbsolutePosition(amlNode.oExt.offsetParent);
-                amlNode.oExt.style.left = (Math.min(amlNode.max,
-                    Math.max(amlNode.min, (e.clientX - pos[0]) - amlNode.tx))) + "px";
-            }
-        }
-        else {
-            if (e.clientY >= 0) {
-                var pos = apf.getAbsolutePosition(amlNode.oExt.offsetParent);
-                amlNode.oExt.style.top = (Math.min(amlNode.max,
-                    Math.max(amlNode.min, (e.clientY - pos[1]) - amlNode.ty))) + "px";
-            }
-        }
-        
-        e.returnValue  = false;
-        e.cancelBubble = true;
-    };
-
     /* *********
         INIT
     **********/
-    //this.implement(apf.AmlElement); /** @inherits apf.AmlElement */
+    //this.implement(apf.GuiElement); /** @inherits apf.GuiElement */
     
-    var lastinit, sizeArr, verdiff, hordiff;
     this.init = function(size, refNode, oItem){
-        /*var li = size + min + max + (refNode.uniqueId || refNode);
-        if(li == lastinit) return;
-        lastinit = li;*/
+        /*var li = size + min + max + (refNode.$uniqueId || refNode);
+        if(li == this.$lastinit) return;
+        this.$lastinit = li;*/
         this.min     = 0;
         this.max     = 1000000;
         this.size    = parseInt(size) || 3;
@@ -241,7 +202,7 @@ apf.splitter = function(pHtmlNode){
             if (typeof refNode != "object")
                 refNode = apf.lookup(refNode);
             this.refNode = refNode;
-            this.refHtml = this.refNode.oExt;
+            this.refHtml = this.refNode.$ext;
             pNode        = this.refHtml.parentNode;
 
             oItem        = refNode.aData.calcData;
@@ -250,24 +211,24 @@ apf.splitter = function(pHtmlNode){
             pNode = oItem.pHtml;
         
         this.oItem = oItem;
-        if (pNode && pNode != this.oExt.parentNode)
-            pNode.appendChild(this.oExt);
+        if (pNode && pNode != this.$ext.parentNode)
+            pNode.appendChild(this.$ext);
         
-        var diff = apf.getDiff(this.oExt);
-        verdiff  = diff[0];
-        hordiff  = diff[1];
-        sizeArr  = [];
+        var diff = apf.getDiff(this.$ext);
+        this.$verdiff  = diff[0];
+        this.$hordiff  = diff[1];
+        this.$sizeArr  = [];
         
         this.type = oItem.parent.vbox ? "horizontal" : "vertical";
         
-        var layout = apf.layout.get(this.oExt.parentNode).layout;
-        var name   = "splitter" + this.uniqueId;
-        layout.addRule("var " + name + " = apf.lookup(" + this.uniqueId + ").oExt");
+        var layout = apf.layout.get(this.$ext.parentNode).layout;
+        var name   = "splitter" + this.$uniqueId;
+        layout.addRule("var " + name + " = apf.lookup(" + this.$uniqueId + ").$ext");
         
         var vleft   = [name + ".style.left = "];
         var vtop    = [name + ".style.top = "];
-        var vwidth  = [name + ".style.width = -" + hordiff + " + "];
-        var vheight = [name + ".style.height = -" + verdiff + " + "];
+        var vwidth  = [name + ".style.width = -" + this.$hordiff + " + "];
+        var vheight = [name + ".style.height = -" + this.$verdiff + " + "];
         var oNext   = oItem.parent.children[oItem.stackId+1];
         
         if (this.type == "horizontal") {
@@ -289,7 +250,7 @@ apf.splitter = function(pHtmlNode){
                 :  0, ")");
             
             layout.addRule(vwidth.join(""));
-            this.oExt.style.height = (oItem.splitter - hordiff) + "px";
+            this.$ext.style.height = (oItem.splitter - this.$hordiff) + "px";
         }
         else {
             vheight.push("Math.max(");
@@ -310,7 +271,7 @@ apf.splitter = function(pHtmlNode){
                 : 0, ")");
             
             layout.addRule(vheight.join(""));
-            this.oExt.style.width = (oItem.splitter - hordiff) + "px";
+            this.$ext.style.width = (oItem.splitter - this.$hordiff) + "px";
         }
         
         layout.addRule(vleft.join(""));
@@ -374,7 +335,7 @@ apf.splitter = function(pHtmlNode){
             
             //This line prevents splitters from sizing minimized items without a rest
             if (!hasRest && oNext && oNext.state > 0)
-                return this.oExt.parentNode.removeChild(this.oExt);
+                return this.$ext.parentNode.removeChild(this.$ext);
             
             for (var d, i = oItem.stackId + 1; i < row.length; i++) {
                 d = row[i];
@@ -406,25 +367,27 @@ apf.splitter = function(pHtmlNode){
         //apf.p.stop();
         //document.title = apf.p.totalTime;	
         
-        this.$setStyleClass(this.oExt, this.type,
+        this.$setStyleClass(this.$ext, this.type,
             [this.type == "horizontal" ? "vertical" : "horizontal"]);
         
         if (this.type == "vertical")
-            this.$setStyleClass(this.oExt, "w-resize", ["n-resize"]);
+            this.$setStyleClass(this.$ext, "w-resize", ["n-resize"]);
         else
-            this.$setStyleClass(this.oExt, "n-resize", ["w-resize"]);
+            this.$setStyleClass(this.$ext, "n-resize", ["w-resize"]);
 
         return this;
     };
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
+        this.$ext = this.$getExternal();
 
-        this.oExt.onmousedown = function(e){
+        var _self = this;
+        this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
             
+            var amlNode = _self;//.$amlNode;
             var pos = apf.getAbsolutePosition(this);
             if (amlNode.type == "vertical")
                 amlNode.tx = e.clientX - pos[0];
@@ -446,14 +409,51 @@ apf.splitter = function(pHtmlNode){
             amlNode.$setStyleClass(document.body,
                 amlNode.type == "vertical" ? "w-resize" : "n-resize",
                 [amlNode.type == "vertical" ? "n-resize" : "w-resize"]);
-            apf.dragmode.setMode("splitter" + amlNode.uniqueId);
+            
+            //@todo convert to proper way
+            document.onmouseup = function(){
+                amlNode.$setStyleClass(amlNode.$ext, "", ["moving"]);
+        
+                // #ifdef __WITH_PLANE
+                apf.plane.hide();
+                // #endif
+        
+                amlNode.update();
+                amlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                
+                document.onmouseup   = 
+                document.onmousemove = null;
+            };
+            
+            //@todo convert to proper way
+            document.onmousemove = function(e){
+                if(!e) e = event;
+        
+                if (amlNode.type == "vertical") {
+                    if (e.clientX >= 0) {
+                        var pos = apf.getAbsolutePosition(amlNode.$ext.offsetParent);
+                        amlNode.$ext.style.left = (Math.min(amlNode.max,
+                            Math.max(amlNode.min, (e.clientX - pos[0]) - amlNode.tx))) + "px";
+                    }
+                }
+                else {
+                    if (e.clientY >= 0) {
+                        var pos = apf.getAbsolutePosition(amlNode.$ext.offsetParent);
+                        amlNode.$ext.style.top = (Math.min(amlNode.max,
+                            Math.max(amlNode.min, (e.clientY - pos[1]) - amlNode.ty))) + "px";
+                    }
+                }
+                
+                e.returnValue  = false;
+                e.cancelBubble = true;
+            };
         }
     };
         
     this.$loadAml = function(x){
-        if (x.getAttribute("left") || x.getAttribute("top")) {
-            var O1 = x.getAttribute("left")  || x.getAttribute("top");
-            var O2 = x.getAttribute("right") || x.getAttribute("bottom");
+        if (this.left || this.top) {
+            var O1 = this.left || this.top;
+            var O2 = this.right || this.bottom;
             O1 = O1.split(/\s*,\s*/);
             O2 = O2.split(/\s*,\s*/);
             
@@ -463,23 +463,17 @@ apf.splitter = function(pHtmlNode){
                 O2[i] = O2[i];
                 
             //Not a perfect hack, but ok, for now
+            var _self = this;
             setTimeout(function(){
-                amlNode.init(x.getAttribute("type"),
-                    x.getAttribute("size"), 
-                    x.getAttribute("min"), 
-                    x.getAttribute("max"), 
-                    x.getAttribute("change"), O1, O2);
+                this.$amlNode.init(_self.type,
+                    _self.size, 
+                    _self.min, 
+                    _self.max, 
+                    _self.change, O1, O2);
             });
         }
     };
-    
-    // #ifdef __WITH_PLANE
-    apf.plane.init();
-    // #endif
-    apf.dragmode.defineMode("splitter" + this.uniqueId, this);
-    
-    this.$destroy = function(){
-        apf.dragmode.removeMode("splitter" + this.uniqueId);
-    };
-};
+}).call(apf.splitter.prototype = new apf.Presentation());
+
+apf.aml.setElement("splitter", apf.splitter);
 // #endif

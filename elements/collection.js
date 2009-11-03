@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JCOLLECTION || __INC_ALL
+// #ifdef __AMLCOLLECTION || __INC_ALL
 
 /**
  * Virtual element acting as a parent for a set of child elements 
@@ -35,18 +35,33 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+apf.collection = function(struct, tagName){
+    this.$init(tagName || "collection", apf.NODE_VISIBLE, struct);
+};
 
-apf.collection = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
-    this.$focussable     = false;
+apf.docklet = function(struct, tagName){
+    this.$init(tagName || "docklet", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.$focussable = false;
     
-    this.$draw = function(pHtmlNode){
-        this.oExt = pHtmlNode;
-        this.oInt = pHtmlNode;
-        apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
-    };
-    
-    this.$loadAml = function(x){};
-});
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        if (this.parentNode && this.parentNode.$int != this.$pHtmlNode)
+            this.$pHtmlNode = this.parentNode.$int; //@todo apf3.0 change this in the mutation events
+
+        //this.$ext = this.$pHtmlNode;
+        this.$int = this.$pHtmlNode;
+        
+        this.$originalNodes = this.parentNode.$originalNodes;
+
+        this.skinName = this.parentNode.skinName;
+    });
+}).call(apf.collection.prototype = new apf.AmlElement());
+
+apf.docklet.prototype = apf.collection.prototype;
+
+apf.aml.setElement("collection", apf.collection);
+apf.aml.setElement("docklet", apf.docklet);
 
 // #endif

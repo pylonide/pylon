@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JNOTIFIER || __INC_ALL
+// #ifdef __AMLNOTIFIER || __INC_ALL
 /**
  * Notification element, which shows popups when events occur. Similar
  * to growl on the OSX platform.
@@ -61,7 +61,9 @@
  * </code>
  * 
  * @define notifier
- * @attribute   {String}   position     Vertical and horizontal element's start position, it can be changed in any time, default is 'top-right'
+ * @attribute   {String}   position     Vertical and horizontal element's start
+ *                                      position, it can be changed in any time,
+ *                                      default is 'top-right'
  *     Possible values:
  *     top-right       element is placed in top-right corner of browser window
  *     top-left        element is placed in top-left corner of browser window
@@ -73,14 +75,21 @@
  *     right-bottom    element is placed in bottom-right corner of browser window
  *     left-bottom     element is placed in bottom-left corner of browser window
  *     center-center   element is placed in the middle of browser window
- * @attribute   {String}   margin       It's a free space around popup element, default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify element width and col width where element will be displayed, default is 300 pixels
- * @attribute   {String}   arrange      popup elements can be displayed in rows or columns, default is 'vertical'
+ * @attribute   {String}   margin       It's a free space around popup element,
+ *                                      default is '10 10 10 10' pixels
+ * @attribute   {String}   columnsize   Specify element width and col width where
+ *                                      element will be displayed, default is 300 pixels
+ * @attribute   {String}   arrange      popup elements can be displayed in rows
+ *                                      or columns, default is 'vertical'
  *     Possible values:
  *     vertical     element will be displayed in rows
  *     horizontal   element will be displayed in columns
- * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2 seconds
- * $attribute   {String}   onclick      It's an action executed after user click on notifier cloud
+ * @attribute   {String}   timeout      After the timeout has passed the popup
+ *                                      will dissapear automatically. When the
+ *                                      mouse hovers over the popup it doesn't
+ *                                      dissapear, default is 2 seconds
+ * $attribute   {String}   onclick      It's an action executed after user click
+ *                                      on notifier cloud
  * 
  * @constructor
  *
@@ -91,34 +100,35 @@
  * 
  * @allowchild event
  */
-apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
-    this.pHtmlNode  = document.body;
+apf.notifier = function(struct, tagName){
+    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
     this.timeout    = 2000;
     this.position   = "top-right";
     this.columnsize = 300;
     this.arrange    = "vertical";
     this.margin     = "10 10 10 10";
 
-    var lastPos = null;
-    var showing = 0;
-    var _self   = this;
-    var sign    = 1;
-
+    this.lastPos    = null;
+    this.showing    = 0;
+    this.sign       = 1;
 
     this.$supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
 
     this.$propHandlers["position"] = function(value) {
-        lastPos = null;
-    }
+        this.lastPos = null;
+    };
     
     this.$propHandlers["margin"] = function(value) {
         this.margin = value;
-    }
+    };
     
     this.$propHandlers["timeout"] = function(value) {
         this.timeout = parseInt(value) * 1000;
-    }
+    };
     
     function getPageScroll() {
         return [
@@ -128,102 +138,104 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
     }
 
     function getStartPosition(x, wh, ww, nh, nw, margin) {
-         var scrolled = getPageScroll();
+        var scrolled = getPageScroll();
 
-         var ver = (x[0] == "top"
-             ? margin[0]
-             : (x[0] == "bottom"
-                 ? wh - nh - margin[2]
-                 : wh/2 - nh/2)) + scrolled[0];
-         var hor = (x[1] == "left" 
-             ? margin[3]
-             : (x[1] == "right"
-                 ? ww - nw - margin[1]
-                 : ww/2 - nw/2)) + scrolled[1];
-         sign = 1;
-
-         return lastPos = [ver, hor];
+        return [
+             (x[0] == "top"
+                 ? margin[0]
+                 : (x[0] == "bottom"
+                     ? wh - nh - margin[2]
+                     : wh / 2 - nh / 2)) + scrolled[0],
+             (x[1] == "left"
+                 ? margin[3]
+                 : (x[1] == "right"
+                     ? ww - nw - margin[1]
+                     : ww / 2 - nw / 2)) + scrolled[1]
+        ];
     }
 
     /**
      * Function creates new notifie popup element
      * 
-     * @param {String}  message  Message content displaing in popup element, default is [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" which is set in skin declaration
+     * @param {String}  message  Message content displaing in popup element,
+     *                           default is [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" which
+     *                           is set in skin declaration
      * @param {Object}  ev       object representation of event
      * 
      */
     this.popup = function(message, icon, ev) {
-        if (!this.oExt)
+        if (!this.$ext)
             return;
 
-        this.oExt.style.width = this.columnsize + "px";
-        var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
-        var ww = apf.isIE
-            ? document.documentElement.offsetWidth
-            : window.innerWidth;
-        var wh = apf.isIE 
-            ? document.documentElement.offsetHeight
-            : window.innerHeight;
+        this.$ext.style.width = this.columnsize + "px";
+
+        var _self = this,
+            oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
+            ww    = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            wh    = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight,
         
-        var removed = false;
+            removed = false,
 
-        var oIcon = this.$getLayoutNode("notification", "icon", oNoti);
-        var oBody = this.$getLayoutNode("notification", "body", oNoti);
+            oIcon = this.$getLayoutNode("notification", "icon", oNoti),
+            oBody = this.$getLayoutNode("notification", "body", oNoti);
 
-        showing++;
+        this.showing++;
 
         if (oIcon && icon) {
-            if (oIcon.nodeType == 1)
+            if (oIcon.nodeType == 1) {
                 oIcon.style.backgroundImage = "url("
                 + this.iconPath + icon + ")";
-            else
+            }
+            else {
                 oIcon.nodeValue = this.iconPath + icon;
+            }
 
-            this.$setStyleClass(oNoti, this.baseCSSname + "ShowIcon");
+            this.$setStyleClass(oNoti, this.$baseCSSname + "ShowIcon");
         }
 
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
         oNoti.style.display = "block";
 
-        var margin = apf.getBox(this.margin || "0");
-        var nh     = oNoti.offsetHeight;
-        var nw     = oNoti.offsetWidth;
+        var margin = apf.getBox(this.margin || "0"),
+            nh     = oNoti.offsetHeight,
+            nw     = oNoti.offsetWidth,
+            /* It's possible to set for example: position: top-right or right-top */
+            x      = this.position.split("-"),
+            _reset = false;
 
-        /* It's possible to set for example: position: top-right or right-top */
-        var x = this.position.split("-");
-        if(x[1] == "top" || x[1] == "bottom" ||
-           x[0] == "left" || x[0] == "right") {
+        if (x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right")
             x = [x[1], x[0]];
-        }
         /* center-X and X-center are disabled */
-        if((x[0] == "center" && x[1] !== "center") ||
-           (x[0] !== "center" && x[1] == "center")) {
+        if ((x[0] == "center" && x[1] !== "center") || (x[0] !== "center" && x[1] == "center"))
             x = ["top", "right"];
-        }
 
-        var _reset = false;
         /* start positions */
-        if (!lastPos) {
-            lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+        if (!this.lastPos) {
+            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+            this.sign = 1;
             _reset = true;
         }
 
-        if ((!_reset && x[0] == "bottom" && sign == 1) ||
-           (x[0] == "top" && sign == -1)) {
+        if ((!_reset && x[0] == "bottom" && this.sign == 1) ||
+           (x[0] == "top" && this.sign == -1)) {
             if (this.arrange == "vertical") {
-                lastPos[0] += x[1] == "center"
+                this.lastPos[0] += x[1] == "center"
                     ? 0
-                    : sign*(x[0] == "top"
+                    : this.sign * (x[0] == "top"
                         ? margin[0] + nh
                         : (x[0] == "bottom"
                             ? - margin[2] - nh
                             : 0));
             }
             else {
-                lastPos[1] += x[0] == "center"
+                this.lastPos[1] += x[0] == "center"
                     ? 0
-                    : sign*(x[1] == "left"
+                    : this.sign * (x[1] == "left"
                         ? margin[3] + nw
                         : (x[1] == "right"
                             ? - margin[1] - nw
@@ -234,29 +246,29 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
         /* reset to next line, first for vertical, second horizontal */
         var scrolled = getPageScroll();
         
-        if (lastPos[0] > wh + scrolled[0] - nh || lastPos[0] < scrolled[0]) {
-            lastPos[1] += (x[1] == "left"
+        if (this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[0]) {
+            this.lastPos[1] += (x[1] == "left"
                 ? nw + margin[3]
                 : (x[1] == "right"
                     ? - nw - margin[3]
                     : 0));
-            sign *= -1;
-            lastPos[0] += sign*(x[0] == "top"
+            this.sign *= -1;
+            this.lastPos[0] += this.sign*(x[0] == "top"
                 ? margin[0] + nh
                 : (x[0] == "bottom"
                     ? - margin[2] - nh
                     : 0));
         }
-        else if (lastPos[1] > ww + scrolled[1] - nw || lastPos[1] < scrolled[1]) {
-            lastPos[0] += (x[0] == "top"
+        else if (this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1]) {
+            this.lastPos[0] += (x[0] == "top"
                 ? nh + margin[0]
                 : (x[0] == "bottom"
                     ? - nh - margin[0]
                     : 0));
-            sign *= -1;
-            lastPos[1] += x[0] == "center"
+            this.sign *= -1;
+            this.lastPos[1] += x[0] == "center"
                 ? 0
-                : sign*(x[1] == "left"
+                : this.sign * (x[1] == "left"
                     ? margin[3] + nw
                     : (x[1] == "right"
                         ? - margin[1] - nw
@@ -264,34 +276,36 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         /* Start from begining if entire screen is filled */
-        if (lastPos) {
-            if ((lastPos[0] > wh + scrolled[0] - nh || lastPos[0] < scrolled[1]) && 
-                this.arrange == "horizontal") {
-                lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+        if (this.lastPos) {
+            if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
+              && this.arrange == "horizontal") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
             }
-            if ((lastPos[1] > ww + scrolled[1] - nw || lastPos[1] < scrolled[1]) && 
-                this.arrange == "vertical") {
-                lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+            if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
+              && this.arrange == "vertical") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
             }
         }  
 
-        oNoti.style.left = lastPos[1] + "px";
-        oNoti.style.top  = lastPos[0] + "px";
+        oNoti.style.left = this.lastPos[1] + "px";
+        oNoti.style.top  = this.lastPos[0] + "px";
 
-        if ((x[0] == "top" && sign == 1) || (x[0] == "bottom" && sign == -1)) {
+        if ((x[0] == "top" && this.sign == 1) || (x[0] == "bottom" && this.sign == -1)) {
             if (this.arrange == "vertical") {
-                lastPos[0] += x[1] == "center"
+                this.lastPos[0] += x[1] == "center"
                     ? 0
-                    : sign*(x[0] == "top"
+                    : this.sign * (x[0] == "top"
                         ? margin[0] + nh
                         : (x[0] == "bottom"
                             ? - margin[2] - nh
                             : 0));
             }
             else {
-                lastPos[1] += x[0] == "center"
+                this.lastPos[1] += x[0] == "center"
                     ? 0
-                    : sign*(x[1] == "left"
+                    : this.sign * (x[1] == "left"
                         ? margin[3] + nw
                         : (x[1] == "right"
                             ? - margin[1] - nw
@@ -301,7 +315,7 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
 
         var isMouseOver = false;
 
-        apf.tween.css(oNoti, "notifier_shown", {
+        apf.tween.css(oNoti, "fade", {
             anim     : apf.tween.NORMAL,
             steps    : 10,
             interval : 10,
@@ -320,18 +334,19 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
                 steps   : 10,
                 interval: 20,
                 onfinish: function(container) {
-                    _self.$setStyleClass(oNoti, "", ["notifier_hover"]);
+                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
+
                     if (oNoti.parentNode) {
-                        if(oNoti.parentNode.removeChild(oNoti) && !removed) {
-                            showing--;
+                        if (oNoti.parentNode.removeChild(oNoti) && !removed) {
+                            _self.showing--;
                             removed = true;
                         }
                     }
-                    if (!showing) {
-                        lastPos = null;
-                    }
+
+                    if (_self.showing == 0)
+                        this.lastPos = null;
                 }
             });
         }
@@ -348,9 +363,10 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
                     steps   : 10,
                     interval: 20,
                     onfinish: function(container) {
-                        _self.$setStyleClass(oNoti, "", ["notifier_shown"]);
+                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
                 });
+                
                 isMouseOver = true;
             }
         };
@@ -372,7 +388,7 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
         if (ev) {
             oNoti.onclick = function() {
                 ev.dispatchEvent("click");
-            }
+            };
         }
     };
 
@@ -380,14 +396,17 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$draw = function() {
         //Build Main Skin
-        this.oExt = this.$getExternal("notification");
-        this.oExt.style.display = "none";
-        this.oExt.style.position = "absolute";
-        this.oExt.style.zIndex = 100000;
+        this.$pHtmlNode = document.body;
+        
+        this.$ext = this.$getExternal("notification");
+        this.$ext.style.display  = "none";
+        this.$ext.style.position = "absolute";
+        this.$ext.style.zIndex   = 100000;
     };
 
-    this.$loadAml = function(x) {
-        var ev, node, nodes = x.childNodes;
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        var node,
+            nodes = this.childNodes;
 
         for (var i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
@@ -395,40 +414,11 @@ apf.notifier = apf.component(apf.NODE_VISIBLE, function() {
                 continue;
 
             if (node[apf.TAGNAME] == "event")
-                ev = new apf.event(this.pHtmlNode, "event").loadAml(node, this)
+                new apf.event("event", this.$pHtmlNode, null, true).loadAml(node, this);
         }
-    };
-}).implement(apf.Presentation);
+    });
+}).call(apf.notifier.prototype = new apf.Presentation());
 
-/**
- * Displays a popup element with a message with optionally an icon at the
- * position specified by the position attribute. After the timeout has passed
- * the popup will dissapear automatically. When the mouse hovers over the popup
- * it doesn't dissapear.
- *
- * @event click Fires when the user clicks on the representation of this event.
- */
-apf.event = apf.component(apf.NODE_HIDDEN, function() {
-    var _self         = this;
-    var hasInitedWhen = false;
-
-    this.$booleanProperties["repeat"] = true;
-    this.$supportedProperties.push("when", "message", "icon", "repeat");
-
-    this.$propHandlers["when"] = function(value) {
-        if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
-            setTimeout(function() {
-                _self.parentNode.popup(_self.message, _self.icon, _self);
-            });
-        }
-        hasInitedWhen = true;
-
-        if (this.repeat)
-            delete this.when;
-    };
-
-    this.$loadAml = function(x) {
-    };
-});
-
+apf.aml.setElement("notifier", apf.notifier);
+apf.aml.setElement("event", apf.event);
 // #endif

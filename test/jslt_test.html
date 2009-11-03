@@ -91,43 +91,45 @@
             }
 
             function doCompileJSLT(){
+            
                 clearLog();
-                //try{
+                try{
                     var jslt = getJslt();
                     //jsltCode = JSLT.compile(jslt,true);
                     //var dt = (new Date()).getTime();
                     //for(var i = 0;i<1000;i++)
-                    var call = 'compileValue', opts = [];
+                    var call = 'compileTest', opts = [];
                     jslt = jslt.replace(/^(\d+|\w+)\s*(\(.*?\))\s*[\r\n]+?/i,function(m,a,o){
                         call = 
                         ({value:'compileValue',node:'compileNode',event:'compileEvent',di:'compileDataInstruction',match:'compileMatch',
                         0:'compileValue',    1:'compileNode',   2:'compileEvent',    3:'compileDataInstruction', 4:'match'})[a];
-                        if(!call){ call = 'compileValue'; return m;}
+                        if(!call){ call = 'compileTest'; return m;}
                         opts = o?o.slice(1,-1).split(/,/):[];
                         for(var i = 0,j = opts.length;i<j;i++)if(parseInt(opts[i])==opts[i])opts[i] = parseInt(opts[i]);
                         return "";
                     });
                     var v, args = (v=apf.jslt[call].toString().match(/function\(\s*str\s*,\s*(.*?)\)/))?v[1].split(','):[];
-                    
                     for(var i =0, s=[] ;i<args.length;i++)
                         s.push(args[i]+' = '+(opts[i]===undefined?'undefined':opts[i]));
                     logw("apf.jslt."+call+"(str = '..', "+s.join(', ')+")");
                     opts.unshift(jslt);
                     
                     if(call == 'compileMatch'){
-                        opts[0] = opts[0].split(/[\r\n]+/);
-                        for(i = 0;i<opts[0].length;i++){
-                            opts[0][i] = opts[0][i].split('#');
+                        var a = opts[0].split(/[\r\n]+/), b = opts[0] = [], c;
+                        for(i = 0;i<a.length;i++){
+                            c = a[i].split('#');
+                            b[b.length] = c[0] || "";
+                            b[b.length] = c[1] || "";
                         }
                         jsltCode = apf.jslt[call].apply(apf.jslt,opts);
                     }else{
                         jsltCode = apf.jslt[call].apply(apf.jslt,opts);
                     }
-                 //catch(e){
-                    //setResult("JSLT Compilation occured:\n"+e.message);
-                    //jsltCode = null;
-                    //return;
-                //}
+                 }
+                catch(e){
+                    setResult("JSLT Compilation occured:\n"+e.message);
+                    jsltCode = null;
+                }
                 setCode(apf.jslt.lastCode());
             }
 
@@ -136,11 +138,39 @@
                 if(!xmlData || x&1)doParseXML();
                 if(!xmlData || !xmlData.documentElement)return;
                 if(!jsltCode || x&2)doCompileJSLT();
-                if(!jsltCode)return;
                 var obj = {v1:3};
-                try{ setResult( jsltCode[0](xmlData.documentElement,0,obj) ); }
+                try{ 
+                    if(jsltCode)setResult("all clear");
+                /*
+                    if( typeof(jsltCode) == 'string'){
+                        setResult("Plain Text: "+jsltCode);
+                    }else if(jsltCode){
+                        if(jsltCode[0]){
+                            if(jsltCode[3]&4){ // async
+                                // hm async shiz. lezz precall.
+                                //var opt = {_precall:1}
+                                //jsltCode[0](xmlData.documentElement,null,opt);
+                                
+                                //opt._precall = 0;
+                                jsltCode[0](xmlData.documentElement,function(v){
+                                    setResult( 'Async received:'+v );
+                                    // jsltCode[0](xmlData.documentElement,function(v){
+                                    //     setResult( 'Async2 received:'+v );
+                                    // });
+                                });
+                                
+                            }else{
+                                setResult("Immediate:"+jsltCode[0](xmlData.documentElement));
+                            }
+                        }
+                        else{
+                            setResult("Plain Xpath: Model: " +jsltCode[1][0]+" Xpath: "+jsltCode[1][1]);
+                        }
+                    }
+                    */
+                }
                 catch(e){
-                    setResult("JSLT Execution occured:\n"+e.message);
+                   setResult("JSLT Execution occured:\n"+e.message);
                 }
             }
 
@@ -175,17 +205,32 @@
                 return txt;
             }
 
+            function test(x){
+                return x;
+            }
+            
             var apf = {
+                SUCCESS:1,
                 console:{error:logw},
+                getXml:function(str){
+                        return parseXML(str).documentElement;
+                },
                 createNodeFromXpath:function(a,b){ return {};},
                 nameserver:{lookup:{model:{}}}
             };
-            function test(){
-            
+            var rpc = {
+                exec : function(func,args,cb){
+                    window.setTimeout(function(){
+                        cb( rpc[func].call(func,args), 1, 0);
+                    },1000);
+                },
+                test : function(a){
+                    return "<xml><drive><folder caption='hello'/></drive></xml>"+a;
+                }
             }
         
         //]]></script>
-		<script src='../core/parsers/jslt_new.js'></script>
+		<script src='../core/parsers/lm.js'></script>
   </head>
   <body>
   	<h1>Realtime JSLT Example</h1>
@@ -218,8 +263,7 @@ and not HTML where you would use nbsp and br tags. Take special note of the % ch
 	<div class="float">
 		<h2>JSLT</h2>
 		<textarea id='taJslt' onkeyup='if(!document.getElementById("nort").checked)doJsltProcessing(2)'>
-[each('folder'){]
-[}]
+        [rpc.test()]
 </textarea>
 
 	</div>

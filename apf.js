@@ -31,10 +31,10 @@
  *   object:
  *   {AMLElement} toElement the element that will receive the focus.
  * @event exit              Fires when the application wants to exit.
- *   cancellable:  Prevents the application from exiting. The returnValue of the
+ *   cancelable:  Prevents the application from exiting. The returnValue of the
  *   event object is displayed in a popup which asks the user for permission.
  * @event keyup         Fires when the user stops pressing a key.
- *   cancellable: Prevents the behaviour.
+ *   cancelable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   whether the ctrl key was pressed.
@@ -42,12 +42,12 @@
  *   {Boolean} altKey    whether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @event mousescroll   Fires when the user scrolls the mouse
- *   cancellable: Prevents the container to scroll
+ *   cancelable: Prevents the container to scroll
  *   object:
  *   {Number} delta the scroll impulse.
  * @event hotkey        Fires when the user presses a hotkey
  *   bubbles: yes
- *   cancellable: Prevents the default hotkey behaviour.
+ *   cancelable: Prevents the default hotkey behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   whether the ctrl key was pressed.
@@ -56,7 +56,7 @@
  *   {Object}  htmlEvent the html event object.
  * @event keydown       Fires when the user presses a key
  *   bubbles: yes
- *   cancellable: Prevents the behaviour.
+ *   cancelable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   whether the ctrl key was pressed.
@@ -71,7 +71,7 @@
  * @event onafterprint  Fires after the application has printed.
  * @event load          Fires after the application is loaded.
  * @event error         Fires when a communication error has occured while making a request for this element.
- *   cancellable: Prevents the error from being thrown.
+ *   cancelable: Prevents the error from being thrown.
  *   bubbles:
  *   object:
  *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
@@ -124,78 +124,16 @@ var apf = {
      */
     NODE_O3 : 103,
 
-    //DOM nodeType constants
-    /**
-     * Constant for a dom element node.
-     * @type {Number}
-     */
-    NODE_ELEMENT                : 1,
-    /**
-     * Constant for a dom attribute node.
-     * @type {Number}
-     */
-    NODE_ATTRIBUTE              : 2,
-    /**
-     * Constant for a dom text node.
-     * @type {Number}
-     */
-    NODE_TEXT                   : 3,
-    /**
-     * Constant for a dom cdata section node.
-     * @type {Number}
-     */
-    NODE_CDATA_SECTION          : 4,
-    /**
-     * Constant for a dom entity reference node.
-     * @type {Number}
-     */
-    NODE_ENTITY_REFERENCE       : 5,
-    /**
-     * Constant for a dom entity node.
-     * @type {Number}
-     */
-    NODE_ENTITY                 : 6,
-    /**
-     * Constant for a dom processing instruction node.
-     * @type {Number}
-     */
-    NODE_PROCESSING_INSTRUCTION : 7,
-    /**
-     * Constant for a dom comment node.
-     * @type {Number}
-     */
-    NODE_COMMENT                : 8,
-    /**
-     * Constant for a dom document node.
-     * @type {Number}
-     */
-    NODE_DOCUMENT               : 9,
-    /**
-     * Constant for a dom document type node.
-     * @type {Number}
-     */
-    NODE_DOCUMENT_TYPE          : 10,
-    /**
-     * Constant for a dom document fragment node.
-     * @type {Number}
-     */
-    NODE_DOCUMENT_FRAGMENT      : 11,
-    /**
-     * Constant for a dom notation node.
-     * @type {Number}
-     */
-    NODE_NOTATION               : 12,
-
     /**
      * Constant for specifying that a widget is using only the keyboard to receive focus.
      * @type {Number}
-     * @see baseclass.amlelement.method.focus
+     * @see baseclass.guielement.method.focus
      */
     KEYBOARD       : 2,
     /**
      * Constant for specifying that a widget is using the keyboard or the mouse to receive focus.
      * @type {Boolean}
-     * @see baseclass.amlelement.method.focus
+     * @see baseclass.guielement.method.focus
      */
     KEYBOARD_MOUSE : true,
 
@@ -234,6 +172,7 @@ var apf = {
 
     includeStack  : [],
     initialized   : false,
+    AppModules    : [],
     
     /**
      * Boolean specifying whether apf tries to load a skin from skins.xml when no skin element is specified.
@@ -244,7 +183,9 @@ var apf = {
      * Namespace for all crypto libraries included with Ajax.org Platform.
      */
     crypto        : {}, //namespace
+    config        : {},
     _GET          : {},
+    $asyncObjects : {},
     
     /**
      * String specifying the basepath for loading apf from seperate files.
@@ -269,6 +210,18 @@ var apf = {
         ev     : "http://www.w3.org/2001/xml-events"
     },
     //#endif
+    
+    availHTTP  : [],
+    releaseHTTP: function(http){
+        if (apf.brokenHttpAbort) 
+            return;
+        if (self.XMLHttpRequestUnSafe && http.constructor == XMLHttpRequestUnSafe) 
+            return;
+        
+        http.onreadystatechange = function(){};
+        http.abort();
+        this.availHTTP.push(http);
+    },
 
     /**
      * @private
@@ -285,52 +238,72 @@ var apf = {
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera = sAgent.indexOf("opera") != -1;
+        this.isOpera      = sAgent.indexOf("opera") != -1;
         
+        /**
+         * Specifies whether the application is running in the OmniWeb browser.
+         * @type {Boolean}
+         */
+        this.isOmniWeb    = sAgent.indexOf("omniweb") != -1;
+
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror = sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror  = sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari    = !this.isOpera && ((navigator.vendor
+        this.isSafari     = !this.isOpera && ((navigator.vendor
             && navigator.vendor.match(/Apple/) ? true : false)
-            || sAgent.indexOf("safari") != -1 || this.isKonqueror);
+            || sAgent.indexOf("safari") != -1);
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
          * @type {Boolean}
          */
-        this.isSafariOld = false;
-
-        if (this.isSafari) {
-            var matches  = sAgent.match(/applewebkit\/(\d+)/);
-            if (matches) {
-                this.safariRev   = parseInt(matches[1])
-                this.isSafariOld = parseInt(matches[1]) < 420;
-            }
-        }
+        this.isSafariOld  = false;
 
         /**
          * Specifies whether the application is running on the Iphone.
          * @type {Boolean}
          */
-        this.isIphone = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
+        this.isIphone     = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
 
         /**
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome    = sAgent.indexOf("chrome/") != -1;
+        this.isChrome     = sAgent.indexOf("chrome/") != -1;
+        
+        /**
+         * Specifies whether the application is running in a Webkit-based browser
+         * @type {Boolean}
+         */
+        this.isWebkit     = this.isSafari || this.isChrome || this.isKonquerer;
+
+        if (this.isWebkit) {
+            var matches   = sAgent.match(/applewebkit\/(\d+)/);
+            if (matches) {
+                this.webkitRev   = parseInt(matches[1])
+                this.isSafariOld = parseInt(matches[1]) < 420;
+            }
+        }
+
         /**
          * Specifies whether the application is running in a Gecko based browser.
          * @type {Boolean}
          */
-        this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
+        this.isGecko      = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
+
+        /**
+         * Specifies whether the application is running in the Camino browser.
+         * @type {Boolean}
+         */
+        this.isCamino     = this.isGecko && navigator.vendor.match(/Camino/);
+        
         /**
          * Specifies whether the application is running in the Firefox browser version 3.
          * @type {Boolean}
@@ -344,28 +317,28 @@ var apf = {
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
-        if (this.isIE) this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
+        this.isIE         = document.all && !this.isOpera && !this.isSafari ? true : false;
+        if (this.isIE)
+            this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 8.
          * @type {Boolean}
          */
-        this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
+        this.isIE8        = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
         
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 7.
          * @type {Boolean}
          */
-        this.isIE7       = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
-        this.versionIE   = this.isIE ? parseFloat(sAgent.match(/msie ([\d\.]+)/)[1]) : -1;
+        this.isIE7        = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
         
         //Mode detection
         if (this.isIE8 && document.documentMode == 7) {
             apf.isIE7        = true;
             apf.isIE8        = false;
             apf.isIE7Emulate = true;
-            this.versionIE   = 7;
+            apf.isIE         = 7;
         }
         
         /**
@@ -384,16 +357,22 @@ var apf = {
          */
         this.isIE50      = this.isIE && !found && sAgent.indexOf("msie 5.0") != -1 && (found = true);
 
+        var os           = (navigator.platform.match(/mac|win|linux/i) || ["other"])[0].toLowerCase();
         /**
          * Specifies whether the application is running on the Windows operating system.
          * @type {Boolean}
          */
-        this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
+        this.isWin       = (os == "win");
         /**
          * Specifies whether the application is running in the OSX operating system..
          * @type {Boolean}
          */
-        this.isMac       = sAgent.indexOf("mac") != -1;
+        this.isMac       = (os == "mac");
+        /**
+         * Specifies whether the application is running in the OSX operating system..
+         * @type {Boolean}
+         */
+        this.isLinux     = (os == "linux");
 
         /**
          * Specifies whether the application is running in the AIR runtime.
@@ -421,15 +400,12 @@ var apf = {
     setCompatFlags : function(){
         //Set Compatibility
         this.TAGNAME                   = apf.isIE ? "baseName" : "localName";
-        this.supportVML                = apf.isIE;
-        this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
-        this.supportCanvas             = !apf.isIE;
-        this.supportSVG                = !apf.isIE;
         this.styleSheetRules           = apf.isIE ? "rules" : "cssRules";
         this.brokenHttpAbort           = apf.isIE6;
         this.canUseHtmlAsXml           = apf.isIE;
         this.supportNamespaces         = !apf.isIE;
         this.cannotSizeIframe          = apf.isIE;
+        this.hasConditionCompilation   = apf.isIE;
         this.supportOverflowComponent  = apf.isIE;
         this.hasEventSrcElement        = apf.isIE;
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
@@ -439,7 +415,7 @@ var apf = {
         this.hasClickFastBug           = apf.isIE;
         this.hasExecScript             = window.execScript ? true : false;
         this.canDisableKeyCodes        = apf.isIE;
-        this.hasTextNodeWhiteSpaceBug  = apf.isIE || apf.versionIE >= 8;
+        this.hasTextNodeWhiteSpaceBug  = apf.isIE || apf.isIE >= 8;
         this.hasCssUpdateScrollbarBug  = apf.isIE;
         this.canUseInnerHtmlWithTables = !apf.isIE;
         this.hasSingleResizeEvent      = !apf.isIE;
@@ -447,7 +423,7 @@ var apf = {
         this.supportOpacity            = !apf.isIE;
         this.supportPng24              = !apf.isIE6 && !apf.isIE5;
         this.cantParseXmlDefinition    = apf.isIE50;
-        this.hasDynamicItemList        = !apf.isIE || apf.versionIE >= 7;
+        this.hasDynamicItemList        = !apf.isIE || apf.isIE >= 7;
         this.canImportNode             = apf.isIE;
         this.hasSingleRszEvent         = !apf.isIE;
         this.hasXPathHtmlSupport       = !apf.isIE;
@@ -455,36 +431,66 @@ var apf = {
         this.hasReadyStateBug          = apf.isIE50;
         this.dateSeparator             = apf.isIE ? "-" : "/";
         this.canCreateStyleNode        = !apf.isIE;
-        this.supportFixedPosition      = !apf.isIE || apf.versionIE >= 7;
-        this.hasHtmlIdsInJs            = apf.isIE || apf.isSafari;
+        this.supportFixedPosition      = !apf.isIE || apf.isIE >= 7;
+        this.hasHtmlIdsInJs            = apf.isIE && apf.isIE < 8 || apf.isWebkit;
         this.needsCssPx                = !apf.isIE;
-        this.hasCSSChildOfSelector     = !apf.isIE || apf.versionIE >= 8;
+        this.hasCSSChildOfSelector     = !apf.isIE || apf.isIE >= 8;
+        this.styleAttrIsObj            = apf.isIE < 8;
         this.hasAutocompleteXulBug     = apf.isGecko;
         this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.supportCSSAnim            = apf.isSafari && (apf.safariRev > 525);//apf.isIphone;
+        this.supportCSSAnim            = apf.isWebkit && (apf.webkitRev > 525);//apf.isIphone;
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
+        this.characterSet              = document.characterSet || document.defaultCharset || "utf-8";
         var t = document.createElement("div");
         this.hasContentEditable        = (typeof t.contentEditable == "string"
                                        || typeof t.contentEditable == "boolean");
         t = null;
         delete t;
 
+        this.supportVML                = apf.isIE;
+        this.supportSVG                = !apf.isIE;
+        this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
+        this.supportCanvas             = !!document.createElement("canvas").getContext;
+        this.supportCanvasText         = !!(this.supportCanvas
+            && typeof document.createElement("canvas").getContext("2d").fillText == "function")
+
+        this.hasVideo                  = !!document.createElement("video")["canPlayType"];
+        this.hasAudio                  = !!document.createElement("audio")["canPlayType"];
+        this.hasGeolocation            = !!navigator.geolocation;
+        this.supportHashChange         = ("onhashchange" in self) && !apf.isIE7Emulate || apf.isIE8;
+        
+        // Run through HTML5's new input types to see if the UA understands any.
+        //   This is put behind the tests runloop because it doesn't return a
+        //   true/false like all the other tests; instead, it returns an array
+        //   containing properties that represent the 'supported' input types.
+        t = document.createElement("input");
+        var _self = this;
+        (function(props) {
+            for (var i in props) {
+                t.setAttribute("type", i);
+                _self["hasInput" + i.charAt(0).toUpperCase()
+                    + i.substr(1).replace("-l", "L")] = !!(t.type !== "text");
+            }
+        })({"search":1, "tel":1, "url":1, "email":1, "datetime":1, "date":1,
+            "month":1, "week":1, "time":1, "datetime-local":1, "number":1,
+            "range":1, "color":1});
+        t = null;
+        delete t;
+
         //Other settings
         this.maxHttpRetries = apf.isOpera ? 0 : 3;
-
-        //#ifdef __WITH_PROPERTY_BINDING
-        this.dynPropMatch = new RegExp();
-        this.dynPropMatch.compile("^[{\\[][\\s\\S]*[}\\]]$");
-        //#endif
 
         //#ifdef __WITH_ANCHORING
         this.percentageMatch = new RegExp();
         this.percentageMatch.compile("([\\-\\d\\.]+)\\%", "g");
         //#endif
+        
+        this.reMatchXpath = new RegExp();
+        this.reMatchXpath.compile("(^|\\|)(?!\\@|[\\w-]+::)", "g");
 
         //#ifdef __SUPPORT_GEARS
         apf.isGears      = !!apf.initGears() || 0;
@@ -528,6 +534,13 @@ var apf = {
         }
         return dest;
     },
+    
+    $extend : function(dest, src){
+        for (var prop in src) {
+            dest[prop] = src[prop];
+        }
+        return dest;
+    },
 
     /**
      * Starts the application.
@@ -566,7 +579,7 @@ var apf = {
             //this.importClass(apf.runIE, true, self);
         // #endif
         // #ifdef __SUPPORT_SAFARI
-        if (this.isSafari) apf.runSafari();
+        if (apf.isWebkit) apf.runSafari();
             //this.importClass(apf.runSafari, true, self);
         // #endif
         // #ifdef __SUPPORT_OPERA
@@ -574,7 +587,7 @@ var apf = {
             //this.importClass(apf.runOpera, true, self);
         // #endif
         // #ifdef __SUPPORT_GECKO
-        if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
+        if (this.isGecko || !this.isIE && !apf.isWebkit && !this.isOpera)
             apf.runGecko();
             //this.importClass(apf.runGecko, true, self);
         // #endif
@@ -600,7 +613,7 @@ var apf = {
         this.oHttp = new this.http();
 
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, apf, ['body', 'xmldb']);
+        this.Init.addConditional(this.parseAppMarkup, apf, ['body']);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
 
         //IE fix
@@ -611,7 +624,7 @@ var apf = {
         catch(e) {};
 
         //#ifdef __WITH_WINDOW
-        apf.window.init();
+        //apf.window.init();
         //#endif
 
         //try{apf.root = !window.opener || !window.opener.apf;}
@@ -619,72 +632,8 @@ var apf = {
         this.root = true;
     },
 
-    // #ifndef __PACKAGED
-    /**
-     * @private
-     */
-    startDependencies : function(){
-        if (location.protocol != "file:") {
-            apf.console.warn("You are serving multiple files from a (local)\
-                   webserver - please consider using the file:// protocol to \
-                   load your files, because that will make your application \
-                   load several times faster.\
-                   On a webserver, we recommend using a release or debug build \
-                   of Ajax.org Platform.");
-        }
-
-        apf.console.info("Loading Dependencies...");
-
-        var i;
-        // Load Kernel Modules
-        for (i = 0; i < this.KernelModules.length; i++)
-            apf.include("core/" + this.KernelModules[i], true);
-
-        // Load TelePort Modules
-        for (i = 0; i < this.TelePortModules.length; i++)
-            apf.include("elements/teleport/" + this.TelePortModules[i], true);
-
-        // Load Elements
-        for (i = 0; i < this.Elements.length; i++) {
-            var c = this.Elements[i];
-            apf.include("elements/" + c + ".js", true);
-        }
-
-        apf.Init.interval = setInterval(
-            "if (apf.checkLoadedDeps()) {\
-                clearInterval(apf.Init.interval);\
-                apf.start();\
-            }", 100);
-    },
-
-    //#endif
-
     nsqueue   : {},
 
-    /**
-     * Offers a way to load modules into a javascript namespace before the root
-     * of that namespace is loaded.
-     * @private
-     */
-    namespace : function(name, oNamespace){
-        try{
-            eval("apf." + name + " = oNamespace");
-            delete this.nsqueue[name];
-
-            for (var ns in this.nsqueue) {
-                if (ns.indexOf(name) > -1) {
-                    this.namespace(ns, this.nsqueue[ns]);
-                }
-            }
-
-            return true;
-        }catch(e){
-            this.nsqueue[name] = oNamespace;
-
-            return false;
-        }
-    },
-    
     //#ifdef __PARSER_AML || __WITH_NS_SUPPORT
     /**
      * @private
@@ -712,7 +661,7 @@ var apf = {
         }
 
         if (docEl) {
-            for (var i=0; i<docEl.attributes.length; i++) {
+            for (var i = 0; i < docEl.attributes.length; i++) {
                 if (docEl.attributes[i].nodeValue == xmlns)
                     return docEl.attributes[i][apf.TAGNAME]
             }
@@ -761,35 +710,32 @@ var apf = {
     * @param {Function}    classRef    Class reference
     * @private
     */
-    implement : function(classRef){
-        for (var i=0; i<arguments.length; i++) {
+    implement : function(classRef) {
+        // for speed, we check for the most common  case first
+        if (arguments.length == 1) {
             //#ifdef __DEBUG
-            if (!arguments[i]) {
+            if (!classRef) {
                 throw new Error(apf.formatErrorString(0, this,
                     "Implementing class",
-                    "Could not implement from '" + classRef + "'",
-                    this.$aml));
+                    "Could not implement from '" + classRef[i] + "'", this));
             }
             //#endif
-
-            arguments[i].call(this);//classRef
+            classRef.call(this);//classRef
+        }
+        else {
+            for (var i = 0; i < arguments.length; i++) {
+                //#ifdef __DEBUG
+                if (!arguments[i]) {
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Implementing class",
+                        "Could not implement from '" + arguments[i] + "'", this));
+                }
+                //#endif
+                arguments[i].call(this);//classRef
+            }
         }
 
         return this;
-    },
-
-    /**
-    * This method transforms an object into a apf class based object.
-    * @param {Object} oBlank the object which will be transformed
-    */
-    makeClass : function(oBlank){
-        if (oBlank.implement) return;
-
-        oBlank.implement = this.implement;
-        oBlank.implement(apf.Class);
-
-        if (!oBlank.uniqueId)
-            oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
 
     /**
@@ -802,7 +748,9 @@ var apf = {
      * @param {HTMLElement} oHtml the object getting the attribute.
      */
     setUniqueHtmlId : function(oHtml){
-        oHtml.setAttribute("id", "q" + this.uniqueHtmlIds++);
+        var id;
+        oHtml.setAttribute("id", id = "q" + this.uniqueHtmlIds++);
+        return id;
     },
 
     /**
@@ -810,51 +758,6 @@ var apf = {
      */
     getUniqueId : function(oHtml){
         return this.uniqueHtmlIds++;
-    },
-
-    /**
-     * @private
-     * @todo deprecate this in favor of apf.component
-     * @deprecated
-     */
-    register : function(o, tagName, nodeFunc){
-        o.tagName  = tagName;
-        o.nodeFunc = nodeFunc || apf.NODE_HIDDEN;
-
-        o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
-        o.$propHandlers = {}; //@todo fix this in each component
-
-        if (nodeFunc != apf.NODE_HIDDEN) {
-            o.$booleanProperties = {
-                "visible"          : true,
-                "focussable"       : true,
-                //"disabled"         : true,
-                "disable-keyboard" : true
-            }
-
-            o.$supportedProperties = [
-                //#ifdef __WITH_INTERACTIVE
-                "draggable", "resizable",
-                //#endif
-                "focussable", "zindex", "disabled", "tabindex",
-                "disable-keyboard", "contextmenu", "visible", "autosize",
-                "loadaml", "actiontracker", "alias"];
-        }
-        else {
-            o.$booleanProperties = {}; //@todo fix this in each component
-            o.$supportedProperties = []; //@todo fix this in each component
-        }
-
-        if (!o.implement) {
-            o.implement = this.implement;
-            o.implement(apf.Class);
-            o.uniqueId = this.all.push(o) - 1;
-         }
-
-        //#ifdef __DESKRUN
-        if(o.nodeFunc == apf.NODE_MEDIAFLOW)
-            DeskRun.register(o);
-        //#endif
     },
 
     /**
@@ -926,6 +829,12 @@ var apf = {
                 icon     : "exclamation.png",
                 color    : "red",
                 messages : {}
+            },
+            
+            repeat : {
+                icon     : "bullet_green.png",
+                color    : "#AAA",
+                messages : {}
             }
         },
 
@@ -949,14 +858,26 @@ var apf = {
                     .replace(/\</g, "&lt;")
                     .replace(/\n/g, "<br />");
 
-                var p = node.parentNode.parentNode.parentNode;
-                var el = node.parentNode.parentNode;
+                var p  = node.parentNode.parentNode.parentNode,
+                    el = node.parentNode.parentNode;
                 if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
                     p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
             }
         },
 
         cache : [],
+        $lastmsg : "",
+        $lastmsgcount : 0,
+
+        $detectSameMessage : function(){
+            apf.console.$lastmsg = "";
+            if (apf.console.$lastmsgcount) {
+                var msg = apf.console.$lastmsgcount + " times the same message";
+                apf.console.$lastmsgcount = 0;
+                apf.console.write(msg, "repeat");
+                clearTimeout(apf.console.$timer);
+            }
+        },
 
         /**
          * @private
@@ -965,6 +886,17 @@ var apf = {
          *      {String} message the content of the message.
          */
         write : function(msg, type, subtype, data, forceWin, nodate){
+            clearTimeout(this.$timer);
+            if (msg == this.$lastmsg) {
+                this.$lastmsgcount++;
+                this.$timer = setTimeout(this.$detectSameMessage, 1000);
+                return;
+            }
+
+            this.$detectSameMessage();
+            this.$lastmsg = msg;
+            this.$timer = setTimeout(this.$detectSameMessage, 1000);
+            
             //if (!apf.debug) return;
             if (!Number.prototype.toPrettyDigit) {
                 Number.prototype.toPrettyDigit = function() {
@@ -973,13 +905,14 @@ var apf = {
                 }
             }
 
-            var dt   = new Date();
-            var ms   = String(dt.getMilliseconds());
-            while (ms.length < 3) ms += "0";
+            var dt   = new Date(),
+                ms   = String(dt.getMilliseconds());
+            while (ms.length < 3)
+                ms += "0";
             var date = dt.getHours().toPrettyDigit() + ":"
-                + dt.getMinutes().toPrettyDigit()    + ":"
-                + dt.getSeconds().toPrettyDigit()    + "."
-                + ms;
+                     + dt.getMinutes().toPrettyDigit()    + ":"
+                     + dt.getSeconds().toPrettyDigit()    + "."
+                     + ms;
 
             msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
@@ -1170,11 +1103,10 @@ var apf = {
             //Determine line number
             var diff, linenr = 0, w = amlContext.previousSibling
                 || amlContext.parentNode && amlContext.parentNode.previousSibling;
-            while(w && w[apf.TAGNAME] != "body"){
-                diff = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
+            while (w && w[apf.TAGNAME] != "body") {
+                diff    = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
                 linenr += diff - 1;
-                w = w.previousSibling || w.parentNode
-                    && w.parentNode.previousSibling;
+                w       = w.previousSibling || w.parentNode && w.parentNode.previousSibling;
             }
             if (w && w[apf.TAGNAME] != "body")
                 linenr = "unknown";
@@ -1189,7 +1121,7 @@ var apf = {
         if (control)
             str.push("Control: '"
                 + (control.name
-                    || (control.$aml ? control.$aml.getAttribute("id") : null)
+                    || (control.$aml ? control.getAttribute("id") : null)
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -1211,6 +1143,34 @@ var apf = {
     /* Init */
 
     /**
+     * Returns the directory portion of a url
+     * @param {String} url the url to retrieve from.
+     * @return {String} the directory portion of a url.
+     */
+    getDirname : function(url){
+        return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
+    },
+    
+    /**
+     * Returns the file portion of a url
+     * @param {String} url the url to retrieve from.
+     * @return {String} the file portion of a url.
+     */
+    getFilename : function(url){
+        return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
+    },
+    
+    /**
+     * Returns an absolute url based on url.
+     * @param {String} base the start of the url to which relative url's work.
+     * @param {String} url  the url to transform.
+     * @return {String} the absolute url.
+     */
+    getAbsolutePath : function(base, url){
+        return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
+    },
+
+    /**
      * Loads javascript from a url.
      * @param {String} sourceFile the url where the javascript is located.
      */
@@ -1218,18 +1178,27 @@ var apf = {
         apf.console.info("including js file: " + sourceFile);
 
         var sSrc = doBase ? (apf.basePath || "") + sourceFile : sourceFile;
-        if (apf.isSafariOld || apf.isSafari && !apf.started) {
+        if (apf.isSafariOld && !apf.started) {
             document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
         }
         else {
-            var head     = document.getElementsByTagName("head")[0];//$("head")[0]
-            var elScript = document.createElement("script");
+            var head     = document.getElementsByTagName("head")[0],//$("head")[0]
+                elScript = document.createElement("script");
             //elScript.defer = true;
             if (type)
                 elScript.setAttribute("_apf_type", type);
             elScript.src   = sSrc;
             head.appendChild(elScript);
         }
+    },
+    
+    $required : [],
+    require : function(list){
+        var dir = apf.getDirname(location.href),
+            i   = 0,
+            l   = arguments.length;
+        for (; i < l; i++)
+            this.$required.push(apf.getAbsolutePath(dir, arguments[i]));
     },
 
     /**
@@ -1268,7 +1237,7 @@ var apf = {
         },
 
         checkAllCombined : function(){
-            for (var i=0; i<this.cond.combined.length; i++) {
+            for (var i = 0; i < this.cond.combined.length; i++) {
                 if (!this.cond.combined[i]) continue;
 
                 if (this.checkCombined(this.cond.combined[i][2])) {
@@ -1279,7 +1248,7 @@ var apf = {
         },
 
         checkCombined : function(arr){
-            for (var i=0; i<arr.length; i++) {
+            for (var i = 0; i < arr.length; i++) {
                 if (!this.done[arr[i]])
                     return false;
             }
@@ -1300,44 +1269,7 @@ var apf = {
     },
 
     //#ifdef __PARSER_AML
-
-    /**
-     * @todo Build this function into the compressor for faster execution
-     * @private
-     */
-    getAmlDocFromString : function(xmlString, preserveWhiteSpace){
-        //replace(/&\w+;/, ""). replace this by something else
-        var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
-          .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g,
-            function(m){ return m.toLowerCase(); });
-
-        /* @todo apf3.0 integrate this
-        x.ownerDocument.setProperty("SelectionNamespaces",
-                                "xmlns:a='" + apf.ns.aml + "'");
-        */
-
-        if (!this.supportNamespaces)
-            str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-
-        //#ifdef __WITH_EXPLICIT_LOWERCASE
-        var xmlNode = apf.getXmlDom(str, null, preserveWhiteSpace || apf.debug);
-
-        // Case insensitive support
-        var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
-        for (var i=0; i<nodes.length; i++) {
-            (nodes[i].ownerElement || nodes[i].selectSingleNode(".."))
-                .setAttribute(nodes[i].nodeName.toLowerCase(), nodes[i].nodeValue);
-        }
-        /* #else
-
-        var xmlNode = apf.getXmlDom(str);
-        if (apf.xmlParseError) apf.xmlParseError(xmlNode);
-
-        #endif */
-
-        return xmlNode;
-    },
-
+    //#endif
     //#ifdef __WITH_PARTIAL_AML_LOADING
     /**
      * @private
@@ -1367,8 +1299,9 @@ var apf = {
                           in this document. Starting to search for it now.");
         //#endif
 
+        var findAml;
         if (apf.isIE) {
-            var findAml = function(htmlNode){
+            findAml = function(htmlNode){
                 //#ifdef __DEBUG
                 if (htmlNode.outerHTML.match(/\/>$/)) {
                     throw new Error("Cannot have self closing elements!\n"
@@ -1377,21 +1310,22 @@ var apf = {
                 //#endif
                 
                 try {
-                    var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
-                    var strXml = (htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(
-                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
-                      + ".*" + htmlNode.tagName))[0] + ">")
-                        .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
-                        .replace(/ disabled /g, " disabled='true' ")
-                        .replace(/\]\]\&gt;/g, "]]>")
-                        .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
-                            if (tags[tag]) {
-                                return "<" + tag + (c||"") + "/>";
-                            }
-                            else {
-                                return m;
-                            }
-                        });
+                    var tags   = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1},
+                        regex  = new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
+                               + ".*" + htmlNode.tagName),
+                        match  = htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(regex),
+                        strXml = match[0] + ">"
+                            .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                            .replace(/ disabled /g, " disabled='true' ")
+                            .replace(/\]\]\&gt;/g, "]]>")
+                            .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
+                                if (tags[tag]) {
+                                    return "<" + tag + (c||"") + "/>";
+                                }
+                                else {
+                                    return m;
+                                }
+                            });
                 } 
                 catch(e) {
                     //#ifdef __DEBUG
@@ -1407,46 +1341,40 @@ var apf = {
                     return;
                 }
 
-                var p = prefix.toLowerCase();
                 var xmlNode = apf.getAmlDocFromString("<div jid='"
-                    + (id++) + "' " + strXmlns + ">"
-                    + strXml + "</div>").documentElement;
+                            + (id++) + "' " + strXmlns + ">"
+                            + strXml + "</div>").documentElement;
 
-                while(xmlNode.childNodes.length > 1) {
+                while (xmlNode.childNodes.length > 1)
                     xmlNode.removeChild(xmlNode.lastChild);
-                }
 
                 apf.AppNode.appendChild(xmlNode);
             }
         }
         else {
-            var findAml = function(htmlNode){
-                var strXml = htmlNode.outerHTML
-                    .replace(/ _moz-userdefined=""/g, "");
+            findAml = function(htmlNode){
+                var strXml  = htmlNode.outerHTML.replace(/ _moz-userdefined=""/g, ""),
+                    xmlNode = apf.getAmlDocFromString("<div jid='"
+                            + (id++) + "' " + strXmlns + ">"
+                            + strXml + "</div>").documentElement;
 
-                var p = prefix.toLowerCase();
-                var xmlNode = apf.getAmlDocFromString("<div jid='"
-                    + (id++) + "' " + strXmlns + ">"
-                    + strXml + "</div>").documentElement;
-
-                while(xmlNode.childNodes.length > 1) {
+                while (xmlNode.childNodes.length > 1)
                     xmlNode.removeChild(xmlNode.lastChild);
-                }
 
-                if (apf.isSafari)
+                if (apf.isWebkit)
                     xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
 
                 apf.AppNode.appendChild(xmlNode);
             }
         }
 
-        var strHtml = document.body.outerHTML;
-        var match = strHtml.match(/(\w+)\s*=\s*["']http:\/\/ajax\.org\/2005\/aml["']/);
+        var match = document.body.outerHTML
+                    .match(/(\w+)\s*=\s*["']http:\/\/ajax\.org\/2005\/aml["']/);
         if (!match)
             return false;
 
-        var strXmlns = "xmlns:" + match[0];
-        var prefix = (RegExp.$1 || "").toUpperCase();
+        var strXmlns = "xmlns:" + match[0],
+            prefix = (RegExp.$1 || "").toUpperCase();
         if (apf.isOpera)
             prefix = prefix.toLowerCase();
         if (!prefix)
@@ -1457,8 +1385,10 @@ var apf = {
         apf.AppNode = apf.getAmlDocFromString("<" + prefix.toLowerCase()
             + "application " + strXmlns + " />").documentElement;
 
-        var temp, loop;
-        var cnode, isPrefix = false, id = 0, str, x, node = document.body;
+        var temp, loop, cnode,
+            isPrefix = false,
+            id       = 0,
+            node     = document.body;
         while (node) {
             isPrefix = node.nodeType == 1
                 && node.tagName.substr(0,2) == prefix;
@@ -1548,7 +1478,7 @@ var apf = {
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
 
-                    if (apf.isSafari)
+                    if (apf.isWebkit)
                         xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
 
                     apf.AppNode.appendChild(xmlNode);
@@ -1590,7 +1520,7 @@ var apf = {
     /**
      * @private
      */
-    loadIncludes : function(docElement){
+    parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
         
         //#ifdef __WITH_PARTIAL_AML_LOADING
@@ -1610,10 +1540,7 @@ var apf = {
                 apf.loadAmlIncludes(apf.AppNode);
 
                 if (!self.ERROR_HAS_OCCURRED) {
-                    apf.Init.interval = setInterval(function(){
-                        if (apf.checkLoaded())
-                            apf.initialize();
-                    }, 20);
+                    apf.initialize();
                 }
 
                 return;
@@ -1684,10 +1611,7 @@ var apf = {
               && (apf.amlParts.length || this.parseStrategy == 11)) {
                 apf.isParsingPartial = true;
 
-                apf.Init.interval = setInterval(function(){
-                    if (apf.checkLoaded())
-                        apf.initialize();
-                }, 20);
+                apf.initialize();
 
                 return;
             }
@@ -1700,6 +1624,7 @@ var apf = {
         //Load aml without reloading the page, but also fully parse javascript
         //This requires there to be no self closing elements
         if (this.parseStrategy == 2) { //!this.parseStrategy
+            var xmlStr;
             if (apf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
@@ -1720,7 +1645,7 @@ var apf = {
 
                 //Clear Body
                 var nodes = document.body.childNodes;
-                for (var i=nodes.length-1; i>=0; i--)
+                for (var i = nodes.length - 1; i >= 0; i--)
                     nodes[i].parentNode.removeChild(nodes[i]);
 
                 /*apf.AppData = $xmlns(docElement, "body", apf.ns.xhtml)[0];
@@ -1780,402 +1705,53 @@ var apf = {
                         .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     //#endif
 
-                    var xmlNode = apf.getAmlDocFromString(xmlString);
+                    //@todo apf3.0 rewrite this flow
+                    var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
+                      .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "");
+                    if (!apf.supportNamespaces)
+                        str = str.replace(/xmlns\=\"[^"]*\"/g, "");
+                    //var xmlNode = apf.getXmlDom(str);//apf.getAmlDocFromString(xmlString);
 
                     //Clear Body
                     if (apf.isIE)
                         document.body.innerHTML ="";
                     else {
                         var nodes = document.body.childNodes;
-                        for (var i=nodes.length-1; i>=0; i--)
+                        for (var i = nodes.length - 1; i >= 0; i--)
                             nodes[i].parentNode.removeChild(nodes[i]);
                     }
 
-                    return apf.loadIncludes(xmlNode);
+                    document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+
+                    if (!self.ERROR_HAS_OCCURRED)
+                        apf.initialize(str);
+
                 }, {ignoreOffline: true});
         }
+        else {
+            document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
-        //Parse the second DOM (add includes)
-        var prefix = apf.findPrefix(docElement, apf.ns.aml);
-        //#ifdef __SUPPORT_SAFARI2
-        if (apf.isSafariOld)
-            prefix = "a";
-        //#endif
-
-        //#ifdef __DEBUG
-        if (!prefix)
-            throw new Error(apf.formatErrorString(0, null,
-                "Parsing document",
-                "Unable to find Ajax.org Platform namespace definition. \
-                 (i.e. xmlns:a=\"" + apf.ns.aml + "\")", docElement));
-        //#endif
-
-        apf.AppData = apf.supportNamespaces
-            ? docElement.createElementNS(apf.ns.aml, prefix + ":application")
-            : docElement.createElement(prefix + ":application");
-
-        var i, nodes;
-        //Head support
-        var head = $xmlns(docElement, "head", apf.ns.xhtml)[0];
-        if (head) {
-            nodes = head.childNodes;
-            for (i = nodes.length-1; i >= 0; i--)
-                if (nodes[i].namespaceURI && nodes[i].namespaceURI != apf.ns.xhtml)
-                    apf.AppData.insertBefore(nodes[i], apf.AppData.firstChild);
+            if (!self.ERROR_HAS_OCCURRED)
+                apf.initialize(docElement.outerHTML || docElement.xml);
         }
-
-        //Body support
-        var body = (docElement.body
-            ? docElement.body
-            : $xmlns(docElement, "body", apf.ns.xhtml)[0]);
-        for (i = 0; i < body.attributes.length; i++)
-            apf.AppData.setAttribute(body.attributes[i].nodeName,
-                body.attributes[i].nodeValue);
-
-        nodes = body.childNodes;
-        for (i = nodes.length - 1; i >= 0; i--)
-            apf.AppData.insertBefore(nodes[i], apf.AppData.firstChild);
-        docElement.documentElement.appendChild(apf.AppData); //Firefox fix for selectNode insertion need...
-
+        
         /* 
         apf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", apf.ns.xhtml)[0];
         */
 
-        apf.loadAmlIncludes(apf.AppData);
-
-        if ($xmlns(apf.AppData, "loader", apf.ns.aml).length) {
-            apf.loadScreen = {
-                show : function(){
-                    this.oExt.style.display = "block";
-                    //this.oExt.style.height = document.body.scrollHeight + "px";
-                },
-
-                hide : function(){
-                    this.oExt.style.display = "none";
-                }
-            }
-
-            if (apf.isGecko || apf.isSafari)
-                document.body.innerHTML = "";
-
-            //#ifdef __SUPPORT_SAFARI
-            if (apf.isSafariOld) {
-                var q = apf.getFirstElement(
-                    $xmlns(apf.AppData, "loader", apf.ns.aml)[0]).serialize();
-                document.body.insertAdjacentHTML("beforeend", q);
-                apf.loadScreen.oExt = document.body.lastChild;
-            }
-            else
-            //#endif
-            {
-                var htmlNode = apf.getFirstElement(
-                    $xmlns(apf.AppData, "loader", apf.ns.aml)[0]);
-
-                //if(apf.isSafari) apf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
-                if (htmlNode.ownerDocument == document)
-                    apf.loadScreen.oExt = document.body.appendChild(
-                        htmlNode.cloneNode(true));
-                else {
-                    document.body.insertAdjacentHTML("beforeend", htmlNode.xml
-                        || htmlNode.serialize());
-                    apf.loadScreen.oExt = document.body.lastChild;
-                }
-            }
-        }
-
-        document.body.style.display = "block"; //might wanna make this variable based on layout loading...
-
-        if (!self.ERROR_HAS_OCCURRED) {
-            apf.Init.interval = setInterval(function(){
-                if (apf.checkLoaded())
-                    apf.initialize()
-            }, 20);
-        }
+        //apf.loadAmlIncludes(apf.AppData);
+    },
+    
+    namespaces : {},
+    setNamespace : function(namespaceURI, oNamespace){
+        this.namespaces[namespaceURI] = oNamespace;
+        oNamespace.namespaceURI = namespaceURI;
     },
 
     /**
      * @private
      */
-    checkForAmlNamespace : function(xmlNode){
-        if (!xmlNode.ownerDocument.documentElement)
-            return false;
-
-        var nodes = xmlNode.ownerDocument.documentElement.attributes;
-        for (var found = false, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeValue == apf.ns.aml) {
-                found = true;
-                break;
-            }
-        }
-
-        //#ifdef __DEBUG
-        if (!found) {
-            throw new Error(apf.formatErrorString(0, null,
-                "Checking for the aml namespace",
-                "The Ajax.org Platform xml namespace was not found in "
-                + (xmlNode.getAttribute("filename")
-                    ? "in '" + xmlNode.getAttribute("filename") + "'"
-                    : "")));
-        }
-        //#endif;
-
-        return found;
-    },
-
-    /**
-     * @private
-     */
-    loadAmlIncludes : function(xmlNode, doSync){
-        // #ifdef __WITH_INCLUDES
-
-        var i, nodes, path;
-        // #ifdef __DEBUG
-        apf.checkForAmlNamespace(xmlNode);
-        // #endif
-
-        var basePath = apf.getDirname(xmlNode.getAttribute("filename")) || apf.hostPath;
-
-        nodes = $xmlns(xmlNode, "include", apf.ns.aml);
-        if (nodes.length) {
-            xmlNode.setAttribute("loading", "loading");
-
-            for (i = nodes.length - 1; i >= 0; i--) {
-                // #ifdef __DEBUG
-                if (!nodes[i].getAttribute("src"))
-                    throw new Error(apf.formatErrorString(0, null, 
-                        "Loading includes", 
-                        "Could not load Include file " + nodes[i].xml 
-                        + ":\nCould not find the src attribute."))
-                // #endif
-
-                path = apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
-
-                apf.loadAmlInclude(nodes[i], doSync, path);
-            }
-        }
-        else
-            xmlNode.setAttribute("loading", "done");
-
-        nodes = $xmlns(xmlNode, "skin", apf.ns.aml);
-        for (i = 0; i < nodes.length; i++) {
-            if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
-              || nodes[i].childNodes.length)
-                continue;
-
-            path = nodes[i].getAttribute("src")
-                ? apf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
-                : apf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
-
-            apf.loadAmlInclude(nodes[i], doSync, path, true);
-
-            //nodes[i].parentNode.removeChild(nodes[i]);
-            nodes[i].setAttribute("a_preparsed", "9999")
-        }
-
-        //#ifdef __WITH_SKIN_AUTOLOAD
-        //XForms and lazy devs support
-        if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
-            apf.console.warn("No skin file found, attempting to autoload the \
-                              default skin file: skins.xml");
-            apf.loadAmlInclude(null, doSync, "skins.xml", true);
-        }
-        //#endif
-
-        //#endif
-
-        return true;
-    },
-
-    /**
-     * @private
-     */
-    loadAmlInclude : function(node, doSync, path, isSkin){
-        // #ifdef __WITH_INCLUDES
-
-        //#ifdef __DEBUG
-        apf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
-        //#endif
-
-        this.oHttp.get(path || apf.getAbsolutePath(apf.hostPath, node.getAttribute("src")),
-            function(xmlString, state, extra){
-                 if (state != apf.SUCCESS) {
-                    var oError = new Error(apf.formatErrorString(1007,
-                        null, "Loading Includes", "Could not load Include file '"
-                        + (path || extra.userdata[0].getAttribute("src"))
-                        + "'\nReason: " + extra.message, node));
-
-                    if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
-                        return true;
-
-                    //#ifdef __WITH_SKIN_AUTOLOAD
-                    //Check if we are autoloading
-                    if (!node) {
-                        //Fail silently
-                        apf.console.warn("Could not autload skin.");
-                        apf.includeStack[extra.userdata[1]] = true;
-                        return;
-                    }
-                    //#endif
-
-                    throw oError;
-                }
-
-                var xmlNode, isTeleport;
-                if (!isSkin) {
-                    xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
-                    var tagName = xmlNode[apf.TAGNAME];
-
-                    if (tagName == "skin")
-                        isSkin = true;
-                    else if (tagName == "teleport")
-                        isTeleport = true;
-                    else if(tagName != "application") {
-                        throw new Error(apf.formatErrorString(0, null,
-                            "Loading Includes",
-                            "Could not find handler to parse include file for '"
-                            + xmlNode[apf.TAGNAME]
-                            + "' expected 'skin' or 'application'", node));
-                    }
-                }
-
-                if (isSkin) {
-                    if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
-                        //#ifdef __DEBUG
-                        apf.console.warn("Found xhtml namespace as global \
-                                          namespace of skin file. This is not \
-                                          allowed. Please remove this before \
-                                          use in production environments.")
-                        //#endif
-                        xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-                        xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
-                    }
-                    else if (!xmlNode)
-                        xmlNode = apf.getAmlDocFromString(xmlString).documentElement;
-                    
-                    if (!xmlNode) {
-                        throw new Error(apf.formatErrorString(0, null,
-                            "Loading skin",
-                            "Could not parse skin. Maybe the file does not exist?", node));
-                    }
-                    
-                    apf.skins.Init(xmlNode, node, path);
-                    apf.includeStack[extra.userdata[1]] = true;
-
-                    if (apf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
-                        extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
-                }
-                else if (isTeleport) {
-                    apf.teleport.loadAml(xmlNode);
-                    apf.includeStack[extra.userdata[1]] = true;
-                }
-                else {
-                    apf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
-                    extra.userdata[0].setAttribute("iid", extra.userdata[1]);
-                }
-
-                xmlNode.setAttribute("filename", extra.url);
-
-                // #ifdef __DEBUG
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
-                // #endif
-
-                apf.loadAmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
-
-            }, {
-                async         : !doSync,
-                userdata      : [node, !apf.isTrue(node.getAttribute("defer")) 
-                                 && apf.includeStack.push(false) - 1],
-                ignoreOffline : true
-            });
-
-        // #endif
-    },
-    //#endif
-
-    /**
-     * @private
-     */
-    checkLoaded : function(){
-        for (var i = 0; i < apf.includeStack.length; i++) {
-            if (!apf.includeStack[i]) {
-                apf.console.info("Waiting for: [" + i + "] " + apf.includeStack[i]);
-                return false;
-            }
-        }
-
-        if (!document.body) return false;
-
-        apf.console.info("Dependencies loaded");
-
-        return true;
-    },
-
-    // #ifndef __PACKAGED
-    /**
-     * @private
-     */
-    checkLoadedDeps : function(){
-        apf.console.info("Loading...");
-
-        apf.Init.addConditional(function(){
-            //apf.dispatchEvent("domready");
-        }, null, ["body"]);
-
-        var i;
-        for (i = 0; i < this.Modules.length; i++) {
-            if (!apf[this.Modules[i]]) {
-                //#ifdef __DEBUG
-                apf.console.info("Waiting for module " + this.Modules[i]);
-                //#endif
-                return false;
-            }
-        }
-
-        for (i = 0; i < this.TelePortModules.length; i++) {
-            var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
-            if (!apf[mod]) {
-                //#ifdef __DEBUG
-                apf.console.info("Waiting for TelePort module " + mod);
-                //#endif
-                return false;
-            }
-        }
-
-        for (i = 0; i < this.Elements.length; i++) {
-            if (this.Elements[i].match(/^_base|\//) || this.Elements[i] == "htmlwrapper")
-                continue;
-
-            if (!apf[this.Elements[i]]) {
-                //#ifdef __DEBUG
-                apf.console.info("Waiting for component " + this.Elements[i]);
-                //#endif
-                return false;
-            }
-        }
-
-        for (i in this.nsqueue) {
-            if (this.nsqueue[i] && apf.namespace(i, this.nsqueue[i])) {
-                //#ifdef __DEBUG
-                apf.console.info("Waiting for namespace to come in " + i);
-                //#endif
-                return false;
-            }
-        }
-
-        if (!document.body) return false;
-
-        //#ifdef __DEBUG
-        apf.console.info("Dependencies loaded");
-        //#endif
-
-        return true;
-    },
-    //#endif
-
-    /**
-     * @private
-     */
-    initialize : function(){
+    initialize : function(xmlStr){
         // #ifdef __DESKRUN
         if (apf.initialized) return;
         apf.initialized = true;
@@ -2188,23 +1764,34 @@ var apf = {
         apf.Init.run(); //Process load dependencies
         
         //#ifdef __WITH_DEFAULT_SKIN
-        apf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml"><a:bar name="bar"><a:style><![CDATA[#jem.apf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}#jem.apf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.apf_bar .apf_counter {position: absolute;bottom: 5px;left: 40px;}#jem.apf_bar .apf_countdown {position: absolute;bottom: 5px;right: 142px;}#jem.apf_bar .apf_volume {position: absolute;bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_volume span {margin: 0;padding: 0;width: 16px;height: 16px;}#jem.apf_bar .apf_fullscreen {position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_fullscreen span {height:14px;width:14px;margin:3px auto 0 0;}]]></a:style><a:presentation><a:main container="." resize-corner="17"><div class="apf_bar" id="jem"> </div></a:main></a:presentation></a:bar><a:label name="label"><a:style><![CDATA[#jem .apf_label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .apf_labelDisabled{color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .apf_label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></a:style><a:presentation><a:main caption="." for="@for"><div class="apf_label"> </div></a:main></a:presentation></a:label><a:slider name="slider"><a:style><![CDATA[#jem .apf_slider {background: url("images/bar_right.png") no-repeat top right;height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .apf_sliderDisabled {background-position: right -8px;}#jem .apf_slider .apf_left {background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .apf_sliderDisabled .apf_left {background-position: left -8px;}#jem .apf_sliderDisabled .apf_filledbar {background-position: 0 -8px;}#jem .apf_slider .apf_grabber {background: url("images/slider3.png") no-repeat top left;width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_sliderDisabled .apf_grabber {background-position: left -8px;}]]></a:style><a:presentation><a:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><marker><u> </u></marker></a:presentation></a:slider><a:slider name="slider16"><a:style><![CDATA[#jem .apf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .apf_slider16Disabled {background-position: right -16px;}#jem .apf_slider16 .apf_left {background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;margin: 0;}#jem .apf_slider16Disabled .apf_left {background-position: left -16px;}#jem .apf_slider16 .apf_grabber {background: url("images/rslider16x.png") no-repeat top right;width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_slider16Disabled .apf_grabber {background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .apf_slider16 .apf_sldprogress {background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]></a:style><a:presentation><a:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider16"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><progress><span class="apf_sldprogress"></span></progress><marker><u></u></marker></a:presentation></a:slider><a:button name="button"><a:style><![CDATA[#jem .apf_button {color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .apf_buttonOver {background-position: 0 -21px;}#jem .apf_buttonDisabled {background-position: 0 -42px;}#jem .apf_buttonDown {background-position: 0 0px;}#jem .apf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]></a:style><a:presentation><a:main background="span" icon="span"><div class="apf_button"><span></span></div></a:main></a:presentation></a:button><a:video name="video"><a:style><![CDATA[#jem .apf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}#jem .apf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></a:style><a:presentation><a:main container="."><div class="apf_video"></div></a:main></a:presentation></a:video></a:skin>';
-        if (!apf.skins.skins["default"] && apf.skins.defaultSkin) {
+        apf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml"><a:checkbox name="checkbox"><a:style><![CDATA[.cbcontainer{padding: 2px 2px 2px 18px;_padding: 2px; /* IE6 fix */position: relative;min-height: 13px;color: #4b4b4b;background: url(images/spacer.gif);_clear: both; /* IE6 fix */}.cbcontainer span{font-family: Tahoma;font-size: 11px;cursor: default;padding: 1px 3px 2px 3px;margin : -1px 0 0 0;overflow: hidden;display: block;float: left;line-height: 13px;}.cbcontainerFocus span{padding: 0px 2px 1px 2px;border: 1px dotted #BBB;}.cbcontainerChecked.cbcontainerDown.cbcontainerFocus .checkbox {background-position: 0 -48px;}.cbcontainer .checkbox{width: 12px;height: 12px;overflow: hidden;position: absolute;left: 2px;top: 2px;_position: relative; /* IE6 fix */_float: left; /* IE6 fix */_margin: -2px 4px 0 0; /* IE6 fix */background: url("images/checkbox.png") no-repeat 0 -12px;}.cbcontainerDown .checkbox{background-position: 0 -36px;}.cbcontainerChecked .checkbox{background-position: 0 -24px;}.cbcontainerError span{background-color : #ffb500;color: #fbfbfb;}.cbcontainerDisabled .checkbox{background-position: 0 -0px;}.cbcontainerDisabled span{color: #bebebe;}.cbcontainer br{display: none;}]]></a:style><a:style condition="!apf.isIE"><![CDATA[.cbcontainer br{line-height: 0;display: block;}]]></a:style><a:presentation><a:main label="span/text()"><div class="cbcontainer"><div class="checkbox"> </div><span>-</span><br clear="left" /></div></a:main></a:presentation></a:checkbox><a:bar name="bar"><a:style><![CDATA[#jem.apf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}#jem.apf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.apf_bar .apf_counter {position: absolute;bottom: 5px;left: 40px;}#jem.apf_bar .apf_countdown {position: absolute;bottom: 5px;right: 142px;}#jem.apf_bar .apf_volume {position: absolute;bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_volume span {margin: 0;padding: 0;width: 16px;height: 16px;}#jem.apf_bar .apf_fullscreen {position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_fullscreen span {height:14px;width:14px;margin:3px auto 0 0;}]]></a:style><a:presentation><a:main container="." resize-corner="17"><div class="apf_bar" id="jem"> </div></a:main></a:presentation></a:bar><a:label name="label"><a:style><![CDATA[#jem .apf_label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .apf_labelDisabled{color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .apf_label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></a:style><a:presentation><a:main caption="." for="@for"><div class="apf_label"> </div></a:main></a:presentation></a:label><a:slider name="slider"><a:style><![CDATA[#jem .apf_slider {background: url("images/bar_right.png") no-repeat top right;height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .apf_sliderDisabled {background-position: right -8px;}#jem .apf_slider .apf_left {background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .apf_sliderDisabled .apf_left {background-position: left -8px;}#jem .apf_sliderDisabled .apf_filledbar {background-position: 0 -8px;}#jem .apf_slider .apf_grabber {background: url("images/slider3.png") no-repeat top left;width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_sliderDisabled .apf_grabber {background-position: left -8px;}]]></a:style><a:presentation><a:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><marker><u> </u></marker></a:presentation></a:slider><a:slider name="slider16"><a:style><![CDATA[#jem .apf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .apf_slider16Disabled {background-position: right -16px;}#jem .apf_slider16 .apf_left {background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;margin: 0;}#jem .apf_slider16Disabled .apf_left {background-position: left -16px;}#jem .apf_slider16 .apf_grabber {background: url("images/rslider16x.png") no-repeat top right;width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_slider16Disabled .apf_grabber {background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .apf_slider16 .apf_sldprogress {background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]></a:style><a:presentation><a:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider16"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><progress><span class="apf_sldprogress"></span></progress><marker><u></u></marker></a:presentation></a:slider><a:button name="button"><a:style><![CDATA[#jem .apf_button {color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .apf_buttonOver {background-position: 0 -21px;}#jem .apf_buttonDisabled {background-position: 0 -42px;}#jem .apf_buttonDown {background-position: 0 0px;}#jem .apf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]></a:style><a:presentation><a:main background="span" icon="span"><div class="apf_button"><span></span></div></a:main></a:presentation></a:button><a:video name="video"><a:style><![CDATA[#jem .apf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}#jem .apf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></a:style><a:presentation><a:main container="."><div class="apf_video"></div></a:main></a:presentation></a:video></a:skin>';
+        if (false && !apf.skins.skins["default"] && apf.skins.defaultSkin) {
             //#ifdef __DEBUG
             apf.console.warn("No skin definition found. Using default skin.");
             //#endif
 
             //var xmlString = apf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-            var xmlNode = apf.getAmlDocFromString(apf.skins.defaultSkin).documentElement; //@todo should get preprocessed
+            //var xmlNode = apf.getAmlDocFromString(apf.skins.defaultSkin).documentElement; //@todo should get preprocessed
+            //@todo apf3.0 rewrite this flow
+            var str = apf.skins.defaultSkin.replace(/\<\!DOCTYPE[^>]*>/, "")
+              .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "");
+            if (!apf.supportNamespaces)
+                str = str.replace(/xmlns\=\"[^"]*\"/g, "");
+            var xmlNode = apf.getXml(str);//apf.getAmlDocFromString(xmlString);
+              
             xmlNode.setAttribute("media-path", apf.CDN + apf.VERSION + "/images/")
             xmlNode.setAttribute("icon-path", apf.CDN + apf.VERSION + "/icons/")
+            
             apf.skins.Init(xmlNode);
         }
         //#endif
+        
+        var bodyMarginTop = parseFloat(apf.getStyle(document.body, 'marginTop'));
+        apf.doesNotIncludeMarginInBodyOffset = (document.body.offsetTop !== bodyMarginTop);
 
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (apf.isParsingPartial) {
-            apf.appsettings.setDefaults();
+            apf.config.setDefaults();
             apf.hasSingleRszEvent = true;
 
             var pHtmlNode = document.body;
@@ -2212,15 +1799,17 @@ var apf = {
             apf.AmlParser.parseMoreAml(apf.AppNode, pHtmlNode, null,
                 true, false);
 
-            var pNode, firstNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
+            var pNode, firstNode, next, info,
+                lastBefore = null,
+                loop       = pHtmlNode.lastChild;
             while (loop && lastChild != loop) {
                 info = apf.amlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
                     pNode = info[0];
                     if ("P".indexOf(pNode.tagName) > -1) {
-                        lastBefore = pNode.parentNode.insertBefore(apf.getNode(loop, [0]),
-                            pNode);
+                        lastBefore = pNode.parentNode.insertBefore(
+                            apf.getNode(loop, [0]), pNode);
                     }
                     else {
                         firstNode = apf.getNode(loop, [0]);
@@ -2230,7 +1819,9 @@ var apf = {
                                     typeof info[1] == "number" ? lastBefore : info[1]);
                             }
                             else {
-                                lastBefore = typeof info[1] == "number" ? lastBefore : info[1];
+                                lastBefore = typeof info[1] == "number" 
+                                    ? lastBefore
+                                    : info[1];
                             }
                             firstNode = apf.getNode(loop, [0]);
                         }
@@ -2241,19 +1832,21 @@ var apf = {
                 loop = next;
             }
 
-            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JTABLE
+            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __AMLTABLE
             setTimeout("apf.layout.forceResize();");
             // #endif
         }
         else
         //#endif
         {
+            apf.window.init(xmlStr);
+            
             // Start application
-            if (apf.AmlParser && apf.AppData)
+            /*if (apf.AmlParser && apf.AppData)
                 apf.AmlParser.parse(apf.AppData);
 
-            if (apf.loadScreen && apf.appsettings.autoHideLoading)
-                apf.loadScreen.hide();
+            if (apf.loadScreen && apf.config.autoHideLoading)
+                apf.loadScreen.hide();*/
         }
     },
 
@@ -2285,10 +1878,20 @@ var apf = {
             };
         }
 
-        if (func && !apf.load_events[0]) {
+        apf.load_events.push(func);
+
+        if (func && apf.load_events.length == 1) {
+            // Catch cases where addDomLoadEvent() is called after the browser
+            // event has already occurred.
+            var doc = document, UNDEF = "undefined";
+            if ((typeof doc.readyState != UNDEF && doc.readyState == "complete")
+              || (typeof doc.readyState == UNDEF && (doc.getElementsByTagName("body")[0] || doc.body)))
+                return apf.load_init();
+
             // for Mozilla/Opera9.
-            // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
-            if (document.addEventListener && !apf.isOpera) {
+            // Mozilla, Opera (see further below for it) and webkit nightlies
+            // currently support this event
+            if (doc.addEventListener && !apf.isOpera) {
                 // We're using "window" and not "document" here, because it results
                 // in a memory leak, especially in FF 1.5:
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=241518
@@ -2303,7 +1906,7 @@ var apf = {
                     try {
                         // If IE is used, use the trick by Diego Perini
                         // http://javascript.nwbox.com/IEContentLoaded/
-                        document.documentElement.doScroll("left");
+                        doc.documentElement.doScroll("left");
                     }
                     catch(error) {
                         setTimeout(arguments.callee, 0);
@@ -2314,10 +1917,10 @@ var apf = {
                 }, 10);
             }
             else if (apf.isOpera) {
-                document.addEventListener( "DOMContentLoaded", function () {
-                    apf.load_timer  = setInterval(function() {
-                        for (var i = 0; i < document.styleSheets.length; i++) {
-                            if (document.styleSheets[i].disabled)
+                doc.addEventListener("DOMContentLoaded", function() {
+                    apf.load_timer = setInterval(function() {
+                        for (var i = 0, l = doc.styleSheets.length; i < l; i++) {
+                            if (doc.styleSheets[i].disabled)
                                 return;
                         }
                         // all is fine, so we can call the init!
@@ -2325,20 +1928,23 @@ var apf = {
                     }, 10);
                 }, false);
             }
-            else if (apf.isSafari && !apf.isIphone) {
-                var aSheets = documents.getElementsByTagName("link");
-                for (var i = aSheets.length; i >= 0; i++) {
+            else if (apf.isWebkit && !apf.isIphone) {
+                var aSheets = doc.getElementsByTagName("link"),
+                    i       = aSheets.length,
+                    iSheets;
+                for (; i >= 0; i++) {
                     if (!aSheets[i] || aSheets[i].getAttribute("rel") != "stylesheet")
                         aSheets.splice(i, 0);
                 }
-                var iSheets = aSheets.length;
+                iSheets = aSheets.length;
                 apf.load_timer  = setInterval(function() {
-                    if (/loaded|complete/.test(document.readyState)
-                      && document.styleSheets.length == iSheets)
+                    if (/loaded|complete/.test(doc.readyState)
+                      && doc.styleSheets.length == iSheets)
                         apf.load_init(); // call the onload handler
                 }, 10);
             }
-            // for other browsers set the window.onload, but also execute the old window.onload
+            // for other browsers set the window.onload, but also execute the
+            // old window.onload
             else {
                 var old_onload = window.onload;
                 window.onload  = function () {
@@ -2348,7 +1954,6 @@ var apf = {
                 };
             }
         }
-        apf.load_events.push(func);
     },
     
     addListener : function(el, type, fn){
@@ -2372,35 +1977,29 @@ var apf = {
     /**
      * Unloads the aml application.
      */
-    destroy : function(exclude){
+    unload : function(exclude){
         //#ifdef __DEBUG
         apf.console.info("Initiating self destruct...");
         //#endif
 
         this.isDestroying = true;
 
-        //#ifdef __WITH_XFORMS
-        var i, models = apf.nameserver.getAll("model");
-        for (i = 0; i < models.length; i++)
-            models[i].dispatchEvent("xforms-model-destruct");
-        //#endif
-
         //#ifdef __WITH_POPUP
         this.popup.destroy();
         //#endif
 
-        for (i = 0; i < this.all.length; i++) {
-            if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
-                this.all[i].destroy(false);
+        for (var node, i = 0; i < this.all.length; i++) {
+            node = this.all[i];
+            if (node && node != exclude && node.destroy && !node.apf)
+                node.destroy(false);
         }
 
-        for (i = this.$amlDestroyers.length - 1; i >= 0; i--)
-            this.$amlDestroyers[i].call(this);
-        this.$amlDestroyers = undefined;
-
-        // #ifdef __WITH_TELEPORT
-        apf.teleport.destroy();
-        // #endif
+        //this.dispatchEvent("DOMNodeRemovedFromDocument", {});//@todo apf3.0
+        
+        for (var i = 0; i < this.availHTTP.length; i++)
+            this.availHTTP[i] = null;
+        
+        this.availHTTP.length = 0;
 
         //#ifdef __WITH_XMLDATABASE
         if (apf.xmldb)
@@ -2436,4 +2035,363 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
 }
 
 document.documentElement.className += " has_apf"; 
-apf.Init.run('apf');
+apf.Init.run("apf");
+
+//#ifndef __PACKAGED
+if (!apf.basePath) {
+    var snodes = document.getElementsByTagName("script");
+    for (var src, i = 0; i < snodes.length; i++) {
+        src = snodes[i].getAttribute("src");
+        if (src && src.match(/^(.*)apf\.js$/)) {
+            apf.basePath = RegExp.$1;
+            break;
+        }
+    }
+    
+    if (!apf.basePath)
+        apf.basePath = "./";
+}
+
+(function(global){
+    var sUNDEF = "undefined",               // constants used for compression optimization
+        sSTRING = "string",
+        sOBJECT = "object",
+        sHEAD = "head",
+        sBODY = "body",
+        sFUNCTION = "function",
+        sSCRIPT = "script",
+        sREADYSTATE = "readyState",
+        sXHRPOLL = "xhrpoll",
+        sPRELOADDONE = "preloaddone",
+        sLOADTRIGGER = "loadtrigger",
+        sSRCFILENAME = "srcfilename",
+        sPRELOAD = "preload",
+        sDONE = "done",
+        sWHICH = "which",
+        bTRUE = true,
+        bFALSE = false,
+        _counter = 0,
+        oDOC = global.document,
+        oDOCLOC = oDOC.location,
+        oACTIVEX = global.ActiveXObject,
+        fSETTIMEOUT = global.setTimeout,
+        fSETINTERVAL = global.setInterval,
+        fCLEARINTERVAL = global.clearInterval,
+        fGETELEMENTSBYTAGNAME = function(tn){return oDOC.getElementsByTagName(tn);},
+        fOBJTOSTRING = Object.prototype.toString,
+        fNOOP = function(){},
+        append_to = {},
+        all_scripts = {},
+        page_domain = oDOCLOC.protocol + "//" + oDOCLOC.host + "/",
+        is_local_filesystem = (page_domain.indexOf("file:") === 0),
+        docScripts = fGETELEMENTSBYTAGNAME(sSCRIPT),
+        is_ie = !+"\v1", // feature detection based on Andrea Giammarchi's solution: http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+        is_safari = /a/.__proto__=='//', // feature detections from http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
+        is_chrome = /source/.test((/a/.toString+'')),
+        is_opera = /^function \(/.test([].sort),
+        is_ff = /a/[-1]=='a',
+        global_defs = {
+            preload:bTRUE, // use various tricks for "preloading" scripts
+            cache:is_ie||is_safari||is_chrome, // IE/Safari/Chrome can use the "cache" trick to preload
+            order:is_ff||is_opera, // FF/Opera preserve execution order with script tags automatically, so just add all scripts as fast as possible
+            xhr:bTRUE, // use XHR trick to preload local scripts
+            dupe:bFALSE, // allow duplicate scripts?
+            preserve:bFALSE, // preserve execution order of all loaded scripts (regardless of preloading)
+            base:"", // base path to prepend to all scripts
+            which:sHEAD // which DOM object ("head" or "body") to append scripts to
+        }
+    ;
+        
+    append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
+    append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
+    
+    function scriptFilename(src) { // extracts just the filename from a script's URL
+        return (typeof src === sSTRING && src.length) ? /^([^#?]*\/)?([^?\/#]*)(\?.*)?(#.*)?$/i.exec(src)[2] : "";
+    }
+    function sameDomain(src) { return !(src.match(/^https?:\/\//) && src.indexOf(page_domain) !== 0); }
+    function scriptTagExists(filename) { // checks if a script filename has ever been loaded into this page's DOM
+        var i = 0, script;
+        while (script = docScripts[i++]) {
+            if (typeof script.src === sSTRING && filename === scriptFilename(script.src) && script.getAttribute("rel") !== sPRELOAD) return bTRUE;
+        }
+        return bFALSE;
+    }
+    function engine(queueExec,opts) {
+        queueExec = !(!queueExec);
+        if (typeof opts === sUNDEF) opts = global_defs;
+        
+        var engine_id = _counter++,
+            ready = bFALSE,
+            _use_preload = queueExec && opts.preload,
+            _use_cache = _use_preload && opts.cache,
+            _use_script_order = _use_preload && opts.order,
+            _use_xhr_preload = _use_preload && opts.xhr,
+            _auto_wait = opts.preserve,
+            _which = opts.which,
+            waitFunc = fNOOP,
+            scripts_loading = bFALSE,
+            publicAPI,
+            scripts = {},
+            exec = []
+        ;
+        
+        function isScriptLoaded(elem,scriptentry) {
+            if ((elem[sREADYSTATE] && elem[sREADYSTATE]!=="complete" && elem[sREADYSTATE]!=="loaded") || scriptentry[sDONE]) { return bFALSE; }
+            elem.onload = elem.onreadystatechange = null; // prevent memory leak
+            return bTRUE;
+        }
+        function handleScriptLoad(scriptentry,skipReadyCheck) {
+            skipReadyCheck = !(!skipReadyCheck); // used to override ready check when script text was injected from XHR preload
+            if (!skipReadyCheck && !(isScriptLoaded(this,scriptentry))) return;
+            scriptentry[sDONE] = bTRUE;
+
+            for (var key in scripts) {
+                if (scripts.hasOwnProperty(key)) {
+                    //console.log("["+engine_id+"] "+"checking for done:"+key);
+                    if (!(scripts[key][sDONE])) return;
+                }
+            }
+            ready = bTRUE;
+            if (ready) {
+                waitFunc();
+            }
+        }
+        function loadTriggerExecute(scriptentry) {
+            if (typeof scriptentry[sLOADTRIGGER] === sFUNCTION) {
+                scriptentry[sLOADTRIGGER]();
+                scriptentry[sLOADTRIGGER] = null; // prevent memory leak
+            }
+        }
+        function handleScriptPreload(scriptentry) {
+            if (!isScriptLoaded(this,scriptentry)) return;
+            scriptentry[sPRELOADDONE] = bTRUE;
+            var elem = this;
+            fSETTIMEOUT(function(){
+                append_to[scriptentry[sWHICH]][0].removeChild(elem); // remove preload script node
+                loadTriggerExecute(scriptentry);
+            },0);
+        }
+        function handleXHRPreload(xhr,scriptentry) {
+            if (xhr[sREADYSTATE] === 0) fCLEARINTERVAL(scriptentry[sXHRPOLL]);
+            if (xhr[sREADYSTATE] === 4) {
+                fCLEARINTERVAL(scriptentry[sXHRPOLL]);
+                scriptentry[sPRELOADDONE] = bTRUE;
+                fSETTIMEOUT(function(){ loadTriggerExecute(scriptentry); },0);
+            }
+        }
+        function createScriptTag(scriptentry,src,type,charset,rel,onload,scriptText) {
+            function run(){
+                if (append_to[scriptentry[sWHICH]][0] === null) { // append_to object not yet ready
+                    fSETTIMEOUT(arguments.callee,825); 
+                    return;
+                }
+                var scriptElem = oDOC.createElement(sSCRIPT), fSETATTRIBUTE = function(attr,val){scriptElem.setAttribute(attr,val);};
+                fSETATTRIBUTE("type",type);
+                fSETATTRIBUTE("rel",rel);
+                if (typeof charset === sSTRING) fSETATTRIBUTE("charset",charset);
+                if (typeof onload === sFUNCTION) { // load script via 'src' attribute, set onload/onreadystatechange listeners
+                    scriptElem.onload = scriptElem.onreadystatechange = function(){onload.call(scriptElem,scriptentry);};
+                    fSETATTRIBUTE("src",src);
+                }
+                append_to[scriptentry[sWHICH]][0].appendChild(scriptElem);
+                if (typeof scriptText === sSTRING) { // script text already avaiable from XHR preload, so just inject it
+                    scriptElem.text = scriptText;
+                    handleScriptLoad.call(scriptElem,scriptentry,bTRUE); // manually call 'load' callback function, skipReadyCheck=true
+                }
+            };
+            if (location.protocol == "file:")
+                run();
+            else
+                fSETTIMEOUT(run,0);
+        }
+        function loadScriptElem(scriptentry,src,type,charset) {
+            all_scripts[scriptentry[sSRCFILENAME]] = bTRUE;
+            createScriptTag(scriptentry,src,type,charset,"",handleScriptLoad);
+        }
+        function loadScriptCache(scriptentry,src,type,charset) {
+            var args = arguments;
+            if (typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload into cache
+                //console.log("["+engine_id+"] "+"start caching:"+scriptentry[sSRCFILENAME]);
+                scriptentry[sPRELOADDONE] = bFALSE;
+                createScriptTag(scriptentry,src,"text/html",charset,sPRELOAD,handleScriptPreload); // "text/html" causes a fetch into cache, but no execution
+            }
+            else if (!scriptentry[sPRELOADDONE]) { // preload still in progress, make sure trigger is set for execution later
+                //console.log("["+engine_id+"] "+"caching not yet done:"+scriptentry[sSRCFILENAME]);
+                scriptentry[sLOADTRIGGER] = function(){loadScriptCache.apply(null,args);};
+            }
+            else { // preload done, so reload (from cache, hopefully!) as regular script element
+                //console.log("["+engine_id+"] "+"caching done:"+scriptentry[sSRCFILENAME]);
+                loadScriptElem.apply(null,args);
+            }
+        }
+        function loadScriptXHR(scriptentry,src,type,charset) {
+            var args = arguments, xhr;
+            if (typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload
+                //console.log("["+engine_id+"] "+"start xhr caching:"+scriptentry[sSRCFILENAME]);
+                scriptentry[sPRELOADDONE] = bFALSE;
+                xhr = scriptentry.xhr = (oACTIVEX ? new oACTIVEX("Microsoft.XMLHTTP") : new global.XMLHttpRequest());
+                scriptentry[sXHRPOLL] = fSETINTERVAL(function() { handleXHRPreload(xhr,scriptentry); },13);
+                xhr.open("GET",src);
+                xhr.send("");
+            }
+            else if (!scriptentry[sPRELOADDONE]) {  // preload XHR still in progress, make sure trigger is set for execution later
+                //console.log("["+engine_id+"] "+"xhr caching not yet done:"+scriptentry[sSRCFILENAME]);
+                scriptentry[sLOADTRIGGER] = function(){loadScriptXHR.apply(null,args);};
+            }
+            else { // preload done, so "execute" script via injection
+                //console.log("["+engine_id+"] "+"xhr caching done:"+scriptentry[sSRCFILENAME]);
+                all_scripts[scriptentry[sSRCFILENAME]] = bTRUE;
+                createScriptTag(scriptentry,src,type,charset,"",null,scriptentry.xhr.responseText);
+                scriptentry.xhr = null;
+            }
+        }
+        function loadScript(o) {
+            if (typeof o.allowDup === sUNDEF) o.allowDup = opts.dupe;
+            var src = ((/^\w+\:\/\//.test(o.src))?"":opts.base) + o.src, type = o.type, charset = o.charset, allowDup = o.allowDup, 
+                src_filename = scriptFilename(src), scriptentry, same_domain = sameDomain(src);
+            if (typeof type !== sSTRING) type = "text/javascript";
+            if (typeof charset !== sSTRING) charset = null;
+            allowDup = !(!allowDup);
+            if (!allowDup && 
+                (
+                    (typeof all_scripts[src_filename] !== sUNDEF && all_scripts[src_filename] !== null) || 
+                    scriptTagExists(src_filename)
+                )
+            ) {
+                //console.log("["+engine_id+"] duplicate found:"+src_filename);
+                if (typeof scripts[src_filename] !== sUNDEF && scripts[src_filename][sPRELOADDONE] && same_domain) {
+                    //console.log("["+engine_id+"] duplicate mark done from XHR:"+src_filename);
+                    // this script was preloaded via XHR, but is a duplicate, and dupes are not allowed
+                    handleScriptLoad(scripts[src_filename],bTRUE); // mark the entry as done and check if chain group is done
+                }
+                return;
+            }
+            if (typeof scripts[src_filename] === sUNDEF) scripts[src_filename] = {};
+            scriptentry = scripts[src_filename];
+            if (typeof scriptentry[sWHICH] === sUNDEF) scriptentry[sWHICH] = _which;
+            scriptentry[sDONE] = bFALSE;
+            scriptentry[sSRCFILENAME] = src_filename;
+            scripts_loading = bTRUE;
+            
+            if (_use_preload && !_use_script_order && !is_local_filesystem && src.indexOf("file://")!==0) { // only use xhr/cache preloading if not script-order loading, 
+                                                                                                            // also don't use xhr or cache-preloading if used on local filesystem
+                if (_use_xhr_preload && same_domain) loadScriptXHR(scriptentry,src,type,charset);
+                else loadScriptCache(scriptentry,src,type,charset);
+            }
+            else {
+                loadScriptElem(scriptentry,src,type,charset);
+            }
+        }
+        function onlyQueue(execBody) {
+            exec.push(execBody);
+        }
+        function queueAndExecute(execBody) { // helper for publicAPI functions below
+            if (queueExec && !_use_script_order) onlyQueue(execBody);
+            if (!queueExec || _use_cache || _use_xhr_preload || _use_script_order) execBody(); // if engine is either not queueing, or is queuing in preload mode, go ahead and execute
+        }
+        function serializeArgs(args) {
+            var sargs = [];
+            for (var i=0; i<args.length; i++) {
+                if (fOBJTOSTRING.call(args[i]) === "[object Array]") sargs = sargs.concat(serializeArgs(args[i]));
+                else sargs[sargs.length] = args[i];
+            }
+            return sargs;
+        }
+                
+        publicAPI = {
+            script:function() {
+                var args = serializeArgs(arguments), use_engine = publicAPI;
+                if (_auto_wait) {
+                    for (var i=0; i<args.length; i++) {
+                        if (i===0) {
+                            queueAndExecute(function(){
+                                if (typeof args[0] === sOBJECT) loadScript(args[0]);
+                                else if (typeof args[0] === sSTRING) loadScript({src:args[0]});
+                            });
+                        }
+                        else use_engine = use_engine.script(args[i]);
+                        use_engine = use_engine.wait();
+                    }
+                }
+                else {
+                    queueAndExecute(function(){
+                        for (var i=0; i<args.length; i++) {
+                            if (typeof args[i] === sOBJECT) loadScript(args[i]);
+                            else if (typeof args[i] === sSTRING) loadScript({src:args[i]});
+                        }
+                    });
+                }
+                return use_engine;
+            },
+            wait:function(func) {
+                if (location.protocol == "file:" && !func)
+                    return engine(bTRUE,opts);
+                
+                if (typeof func !== sFUNCTION) func = fNOOP;
+                // On this current chain's waitFunc function, tack on call to trigger the queue for the *next* engine 
+                // in the chain, which will be executed when the current chain finishes loading
+                var e = engine(bTRUE,opts), // 'bTRUE' tells the engine to be in queueing mode
+                    triggerNextChain = e.trigger, // store ref to e's trigger function for use by 'wfunc'
+                    wfunc = function(){ try { func(); } catch(err) {} triggerNextChain(); };
+                delete e.trigger; // remove the 'trigger' property from e's public API, since only used internally
+                var fn = function(){
+                    if (scripts_loading && !ready) waitFunc = wfunc;
+                    else fSETTIMEOUT(wfunc,0);
+                };
+                
+                if (queueExec && !scripts_loading) onlyQueue(fn)
+                else queueAndExecute(fn);
+                return e;
+            }
+        };
+        publicAPI.block = publicAPI.wait;   // alias "block" to "wait" -- "block" is now deprecated
+        if (queueExec) {
+            // if queueing, return a function that the previous chain's waitFunc function can use to trigger this 
+            // engine's queue. NOTE: this trigger function is not exposed to the public chain API.
+            publicAPI.trigger = function() {
+                //console.log("["+engine_id+"] triggering engine queue:"+exec.length);
+                var i=0, fn; 
+                while (fn = exec[i++]) fn();
+                exec = []; 
+            }
+        }
+        return publicAPI;
+    };
+    function extendOpts(opts) {
+        var k, newOpts = {}, optMappings = {"UseCachePreload":"cache","UseLocalXHR":"xhr","UsePreloading":"preload","AlwaysPreserveOrder":"preserve","AppendTo":"which","AllowDuplicates":"dupe","BasePath":"base"};
+        newOpts.order = !(!global_defs.order);
+        for (k in optMappings) {
+            if (typeof global_defs[optMappings[k]] !== sUNDEF) newOpts[optMappings[k]] = (typeof opts[k] !== sUNDEF) ? opts[k] : global_defs[optMappings[k]];
+        }
+        newOpts.preserve = !(!newOpts.preserve);
+        newOpts.cache = !(!newOpts.cache);
+        newOpts.xhr = !(!newOpts.xhr);
+        newOpts.preload = !(!newOpts.preload);
+        newOpts.dupe = !(!newOpts.dupe);
+        newOpts.base = (typeof newOpts.base === sSTRING) ? newOpts.base : "";
+        if (!newOpts.preload) newOpts.cache = newOpts.order = newOpts.xhr = bFALSE;
+        newOpts.which = (newOpts.which === sHEAD || newOpts.which === sBODY) ? newOpts.which : sHEAD;
+        return newOpts;
+    }
+    
+    apf.$loader = {
+        setGlobalDefaults:function(gdefs) { // intentionally does not return an "engine" instance -- must call as stand-alone function call on $LAB
+            global_defs = extendOpts(gdefs);
+        },
+        setOptions:function(opts){ // set options per chain
+            return engine(bFALSE,extendOpts(opts));
+        },
+        script:function(){ // will load one or more scripts
+            return engine().script.apply(null,arguments);
+        },
+        wait:function(){ // will ensure that the chain's previous scripts are executed before execution of scripts in subsequent chain links
+            return engine().wait.apply(null,arguments);
+        }
+    };
+    apf.$loader.block = apf.$loader.wait;   // alias "block" to "wait" -- "block" is now deprecated
+})(window);
+
+apf.$loader.script(apf.basePath + "loader.js");
+//apf.include(apf.basePath + 'loader.js');
+
+//#endif

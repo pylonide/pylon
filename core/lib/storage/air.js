@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 			
-apf.namespace("storage.modules.air", {
+apf.storage.modules.air = {
     init: function(){
         this.ByteArray = window.runtime.flash.utils.ByteArray;
         this.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore;
@@ -281,6 +281,6 @@ apf.namespace("storage.modules.air", {
         throw new Error(this.declaredClass
             + " does not support a storage settings user-interface");
     }
-});
+};
 
 //#endif

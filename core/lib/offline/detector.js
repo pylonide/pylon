@@ -45,7 +45,7 @@
  *
  * @default_private
  */
-apf.namespace("offline.detector", {
+apf.offline.detector = {
     //#ifndef __PACKED
     detectUrl : apf.basePath + "core/lib/offline/network_check.txt",
     /* #else
@@ -60,7 +60,7 @@ apf.namespace("offline.detector", {
                 this.detectUrl = aml.getAttribute("detect-url");
             /* #ifdef __PACKAGED
             else
-                this.detectUrl = (apf.appsettings.resourcePath || apf.basePath)
+                this.detectUrl = (apf.config.resourcePath || apf.basePath)
                     + "resources/network_check.txt";
             #endif */
 
@@ -133,6 +133,6 @@ apf.namespace("offline.detector", {
         apf.console.info("Detection of network state is deactivated");
         //#endif
     }
-});
+};
 
 // #endif

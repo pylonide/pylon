@@ -28,7 +28,7 @@
  * features that depend on a storage mechanism to be available.
  * @default_private
  */
-apf.namespace("storage.modules.memory", {
+apf.storage.modules.memory = {
     initialized: true,
     store      : {},
     
@@ -300,5 +300,5 @@ apf.namespace("storage.modules.memory", {
         throw new Error(this.declaredClass 
             + " does not support a storage settings user-interface");
     }
-});
+};
 // #endif

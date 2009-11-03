@@ -91,97 +91,22 @@
  * @allowchild auth, authentication, offline, printer, defaults
  * @todo describe defaults
  */
-apf.appsettings = {
-    tagName            : "appsettings",
-    nodeType           : apf.NODE_ELEMENT,
-    nodeFunc           : apf.NODE_HIDDEN,
+apf.appsettings = function(struct, tagName){
+    this.$init(tagName || "appsettings", apf.NODE_HIDDEN, struct);
+};
 
-    //#ifdef __USE_TOSTRING
-    toString : function(){
-        return "[Element Node, <a:appsettings />]";
-    },
-    //#endif
-
-    //Defaults
-    disableRightClick  : false,
-    allowSelect        : false,
-    allowBlur          : false,
-    autoDisableActions : true,
-    autoDisable        : false, /** @todo fix this to only autodisable when createmodel is not true */
-    disableF5          : true,
-    autoHideLoading    : true,
-    disableSpace       : true,
-    defaultPage        : "home",
-    disableBackspace   : true,
-    undokeys        : false,
-    outline            : false,
-    autoDisableNavKeys : true,
-    dragOutline        : false,
-    resizeOutline      : false,
-    disableTabbing     : false,
-    resourcePath       : null,
-    initdelay          : true,
-    // #ifdef __WITH_IEPNGFIX
-    iePngFix           : false,
-    // #endif
-    // #ifdef __SUPPORT_IPHONE
-    iphoneFullscreen   : true,
-    iphoneStatusbar    : 'default', //other options: black-translucent, black
-    iphoneIcon         : null,
-    iphoneIconIsGlossy : false,
-    iphoneFixedViewport: true,
-    // #endif
-    skinset            : "default",
-    name               : "",
-
-    tags               : {},
-    defaults           : {},
-    baseurl            : "",
-
-    setDefaults : function(){
-        //#ifdef __WITH_PARTIAL_AML_LOADING
-        if (apf.isParsingPartial) {
-            this.disableRightClick  = false;
-            this.allowSelect        = true;
-            this.autoDisableActions = true;
-            this.autoDisable        = false;
-            this.disableF5          = false;
-            this.autoHideLoading    = true;
-            this.disableSpace       = false;
-            this.disableBackspace   = false;
-            this.undokeys        = false;
-            this.disableTabbing     = true;
-            this.allowBlur          = true;
-        }
-        //#endif
-    },
-
-    getDefault : function(type, prop){
-        var d = this.defaults[type];
-        if (!d)
-            return;
-
-        for (var i = d.length - 1; i >= 0; i--) {
-            if (d[i][0] == prop)
-                return d[i][1];
-        }
-    },
-
-    setProperty : function(name, value){
-        if (this.$booleanProperties[name])
-            value = apf.isTrue(value);
-        
-        //this[name] = value;
-        //@todo I dont want to go through all the code again, maybe later
-        this[name.replace(/-(\w)/g, function(m, m1){
-            return m1.toUpperCase()
-        })] = this[name] = value;
-        
-        (this.$propHandlers && this.$propHandlers[name]
-          || apf.AmlElement.propHandlers[name] || apf.K).call(this, value);
-    },
+(function(){
+    this.$parsePrio = "001";
     
-    $supportedProperties : ["debug", "name", "baseurl", "resource-path", 
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = {
+        language : 1,
+        login    : 1,
+        logout   : 1,
+        layout   : 1
+    };
+    
+    this.$supportedProperties = ["debug", "name", "baseurl", "resource-path", 
         "disable-right-click", "allow-select", "allow-blur", 
         "auto-disable-actions", "auto-disable", "disable-f5", 
         "auto-hide-loading", "disable-space", "disable-backspace", "undokeys", 
@@ -189,8 +114,8 @@ apf.appsettings = {
         "resize-outline", "resize-outline", "iepngfix", "iepngfix-elements", 
         "iphone-fullscreen", "iphone-statusbar", "iphone-icon", 
         "iphone-icon-is-glossy", "iphone-fixed-viewport", "layout", "skinset", 
-        "language", "storage", "offline", "login"],
-    $booleanProperties : {
+        "language", "storage", "offline", "login"];
+    this.$booleanProperties = {
         "debug":1,
         "disable-right-click":1,
         "allow-select":1,
@@ -208,366 +133,28 @@ apf.appsettings = {
         "iphone-fullscreen":1,
         "iphone-icon-is-glossy":1, 
         "iphone-fixed-viewport":1
-    },
-    $propHandlers : {
-        "baseurl" : function(value){
-            this.baseurl = apf.parseExpression(value);
-        },
-        "language" : function(value){
-            this.language = apf.parseExpression(value);
-            
-            //#ifdef __WITH_LANG_SUPPORT
-            setTimeout("apf.language.loadFrom(apf.appsettings.language);");
-            //#endif
-        },
-        "resource-path" : function(value){
-            this.resourcePath = apf.parseExpression(value || "")
-              .replace(/resources\/?|\/$/g, '');
-        },
-        // #ifdef __WITH_IEPNGFIX
-        "iepngfix" : function(value, x){
-            this.iePngFix           = (!apf.supportPng24 
-                && (apf.isTrue(value)
-                || x.getAttribute("iepngfix-elements")));
-            
-            if (this.iePngFix) {
-                // run after the init() has finished, otherwise the body of the 
-                // document will still be empty, thus no elements found.
-                setTimeout(function() {
-                    apf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
-                });
-            }
-        },
-        // #endif
-        //#ifdef __WITH_PRESENTATION
-        "skinset" : function(value) {
-            if (!apf.isParsing)
-                apf.skins.changeSkinset(value);
-        },
-        //#endif
-        //#ifdef __WITH_INTERACTIVE
-        "outline" : function(value) {
-            this.dragOutline    =
-            this.resizeOutline  =
-            this.outline        = apf.isTrue(apf.parseExpression(value));
-        },
-        "drag-outline" : function(value){
-            this.dragOutline    = value
-              ? apf.isTrue(apf.parseExpression(value))
-              : false;
-        },
-        "resize-outline" : function(value){
-            this.resizeOutline  = value
-              ? !apf.isFalse(apf.parseExpression(value))
-              : false;
-        },
-        //#endif
-        //#ifdef __WITH_AUTH
-        "login" : function(value, x) {
-            apf.auth.init(x);
-        },
-        //#endif
-        "debug" : function(value){
-            //#ifdef __DEBUG
-            if (value) {
-                apf.addEventListener("load", function(){
-                    setTimeout("apf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                    apf.removeEventListener("load", arguments.callee);
-                });
-            }
-            //#endif
-            apf.debug = value;
-        }
-    },
-
-    //@todo adhere to defaults (loop attributes)
-    loadAml: function(x, parentNode){
-        if (!this.$aml) {
-            this.$aml = x;
-            
-            //#ifdef __WITH_AMLDOM_FULL
-            this.parentNode = parentNode;
-            apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
-            //#endif
-        }
-        
-        var name, value, i, a, attr = x.attributes;
-        for (i = 0, l = attr.length; i < l; i++) {
-            a     = attr[i];
-            value = a.nodeValue;
-            name  = a.nodeName;
-            //this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
-            
-            if (this.$booleanProperties[name])
-                value = apf.isTrue(value);
-            
-            //this[name] = value;
-            //@todo I dont want to go through all the code again, maybe later
-            this[name.replace(/-(\w)/g, function(m, m1){
-                return m1.toUpperCase()
-            })] = this[name] = value;
-            
-            (this.$propHandlers && this.$propHandlers[name]
-              || apf.AmlElement.propHandlers[name] || apf.K).call(this, value, x);
-        }
-        
-        if (!apf.loaded)
-            this.init();
-
-        var oFor, attr, d, j, i, l, node, nodes = x.childNodes;
-        for (i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1)
-                continue;
-
-            var tagName = node[apf.TAGNAME];
-            switch(tagName){
-                //#ifdef __WITH_AUTH
-                case "auth":
-                case "authentication":
-                    this.auth = node;
-                    apf.auth.init(node);
-                    break;
-                //#endif
-                //#ifdef __WITH_OFFLINE
-                case "offline":
-                    this.offline = node;
-                    apf.offline.init(node);
-                    break;
-                //#endif
-                //#ifdef __WITH_PRINTER
-                case "printer":
-                    apf.printer.init(node);
-                    break;
-                //#endif
-                //#ifdef __WITH_APP_DEFAULTS
-                case "defaults":
-                    oFor = node.getAttribute("for");
-                    attr = node.attributes;
-                    d = this.defaults[oFor] = [];
-                    for (j = attr.length - 1; j >= 0; j--)
-                        d.push([attr[j].nodeName, attr[j].nodeValue]);
-                    break;
-                //#endif
-                default:
-                    break;
-            }
-        }
-
-        return this;
-    },
+    };
     
-    init : function(){
-        if (!this.name)
-            this.name = window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
-        
-        // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone)
-            apf.runIphone();
-        // #endif
-        
-        //#ifdef __DESKRUN
-        if (apf.isDeskrun && this.disableF5)
-            shell.norefresh = true;
-        //#endif
-        
-        //#ifdef __WITH_STORAGE
-        if (this.storage)
-            apf.storage.init(this.storage);
-        //#endif
-
-        //#ifdef __WITH_OFFLINE
-        if (this.offline && typeof apf.offline != "undefined")
-            apf.offline.init(this.offline);
-        //#endif
-
-        //#ifdef __WITH_HISTORY
-        apf.addEventListener("done", function(){
-            apf.history.init(apf.appsettings.defaultPage, "page");
-        });
-        //#endif
-    }
-};
-//#endif
-
-//#ifdef __WITH_SETTINGS
-
-/**
- * @constructor
- */
-apf.settings = function(){
-    apf.register(this, "settings", apf.NODE_HIDDEN);/** @inherits apf.Class */
-    var oSettings = this;
-
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    this.implement(apf.DataBinding); /** @inherits apf.DataBinding */
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    this.getSetting = function(name){
-        return this[name];
-    };
-
-    this.setSetting = function(name, value){
-        this.setProperty(name, value);
-    };
-
-    this.isChanged = function(name){
-        if (!savePoint)
-            return true;
-        return this.getSettingsNode(savePoint, name) != this[name];
-    };
-
-    this.exportSettings = function(instruction){
-        if (!this.xmlRoot)
-            return;
-
-        apf.saveData(instruction, this.xmlRoot, null, function(data, state, extra){
-            if (state != apf.SUCCESS) {
-                var oError;
-
-                oError = new Error(apf.formatErrorString(0,
-                    oSettings, "Saving settings",
-                    "Error saving settings: " + extra.message));
-
-                if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
-                    return true;
-
-                throw oError;
-            }
-        });
-
-        this.savePoint();
-    };
-
-    this.importSettings = function(instruction, def_instruction){
-        apf.getData(instruction, null, null, function(xmlData, state, extra){
-            if (state != apf.SUCCESS) {
-                var oError;
-
-                //#ifdef __DEBUG
-                oError = new Error(apf.formatErrorString(0, oSettings,
-                    "Loading settings",
-                    "Error loading settings: " + extra.message));
-                //#endif
-
-                if (extra.tpModule.retryTimeout(extra, state, this, oError) === true)
-                    return true;
-
-                throw oError;
-            }
-
-            if (!xmlData && def_instruction)
-                oSettings.importSettings(def_instruction);
-            else
-                oSettings.load(xmlData);
-        });
-    };
-
-    var savePoint;
-    this.savePoint = function(){
-        savePoint = apf.xmldb.getCleanCopy(this.xmlRoot);
-    };
-
-    //Databinding
-    this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
-    this.$load = function(XMLRoot){
-        apf.xmldb.addNodeListener(XMLRoot, this);
-
-        for (var prop in settings) {
-            this.setProperty(prop, null); //Maybe this should be !and-ed
-            delete this[prop];
-            delete settings[prop];
-        }
-
-        var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
-        for (var i = 0; i < nodes.length; i++) {
-            this.setProperty(this.applyRuleSetOnNode("name", nodes[i])
-                || nodes[i].tagName, this.applyRuleSetOnNode("value", nodes[i])
-                || getXmlValue(nodes[i], "text()"));
-        }
-    };
-
-    this.$xmlUpdate = function(action, xmlNode, listenNode){
-        //Added setting
-        var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
-        for (var i = 0; i < nodes.length; i++) {
-            var name  = this.applyRuleSetOnNode("name", nodes[i]) || nodes[i].tagName;
-            var value = this.applyRuleSetOnNode("value", nodes[i])
-                || getXmlValue(nodes[i], "text()");
-            if (this[name] != value)
-                this.setProperty(name, value);
-        }
-
-        //Deleted setting
-        for (var prop in settings) {
-            if (!this.getSettingsNode(this.xmlRoot, prop)) {
-                this.setProperty(prop, null);
-                delete this[prop];
-                delete settings[prop];
-            }
-        }
-    };
-
-    this.reset = function(){
-        if (!savePoint) return;
-
-        this.load(apf.xmldb.getCleanCopy(savePoint));
-    };
-
-    //Properties
-    this.getSettingsNode = function(xmlNode, prop, create){
-        if (!xmlNode)
-            xmlNode = this.xmlRoot;
-
-        var nameNode  = this.getNodeFromRule("name", this.xmlRoot);
-        var valueNode = this.getNodeFromRule("value", this.xmlRoot);
-        nameNode      = nameNode ? nameNode.getAttribute("select") : "@name";
-        valueNode     = valueNode ? valueNode.getAttribute("select") || "text()" : "text()";
-        var traverse  = this.traverseRule + "[" + nameNode + "='" + prop + "']/"
-            + valueNode || prop + "/" + valueNode;
-
-        return create
-            ? apf.createNodeFromXpath(xmlNode, traverse)
-            : apf.queryValue(this.xmlNode, traverse);
-    };
-
     this.$handlePropSet = function(prop, value, force){
-        if (!force && this.xmlRoot)
-            return apf.setNodeValue(this.getSettingsNode(
-                this.xmlRoot, prop, true), true);
+        if (this.$booleanProperties[prop])
+            value = apf.isTrue(value);
 
-        this[prop]     = value;
-        settings[prop] = value;
+        this[prop] = value;
+
+        apf.config.setProperty(prop, value);
     };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        // #ifdef __SUPPORT_IPHONE
+        if (apf.isIphone && apf.runIphone) {
+            //@todo apf3.0 mike please error check all the settings
+            
+            apf.runIphone();
+            delete apf.runIphone;
+        }
+        // #endif
+    });
+}).call(apf.appsettings.prototype = new apf.AmlElement());
 
-    /**
-     * @private
-     */
-    this.loadAml = function(x){
-        this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
-        this.exportInstruction = x.getAttribute("set");
-
-        this.$aml = x;
-        apf.AmlParser.parseChildren(this.$aml, null, this);
-
-        //Model handling in case no smartbinding is used
-        var modelId = apf.getInheritedAttribute(x, "model");
-
-        for (var i = 0; i < apf.AmlParser.modelInit.length; i++)
-            if (apf.AmlParser.modelInit[i][0] == this)
-                return;
-
-        apf.setModel(modelId, this);
-    };
-
-    //Destruction
-    this.destroy = function(){
-        if (this.exportInstruction)
-            this.exportSettings(this.exportInstruction);
-    };
-};
-
+apf.aml.setElement("appsettings", apf.appsettings);
 //#endif

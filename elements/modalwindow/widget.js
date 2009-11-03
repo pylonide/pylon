@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef (__JPORTAL || __ENABLE_WINDOW_WIDGET) && (__JMODALWINDOW || __INC_ALL)
+// #ifdef (__AMLPORTAL || __ENABLE_WINDOW_WIDGET) && (__AMLMODALWINDOW || __INC_ALL)
 
 /**
  * @private
@@ -29,7 +29,7 @@ apf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;
     var _self   = this;
     
-    this.isWindowContainer = false;
+    this.$isWindowContainer = false;
     this.kbclose          = false;
     this.$isWidget         = true;
 
@@ -39,10 +39,10 @@ apf.modalwindow.widget = function(){
         if (_self.state.indexOf("maximized") > -1 || !_self.draggable)
             return;
 
-        nX = _self.oExt.offsetLeft - e.clientX - document.documentElement.scrollLeft;
-        nY = _self.oExt.offsetTop - e.clientY - document.documentElement.scrollTop;
+        nX = _self.$ext.offsetLeft - e.clientX - document.documentElement.scrollLeft;
+        nY = _self.$ext.offsetTop - e.clientY - document.documentElement.scrollTop;
 
-        var htmlNode = _self.oExt;
+        var htmlNode = _self.$ext;
         var p        = _self.positionHolder;
         if (!p)
             var p = this.positionHolder = document.body.appendChild(document.createElement("div"));
@@ -71,10 +71,10 @@ apf.modalwindow.widget = function(){
         if (!apf.hasStyleFilters)
             apf.tween.fade(htmlNode, 0.8);
             
-        //if (_self.oInt && apf.hasSingleResizeEvent)
-            //apf.layout.forceResize(_self.oInt); //@todo recursive apf3.0
+        //if (_self.$int && apf.hasSingleResizeEvent)
+            //apf.layout.forceResize(_self.$int); //@todo recursive apf3.0
 
-        apf.dragmode.mode = true; //simulate using dragmode
+        apf.dragMode = true;
 
         cData                = [htmlNode, p];
         document.onmousemove = _self.dragMove;
@@ -103,10 +103,10 @@ apf.modalwindow.widget = function(){
             if (!apf.supportOpacity || htmlNode.className.indexOf("dockblank") > -1) //@todo hack apf3.0
                 htmlNode.style.filter = "";
 
-            if (_self.oExt) //apf.hasSingleResizeEvent)
-                apf.layout.forceResize(_self.oExt); //@todo recursive apf3.0
+            if (_self.$ext) //apf.hasSingleResizeEvent)
+                apf.layout.forceResize(_self.$ext); //@todo recursive apf3.0
 
-            apf.dragmode.mode = null;
+            apf.dragMode = false;
         };
         
         if (apf.isIE) //@todo hack to solve IE bug... should investigate
@@ -145,7 +145,7 @@ apf.modalwindow.widget = function(){
     this.dragMove = function(e){
         if (!e) e = event;
 
-        _self.oExt.style.top = "10000px";
+        _self.$ext.style.top = "10000px";
         var ex  = e.clientX;// + document.documentElement.scrollLeft;
         var ey  = e.clientY;// + document.documentElement.scrollTop;
         var el  = document.elementFromPoint(ex, ey);
@@ -165,8 +165,8 @@ apf.modalwindow.widget = function(){
             }
         }
         
-        _self.oExt.style.left = (e.clientX + nX + document.documentElement.scrollLeft) + "px";
-        _self.oExt.style.top  = (e.clientY + nY + document.documentElement.scrollTop) + "px";
+        _self.$ext.style.left = (e.clientX + nX + document.documentElement.scrollLeft) + "px";
+        _self.$ext.style.top  = (e.clientY + nY + document.documentElement.scrollTop) + "px";
 
         e.cancelBubble = true;
     };
@@ -174,42 +174,13 @@ apf.modalwindow.widget = function(){
     this.$loadAml = function(x) {
         //this.$aml = x;
 
-        this.$init();
-
-        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
-        var oSettings = this.$getLayoutNode("main", "settings_content", this.oExt);
-
-        var oConfig = $xmlns(x, "config", apf.ns.aml)[0];
-        if (oConfig)
-            oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(x, "body", apf.ns.aml)[0];
-        if (!oBody) return; //Skin change detection (apf3.0) found out why there is xml in the model attr of aml in the portal demo
-        oBody.parentNode.removeChild(oBody);
-
-        apf.AmlParser.parseChildren(x, null, this);
-
-        if (oConfig)
-            x.appendChild(oConfig);
-        x.appendChild(oBody);
-
-        if (oSettings && oConfig) {
-            this.oSettings = this.oSettings
-                ? apf.AmlParser.replaceNode(oSettings, this.oSettings)
-                : apf.AmlParser.parseChildren(oConfig, oSettings, this, true);
-        }
-
-        this.oInt = this.oInt
-            ? apf.AmlParser.replaceNode(oInt, this.oInt)
-            : apf.AmlParser.parseChildren(oBody, oInt, this, true);
-
-        if (oBody.getAttribute("class"))
-            this.$setStyleClass(this.oInt, oBody.getAttribute("class"))
+        this.$create();
     };
     
-    this.$init = function(){
+    this.$create = function(){
         apf.WinServer.setTop(this);
 
-        var diff = apf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.$ext);
         hordiff  = diff[0];
         verdiff  = diff[1];
         

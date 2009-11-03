@@ -58,7 +58,10 @@ apf.resize = function() {
         scaley    : false,
         scaleratio: false,
         dwidth    : 0,
-        dheight   : 0
+        dheight   : 0,
+        snap      : false,
+        gridW     : 48,
+        gridH     : 48
     };
 
     /**
@@ -112,12 +115,9 @@ apf.resize = function() {
      * Shows all block squares
      */
     this.show = function() {
-        var sx = this.scales.scalex;
-        var sy = this.scales.scaley;
-        var sr = this.scales.scaleratio;
-
-        /*if (!sx && !sy && !sr)
-            return;*/
+        var sx   = this.scales.scalex;
+        var sy   = this.scales.scaley;
+        var sr   = this.scales.scaleratio;
 
         for (var i = 0, l = squares.length, s; i < l; i++) {
             s = squares[i];
@@ -137,10 +137,14 @@ apf.resize = function() {
                                 ? true
                                 : false)
                             : false)));
+            
             s.repaint();
         }
     };
 
+    /**
+     * Destroys all block squares
+     */
     this.destroy = function(){
         for (var i = 0; i < squares.length; i++) {
             squares[i].destroy();
@@ -261,9 +265,13 @@ apf.resize.square = function(posY, posX, objResize) {
 
             dw = objResize.scales.dwidth,
             dh = objResize.scales.dheight,
+            
+            snap = objResize.scales.snap,
+            gridH = objResize.scales.gridH,
+            gridW = objResize.scales.gridW,
 
             objBlock = apf.flow.isBlock(block),
-            r  = objBlock.other.ratio,
+            r = objBlock.other.ratio,
 
             posX = _self.posX,
             posY = _self.posY,
@@ -276,6 +284,8 @@ apf.resize.square = function(posY, posX, objResize) {
             w = parseInt(block.style.width),
             h = parseInt(block.style.height),
             resized = false;
+            
+        objResize.onresizedone(w, h, t, l);
 
         if (e.preventDefault) {
             e.preventDefault();
@@ -353,7 +363,14 @@ apf.resize.square = function(posY, posX, objResize) {
                 height = Math.max(dh, height);
             }
 
-            if(objResize.onresize) {
+            if (snap) {
+                left   = Math.floor(left / gridW) * gridW;
+                top    = Math.floor(top / gridH) * gridH;
+                width  = Math.ceil(width / gridW) * gridW;
+                height = Math.ceil(height / gridH) * gridH;
+            }
+
+            if (objResize.onresize) {
                 objResize.onresize(block, top, left, width, height);
             }
 
@@ -364,12 +381,10 @@ apf.resize.square = function(posY, posX, objResize) {
 
         document.onmouseup = function(e) {
             document.onmousemove = null;
-            if (objResize.onresizedone) {
-                if(resized) {
-                    objResize.onresizedone(width, height, top, left);
-                    objBlock.other.ratio = width / height;
-                    resized = false;
-                }
+            if (objResize.onresizedone && resized) {
+                objResize.onresizedone(width, height, top, left);
+                objBlock.other.ratio = width / height;
+                resized = false;
             }
         };
     };

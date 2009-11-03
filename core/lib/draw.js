@@ -23,7 +23,7 @@
 /**
  * @private
  */
-apf.namespace("draw", {
+apf.draw = {
     
     initDriver : function(){
         // initialize by copying either canvas of VML into my object.
@@ -1411,9 +1411,9 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     //----------------------------------------------------------------------
     
     // State rendering
-    
-    //----------------------------------------------------------------------
-    
+
+	//----------------------------------------------------------------------
+
     serializeStyleState : function(style){
         var s = [] ,h,v,k,f;
         if(!style.$stylelist)return "";
@@ -1631,6 +1631,6 @@ this.moveTo("_x6=__cos(_y8=((_x9="+rs+")+(_y9="+rw+"))*0.5)*(_x8="+ds+")*(_x7="+
     },
     
 
-    colors : apf.colors
-});
+    colors : apf.color.colors
+};
 //#endif

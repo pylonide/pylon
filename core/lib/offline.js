@@ -47,15 +47,15 @@
  * </code>
  *
  * @event losechanges   Fires before the offline state is removed.
- *   cancellable: Prevents the application from losing it's recorded offline state.
+ *   cancelable: Prevents the application from losing it's recorded offline state.
  * @event beforeoffline Fires before bringing the application offline.
- *   cancellable: Prevents the application from going offline
+ *   cancelable: Prevents the application from going offline
  * @event afteroffline  Firest after the application is brought offline.
  * @event beforeonline  Fires before bringing the application online.
- *   cancellable: Prevents the application from going online
+ *   cancelable: Prevents the application from going online
  * @event afteronline   Fires after the application is brought online.
  * @event beforeload    Fires before loading the offline state into this application.
- *   cancellable: Prevents the application from reloading it's offline state.
+ *   cancelable: Prevents the application from reloading it's offline state.
  * @event sync          Fires at each sync item's completion.
  *   object:
  *   {Number} position the number of the item in the list that is currently processed.
@@ -91,7 +91,7 @@
  * 
  * @default_private
  */
-apf.namespace("offline", {
+apf.offline = {
     /**
      * whether offline support is enabled.
      * @type {Boolean}
@@ -134,7 +134,13 @@ apf.namespace("offline", {
                 for (i = 0; i < attr.length; i++) {
                     a = attr[i];
                     if (a.nodeName.indexOf("on") == 0)
-                        this.addEventListener(a.nodeName, new Function(a.nodeValue));
+                        this.addEventListener(a.nodeName, 
+                          // #ifdef __WITH_JSLT_EVENTS
+                          apf.lm.compile(a.nodeValue, {event: true, parsecode: true})
+                          /* #else
+                          new Function('event', a.nodeValue)
+                          #endif */
+                        );
                 }
             }
             else {
@@ -178,11 +184,11 @@ apf.namespace("offline", {
         }
 
         if (this.storage.asyncInit) {
-            apf.AmlParser.shouldWait = true;
+            apf.document.$domParser.$shouldWait++; //@todo apf3.0 make this work again
             this.storage.ready(function(){
                 apf.offline.storage.onready = null; //Prevent being called twice
                 apf.offline.continueInit();
-                apf.AmlParser.continueStartup();
+                apf.document.$domParser.$continueParsing(apf.document.documentElement);
             });
 
             return;
@@ -358,9 +364,12 @@ apf.namespace("offline", {
         }
 
         //#ifdef __WITH_AUTH
+        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        if (!auth)
+            return;
         //First let's log in to the services that need it before syncing changes
-        if (apf.auth.needsLogin && apf.auth.loggedIn) { // && !apf.auth.loggedIn
-            apf.auth.authRequired({
+        if (auth.needsLogin && auth.loggedIn) { // && !auth.loggedIn
+            auth.authRequired({
                 object : this,
                 retry  : callback
             });
@@ -565,23 +574,22 @@ apf.namespace("offline", {
 
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
         /*
-            When going online check loadedWhenOffline of
+            When going online check $loadedWhenOffline of
             the multiselect widgets and reload() them
         */
         var nodes = apf.all; //@todo maintaining a list is more efficient, is it necesary??
         for (i = 0; i < nodes.length; i++) {
-            if (nodes[i].loadedWhenOffline)
+            if (nodes[i].$loadedWhenOffline)
                 nodes[i].reload();
         }
         //#endif
     },
 
     stopSync : function(){
-        debugger;
         if (this.syncing)
             this.inProcess = this.STOPPING;
     }
-});
+};
 /*#else
 apf.offline = {
     onLine : true

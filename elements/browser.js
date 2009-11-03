@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JBROWSER || __INC_ALL
+// #ifdef __AMLBROWSER || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -29,10 +29,9 @@
  * @addnode elements:browser
  * @define browser
  *
- * @inherits apf.AmlElement
- * @inherits apf.Validation
  * @inherits apf.XForms
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -55,40 +54,74 @@
  *  <a:colorpicker ref="@url" />
  * </code>
  */
-apf.browser = apf.component(apf.NODE_VISIBLE, function(){
+apf.browser = function(struct, tagName){
+    this.$init(tagName || "browser", apf.NODE_VISIBLE, struct);
+};
+(function(){
+    this.implement(
+        // #ifdef __WITH_XFORMS
+        //apf.XForms,
+        // #endif
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        // #ifdef __WITH_DATABINDING
+        ,apf.StandardBinding
+        // #endif
+    );
+
+    /**
+     * @attribute {String} src   the url to be displayed in this element
+     * @attribute {String} value alias for the 'url' attribute
+     */
+    this.$supportedProperties.push("value", "src");
+    this.$propHandlers["src"]   =
+    this.$propHandlers["value"] = function(value, force){
+        try {
+            this.$int.src = value || "about:blank";
+        }
+        catch(e) {
+            this.$int.src = "about:blank";
+        }
+    };
+
+    this.getValue = function() {
+        return this.value || this.src;
+    };
+
     /**
      * Retrieves the current url that is displayed.
      */
     this.getURL = function(){
-        return this.oInt.src;
+        return this.$int.src;
     };
 
     /**
      * Browses to the previous page
      */
     this.back = function(){
-        this.oInt.contentWindow.history.back();
+        this.$int.contentWindow.history.back();
     };
 
     /**
      * Browses to the next page
      */
     this.forward = function(){
-        this.oInt.contentWindow.history.forward();
+        this.$int.contentWindow.history.forward();
     };
 
     /**
      * Reload the current page
      */
     this.reload = function(){
-        this.oInt.src = this.oInt.src;
+        this.$int.src = this.$int.src;
     };
 
     /**
      * Print the currently displayed page
      */
     this.print = function(){
-        this.oInt.contentWindow.print();
+        this.$int.contentWindow.print();
     };
 
     /**
@@ -99,71 +132,46 @@ apf.browser = apf.component(apf.NODE_VISIBLE, function(){
      * @param {Boolean} noError whether the execution can throw an exception. Defaults to false.
      */
     this.runCode = function(str, noError){
-        if (noError)
+        if (noError) {
             try {
-                this.oInt.contentWindow.eval(str);
+                this.$int.contentWindow.eval(str);
             } catch(e) {}
-        else
-            this.oInt.contentWindow.eval(str);
-    };
-
-    /**
-     * @attribute {String} src   the url to be displayed in this element
-     */
-    this.$supportedProperties.push("value", "src");
-    this.$propHandlers["src"]   =
-    this.$propHandlers["value"] = function(value, force){
-        try {
-            this.oInt.src = value || "about:blank";
         }
-        catch(e) {
-            this.oInt.src = "about:blank";
+        else {
+            this.$int.contentWindow.eval(str);
         }
-    };
-
-    this.getValue = function() {
-        return this.value || this.src;
     };
 
     this.$draw = function(parentNode){
         if (!parentNode)
-            parentNode = this.pHtmlNode;
+            parentNode = this.$pHtmlNode;
 
         //Build Main Skin
         if (apf.cannotSizeIframe) {
-            this.oExt = parentNode.appendChild(document.createElement("DIV"))
-                .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
-            this.oExt.style.width  = "100px";
-            this.oExt.style.height = "100px";
-            this.oInt = this.oExt.firstChild;
-            //this.oInt = this.oExt;
-            this.oInt.style.width  = "100%";
-            this.oInt.style.height = "100%";
-            this.oInt.frameBorder = 0;
+            //parentNode.appendChild(document.createElement("iframe"));//
+            this.$ext = parentNode.appendChild(document.createElement("DIV"))
+                .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;
+            this.$ext.style.width  = "100px";
+            this.$ext.style.height = "100px";
+            this.$int = this.$ext.firstChild;
+            //this.$int = this.$ext;
+            this.$int.style.width  = "100%";
+            this.$int.style.height = "100%";
+            this.$int.frameBorder = 0;
         }
         else {
-            this.oExt = parentNode.appendChild(document.createElement("iframe"));
-            this.oExt.style.width  = "100px";
-            this.oExt.style.height = "100px";
-            this.oInt              = this.oExt;
-            //this.oExt.style.border = "2px inset white";
+            this.$ext = parentNode.appendChild(document.createElement("iframe"));
+            this.$ext.style.width  = "100px";
+            this.$ext.style.height = "100px";
+            this.$int              = this.$ext;
+            //this.$ext.style.border = "2px inset white";
         }
 
-        //this.oInt = this.oExt.contentWindow.document.body;
-        this.oExt.host = this;
-        //this.oInt.host = this;
+        //this.$int = this.$ext.contentWindow.document.body;
+        this.$ext.host = this;
+        //this.$int.host = this;
     };
+}).call(apf.browser.prototype = new apf.GuiElement());
 
-    this.$loadAml = function(x){};
-}).implement(
-    // #ifdef __WITH_VALIDATION || __WITH_XFORMS
-    apf.Validation,
-    // #endif
-    // #ifdef __WITH_XFORMS
-    apf.XForms,
-    // #endif
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding
-    // #endif
-);
+apf.aml.setElement("browser", apf.browser);
 // #endif

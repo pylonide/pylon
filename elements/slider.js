@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JSLIDER || __JRANGE || __INC_ALL
+// #ifdef __AMLSLIDER || __AMLRANGE || __INC_ALL
 
 /**
  * Element allowing the user to select a value from a range of
@@ -68,9 +68,7 @@
  * @version     %I%, %G%
  * @since       0.9
  *
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
  * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
@@ -90,32 +88,51 @@
  *  <a:slider ref="@value" />
  * </code>
  */
-apf.range  =
-apf.slider = apf.component(apf.NODE_VISIBLE, function(){
+apf.range  = function(struct, tagName){
+    this.$init(tagName || "range", apf.NODE_VISIBLE, struct);
+};
+
+apf.slider = function(struct, tagName){
+    this.$init(tagName || "slider", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
     this.$focussable = true; // This object can get the focus
 
-    var _self    = this;
-    var dragging = false;
+    this.$dragging   = false;
+    this.$onlySetXml = false;
 
     /**** Properties and Attributes ****/
-    this.disabled = false; // Object is enabled
-    this.realtime = true;
-    this.balloon  = true;
-    this.value    = 0;
-    this.mask     = "%";
-    this.min      = 0;
-    this.max      = 1000001;
+    this.disabled    = false; // Object is enabled
+    this.realtime    = true;
+    this.balloon     = true;
+    this.value       = 0;
+    this.mask        = "%";
+    this.min         = 0;
+    this.max         = 1000001;
 
-    this.$supportedProperties.push("step", "mask", "min",
-        "max", "slide", "value", "markers");
+    this.$supportedProperties.push("step", "mask", "min", "max", "slide",
+        "value", "markers");
 
     this.$booleanProperties["realtime"] = true;
     this.$booleanProperties["markers"]  = true;
     this.$booleanProperties["balloon"]  = true;
 
     /**
-     * @attribute {Boolean} realtime whether the slider updates it's value realtime, or just when the user stops dragging.
-     * @attribute {Boolean} balloon  whether to show the balloon with extra information on the position of the slider. Default is true when the skin supports it.
+     * @attribute {Boolean} realtime whether the slider updates it's value realtime,
+     *                               or just when the user stops dragging.
+     * @attribute {Boolean} balloon  whether to show the balloon with extra
+     *                               information on the position of the slider.
+     *                               Default is true when the skin supports it.
      * @attribute {Number}  step     specifying the step size of a discreet slider.
      * Example:
      * <code>
@@ -135,7 +152,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
         if (!this.slider)
             this.slideDiscreet = true;
-    }
+    };
     
 
     /**
@@ -143,53 +160,57 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["markers"] = function(value){
         //Remove Markers
-        var markers = this.oMarkers.childNodes;
-        for (var i = markers.length - 1; i >= 0; i--) {
+        var i,
+            markers = this.oMarkers.childNodes;
+        for (i = markers.length - 1; i >= 0; i--) {
             if (markers[i].tagName == "U" && markers[i].nodeType == 1) //small hack
                 apf.destroyHtmlNode(markers[i]);
         }
 
         if (!this.step && this.$aml)
-            this.step = parseInt(this.$aml.getAttribute("step")) || 0;
+            this.step = parseInt(this.getAttribute("step")) || 0;
 
         //Add markers
         if (value && this.step) {
-            var max = this.max == 1000001 ? 1 : this.max;
-            
-            var pos, count = (max - this.min) / this.step;
-            var prop = this.$dir == "horizontal" ? "left" : "top";
-            var size = this.$dir == "horizontal"
-                ? this.oExt.offsetWidth - this.oKnob.offsetWidth
-                : this.oExt.offsetHeight - this.oKnob.offsetHeight;
+            var pos, o,
+                nodes = [],
+                max   = (this.max == 1000001) ? 1 : this.max,
 
-            for (var o, nodes = [], i = 0; i < count + 1; i++) {
+                count = (max - this.min) / this.step,
+                prop  = this.$dir == "horizontal" ? "left" : "top",
+                size  = this.$dir == "horizontal"
+                    ? this.$ext.offsetWidth - this.oKnob.offsetWidth
+                    : this.$ext.offsetHeight - this.oKnob.offsetHeight;
+
+            for (i = 0; i < count + 1; i++) {
                 this.$getNewContext("marker");
                 o = this.$getLayoutNode("marker");
                 pos = Math.max(0, (i * (1 / (count))));
+                //alert(prop + ":" + (pos * size) + "px");
                 o.setAttribute("style", prop + ":" + (pos * size) + "px");
                 nodes.push(o);
             }
-
-            apf.xmldb.htmlImport(nodes, this.oMarkers);
+            apf.insertHtmlNodes(nodes, this.oMarkers);
         }
-    }
+    };
     
     this.$resize = function(){
         this.$propHandlers.value.call(this, this.value);
-        var pos, count = (this.max - this.min) / this.step;
+
+        var count = (this.max - this.min) / this.step;
         if (!count) return;
 
-        var prop = this.$dir == "horizontal" ? "left" : "top";
-        var size = this.$dir == "horizontal"
-            ? this.oExt.offsetWidth - this.oKnob.offsetWidth
-            : this.oExt.offsetHeight - this.oKnob.offsetHeight;
-        
-        var nodes = this.oMarkers.getElementsByTagName("U");//small hack
-        for (var i = nodes.length - 1; i >= 0; i--) {
+        var pos, i,
+            prop = this.$dir == "horizontal" ? "left" : "top",
+            size = this.$dir == "horizontal"
+                ? this.$ext.offsetWidth - this.oKnob.offsetWidth
+                : this.$ext.offsetHeight - this.oKnob.offsetHeight,
+            nodes = this.oMarkers.getElementsByTagName("U");//small hack
+        for (i = nodes.length - 1; i >= 0; i--) {
             pos = Math.max(0, i * (1 / count));
             nodes[i].style[prop] = Math.round(pos * size) + "px";
         }
-    }
+    };
 
     /**
      * @attribute {String} mask a pipe '|' seperated list of strings that are
@@ -211,7 +232,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
         if (!this.mask.match(/^(%|#)$/))
             this.mask = value.split(/\||;/);
-    }
+    };
 
     /**
      * @attribute {String} progress a value between 0 and 1 which is visualized
@@ -231,12 +252,12 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.$propHandlers["progress"] = function(value){
         if (!this.oProgress) {
             this.oProgress =
-              apf.xmldb.htmlImport(this.$getLayoutNode("progress"),
-                this.$getLayoutNode("main", "progress", this.oExt));
+              apf.insertHtmlNode(this.$getLayoutNode("progress"),
+                this.$getLayoutNode("main", "progress", this.$ext));
         }
 
         this.oProgress.style.width = ((value || 0) * 100) + "%";
-    }
+    };
 
     /**
      * @attribute {Number} min the minimal value the slider can have. This is
@@ -250,7 +271,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
             this.value = -1; //@todo apf3.0
             this.setProperty("value", this.$value);
         }
-    }
+    };
 
     /**
      * @attribute {Number} max the maximal value the slider can have. This is
@@ -264,7 +285,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
             this.value = -1; //@todo apf3.0
             this.setProperty("value", this.$value);
         }
-    }
+    };
 
     /**
      * @attribute {String} slide the way the grabber can be handled
@@ -278,26 +299,28 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.$propHandlers["slide"] = function(value){
         this.slideDiscreet = value == "discrete";
         this.slideSnap     = value == "snap";
-    }
+    };
 
     /**
      * @attribute {String} value the value of slider which is represented in
      * the position of the grabber using the following
      * formula: (value - min) / (max - min)
      */
-    this.$propHandlers["value"] = function(value, force, prop, animate){
-        if (!this.$dir)
+    this.$propHandlers["value"] = function(value, prop, force, animate){
+        if (!this.$dir || this.$onlySetXml)
             return; //@todo fix this
 
-        if (dragging && !force && !_self.realtime)
+        if (this.$dragging && !force && !this.realtime)
             return;
 
         this.$value = value;
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-        var max, min, offset;
-        var multiplier = this.max == this.min 
-            ? 0
-            : (this.value - this.min) / (this.max - this.min);
+
+        var max, min, offset,
+            _self      = this,
+            multiplier = this.max == this.min
+                ? 0
+                : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth
@@ -379,15 +402,15 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+    
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
-    this.setValue = function(value, onlySetXml){
-        this.$onlySetXml = onlySetXml;//blrgh..
-        this.setProperty("value", value);
-        this.$onlySetXml = false;
+    this.setValue = function(value){
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -399,6 +422,8 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
             ? Math.round(parseInt(this.value) / this.step) * this.step
             : this.value;
     };
+    
+    //#endif
 
     /**** Keyboard support ****/
 
@@ -406,7 +431,6 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
 
         switch (key) {
             case 37:
@@ -445,20 +469,21 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt         = this.$getExternal();
-        this.oLabel       = this.$getLayoutNode("main", "status", this.oExt);
-        this.oMarkers     = this.$getLayoutNode("main", "markers", this.oExt);
-        this.oKnob        = this.$getLayoutNode("main", "slider", this.oExt);
-        this.oFill        = this.$getLayoutNode("main", "fill", this.oExt);
-        this.oBalloon     = this.$getLayoutNode("main", "balloon", this.oExt);
-        this.oInt         = this.oContainer = this.$getLayoutNode("main",
-            "container", this.oExt);
+        this.$ext     = this.$getExternal();
+        this.oLabel   = this.$getLayoutNode("main", "status", this.$ext);
+        this.oMarkers = this.$getLayoutNode("main", "markers", this.$ext);
+        this.oKnob    = this.$getLayoutNode("main", "slider", this.$ext);
+        this.oFill    = this.$getLayoutNode("main", "fill", this.$ext);
+        this.oBalloon = this.$getLayoutNode("main", "balloon", this.$ext);
+        this.$int     = this.oContainer = this.$getLayoutNode("main",
+            "container", this.$ext);
 
-        this.$dir         = this.$getOption("main", "direction") || "horizontal";
+        this.$dir     = this.$getOption("main", "direction") || "horizontal";
 
         this.oKnob.style.left = (parseInt(apf.getBox(
-            apf.getStyle(this.oExt, "padding"))[3])) + "px";
+            apf.getStyle(this.$ext, "padding"))[3])) + "px";
 
+        var _self = this;
         function prepareKnob(e) {
             this.x   = (e.clientX || e.x);
             this.y   = (e.clientY || e.y);
@@ -511,9 +536,9 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
             _self.$setStyleClass(this, "btndown", ["btnover"]);
 
-            apf.dragmode.mode = true;
+            apf.dragMode = true;
 
-            dragging = true;
+            _self.$dragging = true;
             
             if (_self.balloon && _self.oBalloon) {
                 _self.oBalloon.style.display = "block";
@@ -522,14 +547,12 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                     - _self.oKnob.offsetWidth)/2) + "px";
             }
             
-            var timer, lastTime;
+            var startValue = this.value;
             document.onmousemove = function(e){
                 e = e || window.event;
                 var o = this.dragNode;
                 if (!o) {
-                    apf.dragmode.mode = document.onmousemove
-                        = document.onmouseup = null;
-
+                    apf.dragMode = document.onmousemove = document.onmouseup = null;
                     return; //?
                 }
 
@@ -538,22 +561,27 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                     //_self.value = -1; //reset value //@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
                     if (_self.slideDiscreet) {
                         this.$onlySetXml = true;//blrgh..
-                        var rValue = _self.change(Math.round(knobValue / _self.step) * _self.step);
+                        var rValue = _self.change(Math.round(knobValue / _self.step)
+                            * _self.step);
                         this.$onlySetXml = false;
-                        if (rValue !== false)
-                            _self.$propHandlers["value"].call(_self, knobValue, true);
+                        if (rValue !== false) {
+                            _self.$propHandlers["value"].call(_self, knobValue, 
+                                "value", true);
+                        }
                     }
-                    else
+                    else {
                         _self.change(knobValue);
+                    }
                 }
                 else {
-                    _self.$propHandlers["value"].call(_self, knobValue, true);
+                    _self.$propHandlers["value"].call(_self, knobValue, "value", true);
                 }
                 
-                if (_self.balloon && _self.oBalloon)
+                if (_self.balloon && _self.oBalloon) {
                     _self.oBalloon.style.left = (_self.oKnob.offsetLeft 
                         - (_self.oBalloon.offsetWidth 
                         - _self.oKnob.offsetWidth)/2) + "px";
+                }
                 
                 /*clearTimeout(timer);
                 if (new Date().getTime() - lastTime > 20) {
@@ -574,20 +602,19 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
 
                 o.onmouseout();
 
-                dragging = false;
+                _self.$dragging = false;
 
                 var knobValue = getKnobValue(o, e || window.event,
                     _self.slideDiscreet || _self.slideSnap);
 
-                //_self.value = -1;//@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
-                //_self.$ignoreSignals = _self.realtime;
-                var rValue = _self.change(knobValue);
-                //_self.$ignoreSignals = false;
+                _self.value = startValue;
+                var rValue = startValue != knobValue
+                    ? _self.change(knobValue, true) : false;
                 
                 if (rValue !== false && _self.slideDiscreet)
-                    _self.$propHandlers["value"].call(_self, knobValue, true);
+                    _self.$propHandlers["value"].call(_self, knobValue, "value", true);
 
-                apf.dragmode.mode    = 
+                apf.dragMode         = false;
                 document.onmousemove = 
                 document.onmouseup   = null;
 
@@ -629,7 +656,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                 _self.$setStyleClass(this, "", ["btndown", "btnover"]);
         };
 
-        this.oExt.onmousedown = function(e) {
+        this.$ext.onmousedown = function(e) {
             if (_self.disabled) return false;
             e = e || window.event;
 
@@ -641,7 +668,7 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
                     y : p[1] + o.offsetHeight / 2
                 });
                 var value = getKnobValue(o, e, _self.slideDiscreet || _self.slideSnap);
-                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), true, null, true);
+                _self.$propHandlers["value"].call(_self, getKnobValue(o, e, _self.slideDiscreet), "value", true, true);
                 _self.setValue(value);
             }
         };
@@ -650,21 +677,21 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         if (apf.isIphone)
             apf.iphone.linkEvents(this.oKnob);
         // #endif
-
-        //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.oExt, "knob", 
-            "apf.all[" + this.uniqueId + "].$resize()", true);
-        //#endif
     };
 
-    this.$loadAml = function(x){
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         if (this.max == 1000001)
             this.setProperty("max", 1);
         //this.$propHandlers["value"].call(this, this.value);
 
         //@todo this goes wrong with skin switching. smartbindings is called again.
-        apf.AmlParser.parseChildren(this.$aml, null, this);
-    };
+        
+        //#ifdef __WITH_LAYOUT
+        apf.layout.setRules(this.$ext, "knob",
+            "apf.all[" + this.$uniqueId + "].$resize()", true);
+        apf.layout.queue(this.$ext);
+        //#endif
+    });
 
     this.$destroy = function(){
         this.oKnob.onmousedown =
@@ -673,20 +700,17 @@ apf.slider = apf.component(apf.NODE_VISIBLE, function(){
         this.oKnob.onmouseout  = null;
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.oExt, "knob");
+        apf.layout.removeRule(this.$ext, "knob");
         //#endif
     };
-}).implement(
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.slider.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.slider.prototype = new apf.Presentation());
+#endif*/
 
+apf.range.prototype = apf.slider.prototype;
+
+apf.aml.setElement("range",  apf.range);
+apf.aml.setElement("slider", apf.slider);
 // #endif

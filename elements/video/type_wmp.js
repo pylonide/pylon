@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __AMLVIDEO || __INC_ALL
 
 apf.video.TypeWmpCompat = (function() {
     var hasWMP = false;
@@ -159,7 +159,7 @@ apf.video.TypeWmpCompat = (function() {
  */
 apf.video.TypeWmp = function(oVideo, node, options) {
     this.oVideo      = oVideo;
-    this.name        = "WMP_" + this.oVideo.uniqueId;
+    this.name        = "WMP_" + this.oVideo.$uniqueId;
     this.htmlElement = node;
 
     this.player    = this.pollTimer = null;

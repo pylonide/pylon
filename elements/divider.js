@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JDIVIDER || __INC_ALL
+// #ifdef __AMLDIVIDER || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -26,8 +26,14 @@
  * @define divider
  * @constructor
  */
-apf.divider = apf.component(apf.NODE_VISIBLE, function() {
-    this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+apf.divider = function(struct, tagName){
+    this.$init(tagName || "divider", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$focussable = false;
+    
+    this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;
         
@@ -41,15 +47,17 @@ apf.divider = apf.component(apf.NODE_VISIBLE, function() {
      * @ref amlNode#show
      */
     this.show = function(){
-        this.oExt.style.display = "block";
-    }
+        this.$ext.style.display = "block";
+    };
     
     /**
      * @ref amlNode#hide
      */
     this.hide = function(){
-        this.oExt.style.display = "none";
-    }
+        this.$ext.style.display = "none";
+    };
+    
+    this.$canLeechSkin = true;
     
     /**
      * @private
@@ -57,18 +65,16 @@ apf.divider = apf.component(apf.NODE_VISIBLE, function() {
     this.$loadAml = function(x) {
         this.$aml = x;
 
-        var parentNode = this.parentNode;
-        if (parentNode.$hasLayoutNode && parentNode.$hasLayoutNode("divider")) {
-            this.skinName = this.parentNode.skinName;
-            this.oExt = apf.xmldb.htmlImport(
-                this.parentNode.$getLayoutNode("divider"), this.pHtmlNode);
+        if (this.$isLeechingSkin) {
+            this.$ext = apf.insertHtmlNode(
+                this.parentNode.$getLayoutNode("divider"), this.$pHtmlNode);
         }
         else {
-            this.implement(apf.Presentation);
-            this.$loadSkin();
-            this.oExt = this.$getExternal("main");
-        } 
-    }
-});
+            this.$ext = this.$getExternal("main");
+        }
+    };
+}).call(apf.divider.prototype = new apf.Presentation);
+
+apf.aml.setElement("divider", apf.divider);
 
 //#endif

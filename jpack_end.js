@@ -3,7 +3,7 @@ apf.Init.addConditional(function(){
 }, null, ["body", "class"]);
 
 /*if(document.body)
-    apf.Init.run('body');
+    apf.Init.run("body");
 else*/
     apf.addDomLoadEvent(function(){apf.Init.run('body');});
 

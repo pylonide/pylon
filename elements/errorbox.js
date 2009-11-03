@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JERRORBOX || __INC_ALL
+// #ifdef __AMLERRORBOX || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -83,14 +83,11 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+apf.errorbox = function(struct, tagName){
+    this.$init(tagName || "errorbox", apf.NODE_VISIBLE, struct);
+};
 
-apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"main" : [["container","@invalidmsg"]]};
-    // #endif
-    
-    var _self = this;
-    
+(function(){
     this.$positioning = "basic";
     this.display = function(host){
         this.host = host;
@@ -99,9 +96,9 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
             //#ifdef __WITH_HTML5
             host.validityState.$errorHtml || 
             //#endif
-            host.oExt;
+            host.$ext;
 
-        document.body.appendChild(this.oExt);
+        document.body.appendChild(this.$ext);
         var pos = apf.getAbsolutePosition(refHtml, document.body);
 
         if (document != refHtml.ownerDocument) {
@@ -110,59 +107,54 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
             pos[1] += pos2[1];
         }
         
-        var x = (pos[0] + parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0));
-        var y = (pos[1] + parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
-        //this.oExt.style.left = x + "px"
-        //this.oExt.style.top  = y + "px"
+        var x = (pos[0] + parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0)),
+            y = (pos[1] + parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
+        //this.$ext.style.left = x + "px"
+        //this.$ext.style.top  = y + "px"
         
         this.show();
-        apf.popup.show(this.uniqueId, {
-            x            : x,
-            y            : y,
-            animate      : false,
-            ref          : this.oExt.offsetParent
+        apf.popup.show(this.$uniqueId, {
+            x       : x,
+            y       : y,
+            animate : false,
+            ref     : this.$ext.offsetParent
         });
 
-        this.$setStyleClass(this.oExt,
-            x + this.oExt.offsetWidth > this.oExt.offsetParent.offsetWidth
+        this.$setStyleClass(this.$ext,
+            x + this.$ext.offsetWidth > this.$ext.offsetParent.offsetWidth
                 ? "rightbox"
                 : "leftbox", ["leftbox", "rightbox"]);
-    }
+    };
     
     /**
      * Sets the message of the errorbox.
      * @param {String} value 
      */
     this.setMessage = function(value){
-        // #ifndef __WITH_EDITMODE
-        if(value && value.indexOf(";")>-1){
+        if (value && value.indexOf(";") > -1) {
             value = value.split(";");
             value = "<strong>" + value[0] + "</strong>" + value[1];
         }
-        this.oInt.innerHTML = value || "";
-        //#endif
+        this.$int.innerHTML = value || "";
     };
-    
-    /* #ifdef __WITH_EDITMODE
-    this.hide = function(){}
-    #endif */
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt   = this.$getExternal(); 
-        this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
-        this.oClose = this.$getLayoutNode("main", "close", this.oExt);
+        this.$ext   = this.$getExternal(); 
+        this.$int   = this.$getLayoutNode("main", "container", this.$ext);
+        this.oClose = this.$getLayoutNode("main", "close", this.$ext);
         
         if (this.oClose) {
+            var _self = this;
             this.oClose.onclick = function(){
                 _self.hide();
 
-                if (apf.window.focussed)
-                    apf.window.focussed.focus(true, {mouse:true});
+                if (apf.document.activeElement)
+                    apf.document.activeElement.focus(true, {mouse:true});
             };
         }
         
-        this.oExt.onmousedown = function(e){
+        this.$ext.onmousedown = function(e){
             (e || event).cancelBubble = true;
             
             //#ifdef __WITH_WINDOW_FOCUS
@@ -173,22 +165,21 @@ apf.errorbox = apf.component(apf.NODE_VISIBLE, function(){
 
         this.hide();
         
-        apf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
+        apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
     };
     
     this.$loadAml = function(x){
-        apf.AmlParser.parseChildren(this.$aml, this.oInt, this);
     };
     
     this.$destroy = function(){
         if (this.oClose)
             this.oClose.onclick = null;
         
-        this.oExt.onmousedown = null;
+        this.$ext.onmousedown = null;
         
-        apf.popup.removeContent(this.uniqueId);
-    }
-}).implement(
-    apf.Presentation
-);
+        apf.popup.removeContent(this.$uniqueId);
+    };
+}).call(apf.errorbox.prototype = new apf.Presentation());
+
+apf.aml.setElement("errorbox", apf.errorbox);
 // #endif

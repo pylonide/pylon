@@ -38,7 +38,7 @@ apf.flash = (function(){
      * @type {String}
      */
     function getControlVersion(){
-        var version, axo, e;
+        var version, axo;
 
         // NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
         try {
@@ -47,6 +47,7 @@ apf.flash = (function(){
             version = axo.GetVariable("$version");
         }
         catch (e) {}
+
         if (!version) {
             try {
                 // version will be set for 6.X players only
@@ -105,28 +106,29 @@ apf.flash = (function(){
      */
     function getSwfVersion(){
         // NS/Opera version >= 3 check for Flash plugin in plugin array
-        var flashVer = -1;
-        var sAgent   = navigator.userAgent.toLowerCase();
+        var flashVer = -1,
+            sAgent   = navigator.userAgent.toLowerCase();
 
         if (navigator.plugins != null && navigator.plugins.length > 0) {
             if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
-                var swVer2   = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-                var swfDescr = navigator.plugins["Shockwave Flash" + swVer2].description;
-                var aDescr   = swfDescr.split(" ");
-                var aTempMaj = aDescr[2].split(".");
-                var nMajor   = aTempMaj[0];
-                var nMinor   = aTempMaj[1];
-                var sRev     = aDescr[3];
+                var swVer2   = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "",
+                    swfDescr = navigator.plugins["Shockwave Flash" + swVer2].description,
+                    aDescr   = swfDescr.split(" "),
+                    aTempMaj = aDescr[2].split("."),
+                    nMajor   = aTempMaj[0],
+                    nMinor   = aTempMaj[1],
+                    sRev     = aDescr[3];
                 if (sRev == "")
                     sRev = aDescr[4];
-                if (sRev[0] == "d")
+                if (sRev[0] == "d") {
                     sRev = sRev.substring(1);
+                }
                 else if (sRev[0] == "r") {
                     sRev = sRev.substring(1);
                     if (sRev.indexOf("d") > 0)
                         sRev = sRev.substring(0, sRev.indexOf("d"));
                 }
-                var flashVer = nMajor + "." + nMinor + "." + sRev;
+                flashVer = nMajor + "." + nMinor + "." + sRev;
             }
         }
         // MSN/WebTV 2.6 supports Flash 4
@@ -157,29 +159,30 @@ apf.flash = (function(){
         var versionStr = getSwfVersion();
         if (versionStr == -1)
             return false;
-        else if (versionStr != 0) {
+        if (versionStr != 0) {
             var aVersions;
             if (apf.isIE && !apf.isOpera) {
                 // Given "WIN 2,0,0,11"
-                var aTemp = versionStr.split(" "); // ["WIN", "2,0,0,11"]
-                var sTemp = aTemp[1]; // "2,0,0,11"
-                aVersions = sTemp.split(","); // ['2', '0', '0', '11']
+                var aTemp = versionStr.split(" "), // ["WIN", "2,0,0,11"]
+                    sTemp = aTemp[1];              // "2,0,0,11"
+                aVersions = sTemp.split(",");      // ['2', '0', '0', '11']
             }
-            else
+            else {
                 aVersions = versionStr.split(".");
-            var nMajor = aVersions[0];
-            var nMinor = aVersions[1];
-            var sRev   = aVersions[2];
+            }
+            var nMajor = aVersions[0],
+                nMinor = aVersions[1],
+                sRev   = aVersions[2];
 
             // is the major.revision >= requested major.revision AND the minor version >= requested minor
             if (nMajor > parseFloat(reqMajorVer))
                 return true;
-            else if (nMajor == parseFloat(reqMajorVer)) {
+            if (nMajor == parseFloat(reqMajorVer)) {
                 if (nMinor > parseFloat(reqMinorVer))
                     return true;
-                else if (nMinor == parseFloat(reqMinorVer)) {
-                    if (sRev >= parseFloat(reqRevision))
-                        return true;
+                if (nMinor == parseFloat(reqMinorVer)
+                  && sRev >= parseFloat(reqRevision)) {
+                    return true;
                 }
             }
             return false;
@@ -199,22 +202,23 @@ apf.flash = (function(){
     function generateObj(objAttrs, params, embedAttrs, stdout){
         if (stdout == "undefined")
             stdout = false;
-        var str = [];
+        var i, str = [];
         if (apf.isIE && !apf.isOpera) {
-            str.push('<object ');
-            for (var i in objAttrs)
-                str.push(i, '="', objAttrs[i], '" ');
-            str.push('>');
-            for (var i in params)
-                str.push('<param name="', i, '" value="', params[i], '" /> ');
-            str.push('</object>');
-        } else {
-            str.push('<embed ');
-            for (var i in embedAttrs)
-                str.push(i, '="', embedAttrs[i], '" ');
-            str.push('> </embed>');
+            str.push("<object ");
+            for (i in objAttrs)
+                str.push(i, "=\"", objAttrs[i], "\" ");
+            str.push(">");
+            for (i in params)
+                str.push("<param name=\"", i, "\" value=\"", params[i], "\" />");
+            str.push("</object>");
         }
-        var sOut = str.join('');
+        else {
+            str.push("<embed ");
+            for (i in embedAttrs)
+                str.push(i, "=\"", embedAttrs[i], "\" ");
+            str.push("></embed>");
+        }
+        var sOut = str.join("");
 
         if (stdout === true)
             document.write(sOut);
@@ -229,8 +233,8 @@ apf.flash = (function(){
      *
      * @type {String}
      */
-    function AC_FL_RunContent(){
-        var ret = AC_GetArgs(arguments,
+    function AC_FL_RunContent(options){
+        var ret = AC_GetArgs(options,
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash");
         return generateObj(ret.objAttrs, ret.params, ret.embedAttrs);
@@ -243,13 +247,12 @@ apf.flash = (function(){
      *
      * @type {String}
      */
-    function buildContent() {
-        var hasRequestedVersion = isEightAvailable(),
-            args                = Array.prototype.slice.call(arguments);
-        if (isAvailable() && !hasRequestedVersion)
-            return buildInstaller.apply(null, args);
-        if (hasRequestedVersion)
-            return AC_FL_RunContent.apply(null, args);
+    function buildContent(options) {
+        var v = isEightAvailable();
+        if (isAvailable() && !v)
+            return buildInstaller(options || {});
+        if (v)
+            return AC_FL_RunContent(options);
         return 'This content requires the \
             <a href="http://www.adobe.com/go/getflash/">Adobe Flash Player</a>.';
     }
@@ -258,122 +261,85 @@ apf.flash = (function(){
      * Build the <OBJECT> tag that will load the Adobe installer for Flash
      * upgrades.
      */
-    function buildInstaller() {
-        var ret = AC_GetArgs(arguments,
+    function buildInstaller(options) {
+        if (!options)
+            options = {};
+        var ret = AC_GetArgs(options,
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash"),
             MMPlayerType  = (apf.isIE == true) ? "ActiveX" : "PlugIn",
             MMredirectURL = window.location;
-        document.title    = document.title.slice(0, 47)
-            + " - Flash Player Installation";
+        document.title    = document.title.slice(0, 47) + " - Flash Player Installation";
         var MMdoctitle    = document.title;
 
-        return AC_FL_RunContent(
-            "src", "playerProductInstall",
-            "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType="
-            + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
-            "width", "100%",
-            "height", "100%",
-            "align", "middle",
-            "id", ret.embedAttrs["name"],
-            "quality", "high",
-            "bgcolor", "#000000",
-            "name", ret.embedAttrs["name"],
-            "allowScriptAccess","always",
-            "type", "application/x-shockwave-flash",
-            "pluginspage", "http://www.adobe.com/go/getflashplayer"
-        );
+        return AC_FL_RunContent({
+            src              : "playerProductInstall",
+            FlashVars        : "MMredirectURL=" + MMredirectURL + "&MMplayerType="
+                + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
+            width            : "100%",
+            height           : "100%",
+            align            : "middle",
+            id               : ret.embedAttrs["name"],
+            quality          : "high",
+            bgcolor          : "#000000",
+            name             : ret.embedAttrs["name"],
+            allowScriptAccess: "always",
+            type             : "application/x-shockwave-flash",
+            pluginspage      : "http://www.adobe.com/go/getflashplayer"
+        });
     }
 
+    var sSrc = "src|movie",
+        sObj = "onafterupdate|onbeforeupdate|onblur|oncellchange|onclick|ondblclick"
+             + "|ondrag|ondragend|ondragenter|ondragleave|ondragover|ondrop|onfinish"
+             + "|onfocus|onhelp|onmousedown|onmouseup|onmouseover|onmousemove"
+             + "|onmouseout|onkeypress|onkeydown|onkeyup|onload|onlosecapture"
+             + "|onpropertychange|onreadystatechange|onrowsdelete|onrowenter"
+             + "|onrowexit|onrowsinserted|onstart|onscroll|onbeforeeditfocus"
+             + "|onactivate|onbeforedeactivate|ondeactivate|type|codebase|id",
+        sEmb = "width|height|align|vspace|hspace|class|title|accesskey|name|tabindex";
+
     /**
-     * Transforms arguments from AC_FL_RunContent and AC_SW_RunContent to sane
+     * Augments options from AC_FL_RunContent and AC_SW_RunContent to sane
      * object that can be used to generate <OBJECT> and <EMBED> tags (depending
      * on the clients' browser, but this function will generate both)
      *
-     * @param {Object} args
-     * @param {Object} ext
+     * @param {Object} options
      * @param {Object} srcParamName
      * @param {Object} classid
      * @param {Object} mimeType
      * @type {Object}
      */
-    function AC_GetArgs(args, srcParamName, classid, mimeType){
-        var ret        = {};
-        ret.embedAttrs = {};
-        ret.params     = {};
-        ret.objAttrs   = {};
-        for (var i = 0; i < args.length; i = i + 2) {
-            var currArg = args[i].toLowerCase();
+    function AC_GetArgs(options, srcParamName, classid, mimeType){
+        var i, name,
+            ret  = {
+                embedAttrs: {},
+                params    : {},
+                objAttrs  : {}
+            };
 
-            switch (currArg) {
-                case "classid":
-                    break;
-                case "pluginspage":
-                    ret.embedAttrs[args[i]] = args[i + 1];
-                    break;
-                case "src":
-                case "movie":
-                    ret.embedAttrs["src"] = args[i + 1];
-                    ret.params[srcParamName] = args[i + 1];
-                    break;
-                case "onafterupdate":
-                case "onbeforeupdate":
-                case "onblur":
-                case "oncellchange":
-                case "onclick":
-                case "ondblClick":
-                case "ondrag":
-                case "ondragend":
-                case "ondragenter":
-                case "ondragleave":
-                case "ondragover":
-                case "ondrop":
-                case "onfinish":
-                case "onfocus":
-                case "onhelp":
-                case "onmousedown":
-                case "onmouseup":
-                case "onmouseover":
-                case "onmousemove":
-                case "onmouseout":
-                case "onkeypress":
-                case "onkeydown":
-                case "onkeyup":
-                case "onload":
-                case "onlosecapture":
-                case "onpropertychange":
-                case "onreadystatechange":
-                case "onrowsdelete":
-                case "onrowenter":
-                case "onrowexit":
-                case "onrowsinserted":
-                case "onstart":
-                case "onscroll":
-                case "onbeforeeditfocus":
-                case "onactivate":
-                case "onbeforedeactivate":
-                case "ondeactivate":
-                case "type":
-                case "codebase":
-                case "id":
-                    ret.objAttrs[args[i]] = args[i + 1];
-                    break;
-                case "width":
-                case "height":
-                case "align":
-                case "vspace":
-                case "hspace":
-                case "class":
-                case "title":
-                case "accesskey":
-                case "name":
-                case "tabindex":
-                    ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i + 1];
-                    break;
-                default:
-                    ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i + 1];
+        for (i in options) {
+            name = i.toLowerCase();
+            if (name == "classid") continue;
+            
+            if (name == "pluginspage") {
+                ret.embedAttrs[i] = options[i];
+            }
+            else if (sSrc.indexOf(name) > -1) {
+                ret.embedAttrs["src"]    = options[i];
+                ret.params[srcParamName] = options[i];
+            }
+            else if (sObj.indexOf(name) > -1) {
+                ret.objAttrs[i] = options[i];
+            }
+            else if (sEmb.indexOf(name) > -1) {
+                ret.embedAttrs[i] = ret.objAttrs[i] = options[i];
+            }
+            else {
+                ret.embedAttrs[i] = ret.params[i] = options[i];
             }
         }
+        
         ret.objAttrs["classid"] = classid;
         if (mimeType)
             ret.embedAttrs["type"] = mimeType;
@@ -391,8 +357,9 @@ apf.flash = (function(){
 
         if (typeof id == "object")
             return id;
-        if (apf.isIE)
-            return window[id];
+        if (apf.isIE) {
+            return self[id];
+        }
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
@@ -401,14 +368,8 @@ apf.flash = (function(){
         }
     }
 
-    /* ----------------------------------------------------
-     * FAVideoManager
-     *
-     * This manages the collection of FAVideo instances on the HTML page. It directs calls from embedded
-     * FAVideo SWFs to the appropriate FAVideo instance in Javascript.
-     *----------------------------------------------------- */
-    var hash     = {};
-    var uniqueID = 1;
+    var hash     = {},
+        uniqueID = 1;
 
     /**
      * FAVideoManager: add a FAVideo instance to the stack for callbacks later on
@@ -448,11 +409,30 @@ apf.flash = (function(){
         if (player[methodName] == null)
             throw new Error(apf.formatErrorString(0, this, "Method " + methodName + " Not found"));
 
+        // #ifdef __DEBUG
+        apf.console.info("[FLASH] received method call for player '" + id + "', '" + methodName + "'");
+        // #endif
+
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];
         for (var i = 2; i < arguments.length; i++)
             args.push(decode(arguments[i]));
         player[methodName].apply(player, args);
+    }
+
+    /**
+     * Directs a call from a JS object to an embedded SWF
+     *
+     * @param {mixed}  o  DOM reference of the Flash movie (or its ID as a string)
+     * @param {String} fn Name of the function to be called on the Flash movie, exposed by ExternalInterface
+     * @type {void}
+     */
+    function remote(o, fn) {
+        if (typeof o == "string")
+            o = hash[o];
+        var rs = o.CallFunction('<invoke name="' + fn + '" returntype="javascript">'
+               + __flash__argumentsToXML(arguments, 2) + '</invoke>');
+        return eval(rs);
     }
 
     /**
@@ -466,20 +446,16 @@ apf.flash = (function(){
             return data;
         // double encode all entity values, or they will be mis-decoded
         // by Flash when returned
-        data = data.replace(/\&([^;]*)\;/g, "&amp;$1;");
-
-        // entity encode XML-ish characters, or Flash's broken XML serializer
-        // breaks
-        data = data.replace(/</g, "&lt;");
-        data = data.replace(/>/g, "&gt;");
-
-        // transforming \ into \\ doesn't work; just use a custom encoding
-        data = data.replace("\\", "&custom_backslash;");
-
-        data = data.replace(/\0/g, "\\0"); // null character
-        data = data.replace(/\"/g, "&quot;");
-
-        return data;
+        return data.replace(/\&([^;]*)\;/g, "&amp;$1;")
+                   // entity encode XML-ish characters, or Flash's broken XML
+                   // serializer breaks
+                   .replace(/</g, "&lt;")
+                   .replace(/>/g, "&gt;")
+                   // transforming \ into \\ doesn't work; just use a custom encoding
+                   .replace("\\", "&custom_backslash;")
+                   // null character
+                   .replace(/\0/g, "\\0")
+                   .replace(/\"/g, "&quot;");
     }
 
     /**
@@ -500,19 +476,15 @@ apf.flash = (function(){
             return data;
 
         // certain XMLish characters break Flash's wire serialization for
-        // ExternalInterface; these are encoded on the
-        // DojoExternalInterface side into a custom encoding, rather than
-        // the standard entity encoding, because otherwise we won't be able to
-        // differentiate between our own encoding and any entity characters
+        // ExternalInterface; these are encoded into a custom encoding, rather
+        // than the standard entity encoding, because otherwise we won't be able
+        // to differentiate between our own encoding and any entity characters
         // that are being used in the string itself
-        data = data.replace(/\&custom_lt\;/g, "<");
-        data = data.replace(/\&custom_gt\;/g, ">");
-        data = data.replace(/\&custom_backslash\;/g, '\\');
-
-        // needed for IE; \0 is the NULL character
-        data = data.replace(/\\0/g, "\0");
-
-        return data;
+        return data.replace(/\&custom_lt\;/g, "<")
+                   .replace(/\&custom_gt\;/g, ">")
+                   .replace(/\&custom_backslash\;/g, '\\')
+                   // needed for IE; \0 is the NULL character
+                   .replace(/\\0/g, "\0");
     }
 
     var aIsAvailable = {};
@@ -595,7 +567,8 @@ apf.flash = (function(){
         addPlayer       : addPlayer,
         getPlayer       : getPlayer,
         callMethod      : callMethod,
-        getSandbox      : getSandbox
+        getSandbox      : getSandbox,
+        remote          : remote
     };
 })();
 // #endif

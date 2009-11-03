@@ -25,7 +25,6 @@
  * @private
  */
 apf.runIE = function(){
-
     /* ******** XML Compatibility ************************************************
      Extensions to the xmldb
      ****************************************************************************/
@@ -58,8 +57,8 @@ apf.runIE = function(){
 
     apf.getHttpReq = hasIESecurity
         ? function(){
-            if (apf.teleport.availHTTP.length)
-                return apf.teleport.availHTTP.pop();
+            if (apf.availHTTP.length)
+                return apf.availHTTP.pop();
 
             // #ifdef __DESKRUN
             //if(apf.isDeskrun && !self.useNativeHttp)
@@ -69,8 +68,8 @@ apf.runIE = function(){
             return new XMLHttpRequest();
         }
         : function(){
-            if (apf.teleport.availHTTP.length)
-                return apf.teleport.availHTTP.pop();
+            if (apf.availHTTP.length)
+                return apf.availHTTP.pop();
 
             // #ifdef __DESKRUN
             //if(apf.isDeskrun && !apf.useNativeHttp)
@@ -132,7 +131,11 @@ apf.runIE = function(){
              srcText         Returns the full text of the line containing the error. Read-only.
              url             Contains the URL of the XML document containing the last error. Read-only.
              */
-            throw new Error(apf.formatErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
+            throw new Error(apf.formatErrorString(1050, null,
+                "XML Parse error on line " + xmlParseError.line,
+                xmlParseError.reason + "Source Text:\n"
+                    + xmlParseError.srcText.replace(/\t/gi, " ")
+            ));
         }
 
         return xml;
@@ -148,146 +151,126 @@ apf.runIE = function(){
         return el.currentStyle[prop];
     };
 
-    //function extendXmlDb(){
-    if (apf.XmlDatabase) {
-        //#ifdef __WITH_XMLDATABASE
-        apf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, pre, post){
-            var id;
-            if (xmlNode.length != null && !xmlNode.nodeType) {
-                var str, i, l;
-                for (str = [], i = 0, l = xmlNode.length; i < l; i++)
-                    str.push(xmlNode[i].xml);
-                str = str.join("");
+    //#ifdef __WITH_XMLDATABASE
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode){
+        for (var str = [], i = 0, l = nodeList.length; i < l; i++)
+            str[i] = nodeList[i].xml;
 
-                str = apf.html_entity_decode(str)
-                    .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
+        str = apf.html_entity_decode(str.join(""));
+        
+        if (apf.isIE < 7)
+            str = str.replace(/style="background-image:([^"]*)"/g, 
+              "find='$1' style='background-image:$1'");
 
-                if (pre) {
-                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-                        ? "beforebegin"
-                        : "beforeend", pre + str + post);
+        try {
+            (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+                ? "beforebegin"
+                : "beforeend", str);
+        }
+        catch (e) {
+            //IE table hack
+            document.body.insertAdjacentHTML("beforeend", "<table><tr>"
+                + str + "</tr></table>");
+
+            var x = document.body.lastChild.firstChild.firstChild;
+            for (i = x.childNodes.length - 1; i >= 0; i--)
+                htmlNode.appendChild(x.childNodes[apf.hasDynamicItemList ? 0 : i]);
+        }
+
+        //Fix IE image loading bug
+        if (apf.isIE < 7) {
+            setTimeout(function(){
+                var nodes = htmlNode.getElementsByTagName("*");
+                for (var s, i = 0, l = nodes.length; i < l; i++) {
+                    if (s = nodes[i].getAttribute("find"))
+                        nodes[i].style.backgroundImage = s.trim(); //@todo apf3.0 why is this needed?
                 }
-
-                try {
-                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-                        ? "beforebegin"
-                        : "beforeend", str);
-                }
-                catch (e) {
-                    //IE table hack
-                    document.body.insertAdjacentHTML("beforeend", "<table><tr>"
-                        + str + "</tr></table>");
-                    var x = document.body.lastChild.firstChild.firstChild;
-                    for (i = x.childNodes.length - 1; i >= 0; i--)
-                        htmlNode.appendChild(x.childNodes[apf.hasDynamicItemList ? 0 : i]);
-                }
-
-                //Fix IE image loading bug
-                if (!this.nodes)
-                    this.nodes = [];
-
-                id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
-                setTimeout('apf.xmldb.doNodes(' + id + ')');
-
-                return null;
-            }
-
-            //== ??? OR !=
-            if (htmlNode.ownerDocument && htmlNode.ownerDocument != document
-              && xmlNode.ownerDocument == htmlNode.ownerDocument)
-                return htmlNode.insertBefore(xmlNode, beforeNode);
-            //if(htmlNode.ownerDocument && htmlNode.ownerDocument != document) return htmlNode.insertBefore(xmlNode, beforeNode);
-
-            var strHTML = apf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
-            var pNode = (beforeNode || htmlNode);
-            if (pNode.nodeType == 11) {
-                id = xmlNode.getAttribute("id");
-                if (!id)
-                    throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
-
-                document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-                pNode.appendChild(document.getElementById(id));
-            }
-            else {
-                try {
-                    pNode.insertAdjacentHTML(beforeNode ? "beforeBegin" : "beforeEnd", strHTML);
-                }
-                catch(e) {
-                    //#ifdef __DEBUG
-                    apf.console.warn("Warning found block element inside a " 
-                      + pNode.tagName 
-                      + " element. Rendering will give unexpected results");
-                    //#endif
-                    
-                    pNode.insertAdjacentHTML("afterEnd", strHTML);
-                    return pNode.nextSibling;
-                }
-            }
-
-            return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        };
-
-        apf.XmlDatabase.prototype.doNodes = function(id){
-            var nodes = this.nodes[id];
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].getAttribute("find"))
-                    nodes[i].style.backgroundImage = nodes[i].getAttribute("find").trim(); //@todo apf3.0 why is this needed?
-            }
-            this.nodes[id] = null;
-        };
-
-        //Initialize xmldb
-        apf.xmldb = new apf.XmlDatabase();
-
-        //#endif
+            });
+        }
     }
+    
+    /* I have no idea what below code should do
+    
+    if (pNode.nodeType == 11) {
+        id = xmlNode.getAttribute("id");
+        if (!id)
+            throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
 
-    //apf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
-    //if (!hasIESecurity)
-        apf.Init.run('xmldb');
+        document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
+        pNode.appendChild(document.getElementById(id));
+    }*/
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, str){
+        if (!htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        var pNode = beforeNode || htmlNode;
+        
+        if (!str)
+            str = apf.html_entity_decode(xmlNode.serialize
+                ? xmlNode.serialize(true)
+                : xmlNode.xml || xmlNode.outerHTML || xmlNode.nodeValue);
+        try {
+            pNode.insertAdjacentHTML(beforeNode 
+                ? "beforeBegin" 
+                : "beforeEnd", str);
+        }
+        catch(e) {
+            //#ifdef __DEBUG
+            apf.console.warn("Warning found block element inside a " 
+              + pNode.tagName 
+              + " element. Rendering will give unexpected results");
+            //#endif
+            
+            pNode.insertAdjacentHTML("afterEnd", str);
+            return pNode.nextSibling;
+        }
 
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    }
+    //#endif
+    
     apf.getHorBorders = function(oHtml){
         return Math.max(0,
-              (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0))
+              (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0))
     };
 
     apf.getVerBorders = function(oHtml){
         return Math.max(0,
-              (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))
+              (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))
     };
 
     apf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0))
+        return Math.max(0, (parseInt(oHtml.currentStyle["paddingLeft"]) || 0)
+            + (parseInt(oHtml.currentStyle["paddingRight"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0))
     };
 
     apf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))
+        return Math.max(0, (parseInt(oHtml.currentStyle["paddingTop"]) || 0)
+            + (parseInt(oHtml.currentStyle["paddingBottom"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))
     };
 
     apf.getDiff = function(oHtml){
-        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0)),
-            Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))]
+        return [Math.max(0, (parseInt(oHtml.currentStyle["paddingLeft"]) || 0)
+            + (parseInt(oHtml.currentStyle["paddingRight"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0)),
+            Math.max(0, (parseInt(oHtml.currentStyle["paddingTop"]) || 0)
+            + (parseInt(oHtml.currentStyle["paddingBottom"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
+            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))]
     };
     
     apf.getMargin = function(oHtml) {
-        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0)),
-            Math.max(0, (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0))]
+        return [Math.max(0, (parseInt(oHtml.currentStyle["marginLeft"]) || 0)
+            + (parseInt(oHtml.currentStyle["marginRight"]) || 0)),
+            Math.max(0, (parseInt(oHtml.currentStyle["marginTop"]) || 0)
+            + (parseInt(oHtml.currentStyle["marginBottom"]) || 0))]
     };
 
     // #ifdef __WITH_POPUP_IE

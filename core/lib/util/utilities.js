@@ -27,28 +27,154 @@
  * @param {String} strCode the code to highlight.
  * @return {String} the highlighted string.
  */
+apf.highlightXml = 
 apf.highlightCode = function(strCode){
-    return strCode.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
-       .replace(/>/g, "_@B@_")
-       .replace(/((?:\s|^)[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:red">$1</span>$2<span style="color:black">$3</span>')
-       .replace(/((?:\s|^)[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:red'>$1</span>$2<span style='color:black'>$3</span>")
-       .replace(/(_@A@_[\s\S]*?_@B@_|<[\s\S]*?>)|(\/\/.*)$|("(?:[^"]+|\\.)*")|('(?:[^']+|\\.)*')|(\W)(break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm,
-            function(m, tag, co, str1, str2, nw, kw, nw2, fW, f, fws) {
-                if (tag) return tag;
-                else if (f)
-                    return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
-                else if (co)
-                    return '<span style="color:green">' + co + '</span>';
-                else if (str1 || str2)
-                    return '<span style="color:#808080">' + (str1 || str2) + '</span>';
-                else if (nw)
-                    return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
-            })
-       .replace(/_@A@_(!--[\s\S]*?--)_@B@_/g, '<span style="color:green">&lt;$1&gt;</span>')
-       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-       .replace(/\n/g, "<br />")
-       .replace(/_@B@_/g, "<span style='color:#127ac6'>&gt;</span>")
-       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#127ac6'>&lt;$1</span>")
+    var lines = strCode.split(/\n\r?/);
+    for (var min = 1000, i = 0, l = lines.length; i < l; i++){
+        min = Math.min(min, lines[i].match(/^(\s+)?[^\s]/) && RegExp.$1.length || 1000);
+        if (!min) break;
+    }
+    strCode = strCode.replace(new RegExp("^ {" + min + "}", "gm"), "")
+      .replace(/<!--([\s\S]+?)-->|<\?([\w\-]+)([\s\S]+?)\?>|<\!\[CDATA\[([\s\S]*?)\]\]>|<(\w+:)?script([\s\S]*?)>([\s\S]*?)<\/(?:\w+:)?script>|<([\/\w\:\-]+)([\s\S]*?)(\/?)>/g, 
+        function(m, comment, ptarget, pcontents, cdata, sprefix, sattr, scontent, tagName, attrs, bl){
+            if (comment) {
+                return "<span style=\"color:green\">&lt;!--" + comment + "--&gt;</span>";
+            }
+            else if (ptarget) {
+                return "<span style=\"color:orange\">&lt;?" + ptarget + "</span>" 
+                    + apf.highlightJs(pcontents, true) 
+                    + "<span style=\"color:orange\">?&gt;</span>";
+            }
+            else if (cdata) {
+                return "<span style=\"color:gray\">&lt;![CDATA[" + cdata + "]]&gt;</span>";
+            }
+            else if (sprefix) {
+                return "<span style=\"color:#127ac6\">&lt;" + sprefix + "script" + (attrs 
+                      ? "</span>" + attrs.replace(/("[\s\S]*?")|([\w\-\:]+)/g, function(m, s, w){
+                            if (s) return s;
+                            return "<span style=\"color:red\">" + w + "</span>";
+                        }) + "<span style=\"color:#127ac6\">&gt;</span>"
+                      : "&gt;</span>")
+                    + apf.highlightJs(scontent, true) 
+                    + "<span style=\"color:#127ac6\">&lt;/" + sprefix + "script&gt;</span>";
+            }
+            else if (tagName) {
+                return "<span style=\"color:#127ac6\">&lt;" 
+                    + (tagName.substr(0, 2) == "a:" 
+                        ? "<a href='element." + tagName.substr(2) + "'>" + tagName + "</a>" 
+                        : tagName)
+                    + (attrs 
+                      ? "</span>" + attrs.replace(/("[\s\S]*?")|([\w\-\:]+)/g, function(m, s, w){
+                            if (s) return s;
+                            return "<span style=\"color:red\">" + w + "</span>";
+                        }) + "<span style=\"color:#127ac6\">" + bl + "&gt;</span>"
+                      : "&gt;</span>");
+            }
+        });
+
+    return strCode;//.replace(/</g, "&lt;");
+}
+
+apf.convertAmlToJson = function(strCode){
+    var xml = apf.getXml("<a:app xmlns:a='" + apf.ns.apf + "'>" + strCode + "</a:app>", null, true);
+
+    var script = [], bool = {"true":1, "false":1};
+    var x = (function recur(nodes, depth, paout){
+        var pre = new Array(depth+2).join("  "), output = [];
+        
+        for (var node, i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            if (node.nodeType == 3 || node.nodeType == 4) {
+                if (node.nodeValue.replace(/[\s]*$/, "").replace(/^[\s]*/, "")) {
+                    (paout || output).push("data", '"' + node.nodeValue.trim().replace(/"/g, "\\\"").replace(/\n/g, "\\\n") + '"');
+                }
+                continue;
+            }
+            else if (node.nodeType == 8) {
+                output.push(pre + "//" + node.nodeValue);
+                continue;
+            }
+            else if (node.nodeType != 1)
+                continue; //ignore
+            else if (node[apf.TAGNAME] == "script") {
+                var s = node.childNodes;
+                for (var j = 0, jl = s.length; j < jl; j++) {
+                    if (s[j].nodeValue.trim() != "//")
+                        script.push(s[j].nodeValue.replace(/^ {16}/gm, "").replace(/\/\/$/, "") + "\n");
+                }
+                continue;
+            }
+            
+            var attr, childLength = node.childNodes.length + (attr = node.attributes).length;
+            var max = 0, aout = [];
+            output.push(pre + "new apf." + node[apf.TAGNAME] + (childLength || !depth ? "({" : "()" + (depth == 0 ? ";" : (i == l - 1 ? "" : ","))));
+            if (!depth) {
+                aout.push("htmlNode", "document.body");
+                max = Math.max(8, max);
+            }
+            
+            for (var a, j = 0, jl = attr.length; j < jl; j++) {
+                aout.push((a = attr[j]).nodeName, a.nodeName.substr(0,2) == "on"
+                    ? "function(){" + a.nodeValue + "}"
+                    : (parseInt(a.nodeValue) == a.nodeValue || bool[a.nodeValue]
+                        ? a.nodeValue
+                        : '"' + a.nodeValue.replace(/"/g, "\\\"") + '"'));
+                max = Math.max(a.nodeName.length, max);
+            }
+            
+            var c = "";
+            if (node[apf.TAGNAME] == "model" && node.childNodes.length) {
+                aout.push("data", '"' + apf.serializeChildren(node).trim().replace(/"/g, "\\\"").replace(/\r?\n/g, "\\\n") + '"');
+            }
+            else if (childLength)
+                var c = recur(node.childNodes, depth+2, aout);
+            
+            max = Math.max(c ? 10 : 4, max);
+            
+            max++;
+            
+            for (j = 0, jl = aout.length; j < jl; j+=2) {
+                output.push(pre + "  " + aout[j].pad(max, " ", apf.PAD_RIGHT) 
+                    + ": " + aout[j+1] + (j != jl - 2 || c ? "," : ""));
+            }
+            
+            if (c) {
+                output.push(pre + "  " + "childNodes".pad(max, " ", apf.PAD_RIGHT) + ": [");
+                output.push(c.substr(0, c.length - 1));
+                output.push(pre + "  ]");
+            }
+
+            if (childLength || !depth)
+                output.push(pre + "})" + (depth == 0 ? ";" : (i == l - 1 ? "" : ",")))
+        }
+
+        return output.join("\n") + (depth == 0 ? "\n\n" + script.join("").trim() : "");
+    })(xml.childNodes, 0);
+
+    return x + "\n\n";
+}
+
+apf.highlightJs = function(x, notrim){
+    if (!notrim) {
+        var lines = x.split(/\n\r?/);
+        for (var min = 1000, i = 0, l = lines.length; i < l; i++){
+            min = Math.min(min, lines[i].match(/^(\s+)?[^\s]/) && RegExp.$1.length || 1000);
+            if (!min) break;
+        }
+        x = x.replace(new RegExp("^ {" + min + "}", "gm"), "");
+    }
+    
+    return x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/(\/\*[\s\S]+\*\/)|(\/\/.*)$|("(?:[^"\\]+|\\[\s\S])*")|('(?:[^'\\]+|\\[\s\S])*')|(\W)(apf|break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm,
+        function(m, colong, co, str1, str2, nw, kw, nw2, fW, f, fws) {
+            if (f)
+                return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
+            else if (co || colong)
+                return '<span style="color:green">' + (co || colong) + '</span>';
+            else if (str1 || str2)
+                return '<span style="color:#808080">' + (str1 || str2) + '</span>';
+            else if (nw)
+                return nw + '<span style="color:#127ac6">' + kw + '</span>' + nw2;
+        });
 }
 
 /**
@@ -121,56 +247,60 @@ apf.pasteWindow = function(str){
  * @private
  */
 apf.xmlEntityMap = {
-    'quot': '34', 'amp': '38', 'apos': '39', 'lt': '60', 'gt': '62',
-    'nbsp': '160', 'iexcl': '161', 'cent': '162', 'pound': '163', 'curren': '164',
-    'yen': '165', 'brvbar': '166', 'sect': '167', 'uml': '168', 'copy': '169',
-    'ordf': '170', 'laquo': '171', 'not': '172', 'shy': '173', 'reg': '174', 'macr': '175',
-    'deg': '176', 'plusmn': '177', 'sup2': '178', 'sup3': '179', 'acute': '180',
-    'micro': '181', 'para': '182', 'middot': '183', 'cedil': '184', 'sup1': '185',
-    'ordm': '186', 'raquo': '187', 'frac14': '188', 'frac12': '189', 'frac34': '190',
-    'iquest': '191', 'Agrave': '192', 'Aacute': '193', 'Acirc': '194', 'Atilde': '195',
-    'Auml': '196', 'Aring': '197', 'AElig': '198', 'Ccedil': '199', 'Egrave': '200',
-    'Eacute': '201', 'Ecirc': '202', 'Euml': '203', 'Igrave': '204', 'Iacute': '205',
-    'Icirc': '206', 'Iuml': '207', 'ETH': '208', 'Ntilde': '209', 'Ograve': '210',
-    'Oacute': '211', 'Ocirc': '212', 'Otilde': '213', 'Ouml': '214', 'times': '215',
-    'Oslash': '216', 'Ugrave': '217', 'Uacute': '218', 'Ucirc': '219', 'Uuml': '220',
-    'Yacute': '221', 'THORN': '222', 'szlig': '223', 'agrave': '224', 'aacute': '225',
-    'acirc': '226', 'atilde': '227', 'auml': '228', 'aring': '229', 'aelig': '230',
-    'ccedil': '231', 'egrave': '232', 'eacute': '233', 'ecirc': '234', 'euml': '235',
-    'igrave': '236', 'iacute': '237', 'icirc': '238', 'iuml': '239', 'eth': '240',
-    'ntilde': '241', 'ograve': '242', 'oacute': '243', 'ocirc': '244', 'otilde': '245',
-    'ouml': '246', 'divide': '247', 'oslash': '248', 'ugrave': '249', 'uacute': '250',
-    'ucirc': '251', 'uuml': '252', 'yacute': '253', 'thorn': '254', 'yuml': '255',
-    'OElig': '338', 'oelig': '339', 'Scaron': '352', 'scaron': '353', 'Yuml': '376',
-    'fnof': '402', 'circ': '710', 'tilde': '732', 'Alpha': '913', 'Beta': '914',
-    'Gamma': '915', 'Delta': '916', 'Epsilon': '917', 'Zeta': '918', 'Eta': '919',
-    'Theta': '920', 'Iota': '921', 'Kappa': '922', 'Lambda': '923', 'Mu': '924',
-    'Nu': '925', 'Xi': '926', 'Omicron': '927', 'Pi': '928', 'Rho': '929', 'Sigma': '931',
-    'Tau': '932', 'Upsilon': '933', 'Phi': '934', 'Chi': '935', 'Psi': '936', 'Omega': '937',
-    'alpha': '945', 'beta': '946', 'gamma': '947', 'delta': '948', 'epsilon': '949',
-    'zeta': '950', 'eta': '951', 'theta': '952', 'iota': '953', 'kappa': '954',
-    'lambda': '955', 'mu': '956', 'nu': '957', 'xi': '958', 'omicron': '959', 'pi': '960',
-    'rho': '961', 'sigmaf': '962', 'sigma': '963', 'tau': '964', 'upsilon': '965',
-    'phi': '966', 'chi': '967', 'psi': '968', 'omega': '969', 'thetasym': '977', 'upsih': '978',
-    'piv': '982', 'ensp': '8194', 'emsp': '8195', 'thinsp': '8201', 'zwnj': '8204',
-    'zwj': '8205', 'lrm': '8206', 'rlm': '8207', 'ndash': '8211', 'mdash': '8212',
-    'lsquo': '8216', 'rsquo': '8217', 'sbquo': '8218', 'ldquo': '8220', 'rdquo': '8221',
-    'bdquo': '8222', 'dagger': '8224', 'Dagger': '8225', 'bull': '8226', 'hellip': '8230',
-    'permil': '8240', 'prime': '8242', 'Prime': '8243', 'lsaquo': '8249', 'rsaquo': '8250',
-    'oline': '8254', 'frasl': '8260', 'euro': '8364', 'image': '8465', 'weierp': '8472',
-    'real': '8476', 'trade': '8482', 'alefsym': '8501', 'larr': '8592', 'uarr': '8593',
-    'rarr': '8594', 'darr': '8595', 'harr': '8596', 'crarr': '8629', 'lArr': '8656',
-    'uArr': '8657', 'rArr': '8658', 'dArr': '8659', 'hArr': '8660', 'forall': '8704',
-    'part': '8706', 'exist': '8707', 'empty': '8709', 'nabla': '8711', 'isin': '8712',
-    'notin': '8713', 'ni': '8715', 'prod': '8719', 'sum': '8721', 'minus': '8722',
-    'lowast': '8727', 'radic': '8730', 'prop': '8733', 'infin': '8734', 'ang': '8736',
-    'and': '8743', 'or': '8744', 'cap': '8745', 'cup': '8746', 'int': '8747', 'there4': '8756',
-    'sim': '8764', 'cong': '8773', 'asymp': '8776', 'ne': '8800', 'equiv': '8801', 'le': '8804',
-    'ge': '8805', 'sub': '8834', 'sup': '8835', 'nsub': '8836', 'sube': '8838',
-    'supe': '8839', 'oplus': '8853', 'otimes': '8855', 'perp': '8869', 'sdot': '8901',
-    'lceil': '8968', 'rceil': '8969', 'lfloor': '8970', 'rfloor': '8971', 'lang': '9001',
-    'rang': '9002', 'loz': '9674', 'spades': '9824', 'clubs': '9827', 'hearts': '9829',
-    'diams': '9830'
+    "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
+    "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
+    "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
+    "ordf": "170", "laquo": "171", "not": "172", "shy": "173", "reg": "174",
+    "macr": "175", "deg": "176", "plusmn": "177", "sup2": "178", "sup3": "179",
+    "acute": "180", "micro": "181", "para": "182", "middot": "183", "cedil": "184",
+    "sup1": "185", "ordm": "186", "raquo": "187", "frac14": "188", "frac12": "189",
+    "frac34": "190", "iquest": "191", "agrave": "192", "aacute": "193",
+    "acirc": "194", "atilde": "195", "auml": "196", "aring": "197", "aelig": "198",
+    "ccedil": "199", "egrave": "200", "eacute": "201", "ecirc": "202",
+    "euml": "203", "igrave": "204", "iacute": "205", "icirc": "206", "iuml": "207",
+    "eth": "208", "ntilde": "209", "ograve": "210", "oacute": "211", "ocirc": "212",
+    "otilde": "213", "ouml": "214", "times": "215", "oslash": "216", "ugrave": "217",
+    "uacute": "218", "ucirc": "219", "uuml": "220", "yacute": "221", "thorn": "222",
+    "szlig": "223", "agrave": "224", "aacute": "225", "acirc": "226", "atilde": "227",
+    "auml": "228", "aring": "229", "aelig": "230", "ccedil": "231", "egrave": "232",
+    "eacute": "233", "ecirc": "234", "euml": "235", "igrave": "236", "iacute": "237",
+    "icirc": "238", "iuml": "239", "eth": "240", "ntilde": "241", "ograve": "242",
+    "oacute": "243", "ocirc": "244", "otilde": "245", "ouml": "246", "divide": "247",
+    "oslash": "248", "ugrave": "249", "uacute": "250", "ucirc": "251", "uuml": "252",
+    "yacute": "253", "thorn": "254", "yuml": "255", "oelig": "338", "oelig": "339",
+    "scaron": "352", "scaron": "353", "yuml": "376", "fnof": "402", "circ": "710",
+    "tilde": "732", "alpha": "913", "beta": "914", "gamma": "915", "delta": "916",
+    "epsilon": "917", "zeta": "918", "eta": "919", "theta": "920", "iota": "921",
+    "kappa": "922", "lambda": "923", "mu": "924", "nu": "925", "xi": "926",
+    "omicron": "927", "pi": "928", "rho": "929", "sigma": "931", "tau": "932",
+    "upsilon": "933", "phi": "934", "chi": "935", "psi": "936", "omega": "937",
+    "alpha": "945", "beta": "946", "gamma": "947", "delta": "948", "epsilon": "949",
+    "zeta": "950", "eta": "951", "theta": "952", "iota": "953", "kappa": "954",
+    "lambda": "955", "mu": "956", "nu": "957", "xi": "958", "omicron": "959",
+    "pi": "960", "rho": "961", "sigmaf": "962", "sigma": "963", "tau": "964",
+    "upsilon": "965", "phi": "966", "chi": "967", "psi": "968", "omega": "969",
+    "thetasym": "977", "upsih": "978", "piv": "982", "ensp": "8194", "emsp": "8195",
+    "thinsp": "8201", "zwnj": "8204", "zwj": "8205", "lrm": "8206", "rlm": "8207",
+    "ndash": "8211", "mdash": "8212", "lsquo": "8216", "rsquo": "8217",
+    "sbquo": "8218", "ldquo": "8220", "rdquo": "8221", "bdquo": "8222",
+    "dagger": "8224", "dagger": "8225", "bull": "8226", "hellip": "8230",
+    "permil": "8240", "prime": "8242", "prime": "8243", "lsaquo": "8249",
+    "rsaquo": "8250", "oline": "8254", "frasl": "8260", "euro": "8364",
+    "image": "8465", "weierp": "8472", "real": "8476", "trade": "8482",
+    "alefsym": "8501", "larr": "8592", "uarr": "8593", "rarr": "8594",
+    "darr": "8595", "harr": "8596", "crarr": "8629", "larr": "8656", "uarr": "8657",
+    "rarr": "8658", "darr": "8659", "harr": "8660", "forall": "8704", "part": "8706",
+    "exist": "8707", "empty": "8709", "nabla": "8711", "isin": "8712",
+    "notin": "8713", "ni": "8715", "prod": "8719", "sum": "8721", "minus": "8722",
+    "lowast": "8727", "radic": "8730", "prop": "8733", "infin": "8734",
+    "ang": "8736", "and": "8743", "or": "8744", "cap": "8745", "cup": "8746",
+    "int": "8747", "there4": "8756", "sim": "8764", "cong": "8773", "asymp": "8776",
+    "ne": "8800", "equiv": "8801", "le": "8804", "ge": "8805", "sub": "8834",
+    "sup": "8835", "nsub": "8836", "sube": "8838", "supe": "8839", "oplus": "8853",
+    "otimes": "8855", "perp": "8869", "sdot": "8901", "lceil": "8968",
+    "rceil": "8969", "lfloor": "8970", "rfloor": "8971", "lang": "9001",
+    "rang": "9002", "loz": "9674", "spades": "9824", "clubs": "9827",
+    "hearts": "9829", "diams": "9830"
 };
 
 /**
@@ -186,10 +316,13 @@ apf.htmlentities = function(str){
  * Escape an xml string making it ascii compatible.
  * @param {String} str the xml string to escape.
  * @return {String} the escaped string.
+ *
+ * @todo This function does something completely different from htmlentities, 
+ *       the name is confusing and misleading.
  */
 apf.xmlentities = function(str) {
     return str.replace(/&([a-z]+);/gi, function(a, m) {
-        if (apf.xmlEntityMap[m])
+        if (apf.xmlEntityMap[m = m.toLowerCase()])
             return '&#' + apf.xmlEntityMap[m] + ';';
         return a;
     });
@@ -215,7 +348,7 @@ apf.html_entity_decode = function(str){
 apf.isCharacter = function(charCode){
     return (charCode < 112 || charCode > 122)
       && (charCode == 32 || charCode > 42 || charCode == 8);
-}
+};
 
 /**
  * This random number generator has been added to provide a more robust and
@@ -424,34 +557,6 @@ apf.isFalse = function(c){
 apf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string
     return (!c && typeof c != "string" && c !== 0 || (typeof c == "number" && !isFinite(c)));
-};
-
-/**
- * Returns the directory portion of a url
- * @param {String} url the url to retrieve from.
- * @return {String} the directory portion of a url.
- */
-apf.getDirname = function(url){
-    return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
-};
-
-/**
- * Returns the file portion of a url
- * @param {String} url the url to retrieve from.
- * @return {String} the file portion of a url.
- */
-apf.getFilename = function(url){
-    return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
-};
-
-/**
- * Returns an absolute url based on url.
- * @param {String} base the start of the url to which relative url's work.
- * @param {String} url  the url to transform.
- * @return {String} the absolute url.
- */
-apf.getAbsolutePath = function(base, url){
-    return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
 };
 
 /**

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __AMLVIDEO || __INC_ALL
 
 /**
  * Element displaying a Silverlight video
@@ -42,9 +42,9 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
     }
 
     // #ifndef __PACKAGED
-    this.DEFAULT_PLAYER = (apf.appsettings.resourcePath || apf.basePath) + "elements/video/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (apf.config.resourcePath || apf.basePath) + "elements/video/wmvplayer.xaml";
     /* #else
-    this.DEFAULT_PLAYER = (apf.appsettings.resourcePath || apf.basePath) + "resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (apf.config.resourcePath || apf.basePath) + "resources/wmvplayer.xaml";
     #endif */
     /* #ifdef __WITH_CDN
     this.DEFAULT_PLAYER = apf.CDN + apf.VERSION + "/resources/wmvplayer.xaml";
@@ -91,7 +91,7 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
     }
 
     apf.silverlight.createObjectEx({
-        id:            this.oVideo.uniqueId + "_Player",
+        id:            this.oVideo.$uniqueId + "_Player",
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
         properties:    {
@@ -110,8 +110,9 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
     });
 
     //apf.extend(this, apf.video.TypeInterface);
-    apf.layout.setRules(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight",
-        "apf.all[" + this.oVideo.uniqueId + "].player.resizePlayer()");
+    apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight",
+        "apf.all[" + this.oVideo.$uniqueId + "].player.resizePlayer()");
+    apf.layout.queue(this.oVideo.$ext);
 };
 
 apf.video.TypeSilverlight.isSupported = function(){
@@ -445,7 +446,7 @@ apf.video.TypeSilverlight.prototype = {
     },
 
     $destroy: function() {
-        apf.layout.removeRule(this.oVideo.oExt, this.oVideo.uniqueId + "_silverlight");
+        apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight");
         this.stopPlayPoll();
         if (this.player) {
             this.player = this.video = this.preview = null;

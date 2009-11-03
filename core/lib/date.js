@@ -105,10 +105,10 @@ return {
     span: function(seconds) {
         if (seconds < 0) return;
 
-        var sec  = parseInt(seconds);
-        var min  = Math.floor(sec / 60);
-        var hour = Math.floor(min / 60);
-        var day  = parseInt(Math.floor(hour / 24));
+        var sec  = parseInt(seconds),
+            min  = Math.floor(sec / 60),
+            hour = Math.floor(min / 60),
+            day  = parseInt(Math.floor(hour / 24));
         this.seconds = sec % 60;
         this.minutes = min % 60;
         this.hours   = hour % 24;
@@ -197,8 +197,8 @@ return {
         if (!month)
             month = now.getMonth();
 
-        var days   = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-        var julian = (days[month - 1] + day || now.getDate());
+        var days   = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
+            julian = (days[month - 1] + day || now.getDate());
         if (month > 2 && this.isLeapYear(year || now.getFullYear()))
             julian++;
         return julian;
@@ -229,16 +229,16 @@ return {
     gregorianToISO: function(day, month, year) {
         var mnth       = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
             y_isleap   = this.isLeapYear(year),
-            y_1_isleap = this.isLeapYear(year - 1);
-        var day_of_year_number = day + mnth[month - 1];
+            y_1_isleap = this.isLeapYear(year - 1),
+            day_of_year_number = day + mnth[month - 1];
         if (y_isleap && month > 2)
             day_of_year_number++;
         // find Jan 1 weekday (monday = 1, sunday = 7)
-        var yy           = (year - 1) % 100;
-        var jan1_weekday = 1 + parseInt(((((((year - 1) - yy) / 100) % 4) * 5)
-            + (yy + parseInt(yy / 4))) % 7);
-        // weekday for year-month-day
-        var weekday = 1 + parseInt(((day_of_year_number + (jan1_weekday - 1)) - 1) % 7),
+        var yy           = (year - 1) % 100,
+            jan1_weekday = 1 + parseInt(((((((year - 1) - yy) / 100) % 4) * 5)
+                           + (yy + parseInt(yy / 4))) % 7),
+            // weekday for year-month-day
+            weekday = 1 + parseInt(((day_of_year_number + (jan1_weekday - 1)) - 1) % 7),
             yearnumber, weeknumber
         // find if Y M D falls in YearNumber Y-1, WeekNumber 52 or
         if (day_of_year_number <= (8 - jan1_weekday) && jan1_weekday > 4){
@@ -622,9 +622,9 @@ Date.prototype.inDaylightTime   = function() {
     // Calculate Daylight Saving Time
     var dst   = 0,
         jan1  = new Date(this.getFullYear(), 0, 1, 0, 0, 0, 0),  // jan 1st
-        june1 = new Date(this.getFullYear(), 6, 1, 0, 0, 0, 0); // june 1st
-    var temp  = jan1.toUTCString();
-    var jan2  = new Date(temp.slice(0, temp.lastIndexOf(' ')-1));
+        june1 = new Date(this.getFullYear(), 6, 1, 0, 0, 0, 0), // june 1st
+        temp  = jan1.toUTCString(),
+        jan2  = new Date(temp.slice(0, temp.lastIndexOf(' ')-1));
     temp = june1.toUTCString();
     var june2 = new Date(temp.slice(0, temp.lastIndexOf(' ')-1));
     var std_time_offset = (jan1 - jan2) / (1000 * 60 * 60),
@@ -751,7 +751,6 @@ Date.prototype.getJulianDate    = function() {
     return apf.date.julianDate(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getWeekOfYear    = function() {
-    debugger;
     return apf.date.weekOfYear(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getQuarterOfYear = function() {

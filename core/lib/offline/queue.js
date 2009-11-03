@@ -31,12 +31,12 @@
  *
  * @default_private
  */
-apf.namespace("offline.queue", {
+apf.offline.queue = {
     enabled : false,
     stack   : [],
     
     init : function(){
-        this.namespace = apf.appsettings.name + ".apf.offline.queue";
+        this.namespace = apf.config.name + ".apf.offline.queue";
         this.enabled   = true;
     },
     
@@ -193,6 +193,6 @@ apf.namespace("offline.queue", {
         
         return commInfo;
     }
-});
+};
 
 // #endif

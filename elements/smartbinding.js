@@ -38,7 +38,7 @@
  * model using a {@link term.datainstruction data instruction} as the following
  * example shows:
  * <code>
- *  <a:model load="url:get_person.php?id=10" />
+ *  <a:model load="get_person.php?id=10" />
  * </code>
  * An element can connect directly to a model in order to bind to data.
  * <code>
@@ -140,10 +140,10 @@
  * For multi node components databinding adds another conceptual step. The basics
  * stay the same, though a way is introduced to do 'foreach' on the data to 
  * determine which nodes are rendered. This is done using the 
- * {@link element.multiselectbinding.binding.traverse traverse binding rule} and
- * the selected nodes are called {@link term.traversenode traverse nodes}.
+ * {@link element.multiselectbinding.binding.each each binding rule} and
+ * the selected nodes are called {@link term.eachnode each nodes}.
  *
- * When the set of traverse nodes is determined, each is rendered based on other
+ * When the set of each nodes is determined, each is rendered based on other
  * binding rules that determine whatever is deemed necesary by the component. 
  * This can be the caption, icon, tooltip, whether an item is seletable and so on.
  * In the next example a list is bound to some data representing a contact list.
@@ -154,7 +154,7 @@
  *          <a:caption select="name" />
  *          <a:icon value="contact.png" />
  *          <a:tooltip select="company" />
- *          <a:traverse select="contact" />
+ *          <a:each select="contact" />
  *      </a:bindings>
  *  </a:list>
  * </code>
@@ -175,7 +175,7 @@
  *
  * Processors:
  * There are several ways to convert the data retrieved from the xml data into
- * the needed string or boolean. The following example uses {@link core.apf.object.jsltImplementation jslt}
+ * the needed string or boolean. The following example uses {@link term.livemarkup live markup}
  * to determine the icon by the extension of the filename:
  * <code>
  *  <a:bindings>
@@ -185,7 +185,7 @@
  *      ]]></a:icon>
  *  </a:bindings>
  * </code>
- * Instead of jslt you can use xslt as well. Furthermore you can apply some
+ * Instead of live markup you can use xslt as well. Furthermore you can apply some
  * javascript to the result by calling a method. The following examples shows
  * a caption where a javascript method inserts smileys.
  * <code>
@@ -207,8 +207,8 @@
  *      <a:bindings>
  *          <a:caption select = "@name" />
  *          <a:insert  select = "self::category[not(@leaf)]" 
- *                     get    = "url:get_categories.php?parent={@id}" />
- *          <a:traverse select="category" />
+ *                     get    = "get_categories.php?parent=[@id]" />
+ *          <a:each select="category" />
  *      </a:bindings>
  *  </a:tree>
  * </code>
@@ -232,7 +232,7 @@
  *  <a:datagrid>
  *      <a:actions>
  *          <a:remove select = "self::contact[not(@readonly)]"
- *                    set    = "url:remove_contact.jsp?id={@dbid}" />
+ *                    set    = "remove_contact.jsp?id=[@dbid]" />
  *      </a:actions>
  *  </a:datagrid>
  * </code>
@@ -266,9 +266,9 @@
  * <code>
  *  <a:actions>
  *      <a:rename select = "self::file"   
- *                set    = "url:rename_folder.php?path={@path}&name={@name}" />
+ *                set    = "rename_folder.php?path=[@path]&name=[@name]" />
  *      <a:rename select = "self::folder" 
- *                set    = "url:rename_file.php?path={@path}&name={@name}" />
+ *                set    = "rename_file.php?path=[@path]&name=[@name]" />
  *  </a:actions>
  * </code>
  *
@@ -283,8 +283,8 @@
  * call cannot be used to revert. For these situations set the undo attribute.
  * <code>
  *  <a:actions>
- *      <a:remove set  = "url:remove.php?id={@id}"
- *                undo = "url:undo_remove.php?id={@id}" />
+ *      <a:remove set  = "remove.php?id=[@id]"
+ *                undo = "undo_remove.php?id=[@id]" />
  *      </a:remove>
  *  </a:actions>
  * </code>
@@ -292,8 +292,8 @@
  * Another possibility is to add the item again as shown in this example:
  * <code>
  *  <a:actions>
- *      <a:remove set  = "url:remove.php?id={@id}"
- *                undo = "url:add.php?xml={.}" />
+ *      <a:remove set  = "remove.php?id=[@id]"
+ *                undo = "add.php?xml=[.]" />
  *      </a:remove>
  *  </a:actions>
  * </code>
@@ -316,7 +316,7 @@
  * <code>
  *  <a:list id="myList">
  *      <a:actions>
- *          <a:add set="rpc:comm.addProduct({.})" />
+ *          <a:add set="{comm.addProduct([.])}" />
  *      </a:actions>
  *  </a:list>
  *  <a:script>
@@ -326,7 +326,7 @@
  *
  * The second by specifying the template as a child of the add action rule:
  *  <a:actions>
- *      <a:add set="rpc:comm.addProduct({.})">
+ *      <a:add set="{comm.addProduct([.])}">
  *          <product name="USB drive" type="storage" />
  *      </a:add>
  *  </a:actions>
@@ -334,7 +334,7 @@
  * The third way gets the added node from the server.
  * <code>
  *  <a:actions>
- *      <a:add get="rpc:comm.createNewProduct()" />
+ *      <a:add get="{comm.createNewProduct()}" />
  *  </a:actions>
  * </code>
  *
@@ -360,7 +360,7 @@
  *          <a:remove />
  *      </a:actions>
  *  </a:list>
- *  <a:button onclick="myList.getModel().submit('url:save.php', myList.xmlRoot)">
+ *  <a:button onclick="myList.getModel().submit('save.php', myList.xmlRoot)">
  *      Save
  *  </a:button>
  * </code>
@@ -401,7 +401,7 @@
  *      <a:bindings>
  *          <a:caption select="text()" />
  *          <a:icon value="icoUser.png" />
- *          <a:traverse select="user" />
+ *          <a:each select="user" />
  *      </a:bindings>
  *  </a:smartbinding>
  * 
@@ -415,21 +415,21 @@
  * is used. The drag and drop rules specify which elements can be dragged and
  * where they can be dropped.
  * <code>
- *  <a:smartbinding id="sbFilesystem" model="webdav:getRoot()">
+ *  <a:smartbinding id="sbFilesystem" model="{myWebdav.getRoot()}">
  *      <a:bindings>
- *          <a:insert select="self::folder" get="webdav:readdir({@path})" />
- *          <a:traverse select="file|folder" sort="@name" sort-method="filesort" />
+ *          <a:insert select="self::folder" get="{myWebdav.readdir([@path])}" />
+ *          <a:each select="file|folder" sort="@name" sort-method="filesort" />
  *          <a:caption select="@name" />
  *          <a:icon select="self::folder" value="icoFolder.png" />
  *          <a:icon select="self::file" method="getIcon" />
  *      </a:bindings>
  *      <a:actions>
- *         <a:add type="folder" get="webdav:mkdir({@id}, 'New Folder')" />
- *         <a:add type="file" get="webdav:create({@id}, 'New File', '')" />
- *         <a:rename set="webdav:move(oldValue, {@name}, {@id})"/>
- *         <a:copy select="." set="webdav:copy({@id}, {../@id})"/>
- *         <a:move select="." set="webdav:move()"/>
- *         <a:remove select="." set="webdav:remove({@path})"/>
+ *         <a:add type="folder" get="{myWebdav.mkdir([@id], 'New Folder')}" />
+ *         <a:add type="file" get="{myWebdav.create([@id], 'New File', '')}" />
+ *         <a:rename set="{myWebdav.move(oldValue, [@name], [@id])}"/>
+ *         <a:copy select="." set="{myWebdav.copy([@id], [../@id])}"/>
+ *         <a:move select="." set="{myWebdav.move()}"/>
+ *         <a:remove select="." set="{myWebdav.remove([@path])}"/>
  *      </a:actions>
  *      <a:dragdrop>
  *          <a:allow-drag select="folder|file" /> 
@@ -495,7 +495,7 @@
  *    model    = "mdlExample" />
  *
  *  <a:list smartbinding="sbExample" />
- *  <a:tree binding="bndExample" action="actExample" model="url:example.php" />
+ *  <a:tree binding="bndExample" action="actExample" model="example.php" />
  * </code>
  * Example:
  * This example shows the children of the smartbinding directly as a children of
@@ -516,7 +516,7 @@
  * Example:
  * The shortest method to add binding rules to an element is as follows:
  * <code>
- *  <a:tree traverse="file|folder" caption="@name" icon="@icon" />
+ *  <a:tree each="file|folder" caption="@name" icon="@icon" />
  * </code>
  * @see baseclass.databinding
  * @see baseclass.databinding.attribute.smartbinding
@@ -537,269 +537,101 @@
  *
  * @default_private
  */
-apf.smartbinding = function(name, xmlNode, parentNode){
-    this.xmlbindings = null;
-    this.xmlactions  = null;
-    this.xmldragdrop = null;
-    this.bindings    = null;
-    this.actions     = null;
-    this.dragdrop    = null;
+apf.smartbinding = function(struct, tagName){
+    this.$init(tagName || "smartbinding", apf.NODE_HIDDEN, struct);
 
-    this.amlNodes    = {};
-    this.$modelXpath = {};
-    this.name        = name;
-    var _self        = this;
-    //this.uniqueId    = apf.all.push(this) - 1;
-    
-    //#ifdef __WITH_AMLDOM_FULL
-    this.tagName    = "smartbinding";
-    this.nodeFunc   = apf.NODE_HIDDEN;
-    this.parentNode = parentNode;
-    apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
-    //#endif
+    this.$bindNodes = {};
+};
 
-    var parts        = {
-        bindings: 'loadBindings',
-        actions : 'loadActions'
-    };
-    
-    //#ifdef __DEBUG
-    apf.console.info(name
-        ? "Creating SmartBinding [" + name + "]"
-        : "Creating implicitly assigned SmartBinding");
-    //#endif
-    
-    /**
-     * @private
-     */
-    this.initialize = function(amlNode, part){
-        //register element
-        this.amlNodes[amlNode.uniqueId] = amlNode;
-        
-        if (part)
-            return amlNode[parts[part]](this[part], this["xml" + part]);
-        
-        if (amlNode.$aml && this.name) //@todo is this still relevant?
-            amlNode.$aml.setAttribute("smartbinding", this.name);
-
-        for (part in parts) {
-            //#ifdef __SUPPORT_SAFARI2
-            if (typeof parts[part] != "string") continue;
-            //#endif
-
-            if (!this[part]) continue;
-
-            //#ifdef __DEBUG
-            if (!amlNode[parts[part]]) {
-                throw new Error(apf.formatErrorString(1035, amlNode, 
-                    "initializing smartBinding", 
-                    "Could not find handler for '" + part + "'."));
-            }
-            //#endif
-
-            amlNode[parts[part]](this[part], this["xml" + part]);
-        }
-
-        if (this.model) {
-            this.model.register(amlNode, this.$modelXpath[amlNode.getHost
-                ? amlNode.getHost().uniqueId
-                : amlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
-        }
-        else if (amlNode.$model && (amlNode.smartBinding && amlNode.smartBinding != this))
-            amlNode.$model.reloadAmlNode(amlNode.uniqueId);//.load(amlNode.model.data.selectSingleNode("Accounts/Account[1]"));
-        
-        return this;
-    };
-    
-    /**
-     * @private
-     */
-    this.deinitialize = function(amlNode){
-        //unregister element
-        this.amlNodes[amlNode.uniqueId] = null;
-        delete this.amlNodes[amlNode.uniqueId];
-        
-        for (var part in parts) {
-            //#ifdef __SUPPORT_SAFARI2
-            if (typeof parts[part] != "string") continue;
-            //#endif
-
-            if (!this[part]) continue;
-            
-            //#ifdef __DEBUG
-            if (!amlNode["un" + parts[part]]) {
-                throw new Error(apf.formatErrorString(1035, amlNode, 
-                    "deinitializing smartBinding", 
-                    "Could not find handler for '" + part + "'."));
-            }
-            //#endif
-            
-            amlNode["un" + parts[part]]();
-        }
-        
-        if (this.model)
-            this.model.unregister(amlNode);
-    };
-    
-    var timer, queue = {};
-    this.markForUpdate = function(amlNode, part){
-        (queue[amlNode.uniqueId] 
-            || (queue[amlNode.uniqueId] = {}))[part || "all"] = amlNode;
-        
-        if (!this.amlNodes[amlNode.uniqueId])
-            this.amlNodes[amlNode.uniqueId] = amlNode;
-
-        if (!timer) {
-            timer = setTimeout(function(){
-                _self.$updateMarkedItems();
-            });
-        }
-        
-        return this;
-    };
-    
-    this.$isMarkedForUpdate = function(amlNode){
-        return queue[amlNode.uniqueId] ? true : false;
-    }
-    
-    this.$updateMarkedItems = function(){
-        clearTimeout(timer);
-        
-        var amlNode, model, id, part, q = queue;
-        timer = null;
-        queue = {}
-        for (id in q) {
-            //We're only processing nodes that are registered here
-            if (!this.amlNodes[id])
-                continue;
-            
-            if (q[id]["all"]) {
-                amlNode = q[id]["all"];
-                //model isn't done here
-                for (part in parts) {
-                    if (!this[part]) continue;
-                    amlNode[parts[part]](this[part], this["xml" + part]);
-                }
+(function(){
+    this.$supportedProperties = ["bindings", "actions", "model"];
+    this.$handlePropSet = function(prop, value, force){
+        switch(prop) {
+            case "model":
+                if (typeof value == "string")
+                    value = apf.nameserver.get("model", value);
+                this.model          = apf.nameserver.register("model", this.name, value);
+                this.modelBaseXpath = xpath;
                 
-                model = amlNode.getModel();
-                if (model)
-                    model.reloadAmlNode(amlNode.uniqueId);
-                else
-                    amlNode.reload();
-            }
-            else {
-                for (part in q[id]) {
-                    amlNode = q[id][part];
-                    if (part == "model") {
-                        amlNode.getModel().reloadAmlNode(amlNode.uniqueId);
-                        continue;
-                    }
-                    
-                    amlNode[parts[part]](this[part], this["xml" + part]);
-                    if (part == "bindings")
-                        amlNode.reload();
+                var amlNode;
+                for (var uniqueId in this.$bindNodes) {
+                    amlNode = this.$bindNodes[uniqueId];
+                    this.model.unregister(amlNode);
+                    this.model.register(amlNode, this.$modelXpath[amlNode.getHost
+                        ? amlNode.getHost().$uniqueId
+                        //this is a hack.. by making Models with links to other
+                        //models possible, this should not be needed
+                        : amlNode.$uniqueId] || this.modelBaseXpath);
+                    //this.$bindNodes[uniqueId].load(this.model);
                 }
-            }
-        }
-    };
-    
-    /**
-     * @private
-     */
-    this.addBindRule = function(xmlNode, amlParent){
-        var str = xmlNode[apf.TAGNAME] == "ref"
-            ? amlParent ? amlParent.mainBind : "value"
-            : xmlNode.tagName;
-        if (!this.bindings)
-            this.bindings = {};
-        if (!this.bindings[str])
-            this.bindings[str] = [xmlNode];
-        else
-            this.bindings[str].push(xmlNode);
-    };
-    
-    /**
-     * @private
-     */
-    this.addBindings = function(rules){
-        this.bindings    = rules;//apf.getRules(xmlNode);
-        this.xmlbindings = xmlNode;
-        
-        if (!apf.isParsing) {
-            //@todo, dynamically update part
+                break;
+            case "bindings":
+                if (this.$bindings)
+                    this.remove(this.$bindings);
+                
+                this.$bindings = typeof value == "object" 
+                    ? value 
+                    : apf.nameserver.lookup("bindings", value);
+                
+                this.add(this.$bindings);
+                
+                break;
+            case "actions":
+                if (this.$actions)
+                    this.remove(this.$actions);
+                
+                this.$actions = typeof value == "object" 
+                    ? value 
+                    : apf.nameserver.lookup("actions", value);
+                
+                this.add(this.$actions);
+            
+                break;
         }
         
-        //if (!apf.isParsing)
-            //this.markForUpdate(null, "bindings");
-    };
-    
-    /**
-     * @private
-     */
-    this.addActionRule = function(xmlNode){
-        var str = xmlNode[apf.TAGNAME] == "action" ? "Change" : xmlNode.tagName;
-        if (!this.actions)
-            this.actions = {};
-        if (!this.actions[str])
-            this.actions[str] = [xmlNode];
-        else
-            this.actions[str].push(xmlNode);
-    };
-    
-    /**
-     * @private
-     */
-    this.addActions = function(rules, xmlNode){
-        this.actions    = rules;//apf.getRules(xmlNode);
-        this.xmlactions = xmlNode;
+        this[prop] = value;
         
-        //if (!apf.isParsing)
-            //this.markForUpdate(null, "actions");
+        //#ifdef __DEBUG
+        /*if (!apf.nameserver.get(name, attr[i].nodeValue))
+            throw new Error(apf.formatErrorString(1036, this, 
+                "Connecting " + name, 
+                "Could not find " + name + " by name '" 
+                + attr[i].nodeValue + "'"));*/
+        //#endif
     };
     
-    /**
-     * @private
-     */
-    this.addDropRule = 
-    this.addDragRule = function(xmlNode){
-        if (!this.dragdrop)
-            this.dragdrop = {};
-        if (!this.dragdrop[xmlNode[apf.TAGNAME]])
-            this.dragdrop[xmlNode[apf.TAGNAME]] = [xmlNode];
-        else
-            this.dragdrop[xmlNode[apf.TAGNAME]].push(xmlNode);
+    this.add = function(node){
+        for (var uId in this.$bindNodes)
+            node.register(this.$bindNodes[uId]);
     };
     
-    /**
-     * @private
-     */
-    this.addDragDrop = function(rules, xmlNode){
-        this.dragdrop    = rules;//apf.getRules(xmlNode);
-        this.xmldragdrop = xmlNode;
-        
-        //if (!apf.isParsing)
-            //this.markForUpdate(null, "dragdrop");
+    this.remove = function(node){
+        for (var uId in this.$bindNodes)
+            node.unregister(this.$bindNodes[uId]);
     };
     
-    /**
-     * @private
-     */
-    this.setModel = function(model, xpath){
-        if (typeof model == "string")
-            model = apf.nameserver.get("model", model);
+    this.register = function(amlNode){
+        this.$bindNodes[amlNode.$uniqueId] = amlNode;
         
-        this.model          = apf.nameserver.register("model", this.name, model);
-        this.modelBaseXpath = xpath;
+        if (this.$bindings)
+            this.$bindings.register(amlNode);
+        if (this.$actions)
+            this.$actions.register(amlNode);
+        if (this.$model)
+            this.$model.register(amlNode);
+    };
+
+    this.unregister = function(amlNode){
+        //unregister element
+        this.$bindNodes[amlNode.$uniqueId] = null;
+        delete this.$bindNodes[amlNode.$uniqueId];
         
-        var amlNode;
-        for (var uniqueId in this.amlNodes) {
-            amlNode = this.amlNodes[uniqueId];
-            this.model.unregister(amlNode);
-            this.model.register(amlNode, this.$modelXpath[amlNode.getHost
-                ? amlNode.getHost().uniqueId
-                : amlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed
-            //this.amlNodes[uniqueId].load(this.model);
-        }
+        if (this.$bindings)
+            this.$bindings.unregister(amlNode);
+        if (this.$actions)
+            this.$actions.unregister(amlNode);
+        if (this.$model)
+            this.$model.unregister(amlNode);
     };
     
     /**
@@ -811,7 +643,12 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * @private
      */
     this.load = function(xmlNode){
-        this.setModel(new apf.model().load(xmlNode));
+        //@todo fix this
+        new apf.model().register(this).load(xmlNode);
+    };
+    
+    this.clear = function(state){
+        //for all elements do clear(state);
     };
     
     /**
@@ -865,7 +702,7 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      *  <a:bindings id="bndFolders" >
      *      <a:caption select="@name" />
      *      <a:icon select="@icon" />
-     *      <a:traverse select="folder" sort="@name" />
+     *      <a:each select="folder" sort="@name" />
      *  </a:bindings>
      *
      *  <a:tree bindings="bndFolders" />
@@ -873,116 +710,18 @@ apf.smartbinding = function(name, xmlNode, parentNode){
      * @see element.smartbinding
      * @allowchild {bindings}
      * @addnode smartbinding, global
-     * @define actions  element containing all the action rules for the data 
-     * bound elements referencing this element.
-     * Example:
-     * <code>
-     *  <a:actions id="actPerson" >
-     *      <a:add set="rpc:comm.addPerson({.})">
-     *          <person name="New person" />
-     *      </a:add
-     *      <a:rename set="rpc.comm.renamePerson({@id}, {@name})" />
-     *      <a:remove select="@new" set="rpc:comm.removePerson({@id})"/>
-     *  </a:actions>
-     *
-     *  <a:tree actions="actPerson" />
-     * </code>
-     * @allowchild {actions}
      * @addnode smartbinding, global
-     * @define dragdrop element containing all the dragdrop rules for the data 
-     * bound elements referencing this element.
-     * Example:
-     * This example shows drag and drop rules for a tree with person and
-     * office elements. A person can be dragged to an office. An office can be
-     * dragged but not dropped within this element. Possible an other element
-     * does allow receiving an office element.
-     * <code>
-     *  <a:dragdrop>
-     *      <a:allow-drag select="person|office" /> 
-     *      <a:allow-drop select="person" target="office" 
-     *          operation="tree-append" copy-condition="event.ctrlKey" /> 
-     *  </a:dragdrop>
-     * </code>
-     * @allowchild allow-drag, allow-drop
-     * @addnode smartbinding, global
-     * @define ref      shorthand for the default binding rule
-     * @addnode smartbinding
-     * @define action   shorthand for the default action rule.
-     * @addnode smartbinding
      */
-    var known = {
-        actions  : "addActions",
-        bindings : "addBindings",
-        dragdrop : "addDragDrop"
-    };
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.register(this.parentNode);
 
-    this.loadAml = function(xmlNode){
-        this.name = xmlNode.getAttribute("id");
-        this.$aml  = xmlNode;
+        //#ifdef __DEBUG
+        apf.console.info(this.name
+            ? "Creating SmartBinding [" + this.name + "]"
+            : "Creating implicitly assigned SmartBinding");
+        //#endif
+    });
+}).call(apf.smartbinding.prototype = new apf.AmlElement());
 
-        var name, attr = xmlNode.attributes, l = attr.length;
-        for (var i = 0; i < l; i++) {
-            name = attr[i].nodeName;
-            if (name == "model")
-                continue;
-            
-            if (!known[name])
-                continue;
-            
-            //#ifdef __DEBUG
-            if (!apf.nameserver.get(name, attr[i].nodeValue))
-                throw new Error(apf.formatErrorString(1036, this, 
-                    "Connecting " + name, 
-                    "Could not find " + name + " by name '" 
-                    + attr[i].nodeValue + "'"));
-            //#endif
-            
-            var cNode = apf.nameserver.get(name, attr[i].nodeValue);
-            this[known[name]](apf.getRules(cNode), cNode);
-        }
-
-        var data_node, nodes = xmlNode.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
-    
-            switch (nodes[i][apf.TAGNAME]) {
-                case "model":
-                    data_node = nodes[i];
-                    break;
-                case "bindings":
-                    this.addBindings(apf.getRules(nodes[i]), nodes[i]);
-                    break;
-                case "actions":
-                    this.addActions(apf.getRules(nodes[i]), nodes[i]);
-                    break;
-                case "dragdrop":
-                    this.addDragDrop(apf.getRules(nodes[i]), nodes[i]);
-                    break;
-                case "ref":
-                    this.addBindRule(nodes[i]);
-                    break;
-                case "action":
-                    this.addActionRule(nodes[i]);
-                    break;
-                default:
-                    throw new Error(apf.formatErrorString(1039, this, 
-                        "setSmartBinding Method", 
-                        "Could not find handler for '" 
-                        + nodes[i].tagName + "' node."));
-                    break;
-            }
-        }
-        
-        //Set Model
-        if (data_node)
-            this.setModel(new apf.model().loadAml(data_node));
-        else if (xmlNode.getAttribute("model"))
-            apf.setModel(xmlNode.getAttribute("model"), this);
-    };
-    
-    if (xmlNode)
-        this.loadAml(xmlNode);
-};
-
+apf.aml.setElement("smartbinding", apf.smartbinding);
 // #endif
-

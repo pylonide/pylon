@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __JTABLE || __WITH_LAYOUT
+// #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __AMLTABLE || __WITH_LAYOUT
 
 /**
  * Takes care of the spatial order of elements within the display area
@@ -30,7 +30,7 @@
  * Example:
  * This example shows 5 windows which have a layout defined in layout.xml.
  * <code>
- *  <a:appsettings layout="url:layout.xml:layout[1]" />
+ *  <a:appsettings layout="layout.xml:layout[1]" />
  *
  *  <a:window title="Main Window" id="b1" />
  *  <a:window title="Tree Window" id="b2" />
@@ -86,7 +86,7 @@
  *      <a:bindings>
  *          <a:caption select="@name" />
  *          <a:icon value="layout.png" />
- *          <a:traverse select="layout" />
+ *          <a:each select="layout" />
  *      </a:bindings>
  *      <a:actions>
  *          <a:rename select="." />
@@ -117,10 +117,11 @@ apf.layout = {
     layouts : {},
 
     addParent : function(oHtml, pMargin){
-        if (!oHtml.getAttribute("id"))
-            apf.setUniqueHtmlId(oHtml);
+        var id;
+        if (!(id = oHtml.getAttribute("id")))
+            id = apf.setUniqueHtmlId(oHtml);
 
-        return this.layouts[oHtml.getAttribute("id")] = {
+        return this.layouts[id] = {
             layout   : new apf.layoutParser(oHtml, pMargin),
             controls : []
         };
@@ -142,12 +143,10 @@ apf.layout = {
         }
         else {
             var splitter = new apf.splitter();//this.parentNode
-            var o = apf.findHost(layout.parentNode) || apf.AmlParser;
-            //splitter.parentNode = o;
-            //o.childNodes.push(splitter); //@todo hack
-            splitter.skinset = apf.getInheritedAttribute(o.$aml, "skinset"); //@todo use skinset here. Has to be set in presentation
-            splitter.$loadSkin();
-            splitter.$draw();
+            var o = apf.findHost(layout.parentNode) || apf.document.documentElement;
+            splitter.parentNode = o;
+            splitter.skinset = apf.getInheritedAttribute(o, "skinset"); //@todo use skinset here. Has to be set in presentation
+            splitter.dispatchEvent("DOMNodeInsertedIntoDocument");//{relatedParent : nodes[j].parentNode}
         }
 
         this.splitters[this.getHtmlId(layout.parentNode)].push(splitter);
@@ -161,9 +160,9 @@ apf.layout = {
 
         for (var i = 0; i < ar.length; i++) {
             this.freesplitters.push(ar[i]);
-            if (!ar[i].oExt.parentNode) continue;
+            if (!ar[i].$ext.parentNode) continue;
 
-            ar[i].oExt.parentNode.removeChild(ar[i].oExt);
+            ar[i].$ext.parentNode.removeChild(ar[i].$ext);
         }
         ar.length = 0;
     },
@@ -196,7 +195,7 @@ apf.layout = {
         }
         //#endif
 
-        var pNode = amlNode.oExt.parentNode;
+        var pNode = amlNode.$ext.parentNode;
         var pId   = this.getHtmlId(pNode);
 
         return (this.loadedXml[pId] == xmlNode);
@@ -206,39 +205,30 @@ apf.layout = {
      * Loads a layout using a data instruction.
      * Example:
      * <code>
-     *  apf.layout.loadFrom("mdlLayout:layout[1]");
+     *  apf.layout.$loadFrom("mdlLayout:layout[1]");
      * </code>
      * Remarks:
      * The aml elements referenced in the layout definition should exist when
      * this function is called.
      * @param {String} instruction the {@link term.datainstruction data instruction} specifying where to load the data from.
      */
-    loadFrom : function(instruction){
-        apf.setModel(instruction, {
-            load: function(xmlNode){
-                if (!xmlNode || this.isLoaded) return;
+    $loadFrom : function(instruction){
+        apf.getData(instruction, {callback: function(xmlNode){
+            if (!xmlNode) return;
 
-                //#ifdef __DEBUG
-                if (!xmlNode) {
-                    throw new Error(apf.formatErrorString(0, null,
-                        "Loading default layout",
-                        "Could not find default layout using processing \
-                         instruction: '" + instruction + "'"));
+            //#ifdef __DEBUG
+            if (!xmlNode) {
+                throw new Error(apf.formatErrorString(0, null,
+                    "Loading default layout",
+                    "Could not find default layout using processing \
+                     instruction: '" + instruction + "'"));
 
-                    return;
-                }
-                //#endif
-
-                apf.layout.loadXml(xmlNode);
-                this.isLoaded = true;
-            },
-
-            setModel: function(model, xpath){
-                if (typeof model == "string")
-                    model = apf.nameserver.get("model", model);
-                model.register(this, xpath);
+                return;
             }
-        });
+            //#endif
+
+            apf.layout.loadXml(xmlNode);
+        }});
     },
 
     loadedXml : {},
@@ -264,7 +254,7 @@ apf.layout = {
         }
         //#endif
 
-        var pNode   = amlNode.oExt.parentNode;
+        var pNode   = amlNode.$ext.parentNode;
         var layout  = this.get(pNode, apf.getBox(xmlNode.getAttribute("margin") || ""));
         var pId     = this.getHtmlId(pNode);
 
@@ -278,7 +268,7 @@ apf.layout = {
         }
 
         this.compile(pNode);
-        if (apf.AmlParser.inited)
+        if (apf.window.inited)
             this.activateRules(pNode);
 
         this.loadedXml[pId] = xmlNode;
@@ -424,7 +414,7 @@ apf.layout = {
                 }
                 if (!c)
                     this.parent.prehide(adminOnly);
-                
+
                 if (adminOnly)
                     return this.hide(true);
                 
@@ -593,10 +583,11 @@ apf.layout = {
         };
     },
 
+    //@todo rewrite this. Layout seperate from markup should not be stored in xml but in CSS.
     parseXml : function(x, layout, amlNode, norecur){
         var aData = this.getData(typeof amlNode == "string"
             ? amlNode
-            : x[apf.TAGNAME], layout.layout);
+            : x.localName || x[apf.TAGNAME], layout.layout);
 
         if (aData.node) {
             if (!amlNode) {
@@ -613,16 +604,16 @@ apf.layout = {
             //if (!amlNode.visible)
                 //amlNode.show(true);//amlNode.setProperty("visible", true);//not the most optimal position
 
-            aData.oHtml   = amlNode.oExt;
+            aData.oHtml   = amlNode.$ext;
             amlNode.aData = aData;
 
-            if (!amlNode.hasFeature(__ALIGNMENT__)) {
+            if (!amlNode.hasFeature(apf.__ALIGNMENT__)) {
                 amlNode.implement(apf.Alignment);
-                if (amlNode.hasFeature(__ANCHORING__))
-                    amlNode.disableAnchoring();
+                if (amlNode.hasFeature(apf.__ANCHORING__))
+                    amlNode.$disableAnchoring();
             }
 
-            var aml = amlNode.$aml;
+            var aml = amlNode;
             if (aml.getAttribute("width"))
                 aData.fwidth = aml.getAttribute("width");
             if (aml.getAttribute("height"))
@@ -637,7 +628,7 @@ apf.layout = {
             aData.id = this.getHtmlId(aData.oHtml);
             if (aData.oHtml.style)
                 aData.oHtml.style.position = "absolute";
-            aData.hid = amlNode.uniqueId;
+            aData.hid = amlNode.$uniqueId;
         }
         else {
             aData.id = this.metadata.push(aData) - 1;
@@ -1024,7 +1015,7 @@ apf.layout = {
     //#ifdef __WITH_ALIGN_TEMPLATES
     addAlignNode : function(amlNode, pData){
         var align = (typeof amlNode.align == "undefined"
-            ? amlNode.$aml.getAttribute("align")
+            ? amlNode.getAttribute("align")
             : amlNode.align).split("-");
         var s = pData.children;
         var a = amlNode.aData;
@@ -1206,17 +1197,21 @@ apf.layout = {
     queue : function(oHtml, obj, compile){
         this.$hasQueue = true;
         
-        if (this.qlist[oHtml.getAttribute("id")]) {
+        var id;
+        if (!(id = this.getHtmlId(oHtml)))
+            id = apf.setUniqueHtmlId(oHtml);
+            
+        if (this.qlist[id]) {
             if (obj)
-                this.qlist[oHtml.getAttribute("id")][2].push(obj);
+                this.qlist[id][2].push(obj);
             if (compile)
-                this.qlist[oHtml.getAttribute("id")][1] = compile;
+                this.qlist[id][1] = compile;
             return;
         }
 
-        this.qlist[oHtml.getAttribute("id")] = [oHtml, compile, [obj]];
+        this.qlist[id] = [oHtml, compile, [obj]];
 
-        if(!this.timer)
+        if (!this.timer)
             this.timer = setTimeout("apf.layout.processQueue()");
     },
 
@@ -1542,7 +1537,7 @@ apf.layout = {
         }
     }
 };
-
+apf.layout.load = apf.layout.loadXml;//@todo temp need to rename
 // #endif
 
 // #ifdef __WITH_ALIGNMENT
@@ -1619,8 +1614,10 @@ apf.layoutParser = function(parentNode, pMargin){
 
         this.lastRoot = root;
 
-        if (!noapply)
+        if (!noapply) {
             apf.layout.setRules(this.parentNode, "layout", str, true);
+            apf.layout.queue(this.parentNode);
+        }
         else
             return str;
 

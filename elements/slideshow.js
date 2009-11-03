@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JSLIDESHOW || __INC_ALL
+// #ifdef __AMLSLIDESHOW || __INC_ALL
 /** 
  * This element is used for viewing images. It's possible to add thumbnails and 
  * a description to each of them. You can select a displayed image in several ways.
@@ -57,26 +57,34 @@
  *          <a:src   select="@src"></a:src>
  *          <a:title select="@title"></a:title>
  *          <a:thumb select="@thumb"></a:thumb>
- *          <a:traverse select="picture"></a:traverse>
+ *          <a:each select="picture"></a:each>
  *      </a:bindings>
  *  </a:slideshow>
  * </code>
  * 
- * @attribute {String} title          the description of the picture on the slide. Default is "number".
+ * @attribute {String} title           the description of the picture on the slide. 
+ *                                     Default is "number".
  *   Possible values:
  *   number        the description contains only slide number on a list.
  *   text          the description contains only text added by creator.
- *   number+text   the description contains slide number on a list and text added by creator.
- * @attribute {Number}  delay          the delay between slides when the play button is pressed. Default is 5 seconds.
- * @attribute {Number}  thumbheight    the vertical size of thumbnail bar. Default is 50px.
- * @attribute {String}  defaultthumb   the thumbnail shown when a slide doesn't have one.
- * @attribute {String}  defaultimage   the image shown when a slide doesn't have an image.
- * @attribute {String}  defaulttitle   the text shown when a slide doesn't have a description.
- * @attribute {String}  loadmsg        this text displayd while the picture is loading.
- * @attribute {Boolean} scalewidth     whether the width of the thumbnail is scaled relative to its height.
+ *   number+text   the description contains slide number on a list and text 
+ *                 added by creator.
+ *   
+ * @attribute {Number}  delay          the delay between slides when the play 
+ *                                     button is pressed. Default is 5 seconds.
+ * @attribute {Number}  thumbheight    the vertical size of thumbnail bar. 
+ *                                     Default is 50px.
+ * @attribute {String}  defaultthumb   the thumbnail shown when a slide doesn't 
+ *                                     have one.
+ * @attribute {String}  defaultimage   the image shown when a slide doesn't have 
+ *                                     an image.
+ * @attribute {String}  defaulttitle   the text shown when a slide doesn't have 
+ *                                     a description.
+ * @attribute {String}  loadmsg        this text displayd while the picture is 
+ *                                     loading.
+ * @attribute {Boolean} scalewidth     whether the width of the thumbnail is 
+ *                                     scaled relative to its height.
  * 
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
  * @inherits apf.Cache
  * @inherits apf.MultiselectBinding
  * 
@@ -93,33 +101,90 @@
  * @binding title    Determines the image description text.
  * @binding thumb    Determines the url to thumbnail file.
  */
-apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
-    this.pHtmlNode      = document.body;
-    this.title          = "number";
-    this.thumbheight    = 50;
-    this.loadmsg        = null;
-    this.defaultthumb   = null;
-    this.defaultimage   = null;
-    this.defaulttitle   = null;
-    this.delay          = 5;
-    this.scalewidth     = false;
+apf.slideshow = function(struct, tagName){
+    this.$init(tagName || "slideshow", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //,apf.Cache
+    );
+
+    this.title            = "number";
+    this.thumbheight      = 50;
+    this.loadmsg          = null;
+    this.defaultthumb     = null;
+    this.defaultimage     = null;
+    this.defaulttitle     = null;
+    this.delay            = 5;
+    this.scalewidth       = false;
 
     this.$supportedProperties.push("model", "thumbheight", "title", "loadmsg",
                                    "defaultthumb", "defaulttitle",
                                    "defaultimage", "scalewidth");
-    var _self = this;
 
-    var previous, next, current, last;
+    /**
+     * Contains current selected node, next node to select in two directions
+     * and last selected node
+     */
+    this.previous         = null,
+    this.next             = null,
+    this.current          = null,
+    this.last             = null;
+    
+    /**
+     * Determinates that component is currently loading any image or not
+     */
+    this.inuse            = false;
+    
+    /**
+     * Determinates that slideshow is playing or not
+     */
+    this.play             = false;
+    
+    /**
+     * Determinates that thumbnail bar is displayed or not
+     */
+    this.thumbnails       = true;
 
-    var lastIHeight = 0,
-        lastIWidth  = 0,
-        onuse       = false,
-        play        = false,
-        thumbnails  = true,
-        titleHeight = 30,
-        vSpace      = 210,
-        hSpace      = 150;
-    var lastChoose = [];
+    /**
+     * Keep the last selected image which is saved there when 
+     * slideshow component is busy 
+     */
+    this.lastChoose       = null;
+    
+    /**
+     * Height of title container
+     */
+    this.$vSpace          = 210;
+    this.$hSpace          = 150;
+    
+    /* TIMERS */
+    this.tmrShowLast      = null; //timer for showLast function
+    this.tmrIsResized     = null; 
+    this.tmrPlay          = null;
+    this.tmrKeyDown       = null;
+    this.tmrOnScroll      = null;
+    this.tmrZoom          = null;
+    this.tmrHoverDelay    = null;
+    
+    /* Used in zooming to keep size of scaled image */
+    this.$imageWidth;
+    this.$imageHeight;
+
+    this.viewPortWidth    = 0;
+    this.viewPortHeight   = 0;
+    
+    this.$zooming         = false;
+    
+    this.$oEmpty;
+    
+    this.$IEResizeCounter = 0;
+    
+    this.lastOverflow = null;
     
     /* this.$hide and this.$show function are not overwritten */
     this.$positioning = "basic";
@@ -129,293 +194,239 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
     this.$propHandlers["thumbheight"] = function(value) {
         if (parseInt(value))
             this.thumbheight = parseInt(value);
-    }
+    };
 
     this.$propHandlers["delay"] = function(value) {
         if (parseInt(value))
             this.delay = parseInt(value);
-    }
-
-    var timer5;
-    var onmousescroll_;
-    var onkeydown_ = function(e) {
-        e = (e || event);
-        /*
-         * 39 - Right Arrow
-         * 37 - Left Arrow
-         */
-
-        var key    = e.keyCode,
-            temp   = current,
-            temp_n = _self.getNextTraverse(current),
-            temp_p = _self.getNextTraverse(current, true);
-
-        next     = temp_n ? temp_n : _self.getFirstTraverseNode();
-        previous = temp_p ? temp_p : _self.getLastTraverseNode();
-        current  = key == 39 ? next : (key == 37 ? previous : current);
-
-        _self.addSelection(key == 39 ? -1 : (key == 37 ? 1 : 0));
-
-        if (current !== temp) {
-            clearInterval(timer5);
-            timer5 = setInterval(function() {
-                _self.$refresh();
-                clearInterval(timer5);
-            }, 550);
-        };
-        return false;
-    }
-
-    this.addEventListener("onkeydown", onkeydown_);
+    };
 
     /**
      * Prepare previous and next xml representation of slide element dependent
      * of actual slide
      */
-    function setSiblings() {
-        var temp_n = _self.getNextTraverse(current),
-            temp_p = _self.getNextTraverse(current, true);
+    this.$setSiblings = function() {
+        var temp_n = this.getNextTraverse(this.current),
+            temp_p = this.getNextTraverse(this.current, true);
 
-        next     = temp_n ? temp_n : _self.getFirstTraverseNode();
-        previous = temp_p ? temp_p : _self.getLastTraverseNode();
-    }
+        this.next     = temp_n ? temp_n : this.getFirstTraverseNode();
+        this.previous = temp_p ? temp_p : this.getLastTraverseNode();
+    };
     
     /**
-     * Selects image by its xml representation
-     * 
-     * @param {XMLElement}   badge  xml representation of image
+     * When slideshow is downloading some image, and user is trying to change it,
+     * new image is saved and will be displayed later by this method
      */
-    this.select = function(badge) {
-        current = badge;
-        this.$show();
-    }
-
-    /**
-     * Draw slideshow component and repaint every single picture when
-     * its choosen
-     */
-    this.$paint = function() {
-        current = _self.getFirstTraverseNode();
-
-        this.oInt.style.display    = "none";
-        this.oBody.style.display   = "";
-        this.oImage.style.display  = "";
-        this.oImage.src            = "about:blank";
-        this.oBody.style.height    = this.oBody.style.width      = "100px";
-        this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
-
-        /* Removes window scrollbars */
-        //this.lastOverflow = document.documentElement.style.overflow;
-        //document.documentElement.style.overflow = "hidden";
-
-        if (current) {
-            this.addSelection();
-        }
-        else {
-            this.oConsole.style.display      = "none";
-            this.otPrevious.style.visibility = "hidden";
-            this.otNext.style.visibility     = "hidden";
-        }
-
-        apf.tween.single(this.oCurtain, {
-            steps    : 3,
-            type     : "fade",
-            from     : 0,
-            to       : 0.7,
-            onfinish : function() {
-                _self.oImage.onload = function() {
-                    last                           = current;
-                    _self.oBody.style.display      = "block";
-                    this.style.display             = "block";
-                    var imgWidth                   = this.offsetWidth || this.width;
-                    var imgHeight                  = this.offsetHeight || this.height;
-                    var b                          = _self.oBody;
-                    var im                         = _self.oImage;
-                    this.style.display             = "none";
-                    _self.oThumbnails.style.height = _self.thumbheight + "px";
+    this.$showLast = function() {
+        var _self = this;
+        
+        clearInterval(this.tmrShowLast);
+        this.tmrShowLast = setInterval(function() {
+            if (!_self.inuse) {
+                if (_self.lastChoose) {
+                    _self.current = _self.lastChoose;
+                    _self.lastChoose = null;
                     
-                    _self.oLoading.innerHTML = _self.loadmsg 
-                        || apf.language.getWord("sub.slideshow.loadmsg") 
-                        || "loading...";
-
-                    if (current)
-                        _self.addSelection(); 
-
-                    clearTimeout(_self.timer);
-
-                    var ww = apf.isIE
-                        ? document.documentElement.offsetWidth
-                        : window.innerWidth;
-                    var wh = apf.isIE
-                        ? document.documentElement.offsetHeight
-                        : window.innerHeight;
-
-                    _self.otBody.style.height = _self.thumbheight + "px";
-
-                    var bottomPanel = thumbnails 
-                        ? Math.max(_self.oBeam.offsetHeight / 2,
-                                   _self.thumbheight / 2 + titleHeight / 2
-                                   + _self.oConsole.offsetHeight / 2)
-                        : Math.max(_self.oBeam.offsetHeight / 2,
-                                   titleHeight / 2
-                                   + _self.oConsole.offsetHeight / 2);
-
-                    var diff = apf.getDiff(b);
-                    var checkWH = [false, false];
-
-                    apf.tween.single(b, {
-                        steps    : apf.isGecko
-                            ? 20
-                            : (Math.abs(imgWidth - b.offsetWidth) > 40
-                                ? 10
-                                : 3),
-                        anim     : apf.tween.EASEIN,
-                        type     : "mwidth",
-                        from     : b.offsetWidth - diff[0],
-                        to       : Math.min(imgWidth, ww - hSpace),
-                        onfinish : function() {
-                            checkWH[0] = true;
-                        }
-                    });
-
-                    apf.tween.single(b, {
-                        steps    : apf.isGecko
-                            ? 20
-                            : (Math.abs(imgHeight - b.offsetHeight) > 40
-                                ? 10
-                                : 3),
-                        anim     : apf.tween.EASEIN,
-                        type     : "mheight",
-                        margin   : -1*(bottomPanel - 10),
-                        from     : b.offsetHeight - diff[1],
-                        to       : Math.min(imgHeight,
-                                            wh - vSpace - bottomPanel),
-                        onfinish : function() {
-                            checkWH[1] = true;
-                        }
-                    });
-
-                    var timer2;
-                    timer2 = setInterval(function() {
-                        if (checkWH[0] && checkWH[1]) {
-                            if (current)
-                                setSiblings();
-
-                            _self.oTitle.style.visibility = "visible";
-                            _self.oConsole.style.visibility = "visible";
-
-                            _self.$checkThumbSize();
-
-                            if (thumbnails) {
-                                _self.oThumbnails.style.visibility = "visible";
-                            }
-
-                            _self.oMove.style.display = imgWidth < ww - hSpace
-                                && imgHeight < wh - vSpace - bottomPanel
-                                ? "none"
-                                : "block";
-                            _self.oImage.style.cursor = imgWidth < ww - hSpace
-                                && imgHeight < wh - vSpace - bottomPanel
-                                ? "default"
-                                : "move";
-
-                            im.style.display = "block";
-                            apf.tween.single(im, {
-                                steps : 5,
-                                type  : "fade",
-                                from  : 0,
-                                to    : 1
-                            });
-
-                            apf.tween.single(_self.oTitle, {
-                                steps : 10,
-                                type  : "fade",
-                                from  : 0,
-                                to    : 1
-                            });
-                            clearInterval(timer2);
-
-                            onuse = false;
-                            _self.addSelection();
-
-                            if (play) {
-                                _self.$play();
-                            }
-                        }
-                    }, 30);
-                };
-
-                _self.oImage.onerror = function() {
-                    onuse = false;
+                    _self.$refresh();
                 }
-
-                _self.oImage.onabort = function() {
-                    onuse = false;
-                }
-
-                _self.oImage.src = (_self.applyRuleSetOnNode("src", current)
-                                    || _self.defaultimage || "about:blank");
-                
-                /* When image is unavailable and defaultImage is set, but not exist */
-                /*if(_self.oImage && _self.oImage.readyState) {
-                    if(_self.oImage.readyState == "loading") {
-                        _self.oTitle.style.visibility = "visible";
-                        _self.oConsole.style.visibility = "visible";
-
-                        if (thumbnails) {
-                            _self.oThumbnails.style.height = _self.thumbheight + "px";
-                            _self.oThumbnails.style.visibility = "visible";
-                        }
-                        
-                        _self.oImage.style.display = "block";
-                        
-                        apf.tween.single(_self.oImage, {
-                            steps : 5,
-                            type  : "fade",
-                            from  : 0,
-                            to    : 1
-                        });
-
-                        apf.tween.single(_self.oTitle, {
-                            steps : 10,
-                            type  : "fade",
-                            from  : 0,
-                            to    : 1
-                        });
-
-                        onuse = false;
-                    }
-                }*/
-                
-                _self.oContent.innerHTML = _self.title == "text"
-                    ? _self.applyRuleSetOnNode("title", current)
-                    : (_self.title == "number+text"
-                        ? "<b>" 
-                            + (apf.language.getWord("sub.slideshow.image") || "Image")
-                            + " "
-                            + (_self.getPos() + 1) 
-                            + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
-                            + _self.getTraverseNodes().length
-                            + "</b><br />"
-                            + (_self.applyRuleSetOnNode("title", current)
-                                || (_self.defaulttitle 
-                                    ? _self.defaulttitle 
-                                    : (apf.language.getWord("sub.slideshow.defaulttitle") || "No description")))
-                        : "Image " + (_self.getPos() + 1)
-                            + " of " + _self.getTraverseNodes().length);
+                clearInterval(_self.tmrShowLast);
             }
-        });
+        }, 100);
     };
+    
+    this.$paint = function() {
+        var _self = this;
+        
+        this.current = this.getFirstTraverseNode();
 
+        //Prepare area
+        this.oImage.src               = "about:blank";
+        this.oThumbnails.style.height = 
+        this.otBody.style.height      = 
+        this.otPrevious.style.height  = 
+        this.otNext.style.height      = this.thumbheight + "px";
+       
+        
+        this.oLoading.innerHTML       = this.loadmsg 
+            || apf.language.getWord("sub.slideshow.loadmsg") 
+            || "Loading...";
+
+        //This function will be called when selected image will be downloaded
+        this.oImage.onload = function() {
+            _self.last                     = _self.current;
+            _self.oBody.style.display      = "block";
+            _self.oImageBase.style.display = "block";
+            _self.oImageBase.src           = _self.oImage.src;
+
+            //Get Image size
+            this.style.display = "block";
+            
+            var imgWidth  = _self.oImageBase.offsetWidth || _self.oImageBase.width;
+            var imgHeight = _self.oImageBase.offsetHeight || _self.oImageBase.height;
+            
+            this.style.display             = "none";
+            _self.oImageBase.style.display = "none";
+            
+            //Get browser window dimension
+            var windowWidth = apf.isIE
+                    ? document.documentElement.offsetWidth
+                    : window.innerWidth;
+                windowHeight = apf.isIE
+                    ? document.documentElement.offsetHeight
+                    : window.innerHeight;
+            
+            //Get height of the bottom panel
+            var bottomPanel = _self.$getPanelSize();
+
+            //Get body margins
+            var oBodyDiff = apf.getDiff(_self.oBody);
+            
+            //is the image resized ?
+            var checkWH = [false, false];
+            
+            //calculate viewport size
+            var viewPortHeight = windowHeight - bottomPanel / 2 - _self.$vSpace,
+                viewPortWidth  = windowWidth - _self.$hSpace;
+            
+            var _imgHeight = imgHeight,
+                _imgWidth  = imgWidth;
+
+            //if image height is bigger than body, scale it
+            if (_imgHeight > viewPortHeight) {
+                _imgWidth = parseInt(_imgWidth * (viewPortHeight / _imgHeight));
+                _imgHeight = viewPortHeight;
+            }
+            
+            if (_imgWidth > viewPortWidth) {
+                _imgHeight = parseInt(_imgHeight * (viewPortWidth / _imgWidth));
+                _imgWidth = viewPortWidth;
+            }
+            
+            _self.viewPortHeight = _imgHeight;
+            _self.viewPortWidth  = _imgWidth;
+
+            //resize image body horizontaly
+            apf.tween.single(_self.oBody, {
+                steps    : apf.isGecko
+                    ? 20
+                    : (Math.abs(imgWidth - _self.oBody.offsetWidth) > 40
+                        ? 10
+                        : 3),
+                anim     : apf.tween.EASEIN,
+                type     : "mwidth",
+                from     : _self.oBody.offsetWidth - oBodyDiff[0],
+                to       : _imgWidth,
+                onfinish : function() {
+                    checkWH[0] = true;
+                }
+            });
+            
+            //Resize image body verticaly
+            apf.tween.single(_self.oBody, {
+                steps     : apf.isGecko
+                    ? 20
+                    : (Math.abs(imgHeight - _self.oBody.offsetHeight) > 40
+                        ? 10
+                        : 3),
+                anim     : apf.tween.EASEIN,
+                type     : "mheight",
+                margin   : -1 * (bottomPanel / 2 - 10),
+                from     : _self.oBody.offsetHeight - oBodyDiff[1],
+                to       : _imgHeight,
+                onfinish : function() {
+                    checkWH[1] = true;
+                }
+            });
+            
+            _self.oImage.style.display = "block";
+            _self.oImage.style.width   = _imgWidth + "px";
+            _self.oImage.style.height  = _imgHeight + "px";
+            _self.oImage.style.display = "none";
+
+            //do some things when image body is resized
+            clearInterval(_self.tmrIsResized);
+            _self.tmrIsResized = setInterval(function() {
+                if (checkWH[0] && checkWH[1]) {
+                    clearInterval(_self.tmrIsResized);
+                    
+                    if (_self.current)
+                        _self.$setSiblings();
+
+                    //_self.oTitle.style.visibility   = "visible";
+                    _self.oConsole.style.visibility = "visible";
+                    
+                    _self.oImage.style.display = "block";
+                    _self.oTitle.style.display = "block";
+
+                    _self.$checkThumbSize();
+
+                    if (_self.thumbnails) {
+                        _self.oThumbnails.style.display = "block";
+                    }
+
+                    apf.tween.single(_self.oImage, {
+                        steps : 2,
+                        type  : "fade",
+                        from  : 0,
+                        to    : 1
+                    });
+
+                    apf.tween.single(_self.oTitle, {
+                        steps : 10,
+                        type  : "fade",
+                        from  : 0,
+                        to    : 1
+                    });
+
+                    _self.inuse = false;
+                    _self.addSelection();
+
+                    if (_self.play) {
+                        _self.$play();
+                    }
+                }
+            }, 30);
+        };
+        
+        //If something went wrong
+        this.oImage.onerror = function() {
+            _self.inuse = false;
+        };
+
+        this.oImage.onabort = function() {
+            _self.inuse = false;
+        };
+        
+        //_self.oImage.src = (_self.$applyBindRule("src", _self.current) 
+        //    || _self.defaultimage || "about:blank");
+
+        this.oContent.innerHTML = _self.title == "text"
+            ? this.$applyBindRule("title", this.current)
+            : (this.title == "number+text"
+                ? "<b>" 
+                    + (apf.language.getWord("sub.slideshow.image") || "Image")
+                    + " "
+                    + (this.getPos() + 1) 
+                    + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
+                    + this.getTraverseNodes().length
+                    + "</b><br />"
+                    + (this.$applyBindRule("title", this.current)
+                        || (this.defaulttitle 
+                            ? this.defaulttitle 
+                            : (apf.language.getWord("sub.slideshow.defaulttitle") || "No description")))
+                : "Image " + (this.getPos() + 1)
+                    + " of " + this.getTraverseNodes().length);
+    };
+    
     /**
      * Return image position on imagelist
      * 
      * @return {Number} image position
      */
     this.getPos = function() {
-        return Array.prototype.indexOf.call(_self.getTraverseNodes(), current);
-    }
-
+        return Array.prototype.indexOf.call(this.getTraverseNodes(), this.current);
+    };
+    
     /**
      * Adds selection to thumbnail of actual selected image and removes it from
      * previous. When the "move" param is set, selected thumbnail
@@ -427,14 +438,15 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
      *     -1   when thumbnails are scrolling in left
      */
     this.addSelection = function(move) {
-        var htmlElement = apf.xmldb.findHtmlNode(current, this),
+        var htmlElement = apf.xmldb.findHtmlNode(this.current, this),
             ww          = apf.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
-            diffp       = apf.getDiff(_self.otPrevious),
-            diffn       = apf.getDiff(_self.otNext),
-            bp          = parseInt(apf.getStyle(_self.otPrevious, "width")),
-            bn          = parseInt(apf.getStyle(_self.otNext, "width")),
+                
+            diffp       = apf.getDiff(this.otPrevious),
+            diffn       = apf.getDiff(this.otNext),
+            bp          = parseInt(apf.getStyle(this.otPrevious, "width")),
+            bn          = parseInt(apf.getStyle(this.otNext, "width")),
             ew          = parseInt(apf.getStyle(htmlElement, "width"));
 
         /* checking visiblity */
@@ -449,117 +461,61 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
             }
         }
         if (this.$selected)
-            this.$selected.className = "sspictureBox";
+            this.$selected.className = "ssPicBox";
         if (htmlElement)
-            htmlElement.className = "sspictureBox ssselected";
+            htmlElement.className = "ssPicBox ssselected";
 
         this.$selected = htmlElement;
     };
-
-    /**** Init ****/
-
-    /**
-     * Display next image from imagelist
-     */
-    this.$Next = function() {
-        current = next;
-        this.addSelection(-1);
-        this.$refresh();
-    };
-
-    /**
-     * Display previous image from imagelist
-     */
-    this.$Previous = function() {
-        current = previous;
-        this.addSelection(1);
-        this.$refresh();
-    };
-
-    /**
-     * Move first thumbnail on the left to end of imagebar elementlist.
-     * It's possible to scroll imagebar to infinity.
-     */
-    this.$tNext = function() {
-       _self.otBody.appendChild(_self.otBody.childNodes[0]);
-    };
-
-    /**
-     * Move last thumbnail to begining of imagebar elementlist.
-     * It's possible to scroll imagebar to infinity.
-     */
-    this.$tPrevious = function() {
-       _self.otBody.insertBefore(
-           _self.otBody.childNodes[_self.otBody.childNodes.length - 1],
-           _self.otBody.firstChild); 
-    };
-
-    this.$showLast = function() {
-        var timer8;
-        clearInterval(timer8);
-        timer8 = setInterval(function() {
-            if (!onuse) {
-                if (lastChoose.length) {
-                    current = lastChoose.pop();
-                    lastChoose = [];
-                    _self.$refresh();
-                }
-                clearInterval(timer8);
-            }
-        }, 100);
-    }
 
     /**
      * When xml representation of new image is set, function initiate redrawing
      */
     this.$refresh = function() {
-        /* Fix for situation when image not exist */
-        /*if(_self.oImage && _self.oImage.readyState) {
-            if(_self.oImage.readyState == "loading") {
-                onuse = false;
-            }
-        }*/
+        var _self = this;
 
-        if (onuse) {
-            lastChoose.push(current);
+        //When slideshow is downloading some image, and user is trying to change it,
+        //new image is saved and will be displayed later
+        if (this.inuse) {
+            this.lastChoose = this.current;
             this.$showLast();
+            
             return;
         }
 
-        if (play)
-            clearInterval(timer7);
+        if (this.play)
+            clearInterval(this.tmrPlay);
+            
+        this.$setSiblings();
+        this.inuse = true;
 
-        var img = _self.oImage;
-        setSiblings();
-
-        onuse = true;
-
-        apf.tween.single(img, {
-            steps : 3,
+        apf.tween.single(this.oImage, {
+            steps : 5,
             type  : "fade",
             from  : 1,
             to    : 0
         });
-
-        apf.tween.single(_self.oTitle, {
+        
+        apf.tween.single(this.oTitle, {
             steps    : 3,
             type     : "fade",
             from     : 1,
             to       : 0,
             onfinish : function() {
-                _self.oTitle.style.visibility = "hidden";
-                img.style.left                = "0px";
-                img.style.top                 = "0px";
-                var _src = (_self.applyRuleSetOnNode("src", current) || _self.defaultimage || _self.defaultthumb);
-                var _src_temp = img.src;
+                _self.oImage.style.left       = "0px";
+                _self.oImage.style.top        = "0px";
+                var _src = (_self.$applyBindRule("src", _self.current) 
+                           || _self.defaultimage || _self.defaultthumb);
+                var _src_temp = _self.oImage.src;
 
-                img.src = _src;
+                _self.oImage.src = _src;
+                _self.oImage.style.display = "none";
 
-                /* Safari and Chrome fix for reloading current image */
-                if (img.src == _src_temp && (apf.isChrome || apf.isSafari)) {
-                    onuse = false;
-                    apf.tween.single(img, {
-                        steps : 3,
+                // Safari and Chrome fix for reloading current image
+                if (_self.oImage.src == _src_temp && apf.isWebkit) {
+                    _self.inuse = false;
+                    apf.tween.single(_self.oImage, {
+                        steps : 5,
                         type  : "fade",
                         from  : 0,
                         to    : 1
@@ -570,11 +526,11 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                         from  : 0,
                         to    : 1
                     });
-                    _self.oTitle.style.visibility = "visible";
+                    //_self.oTitle.style.visibility = "visible";
                 }
 
                 _self.oContent.innerHTML = _self.title == "text"
-                    ? _self.applyRuleSetOnNode("title", current)
+                    ? _self.$applyBindRule("title", _self.current)
                     : (_self.title == "number+text"
                         ? "<b>" + (apf.language.getWord("sub.slideshow.image") || "Image")
                             + " "
@@ -582,7 +538,7 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                             + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
                             + _self.getTraverseNodes().length
                             + "</b><br />"
-                            + (_self.applyRuleSetOnNode("title", current)
+                            + (_self.$applyBindRule("title", _self.current)
                                || (_self.defaulttitle 
                                    ? _self.defaulttitle 
                                    : apf.language.getWord("sub.slideshow.defaulttitle") || "No description" ))
@@ -590,24 +546,248 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                             + _self.getTraverseNodes().length);
             }
         });
-        clearTimeout(_self.timer);
     };
 
-    var timer7;
+    /**
+     * Selects image by its xml representation
+     * 
+     * @param {XMLElement}   badge  xml representation of image
+     */
+    this.select = function(badge) {
+        this.current = badge;
+        this.$show();
+    };
+    
+    
+    this.$hideScrollbars = function() {
+        this.lastOverflow = document.documentElement.style.overflow == "hidden"
+            ? "auto"
+            : document.documentElement.style.overflow;
+            
+        document.documentElement.style.overflow = "hidden";
+    };
+    
+    this.$showScrollbars = function() {
+        document.documentElement.style.overflow = this.lastOverflow;
+    };
+    
+    
+    this.$show = function() {
+        var _self = this;
+        
+        this.$hideScrollbars();
+        
+        this.oBeam.style.display = "none";
+        this.oBody.style.display = "none";
+        this.$int.style.display  = "block";
+        this.$ext.style.display  = "block";
+
+        apf.tween.single(_self.oCurtain, {
+            steps    : 10, 
+            type     : "fade",
+            from     : 0,
+            to       : 0.7,
+            onfinish : function() {
+                _self.oBeam.style.display = "block";
+                apf.tween.single(_self.oBeam, {
+                    steps    : 10, 
+                    type     : "fade",
+                    from     : 0,
+                    to       : 1,
+                    onfinish : function() {
+                        _self.oBody.style.display    = "block";
+                        _self.oBody.style.width      = "100px";
+                        _self.oBody.style.height     = "100px";
+                        _self.oBody.style.marginLeft = "-50px";
+                        _self.oBody.style.marginTop  = "-50px";
+                        apf.tween.single(_self.oBody, {
+                            steps    : 5, 
+                            type     : "fade",
+                            from     : 0,
+                            to       : 1,
+                            onfinish : function() {
+                                if (apf.isIE) {
+                                    _self.oBody.style.filter = "";
+                                    _self.oBeam.style.filter = "";
+                                }
+                                _self.$refresh();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    };
+    
+    /**** Init ****/
+
+    /**
+     * Display next image from imagelist
+     */
+    this.$Next = function() {
+        this.current = this.next;
+        this.addSelection(-1);
+        this.$refresh();
+    };
+
+    /**
+     * Display previous image from imagelist
+     */
+    this.$Previous = function() {
+        this.current = this.previous;
+        this.addSelection(1);
+        this.$refresh();
+    };
+    
+    /**
+     * Move first thumbnail on the left to end of imagebar elementlist.
+     * It's possible to scroll imagebar to infinity.
+     */
+    this.$tNext = function() {
+       this.otBody.appendChild(this.otBody.childNodes[0]);
+    };
+
+    /**
+     * Move last thumbnail to begining of imagebar elementlist.
+     * It's possible to scroll imagebar to infinity.
+     */
+    this.$tPrevious = function() {
+       this.otBody.insertBefore(
+           this.otBody.childNodes[this.otBody.childNodes.length - 1],
+           this.otBody.firstChild); 
+    };
+    
     this.$play = function() {
-         timer7 = setInterval(function() {
-             play = true;
-             if (onuse) {
+         var _self = this;
+         clearInterval(this.tmrPlay);
+         this.tmrPlay = setInterval(function() {
+             _self.play = true;
+             if (_self.inuse)
                  return;
-             }
+
              _self.$Next();
          }, _self.delay * 1000);
     };
 
     this.$stop = function() {
-        clearInterval(timer7);
-        timer7 = null;
-        play = false;
+        clearInterval(this.tmrPlay);
+        this.tmrPlay = null;
+        this.play = false;
+    };
+    
+    /**
+     * It's called when thumbnail has been clicked.
+     * Adds selection to thumbnail and shows new image.
+     * 
+     * @param {HTMLElement}   oThumb   html representation of thumbnail element
+     */
+    this.$clickThumb = function(oThumb) {
+        this.current = apf.xmldb.getNode(oThumb);
+        this.addSelection();
+        this.$refresh();
+    };
+    
+    this.$getPanelSize = function() {
+        var title_height = this.oTitle.offsetHeight || parseInt(apf.getStyle(this.oTitle, "height")) + apf.getDiff(this.oTitle)[1];
+        
+        return Math.max(
+            this.oBeam.offsetHeight, 
+            title_height + (this.thumbnails ? this.thumbheight : 0) + this.oConsole.offsetHeight
+        );
+    };
+    
+    this.$resize = function() {
+        //because resize event is called 2 times in IE
+        if (apf.isIE) {
+            this.$IEResizeCounter++;
+        
+            if (this.$IEResizeCounter == 2) {
+                this.$IEResizeCounter = 0;
+                return;
+            }
+        }
+
+        var _self = this;
+
+        _self.oImage.style.display = "none";
+        
+        var windowWidth = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            windowHeight = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight;
+
+        var imgWidth    = _self.oImageBase.offsetWidth || _self.oImageBase.width;
+        var imgHeight   = _self.oImageBase.offsetHeight || _self.oImageBase.height;
+        var oBodyDiff   = apf.getDiff(this.oBody);
+        var bottomPanel = this.$getPanelSize();
+        
+        //calculate viewport size
+        var viewPortHeight = windowHeight - bottomPanel / 2 - _self.$vSpace;
+        var viewPortWidth = windowWidth - _self.$hSpace;
+        
+        var _imgHeight = imgHeight;
+        var _imgWidth  = imgWidth;
+
+        //if image height is bigger than body, scale it
+        if (_imgHeight > viewPortHeight) {
+            _imgWidth  = parseInt(_imgWidth * (viewPortHeight / _imgHeight));
+            _imgHeight = viewPortHeight;
+        }
+        
+        if (_imgWidth > viewPortWidth) {
+            _imgHeight = parseInt(_imgHeight * (viewPortWidth / _imgWidth));
+            _imgWidth  = viewPortWidth;
+        }
+        
+        this.viewPortHeight = _imgHeight;
+        this.viewPortWidth = _imgWidth;
+        
+        var checkWH = [false, false];
+        
+        //resize image body horizontaly
+        apf.tween.single(_self.oBody, {
+            steps    : 5,
+            anim     : apf.tween.EASEIN,
+            type     : "mwidth",
+            from     : _self.oBody.offsetWidth - oBodyDiff[0],
+            to       : _imgWidth,
+            onfinish : function() {
+                checkWH[0] = true;
+            }
+        });
+        
+        //Resize image body verticaly
+        apf.tween.single(_self.oBody, {
+            steps    : 5,
+            anim     : apf.tween.EASEIN,
+            type     : "mheight",
+            margin   : -1 * (bottomPanel / 2 - 10),
+            from     : _self.oBody.offsetHeight - oBodyDiff[1],
+            to       : _imgHeight,
+            onfinish : function() {
+                checkWH[1] = true;
+            }
+        });
+        
+        clearInterval(_self.tmrIsResized);
+        _self.tmrIsResized = setInterval(function() {
+            if (checkWH[0] && checkWH[1]) {
+                clearInterval(_self.tmrIsResized);
+
+                _self.oImage.style.display = "block";
+                _self.oImage.style.width   = _imgWidth + "px";
+                _self.oImage.style.height  = _imgHeight + "px";
+
+                apf.tween.single(_self.oImage, {
+                    steps : 2,
+                    type  : "fade",
+                    from  : 0,
+                    to    : 1
+                });
+            }
+        }, 30);
     };
 
     /**
@@ -616,35 +796,40 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$draw = function() {
         //Build Main Skin
-        this.oExt        = this.$getExternal();
-        this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
-        this.oCurtain    = this.$getLayoutNode("main", "curtain", this.oExt);
-        this.oMove       = this.$getLayoutNode("main", "move", this.oExt);
-        this.oBody       = this.$getLayoutNode("main", "body", this.oExt);
-        this.oContent    = this.$getLayoutNode("main", "content", this.oExt);
-        this.oImage      = this.$getLayoutNode("main", "image", this.oExt);
-        this.oClose      = this.$getLayoutNode("main", "close", this.oExt);
-        this.oBeam       = this.$getLayoutNode("main", "beam", this.oExt);
-        this.oTitle      = this.$getLayoutNode("main", "title", this.oExt);
-        this.oThumbnails = this.$getLayoutNode("main", "thumbnails", this.oExt);
-        this.otBody      = this.$getLayoutNode("main", "tbody", this.oExt);
-        this.otPrevious  = this.$getLayoutNode("main", "tprevious", this.oExt);
-        this.otNext      = this.$getLayoutNode("main", "tnext", this.oExt);
-        this.oLoading    = this.$getLayoutNode("main", "loading", this.oExt);
-        this.oEmpty      = this.$getLayoutNode("main", "empty", this.oExt);
-        this.oConsole    = this.$getLayoutNode("main", "console", this.oExt);
-        this.oPrevious   = this.$getLayoutNode("main", "previous", this.oExt);
-        this.oPlay       = this.$getLayoutNode("main", "play", this.oExt);
-        this.oNext       = this.$getLayoutNode("main", "next", this.oExt);
+        this.$pHtmlNode  = document.body;
+        
+        this.$ext        = this.$getExternal();
+        this.$int        = this.$getLayoutNode("main", "container", this.$ext);
+        this.oCurtain    = this.$getLayoutNode("main", "curtain", this.$ext);
+        this.oBody       = this.$getLayoutNode("main", "body", this.$ext);
+        this.oContent    = this.$getLayoutNode("main", "content", this.$ext);
+        this.oImage      = this.$getLayoutNode("main", "image", this.$ext);
+        this.oImageBase  = this.$getLayoutNode("main", "image_base", this.$ext);
+        this.oClose      = this.$getLayoutNode("main", "close", this.$ext);
+        this.oBeam       = this.$getLayoutNode("main", "beam", this.$ext);
+        this.oTitle      = this.$getLayoutNode("main", "title", this.$ext);
+        this.oThumbnails = this.$getLayoutNode("main", "thumbnails", this.$ext);
+        this.otBody      = this.$getLayoutNode("main", "tbody", this.$ext);
+        this.otPrevious  = this.$getLayoutNode("main", "tprevious", this.$ext);
+        this.otNext      = this.$getLayoutNode("main", "tnext", this.$ext);
+        this.oLoading    = this.$getLayoutNode("main", "loading", this.$ext);
+        this.oEmpty      = this.$getLayoutNode("main", "empty", this.$ext);
+        this.oConsole    = this.$getLayoutNode("main", "console", this.$ext);
+        this.oPrevious   = this.$getLayoutNode("main", "previous", this.$ext);
+        this.oPlay       = this.$getLayoutNode("main", "play", this.$ext);
+        this.oNext       = this.$getLayoutNode("main", "next", this.$ext);
 
+        var _self = this;
+        
         //#ifdef __WITH_LAYOUT
         //@todo add this to $destroy
-        var rules = "var o = apf.all[" + this.uniqueId + "];\
+        var rules = "var o = apf.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
-        apf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling",
+        apf.layout.setRules(this.$pHtmlNode, this.$uniqueId + "_scaling",
                             rules, true);
+        apf.layout.queue(this.$pHtmlNode);
         //#endif
-
+        
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {
             if ((this.className || "").indexOf("ssprevious") != -1)
@@ -652,16 +837,16 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
             else if ((this.className || "").indexOf("ssnext") != -1)
                 _self.$Next();
         };
-
-        var timer3;
+        
+        var tmrThumbButton = null;
         this.otPrevious.onmousedown = function(e) {
-            timer3 = setInterval(function() {
+            tmrThumbButton = setInterval(function() {
                 _self.$tPrevious();
             }, 50);
         };
 
         this.otNext.onmousedown = function(e) {
-            timer3 = setInterval(function() {
+            tmrThumbButton = setInterval(function() {
                 _self.$tNext();
             }, 50);
         };
@@ -681,9 +866,9 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         this.otPrevious.onmouseout = function(e) {
             _self.$setStyleClass(_self.otPrevious, "", ["ssphover"]);
         };
-
+        
         this.oPlay.onclick = function(e) {
-            if (timer7) {
+            if (_self.tmrPlay) {
                 _self.$stop();
                 _self.$setStyleClass(_self.oPlay, "", ["ssstop"]);
                 _self.$setStyleClass(_self.oPlay, "ssplay");
@@ -700,222 +885,240 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
                  _self.oThumbnails.style.display  = "none";
             }
         };
+        
+        this.oClose.onclick = function() {
+            //_self.visible = true;
+            _self.hide();
+            _self.$showScrollbars();
+        };
 
         document.onmouseup = function(e) {
-            /* otNex, otPrevious buttons */
-            clearInterval(timer3);
-
-            /* from onmove */
-            clearInterval(timer);
-            document.onmousemove = null;
-
+            clearInterval(tmrThumbButton);
             return false;
         };
 
-        /* mouse wheel */
-        var timer4, SafariChromeFix = false;
-        onmousescroll_ = function(e) {
-            if (!_self.xmlRoot || _self.oExt.style.display == "none")
+        this.oImage.onmouseover = function(e) {
+            _self.inuse = true;
+            
+            var e = e || event;
+            var target = e.target || e.srcElement;
+            
+            var imgWidth  = _self.oImageBase.offsetWidth || _self.oImageBase.width;
+            var imgHeight = _self.oImageBase.offsetHeight || _self.oImageBase.height;
+            
+            var windowWidth = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth;
+            var windowHeight = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight;
+
+            var diff = apf.getDiff(_self.oBody);
+            var posX = _self.oBody.offsetLeft + diff[0] / 2;
+            var posY = _self.oBody.offsetTop  + diff[1] / 2;
+
+            var dx = 0, dy = 0;
+            var w, h, ml, mt;
+            var sx = e.clientX - posX;
+            var sy = e.clientY - posY;
+
+            w = _self.$imageWidth = parseInt(_self.oImage.style.width);
+            h = _self.$imageHeight = parseInt(_self.oImage.style.height);
+            
+            //wg tej wartosci ustale miejsce na duzym obrazku i bede wiedział wg jakiego punktu mam rozszerzać go
+            var percent_posX = sx / _self.$imageWidth;
+            var percent_posY = sy / _self.$imageHeight;
+            
+            this.onmousemove = function(e) {
+                var e = e || event;
+
+                sx = e.clientX - posX;
+                sy = e.clientY - posY;
+
+                percent_posX = sx / _self.$imageWidth;
+                percent_posY = sy / _self.$imageHeight;
+                
+                if((_self.$imageWidth == parseInt(_self.oImage.style.width) 
+                    && _self.$imageHeight == parseInt(_self.oImage.style.height)) || _self.$zooming) {
+                    return;
+                }
+
+                ml = -1 * (percent_posX * w - sx);
+                mt = -1 * (percent_posY * h - sy);
+
+                if (ml <= 0 && ml >= -1 * (w - _self.viewPortWidth)) {
+                    _self.oImage.style.left = ml + "px";
+                }
+                
+                if (mt <= 0 && mt >= -1 * (h - _self.viewPortHeight)) {
+                    _self.oImage.style.top = mt + "px";
+                }
+            };
+
+            //little delay to run zooming
+            clearInterval(_self.tmrHoverDelay);
+            _self.tmrHoverDelay = setInterval(function() {
+                clearInterval(_self.tmrHoverDelay);
+                clearInterval(_self.tmrZoom);
+
+                _self.tmrZoom = setInterval(function() {
+                    _self.$zooming = true;
+                        w     = parseInt(_self.oImage.style.width);
+                        h     = parseInt(_self.oImage.style.height);
+                    var l     = parseInt(_self.oImage.style.left);
+                    var t     = parseInt(_self.oImage.style.top);
+                    var ratio = apf.isIE ? 0.03 : 0.01;
+                    
+                    if (w < imgWidth) {
+                        _self.oImage.style.width = (w + w * ratio) + "px";
+                        _self.oImage.style.left  = -1 * (percent_posX * w - sx) + "px";
+                    }
+                    if (h < imgHeight) {
+                        _self.oImage.style.height = (h + h * ratio) + "px";
+                        _self.oImage.style.top    = -1 * (percent_posY * h - sy) + "px";
+                    }
+                    
+                    if (w >= imgWidth && h >= imgHeight) {
+                        clearInterval(_self.tmrZoom);
+                        _self.$zooming = false;
+                    }
+                }, apf.isIE ? 5 : 10);
+
+            }, 1000);
+        };
+
+        this.oImage.onmouseout = function(e) {
+            _self.inuse = false;
+            clearInterval(_self.tmrZoom);
+            clearInterval(_self.tmrHoverDelay);
+            
+            _self.oImage.style.width  = _self.$imageWidth + "px";
+            _self.oImage.style.height = _self.$imageHeight + "px";
+            
+            _self.oImage.style.top  = "0px";
+            _self.oImage.style.left = "0px";
+            
+            document.onmousemove = null;
+        };
+        
+        var SafariChromeFix = false;
+        apf.addEventListener("mousescroll", function(e) {
+            if (!_self.xmlRoot || _self.$ext.style.display == "none")
                 return;
             
             e = e || event;
-            if (apf.isChrome || apf.isSafari) {
+            if (apf.isWebkit) {
                 SafariChromeFix = SafariChromeFix ? false : true;
                 if (!SafariChromeFix)
                     return;
             }
 
             var delta  = e.delta;
-            var temp   = current;
-            var temp_n = _self.getNextTraverse(current);
-            var temp_p = _self.getNextTraverse(current, true);
+            var curNode  = _self.current;
+            var nextNode = _self.getNextTraverse(curNode);
+            var prevNode = _self.getNextTraverse(curNode, true);
 
-            next     = temp_n ? temp_n : _self.getFirstTraverseNode();
-            previous = temp_p ? temp_p : _self.getLastTraverseNode();
+            _self.next     = nextNode ? nextNode : _self.getFirstTraverseNode();
+            _self.previous = prevNode ? prevNode : _self.getLastTraverseNode();
 
-            current  = delta < 0 ? next : previous;
+            _self.current = delta < 0 ? nextNode : prevNode;
 
             _self.addSelection(delta);
 
-            if (current !== temp) {
-                clearInterval(timer4);
-                timer4 = setInterval(function() {
+            if (_self.current !== curNode) {
+                clearInterval(_self.tmrOnScroll);
+                _self.tmrOnScroll = setInterval(function() {
                     _self.$refresh();
-                    clearInterval(timer4);
+                    clearInterval(_self.tmrOnScroll);
                 }, 400);
             };
             return false;
-        };
-
-        apf.addEventListener("mousescroll", onmousescroll_);
-        /* end of mouse wheel */
-
-        this.oClose.onclick = function() {
-            _self.visible = true;
-            _self.hide();
-        };
-
-        /* image move */
-        var timer;
-        this.oImage.onmousedown = function(e) {
-            e = e || event;
-            var ww = apf.isIE
-                    ? document.documentElement.offsetWidth
-                    : window.innerWidth,
-                wh = apf.isIE
-                    ? document.documentElement.offsetHeight
-                    : window.innerHeight,
-                b = _self.oBody,
-                diff = apf.getDiff(b),
-                dx = b.offsetWidth - diff[0] - _self.oImage.offsetWidth,
-                dy = b.offsetHeight - diff[1] - _self.oImage.offsetHeight;
-            var t = parseInt(_self.oImage.style.top),
-                l = parseInt(_self.oImage.style.left);
-
-            var cy = e.clientY, cx = e.clientX;
-
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-
-            document.onmousemove = function(e) {
-                e = e || event;
-
-                if (dx < 0) {
-                    if (l + e.clientX - cx >= dx && l + e.clientX - cx <= 0) {
-                        _self.oImage.style.left = (l + e.clientX - cx) + "px";
-                    }
-                }
-                if (dy < 0) {
-                    if (t + e.clientY - cy >= dy && t + e.clientY - cy <= 0) {
-                        _self.oImage.style.top = (t + e.clientY - cy) + "px";
-                    }
-                }
-
-                return false;
-            };
-        };
-        /* end of image move */
-
-        this.oImage.onmouseover = function(e) {
-            onuse = true;
-        };
-
-        this.oImage.onmouseout = function(e) {
-            onuse = false;
-        };
-    };
-
-    this.$xmlUpdate = function() {
-    };
+        });
+        
+        apf.addEventListener("onkeydown", function(e) {
+            e = (e || event);
+            
+            //39 - Right Arrow
+            //37 - Left Arrow
     
-    /**
-     * It's called when browser window is resizing. Keeps proportion of each
-     * element, depends on browser window size.
-     */
-    this.$resize = function() {
-        var ww        = apf.isIE
-                ? document.documentElement.offsetWidth
-                : window.innerWidth,
-            wh        = apf.isIE
-                ? document.documentElement.offsetHeight
-                : window.innerHeight,
-            b         = _self.oBody,
-            img       = _self.oImage,
-            imgWidth  = img.offsetWidth,
-            imgHeight = img.offsetHeight,
-            diff      = apf.getDiff(b),
-            wt        = Math.min(imgWidth, ww - hSpace);
-
-        if (wt > -1) {
-           b.style.width      = wt + "px";
-           b.style.marginLeft = -1 * (wt / 2
-               + (parseInt(apf.getStyle(b, "borderLeftWidth")) || diff[0] / 2))
-               + "px";
-        }
-
-        var bottomPanel = thumbnails
-            ? Math.max(_self.oBeam.offsetHeight / 2,
-                       _self.thumbheight / 2 + titleHeight / 2)
-            : Math.max(_self.oBeam.offsetHeight / 2,
-                       titleHeight / 2);
-        var ht = Math.min(imgHeight, wh - vSpace - bottomPanel);
-        if (ht > -1) {
-            b.style.height    = ht + "px";
-            b.style.marginTop = -1 * (ht / 2
-                + (parseInt(apf.getStyle(b, "borderTopWidth")) || diff[1] / 2)
-                    + bottomPanel)
-                + "px";
-        }
-
-        /* refreshing cursor and move icon */
-        _self.oMove.style.display =
-            imgWidth < ww - hSpace && imgHeight < wh - vSpace
-                ? "none"
-                : "block";
-        img.style.cursor =
-            imgWidth < ww - hSpace && imgHeight < wh - vSpace
-                ? "default"
-                : "move";
-
-       /* reset image position */
-       img.style.left = "0px";
-       img.style.top  = "0px";
-    }
-
-    /**
-     * It's called when thumbnail has been clicked.
-     * Adds selection to thumbnail and shows new image.
-     * 
-     * @param {HTMLElement}   oThumb   html representation of thumbnail element
-     */
-    this.$clickThumb = function(oThumb) {
-        current = apf.xmldb.getNode(oThumb);
-        this.addSelection();
-        this.$refresh();
-    }
+            var key     = e.keyCode;
+            var curNode = _self.current;
+            var nextNode = _self.getNextTraverse(curNode);
+            var prevNode = _self.getNextTraverse(curNode, true);
+    
+            _self.next = nextNode 
+                ? nextNode 
+                : _self.getFirstTraverseNode();
+            _self.previous = prevNode 
+                ? prevNode 
+                : _self.getLastTraverseNode();
+            _self.current = key == 39 
+                ? _self.next 
+                : (key == 37 
+                    ? _self.previous 
+                    : _self.current);
+    
+            _self.addSelection(key == 39 ? -1 : (key == 37 ? 1 : 0));
+    
+            if (_self.current !== curNode) {
+                clearInterval(_self.tmrKeyDown);
+                _self.tmrKeyDown = setInterval(function() {
+                    _self.$refresh();
+                    clearInterval(_self.tmrKeyDown);
+                }, 550);
+            };
+            return false;
+        });
+    };
     
     this.$checkThumbSize = function() {
-        /*if(parseInt(this.otBody.childNodes[0].style.width) > 0) {
-            return;
-        }*/
-
-        var nodes = this.getTraverseNodes(), length = nodes.length;
+        var nodes = this.getTraverseNodes();
+        var nodes_len = nodes.length;
+        
+        var picBoxes = this.otBody.childNodes;
+        var picBoxed_len = picBoxes.length;
+        
         var widthSum = 0;
         
-        for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
-            pictureBox = this.otBody.childNodes[i];
-            thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+        var boxDiff, srcThumb, htmlPicBox, h, w, bh, testImg, counter = 0;
 
-            diff = apf.getDiff(pictureBox);
-            
-            bh = this.thumbheight - 10 - diff[1];
-            
-            img = new Image();
-            document.body.appendChild(img);
-            img.src = thumb ? thumb : this.defaultthumb;
-            
-            if (this.scalewidth) {
-                h = bh;
-                if (img.height < bh) {
-                    w = img.width;
+        for (var i = 0; i < picBoxed_len; i++) {
+            if ((picBoxes[i].className || "").indexOf("ssPicBox") > -1) {
+                htmlPicBox = picBoxes[i];
+
+                srcThumb = this.$applyBindRule("thumb", nodes[counter]);
+                boxDiff = apf.getDiff(htmlPicBox);
+                bh = this.thumbheight - 10 - boxDiff[1];
+    
+                if (this.scalewidth) {
+                    testImg = new Image();
+                    document.body.appendChild(testImg);
+
+                    testImg.src = srcThumb ? srcThumb : this.defaultthumb;
+                    
+                    h = bh;
+                    if (testImg.height < bh) {
+                        w = testImg.width;
+                    }
+                    else {
+                        testImg.setAttribute("height", bh);
+                        w = testImg.width;
+                    }
+                    document.body.removeChild(testImg);
                 }
                 else {
-                    img.setAttribute("height", bh);
-                    w = img.width;
+                    h = w = bh;
                 }
+    
+                widthSum += w + boxDiff[0]
+                         + (parseInt(apf.getStyle(htmlPicBox, "margin-left")
+                             || apf.getStyle(htmlPicBox, "marginLeft")))
+                         + (parseInt(apf.getStyle(htmlPicBox, "margin-right")
+                             || apf.getStyle(htmlPicBox, "marginRight")));
+    
+                htmlPicBox.style.width = w + "px";
+                counter++;
             }
-            else {
-                h = w = bh;
-            }
-
-            widthSum += w + diff[0]
-                     + (parseInt(apf.getStyle(pictureBox, "margin-left")
-                         || apf.getStyle(pictureBox, "marginLeft")))
-                     + (parseInt(apf.getStyle(pictureBox, "margin-right")
-                         || apf.getStyle(pictureBox, "marginRight")));
-            document.body.removeChild(img);
-            pictureBox.style.width = w + "px";
         }
 
         var thumbDiff = apf.getDiff(this.otBody);
@@ -924,146 +1127,66 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
             widthSum < this.oThumbnails.offsetWidth - thumbDiff[0]
                 ? "hidden"
                 : "visible";
-    }
+    };
 
     this.$load = function(xmlRoot) {
         apf.xmldb.addNodeListener(xmlRoot, this);
-        var nodes = this.getTraverseNodes(),
-            length = nodes.length;
+        
+        var nodes = this.getTraverseNodes();
+        var nodes_len = nodes.length;
+        
+        var boxDiff, srcThumb, htmlPicBox, h, w, bh, testImg = null;
+        for (var i = 0; i < nodes_len; i++) {
+            //Create box for thumbnail
+            htmlPicBox = this.otBody.appendChild(document.createElement("div"));
+            //Get source path to thumbnail image
+            srcThumb = this.$applyBindRule("thumb", nodes[i]);
 
-        for (var i = 0, diff, thumb, pictureBox, h, w, bh; i < length; i++) {
-            pictureBox = this.otBody.appendChild(document.createElement("div"));
-            thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+            htmlPicBox.style.backgroundImage = 'url(' + (srcThumb ? srcThumb : this.defaultthumb) +  ')';
             
-            pictureBox.style.backgroundImage = 'url(' + (thumb ? thumb : this.defaultthumb) +  ')';
-
-            this.$setStyleClass(pictureBox, "sspictureBox");
-            diff = apf.getDiff(pictureBox);
+            htmlPicBox.className = "ssPicBox";
+            boxDiff = apf.getDiff(htmlPicBox);
             
-            bh = this.thumbheight - 10 - diff[1];
+            bh = this.thumbheight - 10 - boxDiff[1];
             
             if (this.scalewidth) {
-                img = new Image();
-                document.body.appendChild(img);
-                img.src = thumb ? thumb : this.defaultthumb;
+                testImg = new Image();
+                document.body.appendChild(testImg);
+
+                testImg.src = srcThumb ? srcThumb : this.defaultthumb;
                 
                 h = bh;
-                if (img.height < bh) {
-                    w = img.width;
+                if (testImg.height < bh) {
+                    w = testImg.width;
                 }
                 else {
-                    img.setAttribute("height", bh);
-                    w = img.width;
+                    testImg.setAttribute("height", bh);
+                    w = testImg.width;
                 }
-                
-                document.body.removeChild(img);
+                document.body.removeChild(testImg);
             }
             else {
                 h = w = bh;
             }
+            
+            htmlPicBox.style.height    = h + "px";
+            htmlPicBox.style.width     = w + "px";
+            htmlPicBox.style.marginTop = htmlPicBox.style.marginBottom = "5px";
 
-            pictureBox.style.height = h + "px";
-            pictureBox.style.width = w + "px";
-            pictureBox.style.marginTop = pictureBox.style.marginBottom = "5px";
+            apf.xmldb.nodeConnect(this.documentId, nodes[i], htmlPicBox, this);
 
-            apf.xmldb.nodeConnect(this.documentId, nodes[i], pictureBox, this);
-
-            pictureBox.onclick = function(e) {
+            var _self = this;
+            htmlPicBox.onclick = function(e) {
                 _self.$clickThumb(this);
             }
         }
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (length != this.length)
-            this.setProperty("length", length);
+        if (nodes_len != this.length)
+            this.setProperty("length", nodes_len);
         //#endif
 
         this.$paint();
-    }
-    
-    this.$show = function() {
-        /* Removes window scrollbars */
-        this.lastOverflow = document.documentElement.style.overflow == "hidden"
-            ? "auto"
-            : document.documentElement.style.overflow;
-            
-        document.documentElement.style.overflow = "hidden";
-        
-        _self.oBeam.style.display = "none";
-        _self.oBody.style.display = "none";
-        _self.oInt.style.display = "block";
-        _self.oExt.style.display = "block";
-
-        apf.tween.single(_self.oCurtain, {
-            steps    : 10, 
-            type     : "fade",
-            from     : 0,
-            to       : 0.7,
-            onfinish : function() {
-                _self.oBeam.style.display = "block";
-                apf.tween.single(_self.oBeam, {
-                    steps    : 10, 
-                    type     : "fade",
-                    from     : 0,
-                    to       : 1,
-                    onfinish : function() {
-                        _self.oBody.style.display = "block";
-                        apf.tween.single(_self.oBody, {
-                            steps    : 5, 
-                            type     : "fade",
-                            from     : 0,
-                            to       : 1,
-                            onfinish : function() {
-                                if (apf.isIE) {
-                                    _self.oBody.style.filter = "";
-                                    _self.oBeam.style.filter = "";
-                                }
-                                _self.$refresh();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        
-    }
-
-    this.$hide = function () {
-        /* Restores window scrollbars */
-        _self.oExt.style.display = "block";
-
-        apf.tween.single(_self.oBody, {
-            steps    : 10, 
-            type     : "fade",
-            from     : 1,
-            to       : 0,
-            onfinish : function() {
-                _self.oBody.style.display = "none";
-            }
-        });
-        
-        apf.tween.single(_self.oBeam, {
-            steps    : 10, 
-            type     : "fade",
-            from     : 1,
-            to       : 0,
-            onfinish : function() {
-                _self.oBeam.style.display = "none";
-                
-                apf.tween.single(_self.oCurtain, {
-                    steps    : 10, 
-                    type     : "fade",
-                    from     : 0.7,
-                    to       : 0,
-                    onfinish : function() {
-                        _self.oInt.style.display  = "none";
-                        _self.oExt.style.display  = "none";
-                        
-                        document.documentElement.style.overflow = _self.lastOverflow;
-                    }
-                });
-            }
-        });
     }
 
     this.$destroy = function() {
@@ -1071,25 +1194,19 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         this.otPrevious.onmouseover =
         this.otNext.onmouseout =
         this.otPrevious.onmouseout =
-        this.oExt.onresize =
+        this.$ext.onresize =
         this.oImage.onmousedown =
         this.otNext.onmousedown =
         this.otPrevious.onmousedown =
         this.oNext.onclick =
         this.oPrevious.onclick = null;
 
-        this.removeEventListener("onkeydown", onkeydown_);
-        this.removeEventListener("mousescroll", onmousescroll_);
+        //this.removeEventListener("onkeydown", onkeydown_);
+        //this.removeEventListener("mousescroll", onmousescroll_);
 
         this.x = null;
-    }
-
-    this.$loadAml = function(x) {
-        var nodes = x.childNodes;
-        apf.AmlParser.parseChildren(x, null, this);
     };
 
-    var oEmpty;
     this.$setClearMessage = function(msg, className) {
         var ww = apf.isIE
             ? document.documentElement.offsetWidth
@@ -1098,21 +1215,21 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
         var bn = parseInt(apf.getStyle(_self.otNext, "width"));
         var ew = parseInt(apf.getStyle(_self.oEmpty, "width"));
         
-        oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
+        this.$oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
         apf.setNodeValue(oEmpty, msg || "");
 
-        oEmpty.setAttribute("id", "empty" + this.uniqueId);
-        oEmpty.style.display = "block";
-        oEmpty.style.left = ((ww - ew) / 2 - bp - bn) + "px";
-        apf.setStyleClass(oEmpty, className, ["ssloading", "ssempty", "offline"]);
+        this.$oEmpty.setAttribute("id", "empty" + this.$uniqueId);
+        this.$oEmpty.style.display = "block";
+        this.$oEmpty.style.left = ((ww - ew) / 2 - bp - bn) + "px";
+        apf.setStyleClass(this.$oEmpty, className, ["ssloading", "ssempty", "offline"]);
     };
 
     this.$removeClearMessage = function() {
-        if (!oEmpty)
-            oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty && oEmpty.parentNode)
-            oEmpty.parentNode.removeChild(oEmpty);
+        if (!this.$oEmpty)
+            this.$oEmpty = document.getElementById("empty" + this.$uniqueId);
+        if (this.$oEmpty && oEmpty.parentNode)
+            this.$oEmpty.parentNode.removeChild(this.$oEmpty);
     };
 
     this.$setCurrentFragment = function(fragment) {
@@ -1134,7 +1251,16 @@ apf.slideshow = apf.component(apf.NODE_VISIBLE, function() {
 
         return fragment;
     };
-}).implement(apf.Presentation, apf.DataBinding, apf.Cache,
-             apf.MultiselectBinding);
 
+// #ifdef __WITH_DATABINDING
+}).call(apf.slideshow.prototype = new apf.MultiselectBinding());
+/* #else
+}).call(apf.slideshow.prototype = new apf.Presentation());
+#endif*/
+
+apf.aml.setElement("slideshow", apf.slideshow);
+
+apf.aml.setElement("src",      apf.BindingRule);
+apf.aml.setElement("title",    apf.BindingRule);
+apf.aml.setElement("thumb",    apf.BindingRule);
 // #endif

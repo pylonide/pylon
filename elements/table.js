@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JTABLE || __INC_ALL
+// #ifdef __AMLTABLE || __INC_ALL
 
 /**
  * Any child element of this element is placed in a table. The size of the 
@@ -74,21 +74,17 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.table = apf.component(apf.NODE_VISIBLE, function(){
-    var id;
-    var update  = false;
-    var l       = apf.layout;
-    var _self   = this;
-    var updater = {
-        $updateLayout : function(){
-            _self.$updateTable();
-        }
-    };
+apf.table = function(struct, tagName){
+    this.$init(tagName || "table", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    var l = apf.layout;
     
     /**** Properties and Attributes ****/
     
-    this.canHaveChildren = true;
     this.$focussable     = false;
+    this.$update         = false;
     
     this.columns    = "100,*";
     this.padding    = 2;
@@ -112,113 +108,85 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("columns", "padding", "margin", 
         "cellheight", "span");
     
-    var amlHideShow                  =
-    this.$updateTrigger              =
     this.$propHandlers["columns"]    =
     this.$propHandlers["padding"]    =
     this.$propHandlers["margin"]     =
     this.$propHandlers["cellheight"] = function(value){
-        if (!update && apf.loaded)
-            l.queue(_self.oExt, updater);
-        update = true;
+        if (!this.$update && apf.loaded)
+            l.queue(this.$ext, this.$updateObj);
+        this.$update = true;
     };
     
-    /**** DOM Hooks ****/
+    function visibleHandler(){
+        var p = this.parentNode;
+        if (!p.$update && apf.loaded)
+            l.queue(p.$ext, p.$updateObj);
+        p.$update = true;
+    }
     
-    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
-        if (doOnlyAdmin)
-            return;
+    //@todo move this to enableTable, disableTable
+    this.register = function(amlNode){
+        amlNode.$propHandlers["width"]  = 
+        amlNode.$propHandlers["height"] = 
+        amlNode.$propHandlers["margin"] = 
+        amlNode.$propHandlers["span"]   = this.$updateObj.updateTrigger;
         
+        amlNode.addEventListener("prop.visible", visibleHandler);
+
+        l.queue(this.$ext, this.$updateObj);
+        this.$update = true;
+    }
+    
+    this.unregister = function(amlNode){
         amlNode.$propHandlers["width"]  = 
         amlNode.$propHandlers["height"] = 
         amlNode.$propHandlers["margin"] = 
         amlNode.$propHandlers["span"]   = null;
         
-        amlNode.$hide = amlNode.$_hide;
-        amlNode.$show = amlNode.$_show;
+        amlNode.removeEventListener("prop.visible", visibleHandler);
         
-        /* Removing is probably not a good idea, because we're not sure if the node is reparented
-        //#ifdef __WITH_ALIGNMENT
-        if (amlNode.hasFeature(__ALIGNMENT__) && amlNode.aData)
-            amlNode.enableAlignment();
-        //#endif
-        */
-        
-        //#ifdef __WITH_ANCHORING
-        if (amlNode.hasFeature(__ANCHORING__) && amlNode.$hasAnchorRules())
-            amlNode.$setAnchoringEnabled();
-        //#endif
-        
-        l.queue(this.oExt, updater);
-        update = true;
+        l.queue(this.$ext, this.$updateObj);
+        this.$update = true;
+    }
+    /*
+         this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.register(this.parentNode);
     });
+    */
     
-    this.$domHandlers["insert"].push(function(amlNode, bNode, withinParent){
-        if (withinParent)
-            return;
-        
-        //#ifdef __WITH_ALIGNMENT
-        if (amlNode.hasFeature(__ALIGNMENT__) && amlNode.aData)
-            amlNode.disableAlignment();
-        //#endif
-        
-        //#ifdef __WITH_ANCHORING
-        else if (amlNode.hasFeature(__ANCHORING__) && amlNode.$hasAnchorRules())
-            amlNode.disableAnchoring();
-        //#endif
-        
-        amlNode.$propHandlers["width"]  = 
-        amlNode.$propHandlers["height"] = 
-        amlNode.$propHandlers["margin"] = 
-        amlNode.$propHandlers["span"]   = this.$updateTrigger;
-        
-        amlNode.$_hide = amlNode.$hide;
-        amlNode.$_show = amlNode.$show;
-        amlNode.$hide = amlHideShow;
-        amlNode.$show = amlHideShow;
-        
-        l.queue(this.oExt, updater);
-        update = true;
-    });
+    /**** DOM Hooks ****/
     
-    this.$domHandlers["remove"].push(function(doOnlyAdmin){
-        if (!isWaitingOnDisplay)
+    this.addEventListener("DOMNodeRemoved", function(e){
+        if (this.$isWaitingOnDisplay)
             return;
 
-        var p = _self;
-        while (p) {
-            p.unwatch("visible", propChange);
-            p = p.parentNode;
-        }
-    });
-    
-    this.$domHandlers["reparent"].push(function(doOnlyAdmin){
-        if (!isWaitingOnDisplay)
-            return;
-
-        var p = _self;
-        while (p) {
-            p.watch("visible", propChange);
-            p = p.parentNode;
-        }
-    });
-    
-    //#ifdef __WITH_PROPERTY_WATCH
-    function propChange(name, old, value){
-        if (update && apf.isTrue(value) && _self.oExt.offsetHeight) {
-            _self.$updateTable();
-            apf.layout.activateRules(_self.oExt);
-            
-            var p = _self;
+        if (e.currentTarget == this) {
+            var p = this;
             while (p) {
-                p.unwatch("visible", propChange);
+                p.unwatch("visible", this.$updateObj.propChange);
                 p = p.parentNode;
             }
-            
-            isWaitingOnDisplay = false;
         }
-    };
-    //#endif
+        else if (e.relatedNode == this){
+            this.unregister(e.currentTarget);
+            e.currentTarget.$setLayout();
+        }
+    });
+
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (this.$isWaitingOnDisplay || e.currentTarget != this)
+            return;
+
+        if (e.currentTarget == this) {
+            var p = this;
+            while (p) {
+                p.watch("visible", this.$updateObj.propChange);
+                p = p.parentNode;
+            }
+        }
+        else if (e.relatedNode == this && !e.$moveWithinParent)
+            e.currentTarget.$setLayout("table");
+    });
     
     /**
      * @macro
@@ -229,21 +197,21 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
             : expr;
     }
     
-    var isWaitingOnDisplay = false;
-    this.$updateTable = function(){
-        if (!update)
+    this.$isWaitingOnDisplay = false;
+    this.$updateTable = function(){ //@todo prevent this from being called so much
+        if (!this.$update)
             return;
 
         //@todo when not visible make all property settings rule based
         //@todo isnt there a better way for doing this? (faster)
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.oExt.offsetHeight) {
-            isWaitingOnDisplay = true;
-            this.watch("visible", propChange);
+        if (!this.$ext.offsetHeight) {
+            this.$isWaitingOnDisplay = true;
+            this.watch("visible", this.$updateObj.propChange);
             
             var p = this.parentNode;
             while(p) {
-                p.watch("visible", propChange);
+                p.watch("visible", this.$updateObj.propChange);
                 p = p.parentNode;
             }
             
@@ -251,42 +219,46 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         }
         //#endif
         
-        var pWidth  = "pWidth";
-        var pHeight = "pHeight";
-
         this.cellheight = parseInt(this.cellheight);
-        var cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
-        var collength   = cols.length;
-        var margin      = apf.getBox(this.margin);
-        var rowheight   = [];
         this.padding    = parseInt(this.padding);
         
-        var oCols   = [];
-        var col, row, oExt, diff, j, m, cellInfo;
-        this.ids = [this.oExt];
-        var span, jNode, jNodes = this.childNodes;
+        var id;
+        var pWidth      = "pWidth",
+            pHeight     = "pHeight",
+
+            cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/),
+            collength   = cols.length,
+            margin      = apf.getBox(this.margin),
+            rowheight   = [],
+
+            oCols       = [],
+            jNodes      = this.childNodes,
+            col, row, oExt, diff, j, m, cellInfo, span, jNode;
+
+        this.ids = [this.$ext];
         for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
             jNode = jNodes[i];
-            if (jNode.nodeFunc != apf.NODE_VISIBLE || !jNode.visible)
+            if (jNode.nodeType != 1 && jNode.nodeType != 7 
+              || jNode.nodeFunc == apf.NODE_HIDDEN || jNode.visible === false)
                 continue;
             
             //#ifdef __WITH_ANCHORING
-            if (jNode.hasFeature(__ANCHORING__))
-                jNode.disableAnchoring();
+            if (jNode.hasFeature(apf.__ANCHORING__))
+                jNode.$disableAnchoring();
             //#endif
             
-            m = apf.getBox(String(jNode.getAttribute("margin")));
+            m = apf.getBox(String(jNode.margin));
             //for (j = 0; j < 4; j++)
                 //m[j] += this.padding;
 
-            diff = apf.getDiff(jNode.oExt);
-            oExt = jNode.oExt;
+            diff = apf.getDiff(jNode.$ext);
+            oExt = jNode.$ext;
             if (!oExt.getAttribute("id")) 
                 apf.setUniqueHtmlId(oExt);
             if (apf.isIE)
                 oExt.style.position = "absolute"; //Expensive
             
-            span = jNode.getAttribute("span");
+            span = jNode.span;
             
             cellInfo = {
                 span    : span == "*" ? collength : parseInt(span) || 1,
@@ -327,7 +299,7 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
 
         var total, combCol, fillCol = null, fillRow = null;
         var rule = [
-            "var ids = apf.all[" + this.uniqueId + "].ids",
+            "var ids = apf.all[" + this.$uniqueId + "].ids",
             "var total = 0, pHeight = ids[0].offsetHeight - " 
                 + ((rowheight.length - 1) * this.padding + margin[0] + margin[2]),
             "var pWidth  = ids[0].offsetWidth - " 
@@ -397,7 +369,7 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         }
         
         if (!needcalc)
-            this.oExt.style.height = (total + ((rowheight.length-1) * this.padding) + margin[0] + margin[2]) + "px";
+            this.$ext.style.height = (total + ((rowheight.length-1) * this.padding) + margin[0] + margin[2]) + "px";
         
         //Set column start position
         var rowstart = [margin[0]];
@@ -490,34 +462,62 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
         }
 
         //rule.join("\n"), true);
-        apf.layout.setRules(this.oExt, "table", (rule.length 
+        apf.layout.setRules(this.$ext, "table", (rule.length 
             ? "try{" + rule.join(";}catch(e){};\ntry{") + ";}catch(e){};" 
             : ""), true);
-
+        apf.layout.queue(this.$ext);
         //Set size of table if necesary here...
-        update = false;
+        this.$update = false;
     };
     
     this.$draw = function(){
-        this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "table " + (this.$aml.getAttributeNode("class") || "");
-        this.oInt = this.oExt;
-        this.oExt.host = this;
+        var _self = this;
+        this.$updateObj = {
+            $updateLayout : function(){
+                _self.$updateTable();
+            },
+            updateTrigger : function(value){
+                if (!_self.$update && apf.loaded)
+                    l.queue(_self.$ext, _self.$updateObj);
+                _self.$update = true;
+            },
+            //#ifdef __WITH_PROPERTY_WATCH
+            propChange : function (name, old, value){
+                if (_self.$update && apf.isTrue(value) && _self.$ext.offsetHeight) {
+                    _self.$updateTable();
+                    apf.layout.activateRules(_self.$ext);
+                    
+                    var p = _self;
+                    while (p) {
+                        p.unwatch("visible", _self.$updateObj.propChange);
+                        p = p.parentNode;
+                    }
+                    
+                    _self.$isWaitingOnDisplay = false;
+                }
+            }
+            //#endif
+        }
         
-        if (!this.oExt.getAttribute("id")) 
-            apf.setUniqueHtmlId(this.oExt);
+        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+        this.$ext.className = "table " + (this.getAttributeNode("class") || "");
+        this.$int = this.$ext;
+        this.$ext.host = this;
 
-        id = apf.hasHtmlIdsInJs 
-            ? this.oExt.getAttribute("id")
-            : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
+        if (!this.$ext.getAttribute("id")) 
+            apf.setUniqueHtmlId(this.$ext);
+
+        this.$htmlId = apf.hasHtmlIdsInJs 
+            ? this.$ext.getAttribute("id")
+            : "document.getElementById('" + this.$ext.getAttribute("id") + "')";
         
-        //this.oExt.style.height = "80%"
-        //this.oExt.style.top       = 0;
-        this.oExt.style.position  = "relative";
-        this.oExt.style.minHeight = "10px";
+        //this.$ext.style.height = "80%"
+        //this.$ext.style.top       = 0;
+        this.$ext.style.position  = "relative";
+        this.$ext.style.minHeight = "10px";
         
-        if (this.$aml.getAttribute("class")) 
-            apf.setStyleClass(this.oExt, this.$aml.getAttribute("class"));
+        if (this.getAttribute("class")) 
+            apf.setStyleClass(this.$ext, this.getAttribute("class"));
 
         if (!apf.isIE && !apf.table.$initedcss) {
             apf.importCssString(document, ".table>*{position:absolute}");
@@ -526,29 +526,11 @@ apf.table = apf.component(apf.NODE_VISIBLE, function(){
     };
     
     this.$loadAml = function(x){
-        apf.AmlParser.parseChildren(x, this.oInt, this, true);
-
-        if (!this.width && (apf.getStyle(this.oExt, "position") == "absolute"
+        if (!this.width && (apf.getStyle(this.$ext, "position") == "absolute"
           || this.left || this.top || this.right || this.bottom || this.anchors))
-            this.oExt.style.width  = "100%"
-        
-        var amlNode, nodes = this.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            amlNode = nodes[i];
-            
-            amlNode.$propHandlers["width"]  = 
-            amlNode.$propHandlers["height"] = 
-            amlNode.$propHandlers["margin"] = 
-            amlNode.$propHandlers["span"]   = this.$updateTrigger;
-            
-            amlNode.$_hide = amlNode.$hide;
-            amlNode.$_show = amlNode.$show;
-            amlNode.$hide = amlHideShow;
-            amlNode.$show = amlHideShow;
-        }
-        
-        this.$updateTable();
+            this.$ext.style.width  = "100%"
     };
-});
+}).call(apf.table.prototype = new apf.GuiElement());
 
+apf.aml.setElement("table", apf.table);
 // #endif

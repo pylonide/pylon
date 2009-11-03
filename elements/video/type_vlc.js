@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_VIDEO_VLC && (__JVIDEO || __INC_ALL)
+// #ifdef __WITH_VIDEO_VLC && (__AMLVIDEO || __INC_ALL)
 
 apf.video.TypeVlcCompat = (function() {
     var iVersion = 0;
@@ -115,7 +115,7 @@ apf.video.TypeVlcCompat = (function() {
  */
 apf.video.TypeVlc = function(oVideo, node, options) {
     this.oVideo      = oVideo;
-    this.name        = "VLC_" + this.oVideo.uniqueId;
+    this.name        = "VLC_" + this.oVideo.$uniqueId;
     this.htmlElement = node;
     this.ready       = false;
     this.currState   = null;

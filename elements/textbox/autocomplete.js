@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__JTEXTBOX || __INC_ALL)
+// #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__AMLTEXTBOX || __INC_ALL)
 
 /**
  * Adds autocomplete to the textbox element
@@ -53,8 +53,8 @@ apf.textbox.autocomplete = function(){
         autocomplete.sort      = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = apf.xmldb.htmlImport(this.$getLayoutNode("container"),
-            this.oExt.parentNode, this.oExt.nextSibling);	
+        this.oContainer = apf.insertHtmlNode(this.$getLayoutNode("container"),
+            this.$ext.parentNode, this.$ext.nextSibling);	
     };
     
     this.fillAutocomplete = function(keyCode){
@@ -69,9 +69,9 @@ apf.textbox.autocomplete = function(){
                       && autocomplete.lastStart < autocomplete.suggestData.length){
                         this.clear();
                         var value       = autocomplete.suggestData[autocomplete.lastStart++];
-                        this.oInt.value = value; //hack!
+                        this.$int.value = value; //hack!
                         this.change(value);
-                        //this.oInt.select(); this.oInt.focus();
+                        //this.$int.select(); this.$int.focus();
                         this.oContainer.style.display = "none";
                         return;
                     }
@@ -83,9 +83,9 @@ apf.textbox.autocomplete = function(){
 
                         this.clear();
                         var value = autocomplete.suggestData[autocomplete.lastStart--];
-                        this.oInt.value = value; //hack!
+                        this.$int.value = value; //hack!
                         this.change(value);
-                        //this.oInt.select(); this.oInt.focus();
+                        //this.$int.select(); this.$int.focus();
                         this.oContainer.style.display = "none";
                         return;
                     }
@@ -100,7 +100,7 @@ apf.textbox.autocomplete = function(){
             autocomplete.count = suggestData.length;
         }
         else {
-            if (this.oInt.value.length == 0){
+            if (this.$int.value.length == 0){
                 this.oContainer.style.display = "none";
                 return;
             }
@@ -121,7 +121,7 @@ apf.textbox.autocomplete = function(){
             }
             
             //Find Startpoint in lookup list
-            var value = this.oInt.value.toUpperCase();
+            var value = this.$int.value.toUpperCase();
             for(var start = suggestData.length - autocomplete.count, i = 0; i < suggestData.length; i++) {
                 if (value <= suggestData[i].toUpperCase()) {
                     start = i;
@@ -133,8 +133,8 @@ apf.textbox.autocomplete = function(){
         
         //Create html items
         this.oContainer.innerHTML  = "";
-        this.oContainer.style.left = this.oInt.offsetLeft + "px";
-        this.oContainer.style.top  = this.oInt.offsetTop + "px";
+        this.oContainer.style.left = this.$int.offsetLeft + "px";
+        this.oContainer.style.top  = this.$int.offsetTop + "px";
         
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.$getNewContext("item")
@@ -145,25 +145,25 @@ apf.textbox.autocomplete = function(){
             oItem.setAttribute("onmouseout",  'this.className = ""');
             oItem.setAttribute("onmousedown", 'event.cancelBubble = true');
             oItem.setAttribute("onclick",
-               "var o = apf.lookup(" + this.uniqueId + ");\
-                o.oInt.value = this.innerHTML;\
+               "var o = apf.lookup(" + this.$uniqueId + ");\
+                o.$int.value = this.innerHTML;\
                 o.change(this.innerHTML);\
-                o.oInt.select();\
-                o.oInt.focus();\
+                o.$int.select();\
+                o.$int.focus();\
                 o.oContainer.style.display = 'none';");
             
             arr.push(this.$getLayoutNode("item"));
         }
-        apf.xmldb.htmlImport(arr, this.oContainer);
+        apf.insertHtmlNode(arr, this.oContainer);
         
         this.oContainer.style.display = "block";
     };
     
-    this.setAutocomplete = function(model, traverse, value){
+    this.setAutocomplete = function(model, each, value){
         autocomplete.lastStart   = -1;
         autocomplete.suggestData = null;
         
-        autocomplete.nodeset = [model, traverse];
+        autocomplete.nodeset = [model, each];
         autocomplete.value = value;
         this.oContainer.style.display = "none";
     };

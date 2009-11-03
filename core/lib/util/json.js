@@ -167,7 +167,7 @@ apf.xml2json = function (xml, noattrs) {
             o =  apf.xml2json( n );
         }
         if(out[name] !== undefined){
-            if((s=out[name]).dataType!='array')
+            if((s=out[name]).dataType!=apf.ARRAY)
                 out[name]=[s,o];
             else out[name].push(o);
         }else out[name] = o;
@@ -243,7 +243,8 @@ if (!window["JSON"]) {
             return s.substring(s.length - p.length);
         },
         jsonSerialize   = {
-            object: function(o){
+            //Object
+            0: function(o){
                 //XML support - NOTICE: Ajax.org Platform specific
                 if (o.nodeType && o.cloneNode)
                     return "apf.xmldb.getXml("
@@ -258,21 +259,25 @@ if (!window["JSON"]) {
 
                 return "{" + str.join(", ") + "}";
             },
-
-            string: function(s){
+            
+            //String
+            5: function(s){
                 s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
                 return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
             },
 
-            number: function(i){
+            //Number
+            2: function(i){
                 return i.toString();
             },
 
-            "boolean": function(b){
+            //Boolean
+            4: function(b){
                 return b.toString();
             },
 
-            date: function(d){
+            //Date
+            3: function(d){
                 return '{"jsonclass":["sys.ISODate", ["'
                     + padd(d.getUTCFullYear(), "0000")
                     + padd(d.getUTCMonth() + 1, "00") 
@@ -283,7 +288,8 @@ if (!window["JSON"]) {
                     + '"]]}';
             },
 
-            array: function(a){
+            //Array
+            1: function(a){
                 for (var q = [], i = 0; i < a.length; i++)
                     q.push(JSON.stringify(a[i]));
 
@@ -418,7 +424,7 @@ if (!window["JSON"]) {
         stringify: function(o) {
             if (typeof args == "function" || apf.isNot(o))
                 return "null";
-            return jsonSerialize[o.dataType || "object"](o);
+            return jsonSerialize[o.dataType || 0](o);
         }
     };
 

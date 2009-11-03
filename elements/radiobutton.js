@@ -18,138 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JRADIOBUTTON || __INC_ALL
+// #ifdef __AMLRADIOBUTTON || __INC_ALL
 // #define __WITH_PRESENTATION 1
-
-/**
- * @constructor
- * @private
- *
- * @inherits apf.DataBinding
- * @inherits apf.Validation
- * @inherits apf.XForms
- */
-apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
-    this.radiobuttons = [];
-    this.visible = true;
-
-    this.$supportedProperties.push("value", "visible", "zindex", "disabled");
-    this.$propHandlers["value"] = function(value){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            if (this.radiobuttons[i].value == value)
-                return this.setCurrent(this.radiobuttons[i]);
-        }
-    };
-
-    this.$propHandlers["zindex"] = function(value){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].setZIndex(value);
-        }
-    };
-
-    this.$propHandlers["visible"] = function(value){
-        if (value) {
-            for (var i = 0; i < this.radiobuttons.length; i++) {
-                this.radiobuttons[i].show();
-            }
-        }
-        else {
-            for (var i = 0; i < this.radiobuttons.length; i++) {
-                this.radiobuttons[i].hide();
-            }
-        };
-    }
-
-    this.$propHandlers["disabled"] = function(value){
-        this.disabled = value;
-
-        if (value) {
-            for (var i = 0; i < this.radiobuttons.length; i++) {
-                this.radiobuttons[i].disable();
-            }
-        }
-        else {
-            for (var i = 0; i < this.radiobuttons.length; i++) {
-                this.radiobuttons[i].enable();
-            }
-        }
-    }
-
-    /**
-     * @private
-     */
-    this.addRadio = function(oRB){
-        var id = this.radiobuttons.push(oRB) - 1;
-        if (!this.visible) {
-            oRB.hide();
-            //if(oRB.tNode)
-            //oRB.tNode.style.display = "none";
-        }
-        
-        if (!oRB.value)
-            oRB.value = String(id);
-
-        if (this.value && oRB.value == this.value)
-            this.setCurrent(oRB);
-    };
-
-    /**
-     * @private
-     */
-    this.removeRadio = function(oRB){
-        this.radiobuttons.remove(oRB);
-    }
-
-    /**
-     * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
-     */
-    this.setValue = function(value){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            if (this.radiobuttons[i].value == value) {
-                var oRB = this.radiobuttons[i];
-                if (this.current && this.current != oRB)
-                    this.current.$uncheck();
-                oRB.check(true);
-                this.current = oRB;
-                break;
-            }
-        }
-
-        return this.setProperty("value", value);
-        //return false;
-    };
-
-    /**
-     * @private
-     */
-    this.setCurrent = function(oRB){
-        if (this.current && this.current != oRB)
-            this.current.$uncheck();
-        this.value = oRB.value;
-        oRB.check(true);
-        this.current = oRB;
-    };
-    
-    /**
-     * Returns the current value of this element.
-     * @return {String}
-     */
-    this.getValue = function(){
-        return this.current ? this.current.value : "";
-    };
-}).implement(
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    ,apf.Validation
-    //#endif
-    //#ifdef __WITH_XFORMS
-    ,apf.XForms
-    //#endif
-);
 
 /**
  * Element displaying a two state button which is one of a grouped set.
@@ -208,19 +78,30 @@ apf.radiogroup = apf.component(apf.NODE_HIDDEN, function(){
  * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
  * @see baseclass.amlnode.event.afterchange
  */
-apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {
-        "main": [["label", "text()"]]
-    };
-    // #endif
+apf.radiobutton = function(struct, tagName){
+    this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
+    
+    this.$constructor = apf.radiobutton;
+    var fEl = apf.aml.setElement("radiobutton", function(){
+        this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
+    });
+    fEl.prototype = apf.radiobutton.prototype;
+    apf.radiobutton = fEl;
+};
 
+(function(){
+    this.implement(apf.ChildValue);
+    this.$childProperty = "label";
+    
     this.$focussable = true; // This object can get the focus
-    var _self = this;
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        checked: 1
+    }, this.$attrExcludePropBind);
 
     /**** Properties and Attributes ****/
 
-    this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "background", "group",
         "label", "checked", "tooltip", "icon");
 
@@ -231,47 +112,35 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
      * group; only one radiobutton within that parent can be checked.
      */
     this.$propHandlers["group"] = function(value){
-        if (this.radiogroup)
-            this.radiogroup.removeRadio(this);
-
-        this.radiogroup = apf.nameserver.get("radiogroup", value);
-        if (!this.radiogroup) {
-            var rg = new apf.radiogroup(this.pHtmlNode, "radiogroup");
+        if (this.$group && this.$group.$removeRadio)
+            this.$group.$removeRadio(this);
             
-            rg.id = rg.name = value;
-            rg.errBox     = this.errBox;
-            rg.parentNode = this.parentNode; //is this one needed?
-
-            apf.nameserver.register("radiogroup", value, rg);
-            apf.setReference(value, rg);
-
-            //x = oRB.$aml;
-            //rg.oExt = oRB.oExt;
-            rg.$aml = this.$aml;
-            rg.loadAml(this.$aml);
-
-            this.radiogroup = rg;
+        if (!value) {
+            this.$group = null;
+            return;
         }
         
-        if (this.oInput) {
-            this.oInput.setAttribute("name", this.group
-                || "radio" + this.radiogroup.uniqueId);
+        var group = apf.nameserver.get("radiogroup", value);
+        if (!group) {
+            group = apf.nameserver.register("radiogroup", value, 
+                new apf.$group());
+            group.setAttribute("id", value);
+            group.dispatchEvent("DOMNodeInsertedIntoDocument");
+            group.parentNode = this;
         }
-
-        if (!this.value && this.$aml)
-            this.value = this.$aml.getAttribute("value");
+        this.$group = group;
         
-        this.radiogroup.addRadio(this);
+        if (this.oInput)
+            this.oInput.setAttribute("name", value);
         
-        if (this.checked)
-            this.radiogroup.setValue(this.value);
+        this.$group.$addRadio(this);
     };
     
     /**
      * @attribute {String} tooltip the tooltip of this radio button.
      */
     this.$propHandlers["tooltip"] = function(value){
-        this.oExt.setAttribute("title", value);
+        this.$ext.setAttribute("title", value);
     };
 
     /**
@@ -286,9 +155,9 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
         #endif */
 
         if (value)
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Icon");
         else
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
 
         apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
@@ -298,9 +167,9 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["label"] = function(value){
         if (value)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Empty"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Empty"]);
         else
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Empty");
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Empty");
         
         if (this.oLabel)
             this.oLabel.innerHTML = value;
@@ -310,15 +179,25 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {String} checked whether this radiobutton is the checked one in the group it belongs to.
      */
     this.$propHandlers["checked"] = function(value){
-        if (!this.radiogroup)
+        if (!this.$group)
             return;
 
-        if (value)
-            this.radiogroup.setValue(this.value);
+        if (apf.isTrue(value)) {
+            this.checked = true;
+            this.$group.setProperty("value", this.value);
+        }
+        else if (apf.isFalse(value)) {
+            this.checked = false;
+            this.$group.setProperty("value", "");
+        }
         else {
-            //uncheck...
+            this.$group.$setDynamicProperty("value", value);
         }
     };
+    
+    this.addEventListener("prop.model", function(e){
+        this.$group.setProperty("model", e.value);
+    });
 
     /**
      * @attribute {string} background sets a multistate background. The arguments
@@ -341,7 +220,7 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
      * @see baseclass.basebutton
      */
     this.$propHandlers["background"] = function(value){
-        var oNode = this.$getLayoutNode("main", "background", this.oExt);
+        var oNode = this.$getLayoutNode("main", "background", this.$ext);
         if (value) {
             var b = value.split("|");
             this.$background = b.concat(["vertical", 2, 16].slice(b.length - 1));
@@ -358,13 +237,15 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -374,38 +255,34 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
     this.getValue = function(){
         return this.value;
     };
-
-    /**
-     *    @private
-     */
-    this.setError = function(value){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
-    };
-
-    /**
-     *    @private
-     */
-    this.clearError = function(value){
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
-    };
+    
+    this.check = function(){
+        this.setProperty("checked", true, false, true);
+    }
+    
+    this.uncheck = function(){
+        this.setProperty("checked", false, false, true);
+    }
+    
+    this.getGroup = function(){
+        return this.$group;
+    }
+    
+    //#endif
 
     /**
      * Sets the checked state and related value
      */
-    this.check = function(visually){
-        if (visually) {
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
-            this.checked = true;
-            if (this.oInput)
-                this.oInput.checked = true;
-            this.doBgSwitch(2);
-        }
-        else
-            this.radiogroup.change(this.value);
+    this.$check = function(visually){
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
+        this.checked = true;
+        if (this.oInput)
+            this.oInput.checked = true;
+        this.doBgSwitch(2);
     };
 
     this.$uncheck = function(){
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
         this.checked = false;
         if (this.oInput)
             this.oInput.checked = false;
@@ -418,7 +295,8 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
         if (this.oInput)
             this.oInput.disabled = false;
 
-        this.oExt.onclick = function(e){
+        var _self = this;
+        this.$ext.onclick = function(e){
             if (!e) e = event;
             if ((e.srcElement || e.target) == this)
                 return;
@@ -426,36 +304,36 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
             _self.dispatchEvent("click", {
                 htmlEvent: e
             });
-            _self.radiogroup.change(_self.value);
+            _self.$group.change(_self.value);
         }
 
-        this.oExt.onmousedown = function(e){
+        this.$ext.onmousedown = function(e){
             if (!e) e = event;
             if ((e.srcElement || e.target) == this)
                 return;
 
-            apf.setStyleClass(this, _self.baseCSSname + "Down");
+            apf.setStyleClass(this, _self.$baseCSSname + "Down");
         }
 
-        this.oExt.onmouseover = function(e){
+        this.$ext.onmouseover = function(e){
             if (!e) e = event;
             if ((e.srcElement || e.target) == this)
                 return;
 
-            apf.setStyleClass(this, _self.baseCSSname + "Over");
+            apf.setStyleClass(this, _self.$baseCSSname + "Over");
         }
 
-        this.oExt.onmouseout =
-        this.oExt.onmouseup  = function(){
-            apf.setStyleClass(this, "", [_self.baseCSSname + "Down", _self.baseCSSname + "Over"]);
+        this.$ext.onmouseout =
+        this.$ext.onmouseup  = function(){
+            apf.setStyleClass(this, "", [_self.$baseCSSname + "Down", _self.$baseCSSname + "Over"]);
         }
     };
 
     this.$disable = function(){
         if (this.oInput)
             this.oInput.disabled = true;
-        this.oExt.onclick = null
-        this.oExt.onmousedown = null
+        this.$ext.onclick = null
+        this.$ext.onmousedown = null
     };
 
     /**
@@ -470,24 +348,24 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
                 ? "0 -" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px"
                 : "-"   + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px 0";
 
-            this.$getLayoutNode("main", "background", this.oExt)
+            this.$getLayoutNode("main", "background", this.$ext)
                 .style.backgroundPosition = strBG;
         }
     };
 
     this.$focus = function(){
-        if (!this.oExt)
+        if (!this.$ext)
             return;
         if (this.oInput && this.oInput.disabled)
             return false;
 
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
     };
 
     this.$blur = function(){
-        if (!this.oExt)
+        if (!this.$ext)
             return;
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
     /**** Keyboard support ****/
@@ -498,8 +376,8 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
 
         if (key == 13 || key == 32) {
             //this.check();
-            //this.radiogroup.current = this;
-            this.radiogroup.change(this.value);
+            //this.$group.current = this;
+            this.$group.change(this.value);
             return false;
         }
         //Up
@@ -507,8 +385,8 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
             var node = this;
             while (node && node.previousSibling) {
                 node = node.previousSibling;
-                if (node.tagName == "radiobutton" && !node.disabled
-                  && node.radiogroup == this.radiogroup) {
+                if (node.localName == "radiobutton" && !node.disabled
+                  && node.$group == this.$group) {
                     node.check();
                     node.focus();
                     return;
@@ -520,8 +398,8 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
             var node = this;
             while (node && node.nextSibling) {
                 node = node.nextSibling;
-                if (node.tagName == "radiobutton" && !node.disabled
-                  && node.radiogroup == this.radiogroup) {
+                if (node.localName == "radiobutton" && !node.disabled
+                  && node.$group == this.$group) {
                     node.check();
                     node.focus();
                     return;
@@ -535,41 +413,105 @@ apf.radiobutton = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInput = this.$getLayoutNode("main", "input", this.oExt);
-        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
-        this.oIcon  = this.$getLayoutNode("main", "icon", this.oExt);
+        this.$ext = this.$getExternal();
+        this.oInput = this.$getLayoutNode("main", "input", this.$ext);
+        this.oLabel = this.$getLayoutNode("main", "label", this.$ext);
+        this.oIcon  = this.$getLayoutNode("main", "icon", this.$ext);
 
         this.enable();
     };
 
+    this.$childProperty = "label";
     this.$loadAml = function(x){
-        if (x.firstChild) {
-            var content = x.innerHTML;
-            if (!content) {
-                content = (x.xml || x.serialize())
-                    .replace(/^<[^>]*>/, "")
-                    .replace(/<\/\s*[^>]*>$/, "");
-            }
-
-            this.setProperty("label", content);
-        }
-
-        if (!this.radiogroup) {
+        if (!this.group) {
             this.$propHandlers["group"].call(this,
-                "radiogroup" + this.parentNode.uniqueId);
+                "radiogroup" + this.parentNode.$uniqueId);
         }
-
-        if (this.checked && !this.radiogroup.value)
-            this.$propHandlers["checked"].call(this, this.checked);
     };
     
     this.$destroy = function(){
-        if (this.radiogroup)
-            this.radiogroup.removeRadio(this, true);
+        if (this.$group)
+            this.$group.$removeRadio(this);
     }
-}).implement(
-    apf.Presentation
-);
+}).call(apf.radiobutton.prototype = new apf.Presentation());
+
+apf.aml.setElement("radiobutton", apf.radiobutton);
+
+apf.$group = function(struct, tagName){
+    this.$init(tagName || "radiogroup", apf.NODE_VISIBLE, struct);
+    
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
+    var radiobuttons = [];
+
+    this.$supportedProperties.push("value", "selectedItem");
+    this.$propHandlers["value"] = function(value){
+        for (var i = 0; i < radiobuttons.length; i++) {
+            if (radiobuttons[i].value == value) {
+                return this.setProperty("selectedItem", radiobuttons[i]);
+            }
+        }
+        return this.setProperty("selectedItem", null);
+    };
+    
+    var lastSelected;
+    this.$propHandlers["selectedItem"] = function(rb){
+        if (lastSelected)
+            lastSelected.$uncheck();
+        if (!rb)
+            return;
+            
+        rb.$check();
+        lastSelected = rb;
+        
+        for (var i = 0; i < radiobuttons.length; i++)
+            radiobuttons[i].setProperty("selectedItem", rb);
+    };
+
+    this.$addRadio = function(rb){
+        var id = radiobuttons.push(rb) - 1;
+        
+        if (!rb.value)
+            rb.setProperty("value", id);
+        
+        if (this.value && rb.value == this.value)
+            this.setProperty("selectedItem", rb);
+        else if (rb.checked)
+            this.setProperty("value", rb.value);
+    };
+
+    this.$removeRadio = function(rb){
+        radiobuttons.remove(rb);
+        
+        if (rb.value === rb.id)
+            rb.setProperty("value", "");
+        
+        if (rb.selectedItem == rb)
+            this.setProperty("value", null);
+    }
+
+    /**
+     * Sets the current value of this element.
+     */
+    this.setValue = function(value){
+        this.setProperty("value", value);
+    };
+    
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.value;
+    };
+};
+apf.$group.prototype = new apf.StandardBinding();
 
 // #endif

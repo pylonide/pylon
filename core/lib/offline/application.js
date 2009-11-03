@@ -29,14 +29,14 @@
  * Example:
  * <code>
  *  <a:offline
- *      version-get  = "url:version.php"
+ *      version-get  = "version.php"
  *      providers    = "gears|air"
  *      auto-install = "true" />
  * </code>
  *
  * @define offline
  * @event beforeinstall Fires before installation of an offline provider
- *   cancellable: Cancels the installation of the offline provider
+ *   cancelable: Cancels the installation of the offline provider
  * @event afterinstall  Fires after installation of an offline provider
  *
  * @attribute {String} [version-get]    a datainstruction for getting a version number of the current application
@@ -48,7 +48,7 @@
  * @default_private
  * @todo a later version should also clear models and thus undo state
  */
-apf.namespace("offline.application", {
+apf.offline.application = {
     enabled   : false,
     urls      : [],
     providers : ["deskrun", "gears"],
@@ -57,7 +57,7 @@ apf.namespace("offline.application", {
         if (this.enabled)
             return;
 
-        this.namespace = apf.appsettings.name + ".apf.offline.application";
+        this.namespace = apf.config.name + ".apf.offline.application";
 
         if (typeof aml == "string") {
             this.providers = aml.split("|");
@@ -190,7 +190,7 @@ apf.namespace("offline.application", {
             var newVersion = null;
             var _self      = this;
 
-            apf.getData(this.versionGet, null, null,
+            apf.getData(this.versionGet, {callback:
                 function(newVersion, state, extra){
                     if (state == apf.TIMEOUT)
                         return extra.tpModule.retryTimeout(extra, state, apf.offline);
@@ -230,7 +230,8 @@ apf.namespace("offline.application", {
                             finished : true
                         });
                     }
-                });
+                }
+            });
         }
         else{
             //#ifdef __DEBUG
@@ -305,7 +306,8 @@ apf.namespace("offline.application", {
         });
 
         //Aml based sources
-        if (apf.AmlParser.$aml) {
+        //@todo apf3.x this needs to be rewritten
+        /*if (apf.AmlParser.$aml) { 
             function callback(item){
                 if(!item.nodeType) return;
 
@@ -317,7 +319,7 @@ apf.namespace("offline.application", {
 
             callback(apf.AmlParser.$aml);
             apf.includeStack.forEach(callback);
-        }
+        }*/
 
         //Cached resources??
     },
@@ -335,5 +337,6 @@ apf.namespace("offline.application", {
 
         this.refresh(callback);
     }
-});
+};
+
 // #endif

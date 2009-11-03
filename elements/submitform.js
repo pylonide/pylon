@@ -19,10 +19,10 @@
  *
  */
 
-// #ifdef __JSUBMITFORM || __INC_ALL
+// #ifdef __AMLSUBMITFORM || __INC_ALL
 // #define __WITH_DATABINDING 1
 // #define __WITH_PRESENTATION 1
-// #define __JBASETAB 1
+// #define __AMLBASETAB 1
 // #define __WITH_VALIDATION 1
 
 /**
@@ -41,7 +41,7 @@
  * @allowchild page, {elements}, {anyaml}
  * @addnode elements
  *
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
  * @inherits apf.BaseTab
  * @inherits apf.ValidationGroup
  *
@@ -54,9 +54,23 @@
  * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
  */
 
-apf.xforms     =
-apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
+apf.xforms     = function(struct, tagName){
+    this.$init(tagName || "xforms", apf.NODE_VISIBLE, struct);
+};
+
+apf.submitform = function(struct, tagName){
+    this.$init(tagName || "submitform", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction,
+        //#endif
+        apf.BaseTab,
+        apf.ValidationGroup
+    );
+
     this.$focussable     = false;
 
     this.elements = {};
@@ -101,7 +115,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         if (this.loadState) {
             this.loadState.style.display = "block";
 
-            var message = this.getPage().$aml.getAttribute("loadmessage");
+            var message = this.getPage().getAttribute("loadmessage");
             if (message)
                 (apf.queryNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
@@ -234,7 +248,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             this.elements[name] = [this.elements[name]];
             this.elements[name].getValue = new Function(
                 "for (var i = 0; i < this.length; i++)\
-                     if (this[i].oInt.checked)\
+                     if (this[i].$int.checked)\
                          return this[i].getValue();");
         }
 
@@ -250,8 +264,8 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             }
         }
 
-        if (objEl.$aml.getAttribute("dependson")) {
-            var o = self[objEl.$aml.getAttribute("dependson")];
+        if (objEl.getAttribute("dependson")) {
+            var o = self[objEl.getAttribute("dependson")];
             if (!this.depends[o.name])
                 this.depends[o.name] = [];
             this.depends[o.name].push(objEl);
@@ -267,14 +281,14 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             this.listsHeldBack[name] = null;
         }
 
-        if (this.nQuest && objEl.$aml.getAttribute("checknext") == "true") {
+        if (this.nQuest && objEl.getAttribute("checknext") == "true") {
             if (this.lastEl) {
                 this.lastEl.nextEl = objEl;
                 objEl.prevEl = this.lastEl;
             }
             this.lastEl = objEl;
 
-            if (objEl.prevEl && objEl.$aml.getAttribute("show") != "true"
+            if (objEl.prevEl && objEl.getAttribute("show") != "true"
               && !this.nextHeldBack[name] && !objHasValue(objEl))
                 objEl.setInactive(true);
             else if (this.condActiveCheck[objEl.name])
@@ -332,12 +346,12 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         /*
             new Function(
-                "apf.lookup(" + this.uniqueId + ").showLoader(true);setTimeout("apf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
+                "apf.lookup(" + this.$uniqueId + ").showLoader(true);setTimeout("apf.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
             );
 
             action == "previous" ?
-                "apf.lookup(" + this.uniqueId + ")." + action + "()" :
-                "apf.lookup(" + this.uniqueId + ").showLoader();setTimeout("apf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
+                "apf.lookup(" + this.$uniqueId + ")." + action + "()" :
+                "apf.lookup(" + this.$uniqueId + ").showLoader();setTimeout("apf.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
             );
         */
     };
@@ -464,11 +478,11 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
         var jNode = self[xmlCommNode.getAttribute("element")];
         if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE)
-            jNode.$setStyleClass(jNode.oExt, "loading", ["loaded"]);
+            jNode.$setStyleClass(jNode.$ext, "loading", ["loaded"]);
 
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", apf.getUniqueId());
         apf.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
-            Function('data', 'state', 'extra', 'apf.lookup(' + this.uniqueId
+            Function('data', 'state', 'extra', 'apf.lookup(' + this.$uniqueId
                 + ').' + (isList ? 'loadLists' : 'loadValues')
                 + '(data, state, extra)'), null, data);
     };
@@ -607,9 +621,9 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
         if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE) {
-            jNode.$setStyleClass(jNode.oExt, "loaded", ["loading"]);
-            setTimeout("var jNode = apf.lookup(" + jNode.uniqueId + ");\
-                jNode.$setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
+            jNode.$setStyleClass(jNode.$ext, "loaded", ["loading"]);
+            setTimeout("var jNode = apf.lookup(" + jNode.$uniqueId + ");\
+                jNode.$setStyleClass(jNode.$ext, '', ['loading', 'loaded']);", 500);
         }
 
         if (extra.userdata[0].getAttribute("clearonload") == "true") {
@@ -650,7 +664,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         for (name in this.elements) {
             el = this.elements[name];
 
-            //Hack!!! maybe traverse
+            //Hack!!! maybe each
             if (el.length) {
                 throw new Error(apf.formatErrorString(this, "clearing form",
                     "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
@@ -660,10 +674,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             if (this.errorEl[name])
                 this.errorEl[name].hide();
 
-            if (el.hasFeature(__MULTIBINDING__))
-                el.$getMultiBind().clear();
-            else
-                el.clear();
+            el.clear();
         }
     };
 
@@ -686,12 +697,10 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     function objHasValue(objEl){
-        var oCheck = objEl.hasFeature(__MULTISELECT__)
-            ? objEl.$getMultiBind()
-            : objEl;
+        var oCheck = objEl;
         if (!oCheck)
             return false;
-        return oCheck.applyRuleSetOnNode(oCheck.mainBind,
+        return oCheck.$applyBindRule(oCheck.$mainBind,
             oCheck.xmlRoot, null, true);
     }
 
@@ -699,17 +708,20 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     function onafterload(){
         //Clear all error states
         for (var name in this.elements) {
-            if (apf.isSafari && (!this.elements[name]
+            if (apf.isWebkit && (!this.elements[name]
               || !this.elements[name].$amlLoaders))
                 continue;
 
-            //Hack!!! maybe traverse
+            //Hack!!! maybe each
             if (this.elements[name].length) {
-                throw new Error(apf.formatErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(apf.formatErrorString(1012, this, "clearing form",
+                "Found controls without a name or with a name that isn't unique("
+                + name + "). Please give all elements of your submitform an id: '"
+                + name + "'"));
             }
 
             this.elements[name].clearError();
-            if(this.errorEl[name])
+            if (this.errorEl[name])
                 this.errorEl[name].hide();
         }
 
@@ -719,7 +731,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
 
                 var objEl = this.elements[name];
 
-                if (objEl.$aml.getAttribute("checknext") == "true") {
+                if (objEl.getAttribute("checknext") == "true") {
                     if (objHasValue(objEl)) {//oCheck.value ||
                         objEl.setActive();
                         if (this.condActiveCheck[name])
@@ -738,8 +750,8 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
         }
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
-            var element = this.nQuest.getAttribute("final");
-            var amlNode = self[element].$aml;//apf.queryNode(".//node()[@id='" + element + "']", this.$aml);
+            var element = this.nQuest.getAttribute("final"),
+                amlNode = self[element].$aml;//apf.queryNode(".//node()[@id='" + element + "']", this.$aml);
 
             if (amlNode && !apf.getBoundValue(amlNode, this.xmlRoot)) {
                 var fNextQNode = apf.xmldb
@@ -778,21 +790,21 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     /* *********
         INIT
     **********/
-    this.implement(apf.AmlElement); /** @inherits apf.AmlElement */
+    this.implement(apf.GuiElement); /** @inherits apf.GuiElement */
 
     this.addOther = function(tagName, oAml){
         if (tagName == "loadstate") {
             var htmlNode   = apf.getFirstElement(oAml);
-            this.loadState = apf.xmldb.htmlImport(htmlNode, this.oInt);
+            this.loadState = apf.insertHtmlNode(htmlNode, this.$int);
             this.loadState.style.display = "none";
         }
     };
 
     this.$draw = function(){
         //Build Main Skin
-        this.oPages = this.oExt = this.$getExternal();
-        this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
-        this.oExt.host = this;
+        this.oPages = this.$ext = this.$getExternal();
+        this.$int   = this.$getLayoutNode("main", "container", this.$ext);
+        this.$ext.host = this;
     };
 
     /**
@@ -816,7 +828,7 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             ? "native"
             : (this.type || "xml");
         var instruction = submissionId || this.action
-            ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action)
+            ? ((this.method.match(/post/) ? "url.post:" : "") + this.action)
             : "";
 
         this.$model.submit(instruction, type, this.useComponents, this.ref);
@@ -829,11 +841,11 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
     this.$loadAml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
-        this.action        = this.$aml.getAttribute("action");
-        this.ref           = this.$aml.getAttribute("ref");
-        this.type          = this.$aml.getAttribute("submittype") || "native";
-        this.method        = (this.$aml.getAttribute("method") || "get").toLowerCase();
-        this.useComponents = this.$aml.getAttribute("usecomponents") || true;
+        this.action        = this.getAttribute("action");
+        this.ref           = this.getAttribute("ref");
+        this.type          = this.getAttribute("submittype") || "native";
+        this.method        = (this.getAttribute("method") || "get").toLowerCase();
+        this.useComponents = this.getAttribute("usecomponents") || true;
 
         apf.setModel(x.getAttribute("model"), this);
 
@@ -842,10 +854,14 @@ apf.submitform = apf.component(apf.NODE_VISIBLE, function(){
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });
     };
-}).implement(
-    apf.DataBinding,
-    apf.BaseTab,
-    apf.ValidationGroup
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.submitform.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.submitform.prototype = new apf.Presentation());
+#endif*/
 
+apf.xforms.prototype = apf.submitform.prototype;
+
+apf.aml.setElement("xforms", apf.xforms);
+apf.aml.setElement("submitform", apf.submitform);
 // #endif

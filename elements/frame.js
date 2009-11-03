@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JFRAME || __INC_ALL
+// #ifdef __AMLFRAME || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -46,15 +46,24 @@
  *
  * @inherits apf.Presentation
  */
-apf.panel    = 
-apf.fieldset = 
-apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
+apf.panel    = function(struct, tagName){
+    this.$init(tagName || "panel", apf.NODE_VISIBLE, struct);
+};
+
+apf.fieldset = function(struct, tagName){
+    this.$init(tagName || "fieldset", apf.NODE_VISIBLE, struct);
+};
+
+apf.frame    = function(struct, tagName){
+    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        apf.BaseStateButtons
+    );
+
     this.$focussable     = false;
-    
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"main" : [["caption", "@caption"]]};
-    // #endif
     
     /**** Properties and Attributes ****/
     
@@ -75,7 +84,7 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
      * @attribute {String} icon the location of the image.
      */
     this.$propHandlers["icon"] = function(value){
-        var oIcon = this.$getLayoutNode("main", "icon", this.oExt);
+        var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
         if (!oIcon) return;
 
         if (oIcon.nodeType == 1)
@@ -85,7 +94,9 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$propHandlers["url"] = function(value){
         var node = this.oCaption;
-        if (node.tagName == "A") node = node.parentNode;
+        if (node.tagName == "A" || node.nodeType != 1) 
+            node = node.parentNode;
+
         node.innerHTML = "<a href='" + value + "' " 
             + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
             + this.caption + "</a>";
@@ -104,30 +115,30 @@ apf.frame    = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt     = this.$getExternal(null, null, function(oExt){
+        this.$ext     = this.$getExternal(null, null, function(oExt){
             this.$initButtons(oExt);
         });
-        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
-        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
-        this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
 
         /*if (this.oCaption) {
             this.oCaption = this.oCaption.nodeType == 1 
                 ? this.oCaption 
                 : this.oCaption.parentNode;
         }*/
-        
-        this.oInt = this.oInt 
-            ? apf.AmlParser.replaceNode(oInt, this.oInt) 
-            : apf.AmlParser.parseChildren(this.$aml, oInt, this);
     };
     
     this.$loadAml = function(x){
         // not implement now.
     };
-}).implement(
-    apf.Presentation,
-    apf.BaseStateButtons
-);
+}).call(apf.frame.prototype = new apf.Presentation());
+
+apf.panel.prototype    =
+apf.fieldset.prototype = apf.frame.prototype;
+
+apf.aml.setElement("panel", apf.panel);
+apf.aml.setElement("fieldset", apf.fieldset);
+apf.aml.setElement("frame", apf.frame);
 
 // #endif

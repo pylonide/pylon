@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//#ifdef __JACCORDION || __INC_ALL
+//#ifdef __AMLACCORDION || __INC_ALL
 
 /**
  * The Accordion is component that allows you to provide multiple vertical or 
@@ -33,7 +33,7 @@
  *     easein    
  *     easeout   
  *     none      animation is disabled
- * 
+ *        
  * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
  * 
  * @attribute {Boolean} multiexpand   allows collapsing one or more bars, default is true
@@ -67,7 +67,7 @@
  *      multiexpand     = "true"
  *      expand          = "click"
  *      startexpanded   = "false"
- *      skin            = "accordion_horizontal"
+ *      skin            = "accordion_apf_hor"
  *      >
  *     <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
  *         <b>Discography</b>
@@ -144,48 +144,53 @@
  * @version     %I%, %G%
  * @since       2.2
  */
-apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
-    this.canHaveChildren = true;
+apf.accordion = function(struct, tagName){
+    this.$init(tagName || "accordion", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
     this.$focussable     = false;
 
-    this.animtype1      = apf.tween.NORMAL;
-    this.animtype2      = apf.tween.NORMAL;
-    this.animdelay      = 10;
-    this.hoverdelay     = 500;
-    this.multiexpand    = true;
-    this.expand         = "click";
-    this.startexpanded  = true;
+    this.$animtype1      = apf.tween.NORMAL;
+    this.$animtype2      = apf.tween.NORMAL;
+    this.animdelay       = 10;
+    this.hoverdelay      = 500;
+    this.multiexpand     = true;
+    this.expand          = "click";
+    this.startexpanded   = true;
 
-    var animStep = {};
-    animStep[apf.tween.NORMAL] = 5;
-    animStep[apf.tween.EASEIN] = 10;
-    animStep[apf.tween.EASEOUT] = 10;
-    
-    var _self    = this;
+    this.$animStep = {};
+    this.$animStep[apf.tween.NORMAL]  = 5;
+    this.$animStep[apf.tween.EASEIN]  = 10;
+    this.$animStep[apf.tween.EASEOUT] = 10;
     
     /**
      * Keeps all bars
      * 
      * bars[oTitle.id] = {
-     *     bar  : bar,
-     *     opened : false,
-     *     oTitle : oTitle,
-     *     oBody  : oBody
+     *   amlNode   : amlNode,
+     *   htmlNode  : htmlNode,
+     *   opened    : opened,
+     *   htmlTitle : htmlTitle,
+     *   htmlBody  : htmlBody,
+     *   htmlIcon  : htmlIcon
      * };
      */
-    var bars = {};
+    this.bars = {};
     
     /**
      * Id of title from last opened bar
      */
-    var lastOpened = [];
-    var hoverTimer = null;
+    this.lastOpened = [];
+    this.hoverTimer = null;
     
     /**
      * when "multiexpand" is false, only one bar with expanded="true"
      * can be opened
      */
-    var startExpanded = 0;
+    this.startExpanded = 0;
+    
+    //this.$appendedBars = 0;
 
     this.$booleanProperties["multiexpand"]  = true;
     this.$booleanProperties["startexpanded"] = true;
@@ -194,19 +199,17 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
         "expand", "startexpanded");
     
     /**** DOM Hooks ****/
-    var insertChild;
-    
-    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin) {
+    this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin) {
         if (doOnlyAdmin)
             return;
     });
     
-    this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent) {
+    this.addEventListener("AMLInsert",this.insertChild = function (amlNode, beforeNode, withinParent) {
         if (amlNode.tagName != "bar")
             return;
 
         amlNode.$propHandlers["icon"] = function(value) {
-            var oIcon = this.$getLayoutNode("bar", "icon", this.oExt);
+            var oIcon = this.$getLayoutNode("bar", "icon", this.$ext);
             if (!oIcon) return;
 
             if (oIcon.tagName == "img") 
@@ -223,9 +226,9 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
         value = value.split(" ");
         
         if (value[0])
-            this.animtype1 = animType[value[0]];
+            this.$animtype1 = animType[value[0]];
         if (value[1])
-            this.animtype2 = animType[value[1]];
+            this.$animtype2 = animType[value[1]];
     };
 
     this.$propHandlers["animdelay"] = function(value) {
@@ -242,11 +245,11 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
      *     {String} unique name of title bar
      */
     this.slideToggle = function(id) {
-        if (!bars[id])
+        if (!this.bars[id])
             return;
 
-        if (bars[id].opened) 
-            _self.slideUp(id);
+        if (this.bars[id].opened)
+            this.slideUp(id);
         else
             this.slideDown(id);
     };
@@ -262,114 +265,124 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     this.slideDown = function(id) {
         var id2 = null;
 
-        if (!bars[id]) {
+        if (!this.bars[id]) {
             return;
         }
 
-        var bar = bars[id];
+        var bar = this.bars[id];
         
-        if (!_self.multiexpand && lastOpened.length > 0) {
-            var _temp = lastOpened.shift();
-            if (_temp !== id) {
+        if (!this.multiexpand && this.lastOpened.length > 0) {
+            var _temp = this.lastOpened.shift();
+            if (_temp !== id)
                 id2 = _temp;
+        }
+        
+        this.lastOpened.push(id);
+
+        this.$setStyleClass(bar.htmlNode, "active");
+
+        bar.htmlBody.style.display = "block";
+
+        if (this.$dir == "vertical") {
+            //i don't know why scrollHeight in IE is equal 1
+            if (bar.htmlBody.scrollHeight < 2) {
+                var timer;
+                clearInterval(timer);
+                timer = setInterval(function() {
+                    if (bar.htmlBody.scrollHeight > 0) {
+                        _self.slideDown(bar.htmlTitle.id);
+                        clearInterval(timer);
+                    }
+                }, 100);
             }
-        }
-        
-        lastOpened.push(id);
-
-        _self.$setStyleClass(bar.bar.oExt, "active");
-
-        bar.oBody.style.display = "block";
-        
-        //#ifdef __WITH_PROPERTY_WATCH
-        bar.bar.dispatchWatch("visible", true);
-        //#endif
-        
-        if (_self.$dir == "vertical") {
-            bar.oBody.style.height = "1px";
+            
+            bar.htmlBody.style.height = "1px";
         }
 
-        if (_self.animtype1 == "none") {
+        if (this.$animtype1 == "none") {
             if (id2) {
-                _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
-                bars[id2].oBody.style.display = "none";
+                var bar2 = this.bars[id2];
+                this.$setStyleClass(bar2.htmlNode, "", ["active"]);
+                bar2.htmlBody.style.display = "none";
                 
-                if (_self.$dir == "horizontal") {
-                    bar.oBody.style.width = "auto";
-                    bars[id2].oBody.style.width = "auto";
+                if (this.$dir == "horizontal") {
+                    bar.htmlBody.style.width = "auto";
+                    bar2.htmlBody.style.width = "auto";
                 }
 
-                bars[id].opened = true;
+                this.bars[id].opened = true;
             }
             else {
-                if (_self.$dir == "horizontal") {
-                    bar.oBody.style.width = "auto";
+                if (this.$dir == "horizontal") {
+                    bar.htmlBody.style.width = "auto";
                 }
 
-                bars[id].opened = true;
+                this.bars[id].opened = true;
             }
         }
         else {
+            var _self = this;
             if (id2) {
-                _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
+                var bar2 = this.bars[id2];
+                this.$setStyleClass(bar2.htmlNode, "", ["active"]);
                 
-                apf.tween.multi(bar.oBody, {
-                    steps    : animStep[_self.animtype1],
-                    anim     : _self.animtype1,
-                    interval : _self.animdelay,
+                apf.tween.multi(bar.htmlBody, {
+                    steps    : this.$animStep[this.$animtype1],
+                    anim     : this.$animtype1,
+                    interval : this.animdelay,
                     tweens : [{
-                       type : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                       type : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                        from : 0,
-                       to   : _self.$dir == "vertical"
-                                  ? bar.oBody.scrollHeight
-                                  : bar.oBody.scrollWidth
+                       to   : this.$dir == "vertical"
+                                  ? bar.htmlBody.scrollHeight
+                                  : bar.htmlBody.scrollWidth
                     },
                     {
-                        type  : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-                        from  : _self.$dir == "vertical"
-                                   ? bars[id2].oBody.scrollHeight
-                                   : bars[id2].oBody.scrollWidth,
+                        type  : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                        from  : this.$dir == "vertical"
+                                   ? bar2.htmlBody.scrollHeight
+                                   : bar2.htmlBody.scrollWidth,
                         to    : 0,
-                        oHtml : bars[id2].oBody
+                        oHtml : bar2.htmlBody
                     }],
                     onfinish : function() {
                         //Slide down
-                        _self.$setStyleClass(bar.bar.oExt, "active", [""]);
+                        _self.$setStyleClass(bar.htmlNode, "active", [""]);
         
                         if (_self.$dir == "horizontal")
-                            bar.oBody.style.width = "auto";
+                            bar.htmlBody.style.width = "auto";
         
-                        bars[id].opened = true;
+                        _self.bars[id].opened = true;
                         
                         //Slide up
-                        _self.$setStyleClass(bars[id2].bar.oExt, "", ["active"]);
-                        bars[id2].oBody.style.display = "none";
+                        _self.$setStyleClass(bar2.htmlNode, "", ["active"]);
+                        bar2.htmlBody.style.display = "none";
         
-                        if (_self.$dir == "horizontal") {
-                            bars[id2].oBody.style.width = "auto";
-                        }
+                        if (_self.$dir == "horizontal")
+                            bar2.htmlBody.style.width = "auto";
         
-                        bars[id2].opened = false;
+                        _self.bars[id2].opened = false;
                     }
                 });
             }
             else {
-                apf.tween.single(bar.oBody, {
-                    steps    : animStep[_self.animtype1],
-                    type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                //alert(bar.htmlBody.scrollWidth)
+                apf.tween.single(bar.htmlBody, {
+                    steps    : this.$animStep[this.$animtype1],
+                    type     : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                     from     : 0,
-                    to       : _self.$dir == "vertical"
-                                   ? bar.oBody.scrollHeight
-                                   : bar.oBody.scrollWidth,
-                    anim     : _self.animtype1,
-                    interval : _self.animdelay,
+                    to       : this.$dir == "vertical"
+                                   ? bar.htmlBody.scrollHeight
+                                   : bar.htmlBody.scrollWidth,
+                    anim     : this.$animtype1,
+                    interval : this.animdelay,
                     onfinish : function() {
-                        _self.$setStyleClass(bar.bar.oExt, "active", [""]);
+                        _self.$setStyleClass(bar.htmlNode, "active", [""]);
 
                         if (_self.$dir == "horizontal")
-                            bar.oBody.style.width = "auto";
+                            bar.htmlBody.style.width = "auto";
 
-                        bars[id].opened = true;
+                        _self.bars[id].opened = true;
                     }
                 });
             }
@@ -385,47 +398,41 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
      *     {String} unique name of title bar
      */
     this.slideUp = function(id) {
-        if (!bars[id]) {
+        if (!this.bars[id]) {
             return;
         }
 
-        var bar = bars[id];
-        
-        //#ifdef __WITH_PROPERTY_WATCH
-        bar.bar.dispatchWatch("visible", false);
-        //#endif
+        var bar = this.bars[id];
 
-        _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
+        apf.setStyleClass(bar.htmlNode, "", ["active"]);
 
-        if (_self.animtype2 == "none") {
-            _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
-            bar.oBody.style.display = "none";
+        if (this.$animtype2 == "none") {
+            bar.htmlBody.style.display = "none";
             
-            if (_self.$dir == "horizontal") {
-                bar.oBody.style.width = "auto";
-            }
+            if (this.$dir == "horizontal")
+                bar.htmlBody.style.width = "auto";
     
-            bars[id].opened = false;
+            this.bars[id].opened = false;
         }
         else {
-            apf.tween.single(bar.oBody, {
-                steps    : animStep[_self.animtype2],
-                type     : _self.$dir == "vertical" ? "scrollheight" : "scrollwidth",
-                from     : _self.$dir == "vertical"
-                               ? bar.oBody.scrollHeight
-                               : bar.oBody.scrollWidth,
+            var _self = this;
+            apf.tween.single(bar.htmlBody, {
+                steps    : this.$animStep[this.$animtype2],
+                type     : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                from     : this.$dir == "vertical"
+                               ? bar.htmlBody.scrollHeight
+                               : bar.htmlBody.scrollWidth,
                 to       : 0,
-                anim     : _self.animtype2,
-                interval : _self.animdelay,
+                anim     : this.$animtype2,
+                interval : this.animdelay,
                 onfinish : function() {
-                    _self.$setStyleClass(bar.bar.oExt, "", ["active"]);
-                    bar.oBody.style.display = "none";
+                    _self.$setStyleClass(bar.htmlNode, "", ["active"]);
+                    bar.htmlBody.style.display = "none";
     
-                    if (_self.$dir == "horizontal") {
-                        bar.oBody.style.width = "auto";
-                    }
+                    if (_self.$dir == "horizontal")
+                        bar.htmlBody.style.width = "auto";
     
-                    bars[id].opened = false;
+                    _self.bars[id].opened = false;
                 }
             });
         }
@@ -443,7 +450,7 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
     this.$getbarIdByNumber = function(number) {
         var counter = 1;
         
-        for (var id in bars) {
+        for (var id in this.bars) {
             if (counter++ == number)
                 return id;
         }
@@ -462,14 +469,152 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$draw = function() {
         //Build Main Skin
-        this.oExt = this.$getExternal("main");
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal("main");
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
         this.$dir = this.$getOption("main", "direction") || "vertical";
+        
+        var nodes = this.childNodes;
+        var len = nodes.length;
+        var node;
+
+        var _self = this;
+        
+        var xmlBars = 0;
+        var htmlBars = 0;
+
+        for (var i = 0; i < len; i++) {
+            node = nodes[i];
+
+            if ((node.tagName || "").indexOf("a:bar") > -1 && !node.$amlLoaded) {
+                xmlBars++;
+                node.addEventListener("DOMNodeInsertedIntoDocument", function(e) {
+                    htmlBars++;
+                    
+                    var htmlNode = _self.$ext.lastChild;
+                    var amlNode = e.currentTarget;
+                    var htmlCaption;
+                    var htmlTitle;
+                    var htmlIcon;
+                    var htmlBody;
+
+                    //is the bar expanded ?
+                    var opened = (amlNode.getAttribute("expanded") 
+                        ? (amlNode.getAttribute("expanded") == "true"
+                        ? true : false) : false); 
+
+                    //Looking for title and body nodes
+                    var nodes = htmlNode.childNodes;
+                    var l1 = nodes.length;
+                    
+                    for (var i = 0; i < l1; i++) {
+                        if((nodes[i].className || "").indexOf("body") > -1) {
+                            htmlBody = nodes[i];
+                        }
+                        if((nodes[i].className || "").indexOf("title") > -1) {
+                            htmlTitle = nodes[i];
+                        }
+                        
+                        //Looking for icon node
+                        var subnodes = nodes[i].childNodes;
+                        var l2 = subnodes.length;
+                        for (var j = 0; j < l2; j++) {
+                            if ((subnodes[j].className || "").indexOf("icon") > -1) {
+                                htmlIcon = subnodes[j];
+                            }
+                            if (((subnodes[j].tagName || "").toLowerCase()).indexOf("span") > -1) {
+                                htmlCaption = subnodes[j];
+                            }
+                        }
+                    }
+
+                    if (!htmlTitle && !htmlBody) {
+                        return;
+                    }
+                    apf.setUniqueHtmlId(htmlTitle);
+                    apf.setUniqueHtmlId(htmlBody);
+
+                    //Set caption
+                    var caption = amlNode.getAttribute("title");
+                    if (caption) {
+                        htmlCaption.innerHTML = caption;
+                    }
+                    
+                    //set icon
+                    var icon = amlNode.getAttribute("icon");
+                    if (icon) {
+                        htmlIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
+                    }
+
+                    if (_self.expand == "click") {
+                        htmlTitle.onmousedown = function(e) {
+                            _self.slideToggle(this.id);
+                        };
+                        
+                        //oIcon.onmousedown = function(e) {
+                        //    _self.slideToggle(this.parentNode.id);
+                        //};
+                    }
+                    else if (this.expand == "hover") {
+                        htmlTitle.onmouseover = function(e) {
+                            (e || event).cancelBubble = true;
+                            var id = this.id;
+                            
+                            clearInterval(_self.hoverTimer);
+                            _self.hoverTimer = setInterval(function() {
+                                _self.slideToggle(id);
+                                clearInterval(_self.hoverTimer);
+                            }, _self.hoverdelay);
+                        };
+                        htmlIcon.onmouseover = function(e) {
+                            (e || event).cancelBubble = true;
+                            
+                            var id = (e.srcElement || e.target).parentNode.id;
+    
+                            clearInterval(_self.hoverTimer);
+                            _self.hoverTimer = setInterval(function() {
+                                _self.slideToggle(id);
+                                clearInterval(_self.hoverTimer);
+                            }, _self.hoverdelay);
+                           
+                        };
+                    }
+                    
+                    //This info must be pushed here, because i could be used in next condition
+                    _self.bars[htmlTitle.id] = {
+                        amlNode   : amlNode,
+                        htmlNode  : htmlNode,
+                        opened    : false,
+                        htmlTitle : htmlTitle,
+                        htmlBody  : htmlBody,
+                        htmlIcon  : htmlIcon
+                    };
+
+                    if ((opened || _self.startexpanded) && (_self.multiexpand || _self.startExpanded == 0)) {
+                        _self.slideDown(htmlTitle.id);
+                        _self.startExpanded++;
+                    }
+                    
+                    if (htmlBars == xmlBars) {
+                        //this.$setStyleClass(oBody, "last");
+        
+                        _self.oEnding = _self.$getExternal("ending");
+                        var oEnding = _self.$getLayoutNode("ending", "container", _self.oEnding);
+                
+                        _self.$int.appendChild(oEnding);
+                    }
+                });
+            }
+        }
+
     };
 
     this.$loadAml = function(x) {
-        var i, l, node, bar, nodes = this.$aml.childNodes;
+        
+        
+
+        
+        /*var i, l, node, bar, nodes = this.$aml.childNodes;
  
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
@@ -478,7 +623,8 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                 continue;
 
             if (node[apf.TAGNAME] == "bar") {
-                var bar = new apf.bar(this.oInt, "bar");
+                var bar = new apf.bar("bar", this.$int, null, true);
+                
                 var opened = node.getAttribute("expanded")
                     ? (node.getAttribute("expanded") == "true"
                         ? true
@@ -486,18 +632,21 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                     : false;
 
                 bar.skinName = this.skinName;
-                insertChild.call(this, bar);
-                bar.loadAml(node, this);
+                this.insertChild(bar);
                 
-                var oTitle = this.$getLayoutNode("bar", "title", bar.oExt);
-                var oCaption = this.$getLayoutNode("bar", "caption", bar.oExt);
-                var oIcon = this.$getLayoutNode("bar", "icon", bar.oExt);
+                //returns errors
+                //bar.replaceMarkup(node, this);
+
+                var oTitle   = this.$getLayoutNode("bar", "title", bar.$ext),
+                    oCaption = this.$getLayoutNode("bar", "caption", bar.$ext),
+                    oIcon    = this.$getLayoutNode("bar", "icon", bar.$ext),
+                    _self    = this;
                 
                 apf.setUniqueHtmlId(oTitle);
                 
                 bar.$propHandlers["title"] = function(value) {
-                    var oTitle = this.$getLayoutNode("bar", "title", this.oExt);
-                    var oCaption = this.$getLayoutNode("bar", "caption", this.oExt);
+                    var oTitle   = this.$getLayoutNode("bar", "title", this.$ext),
+                        oCaption = this.$getLayoutNode("bar", "caption", this.$ext);
                     
                     (oCaption || oTitle).innerHTML = value;
                 }
@@ -508,42 +657,42 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
 
                 if (this.expand == "click") {
                     oTitle.onmousedown = function(e) {
-                        _self.slideToggle(this.id);
+                        _self.slideToggle(_self.id);
                     };
                     
-                    /*oIcon.onmousedown = function(e) {
-                        _self.slideToggle(this.parentNode.id);
-                    };*/
+                    //oIcon.onmousedown = function(e) {
+                    //    _self.slideToggle(this.parentNode.id);
+                    //};
                 }
                 else if (this.expand == "hover") {
                     oTitle.onmouseover = function(e) {
                         (e || event).cancelBubble = true;
-                        var id = this.id;
+                        var id = _self.id;
                         
-                        clearInterval(hoverTimer);
-                        hoverTimer = setInterval(function() {
+                        clearInterval(_self.hoverTimer);
+                        _self.hoverTimer = setInterval(function() {
                             _self.slideToggle(id);
-                            clearInterval(hoverTimer);
+                            clearInterval(_self.hoverTimer);
                         }, _self.hoverdelay);
                     };
                     oIcon.onmouseover = function(e) {
                         (e || event).cancelBubble = true;
                         
-                        var id = target.parentNode.id;
+                        var id = (e.srcElement || e.target).parentNode.id;
 
-                        clearInterval(hoverTimer);
-                        hoverTimer = setInterval(function() {
+                        clearInterval(_self.hoverTimer);
+                        _self.hoverTimer = setInterval(function() {
                             _self.slideToggle(id);
-                            clearInterval(hoverTimer);
+                            clearInterval(_self.hoverTimer);
                         }, _self.hoverdelay);
                        
                     };
                 }
 
-                var oBody = this.$getLayoutNode("bar", "body", bar.oExt);
+                var oBody = this.$getLayoutNode("bar", "body", bar.$ext);
                 apf.setUniqueHtmlId(oBody);
 
-                bars[oTitle.id] = {
+                this.bars[oTitle.id] = {
                     bar  : bar,
                     opened : false,
                     oTitle : oTitle,
@@ -551,12 +700,12 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                 };
 
                 //opened && 
-                if ((opened || this.startexpanded) && (this.multiexpand || startExpanded == 0)) {
+                if ((opened || this.startexpanded) && (this.multiexpand || this.startExpanded == 0)) {
                     //#ifdef __WITH_PROPERTY_WATCH
-                    if (!this.oExt.offsetHeight) {
+                    if (!this.$ext.offsetHeight) {
                         var openTitleId = oTitle.id;
                         function propChange(name, old, value){
-                            if (apf.isTrue(value) && _self.oExt.offsetHeight) {
+                            if (apf.isTrue(value) && _self.$ext.offsetHeight) {
                                 _self.slideDown(openTitleId);
                                 
                                 var p = _self;
@@ -581,7 +730,7 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
                         this.slideDown(oTitle.id);
                     }
                     
-                    startExpanded++;
+                    this.startExpanded++;
                 }
             }
         }
@@ -590,12 +739,14 @@ apf.accordion = apf.component(apf.NODE_VISIBLE, function() {
         this.oEnding = this.$getExternal("ending");
         var oEnding = this.$getLayoutNode("ending", "container", this.oEnding);
 
-        this.oInt.appendChild(oEnding);
+        this.$int.appendChild(oEnding);
+        */
     };
 
     this.$destroy = function() {
         
     };
-}).implement(apf.Presentation);
+}).call(apf.accordion.prototype = new apf.Presentation());
 
+apf.aml.setElement("accordion", apf.accordion);
 // #endif

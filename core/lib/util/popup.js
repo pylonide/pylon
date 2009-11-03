@@ -106,7 +106,7 @@ apf.popup = {
             var pos    = apf.getAbsolutePosition(options.ref, 
                             o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
                 top    = (options.y || 0) + pos[1],
-                    //+ (apf.isSafari ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
+                    //+ (apf.isWebkit ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
                 p      = apf.getOverflowParent(o.content);
         
             if (options.width || o.width)
@@ -130,7 +130,7 @@ apf.popup = {
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
         // #endif
         
-        if (options.animate && !apf.isIE) { //@todo hack!!! apf3.0
+        if (options.animate) {
             if (options.animate == "fade") {
                 apf.tween.single(popup, {
                     type  : 'fade',
@@ -190,7 +190,7 @@ apf.popup = {
             if (o.content)
                 o.content.style.display = "none";
 
-            if (o.options.onclose) {
+            if (o.options && o.options.onclose) {
                 o.options.onclose(apf.extend(o.options, {htmlNode: o.content}));
                 o.options.onclose = false;
             }
@@ -221,7 +221,7 @@ apf.popup = {
             resizeOutline : false,
             draggable     : true,
             resizable     : options.resizable,
-            oExt          : oHtml,
+            $ext          : oHtml,
             oDrag         : oHtml.firstChild
         };
 

@@ -63,7 +63,7 @@ Function.prototype.toHTMLNode = function(highlight){
                 return TYPE_DOMNODE;
         }
 
-        if (variable.dataType == undefined)
+        if (typeof variable.dataType == "undefined")
             return TYPE_OBJECT;
 
         return variable.dataType;
@@ -156,7 +156,7 @@ Function.prototype.toHTMLNode = function(highlight){
                   oFirst.src='" + apf.debugwin.resPath + "arrow_down.gif';\
               }\
               if (apf.layout)\
-                 apf.layout.forceResize(apf.debugwin.oExt);\
+                 apf.layout.forceResize(apf.debugwin.$ext);\
               event.cancelBubble=true\">\
                 <nobr>"
                       + (this.url
@@ -168,7 +168,7 @@ Function.prototype.toHTMLNode = function(highlight){
                       + "arrow_right.gif' style='margin:0 3px 0 2px;' />"
                       + (name.trim() || "anonymous") + "(" + args.join(", ") + ")&nbsp;\
                 </nobr>\
-                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' style='\
+                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' style='\
                   cursor: text;\
                   display: none;\
                   padding: 0px;\
@@ -211,7 +211,7 @@ apf.debugwin = {
     stackTrace   : "debug_panel_stacktrace",//null, //blockquote[0]
     logView      : "jvlnviewlog",
     debugConsole : "apfDebugExpr",
-    jsltConsole  : "apfJsltExpr",
+    lmConsole  : "apfLmExpr",
     
     outdent : function(str, skipFirst){
         var lines = str.split("\n");
@@ -257,7 +257,7 @@ apf.debugwin = {
             if (apf.isGecko)
                 var error = Error;
 
-            if (apf.isOpera || apf.isSafari || apf.isGecko) {
+            if (apf.isOpera || apf.isWebkit || apf.isGecko) {
                 self.Error = function(msg){
                     apf.debugwin.errorHandler(msg, location.href, 0);
                 }
@@ -287,7 +287,7 @@ apf.debugwin = {
     },
 
     hide : function(){
-        this.oExt.style.display = "none";
+        this.$ext.style.display = "none";
         document.body.style.marginRight = "0";
         
         if (apf.isIE8) {
@@ -302,14 +302,15 @@ apf.debugwin = {
         if (apf.loadScreen)
             apf.loadScreen.hide();
 
-        if (!apf.isIE && !Error.custom) {
+        if (!apf.isIE && !apf.isWebkit && !Error.custom) {
+
             var stack = new Error().stack.split("\n");
             for (i = 0; i < stack.length; i++) {
                 stack[i].trim().match(/^([\w_\$]*)(\(.*?\))?@(.*?):(\d+)$/);
-                var name = RegExp.$1;
-                var args = RegExp.$2;
-                var url  = RegExp.$3;
-                var line = RegExp.$4;
+                var name = RegExp.$1,
+                    args = RegExp.$2,
+                    url  = RegExp.$3,
+                    line = RegExp.$4;
                 
                 list.push(Function.prototype.toHTMLNode.call({
                     toString : function(){
@@ -323,7 +324,7 @@ apf.debugwin = {
         else {
             //Opera doesnt support caller... weird...
             try {
-                var end, loop = end = apf.isIE
+                var loop = apf.isIE
                   ? this.show.caller.caller
                   : this.show.caller.caller
                       ? this.show.caller.caller.caller
@@ -350,7 +351,7 @@ apf.debugwin = {
 
         if (apf.isIE8) {
             document.body.style.overflow = "auto";
-            document.body.style.position = "static";
+            //document.body.style.position = "static";
         }
         
         if (!apf.debugwin.win)
@@ -387,8 +388,8 @@ apf.debugwin = {
             this.stackTrace.parentNode.style.display = "none";
         }
 
-        this.oExt.style.display = "block";
-        apf.layout.forceResize(this.oExt);
+        this.$ext.style.display = "block";
+        apf.layout.forceResize(this.$ext);
         this.logView.scrollTop = this.logView.scrollHeight;
 
         //!self.ERROR_HAS_OCCURRED && 
@@ -463,7 +464,7 @@ apf.debugwin = {
             if (selected.value)
                 dbgMarkup.load(apf.includeStack[selected.value]);
             else
-                dbgMarkup.load(apf.AmlParser.$aml);
+                dbgMarkup.load(apf.document.documentElement);
 
             return;
         }
@@ -499,7 +500,7 @@ apf.debugwin = {
     },
 
     initMarkup : function(oHtml){
-        if (!apf.AmlParser)
+        if (!apf.DOMParser)
             return;// alert("Sorry, the depencies for the Data Debugger could not be loaded");
 
         if (oHtml.getAttribute("inited")) return;
@@ -690,7 +691,7 @@ apf.debugwin = {
         list = apf.all;
         for (i = 0; i < list.length; i++) {
             if (list[i] && list[i].name && list[i].hasFeature
-              && list[i].hasFeature(__DATABINDING__))
+              && list[i].hasFeature(apf.__DATABINDING__))
                 options.push("<option>#" + list[i].name + "</option>");
         }
 
@@ -711,39 +712,23 @@ apf.debugwin = {
         oHtml.getElementsByTagName("label")[0].insertAdjacentHTML("afterend",
             "<select id='dbgMarkupSelect' style='margin-top:2px;float:left;' onchange='apf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>");
 
-        //<button onclick='apf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
-        var xml = apf.xmldb.getXml("\
-            <a:parent xmlns:a='" + apf.ns.aml + "'>\
-                <a:markupedit skin='debugmarkup' skinset='debug' " + (first ? "model='" + first + "'" : "") + " id='dbgMarkup' render-root='true' height='160' minheight='110' resizable='vertical'>\
-                    <a:bindings>\
-                        <a:traverse select='node()[local-name(.)]' />\
-                    </a:bindings>\
-                    <a:actions><a:remove /><a:rename /><a:setAttributeValue /><a:renameAttribute /><a:setTextNode /></a:actions>\
-                </a:markupedit>\
-            </a:parent>\
-        ");
+        var dbgMarkup = new apf.markupedit({
+            id            : "dbgMarkup",
+            htmlNode      : oInt,
+            skin          : "debugmarkup",
+            skinset       : "debug",
+            model         : first || null,
+            height        : 160,
+            minheight     : 110,
+            resizable     : "vertical",
+            "render-root" : true,
+            each          : "node()[local-name(.)]"
+        });
 
-        if (apf.isIE) {
-            xml.ownerDocument.setProperty("SelectionNamespaces",
-                "xmlns:a='" + apf.ns.aml + "'");
-        }
-
-        //Reset loading state in case of an error during init
-        var j = apf.AmlParser;
-        j.sbInit                = {};
-        j.hasNewSbStackItems    = false;
-        j.stateStack            = []
-        j.modelInit             = []
-        j.hasNewModelStackItems = false;
-        j.loaded                = true;
-
-        //Load AML
-        j.parseMoreAml(xml, oInt);
-        
         if (apf.layout && !apf.hasSingleRszEvent) {
             apf.layout.setRules(apf.getFirstElement(oInt), "resize",
-                "apf.layout.forceResize(apf.debugwin.oExt);");
-            apf.layout.activateRules(oInt.firstChild);
+                "apf.layout.forceResize(apf.debugwin.$ext);");
+            apf.layout.queue(oInt.firstChild);
         }
     },
 
@@ -759,7 +744,7 @@ apf.debugwin = {
         this.PROFILER_SUMMARY = document.getElementById('apfProfilerSummary');
         this.showProgress();
 
-        if (apf.profiler.isRunning)
+        if (apf.profiler && apf.profiler.isRunning)
             this.toggleFold(document.getElementById('apfProfilerPanel'));
     },
 
@@ -847,7 +832,7 @@ apf.debugwin = {
         }
 
         if (apf.layout)
-            apf.layout.forceResize(this.oExt);
+            apf.layout.forceResize(this.$ext);
     },
     
     $getOption : function(){
@@ -875,7 +860,7 @@ apf.debugwin = {
 
         elError.host = this;
         this.name    = "Debug Window";
-        this.tagName = "debugwin";
+        this.localName = "debugwin";
 
         elError.onmousedown  = function(e) {
             if (!e) e = event;
@@ -926,9 +911,9 @@ apf.debugwin = {
         }
 
         // #ifndef __PACKAGED
-        this.resPath = (apf.appsettings.resourcePath || apf.basePath) + "core/debug/resources/";
+        this.resPath = (apf.config.resourcePath || apf.basePath) + "core/debug/resources/";
         /* #else
-        this.resPath = (apf.appsettings.resourcePath || apf.basePath) + "resources/";
+        this.resPath = (apf.config.resourcePath || apf.basePath) + "resources/";
         #endif */
         /* #ifdef __WITH_CDN
         this.resPath = apf.CDN + apf.VERSION + "/resources/";
@@ -1289,12 +1274,12 @@ apf.debugwin = {
                 overflow: auto;\
                 font-size: 12px;\
             }\
-            #apf_debugwin .debug_panel_body_jslt{\
+            #apf_debugwin .debug_panel_body_lm{\
                 padding : 0;\
                 font-size: 8pt;\
                 font-family: 'Lucida Grande', Verdana;\
             }\
-            #apf_debugwin .debug_panel_body_jslt blockquote{\
+            #apf_debugwin .debug_panel_body_lm blockquote{\
                 height : 194px;\
                 border : 0;\
                 border-right : 1px solid #bfbfbf;\
@@ -1303,13 +1288,13 @@ apf.debugwin = {
                 padding : 3px;\
                 overflow : auto;\
             }\
-            #apf_debugwin .debug_panel_body_jslt .apf_empty {\
+            #apf_debugwin .debug_panel_body_lm .apf_empty {\
                 color : #AAA;\
                 text-align : center;\
                 padding : 5px;\
                 display : block;\
             }\
-            #apf_debugwin .debug_panel_body_jslt textarea{\
+            #apf_debugwin .debug_panel_body_lm textarea{\
                 width : 50%;\
                 float : right;\
                 height : 194px;\
@@ -1358,7 +1343,7 @@ apf.debugwin = {
         elError.innerHTML = "\
             <div class='debug_header'>\
                 <div class='debug_header_cont'>\
-                    <div onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' class='debug_logos'>\
+                    <div onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' class='debug_logos'>\
                         &nbsp;\
                     </div>\
                     <div class='debug_closebtn' onmouseover='this.className=\"debug_closebtn_hover\"' \
@@ -1371,7 +1356,7 @@ apf.debugwin = {
                     <strong>Error</strong>\
                 </div>\
                 <div id='" + this.errorTable + "' onclick='event.cancelBubble=true' \
-                  onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true'\
+                  onselectstart='if (apf.dragMode) return false; event.cancelBubble=true'\
                   class='debug_panel_body_base debug_panel_body_error'>@todo</div>\
             </div>\
             <div class='debug_panel' onclick='apf.debugwin.toggleFold(this);'>\
@@ -1380,7 +1365,7 @@ apf.debugwin = {
                     <strong>AML related to the error</strong>\
                 </div>\
                 <div id='" + this.contextDiv + "' onclick='event.cancelBubble=true' \
-                  onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' \
+                  onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' \
                   class='debug_panel_body_base debug_panel_body_aml'>@todo</div>\
             </div>\
             <div class='debug_panel' onclick='apf.debugwin.toggleFold(this);'>\
@@ -1390,30 +1375,30 @@ apf.debugwin = {
                 </div>\
                 <div id='" + this.stackTrace + "' class='debug_panel_body_base debug_panel_body_none'></div>\
             </div>" +
-        (apf.JsltImplementation
+        (apf.lm
          ? "<div class='debug_panel' onclick='apf.debugwin.toggleFold(this);'>\
                 <div class='debug_panel_head'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
-                    <strong>JSLT Debugger (beta)</strong>\
+                    <strong>LM Debugger (beta)</strong>\
                 </div>\
                 <div onclick='event.cancelBubble=true' \
-                  class='debug_panel_body_base debug_panel_body_jslt debug_panel_body_none'>\
-                    <textarea id='" + this.jsltConsole + "' onkeyup='if(document.getElementById(\"dbgJsltCheck\").checked || event.keyCode==13) apf.debugwin.run(\"jslt\");'\
-                      onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true'\
->/* JSLT example */\n\
+                  class='debug_panel_body_base debug_panel_body_lm debug_panel_body_none'>\
+                    <textarea id='" + this.lmConsole + "' onkeyup='if(document.getElementById(\"dbgLmCheck\").checked || event.keyCode==13) apf.debugwin.run(\"lm\");'\
+                      onselectstart='if (apf.dragMode) return false; event.cancelBubble=true'\
+>/* LM example */\n\
 <h4>{node()/node()|text()}</h4>\n\
 \n\
 <p>This document contains [%#'//node()'] nodes.</p>\n\
 \n\
 <p>The first node is called <b>[%n.tagName]</b>, and has [%#'node()'] child[%#'node()' == 1 ? '' : 'ren'].</p></textarea>\
-                    <blockquote id='apf_jslt_output'><span class='apf_empty'>No JSLT Parsed</span></blockquote>\
+                    <blockquote id='apf_lm_output'><span class='apf_empty'>No LM Parsed</span></blockquote>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
                         <label style='float:left;padding:4px 3px 0 0;'>Data instruction: </label>\
-                        <input id='dbgJsltInput' onkeydown='if(event.keyCode==13) apf.debugwin.run(\"jslt\");event.cancelBubble=true;' \
+                        <input id='dbgLmInput' onkeydown='if(event.keyCode==13) apf.debugwin.run(\"lm\");event.cancelBubble=true;' \
                             style='margin-top:2px;width:150px;float:left;' class='input_text'\
-                            onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' />\
-                        <label for='dbgJsltCheck' style='float:right;padding:3px 5px 0 1px'>Don't update in real-time.</label>\
-                        <input id='dbgJsltCheck' style='float:right' checked='checked' type='checkbox' />\
+                            onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' />\
+                        <label for='dbgLmCheck' style='float:right;padding:3px 5px 0 1px'>Don't update in real-time.</label>\
+                        <input id='dbgLmCheck' style='float:right' checked='checked' type='checkbox' />\
                     </div>\
                 </div>\
             </div>"
@@ -1424,7 +1409,7 @@ apf.debugwin = {
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                     <strong>Data Editor (beta)</strong>\
                 </div>\
-                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true'\
+                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragMode) return false; event.cancelBubble=true'\
                   class='debug_panel_body_base debug_panel_body_markup debug_panel_body_none'>\
                     <div id='apf_markupcontainer'> </div>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
@@ -1432,7 +1417,7 @@ apf.debugwin = {
                         <label style='float:left'>XPath:</label>\
                         <input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) apf.debugwin.setSelected(true);event.cancelBubble=true;' \
                             style='margin-top:2px;width:90px;float:left' class='input_text'\
-                            onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' />\
+                            onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' />\
                         <div onclick='apf.debugwin.exec(\"remove\")' class='debug_btn debug_btnright' title='Remove'\
                           onmousedown='apf.debugwin.btnMouseDown(this)' onmouseup='apf.debugwin.btnMouseUp(this)'>\
                             <span class='remove'> </span>\
@@ -1463,7 +1448,7 @@ apf.debugwin = {
                     <img width='9' height='9' src='" + this.resPath + "arrow_gray_right.gif' />&nbsp;\
                     <strong>Javascript Profiler (beta)</strong>\
                 </div>\
-                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true' style='display:none;'>\
+                <div onclick='event.cancelBubble=true' onselectstart='if (apf.dragMode) return false; event.cancelBubble=true' style='display:none;'>\
                     <div id='apfProfilerOutput' class='debug_panel_body_base debug_panel_body_profiler'></div>\
                     <div id='apfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
@@ -1501,7 +1486,7 @@ apf.debugwin = {
                     <strong>Log Viewer</strong>\
                 </div>\
                 <div id='" + this.logView + "' onclick='event.cancelBubble=true'\
-                  onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true'\
+                  onselectstart='if (apf.dragMode) return false; event.cancelBubble=true'\
                   class='debug_panel_body_base debug_panel_body_log'>" 
                     + apf.console.debugInfo.join('').replace(/\{imgpath\}/g, this.resPath) +
                "</div>\
@@ -1513,7 +1498,7 @@ apf.debugwin = {
                 </div>\
                 <div onclick='event.cancelBubble=true'>\
                     <textarea id='" + this.debugConsole + "' onkeydown='return apf.debugwin.consoleTextHandler(event);'\
-                      onselectstart='if (apf.dragmode.mode) return false; event.cancelBubble=true'\
+                      onselectstart='if (apf.dragMode) return false; event.cancelBubble=true'\
                       class='debug_panel_body_base debug_panel_body_console'>" + apf.getcookie('jsexec') + "</textarea>\
                     <div class='debug_toolbar debug_toolbar_inner'>\
                         <div id='apfDebugExec' onclick='apf.debugwin.jRunCode(apf.debugwin.debugConsole.value)' title='Run Code'\
@@ -1557,29 +1542,31 @@ apf.debugwin = {
         this.stackTrace   = document.getElementById(this.stackTrace);
         this.logView      = document.getElementById(this.logView);
         this.debugConsole = document.getElementById(this.debugConsole);
-        this.jsltConsole  = document.getElementById(this.jsltConsole);
+        this.lmConsole  = document.getElementById(this.lmConsole);
 
-        if (!this.oExt && apf.Interactive) {
-            this.oExt     = elError;
-            this.pHtmlDoc = document;
+        if (!this.$ext && apf.Interactive) {
+            this.$ext     = elError;
+            this.$pHtmlDoc = document;
 
-            this.$propHandlers = [];
-            apf.implement.call(this, apf.Interactive);
-
-            this.minwidth  = 400;
-            this.minheight = 442;
-            this.maxwidth  = 10000;
-            this.maxheight = 10000;
-
-            this.resizable     = "horizontal";
-            this.resizeOutline = true;
-            this.$propHandlers["resizable"].call(this, "horizontal");
-
-            if (apf.isIE) {
-                this.debugConsole.parentNode.style.width = "auto";
-                this.debugConsole.parentNode.style.paddingTop = "108px";
-                this.debugConsole.style.position = "absolute";
-                this.debugConsole.style.marginTop = "-108px";
+            if (false) { //@todo temp disabled because of issues
+                this.$propHandlers = [];
+                apf.implement.call(this, apf.Interactive);
+    
+                this.minwidth  = 400;
+                this.minheight = 442;
+                this.maxwidth  = 10000;
+                this.maxheight = 10000;
+    
+                this.resizable     = "horizontal";
+                this.resizeOutline = true;
+                this.$propHandlers["resizable"].call(this, "horizontal");
+    
+                if (apf.isIE) {
+                    this.debugConsole.parentNode.style.width = "auto";
+                    this.debugConsole.parentNode.style.paddingTop = "108px";
+                    this.debugConsole.style.position = "absolute";
+                    this.debugConsole.style.marginTop = "-108px";
+                }
             }
             
             if (apf.layout) {
@@ -1587,6 +1574,7 @@ apf.debugwin = {
                     "var oHtml = document.getElementById('" + elError.id + "');\
                     var o = document.getElementById('jvlnviewlog');\
                     var l = document.getElementById('lastElement');\
+                    if (!o || !l) return;\
                     var scrollHeight = l.offsetTop + l.offsetHeight;\
                     var shouldSize = scrollHeight - o.offsetHeight + 200 < oHtml.offsetHeight;\
                     o.style.height = (shouldSize\
@@ -1607,16 +1595,16 @@ apf.debugwin = {
                         o.style.width = (o.parentNode.offsetWidth \
                             - (apf.isGecko ? 4 : 8)) + 'px';\
                 ");
-                
-                apf.layout.activateRules(elError);
+                apf.layout.queue(elError);
             }
         }
         else
-            this.oExt = elError;
+            this.$ext = elError;
 
         if (apf.hasFocusBug) {
             apf.sanitizeTextbox(this.debugConsole);
-            apf.sanitizeTextbox(this.jsltConsole);
+            if (this.lmConsole)
+                apf.sanitizeTextbox(this.lmConsole);
         }
 
         clearInterval(apf.Init.interval);
@@ -1664,39 +1652,39 @@ apf.debugwin = {
 
                 apf.offline.goOffline()
                 break;
-            case "jslt":
-                if (!apf.debugwin.$jslt) {
-                    apf.debugwin.$jslt = new apf.JsltImplementation();
-                    apf.debugwin.$jslt.modelcache = {};
+            case "lm":
+                if (!apf.debugwin.$lm) {
+                    apf.debugwin.$lm = new apf.LmImplementation();
+                    apf.debugwin.$lm.modelcache = {};
                 }
                 
-                var ds = document.getElementById("dbgJsltInput").value;
+                var ds = document.getElementById("dbgLmInput").value;
                 if (!ds)
                     return alert("Missing data instruction");
                 
-                var xml = apf.debugwin.$jslt.modelcache[ds];
-                var jsltCode, result = document.getElementById("apf_jslt_output");
+                var xml = apf.debugwin.$lm.modelcache[ds];
+                var lmCode, result = document.getElementById("apf_lm_output");
                 if (!xml) {
-                    apf.debugwin.$jslt.modelcache[ds] = -1;
+                    apf.debugwin.$lm.modelcache[ds] = -1;
                     
-                    apf.getData(ds, null, null, function(data, state, extra){
+                    apf.getData(ds, {callback: function(data, state, extra){
                         if (state != apf.SUCCESS) {
-                            delete apf.debugwin.$jslt.modelcache[ds];
+                            delete apf.debugwin.$lm.modelcache[ds];
                             result.innerHTML = "<span class='apf_empty'>Retrieving data by the data instruction given '" + ds + "' has failed.\n" + extra.message + "</span>";
                             return true;
                         }
                         
                         try {
-                            apf.debugwin.$jslt.modelcache[ds] = data.nodeType 
+                            apf.debugwin.$lm.modelcache[ds] = data.nodeType 
                                 ? data 
                                 : data && apf.getXml(data.replace(/\<\!DOCTYPE[^>]*>/, "")) || -10;
                         }
                         catch(e) {
-                            apf.debugwin.$jslt.modelcache[ds] = -10;
+                            apf.debugwin.$lm.modelcache[ds] = -10;
                         }
                         
-                        apf.debugwin.run("jslt");
-                    }); //Can this error?
+                        apf.debugwin.run("lm");
+                    }}); //Can this error?
                     
                     return;
                 }
@@ -1705,16 +1693,16 @@ apf.debugwin = {
 
                 try{
                     if (!xml.nodeType && xml == -10)
-                        jsltCode = "<span class='apf_empty'>Data source did not return any data</span>";
+                        lmCode = "<span class='apf_empty'>Data source did not return any data</span>";
                     else 
-                        jsltCode = apf.debugwin.$jslt.apply(this.jsltConsole.value, xml) 
+                        lmCode = (apf.debugwin.$lm.compile(this.lmConsole.value))(xml) 
                 }
             	catch(e){
-            		result.innerHTML = "JSLT Compilation error:\n" + e.message;
+            		result.innerHTML = "Live Markup Compilation error:\n" + e.message;
             		return;
             	}
                 
-                result.innerHTML = jsltCode;
+                result.innerHTML = lmCode;
 
                 break;
         }
@@ -1735,7 +1723,18 @@ apf.debugwin = {
                 x = "undefined";
 
             try {
-                apf.console.write((x.nodeType && !x.nodeFunc ? x.outerHTML || x.xml || x.serialize() : x.toString())
+                var str;
+                if (x.nodeType) {
+                    if (x.serialize)
+                        str = x.serialize();
+                    else if (x.style)
+                        str = x.outerHTML
+                    else
+                        str = apf.getCleanCopy(x).xml;
+                }
+                else str = x.toString();
+                
+                apf.console.write(str
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){
@@ -1847,13 +1846,13 @@ apf.debugwin = {
         if (document.getElementById("apf_debugwin")) {
             if (apf.isIE8) {
                 document.body.style.overflow = "auto";
-                document.body.style.position = "static";
+                //document.body.style.position = "static";
             }
             
             document.getElementById("apf_debugwin").style.display = "block";
             
             if (apf.layout)
-                apf.layout.forceResize(this.oExt);
+                apf.layout.forceResize(this.$ext);
         }
         else {
             apf.debugwin.errorHandler(msg, null, null, true);

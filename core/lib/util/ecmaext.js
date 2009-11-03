@@ -30,13 +30,21 @@ if (typeof isFinite == "undefined") {
     }
 }
 
-Array.prototype.dataType    = "array";
-Number.prototype.dataType   = "number";
-Date.prototype.dataType     = "date";
-Boolean.prototype.dataType  = "boolean";
-String.prototype.dataType   = "string";
-RegExp.prototype.dataType   = "regexp";
-Function.prototype.dataType = "function";
+apf.ARRAY    = 1;
+apf.NUMBER   = 2;
+apf.DATE     = 3;
+apf.BOOLEAN  = 4;
+apf.STRING   = 5;
+apf.REGEXP   = 6;
+apf.FUNCTION = 7;
+
+Array.prototype.dataType    = apf.ARRAY;
+Number.prototype.dataType   = apf.NUMBER;
+Date.prototype.dataType     = apf.DATE;
+Boolean.prototype.dataType  = apf.BOOLEAN;
+String.prototype.dataType   = apf.STRING;
+RegExp.prototype.dataType   = apf.REGEXP;
+Function.prototype.dataType = apf.FUNCTION;
 
 /**
  * Converts a javascript object to a cgi string.
@@ -147,6 +155,7 @@ Function.prototype.extend = function() {
  * declared in apf.AbstractEvent
  *
  * @param {Object} The context the execute the Function within
+ * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
  * @param {mixed}  param1, param2, param3, etc.
  * @type Function
  * @see apf.AbstractEvent
@@ -671,6 +680,25 @@ String.prototype.escape = function() {
     return escape(this);
 };
 
+/**
+ * Returns an xml document
+ * @type {XMLElement}
+ */
+String.prototype.toXml = function(){
+    var node = apf.getXml("<root>" + this + "</root>");
+    if (node.childNodes.length == 1) {
+        return node.childNodes[0];
+    }
+    else {
+        var docFrag = node.ownerDocument.createDocumentFragment(),
+            nodes   = node.childNodes;
+        while (nodes.length)
+            docFrag.appendChild(nodes[0]);
+        return docFrag;
+    }
+};
+
+
 if (typeof window != "undefined" && typeof window.document != "undefined" 
   && typeof window.document.createElement == "function") {
     /**
@@ -678,6 +706,7 @@ if (typeof window != "undefined" && typeof window.document != "undefined"
      * and '&lt;' to '&amp;lt;'.
      *
      * @type {String}
+     * @todo is this fast?
      */
     String.prototype.escapeHTML = function() {
         this.escapeHTML.text.data = this;

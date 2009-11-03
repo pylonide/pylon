@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __JTAB || __JPAGES || __JSWITCH || __INC_ALL
+// #ifdef __AMLTAB || __AMLPAGES || __AMLSWITCH || __INC_ALL
 // #define __WITH_PRESENTATION 1
-// #define __JBASETAB 1
+// #define __AMLBASETAB 1
 
 /**
  * Element displaying a page and several buttons allowing a
@@ -59,23 +59,37 @@
  * @inherits apf.BaseTab
  */
 
-apf["switch"] =
-apf.pages     =
-apf.tab       = apf.component(apf.NODE_VISIBLE, function(){
-    this.$hasButtons = this.tagName == "tab";
+apf["switch"] = function(struct, tagName){
+    this.$hasButtons = false;
+    this.$init(tagName || "switch", apf.NODE_VISIBLE, struct);
+};
+
+apf.pages     = function(struct, tagName){
+    this.$hasButtons = false;
+    this.$init(tagName || "pages", apf.NODE_VISIBLE, struct);
+};
+
+apf.tab       = function(struct, tagName){
+    this.$hasButtons = true;
+    this.$init(tagName || "tab", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
 
     /**** Init ****/
 
     this.$draw = function(bSkinChange){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-    };
-
-    this.$loadAml = function(x){
-        this.switchType = x.getAttribute("switchtype") || "incremental";
+        this.$ext = this.$getExternal();
         this.$loadChildren();
     };
-}).implement(apf.BaseTab);
+}).call(apf.tab.prototype = new apf.BaseTab());
 
+apf["switch"].prototype =
+apf.pages.prototype     = apf.tab.prototype;
+
+apf.aml.setElement("switch", apf["switch"]);
+apf.aml.setElement("pages",  apf.pages);
+apf.aml.setElement("tab",    apf.tab);
 // #endif

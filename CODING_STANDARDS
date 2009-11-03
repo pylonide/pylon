@@ -30,7 +30,7 @@ closing statement:
   1.3. Maximum Line Length
   ========================
 
-  The target line length is 80 characters. That is to say, JPF developers should
+  The target line length is 80 characters. That is to say, apf developers should
 strive keep each line of their code under 80 characters where possible and
 practical. However, longer lines are acceptable in some circumstances.
 The maximum length of any line of code is 120 characters.
@@ -51,10 +51,10 @@ Windows OS (0x0D, 0x0A).
 
   2.1 Classes
 
-  The root level directory of the JPF standard library is the "core/" directory.
-The root level directory of the JPF components is the "components/" directory.
-The root level directory of the JPF Teleport library and its modules is the
-"teleport/" directory.
+  The root level directory of the apf standard library is the "core/" directory.
+The root level directory of the apf elements is the "elements/" directory.
+The root level directory of the apf Teleport library and its modules is the
+"elements/teleport/" directory.
 
   Class names may only contain alphanumeric characters. Numbers are permitted
 in class names but are discouraged in most cases.
@@ -70,25 +70,25 @@ e.g. a class "parserJML" is not allowed while "parserJml" is acceptable.
 character ("-") are permitted. Spaces are strictly prohibited.
 
   Any file that contains Javascript code should end with the extension ".js".
-The following examples show acceptable filenames for Javeline Platform classes:
+The following examples show acceptable filenames for Ajax.org Platform classes:
 
 #
-# components/bar.js
-# core/lib/class.js
-# teleport/rpc/jsonrpc.js
+# elements/bar.js
+# core/parsers/aml.js
+# elements/teleport/rpc/jsonrpc.js
 #
 
   2.2. Functions and Methods
   ==========================
 
   Function names may only contain alphanumeric characters. The use of
-underscores are is strongly discouraged, with the notable exception when
+underscores is strongly discouraged, with the notable exception when
 declaring a function as pseudo-private. Numbers are permitted in function
 names but are discouraged in most cases.
 
   Function names must always start with a lowercase letter. When a function
 name consists of more than one word, the first letter of each new word must be
-capitalized. This is commonly called "camelCase" formatting.
+capitalized. This is commonly called "lower camelCase" formatting[2].
 
 Verbosity is generally encouraged. Function names should be as verbose as is
 practical to fully describe their purpose and behavior.
@@ -113,12 +113,12 @@ method name. Methods declared "public" should never contain an underscore.
 
   For methods on objects that are declared pseudo-protected, the first character
 of the variable name must be a dollar-sign ($). There exists no protected scope
-in Javascript, however Javeline Platform recognizes the value and use of this
+in Javascript, however Ajax.org Platform recognizes the value and use of this
 pattern and implements it by using the dollar-sign convention.
 
-  Functions in the global scope (a.k.a "floating functions") are permitted but
+  Functions in the global scope (a.k.a. "floating functions") are permitted but
 discouraged in most cases. Consider wrapping these functions in the globally
-defined 'jpf' namespace.
+defined 'apf' namespace.
 
   2.3. Variables
   ==============
@@ -133,13 +133,17 @@ the only acceptable application of an underscore in a variable name. Member
 variables declared "public" should never start with an underscore.
 
   As with function names (see section 2.2) variable names must always start
-with a lowercase letter and follow the "camelCaps" capitalization convention.
+with a lowercase letter and follow the "camelCaps" capitalization convention[2].
 
   Verbosity is generally encouraged. Variables should always be as verbose as
 practical to describe the data that the developer intends to store in them.
 Terse variable names such as "i" and "n" are discouraged for all but the
 smallest loop contexts. If a loop contains more than 20 lines of code, the
 index variables should have more descriptive names.
+
+  The Hungarian notation[3] for variable names is generally encouraged. Since
+Javascript is an untyped language, specifying the variable type as part of the
+variable name makes the code much easier to read.
 
   2.4. Constants
   ==============
@@ -157,9 +161,9 @@ EMBED_SUPPRESSEMBEDEXCEPTION is not.
 naming conflicts with other class contants. For example:
 
 #
-# jpf.bar = jpf.component(...);
+# apf.bar = apf.component(...);
 #
-# jpf.bar.ALIGN_LEFT = 0; //constant attached to the jpf.bar namespace
+# apf.bar.ALIGN_LEFT = 0; //constant attached to the apf.bar namespace
 #
 
   3. Coding Style
@@ -201,7 +205,7 @@ to read.
 added before and after the "+" operator to improve readability:
 
 #
-# var sProduct = "Javeline" + " " + "Platform";
+# var sProduct = "Ajax.org" + " " + "Platform";
 #
 
   When concatenating strings with the "+" operator, it is encouraged to break
@@ -243,9 +247,9 @@ indices besides 0 are discouraged.
 trailing space must be added after each comma delimiter to improve readability:
 
 #
-# var sampleArray = [1, 2, 3, 'Javeline', 'Platform'];
+# var sampleArray = [1, 2, 3, 'Ajax.org', 'Platform'];
 #
-# var sampleArray2 = new Array(1, 2, 3, 'Javeline', 'Platform');
+# var sampleArray2 = new Array(1, 2, 3, 'Ajax.org', 'Platform');
 #
 
   It is permitted to declare multiline indexed arrays using the "Array"
@@ -253,7 +257,7 @@ construct or "[]" shorthand. In this case, each successive line must be
 padded with spaces such that beginning of each line is aligned:
 
 #
-# var sampleArray = [1, 2, 3, 'Javeline', 'Platform',
+# var sampleArray = [1, 2, 3, 'Ajax.org', 'Platform',
 #                    a, b, c,
 #                    56.44, d, 500];
 #
@@ -262,7 +266,7 @@ padded with spaces such that beginning of each line is aligned:
   =========================
 
   The Javascript language does not support arrays, but it does support simple
-objects to be used in conjuction with the HashTable pattern[2].
+objects to be used in conjuction with the HashTable pattern[4].
   When declaring associative arrays with the "{}" shorthand for simple objects
 or collections, breaking the statement into multiple lines is encouraged. In
 this case, each successive line must be padded with whitespace such that both
@@ -281,9 +285,9 @@ the keys and the values are aligned:
   3.3.1. Class Declaration
   ========================
 
-  Classes must be named according to Javeline Platform's naming conventions.
+  Classes must be named according to Ajax.org Platform's naming conventions.
 
-  Every class must be declared inside the "jpf" namespace.
+  Every class must be declared inside the "apf" namespace.
 
   The brace should always be written on the line underneath the class name
 (the "one true brace" form).
@@ -305,7 +309,7 @@ code in the class file.
 # /**
 #  * Documentation Block Here
 #  */
-# jpf.sampleClass = function() {
+# apf.sampleClass = function() {
 #     // all contents of class
 #     // must be indented four spaces
 # }
@@ -314,7 +318,7 @@ code in the class file.
   3.3.2. Class Member Variables
   =============================
 
-  Member variables must be named according to Javeline Platform's variable
+  Member variables must be named according to Ajax.org Platform's variable
 naming conventions.
 
   Any variables declared in a class must be listed at the top of the class,
@@ -329,7 +333,7 @@ permitted but discouraged in favor of accessor methods (set/get).
   3.4.1. Function and Method Declaration
   ======================================
 
-  Functions must be named according to the Javeline Platform's function naming
+  Functions must be named according to the Ajax.org Platform's function naming
 conventions.
 
   As with classes, the brace should always be written on the same line as the
@@ -344,7 +348,7 @@ the arguments is not permitted.
 # /**
 #  * Documentation Block Here
 #  */
-# jpf.foo = function() {
+# apf.foo = function() {
 #     /**
 #      * Documentation Block Here
 #      */
@@ -374,7 +378,7 @@ apply:
 #
 # threeArguments([1, 2, 3], 2, 3);
 #
-# threeArguments([1, 2, 3, 'Javeline', 'Platform',
+# threeArguments([1, 2, 3, 'Ajax.org', 'Platform',
 #                 a, b, c,
 #                 56.44, $d, 500], 2, 3);
 #
@@ -567,7 +571,7 @@ executes regardless of whether or not the try block has completed successfully.
 # try {
 #     statements;
 # }
-# catch (ExceptionClass e) {
+# catch (e) {
 #     statements;
 # }
 # finally {
@@ -582,7 +586,7 @@ executes regardless of whether or not the try block has completed successfully.
   ===========================
 
   All documentation blocks ("docblocks") must be compatible with the
-Scriptdoc[3] format. Describing the Scriptdoc format is beyond the scope of
+Scriptdoc[5] format. Describing the Scriptdoc format is beyond the scope of
 this document. For more information, visit: http://scriptdoc.org/
 
   All class files must contain a "file-level" docblock at the top of each file
@@ -602,7 +606,7 @@ contains these Scriptdoc tags at a minimum:
 #  *
 #  * Long description for file (if any)...
 #  *
-#  * @copyright  2008 Javeline B.V. [Optional]
+#  * @copyright  2008 Ajax.org [Optional]
 #  * @version    $Id:$
 #  * @link       http://api.ajax.org/package/PackageName
 #  * @since      1.0
@@ -621,7 +625,7 @@ minimum:
 #  *
 #  * Long description for class (if any)...
 #  *
-#  * @copyright  2008 Javeline B.V. [Optional]
+#  * @copyright  2008 Ajax.org [Optional]
 #  * @version    Release: @package_version@
 #  * @link       http://api.ajax.org/package/PackageName
 #  * @since      0.8
@@ -655,6 +659,10 @@ exception types:
   ========
 
 [1] We are using Jaw as a Javascript compiler/ pre-processor.
-[2] http://en.wikipedia.org/wiki/Hashmap - Wikipedia entry for Hash Table
-[3] http://scriptdoc.org/ - Scriptdoc standards home
-[4] http://www.gnu.org/software/womb/gnits/ - Gnits standards
+[2] http://en.wikipedia.org/wiki/Camelcase#Current_usage_in_computing - Wikipedia 
+    entry for camelCase usage in computing
+[3] http://en.wikipedia.org/wiki/Hungarian_notation - Wikipedia entry for 
+    Hungarian notation
+[4] http://en.wikipedia.org/wiki/Hashmap - Wikipedia entry for Hash Table
+[5] http://scriptdoc.org/ - Scriptdoc standards home
+[6] http://www.gnu.org/software/womb/gnits/ - Gnits standards

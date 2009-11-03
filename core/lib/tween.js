@@ -82,9 +82,10 @@ apf.tween = {
     },
     scrollheight: function(oHtml, value, info){
         var diff = apf.getHeightDiff(oHtml),
-            oInt = info.oInt || oHtml;
-        oHtml.style.height = value + "px";
-        oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff;
+            oInt = info.$int || oHtml;
+            
+        oHtml.style.height = Math.max((value + (info.diff || 0)), 0) + "px";
+        oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff + (info.diff || 0);
     },
     scrolltop: function(oHtml, value){
         oHtml.style.height = value + "px";
@@ -208,13 +209,16 @@ apf.tween = {
      * begin and end value for colors
      */
     $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var a = parseInt((apf.colors[fromValue]||fromValue).slice(1),16),
-            b = parseInt((apf.colors[toValue]||toValue).slice(1),16),
-            __round = Math.round, out = [];
+        var c = apf.color.colors,
+            a = parseInt((c[fromValue]||fromValue).slice(1),16),
+            b = parseInt((c[toValue]||toValue).slice(1),16),
+            i = 0,
+            __round = Math.round,
+            out = [], d1;
             
-        for(var i = 0; i < nrOfSteps; i++){
-            var d1 = i / (nrOfSteps - 1), d2 = 1-d1;
-            out[out.length] = '#' + ('000000'+
+        for (; i < nrOfSteps; i++){
+            d1 = i / (nrOfSteps - 1), d2 = 1-d1;
+            out[out.length] = "#" + ("000000"+
                 ((__round((a&0xff)*d2+(b&0xff)*d1)&0xff)|
                 (__round((a&0xff00)*d2+(b&0xff00)*d1)&0xff00)|
                 (__round((a&0xff0000)*d2+(b&0xff0000)*d1)&0xff0000)).toString(16)).slice(-6);
@@ -278,8 +282,8 @@ apf.tween = {
         info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
-            info.oInt = oHtml.oInt;
-            oHtml = oHtml.oExt;
+            info.$int = oHtml.$int;
+            oHtml = oHtml.$ext;
         }
 
         if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
@@ -408,8 +412,8 @@ apf.tween = {
         info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
-            info.oInt = oHtml.oInt;
-            oHtml = oHtml.oExt;
+            info.$int = oHtml.$int;
+            oHtml = oHtml.$ext;
         }
 
         var useCSSAnim  = apf.supportCSSAnim,
@@ -421,8 +425,8 @@ apf.tween = {
             var data = info.tweens[i];
             
             if (data.oHtml && data.oHtml.nodeFunc > 100) {
-                data.oInt = data.oHtml.oInt;
-                data.oHtml = data.oHtml.oExt;
+                data.$int = data.oHtml.$int;
+                data.oHtml = data.oHtml.$ext;
             }
 
             useCSSAnim = (apf.supportCSSAnim && apf.tween.CSSPROPS[data.type]);
@@ -544,7 +548,7 @@ apf.tween = {
         (info = info || {}).tweens = [];
 
         if (oHtml.nodeFunc > 100)
-            oHtml = oHtml.oExt;
+            oHtml = oHtml.$ext;
 
         if (remove)
             apf.setStyleClass(oHtml, "", [className]);

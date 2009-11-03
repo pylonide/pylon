@@ -19,8 +19,8 @@
  *
  */
 
-// #ifdef __JIMG || __INC_ALL
-// #define __JBASESIMPLE 1
+// #ifdef __AMLIMG || __INC_ALL
+// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying a picture. This element can read databound resources.
@@ -37,7 +37,7 @@
  *  </a:model>
  *  
  *  <a:list id="lstPics" skin="thumbnail" height="200" width="400" 
- *      traverse = "picture" 
+ *      each = "picture" 
  *      name = "@title" 
  *      model = "mdlPictures" 
  *      image = "@src" 
@@ -76,12 +76,12 @@
  *  <a:img ref="@src" />
  * </code>
  */
-apf.img = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"main" : [["image","@src"]]};
-    //#endif
-    
-    var _self = this;
+apf.img = function(struct, tagName){
+    this.$init(tagName || "img", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    //#ifdef __WITH_CONVENIENCE_API
     
     /**
      * Sets the value of this element. This should be one of the values
@@ -89,7 +89,7 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
     
     /**
@@ -99,6 +99,8 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
     this.getValue = function(value){
         return this.value;
     };
+    
+    //#endif
     
     this.$supportedProperties.push("value", "src");
     /**
@@ -116,11 +118,11 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
             if (this.oImg) {
                 //#ifdef __WITH_LAYOUT
                 //@todo add this to $destroy
-                var pNode = apf.hasSingleRszEvent ? this.pHtmlNode : this.oExt;
-                apf.layout.setRules(pNode, this.uniqueId + "_image",
-                    "var o = apf.all[" + this.uniqueId + "];\
+                var pNode = apf.hasSingleRszEvent ? this.$pHtmlNode : this.$ext;
+                apf.layout.setRules(pNode, this.$uniqueId + "_image",
+                    "var o = apf.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()");
-                apf.layout.activateRules(pNode);
+                apf.layout.queue(pNode);
                 
                 this.oImg.onload = function(){
                     apf.layout.forceResize(pNode);
@@ -139,54 +141,49 @@ apf.img = apf.component(apf.NODE_VISIBLE, function(){
         }
     };
     
-    this.$clear = function(){
+    this.addEventListener("$clear", function(){
         this.value = "";
         
         if (this.oImg)
             this.oImg.style.display = "none";
-    }
+    });
     
     /**** Init ****/
     
     this.$draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = this.$getExternal();
-        this.oExt.onclick = function(e){
+        this.$int = this.$ext = this.$getExternal();
+        this.$ext.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
-        this.oImage = this.$getLayoutNode("main", "image", this.oExt);
-        this.oImg = this.oInt.getElementsByTagName("img")[0];
+        this.oImage = this.$getLayoutNode("main", "image", this.$ext);
+        this.oImg = this.$int.getElementsByTagName("img")[0];
     };
     
     this.$resize = function(){
-        var diff = apf.getDiff(this.oExt);
+        var diff = apf.getDiff(this.$ext);
         var wratio = 1, hratio = 1;
         
         this.oImg.style.width = "";
         this.oImg.style.height = "";
         
-        if (this.oImg.offsetWidth > this.oExt.offsetWidth)
-            wratio = this.oImg.offsetWidth / (this.oExt.offsetWidth - diff[0]);
-        if (this.oImg.offsetHeight > this.oExt.offsetHeight)
-            hratio = this.oImg.offsetHeight / (this.oExt.offsetHeight - diff[1]);
+        if (this.oImg.offsetWidth > this.$ext.offsetWidth)
+            wratio = this.oImg.offsetWidth / (this.$ext.offsetWidth - diff[0]);
+        if (this.oImg.offsetHeight > this.$ext.offsetHeight)
+            hratio = this.oImg.offsetHeight / (this.$ext.offsetHeight - diff[1]);
 
         if (wratio > hratio && wratio > 1)
             this.oImg.style.width = "100%";
         else if (hratio > wratio && hratio > 1)
             this.oImg.style.height = "100%";
         
-        this.oImg.style.top = ((this.oExt.offsetHeight - apf.getHeightDiff(this.oExt) 
+        this.oImg.style.top = ((this.$ext.offsetHeight - apf.getHeightDiff(this.$ext) 
             - this.oImg.offsetHeight) / 2) + "px";
     }
-    
-    this.$loadAml = function(x){
-        if(x.getAttribute("src"))
-            this.setProperty("value", x.getAttribute("src"));
-        
-        apf.AmlParser.parseChildren(x, null, this);
-    };
-}).implement(
-    apf.BaseSimple
-);
+}).call(apf.img.prototype = new apf.BaseSimple());
 
+apf.aml.setElement("img", apf.img);
+
+apf.aml.setElement("name", apf.BindingRule);
+apf.aml.setElement("image", apf.BindingRule);
 // #endif

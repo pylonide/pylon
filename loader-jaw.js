@@ -58,7 +58,7 @@ apf.KernelModules = [
    
     "parsers/xpath.js",
     "parsers/xslt.js",
-    "parsers/jslt.js",
+    "parsers/livemarkup.js",
     "parsers/url.js",
     "parsers/js.js",
     

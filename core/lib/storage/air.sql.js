@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-apf.namespace("storage.modules['air.sql']", {
+apf.storage.modules['air.sql'] = {
     database_file: "apf.db",
 
     initialized: false,
@@ -36,8 +36,8 @@ apf.namespace("storage.modules['air.sql']", {
         this.SQLConnection = window.runtime.flash.data.SQLConnection;
         this.SQLStatement  = window.runtime.flash.data.SQLStatement;
         
-        this.table_name = "__JPF_" + (apf.appsettings.name
-            ? apf.appsettings.name.toUpperCase()
+        this.table_name = "__JPF_" + (apf.config.name
+            ? apf.config.name.toUpperCase()
             : "STORAGE");
 
         // need to initialize our storage database
@@ -358,6 +358,6 @@ apf.namespace("storage.modules['air.sql']", {
     hideSettingsUI: function(){
         throw new Error(this.declaredClass + " does not support a storage settings user-interface");
     }
-});
+};
 
 //#endif

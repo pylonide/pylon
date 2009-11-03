@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __AMLPAGER || __INC_ALL
+
 /**
  * This elements displays buttons which can be used to navigate between some
  * parts of data, for example between parts of article
@@ -29,7 +31,8 @@
  * @attribute {String} next       determines the caption of "go to next page" button
  * 
  * @inherits apf.Presentation
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  * 
  * @author      
  * @version     %I%, %G% 
@@ -41,19 +44,26 @@
  * @binding total        Determines the number of pages.
  * 
  */
-apf.pager = apf.component(apf.NODE_VISIBLE, function() {
+apf.pager = function(struct, tagName){
+    this.$init(tagName || "pager", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
     this.previous   = "Previous";
     this.next       = "Next";
     this.range      = 5;
     this.curpage    = 1;
     this.totalpages = 0;
     this.autohide   = true;
+    this.oEmpty     = null;
     
-    var pages = [];
-    var _self = this;
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        pageload : 1
+    }, this.$attrExcludePropBind);
     
     this.$supportedProperties.push("range", "curpage", "totalpages", 
-        "previous", "next", "autohide");
+        "previous", "next", "autohide", "pageload");
         
     this.$booleanProperties["autohide"] = true;
     
@@ -63,7 +73,7 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["curpage"] = function(value){
         this.gotoPage(value);
-    }
+    };
 
     /**
      * Selects page depends on its number or jump length
@@ -74,7 +84,7 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.gotoPage = function(pageNr, pageDelta) {
         var lastCurpage = this.curpage;
-        this.curpage = pageNr || this.curpage + pageDelta;
+        this.curpage    = pageNr || this.curpage + pageDelta;
         if (lastCurpage != this.curpage)
             this.setProperty("curpage", this.curpage);
 
@@ -87,9 +97,11 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
         if (this.dispatchEvent("beforepagechange", {page:this.curpage}) === false)
             return false;
         
-        var model = this.getModel(true);
+        var model = this.getModel(true),
+            _self = this;
         if (model) {
-            model.loadFrom(this.pageload, this.xmlRoot, {
+            model.$loadFrom(this.pageload, {
+                xmlNode  : this.xmlRoot,
                 page     : this.curpage,
                 callback : function(){
                     _self.dispatchEvent("afterpagechange", {page:_self.curpage});
@@ -101,7 +113,8 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
             setTimeout(function(){
                 var model = _self.getModel(true);
                 if (model) {
-                    model.loadFrom(_self.pageload, _self.xmlRoot, {
+                    model.$loadFrom(_self.pageload, {
+                        xmlNode  : _self.xmlRoot,
                         page     : _self.curpage,
                         callback : function(){
                             _self.dispatchEvent("afterpagechange", {page:_self.curpage});
@@ -115,24 +128,20 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
     };
     
     this.$draw  = function() {
-        this.oExt = this.$getExternal("main");
-        this.oInt = this.$getLayoutNode("main", "container",  this.oExt);
-    };
-    
-    this.$loadAml = function(x) {
-        var nodes = x.childNodes;
-        apf.AmlParser.parseChildren(x, null, this);
+        this.$ext = this.$getExternal("main");
+        this.$int = this.$getLayoutNode("main", "container",  this.$ext);
     };
     
     this.$load = function(xmlRoot) {
-        this.setProperty("curpage", parseInt(this.applyRuleSetOnNode("current", xmlRoot)));
-        this.setProperty("totalpages", parseInt(this.applyRuleSetOnNode("total", xmlRoot)));
+        this.setProperty("curpage",    parseInt(this.$applyBindRule("current", xmlRoot)));
+        this.setProperty("totalpages", parseInt(this.$applyBindRule("total", xmlRoot)));
         
-        var curpage = this.curpage;
-        var totalpages = this.totalpages;
-        var btn, nodes = [];
+        var curpage    = this.curpage,
+            totalpages = this.totalpages,
+            nodes      = [],
+            btn;
         
-        this.oInt.innerHTML = "";
+        this.$int.innerHTML = "";
         
         if (!totalpages)
             return;
@@ -144,7 +153,8 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
             this.$setStyleClass(btn, "previous");
             
             if (curpage != 1) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(null, -1)");
+                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+                    + ").gotoPage(null, -1)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -153,18 +163,20 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
             nodes.push(btn);
         }
         
-        var rlow  = Math.floor(this.range / 2);
-        var rhigh = Math.ceil(this.range / 2);
-        var start = Math.max(1, curpage - rlow);
-        var end   = Math.min(totalpages + 1, start + this.range);
+        var rlow  = Math.floor(this.range / 2),
+        //    rhigh = Math.ceil(this.range / 2);
+            start = Math.max(1, curpage - rlow),
+            end   = Math.min(totalpages + 1, start + this.range),
+            i;
         if (end - start < this.range && start != 1)
             start = Math.max(end - this.range, 1);
         
-        for (var i = start, page; i < end; i++) {
+        for (i = start; i < end; i++) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = i;
-            btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(" + i + ")");
+            btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+                + ").gotoPage(" + i + ")");
             nodes.push(btn);
             
             if (i == curpage)
@@ -178,7 +190,8 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
             this.$setStyleClass(btn, "next");
             
             if (curpage != totalpages) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.uniqueId + ").gotoPage(null, 1)");
+                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+                    + ").gotoPage(null, 1)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -187,22 +200,27 @@ apf.pager = apf.component(apf.NODE_VISIBLE, function() {
             nodes.push(btn);
         }
         
-        apf.xmldb.htmlImport(nodes, this.oInt);
+        apf.insertHtmlNodes(nodes, this.$int);
     }
     
-    var oEmpty;
     this.$setClearMessage = function(msg, className) {
         
     };
     
     this.$removeClearMessage = function() {
-        if (!oEmpty)
-            oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty && oEmpty.parentNode)
-            oEmpty.parentNode.removeChild(oEmpty);
+        if (!this.oEmpty)
+            this.oEmpty = document.getElementById("empty" + this.$uniqueId);
+        if (this.oEmpty && this.oEmpty.parentNode)
+            this.oEmpty.parentNode.removeChild(this.oEmpty);
     };
     
-}).implement(
-    apf.Presentation, 
-    apf.DataBinding
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.pager.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.pager.prototype = new apf.Presentation());
+#endif */
+
+apf.aml.setElement("pager",   apf.pager);
+apf.aml.setElement("total",   apf.BindingRule);
+apf.aml.setElement("current", apf.BindingRule);
+// #endif

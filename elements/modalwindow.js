@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JMODALWINDOW || __INC_ALL || __JWINDOW
+// #ifdef __AMLMODALWINDOW || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -30,11 +30,23 @@ apf.WinServer = {
     wins  : [],
 
     setTop : function(win, norecur){
+        if (win.$opened) {
+            if (win.$opened.visible)
+                return;
+            else 
+                delete win.$opened;
+        }
+        
         var topmost;
         if (!norecur && this.wins.length) {
             var topmost = this.wins[this.wins.length - 1];
             if (!topmost.modal || !topmost.visible)
                 topmost = null;
+            else if (topmost && win.modal) {
+                win.$opener = topmost;
+                topmost.$opened = win;
+                topmost = null;
+            }
         }
         
         this.count += 2;
@@ -42,10 +54,10 @@ apf.WinServer = {
         win.setProperty("zindex", this.count);
         this.wins.remove(win);
         this.wins.push(win);
-        
+
         if (topmost)
             this.setTop(topmost, true);
-        
+
         return win;
     },
 
@@ -105,15 +117,13 @@ apf.WinServer = {
  * @since       0.4
  *
  * @inherits apf.Presentation
- * @inherits apf.DelayedRender
  * @inherits apf.Docking
  * @inherits apf.Transaction
  *
- * @event display       Fires when the window is displayed.
  * @event close         Fires when the window is closed.
  * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
- *   cancellable:   Prevents the edit panel from being closed.
+ *   cancelable:   Prevents the edit panel from being closed.
  * @event statechange   Fires after the state of this window changed.
  *   object:
  *   {Boolean} minimized  whether the window is minimized.
@@ -122,29 +132,44 @@ apf.WinServer = {
  *   {Boolean} edit       whether the window is in the edit state.
  *   {Boolean} closed     whether the window is closed.
  */
-apf.toolwindow  = 
-apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
-    this.isWindowContainer = true;
+apf.toolwindow  = function(struct, tagName){
+    this.$init(tagName || "toolwindow", apf.NODE_VISIBLE, struct);
+};
+
+apf.modalwindow = function(struct, tagName){
+    this.$init(tagName || "modalwindow", apf.NODE_VISIBLE, struct);
+};
+
+apf.AmlWindow = function(struct, tagName){
+    this.$init(tagName || "window", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DOCKING
+        apf.Docking,
+        //#endif
+        apf.BaseStateButtons
+    );
+
+    this.$isWindowContainer = true;
     this.collapsedHeight   = 30;
     this.canHaveChildren   = 2;
     this.visible           = false;
     this.showdragging      = false;
     this.kbclose           = false;
     this.$focussable       = apf.KEYBOARD;
-    var _self              = this;
-
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"main" : [["title","@title"]]};
-    // #endif
 
     /**** Public Methods ****/
+
+    //#ifdef __WITH_CONVENIENCE_API
 
     /**
      * Sets the title of the window. Call-chaining is supported.
      * @param {String} caption the text of the title.
      */
     this.setTitle = function(caption){
-        this.setProperty("title", caption);
+        this.setProperty("title", caption, false, true);
         return this;
     };
 
@@ -153,15 +178,17 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
      * @param {String} icon the location of the image.
      */
     this.setIcon = function(icon){
-        this.setProperty("icon", icon);
+        this.setProperty("icon", icon, false, true);
         return this;
     };
     
     //For modal elements
     this.show = function(callback){
         this.execAction = callback; //@todo Proper error handling??
-        this.setProperty("visible", true);
+        this.setProperty("visible", true, false, true);
     }
+    
+    //#endif
     
     this.slideIn = function(sFrom, bSticky) {
         if (!sFrom)
@@ -174,38 +201,38 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         var iFrom  = 0,
             iTo    = 0,
             innerW = (apf.isIE
-                ? this.oExt.offsetParent.offsetWidth
+                ? this.$ext.offsetParent.offsetWidth
                 : window.innerWidth),
             innerH = (apf.isIE
-                ? this.oExt.offsetParent.offsetHeight
+                ? this.$ext.offsetParent.offsetHeight
                 : window.innerHeight),
-            cX     = Math.max(0, ((innerW - this.oExt.offsetWidth)  / 2)),
-            cY     = Math.max(0, ((innerH - this.oExt.offsetHeight) / 3)),
+            cX     = Math.max(0, ((innerW - this.$ext.offsetWidth)  / 2)),
+            cY     = Math.max(0, ((innerH - this.$ext.offsetHeight) / 3)),
             sType  = "top",
             pad    = 10;
 
         switch(sFrom) {
             case "top":
-                iFrom = -(this.oExt.offsetHeight) - pad;
+                iFrom = -(this.$ext.offsetHeight) - pad;
                 iTo   = bSticky ? 0 : cY;
                 break;
             case "left":
-                iFrom = -(this.oExt.offsetWidth) - pad;
+                iFrom = -(this.$ext.offsetWidth) - pad;
                 iTo   = bSticky ? 0 : cX;
                 sType = "left";
                 break;
             case "bottom":
-                iFrom = innerH + this.oExt.offsetHeight + pad;
-                iTo   = bSticky ? innerH - this.oExt.offsetHeight : cY;
+                iFrom = innerH + this.$ext.offsetHeight + pad;
+                iTo   = bSticky ? innerH - this.$ext.offsetHeight : cY;
                 break;
             case "right":
-                iFrom = innerW + this.oExt.offsetLeft + pad;
-                iTo   = bSticky ? innerW - this.oExt.offsetWidth : cX;
+                iFrom = innerW + this.$ext.offsetLeft + pad;
+                iTo   = bSticky ? innerW - this.$ext.offsetWidth : cX;
                 sType = "left";
                 break;
         }
         
-        apf.tween.single(this.oExt, {
+        apf.tween.single(this.$ext, {
             steps   : apf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
@@ -226,30 +253,31 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         switch(sTo) {
             case "top":
-                iFrom = this.oExt.offsetTop;
-                iTo   = -(this.oExt.offsetHeight) - pad;
+                iFrom = this.$ext.offsetTop;
+                iTo   = -(this.$ext.offsetHeight) - pad;
                 break;
             case "left":
-                iFrom = this.oExt.offsetLeft;
-                iTo   = -(this.oExt.offsetWidth) - pad;
+                iFrom = this.$ext.offsetLeft;
+                iTo   = -(this.$ext.offsetWidth) - pad;
                 sType = "left";
                 break;
             case "bottom":
-                iFrom = this.oExt.offsetTop;
+                iFrom = this.$ext.offsetTop;
                 iTo = (apf.isIE
-                    ? this.oExt.offsetParent.offsetHeight
-                    : window.innerHeight) + this.oExt.offsetHeight + pad;
+                    ? this.$ext.offsetParent.offsetHeight
+                    : window.innerHeight) + this.$ext.offsetHeight + pad;
                 break;
             case "right":
-                iFrom = this.oExt.offsetLeft;
+                iFrom = this.$ext.offsetLeft;
                 iTo   = (apf.isIE
-                    ? this.oExt.offsetParent.offsetWidth
-                    : window.innerWidth) + this.oExt.offsetLeft + pad;
+                    ? this.$ext.offsetParent.offsetWidth
+                    : window.innerWidth) + this.$ext.offsetLeft + pad;
                 sType = "left";
                 break;
         }
 
-        apf.tween.single(this.oExt, {
+        var _self = this;
+        apf.tween.single(this.$ext, {
             steps   : apf.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
@@ -276,12 +304,12 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             apf.WinServer.setTop(this);
 
         if (oItem.state > 0) {
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Min",
-                [this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Min",
+                [this.$baseCSSname + "Edit", this.$baseCSSname + "Max"]);
         }
         else {
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Min",
-                this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Min",
+                this.$baseCSSname + "Edit", this.$baseCSSname + "Max"]);
         }
     };
     //#endif
@@ -306,7 +334,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         if (value && !this.oCover) {
             var oCover = this.$getLayoutNode("cover");
             if (oCover) {
-                this.oCover = apf.xmldb.htmlImport(oCover, this.pHtmlNode);
+                this.oCover = apf.insertHtmlNode(oCover, this.$pHtmlNode);
 
                 if (!this.visible)
                     this.oCover.style.display = "none";
@@ -326,7 +354,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
      * containing rect when shown.
      */
     this.$propHandlers["center"] = function(value){
-        this.oExt.style.position = "absolute"; //@todo no unset
+        this.$ext.style.position = "absolute"; //@todo no unset
     };
 
     /**
@@ -350,12 +378,6 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
         if (apf.isTrue(value)){
-            //if (!x && !y && !center) center = true;
-
-            // #ifdef __WITH_DELAYEDRENDER
-            this.$render();
-            // #endif
-
             if (this.oCover){
     			if (this.oCover.offsetParent) {
                     //@todo apf3.0 ie8 too high...
@@ -368,39 +390,30 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
             this.state = this.state.split("|").remove("closed").join("|");
 
-            this.oExt.style.display = "block"; //Some form of inheritance detection
+            this.$ext.style.display = "block"; //Some form of inheritance detection
 
             //!apf.isIE &&
-            if (apf.layout && this.oInt)
-                apf.layout.forceResize(this.oInt); //@todo this should be recursive down
+            if (apf.layout && this.$int)
+                apf.layout.forceResize(this.$int); //@todo this should be recursive down
 
             //if (this.modal) 
-                //this.oExt.style.position = "fixed";
+                //this.$ext.style.position = "fixed";
             
             if (this.center) {
-                var size = !this.oExt.offsetParent || this.oExt.offsetParent.tagName == "BODY"
+                var size = !this.$ext.offsetParent || this.$ext.offsetParent.tagName == "BODY"
                     ? [apf.getWindowWidth(), apf.getWindowHeight()]
-                    : [this.oExt.offsetParent.offsetWidth, this.oExt.offsetParent.offsetHeight, 0, 0];
+                    : [this.$ext.offsetParent.offsetWidth, this.$ext.offsetParent.offsetHeight, 0, 0];
 
                 if (size.length == 2) {
                     size.push(document.documentElement.scrollLeft, 
                       document.documentElement.scrollTop);
                 }
                 
-                this.oExt.style.left = (Math.max(0, ((
-                    size[0] - this.oExt.offsetWidth)/2)) + size[2]) + "px";
-                this.oExt.style.top  = (Math.max(0, ((
-                    size[1] - this.oExt.offsetHeight)/3)) + size[3]) + "px";
+                this.$ext.style.left = (Math.max(0, ((
+                    size[0] - this.$ext.offsetWidth)/2)) + size[2]) + "px";
+                this.$ext.style.top  = (Math.max(0, ((
+                    size[1] - this.$ext.offsetHeight)/3)) + size[3]) + "px";
             }
-
-            if (!this.$rendered) {
-                this.addEventListener("afterrender", function(){
-                    this.dispatchEvent("display");
-                    this.removeEventListener("display", arguments.callee);
-                });
-            }
-            else
-                this.dispatchEvent("display");
 
             if (!apf.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
@@ -412,24 +425,34 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
                 }
             }
 
-            if (wasVisible != true && this.$show)
-                this.$show();
-
             if (this.modal)
                 this.bringToFront();
             
-            // #ifdef __WITH_FOCUS
-            //@todo make widget a tagname and alias
-            if (!apf.isParsing && (this.model 
-              || (!this.dockable || !this.aData) && !this.$isWidget 
-              && this.tagName != "toolwindow"))
-                this.focus(false, {mouse:true});
-            // #endif
+            if (!this.$rendered) {
+                this.addEventListener("afterrender", function(){
+                    // #ifdef __WITH_FOCUS
+                    //@todo make widget a tagname and alias
+                    if (this.$amlLoaded && (this.model 
+                      || (!this.dockable || !this.aData) && !this.$isWidget 
+                      && this.localName != "toolwindow"))
+                        this.focus(false, {mouse:true});
+                    // #endif
+                });
+            }
+            else {
+                // #ifdef __WITH_FOCUS
+                //@todo make widget a tagname and alias
+                if (this.$amlLoaded && (this.model 
+                  || (!this.dockable || !this.aData) && !this.$isWidget 
+                  && this.localName != "toolwindow"))
+                    this.focus(false, {mouse:true});
+                // #endif
+            }
             
             if (apf.isIE) {
-                var cls = this.oExt.className;
-                this.oExt.className = "rnd" + Math.random();
-                this.oExt.className = cls;
+                var cls = this.$ext.className;
+                this.$ext.className = "rnd" + Math.random();
+                this.$ext.className = cls;
             }
         }
         else if (apf.isFalse(value)) {
@@ -437,16 +460,13 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             if (this.oCover)
                 this.oCover.style.display = "none";
 
-            this.oExt.style.display = "none";
+            this.$ext.style.display = "none";
 
             if (!apf.canHaveHtmlOverSelects && this.hideselects) {
                 for (var i = 0; i < hEls.length; i++) {
                     hEls[i][0].style.display = hEls[i][1];
                 }
             }
-
-            if (this.$hide)
-                this.$hide();
 
             if (this.hasFocus())
                 apf.window.moveNext(true, this, true);//go backward to detect modals
@@ -458,7 +478,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     this.$propHandlers["zindex"] = function(value){
-        this.oExt.style.zIndex = value + 1;
+        this.$ext.style.zIndex = value + 1;
         if (this.oCover)
             this.oCover.style.zIndex = value;
     };
@@ -474,10 +494,10 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
 
-        if (key > 36 && key < 41) {
-            if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
-                _self.disableAnchoring();
-        }
+        /*if (key > 36 && key < 41) {
+            if (this.hasFeature && this.hasFeature(apf.__ANCHORING__))
+                this.$disableAnchoring();
+        }*/
 
         var retValue = false;
         switch (key) {
@@ -491,37 +511,37 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             //UP
                 if (shiftKey && this.resizable)
                     this.setProperty("height", Math.max(this.minheight || 0,
-                        this.oExt.offsetHeight - (ctrlKey ? 50 : 10)));
+                        this.$ext.offsetHeight - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("top",
-                        this.oExt.offsetTop - (ctrlKey ? 50 : 10));
+                        this.$ext.offsetTop - (ctrlKey ? 50 : 10));
                 break;
             case 37:
             //LEFT
                 if (shiftKey && this.resizable)
                     this.setProperty("width", Math.max(this.minwidth || 0,
-                        this.oExt.offsetWidth - (ctrlKey ? 50 : 10)));
+                        this.$ext.offsetWidth - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left",
-                        this.oExt.offsetLeft - (ctrlKey ? 50 : 10));
+                        this.$ext.offsetLeft - (ctrlKey ? 50 : 10));
                 break;
             case 39:
             //RIGHT
                 if (shiftKey && this.resizable)
                     this.setProperty("width", Math.min(this.maxwidth || 10000,
-                        this.oExt.offsetWidth + (ctrlKey ? 50 : 10)));
+                        this.$ext.offsetWidth + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left",
-                        this.oExt.offsetLeft + (ctrlKey ? 50 : 10));
+                        this.$ext.offsetLeft + (ctrlKey ? 50 : 10));
                 break;
             case 40:
             //DOWN
                 if (shiftKey && this.resizable)
                     this.setProperty("height", Math.min(this.maxheight || 10000,
-                        this.oExt.offsetHeight + (ctrlKey ? 50 : 10)));
+                        this.$ext.offsetHeight + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("top",
-                        this.oExt.offsetTop + (ctrlKey ? 50 : 10));
+                        this.$ext.offsetTop + (ctrlKey ? 50 : 10));
                 break;
             default:
                 retValue = null;
@@ -529,7 +549,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         }
 
         if (apf.hasSingleRszEvent)
-            apf.layout.forceResize(this.oInt);
+            apf.layout.forceResize(this.$int);
         
         return retValue;
     }, true);
@@ -548,18 +568,21 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     /**** Init ****/
 
     this.$draw = function(){
-        this.popout = apf.isTrue(this.$aml.getAttribute("popout"));
+        this.popout = apf.isTrue(this.getAttribute("popout"));
         if (this.popout)
-            this.pHtmlNode = document.body;
+            this.$pHtmlNode = document.body;
 
-        this.oExt = this.$getExternal(null, null, function(oExt){
+        this.$ext = this.$getExternal(null, null, function(oExt){
             this.$initButtons(oExt);
         });
-        this.oTitle   = this.$getLayoutNode("main", "title", this.oExt);
-        this.oIcon    = this.$getLayoutNode("main", "icon",  this.oExt);
-        this.oDrag    = this.$getLayoutNode("main", "drag",  this.oExt);
-        this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
+        this.oTitle   = this.$getLayoutNode("main", "title", this.$ext);
+        this.oIcon    = this.$getLayoutNode("main", "icon",  this.$ext);
+        this.oDrag    = this.$getLayoutNode("main", "drag",  this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
         this.oDrag.host = this;
+
+        if (this.popout)
+            this.$ext.style.position = "absolute";
 
         if (this.oIcon)
             this.oIcon.style.display = "none";
@@ -567,6 +590,8 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         //#ifdef __SUPPORT_IPHONE
         if (!apf.isIphone) {
         //#endif
+        
+        var _self = this;
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
 
@@ -586,9 +611,9 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             //#endif
         };
 
-        this.oExt.onmousedown = function(){
+        this.$ext.onmousedown = function(){
             //#ifdef __WITH_FOCUS
-            var p = apf.window.focussed;
+            var p = apf.document.activeElement;
             if (p && p.$focusParent != _self && p.$focusParent.modal)
                 return false;
             //#endif
@@ -600,7 +625,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
             if (!_self.$lastState.normal)
                 return false;
         }
-        this.oExt.onmousemove = function(){
+        this.$ext.onmousemove = function(){
             if (!_self.$lastState.normal)
                 return false;
         }
@@ -610,7 +635,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
         
 
         /*var v;
-        if (!apf.dynPropMatch.test(v = this.$aml.getAttribute("visible"))) {
+        if (!((v = this.getAttribute("visible")).indexOf("{") > -1 || v.indexOf("[") > -1)) {
             this.$aml.setAttribute("visible", "{" + apf.isTrue(v) + "}");
         }*/
     };
@@ -618,16 +643,13 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     this.$loadAml = function(x){
         apf.WinServer.setTop(this);
 
-        var oInt = this.$getLayoutNode("main", "container", this.oExt);
-
-        this.oInt = this.oInt
-            ? apf.AmlParser.replaceNode(oInt, this.oInt)
-            : apf.AmlParser.parseChildren(this.$aml, oInt, this, true);
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
         //#ifdef __SUPPORT_IPHONE
         if (!apf.isIphone) {
         //#endif
             if (this.oTitle) {
+                var _self = this;
                 (this.oTitle.nodeType != 1
                   ? this.oTitle.parentNode
                   : this.oTitle).ondblclick = function(e){
@@ -642,7 +664,7 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
     
             if (typeof this.draggable == "undefined") {
                 (this.$propHandlers.draggable
-                    || apf.AmlElement.propHandlers.draggable).call(this, true);
+                    || apf.GuiElement.propHandlers.draggable).call(this, true);
                 this.draggable = true;
             }
 
@@ -660,14 +682,18 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         //Set default visible hidden
         if (!this.visible) {
-            this.oExt.style.display = "none";
+            this.$ext.style.display = "none";
 
             if (this.oCover)
                 this.oCover.style.display = "none";
         }
         //#ifdef __WITH_FOCUS
-        else if (this.modal)
-            this.focus(false, {mouse:true});
+        else if (this.modal) {
+            var _self = this;
+            apf.queue.add("focus", function(){
+                _self.focus(false, {mouse:true});
+            });
+        }
         //#endif
 
         if (this.minwidth === undefined)
@@ -681,23 +707,23 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         if (this.center && this.visible) {
             this.visible = false;
-            this.oExt.style.display = "none"; /* @todo temp done for project */
-            apf.AmlParser.stateStack.push({
-                node  : this,
-                name  : "visible",
-                value : "true"
+            this.$ext.style.display = "none"; /* @todo temp done for project */
+            
+            var _self = this;
+            setTimeout(function(){
+                _self.setProperty("visible", true);
             });
         }
     };
 
     //#ifdef __WITH_SKIN_CHANGE
-    this.$skinchange = function(){
+    this.addEventListener("$skinchange", function(){
         if (this.title)
             this.$propHandlers["title"].call(this, this.title);
 
         if (this.icon)
             this.$propHandlers["icon"].call(this, this.icon);
-    }
+    });
     //#endif
 
     this.$destroy = function(skinChange){
@@ -710,19 +736,16 @@ apf.modalwindow = apf.component(apf.NODE_VISIBLE, function(){
 
         this.oTitle =  this.oIcon = this.oCover = null;
 
-        if (this.oExt && !skinChange) {
-            this.oExt.onmousedown = null;
-            this.oExt.onmousemove = null;
+        if (this.$ext && !skinChange) {
+            this.$ext.onmousedown = null;
+            this.$ext.onmousemove = null;
         }
     };
-}).implement(
-    // #ifdef __WITH_DELAYEDRENDER
-    apf.DelayedRender,
-    // #endif
-    //#ifdef __WITH_DOCKING
-    apf.Docking,
-    //#endif
-    apf.Presentation,
-    apf.BaseStateButtons
-);
+}).call(apf.modalwindow.prototype = new apf.Presentation());
+
+apf.AmlWindow.prototype = apf.toolwindow.prototype = apf.modalwindow.prototype;
+
+apf.aml.setElement("toolwindow",  apf.toolwindow);
+apf.aml.setElement("modalwindow", apf.modalwindow);
+apf.aml.setElement("window",      apf.modalwindow);
 // #endif

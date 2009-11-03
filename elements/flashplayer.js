@@ -18,8 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JFLASHPLAYER || __INC_ALL
-// #define __JBASESIMPLE 1
+// #ifdef __AMLFLASHPLAYER || __INC_ALL
+// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying the contents of a .swf (adobe flash) file.
@@ -52,19 +52,30 @@
  *  <a:flashplayer ref="@src" />
  * </code>
  */
-apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    //this.editableParts = {"main" : [["image","@src"]]};
-    //#endif
-    
+apf.flashplayer = function(struct, tagName){
+    this.$init(tagName || "flashplayer", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction,
+        //#endif
+        apf.StandardBinding
+    );
+
     /**** Public methods ****/
+    
+    //#ifdef __WITH_CONVENIENCE_API
     
     /**
      * @ref global#setValue
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
+    
+    //#endif
     
     /**** Properties and attributes ****/
     
@@ -77,39 +88,36 @@ apf.flashplayer = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        //this.oInt = this.oExt = this.$getExternal();
-        //this.oExt.onclick = function(){this.host.dispatchEvent("click");}
+        this.$ext = 
+        this.$int = this.$pHtmlNode.appendChild(document.createElement("div"));
+        this.$ext.onclick = function(){this.host.dispatchEvent("click");}
         
-        var src = this.$aml.getAttribute("src") || "";
-        document.body.insertAdjacentHTML("beforeend", 
+        var src = this.getAttribute("src") || "";
+        this.$ext.insertAdjacentHTML("beforeend",
             '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
               codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
-              width="1" \
-              height="1" \
+              width="100%" \
+              height="100%" \
               align="middle">\
                 <param name="allowScriptAccess" value="sameDomain" />\
                 <param name="allowFullScreen" value="false" />\
                 <param name="movie" value="' + src + '" />\
-                <param name="play" value="false" />\
+                <param name="play" value="true" />\
                 <param name="menu" value="false" />\
                 <param name="quality" value="high" />\
                 <param name="wmode" value="transparent" />\
                 <param name="bgcolor" value="#ffffff" />\
-                <embed src="' + src + '" play="false" menu="false" \
-                  quality="high" wmode="transparent" bgcolor="#ffffff" width="1" \
-                  height="1" align="middle" allowScriptAccess="sameDomain" \
+                <embed src="' + src + '" play="true" menu="false" \
+                  quality="high" wmode="transparent" bgcolor="#ffffff" width="100%" \
+                  height="100%" align="middle" allowScriptAccess="sameDomain" \
                   allowFullScreen="false" type="application/x-shockwave-flash" \
                   pluginspage="http://www.macromedia.com/go/getflashplayer" />\
             </object>')
-        this.oExt = document.body.lastChild;
-        pHtmlNode.appendChild(this.oExt);
     };
     
     this.$loadAml = function(x){
-        apf.AmlParser.parseChildren(x, null, this);
     };
-}).implement(
-    apf.BaseSimple
-);
+}).call(apf.flashplayer.prototype = new apf.GuiElement());
 
+apf.aml.setElement("flashplayer", apf.flashplayer);
 // #endif

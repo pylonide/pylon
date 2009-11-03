@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JCOLORPICKER || __INC_ALL
+// #ifdef __AMLCOLORPICKER || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -34,9 +34,8 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  * @inherits apf.XForms
  *
  * @attribute {String} color the color that is selected in the color picker.
@@ -58,7 +57,22 @@
  *  <a:colorpicker ref="@color" />
  * </code>
  */
-apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
+apf.colorpicker = function(struct, tagName){
+    this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        // #ifdef __WITH_DATABINDING
+        apf.StandardBinding
+        // #endif
+        //#ifdef __WITH_DATAACTION
+        ,apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+       // ,apf.XForms
+        //#endif
+    );
     //Options
     this.$focussable = true; // This object can get the focus
 
@@ -93,8 +107,7 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
         cS       = 239,
         cH       = 0,
         cHex     = "#FF0000",
-        HSLRange = 240,
-        _self    = this;
+        HSLRange = 240;
 
     function HSLRangeToRGB(H, S, L){
         return HSLtoRGB(H / (HSLRange - 1), S / HSLRange,
@@ -214,29 +227,29 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
     this.movePointer = function(e){
         e = e || window.event;
 
-        var ty = _self.pHolder.ty;
+        var ty = this.pHolder.ty;
         if ((e.clientY - ty >= 0) && (e.clientY - ty
-          <= _self.pHolder.offsetHeight - _self.pointer.offsetHeight + 22))
-            _self.pointer.style.top = e.clientY - ty;
+          <= this.pHolder.offsetHeight - this.pointer.offsetHeight + 22))
+            this.pointer.style.top = e.clientY - ty;
         if (e.clientY - ty < 21)
-            _self.pointer.style.top = 21;
+            this.pointer.style.top = 21;
         if (e.clientY - ty
-          > _self.pHolder.offsetHeight - _self.pointer.offsetHeight + 19)
-            _self.pointer.style.top = _self.pHolder.offsetHeight
-                - _self.pointer.offsetHeight + 19;
+          > this.pHolder.offsetHeight - this.pointer.offsetHeight + 19)
+            this.pointer.style.top = this.pHolder.offsetHeight
+                - this.pointer.offsetHeight + 19;
 
         // 255 - posY:
-        cL = (255 - (_self.pointer.offsetTop - 22)) / 2.56 * 2.4;
-        _self.fill(cH, cS, cL);
+        cL = (255 - (this.pointer.offsetTop - 22)) / 2.56 * 2.4;
+        this.fill(cH, cS, cL);
 
         e.returnValue  = false;
         e.cancelBubble = true;
     };
 
     this.setLogic = function(){
+        var _self = this;
         this.pHolder.style.zIndex = 10;
         this.pHolder.onmousedown  = function(){
-
             this.ty = apf.getAbsolutePosition(this)[1] - 20;
 
             _self.movePointer();
@@ -263,7 +276,7 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
         }
 
         this.container.onmouseup = function(e){
-            this.active                   = false;
+            this.active               = false;
             _self.point.style.top     = event.offsetY - _self.point.offsetHeight - 2;
             _self.point.style.left    = event.offsetX - _self.point.offsetWidth - 2;
             _self.point.style.display = "block";
@@ -296,38 +309,38 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
     }
 
     // Databinding
-    this.mainBind = "color";
+    this.$mainBind = "color";
 
     this.$draw = function(parentNode, clear){
         //Build Main Skin
-        this.oExt    = this.$getExternal();
+        this.$ext    = this.$getExternal();
 
-        this.tbRed   = this.$getLayoutNode("main", "red", this.oExt);
-        this.tbGreen = this.$getLayoutNode("main", "green", this.oExt);
-        this.tbBlue  = this.$getLayoutNode("main", "blue", this.oExt);
+        this.tbRed   = this.$getLayoutNode("main", "red", this.$ext);
+        this.tbGreen = this.$getLayoutNode("main", "green", this.$ext);
+        this.tbBlue  = this.$getLayoutNode("main", "blue", this.$ext);
 
-        this.tbHue       = this.$getLayoutNode("main", "hue", this.oExt);
-        this.tbSatern    = this.$getLayoutNode("main", "satern", this.oExt);
-        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.oExt);
+        this.tbHue       = this.$getLayoutNode("main", "hue", this.$ext);
+        this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
+        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
 
-        this.tbHexColor          = this.$getLayoutNode("main", "hex", this.oExt);
+        this.tbHexColor          = this.$getLayoutNode("main", "hex", this.$ext);
         this.tbHexColor.onchange = function(){
             _self.setValue(this.value, "RGBHEX");
         }
 
-        this.shower = this.$getLayoutNode("main", "shower", this.oExt);
+        this.shower = this.$getLayoutNode("main", "shower", this.$ext);
 
-        this.bar1   = this.$getLayoutNode("main", "bar1", this.oExt);
-        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.oExt);
-        this.bar2   = this.$getLayoutNode("main", "bar2", this.oExt);
-        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.oExt);
+        this.bar1   = this.$getLayoutNode("main", "bar1", this.$ext);
+        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.$ext);
+        this.bar2   = this.$getLayoutNode("main", "bar2", this.$ext);
+        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.$ext);
 
-        this.pHolder   = this.$getLayoutNode("main", "pholder", this.oExt);
-        this.pointer   = this.$getLayoutNode("main", "pointer", this.oExt);
-        this.container = this.$getLayoutNode("main", "container", this.oExt);
-        this.point     = this.$getLayoutNode("main", "point", this.oExt);
+        this.pHolder   = this.$getLayoutNode("main", "pholder", this.$ext);
+        this.pointer   = this.$getLayoutNode("main", "pointer", this.$ext);
+        this.container = this.$getLayoutNode("main", "container", this.$ext);
+        this.point     = this.$getLayoutNode("main", "point", this.$ext);
 
-        var nodes = this.oExt.getElementsByTagName("input");
+        var nodes = this.$ext.getElementsByTagName("input");
         for (var i = 0; i < nodes.length; i++) {
             nodes[i].onselectstart = function(e){
                 e = e || window.event;
@@ -354,17 +367,8 @@ apf.colorpicker = apf.component(apf.NODE_VISIBLE, function(){
         this.tbHexColor.host =
         this.pHolder.host    = null;
     }
-}).implement(
-    apf.Presentation
-    // #ifdef __WITH_DATABINDING
-    ,apf.DataBinding
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    ,apf.Validation
-    //#endif
-    //#ifdef __WITH_XFORMS
-    ,apf.XForms
-    //#endif
-);
+}).call(apf.colorpicker.prototype = new apf.GuiElement());
+
+apf.aml.setElement("colorpicker", apf.colorpicker);
 
 // #endif

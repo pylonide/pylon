@@ -18,7 +18,7 @@
  *
  */
 
-// #ifdef __JSPINNER || __INC_ALL
+// #ifdef __AMLSPINNER || __INC_ALL
 /** 
  * This element is used to choosing number by plus/minus buttons.
  * When plus button is clicked longer, number growing up faster. The same
@@ -59,7 +59,7 @@
  *     <a:bindings>
  *         <a:value select = "@page" />
  *         <a:max select   = "@pages" />
- *         <a:caption><![CDATA[{@page} of {@pages}, it's possible to add more text]]></a:caption>
+ *         <a:caption><![CDATA[[@page] of [@pages], it's possible to add more text]]></a:caption>
  *     </a:bindings>
  * </a:spinner>
  * <a:textbox value="{spinner.caption}"></a:textbox>
@@ -76,20 +76,31 @@
  * @version     %I%, %G%
  * 
  * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  */
-apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
-    this.max           = 64000;
-    this.min           = -64000;
-    this.focused       = false;
-    this.value         = 0;
+apf.spinner = function(struct, tagName){
+    this.$init(tagName || "spinner", apf.NODE_VISIBLE, struct);
+};
 
-    var _self     = this;
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
+    this.max     = 64000;
+    this.min     = -64000;
+    this.focused = false;
+    this.value   = 0;
 
     this.$supportedProperties.push("width", "value", "max", "min", "caption");
 
@@ -97,35 +108,33 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
         value = parseInt(value) || 0;
 
         if (value) {
-            this.value = this.oInput.value = (value > _self.max
-                ? _self.max
-                : (value < _self.min
-                    ? _self.min
+            this.value = this.oInput.value = (value > this.max
+                ? this.max
+                : (value < this.min
+                    ? this.min
                     : value));
         }
     };
 
     this.$propHandlers["min"] = function(value) {
-        if (parseInt(value)) {
-            this.min = parseInt(value);
-            if (value > this.value) {
-                this.change(value);
-            }
-        }
+        if (!(value = parseInt(value))) return;
+        this.min = value;
+        if (value > this.value)
+            this.change(value);
     };
 
     this.$propHandlers["max"] = function(value) {
-        if (parseInt(value)) {
-            this.max = parseInt(value);
-            if(value < this.value) {
-                this.change(value);
-            }
-        }
+        if (!(value = parseInt(value))) return;
+        this.max = value;
+        if (value < this.value)
+            this.change(value);
     };
 
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
+
+    //#ifdef __WITH_CONVENIENCE_API
 
     /**
      * Sets the value of this element. This should be one of the values
@@ -133,7 +142,7 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
      * @param {String} value the new value of this element
      */
     this.setValue = function(value) {
-       this.setProperty("value", value);
+       this.setProperty("value", value, false, true);
     };
 
     /**
@@ -143,6 +152,8 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
     this.getValue = function() {
         return this.value;
     };
+    
+    //#endif
 
     this.$enable = function() {
         this.oInput.disabled = false;
@@ -155,7 +166,7 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$focus = function(e) {
-        if (!this.oExt || this.disabled || this.focused)
+        if (!this.$ext || this.disabled || this.focused)
             return;
 
         //#ifdef __WITH_WINDOW_FOCUS
@@ -165,31 +176,31 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
 
         this.focused = true;
         this.$setStyleClass(this.oInput, "focus");
-        this.$setStyleClass(this.oButtonPlus, "plusFocus");
-        this.$setStyleClass(this.oButtonMinus, "minusFocus");
+        this.$setStyleClass(this.$buttonPlus, "plusFocus");
+        this.$setStyleClass(this.$buttonMinus, "minusFocus");
     };
 
     this.$blur = function(e) {
-        if (!this.oExt && !this.focused)
+        if (!this.$ext && !this.focused)
             return;
 
         this.$setStyleClass(this.oInput, "", ["focus"]);
-        this.$setStyleClass(this.oButtonPlus, "", ["plusFocus"]);
-        this.$setStyleClass(this.oButtonMinus, "", ["minusFocus"]);
+        this.$setStyleClass(this.$buttonPlus, "", ["plusFocus"]);
+        this.$setStyleClass(this.$buttonMinus, "", ["minusFocus"]);
         this.focused = false;
-    }
+    };
 
     /* ***********************
      Keyboard Support
      ************************/
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
-        var key = e.keyCode;
+        var key = e.keyCode,
 
-        var keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
-                      || (key > 40 && key < 46) || (key > 46 && key < 48)
-                      || (key > 57 && key < 96) || (key > 105 && key < 109)
-                      || (key > 109 && key !== 189));
+        keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
+            || (key > 40 && key < 46) || (key > 46 && key < 48)
+            || (key > 57 && key < 96) || (key > 105 && key < 109)
+            || (key > 109 && key !== 189));
 
        if (keyAccess)
            return false;
@@ -207,8 +218,10 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
      * @event mousedown Fires when the user presses a mousebutton while over this element. 
      */
     this.$draw = function() {
+        var _self = this;
+
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt) {
+        this.$ext = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmousedown",
                 'this.host.dispatchEvent("mousedown", {htmlEvent : event});');
             oExt.setAttribute("onmouseup",
@@ -217,16 +230,19 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
                 'this.host.dispatchEvent("click", {htmlEvent : event});');
         });
 
-        this.oInt         = this.$getLayoutNode("main", "container", this.oExt);
-        this.oInput       = this.$getLayoutNode("main", "input", this.oExt);
-        this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
-        this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
+        this.$int         = this.$getLayoutNode("main", "container",   this.$ext);
+        this.oInput       = this.$getLayoutNode("main", "input",       this.$ext);
+        this.$buttonPlus  = this.$getLayoutNode("main", "buttonplus",  this.$ext);
+        this.$buttonMinus = this.$getLayoutNode("main", "buttonminus", this.$ext);
 
         //#ifdef __WITH_WINDOW_FOCUS
         apf.sanitizeTextbox(this.oInput);
         //#endif
 
-        var timer, z = 0;
+        var timer,
+            doc = (!document.compatMode || document.compatMode == 'CSS1Compat')
+                ? document.html : document.body,
+            z   = 0;
 
         /* Setting start value */
         this.oInput.value = this.value;
@@ -237,31 +253,38 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
             
             e = e || window.event;
 
-            var value = parseInt(this.value) || 0, step = 0,
-                cy = e.clientY, cx = e.clientX,
-                ot = _self.oInt.offsetTop, ol = _self.oInt.offsetLeft,
-                ow = _self.oInt.offsetWidth, oh = _self.oInt.offsetHeight;
+            clearTimeout(timer);
 
-            clearInterval(timer);
-            timer = setInterval(function() {
-                if (!step)
-                    return;
+            var newval,
+                value = parseInt(this.value) || 0,
+                step  = 0,
+                cy    = e.clientY,
+                ot    = _self.$int.offsetTop, ol = _self.$int.offsetLeft,
+                ow    = _self.$int.offsetWidth, oh = _self.$int.offsetHeight,
+                func  = function() {
+                    clearTimeout(timer);
+                    timer = setTimeout(func, 10);
+                    if (!step)
+                        return;
 
-                if (value + step <= _self.max
-                    && value + step >= _self.min) {
-                    value += step;
-                    _self.oInput.value= Math.round(value);
-                }
-                else {
-                    _self.oInput.value = step < 0 
-                        ? _self.min
-                        : _self.max;
-                }
-            }, 10);
+                    newval = value + step;
+                    if (newval <= _self.max && newval >= _self.min) {
+                        value += step;
+                        _self.oInput.value = Math.round(value);
+                    }
+                    else {
+                        _self.oInput.value = step < 0
+                            ? _self.min
+                            : _self.max;
+                    }
+                };
+            func();
 
-            document.onmousemove = function(e) {
+            function calcStep(e) {
                 e = e || window.event;
-                var y = e.clientY, x = e.clientX, nrOfPixels = cy - y;
+                var x = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
+                    y = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0),
+                    nrOfPixels = cy - y;
 
                 if ((y > ot && x > ol) && (y < ot + oh && x < ol + ow)) {
                     step = 0;
@@ -271,130 +294,133 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
                 step = Math.pow(Math.min(200, Math.abs(nrOfPixels)) / 10, 2) / 10;
                 if (nrOfPixels < 0)
                     step = -1 * step;
-            };
+            }
+            
+            document.onmousemove = calcStep;
 
             document.onmouseup = function(e) {
-                clearInterval(timer);
+                clearTimeout(timer);
 
                 var value = parseInt(_self.oInput.value);
 
-                if (value != _self.value) {
+                if (value != _self.value)
                     _self.change(value);
-                }
-                document.onmousemove = null;
+                document.onmousemove = document.onmouseup = null;
             };
         };
 
         /* Fix for mousedown for IE */
         var buttonDown = false;
-        this.oButtonPlus.onmousedown = function(e) {
+        this.$buttonPlus.onmousedown = function(e) {
             if (_self.disabled)
                 return;
             
             e = e || window.event;
             buttonDown = true;
 
-            var value = (parseInt(_self.oInput.value) || 0) + 1;
+            var value = (parseInt(_self.oInput.value) || 0) + 1,
+                func  = function() {
+                    clearTimeout(timer);
+                    timer = setTimeout(func, 50);
+                    z++;
+                    value += Math.pow(Math.min(200, z) / 10, 2) / 10;
+                    value = Math.round(value);
 
-            apf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
+                    _self.oInput.value = value <= _self.max
+                        ? value
+                        : _self.max;
+                };
 
-            clearInterval(timer);
-            timer = setInterval(function() {
-                z++;
-                value += Math.pow(Math.min(200, z) / 10, 2) / 10;
-                value = Math.round(value);
+            apf.setStyleClass(this, "plusDown", ["plusHover"]);
 
-                _self.oInput.value = value <= _self.max
-                    ? value
-                    : _self.max;
-            }, 50);
+            func();
         };
 
-        this.oButtonMinus.onmousedown = function(e) {
+        this.$buttonMinus.onmousedown = function(e) {
             if (_self.disabled)
                 return;
             
             e = e || window.event;
             buttonDown = true;
 
-            var value = (parseInt(_self.oInput.value) || 0) - 1;
+            var value = (parseInt(_self.oInput.value) || 0) - 1,
+                func  = function() {
+                    clearTimeout(timer);
+                    timer = setTimeout(func, 50);
+                    z++;
+                    value -= Math.pow(Math.min(200, z) / 10, 2) / 10;
+                    value = Math.round(value);
 
-            apf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
+                    _self.oInput.value = value >= _self.min
+                        ? value
+                        : _self.min;
+                };
 
-            clearInterval(timer);
-            timer = setInterval(function() {
-                z++;
-                value -= Math.pow(Math.min(200, z) / 10, 2) / 10;
-                value = Math.round(value);
+            apf.setStyleClass(this, "minusDown", ["minusHover"]);
 
-                _self.oInput.value = value >= _self.min
-                    ? value
-                    : _self.min;
-            }, 50);
+            func();
         };
 
-        this.oButtonMinus.onmouseout = function(e) {
+        this.$buttonMinus.onmouseout = function(e) {
             if (_self.disabled)
                 return;
             
-            window.clearInterval(timer);
+            clearTimeout(timer);
             z = 0;
 
             var value = parseInt(_self.oInput.value);
 
-            if (value != _self.value) {
+            if (value != _self.value)
                 _self.change(value);
-            }
-            apf.setStyleClass(_self.oButtonMinus, "", ["minusHover"]);
 
-            if (!_self.focused) {
+            apf.setStyleClass(this, "", ["minusHover"]);
+
+            if (!_self.focused)
                _self.$blur(e);
-            }
         };
 
-        this.oButtonPlus.onmouseout  = function(e) {
+        this.$buttonPlus.onmouseout  = function(e) {
             if (_self.disabled)
                 return;
             
-            window.clearInterval(timer);
+            clearTimeout(timer);
             z = 0;
 
             var value = parseInt(_self.oInput.value);
 
-            if (value != _self.value) {
+            if (value != _self.value)
                 _self.change(value);
-            }
-            apf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
 
-            if (!_self.focused) {
+            apf.setStyleClass(this, "", ["plusHover"]);
+
+            if (!_self.focused)
                _self.$blur(e);
-            }
         };
 
-        this.oButtonMinus.onmouseover = function(e) {
+        this.$buttonMinus.onmouseover = function(e) {
             if (_self.disabled)
                 return;
                 
-            apf.setStyleClass(_self.oButtonMinus, "minusHover");
+            apf.setStyleClass(this, "minusHover");
         };
 
-        this.oButtonPlus.onmouseover  = function(e) {
+        this.$buttonPlus.onmouseover  = function(e) {
             if (_self.disabled)
                 return;
                 
-            apf.setStyleClass(_self.oButtonPlus, "plusHover");
+            apf.setStyleClass(this, "plusHover");
         };
 
-        this.oButtonPlus.onmouseup = function(e) {
+        this.$buttonPlus.onmouseup = function(e) {
             if (_self.disabled)
                 return;
             
             e = e || event;
             e.cancelBubble = true;
 
-            apf.setStyleClass(_self.oButtonPlus, "plusHover", ["plusDown"]);
+            apf.setStyleClass(this, "plusHover", ["plusDown"]);
 
-            window.clearInterval(timer);
+            clearTimeout(timer);
             z = 0;
 
             var value = parseInt(_self.oInput.value);
@@ -407,21 +433,20 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
                 buttonDown = false;
             }
 
-            if (value != _self.value) {
+            if (value != _self.value)
                 _self.change(value);
-            }
         };
 
-        this.oButtonMinus.onmouseup = function(e) {
+        this.$buttonMinus.onmouseup = function(e) {
             if (_self.disabled)
                 return;
             
             e = e || event;
             e.cancelBubble = true;
 
-            apf.setStyleClass(_self.oButtonMinus, "minusHover", ["minusDown"]);
+            apf.setStyleClass(this, "minusHover", ["minusDown"]);
 
-            window.clearInterval(timer);
+            clearTimeout(timer);
             z = 0;
 
             var value = parseInt(_self.oInput.value);
@@ -435,9 +460,8 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
             }
 
 
-            if (value != _self.value) {
+            if (value != _self.value)
                 _self.change(value);
-            }
         };
 
         this.oInput.onselectstart = function(e) {
@@ -448,36 +472,26 @@ apf.spinner = apf.component(apf.NODE_VISIBLE, function() {
         this.oInput.host = this;
     };
 
-    this.$loadAml = function(x) {
-        apf.AmlParser.parseChildren(this.$aml, null, this);
-    };
-
     this.$destroy = function() {
         this.oInput.onkeypress =
         this.oInput.onmousedown =
         this.oInput.onkeydown =
         this.oInput.onkeyup =
         this.oInput.onselectstart =
-        this.oButtonPlus.onmouseover =
-        this.oButtonPlus.onmouseout =
-        this.oButtonPlus.onmousedown =
-        this.oButtonPlus.onmouseup =
-        this.oButtonMinus.onmouseover =
-        this.oButtonMinus.onmouseout =
-        this.oButtonMinus.onmousedown =
-        this.oButtonMinus.onmouseup = null;
+        this.$buttonPlus.onmouseover =
+        this.$buttonPlus.onmouseout =
+        this.$buttonPlus.onmousedown =
+        this.$buttonPlus.onmouseup =
+        this.$buttonMinus.onmouseover =
+        this.$buttonMinus.onmouseout =
+        this.$buttonMinus.onmousedown =
+        this.$buttonMinus.onmouseup = null;
     };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    //#ifdef __WITH_VALIDATION
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.spinner.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.spinner.prototype = new apf.Presentation());
+#endif */
 
+apf.aml.setElement("spinner", apf.spinner);
 // #endif

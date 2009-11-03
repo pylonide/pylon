@@ -25,7 +25,7 @@
  * Offline provider that uses Google gears.
  * @default_private
  */
-apf.namespace("offline.application.gears", {
+apf.offline.application.gears = {
     localServer : null,
     lastStore   : null,
     cancelID    : null,
@@ -35,7 +35,7 @@ apf.namespace("offline.application.gears", {
     init : function(){
         // clip at 64 characters, the max length of a resource store name
         this.name = this.storeName.truncate(64);
-        this.storeName = apf.appsettings.name + ".apf.offline";
+        this.storeName = apf.config.name + ".apf.offline";
         
         try{
             this.localServer = apf.nameserver.get("google", "gears").create("beta.localserver", "1.0");
@@ -138,6 +138,6 @@ apf.namespace("offline.application.gears", {
         this.lastStore.abortCapture(this.cancelID);
         this.refreshing = false;
     }
-});
+};
 
 // #endif

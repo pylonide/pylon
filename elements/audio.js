@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JAUDIO || __INC_ALL
+// #ifdef __AMLAUDIO || __INC_ALL
 
 /**
  * Element that is able to play an audio file or remote stream
@@ -49,11 +49,24 @@
  * @version     %I%, %G%
  * @since       1.0
  */
+apf.audio = function(struct, tagName){
+    this.$init(tagName || "audio", apf.NODE_VISIBLE, struct);
+};
 
-apf.audio = apf.component(apf.NODE_HIDDEN, function() {
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATABINDING
+        apf.StandardBinding,
+        //#endif
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction,
+        //#endif
+        apf.Media
+    );
+
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
 
-    this.mainBind = "src";
+    this.$mainBind = "src";
 
     /**
      * Load a audio by setting the URL pointer to a different audio file
@@ -61,7 +74,7 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
      * @param {String} sAudio
      * @type {Object}
      */
-    var dbLoad = this.load;
+    this.$dbLoad = this.load;
     this.loadMedia = function() {
         if (!arguments.length) {
             if (this.player) {
@@ -70,9 +83,8 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
                 this.player.load(this.src);
             }
         }
-        else {
-            dbLoad.apply(this, arguments);
-        }
+        else
+            this.$dbLoad.apply(this, arguments);
 
         return this;
     };
@@ -107,8 +119,8 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
      */
     this.$guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
-        var ext  = path.substr(path.lastIndexOf('.') + 1);
-        var type = "";
+        var ext  = path.substr(path.lastIndexOf('.') + 1),
+            type = "";
         switch (ext) {
             default:
             case "mp3":
@@ -168,7 +180,7 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new apf.audio[this.playerType](this, this.oExt, {
+        this.player = new apf.audio[this.playerType](this, this.$ext, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -346,9 +358,9 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$draw = function(){
-        this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "apf_audio " + (this.$aml.getAttributeNode("class") || "");
-        this.oInt = this.oExt;
+        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+        this.$ext.className = "apf_audio " + (this.getAttributeNode("class") || "");
+        this.$int = this.$ext;
     };
 
     /**
@@ -361,8 +373,6 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
     this.$loadAml = function(x){
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
-        else
-            apf.AmlParser.parseChildren(this.$aml, null, this);
     };
 
     this.$destroy = function(bRuntime) {
@@ -372,14 +382,11 @@ apf.audio = apf.component(apf.NODE_HIDDEN, function() {
         this.player = null;
 
         if (bRuntime)
-            this.oExt.innerHTML = "";
+            this.$ext.innerHTML = "";
     };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    apf.Media
-);
+}).call(apf.audio.prototype = new apf.GuiElement());
+
+apf.aml.setElement("audio", apf.audio);
 
 apf.audio.TypeInterface = {
     properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],
@@ -410,18 +417,7 @@ apf.audio.TypeInterface = {
      * @type {HTMLDomElement}
      */
     getElement: function(id) {
-        var elem;
-
-        if (typeof id == "object")
-            return id;
-        if (apf.isIE)
-            return window[id];
-        else {
-            elem = document[id] ? document[id] : document.getElementById(id);
-            if (!elem)
-                elem = apf.lookup(id);
-            return elem;
-        }
+        return apf.flash.getElement(id);
     }
 };
 

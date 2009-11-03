@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JTOC || __INC_ALL
+// #ifdef __AMLTOC || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -41,13 +41,11 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.toc = apf.component(apf.NODE_VISIBLE, function(){
-    // #ifdef __WITH_EDITMODE
-    this.editableParts = {"Page" : [["caption","@caption"]]};
-    // #endif
-    
-    var _self = this;
-    
+apf.toc = function(struct, tagName){
+    this.$init(tagName || "toc", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     /**** Properties and Attributes ****/
     
     this.$supportedProperties.push("represent");
@@ -57,6 +55,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
      * navigation for.
      */
     this.$propHandlers["represent"] = function(value){
+        var _self = this;
         setTimeout(function(){
             var amlNode = _self.$represent = self[value];
             
@@ -85,34 +84,36 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
         if (this.disabled) return false;
 
         if (this.$represent.isValid && !this.$represent.testing) {
-            var pages      = this.$represent.getPages();
-            var activepagenr = this.$represent.activepagenr;
-            for (var i = activepagenr; i < nr; i++) {
-                pages[i].oExt.style.position = "absolute"; //hack
-                pages[i].oExt.style.top      = "-10000px"; //hack
-                pages[i].oExt.style.display  = "block"; //hack
-                var test = !this.$represent.isValid || this.$represent
-                    .isValid(i < activepagenr, i < activepagenr, pages[i]);//false, activepagenr == i, pages[i], true);
-                pages[i].oExt.style.display  = ""; //hack
-                pages[i].oExt.style.position = ""; //hack
-                pages[i].oExt.style.top      = ""; //hack
-                pages[i].oExt.style.left     = ""; //hack
-                pages[i].oExt.style.width    = "1px";
-                pages[i].oExt.style.width    = "";
+            var i, test,
+                pages        = this.$represent.getPages(),
+                activepagenr = this.$represent.activepagenr;
+            for (i = activepagenr; i < nr; i++) {
+                pages[i].$ext.style.position = "absolute"; //hack
+                pages[i].$ext.style.top      = "-10000px"; //hack
+                pages[i].$ext.style.display  = "block"; //hack
+                test = !this.$represent.isValid || this.$represent
+                    .isValid(i < activepagenr, i < activepagenr, pages[i]);
+                //false, activepagenr == i, pages[i], true);
+                pages[i].$ext.style.display  = ""; //hack
+                pages[i].$ext.style.position = ""; //hack
+                pages[i].$ext.style.top      = ""; //hack
+                pages[i].$ext.style.left     = ""; //hack
+                pages[i].$ext.style.width    = "1px";
+                pages[i].$ext.style.width    = "";
     
-                if (!test) {
+                if (!test)
                     return this.$represent.set(i);
-                }
             }
         }
         
         if (this.$represent.showLoader)
             this.$represent.showLoader(true, nr); 
 
+        var _self = this;
         setTimeout(function(){
             _self.$represent.set(nr);
         }, 1);
-        //setTimeout("apf.lookup(" + this.$represent.uniqueId + ").set(" + nr + ");", 1);
+        //setTimeout("apf.lookup(" + this.$represent.$uniqueId + ").set(" + nr + ");", 1);
     };
     
     /**** Private Methods ****/
@@ -129,7 +130,7 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
                 if (page > active)
                     is_between = true;
             }
-            if (!last || !is_between) return; //exit if there are no known indexes
+            if (!last || !is_between) return; //exit if there are no known indices
             active = last;
         }
 
@@ -138,32 +139,37 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
                 this.$setStyleClass(this.pages[i], "present", ["future", "past"]);
                 isPast = false;
             }
-            else
-                if (isPast)
+            else if (isPast) {
                     this.$setStyleClass(this.pages[i], "past", ["future", "present"]);
-            else
+            }
+            else {
                 this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
+            }
             
-            if (i == this.pages.length-1)
+            if (i == this.pages.length - 1)
                 this.$setStyleClass(this.pages[i], "last");
         }
     };
     
     this.$createReflection = function(){
-        var pages = this.$represent.getPages();
+        var i, oCaption, oPage,
+            l     = {},
+            pages = this.$represent.getPages(),
+            l2    = pages.length,
+            p     = [];
         
-        for (var l = {}, p = [], i = 0; i < pages.length; i++) {
+        for (i = 0; i < l2; i++) {
             this.$getNewContext("page");
-            var oCaption = this.$getLayoutNode("page", "caption");
-            var oPage    = this.$getLayoutNode("page");
+            oCaption = this.$getLayoutNode("page", "caption");
+            oPage    = this.$getLayoutNode("page");
             this.$setStyleClass(oPage, "page" + i);
             
-            oPage.setAttribute("onmouseover", 'apf.lookup(' + this.uniqueId 
+            oPage.setAttribute("onmouseover", 'apf.lookup(' + this.$uniqueId 
                 + ').$setStyleClass(this, "hover", null);');
-            oPage.setAttribute("onmouseout", 'apf.lookup(' + this.uniqueId 
+            oPage.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId 
                 + ').$setStyleClass(this, "", ["hover"]);');
             
-            if(!pages[i].$aml.getAttribute("caption")){
+            if(!pages[i].getAttribute("caption")){
                 // #ifdef __DEBUG
                 apf.console.warn("Page element without caption found.");
                 // #endif
@@ -171,17 +177,17 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
             }
             else {
                 apf.setNodeValue(oCaption, 
-                    pages[i].$aml.getAttribute("caption") || "");
+                    pages[i].getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
-                    apf.lookup(" + this.uniqueId + ").gotoPage(" + i + ");\
+                    apf.lookup(" + this.$uniqueId + ").gotoPage(" + i + ");\
                 });");
-            p.push(apf.xmldb.htmlImport(oPage, this.oInt));
+            p.push(apf.insertHtmlNode(oPage, this.$int));
             l[i] = p[p.length - 1];
         }
         
-        //xmldb.htmlImport(p, this.oInt);
+        //xmldb.htmlImport(p, this.$int);
         this.pages      = p;
         this.pagelookup = l;
         
@@ -191,8 +197,8 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
         if (apf.isGecko) {
             var tocNode = this;
             setTimeout(function(){
-                tocNode.oExt.style.height = tocNode.oExt.offsetHeight + 1 + "px";
-                tocNode.oExt.style.height = tocNode.oExt.offsetHeight - 1 + "px";
+                tocNode.$ext.style.height = tocNode.$ext.offsetHeight + 1 + "px";
+                tocNode.$ext.style.height = tocNode.$ext.offsetHeight - 1 + "px";
             }, 10);
         }
         //#endif
@@ -202,21 +208,22 @@ apf.toc = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt     = this.$getExternal(); 
-        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
-        this.oInt     = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext     = this.$getExternal(); 
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
     };
-    
-    this.$loadAml = function(x){
-        // #ifdef __DEBUG
-        if (!this.represent)
+
+    // #ifdef __DEBUG
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        if (!this.represent) {
             throw new Error(apf.formatErrorString(1013, this, 
                 "Find representation", 
                 "Could not find representation for the Toc: '" 
-                + this.name + "'", x))
-        // #endif
-    };
-}).implement(
-    apf.Presentation
-);
+                + this.name + "'", this));
+        }
+    });
+    // #endif
+}).call(apf.toc.prototype = new apf.Presentation());
+
+apf.aml.setElement("toc", apf.toc);
 // #endif

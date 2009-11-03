@@ -39,11 +39,11 @@
  * @default_private
  * @todo remove serialize here
  */
-apf.namespace("offline.transactions", {
+apf.offline.transactions = {
     enabled   : false,
        
     init : function(){
-        this.namespace = apf.appsettings.name + ".apf.offline.transactions";
+        this.namespace = apf.config.name + ".apf.offline.transactions";
         this.enabled   = true;
         
         //#ifdef __WITH_OFFLINE_STATE
@@ -248,14 +248,14 @@ apf.namespace("offline.transactions", {
             }
         }
     }
-});
+};
 
 /**
  * Determines whether it's possible to start a new action.
  * @private
  * @method
  */
-apf.namespace("offline.canTransact", function(){
+apf.offline.canTransact = function(){
     if(!apf.offline.enabled || this.onLine || this.transactions.enabled)
         return true;
     
@@ -268,5 +268,5 @@ apf.namespace("offline.canTransact", function(){
         return true;
     
     return false;
-});
+};
 // #endif

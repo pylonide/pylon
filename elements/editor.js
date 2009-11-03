@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JEDITOR || __INC_ALL
+// #ifdef __AMLEDITOR || __INC_ALL
 /**
  * Element displaying a Rich Text Editor, like M$ Office Word in a browser
  * window. Even though this Editor does not offer the same amount of features
@@ -43,9 +43,8 @@
  * @version     %I%, %G%
  * @since       1.0
  *
- * @inherits apf.Validation
  * @inherits apf.XForms
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
  * @inherits apf.Presentation
  *
  * @binding value  Determines the way the value for the element is retrieved 
@@ -65,19 +64,30 @@
  *  <a:colorpicker ref="body/text()" />
  * </code>
  */
-apf.editor = apf.component(apf.NODE_VISIBLE, function() {
-    var _self   = this;
+apf.editor = function(struct, tagName){
+    this.$init(tagName || "editor", apf.NODE_VISIBLE, struct);
+};
 
+(function() {
+    this.implement(
+        apf.ContentEditable
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+    
     this.value  = "";
     this.$value = "";
 
-    this.oWin = null;
+    this.$oWin      =
+    this.$oBookmark =
+    this.$fTimer    = null;
 
     /**** Properties and Attributes ****/
 
     this.isContentEditable = true;
 
-    this.$supportedProperties.push("value");
+    this.$supportedProperties.push("value", "characterset");
 
     this.$propHandlers["value"] = function(html){
         if (typeof html != "string")// || html == ""
@@ -90,7 +100,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         
         this.$value = html;
 
-        // #ifdef __PARSER_HTML
+        // #ifdef __WITH_HTML_CLEANER
         html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
             "<br _apf_marker='1' /><br _apf_marker='1' />");
 
@@ -115,6 +125,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type void
      */
     this.makeEditable = function() {
+        var _self = this;
+        
         if (apf.isIE) {
             setTimeout(function() {
                 _self.$activeDocument.body.contentEditable = true;
@@ -139,8 +151,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         this.dispatchEvent("complete", {editor: this});
     };
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
-     * API; processes the current state of the editor's content and outputs the result that
+     * processes the current state of the editor's content and outputs the result that
      *      can be used inside any other content or stored elsewhere.
      *
      * @return The string of (X)HTML that is inside the editor.
@@ -152,26 +166,28 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     /**
-     * API; replace the (X)HTML that's inside the Editor with something else
+     * replace the (X)HTML that's inside the Editor with something else
      *
      * @param {String} html
      * @type  {void}
      */
     this.setValue = function(value){
-        return this.setProperty("value", value);
+        return this.setProperty("value", value, false, true);
     };
+    
+    //#endif
 
     /**
      * Invoked by the Databinding layer when a model is reset/ cleared.
      * 
      * @type {void}
      */
-    this.$clear = function(nomsg) {
-        if (!nomsg) {
+    this.addEventListener("$clear", function(e) {
+        if (!e.nomsg) {
             this.value = "";
             return this.$propHandlers["value"].call(this, "");
         }
-    };
+    });
 
     /**
      * Paste (clipboard) data into the Editor
@@ -182,6 +198,7 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function onPaste(e) {
+        var _self = this;
         setTimeout(function() {
             var s = this.$activeDocument.body.innerHTML;
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
@@ -194,7 +211,6 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         });
     }
 
-    var oBookmark;
     /**
      * Event handler; fired when the user clicked inside the editable area.
      *
@@ -204,18 +220,20 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function onClick(e) {
-        if (oBookmark && apf.isGecko) {
+        if (this.$oBookmark && apf.isGecko) {
             var oNewBm = _self.$selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
-                //this.$selection.moveToBookmark(oBookmark);
+                //this.$selection.moveToBookmark(this.$oBookmark);
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
             }
         }
 
-        var which = e.which, button = e.button;
+        var which  = e.which,
+            button = e.button,
+            _self  = this;
         setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
-            if (apf.window.focussed != this) {
+            if (apf.document.activeElement != this) {
                 //this.$visualFocus(true);
                 _self.focus({});
             }
@@ -234,15 +252,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
-        if (_self.state == apf.DISABLED) return;
+        if (this.state == apf.DISABLED) return;
         //if (apf.isIE)
         //    this.$visualFocus(true);
-        _self.$notifyAllPlugins("context", e);
+        this.$notifyAllPlugins("context", e);
     }
 
     /**** Focus Handling ****/
 
-    var fTimer;
     /**
      * Fix for focus handling to mix 'n match nicely with other JPF elements
      *
@@ -250,23 +267,25 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.$focus = function(e){
-        if (!this.oExt || this.oExt.disabled)
+        if (!this.$ext || this.$ext.disabled)
             return;
 
         this.setProperty("state", (this.$pluginsActive == "code")
             ? apf.DISABLED
             : apf.OFF);
 
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+
+        var _self = this;
 
         function delay(){
             try {
-                if (!fTimer || document.activeElement != _self.oExt) {
+                if (!_self.$fTimer || document.activeElement != _self.$ext) {
                     _self.$visualFocus(true);
-                    clearInterval(fTimer);
+                    clearInterval(_self.$fTimer);
                 }
                 else {
-                    clearInterval(fTimer);
+                    clearInterval(_self.$fTimer);
                     return;
                 }
             }
@@ -274,8 +293,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         if (e && e.mouse && apf.isIE) {
-            clearInterval(fTimer);
-            fTimer = setInterval(delay, 1);
+            clearInterval(this.$fTimer);
+            this.$fTimer = setInterval(delay, 1);
         }
         else
             delay();
@@ -300,14 +319,14 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.$blur = function(e){
-        if (!this.oExt)
+        if (!this.$ext)
             return;
 
         var pParent = apf.popup.last && apf.lookup(apf.popup.last);
         if (pParent && pParent.editor == this)
             apf.popup.forceHide();
 
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
         var bCode = (this.$pluginsActive == "code");
         if (!this.realtime || bCode) {
@@ -325,7 +344,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$addListeners = function() {
-        apf.AbstractEvent.addListener(this.$activeDocument, "mouseup", onClick);
+        var _self = this;
+        apf.AbstractEvent.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this, false));
         //apf.AbstractEvent.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
         apf.AbstractEvent.addListener(this.$activeDocument, "keyup", apf.window.$keyup);
         apf.AbstractEvent.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
@@ -336,13 +356,13 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             apf.window.$mousedown(e);
         });
 
-        apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu);
+        apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this, false));
         apf.AbstractEvent.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
         apf.AbstractEvent.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
 
         this.$activeDocument.host = this;
 
-        apf.AbstractEvent.addListener(this.$activeDocument.body, "paste", onPaste);
+        apf.AbstractEvent.addListener(this.$activeDocument.body, "paste", onPaste.bindWithEvent(this, false));
     };
 
     //this.addEventListener("contextmenu", onContextmenu);
@@ -357,7 +377,8 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
     this.$draw = function() {
         this.$editable(function() {
             //this.plugins   = new apf.editor.plugins(this.$plugins, this);
-            var oEditor = this.$getLayoutNode("main", "editor",  this.oExt);
+            var oEditor = this.$getLayoutNode("main", "editor",  this.$ext),
+                _self   = this;
 
             this.iframe = document.createElement("iframe");
             this.iframe.setAttribute("frameborder", "0");
@@ -365,10 +386,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             this.iframe.setAttribute("marginwidth", "0");
             this.iframe.setAttribute("marginheight", "0");
             oEditor.appendChild(this.iframe);
-            this.oWin = this.iframe.contentWindow;
-            this.$activeDocument = this.oWin.document;
+            this.$oWin = this.iframe.contentWindow;
+            this.$activeDocument = this.$oWin.document;
 
-            this.$selection = new apf.selection(this.oWin,
+            this.$selection = new apf.selection(this.$oWin,
                 this.$activeDocument, this);
 
             // get the document style (CSS) from the skin:
@@ -418,11 +439,13 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
                         line-height: 10px;\
                     }";
             }
-
+            var c = this.getAttribute("characterset")
+                || this.getAttribute("charset") || apf.characterSet;
             this.$activeDocument.open();
-            this.$activeDocument.write('<?xml version="1.0" encoding="UTF-8"?>\
+            this.$activeDocument.write('<?xml version="1.0" encoding="' + c + '"?>\
                 <html>\
                 <head>\
+                    <meta http-equiv="Content-Type" content="text/html; charset=' + c + '" />\
                     <title></title>\
                     <style type="text/css">' + sCss + '</style>\
                 </head>\
@@ -438,10 +461,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
             //#ifdef __WITH_LAYOUT
             // setup layout rules:
             //@todo add this to $destroy
-            apf.layout.setRules(this.oExt, this.uniqueId + "_editor",
-                "var o = apf.all[" + this.uniqueId + "];\
+            apf.layout.setRules(this.$ext, this.$uniqueId + "_editor",
+                "var o = apf.all[" + this.$uniqueId + "];\
                 if (o) o.$resize()");
-            apf.layout.activateRules(this.oExt);
+            apf.layout.queue(this.$ext);
             //#endif
 
             this.$addListeners();
@@ -463,10 +486,10 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @type {void}
      */
     this.$resize = function() {
-        if (!this.iframe || !this.iframe.parentNode || !this.oExt.offsetHeight)
+        if (!this.iframe || !this.iframe.parentNode || !this.$ext.offsetHeight)
             return;
             
-        var h = (this.oExt.offsetHeight - this.oToolbar.offsetHeight - 2);
+        var h = (this.$ext.offsetHeight - this.oToolbar.offsetHeight - 2);
         if (!h || h < 0)
             h = 0;
 
@@ -486,35 +509,26 @@ apf.editor = apf.component(apf.NODE_VISIBLE, function() {
      * @param {XMLRootElement} x
      * @type  {void}
      */
-    this.$loadAml = function(x){
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(){
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
-        if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
-        else
-            apf.AmlParser.parseChildren(this.$aml, null, this);
+        if (apf.isOnlyChild(this.firstChild, [3,4]))
+            this.$handlePropSet("value", this.firstChild.nodeValue.trim());
 
         if (typeof this.realtime == "undefined")
             this.$propHandlers["realtime"].call(this);
-    };
+    });
 
     this.$destroy = function() {
         this.$selection.$destroy();
         this.$selection = this.$activeDocument.host = this.oToobar =
-            this.$activeDocument = this.oWin = this.iframe = null;
+            this.$activeDocument = this.$oWin = this.iframe = null;
     };
-}).implement(
-     //#ifdef __WITH_VALIDATION
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    apf.Presentation,
-    apf.ContentEditable
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.editor.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.editor.prototype = new apf.Presentation());
+#endif */
 
+apf.aml.setElement("editor", apf.editor);
 // #endif

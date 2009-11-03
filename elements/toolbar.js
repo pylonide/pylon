@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JTOOLBAR || __INC_ALL
+// #ifdef __AMLTOOLBAR || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -65,8 +65,11 @@
  * @inherits apf.Presentation
  */
 
-apf.toolbar = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
+apf.toolbar = function(struct, tagName){
+    this.$init(tagName || "toolbar", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     this.$focussable     = false;
     
     /**** DOM Hooks ****/
@@ -76,46 +79,10 @@ apf.toolbar = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
     };
-    
-    this.$loadAml = function(x){
-        var bar, tagName, i, l, node, nodes = this.$aml.childNodes;
-        
-        //Let's not parse our children, when we've already have them
-        if (!this.oInt && this.childNodes.length) 
-            return;
-        
-        //@todo Skin switching here...
-        
-        for (i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1) 
-                continue;
-            
-            tagName = node[apf.TAGNAME];
-            if ("bar|menubar".indexOf(tagName) > -1) {
-                bar = new apf.bar(this.oInt, tagName);
-                bar.skinName = this.skinName
-                bar.loadAml(node, this);
-                
-                if (tagName == "menubar") {
-                    this.$setStyleClass(bar.oExt, "menubar");
-    
-                    //#ifdef __DEBUG
-                    bar.$domHandlers["insert"].push(function(amlNode){
-                        if (amlNode.tagName != "button") {
-                            throw new Error(apf.formatErrorStrin(0, this,
-                                "Appending a child",
-                                "A menubar can only contain button elements"));
-                        }
-                    });
-                    //#endif
-                }
-            }
-        }
-    };
-}).implement(apf.Presentation);
+}).call(apf.toolbar.prototype = new apf.Presentation());
 
+apf.aml.setElement("toolbar", apf.toolbar);
 // #endif

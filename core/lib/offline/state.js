@@ -36,12 +36,12 @@
  * <code>
  *  <a:offline 
  *      realtime  = "true" 
- *      set       = "url:store_session.jsp" 
+ *      set       = "store_session.jsp" 
  *      onrestore = "return confirm('Would you like to continue where you left of?')" />
  * </code>
  *
  * @event restore Fires before restoring the application to the predefined state.
- *   cancellable: Loads the stored state into the applicaton.
+ *   cancelable: Loads the stored state into the applicaton.
  *
  * @define offline
  * @attribute {String} [set]    a datainstruction that stores the state of the application to an external data store.
@@ -49,14 +49,14 @@
  * @default_private
  * @todo optimize by not getting the default values from the aml
  */
-apf.namespace("offline.state", {
+apf.offline.state = {
     enabled   : false,
     states    : {},
     realtime  : true,
     lookup    : {},
 
     init : function(aml){
-        this.namespace = apf.appsettings.name + ".apf.offline.state";
+        this.namespace = apf.config.name + ".apf.offline.state";
         
         if (aml.nodeType) {
             if (aml.getAttribute("realtime"))
@@ -85,7 +85,7 @@ apf.namespace("offline.state", {
         
         //#ifdef __WITH_REGISTRY
         var registry       = apf.extend({}, apf.offline.storage || apf.storage);
-        registry.namespace = apf.appsettings.name + ".apf.registry";
+        registry.namespace = apf.config.name + ".apf.registry";
         apf.registry.$export(registry);
         apf.registry       = registry;
         //#endif
@@ -129,7 +129,7 @@ apf.namespace("offline.state", {
         if (!obj.tagName)
             return;
         
-        var name    = obj.name || obj.uniqueId + "_" + obj.tagName;
+        var name    = obj.name || obj.$uniqueId + "_" + obj.tagName;
         var storage = apf.offline.storage;
         
         //#ifdef __DEBUG
@@ -160,17 +160,17 @@ apf.namespace("offline.state", {
     },
     
     get : function(obj, key, value){
-        return this.lookup[(obj.name || obj.uniqueId + "_" + obj.tagName) + "." + key];
+        return this.lookup[(obj.name || obj.$uniqueId + "_" + obj.tagName) + "." + key];
         
         /*return apf.offline.storage.get(
-            (obj.name || obj.uniqueId + "." + obj.tagName) + "." + key, 
+            (obj.name || obj.$uniqueId + "." + obj.tagName) + "." + key, 
             this.namespace);*/
     },
     
     //blrgh.. unoptimized
     getAll : function(obj) {
         var prop, res = {}, x,
-            name = obj.name || obj.uniqueId + "_" + obj.tagName;
+            name = obj.name || obj.$uniqueId + "_" + obj.tagName;
         for (prop in this.lookup) {
             x = prop.split(".");
             if (x[0] == name)
@@ -223,13 +223,14 @@ apf.namespace("offline.state", {
             data[keys[i]] = storage.get(keys[i], this.namespace);
         }
         
-        apf.saveData(this.setInstruction, null, {
+        apf.saveData(this.setInstruction, {
             ignoreOffline : true,
-            data          : apf.serialize(data)
-        }, function(data, state, extra){
-            if (extra.tpModule.retryTimeout(extra, state, apf.offline) === true)
-                return true;
+            data          : apf.serialize(data),
+            callback      : function(data, state, extra){
+                if (extra.tpModule.retryTimeout(extra, state, apf.offline) === true)
+                    return true;
+            }
         });
     }
-});
+};
 // #endif

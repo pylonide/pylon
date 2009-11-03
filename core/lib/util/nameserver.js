@@ -24,7 +24,7 @@
 /**
  * @private
  */
-apf.namespace("nameserver", {
+apf.nameserver = {
     lookup : {},
     
     add : function(type, item){
@@ -67,16 +67,26 @@ apf.namespace("nameserver", {
     },
     
     getAll : function(type){
-        var name, arr = [];
-        for (name in this.lookup[type]) {
-            //#ifdef __SUPPORT_SAFARI2
-            if (apf.isSafariOld
-              && (!this.lookup[type][name]
-              || typeof this.lookup[type][name] != "object"))
-                continue;
-            //#endif
-            arr.push(this.lookup[type][name]);
+        var name, arr = [], l = this.lookup[type];
+        if (!l) return arr;
+        
+        if (l.dataType == apf.ARRAY) {
+            for (var i = 0; i < l.length; i++) {
+                arr.push(l[i]);
+            }
         }
+        else {
+            for (name in l) {
+                
+                //#ifdef __SUPPORT_SAFARI2
+                if (apf.isSafariOld && (!l[name] || typeof l[name] != "object"))
+                    continue;
+                //#endif
+                
+                arr.push(l[name]);
+            }
+        }
+        
         return arr;
     }, 
     
@@ -88,7 +98,7 @@ apf.namespace("nameserver", {
         }
         return arr;
     }
-});
+};
 
 //#endif
 
@@ -175,5 +185,7 @@ apf.registry.lookup = {};
 apf.registry.get = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };
+
+apf.Init.run("nameserver");
 
 //#endif

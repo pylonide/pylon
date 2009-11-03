@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JFLOWCHART || __INC_ALL
+// #ifdef __AMLFLOWCHART || __INC_ALL
 /**
  * Element with which you can add and remove graphical blocks and create 
  * connections between them. Block could be rotated, flipped, resized, 
@@ -53,7 +53,7 @@
  *         </block>
  *     </flowchart>
  * </a:model>
- * <a:flowchart id="WF" template="url:template.xml" model="modelName">
+ * <a:flowchart id="WF" template="template.xml" model="modelName">
  *     <a:css default="red" />
  *     <a:bindings>
  *         <a:move select="self::node()[not(@move='0') and not(@lock='1')]" />
@@ -72,7 +72,7 @@
  *         <a:type value="" />
  *         <a:zindex select="@zindex" />
  *         <a:image select="@src" />
- *         <a:traverse select="block" />
+ *         <a:each select="block" />
  *
  *         <!-- Connection Binding Rules -->
  *         <a:connection select="connection" />
@@ -87,6 +87,12 @@
  * @define flowchart
  * @attribute {String} template   the data instruction to load the xml for the
  * template that defines all the elements which are available on the flowchart.
+ * 
+ * @attribute {String} snap   
+ * Possible values:
+ *     true
+ *     false
+ *     {Number}
  * 
  * Example:
  * A template describing a single capacitor element
@@ -147,8 +153,6 @@
  *
  * @constructor
  *
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
  * @inherits apf.Cache
  * @inherits apf.MultiSelect
  * @inherits apf.BaseList
@@ -157,94 +161,150 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  */
-apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
-    this.objCanvas;
-    this.nodes = [];
+apf.flowchart = function(struct, tagName){
+    this.$init(tagName || "flowchart", apf.NODE_VISIBLE, struct);
+};
 
-    var lastBlockId   = 0,
-        template      = null,
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction,
+        //#endif
+        apf.Cache,
+        apf.MultiSelect,
+        apf.Rename
+    );
+
+    this.objCanvas    = null;
+    this.nodes        = [];
+    this.snap         = false;
+    this.gridW        = 48;
+    this.gridH        = 48;
+
+    this.$flowVars     = {
+        lastBlockId   : 0,
+        template      : null,
         //torename      = null,
-        resizeManager = null,
+        resizeManager : null,
 
-        xmlBlocks      = {},
-        objBlocks      = {},
-        xmlConnections = {},
-        connToPaint    = [];
+        xmlBlocks     : {},
+        objBlocks     : {},
+        xmlConnections: {},
+        connToPaint   : []
+    };
 
-    var _self = this;
+    this.$init(function() {
+        var _self = this;
+        var onkeydown_ = function(e) {
+            e = (e || event);
 
-    var onkeydown_ = function(e) {
-        e = (e || event);
+            var key      = e.keyCode,
+                ctrlKey  = e.ctrlKey,
+                shiftKey = e.shiftKey,
+                sel      = this.getSelection(),
+                value    = this.snap 
+                    ? ((key == 37 || key == 39 
+                        ? this.gridW 
+                        : (key == 38 || key == 40 
+                            ? this.gridH 
+                            : 0)) * (ctrlKey 
+                                         ? 2 
+                                         : (shiftKey 
+                                             ? 3 
+                                             : 1)))
+                    : (ctrlKey 
+                        ? 10 
+                        : (shiftKey 
+                            ? 100 
+                            : 1)),
+                disabled = _self.objCanvas.disableremove;
 
-        var key      = e.keyCode,
-            ctrlKey  = e.ctrlKey,
-            shiftKey = e.shiftKey,
-            sel = this.getSelection(),
-            value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
-        var disabled = _self.objCanvas.disableremove;
+            if (!sel || disabled)
+                return;
 
-        if (!sel || disabled)
-            return;
+            switch (key) {
+                case 37:
+                    //Left Arrow
+                    this.moveTo(sel, - value, 0);
+                    break;
+                case 38:
+                    //Top Arrow
+                    this.moveTo(sel, 0, - value);
+                    break;
+                case 39:
+                    //Right Arrow
+                    this.moveTo(sel, value, 0);
+                    break;
+                case 40:
+                    //Bottom Arrow
+                    this.moveTo(sel, 0, value);
+                    break;
+                case 46:
+                    //Delete
+                    _self.$flowVars.resizeManager.hide();
 
-        if (!key && shiftKey) {
-            resizeManager
-        }
-
-        switch (key) {
-            case 37:
-                //Left Arrow
-                this.moveTo(sel, - value, 0);
-                break;
-            case 38:
-                //Top Arrow
-                this.moveTo(sel, 0, - value);
-                break;
-            case 39:
-                //Right Arrow
-                this.moveTo(sel, value, 0);
-                break;
-            case 40:
-                //Bottom Arrow
-                this.moveTo(sel, 0, value);
-                break;
-            case 46:
-                //Delete
-                resizeManager.hide();
-
-                switch (_self.objCanvas.mode) {
-                    case "normal":
-                        //Removing Blocks
-                        this.removeBlocks(sel);
-                        break;
-                    case "connection-change":
-                        //Removing Connections
-                        var connectionsToDelete = [],
-                            connectors = _self.objCanvas.htmlConnectors;
-                        for (var id in connectors) {
-                            if (connectors[id].selected) {
-                                connectionsToDelete.push(connectors[id].other.xmlNode);
-                                connectors[id].destroy();
+                    switch (_self.objCanvas.mode) {
+                        case "normal":
+                            //Removing Blocks
+                            this.removeBlocks(sel);
+                            break;
+                        case "connection-change":
+                            //Removing Connections
+                            var connectionsToDelete = [],
+                                connectors = _self.objCanvas.htmlConnectors;
+                            for (var id in connectors) {
+                                if (connectors[id].selected) {
+                                    connectionsToDelete.push(connectors[id].other.xmlNode);
+                                    connectors[id].destroy();
+                                }
                             }
-                        }
-                        _self.removeConnectors(connectionsToDelete);
-                        _self.objCanvas.mode = "normal";
-                        break;
-                }
-                break;
+                            _self.removeConnectors(connectionsToDelete);
+                            _self.objCanvas.mode = "normal";
+                            break;
+                    }
+                    break;
+            }
+
+            return false;
         }
 
-        return false;
+        //#ifdef __WITH_KEYBOARD
+        this.addEventListener("onkeydown", onkeydown_, true);
+
+        apf.addEventListener("contextmenu", function() {return false;});
+        //#endif
+
+        function $afterRenameMode() {
+           _self.objCanvas.disableremove = false;
+        }
+        this.addEventListener("afterrename", $afterRenameMode);
+        this.addEventListener("stoprename", $afterRenameMode);
+    });
+    
+    this.$propHandlers["snap"] = function(value) {
+        var isNumber = parseInt(value) > 0 ? true : false
+        
+        this.snap = this.objCanvas.snap = value == "true" || isNumber 
+            ? true 
+            : false;
+
+        if (isNumber) {
+            this.gridW = this.objCanvas.gridW = parseInt(value);
+            this.gridH = this.objCanvas.gridH = parseInt(value);
+        }
     }
-
-    //#ifdef __WITH_KEYBOARD
-    this.addEventListener("onkeydown", onkeydown_, true);
-
-    apf.addEventListener("contextmenu", function() {return false;});
-    //#endif
+    
+    this.$propHandlers["grid-width"] = function(value) {
+        this.gridW = this.objCanvas.gridW = parseInt(value);
+    }
+    
+    this.$propHandlers["grid-height"] = function(value) {
+        this.gridH = this.objCanvas.gridH = parseInt(value);
+    }
 
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function() {
-        var objBlock = objBlocks[this.applyRuleSetOnNode("id", this.selected)];
+        var objBlock = objBlocks[this.$applyBindRule("id", this.selected)];
         if (!objBlock)
             return;
         return objBlock.caption;
@@ -254,13 +314,13 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
     this.$beforeRename = function(e) {
         e = e || event;
         var target = e.srcElement || e.target;
-        _self.$selectCaption(target);
+        this.$selectCaption(target);
 
-        _self.objCanvas.disableremove = true;
-        _self.$deselectCaption(target);
-        _self.startRename();
+        this.objCanvas.disableremove = true;
+        this.$deselectCaption(target);
+        this.startRename();
 
-        var rename_input = this.pHtmlDoc.getElementById("txt_rename");
+        var rename_input = this.$pHtmlDoc.getElementById("txt_rename");
         this.$setStyleClass(rename_input, target.className);
 
         var c = rename_input;
@@ -273,21 +333,16 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         return false;
-    }
+    };
 
-    function $afterRenameMode() {
-       _self.objCanvas.disableremove = false;
-    }
-    this.addEventListener("afterrename", $afterRenameMode);
-    this.addEventListener("stoprename", $afterRenameMode);
 
     this.$selectCaption = function(o) {
         this.$setStyleClass(o, "selected");
-    }
+    };
 
     this.$deselectCaption = function(o) {
         this.$setStyleClass(o, "", ["selected"]);
-    }
+    };
 
     this.$select = function(o) {
         if (!o)
@@ -296,28 +351,28 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         var objBlock = apf.flow.isBlock(o);
 
         if (objBlock) {
-            if (resizeManager) {
+            if (this.$flowVars.resizeManager) {
                 var prop = objBlock.other;
 
                 if (prop.lock == 1)
                     return;
 
-                var scales = {
+                this.$flowVars.resizeManager.grab(o, {
                     scalex     : prop.scalex,
                     scaley     : prop.scaley,
                     scaleratio : prop.scaleratio,
                     dwidth     : prop.dwidth,
                     dheight    : prop.dheight,
-                    ratio      : prop.ratio
-                }
-
-                resizeManager.grab(o, scales);
+                    ratio      : prop.ratio,
+                    snap       : this.snap,
+                    gridH      : this.gridH,
+                    gridW      : this.gridW
+                });
             }
             this.$setStyleClass(o, "selected");
 
-            if (objBlock.other.capPos !== "inside") {
-                _self.$selectCaption(objBlock.caption);
-            }
+            if (objBlock.other.capPos !== "inside")
+                this.$selectCaption(objBlock.caption);
         }
     };
 
@@ -329,7 +384,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         var objBlock = apf.flow.isBlock(o);
         this.$deselectCaption(objBlock.caption);
 
-        resizeManager.hide();
+        this.$flowVars.resizeManager.hide();
     };
 
     /* ********************************************************************
@@ -345,18 +400,28 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @param {Number} dt             vertical alteration
      */
     this.moveTo = function(xmlNodeArray, dl, dt) {
+        if(!xmlNodeArray) {
+            return;
+        }
+
         if (!xmlNodeArray.length) {
             xmlNodeArray = [xmlNodeArray];
         }
 
-        var changes,
-            props = changes = [];
-        var setNames = ["top", "left"];
-
-        for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
-            for (var j = 0; j < setNames.length; j++) {
-                var node = this.getNodeFromRule(setNames[j], xmlNodeArray[i], false, false, this.createModel),
-                    value = (setNames[j] == "left" ? dl : dt) + (parseInt(this.applyRuleSetOnNode(setNames[j], xmlNodeArray[i])) || 0);
+        var changes = [],
+            setNames = ["top", "left"],
+            node, value, i, l, j;
+        for (i = 0, l = xmlNodeArray.length; i < l; i++) {
+            for (j = 0; j < setNames.length; j++) {
+                node = this.$getDataNode(
+                  setNames[j], xmlNodeArray[i], this.$createModel);
+                value = (setNames[j] == "left" ? dl : dt) 
+                  + (parseInt(this.$applyBindRule(setNames[j], xmlNodeArray[i])) || 0);
+                  
+                if (this.snap) {
+                    var gridSize = setNames[j] == "top" ? this.gridH : this.gridW;
+                    value = Math.round(value / gridSize) * gridSize;
+                }
 
                 if (node) {
                     var atAction = node.nodeType == 1 || node.nodeType == 3
@@ -377,7 +442,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
             }
         }
 
-        this.executeAction("multicall", changes, "moveTo", xmlNodeArray);
+        this.$executeAction("multicall", changes, "moveTo", xmlNodeArray);
     };
 
     /**
@@ -388,7 +453,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @param {Number}     value     new z-index number
      */
     this.setZindex = function(xmlNode, value) {
-        this.executeActionByRuleSet("setzindex", "zindex", xmlNode, value);
+        this.$executeSingleValue("setzindex", "zindex", xmlNode, value);
     };
 
     /**
@@ -405,7 +470,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      *     connection-change   it's possible to change existing connection, all operations from "normal" mode its allowed
      */
     this.setMode = function(mode) {
-        _self.objCanvas.setMode(mode);
+        this.objCanvas.setMode(mode);
     };
 
     /**
@@ -424,7 +489,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * 
      */
     this.getMode = function() {
-        return _self.objCanvas.getMode();
+        return this.objCanvas.getMode();
     };
 
     /**
@@ -438,7 +503,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      *     false   block is unlocked
      */
     this.setLock = function(xmlNode, value) {
-        this.executeActionByRuleSet("setlock", "lock", xmlNode, String(value));
+        this.$executeSingleValue("setlock", "lock", xmlNode, String(value));
     };
 
     /**
@@ -454,16 +519,17 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      *     270   270 degrees rotation
      */
     this.rotate = function(xmlNode, newRotation/*, start*/) {
-        var prevFlipV = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
+        var prevFlipV = this.$applyBindRule("flipv", xmlNode) == "true"
                 ? true
                 : false,
-            prevFlipH = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+            prevFlipH = this.$applyBindRule("fliph", xmlNode) == "true"
                 ? true
                 : false,
-            prevRotation = parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,
+            prevRotation = parseInt(this.$applyBindRule("rotation", xmlNode)) || 0,
+
             /*prevRotation = start
                 ? 0
-                : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,*/
+                : parseInt(this.$applyBindRule("rotation", xmlNode)) || 0,*/
             names = ["fliph", "flipv", "rotation"],
             values;
 
@@ -475,8 +541,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
 
             if (Math.abs(newRotation - prevRotation) % 180 !== 0) {
                 var
-                w = parseInt(this.applyRuleSetOnNode("width", xmlNode)) || 0,
-                h = parseInt(this.applyRuleSetOnNode("height", xmlNode)) || 0;
+                w = parseInt(this.$applyBindRule("width", xmlNode)) || 0,
+                h = parseInt(this.$applyBindRule("height", xmlNode)) || 0;
 
                 names.push("width", "height");
                 values.push(h, w);
@@ -497,11 +563,11 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      *     false   block element is not flipped
      */
     this.flipVertical = function(xmlNode, newFlipV) {
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+        var prevFlipH  = this.$applyBindRule("fliph", xmlNode) == "true"
                 ? true
                 : false,
-            prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-                ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
+            prevRotate = this.$applyBindRule("rotation", xmlNode)
+                ? parseInt(this.$applyBindRule("rotation", xmlNode))
                 : 0;
 
         var values = prevFlipH && newFlipV
@@ -523,14 +589,14 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      *     false   block element is not flipped
      */
     this.flipHorizontal = function(xmlNode, newFlipH) {
-        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
+        var prevFlipV  = this.$applyBindRule("flipv", xmlNode) == "true"
                 ? true
                 : false,
-            prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+            prevFlipH  = this.$applyBindRule("fliph", xmlNode) == "true"
                 ? true
                 : false,
-            prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-                ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
+            prevRotate = this.$applyBindRule("rotation", xmlNode)
+                ? parseInt(this.$applyBindRule("rotation", xmlNode))
                 : 0;
 
         var values = prevFlipV && newFlipH
@@ -552,11 +618,11 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @param {Number}       newLeft     horizontal position of block element
      */
     this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
-            this.$executeMulticallAction(
-                "resize",
-                ["top", "left", "width", "height"],
-                xmlNode,
-                [newTop, newLeft, newWidth, newHeight]);
+        this.$executeMulticallAction(
+            "resize",
+            ["top", "left", "width", "height"],
+            xmlNode,
+            [newTop, newLeft, newWidth, newHeight]);
     };
 
     /**
@@ -570,11 +636,11 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @type {String}
      */
     this.$executeMulticallAction = function(atName, setNames, xmlNode, values) {
-        var changes, props = changes = [], l = setNames.length;
-        for (var i = 0; i < l; i++) {
-            var node = this.getNodeFromRule(setNames[i], xmlNode, false, false,
-                                            this.createModel),
-                value = values[i];
+        var i, node, value, changes, props = changes = [], l = setNames.length;
+        for (i = 0; i < l; i++) {
+            node = this.$getDataNode(
+              setNames[i], xmlNode, this.$createModel);
+            value = values[i];
 
             if (node) {
                 var atAction = node.nodeType == 1 || node.nodeType == 3
@@ -593,8 +659,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
                 });
             }
         }
-        this.executeAction("multicall", changes, atName, xmlNode);
-    }
+        this.$executeAction("multicall", changes, atName, xmlNode);
+    };
 
     /**
      * Creates new connection between two blocks. This is an action. It's
@@ -606,13 +672,13 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
      * @param {Number}       dInput     destination block output number
      */
     this.addConnector = function(sXmlNode, sInput, dXmlNode, dInput) {
-        var nXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
+        var nXmlNode = this.xmlRoot.ownerDocument.createElement("connection");
 
-        nXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", dXmlNode));
+        nXmlNode.setAttribute("ref", this.$applyBindRule("id", dXmlNode));
         nXmlNode.setAttribute("output", sInput);
         nXmlNode.setAttribute("input", dInput);
 
-        this.executeAction("appendChild", [sXmlNode, nXmlNode],
+        this.$executeAction("appendChild", [sXmlNode, nXmlNode],
                            "addConnector", sXmlNode);
     };
 
@@ -633,7 +699,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
             });
         }
 
-        this.executeAction("multicall", changes,
+        this.$executeAction("multicall", changes,
                            "removeConnectors", xmlNodeArray[0]);
     };
 
@@ -652,15 +718,15 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         if (!type)
             return;
 
-        var elTemplate =
-            template.selectSingleNode("//element[@type='" + type + "']");
+        var elTemplate = this.$flowVars.template
+            .selectSingleNode("//element[@type='" + type + "']");
 
         if (!elTemplate)
             return;
 
         var nXmlNode = this.xmlRoot.ownerDocument.createElement("block");
 
-        nXmlNode.setAttribute("id", "b"+(lastBlockId + 1));
+        nXmlNode.setAttribute("id", "b"+(this.$flowVars.lastBlockId + 1));
         nXmlNode.setAttribute("left", left || 20);
         nXmlNode.setAttribute("top", top || 20);
         nXmlNode.setAttribute("width", elTemplate.getAttribute("dwidth"));
@@ -668,7 +734,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         nXmlNode.setAttribute("type", type);
         nXmlNode.setAttribute("caption", caption);
 
-        this.executeAction("appendChild", [this.xmlRoot, nXmlNode],
+        this.$executeAction("appendChild", [this.xmlRoot, nXmlNode],
                            "addBlock", this.xmlRoot);
     };
 
@@ -684,7 +750,7 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         var ids     = [];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
-            var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
+            var id = this.$applyBindRule("id", xmlNodeArray[i]);
             ids.push(id);
 
             changes.push({
@@ -694,30 +760,29 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         /* Removing connections from other blocks */
-        for (var id2 in xmlConnections) {
-            for (var j = xmlConnections[id2].length - 1; j >= 0 ; j--) {
+        for (var id2 in this.$flowVars.xmlConnections) {
+            for (var j = this.$flowVars.xmlConnections[id2].length - 1; j >= 0 ; j--) {
                 for (var k = 0; k < ids.length; k++) {
-                    if (xmlConnections[id2][j].ref == ids[k]) {
+                    if (this.$flowVars.xmlConnections[id2][j].ref == ids[k]) {
                         changes.push({
                             func : "removeNode",
-                            args : [xmlConnections[id2][j].xmlNode]
+                            args : [this.$flowVars.xmlConnections[id2][j].xmlNode]
                         });
-
                     }
                 }
             }
         }
 
-        this.executeAction("multicall", changes,
+        this.$executeAction("multicall", changes,
                            "removeBlocksWithConnections", xmlNodeArray);
     };
 
     this.$draw = function() {
         //Build Main Skin
-        this.oExt        = this.$getExternal();
-        this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
-        _self.objCanvas = new apf.flow.getCanvas(this.oInt);
+        this.objCanvas = new apf.flow.getCanvas(this.$int);
         apf.flow.init();
         /*apf.flow.onconnectionrename = function(e) {
             _self.$beforeRename(e);
@@ -726,67 +791,70 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
 
     /* Action when block is removed  */
     this.$deInitNode = function(xmlNode, htmlNode) {
-        var id = this.applyRuleSetOnNode("id", xmlNode);
+        var id = this.$applyBindRule("id", xmlNode);
 
-        objBlocks[id].destroy();
+        this.$flowVars.objBlocks[id].destroy();
 
-        delete objBlocks[id];
-        delete xmlBlocks[id];
+        delete this.$flowVars.objBlocks[id];
+        delete this.$flowVars.xmlBlocks[id];
         htmlNode.parentNode.removeChild(htmlNode);
-        resizeManager.hide();
+        this.$flowVars.resizeManager.hide();
     }
 
     this.$dragdrop = function(el, dragdata, candrop) {
         var blockPos  = apf.getAbsolutePosition(dragdata.indicator);
-        var canvasPos = apf.getAbsolutePosition(_self.objCanvas.htmlElement);
+        var canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
 
         this.moveTo(
-            [dragdata.xmlNode],
+            [dragdata.xmlNode[0]],
             blockPos[0] - canvasPos[0],
             blockPos[1] - canvasPos[1]
         );
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
-        var blockId  = this.applyRuleSetOnNode("id", xmlNode),
-            objBlock = objBlocks[blockId];
+        apf.console.info("UPDATE")
+        
+        var fv       = this.$flowVars,
+            blockId  = this.$applyBindRule("id", xmlNode),
+            objBlock = fv.objBlocks[blockId];
 
-        var t = parseInt(this.applyRuleSetOnNode("top", xmlNode))
-                ? this.applyRuleSetOnNode("top", xmlNode)
+        var t = parseInt(this.$applyBindRule("top", xmlNode))
+                ? this.$applyBindRule("top", xmlNode)
                 : parseInt(objBlock.htmlElement.style.top),
-            l = parseInt(this.applyRuleSetOnNode("left", xmlNode))
-                ? this.applyRuleSetOnNode("left", xmlNode)
+            l = parseInt(this.$applyBindRule("left", xmlNode))
+                ? this.$applyBindRule("left", xmlNode)
                 : parseInt(objBlock.htmlElement.style.left);
 
         objBlock.moveTo(t, l);
 
-        var w = parseInt(this.applyRuleSetOnNode("width", xmlNode))
-                ? this.applyRuleSetOnNode("width", xmlNode)
+        var w = parseInt(this.$applyBindRule("width", xmlNode))
+                ? this.$applyBindRule("width", xmlNode)
                 : objBlock.other.dwidth,
-            h = parseInt(this.applyRuleSetOnNode("height", xmlNode))
-                ? this.applyRuleSetOnNode("height", xmlNode)
+            h = parseInt(this.$applyBindRule("height", xmlNode))
+                ? this.$applyBindRule("height", xmlNode)
                 : objBlock.other.dheight;
         objBlock.resize(w, h);
 
         /* Rename */
-       objBlock.setCaption(this.applyRuleSetOnNode("caption", xmlNode));
+       objBlock.setCaption(this.$applyBindRule("caption", xmlNode));
 
         /* Lock */
-        var lock = this.applyRuleSetOnNode("lock", xmlNode) == "true"
+        var lock = this.$applyBindRule("lock", xmlNode) == "true"
             ? true
             : false;
 
         objBlock.setLock(lock);
 
         objBlock.changeRotation(
-            this.applyRuleSetOnNode("rotation", xmlNode),
-            this.applyRuleSetOnNode("fliph", xmlNode),
-            this.applyRuleSetOnNode("flipv", xmlNode));
+            this.$applyBindRule("rotation", xmlNode),
+            this.$applyBindRule("fliph", xmlNode),
+            this.$applyBindRule("flipv", xmlNode)
+        );
 
         /* Checking for changes in connections */
-        var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
-        var cNew     = xmlNode.selectNodes(xpath);
-        var cCurrent = xmlConnections[blockId] || [];
+        var cNew     = this.$getDataNode("connection", xmlNode, null, null, true),
+            cCurrent = fv.xmlConnections[blockId] || [];
 
         //Checking for removed connections
         if (cCurrent.length) {
@@ -799,20 +867,19 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
                 }
 
                 if (!found) {
-                    if (objBlocks[blockId] && objBlocks[cCurrent[i].ref]) {
+                    if (fv.objBlocks[blockId] && fv.objBlocks[cCurrent[i].ref]) {
                         var ConToDel = apf.flow.findConnector(
-                            objBlocks[blockId], cCurrent[i].output,
-                            objBlocks[cCurrent[i].ref], cCurrent[i].input);
-                        if (ConToDel) {
+                            fv.objBlocks[blockId], cCurrent[i].output,
+                            fv.objBlocks[cCurrent[i].ref], cCurrent[i].input);
+                        if (ConToDel)
                             apf.flow.removeConnector(ConToDel.connector.htmlElement);
-                        }
-                        xmlConnections[blockId].removeIndex(i);
+                        fv.xmlConnections[blockId].removeIndex(i);
                     }
                 }
             }
         }
-        else{
-            delete xmlConnections[blockId];
+        else {
+            delete fv.xmlConnections[blockId];
         }
 
         //Checking for new connections
@@ -828,14 +895,14 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
             }
 
             if (!found) {
-                var ref    = this.applyRuleSetOnNode("ref", cNew[i]);
-                var output = this.applyRuleSetOnNode("output", cNew[i]);
-                var input  = this.applyRuleSetOnNode("input", cNew[i]);
-                var label  = this.applyRuleSetOnNode("label", cNew[i]);
-                var type   = this.applyRuleSetOnNode("type", cNew[i]);
+                var ref    = this.$applyBindRule("ref", cNew[i]),
+                    output = this.$applyBindRule("blockoutput", cNew[i]),
+                    input  = this.$applyBindRule("blockinput", cNew[i]),
+                    label  = this.$applyBindRule("blocklabel", cNew[i]),
+                    type   = this.$applyBindRule("type", cNew[i]);
 
-                if (xmlBlocks[ref]) {
-                    var r = xmlConnections[blockId] || [];
+                if (fv.xmlBlocks[ref]) {
+                    var r = fv.xmlConnections[blockId] || [];
                     r.push({
                         ref     : ref,
                         output  : output,
@@ -845,8 +912,8 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
                         xmlNode : cNew[i]
                     });
 
-                    new apf.flow.addConnector(_self.objCanvas,
-                        objBlocks[blockId], objBlocks[ref], {
+                    new apf.flow.addConnector(this.objCanvas,
+                        fv.objBlocks[blockId], fv.objBlocks[ref], {
                             output : output,
                             input  : input,
                             label  : label,
@@ -854,20 +921,18 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
                             xmlNode: cNew[i]
                         }
                     );
-                    xmlConnections[blockId] = r;
+                    fv.xmlConnections[blockId] = r;
                 }
                 else {
-                    apf.console.info("Destination block don't exist.");
+                    apf.console.info("Destination block doesn't exist.");
                 }
             }
         }
 
-        if (resizeManager && xmlNode == this.selected && !lock) {
-            resizeManager.show();
-        }
-        else {
-            resizeManager.hide();
-        }
+        if (fv.resizeManager && xmlNode == this.selected && !lock)
+            fv.resizeManager.show();
+        else
+            fv.resizeManager.hide();
 
         objBlock.updateOutputs();
         objBlock.onMove();
@@ -875,34 +940,39 @@ apf.flowchart = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
-        lastBlockId++;
-//apf.flow.alert_r(xmlNode)
-apf.console.info("ADD");
+        this.$flowVars.lastBlockId++;
+        //apf.flow.alert_r(xmlNode)
+        apf.console.info("ADD");
         this.$getNewContext("block");
-        var block            = this.$getLayoutNode("block");
-        var elSelect         = this.$getLayoutNode("block", "select");
-        var elImage          = this.$getLayoutNode("block", "image");
-        var elimageContainer = this.$getLayoutNode("block", "imagecontainer");
-        var elCaption        = this.$getLayoutNode("block", "caption");
+        var block            = this.$getLayoutNode("block"),
+            elSelect         = this.$getLayoutNode("block", "select"),
+            elImage          = this.$getLayoutNode("block", "image"),
+            elimageContainer = this.$getLayoutNode("block", "imagecontainer"),
+            elCaption        = this.$getLayoutNode("block", "caption");
 
-        elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.uniqueId
+        elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
             + ').$beforeRename(event); return false;');
 
         this.nodes.push(block);
 
         /* Set Css style */
-        var style = [], style2 = [];
-        var left = this.applyRuleSetOnNode("left", xmlNode) || 0;
-        var top = this.applyRuleSetOnNode("top", xmlNode) || 0;
-        var zindex = this.applyRuleSetOnNode("zindex", xmlNode) || 1001;
+        var style  = [], style2 = [];
+        var left   = this.$applyBindRule("left", xmlNode) || 0;
+        var top    = this.$applyBindRule("top", xmlNode) || 0;
+        if (this.snap) {
+            left = Math.round(left / this.gridW) * this.gridW;
+            top = Math.round(top / this.gridH) * this.gridH;
+        }
+        
+        var zindex = this.$applyBindRule("zindex", xmlNode) || 1001;
 
         style.push("z-index:" + zindex);
         style.push("left:" + left + "px");
         style.push("top:" + top + "px");
 
-        if (template) {
-            var elTemplate = template.selectSingleNode("//element[@type='"
-                           + this.applyRuleSetOnNode("type", xmlNode)
+        if (this.$flowVars.template) {
+            var elTemplate = this.$flowVars.template.selectSingleNode("//element[@type='"
+                           + this.$applyBindRule("type", xmlNode)
                            + "']");
             if (elTemplate) {
                 var stylesFromTemplate = elTemplate.getAttribute("css");
@@ -927,18 +997,17 @@ apf.console.info("ADD");
             }
         }
 
-        if (this.applyRuleSetOnNode("id", xmlNode)) {
-            var _id = this.applyRuleSetOnNode("id", xmlNode).substr(1);
-            if (_id > lastBlockId) {
-                lastBlockId = _id;
-            }
+        if (this.$applyBindRule("id", xmlNode)) {
+            var _id = this.$applyBindRule("id", xmlNode).substr(1);
+            if (_id > this.$flowVars.lastBlockId)
+                this.$flowVars.lastBlockId = _id;
         }
 
-        var id = this.applyRuleSetOnNode("id", xmlNode) || "b"+lastBlockId;
-        var width = this.applyRuleSetOnNode("width", xmlNode) || w || 56;
-        var height = this.applyRuleSetOnNode("height", xmlNode) || h || 56;
-        var lock = this.applyRuleSetOnNode("lock", xmlNode) || "false";
-        var capPos = this.applyRuleSetOnNode("cap-pos", xmlNode) || "outside";
+        var id     = this.$applyBindRule("id", xmlNode) || "b" + this.$flowVars.lastBlockId,
+            width  = this.$applyBindRule("width", xmlNode) || w || 56,
+            height = this.$applyBindRule("height", xmlNode) || h || 56,
+            lock   = this.$applyBindRule("lock", xmlNode) || "false",
+            capPos = this.$applyBindRule("cap-pos", xmlNode) || "outside";
 
         style.push("width:" + width + "px");
         style.push("height:" + height + "px");
@@ -954,7 +1023,7 @@ apf.console.info("ADD");
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
-//apf.flow.alert_r(xmlNode);
+        //apf.flow.alert_r(xmlNode);
         xmlNode.setAttribute("id", id);
         xmlNode.setAttribute("width", width);
         xmlNode.setAttribute("height", height);
@@ -963,108 +1032,109 @@ apf.console.info("ADD");
         xmlNode.setAttribute("top", top);
         xmlNode.setAttribute("zindex", zindex);
         xmlNode.setAttribute("cap-pos", capPos);
-//apf.flow.alert_r(xmlNode);
+        //apf.flow.alert_r(xmlNode);
 
         this.$setStyleClass(elCaption, capPos);
 
         elSelect.setAttribute(this.itemSelectEvent ||
             "onmousedown", 'var o = apf.lookup('
-            + this.uniqueId
+            + this.$uniqueId
             + '); o.select(this, event.ctrlKey, event.shiftKey)');
 
-
-
         apf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
-        xmlBlocks[id] = xmlNode;
+        this.$flowVars.xmlBlocks[id] = xmlNode;
 
         /* Creating Connections */
-        var r = [];
-        var xpath = this.getSelectFromRule("connection", xmlNode)[0];
-        var connections = xmlNode.selectNodes(xpath);
+        var r = [],
+            connections = this.$getDataNode("connection", xmlNode, null, null, true);
 
         for (var i = 0, l = connections.length; i < l; i++) {
             r.push({
-                ref     : this.applyRuleSetOnNode("ref", connections[i]),
-                output  : this.applyRuleSetOnNode("output", connections[i]),
-                input   : this.applyRuleSetOnNode("input", connections[i]),
-                label   : this.applyRuleSetOnNode("label", connections[i]),
-                type    : this.applyRuleSetOnNode("type", connections[i]),
+                ref     : this.$applyBindRule("ref", connections[i]),
+                output  : this.$applyBindRule("blockoutput", connections[i]),
+                input   : this.$applyBindRule("blockinput", connections[i]),
+                label   : this.$applyBindRule("blocklabel", connections[i]),
+                type    : this.$applyBindRule("type", connections[i]),
                 xmlNode : connections[i]
             });
 
         }
-        if (r.length > 0) {
-            xmlConnections[id] = r;
-        }
-
+        
+        if (r.length > 0)
+            this.$flowVars.xmlConnections[id] = r;
     };
 
     this.$fill = function() {
-        apf.xmldb.htmlImport(this.nodes, this.oInt);
-apf.console.info("FILL");
-        for (var id in xmlBlocks) {
-            var xmlBlock = xmlBlocks[id],
+        apf.insertHtmlNodes(this.nodes, this.$int);
+        apf.console.info("FILL");
+        var fv = this.$flowVars;
+        for (var id in fv.xmlBlocks) {
+            var xmlBlock = fv.xmlBlocks[id],
                 htmlElement = apf.xmldb.findHtmlNode(xmlBlock, this),
-                type = xmlBlocks[id].getAttribute("type") || null,
+                type = this.$flowVars.xmlBlocks[id].getAttribute("type") || null,
                 inputList = {};
 
             if (type) {
-                if (template) {
-                    var elTemplate = template.selectSingleNode("element[@type='" + this.applyRuleSetOnNode("type", xmlBlock) + "']");
+                if (fv.template) {
+                    var elTemplate = fv.template
+                        .selectSingleNode("element[@type='"
+                        + this.$applyBindRule("type", xmlBlock) + "']");
 
                     var inputs = elTemplate.selectNodes("input");
-                    for (var i = 0, l = inputs.length; i < l; i++) {
-                        inputList[parseInt(inputs[i].getAttribute("name"))] = {
-                            x        : parseInt(inputs[i].getAttribute("x")),
-                            y        : parseInt(inputs[i].getAttribute("y")),
-                            position : inputs[i].getAttribute("position")
-                        };
+                    if (inputs) {
+                        for (var i = 0, l = inputs.length; i < l; i++) {
+                            inputList[parseInt(inputs[i].getAttribute("name"))] = {
+                                x        : parseInt(inputs[i].getAttribute("x")),
+                                y        : parseInt(inputs[i].getAttribute("y")),
+                                position : inputs[i].getAttribute("position")
+                            };
+                        }
                     }
                 }
             }
 
-            var lock = this.applyRuleSetOnNode("lock", xmlBlock) == "true"
+            var lock = this.$applyBindRule("lock", xmlBlock) == "true"
                 ? true
                 : false;
             var other = {
                 lock : lock,
-                flipv : this.applyRuleSetOnNode("flipv", xmlBlock) == "true"
+                flipv : this.$applyBindRule("flipv", xmlBlock) == "true"
                     ? true
                     : false,
-                fliph : this.applyRuleSetOnNode("fliph", xmlBlock) == "true"
+                fliph : this.$applyBindRule("fliph", xmlBlock) == "true"
                     ? true
                     : false,
-                rotation : parseInt(this.applyRuleSetOnNode("rotation", xmlBlock))
+                rotation : parseInt(this.$applyBindRule("rotation", xmlBlock))
                            || 0,
                 inputList : inputList,
                 type : type,
-                picture : type && template
+                picture : type && fv.template
                     ? elTemplate.getAttribute("picture")
                     : null,
-                dwidth : type && template
+                dwidth : type && fv.template
                     ? parseInt(elTemplate.getAttribute("dwidth"))
                     : 56,
-                dheight : type && template
+                dheight : type && fv.template
                     ? parseInt(elTemplate.getAttribute("dheight"))
                     : 56,
-                scalex : type && template
+                scalex : type && fv.template
                     ? (elTemplate.getAttribute("scalex") == "true"
                         ? true
                         : false)
                     : true,
-                scaley : type && template
+                scaley : type && fv.template
                     ? (elTemplate.getAttribute("scaley") == "true"
                         ? true
                         : false)
                     : true,
-                scaleratio : type && template
+                scaleratio : type && fv.template
                     ? (elTemplate.getAttribute("scaleratio") == "true"
                         ? true
                         : false)
                     : false,
                 xmlNode : xmlBlock,
-                caption : this.applyRuleSetOnNode("caption", xmlBlock),
-                capPos  : this.applyRuleSetOnNode("cap-pos", xmlBlock)
+                caption : this.$applyBindRule("caption", xmlBlock),
+                capPos  : this.$applyBindRule("cap-pos", xmlBlock)
             }
 
             var objBlock = apf.flow.isBlock(htmlElement);
@@ -1075,7 +1145,8 @@ apf.console.info("FILL");
                 objBlock.initBlock();
             }
             else {
-                var objBlock = apf.flow.addBlock(htmlElement, _self.objCanvas, other);
+                var objBlock = apf.flow.addBlock(htmlElement, this.objCanvas, other),
+                    _self    = this;
 
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
@@ -1083,22 +1154,23 @@ apf.console.info("FILL");
                 objBlock.onremoveconnection = function(xmlNodeArray) {
                     _self.removeConnectors(xmlNodeArray);
                 };
-                objBlocks[id] = objBlock;
+                fv.objBlocks[id] = objBlock;
             }
         }
 
-        for (var id in xmlBlocks) {
-            var c = xmlConnections[id] || [];
+        for (var id in fv.xmlBlocks) {
+            var c = fv.xmlConnections[id] || [];
 
             for (var i = 0, l = c.length; i < l; i++) {
-                var con = apf.flow.findConnector(objBlocks[id], c[i].output,
-                                                 objBlocks[c[i].ref], c[i].input);
+                var con = apf.flow.findConnector(fv.objBlocks[id], c[i].output,
+                                                 fv.objBlocks[c[i].ref], c[i].input);
                 if (!con) {
-                    if (objBlocks[id] && objBlocks[c[i].ref]) {
+                    if (fv.objBlocks[id] && fv.objBlocks[c[i].ref]) {
                         //it's called because connection labels must be aligned
-                        objBlocks[id].onMove();
-                        new apf.flow.addConnector(_self.objCanvas, objBlocks[id],
-                                                  objBlocks[c[i].ref], {
+                        fv.objBlocks[id].onMove();
+                        
+                        new apf.flow.addConnector(this.objCanvas, fv.objBlocks[id],
+                                                  fv.objBlocks[c[i].ref], {
                             output  : c[i].output,
                             input   : c[i].input,
                             label   : c[i].label,
@@ -1107,7 +1179,7 @@ apf.console.info("FILL");
                         });
                     }
                     else {
-                        connToPaint.push({
+                        fv.connToPaint.push({
                             id      : id,
                             id2     : c[i].ref,
                             output  : c[i].output,
@@ -1133,27 +1205,26 @@ apf.console.info("FILL");
         }
 
         /* Try to draw rest of connections */
-        for (var i = connToPaint.length-1; i >= 0 ; i--) {
-            if (objBlocks[connToPaint[i].id] && objBlocks[connToPaint[i].id2]) {
-                new apf.flow.addConnector(_self.objCanvas,
-                                          objBlocks[connToPaint[i].id],
-                                          objBlocks[connToPaint[i].id2], {
-                    output  : connToPaint[i].output,
-                    input   : connToPaint[i].input,
-                    label   : connToPaint[i].label,
-                    type    : connToPaint[i].type,
-                    xmlNode : connToPaint[i].xmlNode
+        for (var i = fv.connToPaint.length-1; i >= 0 ; i--) {
+            if (fv.objBlocks[fv.connToPaint[i].id] && fv.objBlocks[fv.connToPaint[i].id2]) {
+                new apf.flow.addConnector(this.objCanvas,
+                                          fv.objBlocks[fv.connToPaint[i].id],
+                                          fv.objBlocks[fv.connToPaint[i].id2], {
+                    output  : fv.connToPaint[i].output,
+                    input   : fv.connToPaint[i].input,
+                    label   : fv.connToPaint[i].label,
+                    type    : fv.connToPaint[i].type,
+                    xmlNode : fv.connToPaint[i].xmlNode
                     });
-                connToPaint.removeIndex(i);
+                fv.connToPaint.removeIndex(i);
             }
         }
 
         this.nodes = [];
 
-        if (!_self.objCanvas.scrollPointer) {
-            _self.objCanvas.addScrollPointer();
-        }
-    }
+        if (!this.objCanvas.scrollPointer)
+            this.objCanvas.addScrollPointer();
+    };
 
     this.$destroy = function() {
         /*this.oPrevious.onclick = null;
@@ -1162,32 +1233,33 @@ apf.console.info("FILL");
         this.removeEventListener("mousescroll", onmousescroll_);
 
         this.x = null;*/
-    }
+    };
 
     this.$loadAml = function(x) {
-        if (this.$aml.childNodes.length)
-            this.$loadInlineData(this.$aml);
-
         /* Loading template */
-        apf.getData(this.$aml.getAttribute("template"), null, null,
-                    function(data, state, extra) {
-            if (state == apf.SUCCESS) {
-                _self.loadTemplate(data);
-            }
-            else {
-                apf.console.info("An error has occurred: " + extra.message, 2);
-                return;
+        apf.getData(this.getAttribute("template"), {callback: 
+            function(data, state, extra) {
+                if (state == apf.SUCCESS) {
+                    _self.loadTemplate(data);
+                }
+                else {
+                    apf.console.info("An error has occurred: " + extra.message, 2);
+                    return;
+                }
             }
         });
 
-        /* Resize */
-        resizeManager = new apf.resize();
+        var _self = this,
+            fv    = this.$flowVars;
 
-        resizeManager.onresizedone = function(w, h, t , l) {
+        /* Resize */
+        fv.resizeManager = new apf.resize();
+
+        fv.resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
         };
 
-        resizeManager.onresize = function(htmlElement, t, l, w, h) {
+        fv.resizeManager.onresize = function(htmlElement, t, l, w, h) {
             if (!htmlElement)
                 return;
             var objBlock = apf.flow.isBlock(htmlElement);
@@ -1202,7 +1274,7 @@ apf.console.info("FILL");
         };
 
         apf.flow.onblockmove = function() {
-            resizeManager.show();
+            fv.resizeManager.show();
         };
     };
 
@@ -1214,22 +1286,45 @@ apf.console.info("FILL");
      * 
      * @param {XMLElement}   data   xml representation of template
      */
-    this.loadTemplate = function(data) {
-        template = this.$getBindXmlNode(data);
+    this.loadTemplate = function(xmlRootNode) {
+        if (typeof xmlRootNode != "object")
+            xmlRootNode = apf.getXmlDom(xmlRootNode);
+        if (xmlRootNode.nodeType == 9)
+            xmlRootNode = xmlRootNode.documentElement;
+        if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
+            xmlRootNode = xmlRootNode.parentNode;
+        if (xmlRootNode.nodeType == 2)
+            xmlRootNode = xmlRootNode.ownerElement 
+                || xmlRootNode.parentNode 
+                || xmlRootNode.selectSingleNode("..");
+        
+        this.$flowVars.template = xmlRootNode;
         this.$checkLoadQueue();
     };
 
     this.$canLoadData = function() {
-        return template ? true : false;
+        return this.$flowVars.template ? true : false;
     };
 
-}).implement(
-    apf.Presentation,
-    apf.DataBinding,
-    apf.Cache,
-    apf.MultiSelect,
-    apf.BaseList,
-    apf.Rename,
-    apf.DragDrop
-);
+}).call(apf.flowchart.prototype = new apf.BaseList());
+
+apf.aml.setElement("flowchart", apf.flowchart);
+apf.aml.setElement("resize", apf.BindingRule);
+apf.aml.setElement("left", apf.BindingRule);
+apf.aml.setElement("top", apf.BindingRule);
+apf.aml.setElement("id", apf.BindingRule);
+apf.aml.setElement("width", apf.BindingRule);
+apf.aml.setElement("height", apf.BindingRule);
+apf.aml.setElement("flipv", apf.BindingRule);
+apf.aml.setElement("fliph", apf.BindingRule);
+apf.aml.setElement("rotation", apf.BindingRule);
+apf.aml.setElement("lock", apf.BindingRule);
+apf.aml.setElement("type", apf.BindingRule);
+apf.aml.setElement("cap-pos", apf.BindingRule);
+apf.aml.setElement("zindex", apf.BindingRule);
+apf.aml.setElement("connection", apf.BindingRule);
+apf.aml.setElement("ref", apf.BindingRule);
+apf.aml.setElement("blockoutput", apf.BindingRule);
+apf.aml.setElement("blockinput", apf.BindingRule);
+apf.aml.setElement("blocklabel", apf.BindingRule);
 //#endif

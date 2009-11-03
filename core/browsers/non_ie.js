@@ -81,13 +81,15 @@ apf.runNonIe = function (){
             Text.prototype.insertAdjacentHTML =
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
-                r.setStartBefore(apf.isSafari ? document.body : (self.document ? document.body : this));
+                r.setStartBefore(apf.isWebkit
+                    ? document.body
+                    : (self.document ? document.body : this));
                 var parsedHTML = r.createContextualFragment(htmlStr);
                 this.insertAdjacentElement(where, parsedHTML);
             };
         }
 
-        if (apf.isSafari || apf.isChrome)
+        if (!HTMLBodyElement.prototype.insertAdjacentHTML) //apf.isWebkit)
             HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
     
         if (!HTMLElement.prototype.insertAdjacentText) {
@@ -157,7 +159,8 @@ apf.runNonIe = function (){
     
            for (var i = 0; i < oNodes.length; i++)
                 this.appendChild(this.importNode(oNodes[i], true));
-        } else if(oDoc.nodeType == 1)
+        }
+        else if (oDoc.nodeType == 1)
             this.appendChild(this.importNode(oDoc, true));
     };
     
@@ -303,8 +306,8 @@ apf.runNonIe = function (){
         Extensions to the xmldb
     ****************************************************************************/
     apf.getHttpReq = function(){
-        if (apf.teleport.availHTTP.length)
-            return apf.teleport.availHTTP.pop();
+        if (apf.availHTTP.length)
+            return apf.availHTTP.pop();
         return new XMLHttpRequest();
     };
 
@@ -340,11 +343,11 @@ apf.runNonIe = function (){
     
     apf.xmlParseError = function(xml){
         if (xml.documentElement.tagName == "parsererror") {
-            var str     = xml.documentElement.firstChild.nodeValue.split("\n");
-            var linenr  = str[2].match(/\w+ (\d+)/)[1];
-            var message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1");
+            var str     = xml.documentElement.firstChild.nodeValue.split("\n"),
+                linenr  = str[2].match(/\w+ (\d+)/)[1],
+                message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1"),
             
-            var srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
+                srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
             
             throw new Error(apf.formatErrorString(1050, null, 
                 "XML Parse Error on line " +  linenr, message + 
@@ -354,84 +357,18 @@ apf.runNonIe = function (){
         return xml;
     };
     
-    //#ifdef __WITH_XMLDATABASE
-    if (apf.XmlDatabase) {
-        apf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
-            if (!htmlNode)
-                alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
-            
-            if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
-                    str.push(xmlNode[i].xml || xmlNode[i].serialize());
-
-                str = str.join("").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
-                    .replace(/<([^>]+)\/>/g, "<$1></$1>");
-                    
-                (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
-                    ? "beforebegin" 
-                    : "beforeend", str);
-
-                return null;
-            }
+    apf.xmldb.setReadyState = function(oDoc, iReadyState) {
+        oDoc.readyState = iReadyState;
+        if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
+            oDoc.onreadystatechange();
+    };
     
-            if (htmlNode.ownerDocument && htmlNode.ownerDocument != document
-              && xmlNode.ownerDocument == htmlNode.ownerDocument)
-                return htmlNode.insertBefore(xmlNode, beforeNode);
-            
-            //var strHTML = (xmlNode.outerHTML
-                //|| (xmlNode.nodeType == 1 ? xmlNode.xml || xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
-                //.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-            
-            var strHTML = apf.html_entity_decode(xmlNode.outerHTML || xmlNode.xml || xmlNode.nodeValue);
-            var pNode = (beforeNode || htmlNode);
-            if (pNode.nodeType == 11){
-                var id = xmlNode.getAttribute("id");
-                if (!id)
-                    throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
-                
-                document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-                pNode.appendChild(document.getElementById(id));
-            }
-            else {
-                //firefox bug??
-                if (xmlNode.tagName.match(/tbody|thead|th|td|tr/)) {
-                    o = pNode.insertBefore(pNode.ownerDocument
-                        .createElement(xmlNode.tagName.toLowerCase()), beforeNode || null);
-                    var attr = xmlNode.attributes;
-                    for(var j = 0; j < attr.length; j++)
-                        o.setAttribute(attr[j].nodeName, attr[j].nodeValue);
-                    return o;
-                }
-                else {
-                    pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-                }
-            }
-            
-            //#ifdef __DEBUG
-            //var retNode = beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-            //if(!retNode.tagName || retNode.tagName.toLowerCase() != xmlNode.tagName.toLowerCase()) debugger;
-            //#endif
-            
-            return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        };
+    apf.xmldb.loadHandler = function(oDoc){
+        if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
+            oDoc.parseError = -1;
         
-        apf.XmlDatabase.prototype.setReadyState = function(oDoc, iReadyState) {
-            oDoc.readyState = iReadyState;
-            if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
-                oDoc.onreadystatechange();
-        };
-        
-        apf.XmlDatabase.prototype.loadHandler = function(oDoc){
-            if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
-                oDoc.parseError = -1;
-            
-            apf.xmldb.setReadyState(oDoc, 4);
-        };
-        
-        //Initialize xmldb
-        apf.xmldb = new apf.XmlDatabase();
-    }
-    //#endif
+        apf.xmldb.setReadyState(oDoc, 4);
+    };
     
     //Fix XML Data-Island Support Problem with Form Tag
     apf.Init.add(function(){
@@ -443,10 +380,6 @@ apf.runNonIe = function (){
             nodes[i].removeNode();
         nodes = null;
     });
-    
-    //IE Like Error Handling
-    var MAXMSG      = 3;
-    var ERROR_COUNT = 0;
     
     /*window.onerror = function(message, filename, linenr){
         if(++ERROR_COUNT > MAXMSG) return;
@@ -493,17 +426,19 @@ apf.runNonIe = function (){
         
             // Optimization only looking at registered nodes
             if (this.RegElements) {
-                for (var calc_z = -1, calc, i = 0; i < this.RegElements.length; i++) {
-                    var n = this.RegElements[i];
+                var calc_z = -1,
+                    i, calc, n, sx, sy, ex, ey, z
+                for (calc_z = -1, calc, i = 0; i < this.RegElements.length; i++) {
+                    n = this.RegElements[i];
                     if (getStyle(n, "display") == "none") continue;
         
-                    var sx = getElementPosX(n); 
-                    var sy = getElementPosY(n);
-                    var ex = sx + n.offsetWidth;
-                    var ey = sy + n.offsetHeight;
+                    sx = getElementPosX(n); 
+                    sy = getElementPosY(n);
+                    ex = sx + n.offsetWidth;
+                    ey = sy + n.offsetHeight;
                     
                     if (x > sx && x < ex && y > sy && y < ey) {
-                        var z = getElementZindex(n);
+                        z = getElementZindex(n);
                         if (z > calc_z) { //equal z-indexes not supported
                             calc   = [n, x, y, sx, sy];
                             calc_z = z;
@@ -533,24 +468,24 @@ apf.runNonIe = function (){
         }
         
         function efpi(from, x, y, CurIndex, CurValue, px, py){
-            var StartValue = CurValue;
-            var StartIndex = CurIndex;
-            
+            var StartValue = CurValue,
+                StartIndex = CurIndex,
             //Loop through childNodes
-            var nodes = from.childNodes;
-            for(var n, i = 0; i < from.childNodes.length; i++) {
+                nodes      = from.childNodes,
+                n, i, z, sx, sy, ex, ey, isAbs, isHidden, inSpace;
+            for (n, i = 0; i < from.childNodes.length; i++) {
                 n = from.childNodes[i];
                 if (n.nodeType == 1 && getStyle(n, 'display') != 'none' && n.offsetParent) {
-                    var sx = px + n.offsetLeft - n.offsetParent.scrollLeft;//getElementPosX(n); 
-                    var sy = py + n.offsetTop - n.offsetParent.scrollTop;//getElementPosY(n);
-                    var ex = sx + n.offsetWidth;
-                    var ey = sy + n.offsetHeight;
+                    sx = px + n.offsetLeft - n.offsetParent.scrollLeft;//getElementPosX(n); 
+                    sy = py + n.offsetTop - n.offsetParent.scrollTop;//getElementPosY(n);
+                    ex = sx + n.offsetWidth;
+                    ey = sy + n.offsetHeight;
                     
                     //if(Child is position absolute/relative and overflow == "hidden" && !inSpace) continue;
-                    var isAbs    = getStyle(n, "position");
+                    isAbs    = getStyle(n, "position");
                     isAbs        = (isAbs == "absolute") || (isAbs == "relative");
-                    var isHidden = getStyle(n, "overflow") == "hidden";
-                    var inSpace  = (x > sx && x < ex && y > sy && y < ey);
+                    isHidden = getStyle(n, "overflow") == "hidden";
+                    inSpace  = (x > sx && x < ex && y > sy && y < ey);
 
                     if (isAbs && isHidden && !inSpace) continue;
             
@@ -558,7 +493,7 @@ apf.runNonIe = function (){
                     CurValue = StartValue.copy();
             
                     //if (Child is position absolute/relative and has zIndex) or overflow == "hidden"
-                    var z = parseInt(getStyle(n, "z-index")) || 0;
+                    z = parseInt(getStyle(n, "z-index")) || 0;
                     if (isAbs && (z || z == 0) || isHidden) {
                         //if(!is position absolute/relative) zIndex = 0
                         if (!isAbs) z = 0;
@@ -617,7 +552,7 @@ apf.runNonIe = function (){
         function getElementZindex(myObj){
             //This is not quite sufficient and should be changed
             var z = 0, n, p = myObj;
-            while(p && p.nodeType == 1){
+            while (p && p.nodeType == 1) {
                 z = Math.max(z, parseInt(getStyle(p, "z-index")) || -1);
                 p = p.parentNode;
             }
@@ -670,7 +605,5 @@ apf.runNonIe = function (){
             Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-top")) || 0)
             + (parseInt(apf.getStyle(oHtml, "margin-bottom")) || 0))]
     };
-    
-    apf.Init.run('xmldb');
 }
 //#endif

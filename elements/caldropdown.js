@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JCALDROPDOWN || __INC_ALL
+// #ifdef __AMLCALDROPDOWN || __INC_ALL
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
@@ -45,9 +45,8 @@
  * @version     %I%, %G%
  * @since       1.0
  * 
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
@@ -61,9 +60,9 @@
  * @attribute {String}   value            the date returned by calendar; should be in the format specified by the output-format attribute.
  *
  * @event slidedown Fires when the calendar slides open.
- *   cancellable: Prevents the calendar from sliding open
+ *   cancelable: Prevents the calendar from sliding open
  * @event slideup   Fires when the calendar slides up.
- *   cancellable: Prevents the calendar from sliding up
+ *   cancelable: Prevents the calendar from sliding up
  *
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
@@ -87,7 +86,25 @@
  * <a:caldropdown ref="@date" />
  * </code>
  */
-apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
+
+apf.caldropdown = function(struct, tagName){
+    this.$init(tagName || "caldropdown", apf.NODE_VISIBLE, struct);
+    
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_DATABINDING
+        //,apf.StandardBinding
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -104,35 +121,37 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
     this.outputFormat  = null;
     this.captionFormat = "yyyy-mm-dd";
 
-    this.sliderHeight  = 0;
+    this.$sliderHeight = 0;
 
-    var _day          = null,
-        _month        = null,
-        _year         = null,
-        _hours        = 1,
-        _minutes      = 0,
-        _seconds      = 0,
-        _currentMonth = null,
-        _currentYear  = null,
-        _numberOfDays = null,
-        _dayNumber    = null,
+    this.$calVars      = {
+        day          : null,
+        month        : null,
+        year         : null,
+        hours        : 1,
+        minutes      : 0,
+        seconds      : 0,
+        currentMonth : null,
+        currentYear  : null,
+        numberOfDays : null,
+        dayNumber    : null,
         
-        _temp         = null;
+        temp         : null,
 
-    var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
-                "Thursday", "Friday", "Saturday"];
-    var months = [{name : "January",   number : 31},
-                  {name : "February",  number : 28},
-                  {name : "March",     number : 31},
-                  {name : "April",     number : 30},
-                  {name : "May",       number : 31},
-                  {name : "June",      number : 30},
-                  {name : "July",      number : 31},
-                  {name : "August",    number : 31},
-                  {name : "September", number : 30},
-                  {name : "October",   number : 31},
-                  {name : "November",  number : 30},
-                  {name : "December",  number : 31}];
+        days         : ["Sunday", "Monday", "Tuesday", "Wednesday",
+                        "Thursday", "Friday", "Saturday"],
+        months       : [{name : "January",   number : 31},
+                        {name : "February",  number : 28},
+                        {name : "March",     number : 31},
+                        {name : "April",     number : 30},
+                        {name : "May",       number : 31},
+                        {name : "June",      number : 30},
+                        {name : "July",      number : 31},
+                        {name : "August",    number : 31},
+                        {name : "September", number : 30},
+                        {name : "October",   number : 31},
+                        {name : "November",  number : 30},
+                        {name : "December",  number : 31}]
+    };
 
     this.$supportedProperties.push("initial-message", "output-format",
                                    "default", "caption-format", "value");
@@ -141,13 +160,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      * @attribute {String} initial-message the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent
      * nodes. When none is found it is looked for on the appsettings element.
-     */
-    this.$propHandlers["initial-message"] = function(value) {
-        this.initialMsg = value
-            || apf.getInheritedAttribute(this.$aml, "intial-message");
-    };
-
-    /**
+     *
      * @attribute {String} style of returned date
      * 
      * Possible values:
@@ -172,8 +185,9 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
-            this.setProperty("value", new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.outputFormat = value));
+            var c = this.$calVars;
+            this.setProperty("value", new Date(c.year, c.month, c.day, c.hours,
+                c.minutes, c.seconds).format(this.outputFormat = value));
         }
         else
             this.outputFormat = value;
@@ -204,16 +218,18 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["caption-format"] = function(value) {
         if (this.value) {
-            this.$setLabel(new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.captionFormat = value));
+            var c = this.$calVars;
+            this.$setLabel(new Date(c.year, c.month, c.day, c.hours,
+                c.minutes, c.seconds).format(this.captionFormat = value));
         }
         else
             this.captionFormat = value;
     }
 
     this.$propHandlers["value"] = function(value) {
+        var c = this.$calVars;
         if (!this.outputFormat) {
-            _temp = value;
+            c.temp = value;
             return;
         }
 
@@ -225,25 +241,27 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         var date = Date.parse(value, this.outputFormat);
 
         //#ifdef __DEBUG
-        if (!date || !date.getFullYear()) {
-            throw new Error(apf.formErrorString(this, "Parsing date",
-                "Invalid date: " + value));
+        if (!date || isNaN(date)) {
+            return;
+            /*throw new Error(apf.formErrorString(this, "Parsing date",
+                "Invalid date: " + value));*/
         }
         //#endif
 
-        _day     = date.getDate();
-        _month   = date.getMonth();
-        _year    = date.getFullYear();
-        _hours   = date.getHours();
-        _minutes = date.getMinutes();
-        _seconds = date.getSeconds();
+        c.day     = date.getDate();
+        c.month   = date.getMonth();
+        c.year    = date.getFullYear();
+        c.hours   = date.getHours();
+        c.minutes = date.getMinutes();
+        c.seconds = date.getSeconds();
 
         this.value = value;
-        this.$setLabel(new Date(_year, _month, _day, _hours,
-            _minutes, _seconds).format(this.captionFormat));
-        this.redraw(_month, _year);
+        this.$setLabel(new Date(c.year, c.month, c.day, c.hours,
+            c.minutes, c.seconds).format(this.captionFormat));
+        this.redraw(c.month, c.year);
     }
     
+    //#ifdef __WITH_CONVENIENCE_API
     /**
      * @method  
      * 
@@ -257,8 +275,9 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      * @method  Sets calendar date
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     }
+    //#endif
     
     /**** Keyboard Handling ****/
 
@@ -268,11 +287,12 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
 
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
-            shiftKey = e.shiftKey;
+            shiftKey = e.shiftKey,
+            c        = this.$calVars;
 
         switch (key) {
             case 13: /* enter */
-                this.selectDay(_day);
+                this.selectDay(c.day);
                 this.slideUp();
                 break;
 
@@ -290,12 +310,12 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 else if (shiftKey)
                     this.prevYear();
                 else {
-                    if (_day - 1 < 1) {
+                    if (c.day - 1 < 1) {
                         this.prevMonth();
-                        this.selectDay(months[_currentMonth].number);
+                        this.selectDay(c.months[c.currentMonth].number);
                     }
                     else {
-                        this.selectDay(_day - 1);
+                        this.selectDay(c.day - 1);
                     }
                 }
                 break;
@@ -304,12 +324,12 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 if (ctrlKey)
                     this.slideUp();
                 else {
-                    if (_day - 7 < 1) {
+                    if (c.day - 7 < 1) {
                         this.prevMonth();
-                        this.selectDay(months[_currentMonth].number + _day - 7);
+                        this.selectDay(c.months[c.currentMonth].number + c.day - 7);
                     }
                     else {
-                        this.selectDay(_day - 7);
+                        this.selectDay(c.day - 7);
                     }
                 }
                 break;
@@ -320,14 +340,14 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 else if (shiftKey)
                     this.nextYear();
                 else
-                    this.selectDay(_day + 1);
+                    this.selectDay(c.day + 1);
                 break;
 
             case 40: /* down arrow */
                 if (ctrlKey)
                     this.slideDown(e);
                 else
-                    this.selectDay(_day + 7);
+                    this.selectDay(c.day + 7);
                 break;
 
             case 84:
@@ -370,27 +390,27 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             : "overflow"] = "hidden";
 
         this.oSlider.style.display = "";
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
 
-        this.oSlider.style.height = (this.sliderHeight > 0
-            ? this.sliderHeight - 1
+        this.oSlider.style.height = (this.$sliderHeight > 0
+            ? this.$sliderHeight - 1
             : 0) + "px";
 
-        this.oSlider.style.width  = (this.oExt.offsetWidth > 0
-            ? this.oExt.offsetWidth - 1
+        this.oSlider.style.width  = (this.$ext.offsetWidth > 0
+            ? this.$ext.offsetWidth - 1
             : 0) + "px";
 
         apf.caldropdown.cache["oSlider"].host = this;
 
-        this.redraw(_month, _year);
+        this.redraw(this.$calVars.month, this.$calVars.year);
 
-        apf.popup.show(this.uniqueId, {
+        apf.popup.show(this.$uniqueId, {
             x       : 0,
-            y       : this.oExt.offsetHeight,
+            y       : this.$ext.offsetHeight + this.$getPageScroll()[0],
             animate : true,
-            ref     : this.oExt,
-            width   : this.oExt.offsetWidth + 1,
-            height  : this.sliderHeight,
+            ref     : this.$ext,
+            width   : this.$ext.offsetWidth + 1,
+            height  : this.$sliderHeight,
             callback: function(container) {
                 container.style[apf.supportOverflowComponent
                     ? "overflowY"
@@ -398,6 +418,13 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             }
         });
     };
+    
+    this.$getPageScroll = function() {
+        return [
+            document.documentElement.scrollTop || document.body.scrollTop,
+            document.documentElement.scrollLeft || document.body.scrollLeft
+        ];
+    }
 
     /**
      * Hides the container with the calendar using a slide effect.
@@ -412,7 +439,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
 
-        this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
+        this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
         apf.popup.hide();
         return false;
     };
@@ -420,10 +447,10 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
     /**** Private methods and event handlers ****/
 
     this.$setLabel = function(value) {
-        this.oLabel.innerHTML = value || this.initialMsg || "";
+        this.oLabel.innerHTML = value || this["initial-message"] || "";
 
-        this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
-            [!value ? "" : this.baseCSSname + "Initial"]);
+        this.$setStyleClass(this.$ext, value ? "" : this.$baseCSSname + "Initial",
+            [!value ? "" : this.$baseCSSname + "Initial"]);
     };
 
     this.addEventListener("afterselect", function(e) {
@@ -431,23 +458,17 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
 
         this.slideUp();
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
 
-        this.$setLabel(this.applyRuleSetOnNode("value", this.selected))
+        this.$setLabel(e.selection.length
+            ? this.$applyBindRule("value", this.selected)
+            : "")
 
-        //#ifdef __WITH_MULTIBINDING
-        this.$updateOtherBindings();
-        //#endif
-
-        //#ifdef __JSUBMITFORM || __INC_ALL
-        if (this.hasFeature(__VALIDATION__) && this.form) {
+        //#ifdef __AMLSUBMITFORM || __INC_ALL
+        if (this.hasFeature(apf.__VALIDATION__) && this.form) {
             this.validate(true);
         }
         //#endif
-    });
-
-    this.addEventListener("afterdeselect", function() {
-        this.$setLabel("");
     });
 
     function setMaxCount() {
@@ -455,79 +476,32 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             this.slideDown();
     }
 
-    //#ifdef __WITH_MULTIBINDING
-    //For MultiBinding
-    this.$showSelection = function(value) {
-        //Set value in Label
-        var bc = this.$getMultiBind();
-
-        //Only display caption when a value is set
-        if (value === undefined) {
-            var sValue2,
-                sValue = bc.applyRuleSetOnNode("value", bc.xmlRoot, null, true);
-            if (sValue)
-                sValue2 = bc.applyRuleSetOnNode("caption", bc.xmlRoot, null, true);
-
-            if (!sValue2 && this.xmlRoot && sValue) {
-                var rule    = this.getBindRule(this.mainBind).getAttribute("select");
-
-                var xpath   = this.traverse + "[" + rule + "='"
-                    + sValue.replace(/'/g, "\\'") + "']";
-
-                var xmlNode = this.xmlRoot.selectSingleNode(xpath);
-                value       = this.applyRuleSetOnNode("caption", xmlNode);
-            }
-            else {
-                value = sValue2 || sValue;
-            }
-        }
-    };
-
-    //I might want to move this method to the MultiLevelBinding baseclass
-    this.$updateOtherBindings = function() {
-        if (!this.multiselect) {
-            // Set Caption bind
-            var bc = this.$getMultiBind(), caption;
-            if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = apf.createNodeFromXpath(bc.xmlRoot,
-                    bc.bindingRules["caption"][0].getAttribute("select"));
-                if (!xmlNode)
-                    return;
-
-                apf.setNodeValue(xmlNode,
-                    this.applyRuleSetOnNode("caption", this.selected));
-            }
-        }
-    };
-    //#endif
-
     // Private functions
     this.$blur = function() {
         this.slideUp();
-        //this.oExt.dispatchEvent("mouseout")
+        //this.$ext.dispatchEvent("mouseout")
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"])
-        //if(this.oExt.onmouseout) this.oExt.onmouseout();
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
+        //if(this.$ext.onmouseout) this.$ext.onmouseout();
 
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
     this.$focus = function(){
         apf.popup.forceHide();
-        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }
 
     this.$setClearMessage = function(msg) {
-        if (msg) {
+        if (msg)
             this.$setLabel(msg);
-        }
     };
 
     this.$removeClearMessage = function() {
         this.$setLabel("");
     };
 
-    //#ifdef __JSUBMITFORM || __INC_ALL
+    //#ifdef __AMLSUBMITFORM || __INC_ALL
     this.addEventListener("slidedown", function() {
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
         if (!this.form || !this.form.xmlActions || this.xmlRoot)
@@ -552,35 +526,37 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.redraw = function(month, year) {
-        _currentMonth = month;
-        _currentYear  = year;
-        var _width    = this.oExt.offsetWidth;
+        var c = this.$calVars;
+        c.currentMonth = month;
+        c.currentYear  = year;
 
-        var temp      = Math.floor((_width - 36) / 8) * 8 + 32 - apf.getDiff(this.oNavigation)[0];
+        var _width     = this.$ext.offsetWidth,
+            temp       = Math.floor((_width - 36) / 8) * 8 + 32 
+                         - apf.getDiff(this.oNavigation)[0],
+            w_days     = new Date(year, 0, 1).getDay();
 
         if (temp >= 0)
             this.oNavigation.style.width = temp + "px";
 
         //var w_firstYearDay = new Date(year, 0, 1);
         //var w_dayInWeek    = w_firstYearDay.getDay();
-        var w_days         = new Date(year, 0, 1).getDay();
 
         for (i = 0; i <= month; i++) {
             if (isLeapYear(year) && i == 1)
                 w_days++;
-            w_days += months[i].number;
+            w_days += c.months[i].number;
         }
 
         var w_weeks = Math.ceil(w_days / 7),
             date    = new Date(year, month);
 
-        _numberOfDays = months[date.getMonth()].number;
+        c.numberOfDays = c.months[date.getMonth()].number;
         if (isLeapYear(year) && date.getMonth() == 1)
-            _numberOfDays++;
+            c.numberOfDays++;
 
-        _dayNumber = new Date(year, month, 1).getDay();
+        c.dayNumber = new Date(year, month, 1).getDay();
         var prevMonth     = month == 0 ? 11 : month - 1,
-            prevMonthDays = months[prevMonth].number - _dayNumber + 1,
+            prevMonthDays = c.months[prevMonth].number - c.dayNumber + 1,
             nextMonthDays = 1,
             rows = this.oNavigation.childNodes,
             cells,
@@ -603,15 +579,15 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             }
             else if ((rows[i].className || "").indexOf("status") != -1) {
                 if (_width >= 300)
-                    rows[i].innerHTML = months[_currentMonth].name
-                                      + " " + _currentYear;
+                    rows[i].innerHTML = c.months[c.currentMonth].name
+                                      + " " + c.currentYear;
                 else {
-                    rows[i].innerHTML = (_currentMonth + 1) + "/" + _currentYear;
+                    rows[i].innerHTML = (c.currentMonth + 1) + "/" + c.currentYear;
                 }
             }
         }
 
-        this.sliderHeight = 22; //navigators bar height
+        this.$sliderHeight = 22; //navigators bar height
         temp = Math.floor((_width - 37) / 8);
         var squareSize = temp > 0 ? temp : 0;
 
@@ -626,7 +602,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
 
         this.oDow.style.width = d_width + "px";
 
-        this.sliderHeight += d_height + d_paddingTop;
+        this.$sliderHeight += d_height + d_paddingTop;
 
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
@@ -636,16 +612,16 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 daysofweek[i].style.fontSize   = d_fontSize;
 
                 if (z > 0) {
-                    daysofweek[i].innerHTML = days[z - 1].substr(0, 3);
+                    daysofweek[i].innerHTML = c.days[z - 1].substr(0, 3);
                 }
                 z++;
             }
         }
 
-        var c_height     = Math.floor((squareSize + 12) / 2);
-        var c_paddingTop = squareSize - c_height > 0
-            ? squareSize - c_height
-            : 0;
+        var c_height     = Math.floor((squareSize + 12) / 2),
+            c_paddingTop = squareSize - c_height > 0
+                ? squareSize - c_height
+                : 0;
 
         rows = this.oSlider.childNodes;
         for (z = 0, y = 0, i = 0; i < rows.length; i++) {
@@ -657,7 +633,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 rows[i].style.paddingTop = "1px";
             }
 
-            this.sliderHeight += (squareSize + 5);
+            this.$sliderHeight += (squareSize + 5);
 
             cells = rows[i].childNodes;
             for (var j = 0, disabledRow = 0; j < cells.length; j++) {
@@ -677,31 +653,31 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
 
                 if ((z - 1) % 8 == 0) {
                     cells[j].innerHTML = w_weeks
-                        - Math.ceil((months[_month].number + _dayNumber) / 7)
+                        - Math.ceil((c.months[c.month].number + c.dayNumber) / 7)
                         + 1 + (z - 1) / 8;
                 }
                 else {
                     y++;
-                    if (y <= _dayNumber) {
+                    if (y <= c.dayNumber) {
                         cells[j].innerHTML = prevMonthDays++;
                         this.$setStyleClass(cells[j], "disabled prev");
                     }
-                    else if (y > _dayNumber && y <= _numberOfDays + _dayNumber) {
-                        cells[j].innerHTML = y - _dayNumber;
+                    else if (y > c.dayNumber && y <= c.numberOfDays + c.dayNumber) {
+                        cells[j].innerHTML = y - c.dayNumber;
 
                         var dayNrWeek = new Date(year, month,
-                                                 y - _dayNumber).getDay();
+                                                 y - c.dayNumber).getDay();
 
                         if (dayNrWeek == 0 || dayNrWeek == 6) {
                             this.$setStyleClass(cells[j], "weekend");
                         }
 
-                        if (month == _month && year == _year
-                          && y - _dayNumber == _day) {
+                        if (month == c.month && year == c.year
+                          && y - c.dayNumber == c.day) {
                             this.$setStyleClass(cells[j], "active");
                         }
                     }
-                    else if (y > _numberOfDays + _dayNumber) {
+                    else if (y > c.numberOfDays + c.dayNumber) {
                         cells[j].innerHTML = nextMonthDays++;
                         this.$setStyleClass(cells[j], "disabled next");
                         disabledRow++;
@@ -723,13 +699,13 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      * @param {String}   type   class name of html representation of selected cell
      */
     this.selectDay = function(nr, type) {
-        var newMonth = type == "prev"
-            ? _currentMonth
-            : (type == "next"
-                ? _currentMonth + 2
-                : _currentMonth + 1);
-
-        var newYear = _currentYear;
+        var c = this.$calVars,
+            newMonth = type == "prev"
+                ? c.currentMonth
+                : (type == "next"
+                    ? c.currentMonth + 2
+                    : c.currentMonth + 1),
+            newYear = c.currentYear;
 
         if (newMonth < 1) {
             newMonth = 12;
@@ -740,22 +716,22 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             newYear++;
         }
 
-        this.change(new Date(newYear, (newMonth - 1), nr, _hours,
-            _minutes, _seconds).format(this.outputFormat));
+        this.change(new Date(newYear, (newMonth - 1), nr, c.hours,
+            c.minutes, c.seconds).format(this.outputFormat));
     };
 
     /**
      * Change displayed year to next
      */
     this.nextYear = function() {
-        this.redraw(_currentMonth, _currentYear + 1);
+        this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear + 1);
     };
 
     /**
      * Change displayed year to previous
      */
     this.prevYear = function() {
-        this.redraw(_currentMonth, _currentYear - 1);
+        this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear - 1);
     };
 
     /**
@@ -763,14 +739,15 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to next
      */
     this.nextMonth = function() {
-        var newMonth, newYear;
-        if (_currentMonth > 10) {
+        var newMonth, newYear,
+            c = this.$calVars;
+        if (c.currentMonth > 10) {
             newMonth = 0;
-            newYear  = _currentYear + 1;
+            newYear  = c.currentYear + 1;
         }
         else {
-            newMonth = _currentMonth + 1;
-            newYear  = _currentYear;
+            newMonth = c.currentMonth + 1;
+            newYear  = c.currentYear;
         }
 
         this.redraw(newMonth, newYear);
@@ -781,14 +758,15 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to previous
      */
     this.prevMonth = function() {
-        var newMonth, newYear;
-        if (_currentMonth < 1) {
+        var newMonth, newYear,
+            c = this.$calVars;
+        if (c.currentMonth < 1) {
             newMonth = 11;
-            newYear  = _currentYear - 1;
+            newYear  = c.currentYear - 1;
         }
         else {
-            newMonth = _currentMonth - 1;
-            newYear  = _currentYear;
+            newMonth = c.currentMonth - 1;
+            newYear  = c.currentYear;
         }
 
         this.redraw(newMonth, newYear);
@@ -812,37 +790,37 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt      = this.$getExternal(null, null, function(oExt) {
+        this.$ext = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmouseover", 
-                'var o = apf.lookup(' + this.uniqueId + ');\
-                 o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
+                'var o = apf.lookup(' + this.$uniqueId + ');\
+                 o.$setStyleClass(o.$ext, o.$baseCSSname + "Over");');
             oExt.setAttribute("onmouseout", 
-                'var o = apf.lookup('+ this.uniqueId + ');\
+                'var o = apf.lookup('+ this.$uniqueId + ');\
                  if (o.isOpen) return;\
-                 o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
+                 o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"]);');
 
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown",
-                    'apf.lookup(' + this.uniqueId + ').slideToggle(event);');
+                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event);');
             }
 
             //Label
             var oLabel  = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
-                    + this.uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event);');
             }
         });
-        this.oLabel     = this.$getLayoutNode("main", "label", this.oExt);
+        this.oLabel     = this.$getLayoutNode("main", "label", this.$ext);
         
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
 
-        this.oIcon      = this.$getLayoutNode("main", "icon", this.oExt);
-        if (this.oButton)
-            this.oButton = this.$getLayoutNode("main", "button", this.oExt);
+        this.oIcon      = this.$getLayoutNode("main", "icon", this.$ext);
+        if (this.$button)
+            this.$button = this.$getLayoutNode("main", "button", this.$ext);
 
         if (apf.caldropdown.cache) {
             var cal          = apf.caldropdown.cache;
@@ -853,7 +831,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
             apf.caldropdown.cache.refcount++;
 
             //Set up the popup
-            this.pHtmlDoc = apf.popup.setContent(this.uniqueId, this.oSlider,
+            this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSlider,
             apf.skins.getCssString(this.skinName));
         }
         else {
@@ -910,7 +888,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                 var oDaysOfWeek = this.$getLayoutNode("container",
                                                       "daysofweek", oExt1);
     
-                for (i = 0; i < days.length + 1; i++) {
+                for (i = 0; i < this.$calVars.days.length + 1; i++) {
                     this.$getNewContext("day");
                     oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
                 }
@@ -923,7 +901,7 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         
 
         //Set up the popup
-        this.pHtmlDoc    = apf.popup.setContent(this.uniqueId, this.oSlider,
+        this.$pHtmlDoc    = apf.popup.setContent(this.$uniqueId, this.oSlider,
             apf.skins.getCssString(this.skinName));
 
         document.body.appendChild(this.oSlider);
@@ -931,9 +909,6 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype    = parseInt(this.$getLayoutNode("main", "type")) || 1;
-
-        /*if (this.$aml.childNodes.length)
-            this.$loadInlineData(this.$aml); caldropdown don't inherit that function */
 
         if (!apf.caldropdown.cache) {
             apf.caldropdown.cache = {
@@ -946,7 +921,8 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$loadAml = function(x) {
-        var date;
+        var date, c = this.$calVars;
+
         if (typeof this.value == "undefined") {
             switch(this["default"]) {
                 case "today":
@@ -954,51 +930,43 @@ apf.caldropdown = apf.component(apf.NODE_VISIBLE, function() {
                     break;
                 default :
                     date =  new Date();
-                    _day   = 0;
-                    _month = date.getMonth();
-                    _year  = date.getFullYear();
+                    c.day   = 0;
+                    c.month = date.getMonth();
+                    c.year  = date.getFullYear();
 
-//                    if (!this.selected && this.initialMsg)
+//                    if (!this.selected && this["initial-message"])
                         this.$setLabel();
                     break;
             }
         }
         else {
-            date = Date.parse(_temp || this.value, this.outputFormat);
-            _day   = date.getDate();
-            _month = date.getMonth();
-            _year  = date.getFullYear();
+            date = Date.parse(c.temp || this.value, this.outputFormat);
+            c.day   = date.getDate();
+            c.month = date.getMonth();
+            c.year  = date.getFullYear();
 
-            this.setProperty("value", new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.outputFormat));
+            if (c.day && c.month && c.year) {
+                this.setProperty("value", new Date(c.year, c.month, c.day, c.hours,
+                    c.minutes, c.seconds).format(this.outputFormat));
+            }
         }
     };
 
     this.$destroy = function() {
-        apf.popup.removeContent(this.uniqueId);
+        apf.popup.removeContent(this.$uniqueId);
         apf.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
 
         if (apf.caldropdown.cache && apf.caldropdown.cache.refcount) {
-            if (apf.caldropdown.cache.refcount == 0) {
+            if (apf.caldropdown.cache.refcount == 0)
                 apf.caldropdown.cache = null;
-            }
-            else {
+            else
                 apf.caldropdown.cache.refcount--;
-            }
         }
     };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    //#ifdef __WITH_VALIDATION
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+}).call(apf.caldropdown.prototype = new apf.StandardBinding());
 
+apf.config.$inheritProperties["initial-message"] = 1;
+
+apf.aml.setElement("caldropdown", apf.caldropdown);
 // #endif

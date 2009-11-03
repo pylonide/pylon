@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __AMLVIDEO || __INC_ALL
 
 /**
  * Element that is able to play a video file or remote stream
@@ -65,7 +65,17 @@
  * @since       1.0
  */
 
-apf.video = apf.component(apf.NODE_VISIBLE, function(){
+apf.video = function(struct, tagName){
+    this.$init(tagName || "video", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+    );
+
     this.$booleanProperties["fullscreen"] = true;
 
     var oldStyle = null; //will hold old style of the media elements' parentNode on fullscreen
@@ -78,7 +88,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
         else if (this.parentNode && this.parentNode.tagName != "application"
           && this.parentNode.setWidth) {
             // we're going into fullscreen mode...
-            var i, node, oParent = this.parentNode.oExt;
+            var i, node, oParent = this.parentNode.$ext;
             if (value) {
                 oldStyle = {
                     width    : this.parentNode.getWidth(),
@@ -106,7 +116,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
                         /*window.console.log('still reparenting!');
                         window.console.dir(oParent.parentNode);
                         placeHolder = document.createElement('div');
-                        placeHolder.setAttribute('id', '__apf_video_placeholder__');
+                        placeHolder.setAttribute('id', 'apf.__apf_video_placeholder__');
                         placeHolder.style.display = "none";
                         oParent.parentNode.insertBefore(placeHolder, oParent);
 
@@ -114,8 +124,8 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
                     }
                 }
 
-                this.parentNode.oExt.style.position = "absolute";
-                this.parentNode.oExt.style.zIndex = "1000000";
+                this.parentNode.$ext.style.position = "absolute";
+                this.parentNode.$ext.style.zIndex = "1000000";
                 this.parentNode.setWidth('100%');
                 this.parentNode.setHeight('100%');
                 this.parentNode.setTop('0');
@@ -143,8 +153,8 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
                     placeHolder = null;
                 }*/
 
-                this.parentNode.oExt.style.zIndex = oldStyle.zIndex;
-                this.parentNode.oExt.style.position = oldStyle.position;
+                this.parentNode.$ext.style.zIndex = oldStyle.zIndex;
+                this.parentNode.$ext.style.position = oldStyle.position;
                 this.parentNode.setWidth(oldStyle.width);
                 this.parentNode.setHeight(oldStyle.height);
                 this.parentNode.setTop(oldStyle.top);
@@ -162,7 +172,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
 
             var _self = this;
             window.setTimeout(function() {
-                apf.layout.forceResize(_self.parentNode.oExt);
+                apf.layout.forceResize(_self.parentNode.$ext);
             }, 100)
         }
     };
@@ -191,7 +201,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
     }, true);
     // #endif
 
-    this.mainBind = "src";
+    this.$mainBind = "src";
 
     /**
      * Load a video by setting the URL pointer to a different video file
@@ -199,17 +209,11 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
      * @param {String} sVideo
      * @type {Object}
      */
-    //var dbLoad = this.load;
     this.loadMedia = function() {
-        if (!arguments.length) {
-            if (this.player) {
-                this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', apf.Media.NETWORK_LOADING);
-                this.player.load(this.src);
-            }
-        }
-        else {
-            dbLoad.apply(this, arguments);
+        if (this.player) {
+            this.setProperty('currentSrc',   this.src);
+            this.setProperty('networkState', apf.Media.NETWORK_LOADING);
+            this.player.load(this.src);
         }
 
         return this;
@@ -335,7 +339,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
     };
 
     /**
-     * Checks if a specified playerType is supported by JPF or not...
+     * Checks if a specified playerType is supported by APF or not...
      *
      * @type {Boolean}
      */
@@ -350,7 +354,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new apf.video[this.playerType](this, this.oExt, {
+        this.player = new apf.video[this.playerType](this, this.$ext, {
             src         : this.src.splitSafe(",")[this.$lastMimeType] || this.src,
             width       : this.width,
             height      : this.height,
@@ -431,10 +435,12 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.$stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
-        if (e.state == "loading")
+        if (e.state == "loading") {
             this.setProperty('networkState', this.networkState = apf.Media.NETWORK_LOADING);
-        else if (e.state == "connectionError")
+        }
+        else if (e.state == "connectionError") {
             this.$propHandlers["readyState"].call(this, this.networkState = apf.Media.HAVE_NOTHING);
+        }
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
                 this.$readyHook({type: 'ready'});
@@ -527,7 +533,7 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$draw = function(){
-        this.oExt = this.$getExternal();
+        this.$ext = this.$getExternal();
     };
 
     /**
@@ -537,17 +543,17 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.$loadAml = function(x){
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(){
+        this.$int   = this.$getLayoutNode("main", "container", this.$ext);
 
         this.width  = parseInt(this.width)  || null;
         this.height = parseInt(this.height) || null;
+    });
 
+    this.addEventListener("AMLMediaReady", function() {
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
-        else
-            apf.AmlParser.parseChildren(this.$aml, null, this);
-    };
+    });
 
     this.$destroy = function(bRuntime) {
         if (this.player && this.player.$destroy)
@@ -556,15 +562,11 @@ apf.video = apf.component(apf.NODE_VISIBLE, function(){
         this.player = null;
 
         if (bRuntime)
-            this.oExt.innerHTML = "";
+            this.$ext.innerHTML = "";
     };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    apf.Presentation,
-    apf.Media
-);
+}).call(apf.video.prototype = new apf.Media());
+
+apf.aml.setElement("video", apf.video);
 
 apf.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls",

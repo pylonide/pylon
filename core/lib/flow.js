@@ -40,7 +40,7 @@
  * @attribute {Object}  connectionsTemp      keeps information about source block and its input in moment of connection creation. (mode must be set to "connection-add")
  * @attribute {Object}  connectionsManager   manage of entire connection creation process
  * @attribute {Number}  sSize                connection line width
- * @attrubite {Number}  fsSize               define size of first and last connection segment
+ * @attrubute {Number}  fsSize               define size of first and last connection segment
  *
  * @private
  * @default_private
@@ -88,7 +88,12 @@ apf.flow = {
             var sx = e.clientX, sy = e.clientY,
                 dx = 0, dy = 0,
                 l = parseInt(target.style.left),
-                t = parseInt(target.style.top);
+                t = parseInt(target.style.top),
+                newTop, newLeft;
+            //Snap
+            var snap  = objBlock.canvas.snap;
+                gridW = objBlock.canvas.gridW,
+                gridH = objBlock.canvas.gridH;
 
             //objBlock.canvas.htmlElement.scrollLeft = Math.round(l+dx+target.offsetWidth);
 
@@ -103,9 +108,19 @@ apf.flow = {
 
                 dx = e.clientX - sx;
                 dy = e.clientY - sy;
+                
+                newTop  = t + dy;
+                newLeft = l + dx;
 
-                target.style.left = (l + dx) + "px";
-                target.style.top  = (t + dy) + "px";
+                if (snap) {
+                    target.style.left = Math.round(newLeft / gridW) * gridW + "px";
+                    target.style.top  = Math.round(newTop / gridH) * gridH + "px";
+                }
+                else {
+                    target.style.left = newLeft + "px";
+                    target.style.top  = newTop + "px";
+                }
+                
 
                 objBlock.onMove();
                 apf.flow.onblockmove();
@@ -116,8 +131,9 @@ apf.flow = {
             document.body.onmouseup = function(e) {
                 document.body.onmousemove = null;
 
-                if(apf.flow.onaftermove && isDraged) {
+                if (apf.flow.onaftermove && isDraged) {
                     apf.flow.onaftermove(dy, dx);
+
                     isDraged = false;
                 }
             }
@@ -148,6 +164,9 @@ apf.flow.canvas = function(htmlElement) {
 
     this.mode           = "normal";
     this.disableremove  = false;
+    this.snap           = false;
+    this.gridW          = 48;
+    this.gridH          = 48;
 
     this.initCanvas = function() {
         apf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
@@ -515,9 +534,9 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                 ? "vertical"
                 : "none"));
 
-        if (init || (prev[0] != o.rotation  || prev[1] != o.fliph || prev[2] != o.flipv)) {
+        //if (init || prev[0] != o.rotation  || prev[1] != o.fliph || prev[2] != o.flipv) {
             this.repaintImage(flip, o.rotation, 'rel');
-        }
+        //}
     };
 
     /**
@@ -538,7 +557,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
-        if(p.style.display == "none")
+        if (p.style.display == "none")
             return;
         else
             p.style.display = "block";
@@ -547,7 +566,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;
 
-        var rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle)/ 180;
+        var rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle) / 180;
         var costheta = Math.cos(rotation);
         var sintheta = Math.sin(rotation);
 
@@ -636,6 +655,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * element have. Notified object must have onMove function).
      */
     this.onMove = function() {
+        apf.console.info(this.moveListeners.length)
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
@@ -951,6 +971,7 @@ apf.flow.connectionsManager = new (function() {
  */
 apf.flow.virtualMouseBlock = function(canvas) {
     var hook = [0, 0, "virtual"];
+    var _self = this;
     this.canvas = canvas;
     this.htmlElement = document.createElement('div');
 
@@ -971,15 +992,12 @@ apf.flow.virtualMouseBlock = function(canvas) {
 
     apf.setStyleClass(this.htmlElement, "vMB");
 
-    var sPos = apf.getAbsolutePosition(this.htmlElement.parentNode);
+    var sPos = apf.getAbsolutePosition(this.canvas.htmlElement);
 
     this.onMove = function(e) {
-        this.htmlElement.style.left = (e.clientX - sPos[0] + 2) 
-            + this.canvas.getScrollLeft() 
-            + this.canvas.getWindowScrollLeft()+ "px";
-        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2 
-            + this.canvas.getScrollTop()) 
-            + this.canvas.getWindowScrollTop() + "px";
+        //@todo apf3.x see why this is twice (2 * this.canvas.getWindowScrollLeft() - for Top either)
+        this.htmlElement.style.left = (e.clientX + 2 + this.canvas.getWindowScrollLeft() + this.canvas.getScrollLeft() - sPos[0]) + "px";
+        this.htmlElement.style.top = (e.clientY + 2 + this.canvas.getWindowScrollTop() + this.canvas.getScrollTop() - sPos[1]) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
@@ -1540,7 +1558,7 @@ apf.flow.connectorsEnds = function(connector, place, type) {
 }
 
 apf.flow.label = function(connector, number) {
-    var number = number || Math.ceil(connector.htmlSegments.length/2);
+    var number = number || Math.ceil(connector.htmlSegments.length / 2);
     var segment = connector.htmlSegments[number];
     var l = parseInt(segment[0].style.left);
     var t = parseInt(segment[0].style.top);
@@ -1793,6 +1811,7 @@ apf.flow.removeBlock = function(htmlElement) {
  */
 apf.flow.addConnector = function(c, s, d, o) {
     var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
+
     this.newConnector = new apf.flow.connector(htmlElement, c, s, d, o);
     this.newConnector.initConnector();
 };

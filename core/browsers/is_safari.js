@@ -28,26 +28,25 @@ apf.runSafari = function(){
     //#ifdef __SUPPORT_SAFARI2
     if (!apf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
-        lookupSafariCall = [];
+        self.lookupSafariCall = [];
         window.setTimeout = function(call, time){
             if (typeof call == "string") 
                 return setTimeoutSafari(call, time);
-            return setTimeoutSafari("lookupSafariCall["
-                + (lookupSafariCall.push(call) - 1) + "]()", time);
+            return setTimeoutSafari("self.lookupSafariCall["
+                + (self.lookupSafariCall.push(call) - 1) + "]()", time);
         }
         
         if (apf.isSafariOld) {
             HTMLHtmlElement = document.createElement("html").constructor;
             Node            = HTMLElement = {};
-            HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
+            HTMLElement.prototype = HTMLHtmlElement.apf.__proto__.apf.__proto__;
             HTMLDocument    = Document = document.constructor;
             var x           = new DOMParser();
             XMLDocument     = x.constructor;
             Element         = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
             x               = null;
         }
-        
-        if (!XMLDocument.__defineGetter__) {
+        if (!XMLDocument.prototype.__defineGetter__) {
             Document.prototype.serialize    = 
             Node.prototype.serialize        =
             XMLDocument.prototype.serialize = function(){
@@ -59,7 +58,7 @@ apf.runSafari = function(){
     
     //#ifdef __PARSER_XPATH
     
-    if (apf.isSafariOld || apf.isSafari || apf.isChrome) {
+    if (apf.isWebkit) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){
@@ -67,7 +66,7 @@ apf.runSafari = function(){
         };
         
         //Element.selectNodes
-        Text.prototype.selectNodes =
+        Text.prototype.selectNodes    =
         Element.prototype.selectNodes = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
@@ -79,14 +78,43 @@ apf.runSafari = function(){
         };
         
         //Element.selectSingleNode
-        Text.prototype.selectSingleNode =
+        Text.prototype.selectSingleNode    =
         Element.prototype.selectSingleNode = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
         apf.importClass(apf.runXpath, true, self);
-        apf.importClass(apf.runXslt, true, self);
+        apf.importClass(apf.runXslt,  true, self);
     }
+    
+    var serializer = new XMLSerializer();
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
+        var frag = document.createDocumentFragment();
+        for (var node, a = [], i = 0, l = nodeList.length; i < l; i++) {
+            if (!(node = nodeList[i])) continue;
+            frag.appendChild(node);
+        }
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", serializer.serializeToString(frag));
+        //.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<([^>]+)\/>/g, "<$1></$1>");
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (!s) {
+            s = xmlNode.serialize 
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode));
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s);//apf.html_entity_decode
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
 
     // #endif
     
@@ -99,8 +127,6 @@ apf.runSafari = function(){
 
 apf.runIphone = function() {
     if (!apf.isIphone) return;
-
-    apf.makeClass(this);
 
     // #ifdef __WITH_STYLE
     apf.importCssString(document,
@@ -126,11 +152,11 @@ apf.runIphone = function() {
     // #endif
     
     var head = document.getElementsByTagName("head")[0];
-    if (apf.appsettings.iphoneIcon) {
+    if (apf.config.iphoneIcon) {
         var link = document.createElement("link");
         link.setAttribute("rel", "apple-touch-icon" 
-            + (apf.appsettings.iphoneIconIsGlossy ? "" : "-precomposed"));
-        link.setAttribute("href", "apf.appsettings.iphoneIcon");
+            + (apf.config.iphoneIconIsGlossy ? "" : "-precomposed"));
+        link.setAttribute("href", "apf.config.iphoneIcon");
         head.appendChild(link);
     }
 
@@ -141,17 +167,17 @@ apf.runIphone = function() {
         head.appendChild(meta);
     }
 
-    if (apf.appsettings.iphoneFixedViewport) {
+    if (apf.config.iphoneFixedViewport) {
         appendMeta("viewport",
             "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;");
     }
 
-    if (apf.appsettings.iphoneFullScreen) {
+    if (apf.config.iphoneFullScreen) {
         appendMeta("apple-mobile-web-app-capable", "yes");
 
-        if (apf.appsettings.iphoneStatusBar)
+        if (apf.config.iphoneStatusBar)
             appendMeta("apple-mobile-web-app-status-bar-style",
-                "apf.appsettings.iphoneStatusBar");
+                "apf.config.iphoneStatusBar");
     }
 
     var hasOrientationEvent = false,
@@ -286,7 +312,7 @@ apf.runIphone = function() {
                 scrollTo(0, 1);
                 apf.dispatchEvent("pagechange", where);
 
-                var sTitle = p.$aml.getAttribute("title");
+                var sTitle = p.getAttribute("title");
                 if (apf.iphone.titleNode && sTitle)
                     apf.iphone.titleNode.innerHTML = sTitle;
 
@@ -301,10 +327,10 @@ apf.runIphone = function() {
                             continue;
                         var section = _self.sections[i];
                         section.setProperty("zindex", 0);
-                        apf.tween.single(section.oExt, {
+                        apf.tween.single(section.$ext, {
                             steps   : 5,
                             interval: 10,
-                            from    : section.oExt.offsetLeft,
+                            from    : section.$ext.offsetLeft,
                             to      : (where.index < 0) ? 1000 : -1000,
                             type    : "left",
                             anim    : apf.tween.EASEOUT,
@@ -315,7 +341,7 @@ apf.runIphone = function() {
                     }
 
                     var pad   = 10,
-                        el    = p.oExt,
+                        el    = p.$ext,
                         iFrom = (where.index < 0)
                             ? -(el.offsetWidth) - pad
                             : window.innerWidth + el.offsetLeft + pad;

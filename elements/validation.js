@@ -33,7 +33,11 @@
  *
  * @default_private
  */
-apf.validation = apf.component(apf.NODE_HIDDEN, function(){
+apf.validation = function(struct, tagName){
+    this.$init(tagName || "validation", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
     this.$rules = [];
     
     var amlNodes = {};
@@ -41,7 +45,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
         if (amlNode.tagName != "model")
             return;
         
-        amlNodes[amlNode.uniqueId] = amlNode;
+        amlNodes[amlNode.$uniqueId] = amlNode;
         
         amlNode.$validation = this;
         
@@ -50,8 +54,8 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
 
     this.unregister = function(){
         //unregister element
-        amlNodes[amlNode.uniqueId] = null;
-        delete amlNodes[amlNode.uniqueId];
+        amlNodes[amlNode.$uniqueId] = null;
+        delete amlNodes[amlNode.$uniqueId];
         
         amlNode.$validation = null;
     };
@@ -61,7 +65,7 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
         //@todo Shouldn't allow async calls..., should always give a function
         for (var rule, i = 0, l = rules.length; i < l; i++) {
             var rule = rules[i];
-            if ((rule[1] || (rule[1] = (rule[5] = apf.jsltParser.compile(rule[0]))[0] ||apf.K))(xmlNode)) 
+            if ((rule[1] || (rule[1] = (rule[5] = apf.lm.compileMatch(rule[0]))[0] ||apf.K))(xmlNode)) 
                 return rule;
         }*/
 
@@ -85,14 +89,8 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
     /**
      * @private
      */
-    this.loadAml = function(x, parentNode){
-        this.name = x.getAttribute("id");
-        this.$aml = x;
-        
-        this.parentNode = parentNode;
-        //#ifdef __WITH_AMLDOM_FULL
-        apf.implement.call(this, apf.AmlDom); /** @inherits apf.AmlDom */
-        //#endif
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var x = this.$aml;
         
         var rule, attr, node, nodes = x.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -104,8 +102,10 @@ apf.validation = apf.component(apf.NODE_HIDDEN, function(){
                 rule[attr[j].nodeName] = attr[j].nodeValue;
             rule.node = node;
         }
-    };
-});
+        
+        this.register(this.parentNode);
+    });
+}).call(apf.validation.prototype = new apf.AmlElement());
 
+apf.aml.setElement("validation", apf.validation);
 // #endif
-

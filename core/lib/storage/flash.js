@@ -26,7 +26,7 @@
 //        storage
 // description:
 
-apf.namespace("storage.modules.flash", {
+apf.storage.modules.flash = {
     initialized   : false,
     asyncInit     : true,
 
@@ -48,11 +48,11 @@ apf.namespace("storage.modules.flash", {
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
         // #ifndef __PACKAGED
-        this.STORAGE_SWF = (apf.appsettings.resourcePath || apf.basePath)
+        this.STORAGE_SWF = (apf.config.resourcePath || apf.basePath)
             + "core/lib/storage/resources/apfStorage.swf?cachebust="
             + new Date().getTime();
         /* #else
-        this.STORAGE_SWF = (apf.appsettings.resourcePath || apf.basePath)
+        this.STORAGE_SWF = (apf.config.resourcePath || apf.basePath)
             + "resources/apfStorage.swf?cachebust="
             + new Date().getTime();
         #endif */
@@ -116,29 +116,25 @@ apf.namespace("storage.modules.flash", {
     /**
      * All public methods use this proxy to make sure that methods called before
      * initialization are properly called after the player is ready.
-     * Supply three arguments maximum, because function.apply does not work on
-     * the flash object.
      *
      * @param {String} param1
      * @param {String} param2
      * @param {String} param3
      * @type {Object}
      */
-    callMethod: function(param1, param2, param3, param4, param5) {
-        if (this.initialized && typeof this.player.callMethod == "function") {
-            try {
-                return this.player.callMethod(
-                    apf.flash.encode(param1),
-                    apf.flash.encode(param2),
-                    apf.flash.encode(param3),
-                    apf.flash.encode(param4),
-                    apf.flash.encode(param5)
-                ); // function.apply does not work on the flash object
-            }
-            catch (ex) {}
-        }
-        else
+    callMethod: function() {
+        if (!this.initialized || typeof this.player.callMethod != "function") {
             this.delayCalls.push(arguments);
+        }
+        else {
+            var args = [this.player, "callMethod"],
+                f    = apf.flash,
+                i    = 0,
+                l    = arguments.length;
+            for (; i < l; i++)
+                args.push(f.encode(args[i]));
+            f.remote.apply(null, args);
+        }
     },
 
     /**
@@ -452,5 +448,5 @@ apf.namespace("storage.modules.flash", {
         // @todo: implement offline support icw Flash storage
         return [];
     }
-});
+};
 // #endif

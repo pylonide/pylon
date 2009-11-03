@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JPROGRESSBAR || __INC_ALL
+// #ifdef __AMLPROGRESSBAR || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -40,8 +40,8 @@
  * @allowchild {smartbinding}
  * @addnode elements:progressbar
  *
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -64,8 +64,18 @@
  *  <a:progressbar ref="@progress" />
  * </code>
  */
-apf.progress    =
-apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
+apf.progress    = function(struct, tagName){
+    this.$init(tagName || "progress", apf.NODE_VISIBLE, struct);
+};
+apf.progressbar = function(struct, tagName){
+    this.$init(tagName || "progressbar", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    //#ifdef __WITH_DATAACTION
+    this.implement(apf.DataAction);
+    //#endif
+
     this.$focussable = false; // This object can get the focus
 
     /**** Properties and Attributes ****/
@@ -74,9 +84,8 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
     this.min   = 0;
     this.max   = 100;
     
-    var _self   = this;
-    var running = false;
-    var timer;
+    this.$running = false;
+    this.$timer;
 
     /**
      * @attribute {Boolean} autostart whether the progressbar starts automatically.
@@ -95,14 +104,14 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
         this.value = parseInt(value) || this.min;
 
         if (this.value >= this.max)
-            apf.setStyleClass(this.oExt, this.baseCSSname + "Complete", [this.baseCSSname + "Running"]);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running"]);
         else
-            apf.setStyleClass(this.oExt, this.baseCSSname + "Running", [this.baseCSSname + "Complete"]);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Running", [this.$baseCSSname + "Complete"]);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
         /*Math.max(0,
-            Math.round((this.oExt.offsetWidth - 5)
+            Math.round((this.$ext.offsetWidth - 5)
             * (this.value / (this.max - this.min)))) + "px";*/
 
         this.oCaption.nodeValue =
@@ -127,13 +136,15 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Public Methods ****/
 
+    //#ifdef __WITH_CONVENIENCE_API
+
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -143,30 +154,34 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
     this.getValue = function(){
         return this.value;
     };
+    
+    //#endif
 
     /**
      * Resets the progress indicator.
-     * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
+     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
      */
     this.clear = function(){
         this.$clear();
     }
 
     this.$clear = function(restart, restart_time){
-        clearInterval(timer);
+        clearInterval(this.$timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";
-        apf.setStyleClass(this.oExt, "", [this.baseCSSname + "Running", this.baseCSSname + "Complete"]);
+        apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Running", this.$baseCSSname + "Complete"]);
 
-        if(restart)
-            timer = setInterval(function(){
+        if (restart) {
+            var _self = this;
+            this.$timer = setInterval(function(){
                 _self.start(restart_time);
             });
+        }
         
         if (this.autohide)
             this.hide();
         
-        running = false;
+        this.$running = false;
     };
 
     /**
@@ -177,33 +192,36 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
         if (this.autohide)
             this.show();
 
-        clearInterval(timer);
+        clearInterval(this.$timer);
         
         //if (this.value == this.max)
             //this.setValue(this.min + (this.max - this.min) * 0.5);
         
         //this.oSlider.style.display = "block";
-        timer = setInterval(function(){
+        var _self = this;
+        this.$timer = setInterval(function(){
             _self.$step();
         }, time || 1000);
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Running");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Running");
     };
 
     /**
      * Pauses the progress indicator.
      */
     this.pause = function(){
-        clearInterval(timer);
+        clearInterval(this.$timer);
     };
 
     /**
      * Stops the progress indicator from moving.
-     * @param {Boolean} restart whether a timer should start with a new indicative progress indicator.
+     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
      */
     this.stop = function(restart, time, restart_time){
-        clearInterval(timer);
+        clearInterval(this.$timer);
         this.setValue(this.max);
-        timer = setInterval(function(){
+        
+        var _self = this;
+        this.$timer = setInterval(function(){
             _self.$clear(restart, (restart_time || 0));
         }, time || 500);
     };
@@ -221,9 +239,9 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
-        this.oExt     = this.$getExternal();
-        this.oSlider  = this.$getLayoutNode("main", "progress", this.oExt);
-        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
+        this.$ext     = this.$getExternal();
+        this.oSlider  = this.$getLayoutNode("main", "progress", this.$ext);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
     };
 
     this.$loadAml = function(x){
@@ -232,14 +250,15 @@ apf.progressbar = apf.component(apf.NODE_VISIBLE, function(){
 
         if (this.autohide)
             this.hide();
-        
-        apf.AmlParser.parseChildren(x, null, this);
     };
-}).implement(
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    // #endif
-    apf.Presentation
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.progressbar.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.progressbar.prototype = new apf.Presentation());
+#endif */
 
+apf.progress.prototype = apf.progressbar.prototype;
+
+apf.aml.setElement("progress",    apf.progress);
+apf.aml.setElement("progressbar", apf.progressbar);
 // #endif

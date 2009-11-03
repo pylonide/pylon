@@ -19,8 +19,8 @@
  *
  */
 
-// #ifdef __JDROPDOWN || __INC_ALL
-// #define __JBASELIST 1
+// #ifdef __AMLDROPDOWN || __INC_ALL
+// #define __AMLBASELIST 1
 // #define __WITH_GANIM 1
 
 /**
@@ -39,34 +39,34 @@
  * Example:
  * A databound dropdown with items loaded from an xml file.
  * <code>
- *  <a:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
+ *  <a:dropdown model="friends.xml" each="friend" caption="@name" />
  * </code>
  * Example:
  * A databound dropdown using the bindings element
  * <code>
- *  <a:dropdown model="url:friends.xml">
+ *  <a:dropdown model="friends.xml">
  *      <a:bindings>
  *          <a:caption  select="@name" />
  *          <a:css      select="self::node()[@type='best']" value="bestfriend" />
- *          <a:traverse select="friend" />
+ *          <a:each select="friend" />
  *      </a:bindings>
  *  </a:dropdown>
  * </code>
  * Example:
  * A small form.
  * <code>
- *  <a:model id="mdlForm" submission="url:save_form.asp" />
+ *  <a:model id="mdlForm" submission="save_form.asp" />
  *
  *  <a:bar model="mdlForm">
  *      <a:label>Name</a:label>
  *      <a:textbox ref="name" />
  *
  *      <a:label>City</a:label>
- *      <a:dropdown ref="city" model="url:cities.xml">
+ *      <a:dropdown ref="city" model="cities.xml">
  *          <a:bindings>
  *              <a:caption select="text()" />
  *              <a:value select="@value" />
- *              <a:traverse select="city" />
+ *              <a:each select="city" />
  *          </a:bindings>
  *      </a:dropdown>
  *
@@ -75,9 +75,9 @@
  * </code>
  *
  * @event slidedown Fires when the calendar slides open.
- *   cancellable: Prevents the calendar from sliding open
+ *   cancelable: Prevents the calendar from sliding open
  * @event slideup   Fires when the calendar slides up.
- *   cancellable: Prevents the calendar from sliding up
+ *   cancelable: Prevents the calendar from sliding up
  *
  * @constructor
  * @define dropdown
@@ -85,13 +85,17 @@
  * @addnode elements
  *
  * @inherits apf.BaseList
- * @inherits apf.AmlElement
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
+apf.dropdown = function(struct, tagName){
+    this.$init(tagName || "dropdown", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -113,6 +117,10 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         "initial-message", "fill");
     
     /**
+     * @attribute {String} initial-message the message displayed by this element
+     * when it doesn't have a value set. This property is inherited from parent 
+     * nodes. When none is found it is looked for on the appsettings element. 
+     *
      * @attribute {Number} maxitems the number of items that are shown at the 
      * same time in the container.
      */
@@ -125,16 +133,6 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
             : 10;
         if (this.containerHeight > 20)
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);
-    };
-    
-    /**
-     * @attribute {String} initial-message the message displayed by this element
-     * when it doesn't have a value set. This property is inherited from parent 
-     * nodes. When none is found it is looked for on the appsettings element. 
-     */
-    this.$propHandlers["initial-message"] = function(value){
-        this.initialMsg = value 
-            || apf.getInheritedAttribute(this.$aml, "intial-message");
     };
     
     /**** Public methods ****/
@@ -163,7 +161,8 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         
         this.isOpen = true;
 
-        this.$propHandlers["maxitems"].call(this, this.xmlRoot ? this.getTraverseNodes().length : 0);
+        this.$propHandlers["maxitems"].call(this, this.xmlRoot && this.each 
+            ? this.getTraverseNodes().length : this.childNodes.length); //@todo apf3.0 count element nodes
         
         this.oSlider.style.display = "block";
         this.oSlider.style[apf.supportOverflowComponent
@@ -171,20 +170,21 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
             : "overflow"] = "hidden";
         
         this.oSlider.style.display = "";
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
         
-        //var pos = apf.getAbsolutePosition(this.oExt);
+        //var pos = apf.getAbsolutePosition(this.$ext);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
-        this.oSlider.style.width  = (this.oExt.offsetWidth - 2 - this.widthdiff) + "px";
+        this.oSlider.style.width  = (this.$ext.offsetWidth - 2 - this.widthdiff) + "px";
 
         var _self = this;
 
-        apf.popup.show(this.uniqueId, {
+        apf.popup.show(this.$uniqueId, {
             x       : 0,
-            y       : this.oExt.offsetHeight,
+            y       : this.$ext.offsetHeight,
             animate : true,
-            ref     : this.oExt,
-            width   : this.oExt.offsetWidth - this.widthdiff,
+            ref     : this.$ext,
+            width   : this.$ext.offsetWidth - this.widthdiff,
             height  : this.containerHeight,
             callback: function(container){
                 if (!_self.ignoreOverflow) {
@@ -210,22 +210,23 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
             if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
         
-        this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
+        this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
         apf.popup.hide();
         return false;
     };
     
     /**** Private methods and event handlers ****/
 
+    //@todo apf3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
         //#ifdef __SUPPORT_SAFARI
-        this.oLabel.innerHTML = value || this.initialMsg || "";
+        this.oLabel.innerHTML = value || this["initial-message"] || "";
         /* #else
-        this.oLabel.nodeValue = value || this.initialMsg || "";//nodeValue
+        this.oLabel.nodeValue = value || this["initial-message"] || "";//nodeValue
         #endif */
         
-        this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
-            [!value ? "" : this.baseCSSname + "Initial"]);
+        this.$setStyleClass(this.$ext, value ? "" : this.$baseCSSname + "Initial",
+            !value ? [] : [this.$baseCSSname + "Initial"]);
     };
 
     this.addEventListener("afterselect", function(e){
@@ -233,24 +234,11 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         
         this.slideUp();
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"]);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
         
-        this.$setLabel(this.applyRuleSetOnNode("caption", this.selected))
-        //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.xmlRoot, null, true);
-        
-        //#ifdef __WITH_MULTIBINDING
-        this.$updateOtherBindings();
-        //#endif
-        
-        //#ifdef __JSUBMITFORM || __INC_ALL
-        if (this.hasFeature(__VALIDATION__) && this.form) {
-            this.validate(true);
-        }
-        //#endif
-    });
-    
-    this.addEventListener("afterdeselect", function(){
-        this.$setLabel("");
+        this.$setLabel(e.selection.length
+         ? this.$applyBindRule("caption", this.selected)
+         : "");
     });
     
     function setMaxCount() {
@@ -261,82 +249,22 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
     this.addEventListener("afterload", setMaxCount);
     this.addEventListener("xmlupdate", function(){
         setMaxCount.call(this);
-        this.$setLabel(this.applyRuleSetOnNode("caption", this.selected));
+        this.$setLabel(this.$applyBindRule("caption", this.selected));
     });
-    
-    /*this.addEventListener("initselbind", function(bindclass){
-        var amlNode = this;
-        bindclass.addEventListener("xmlupdate", function(){
-            debugger;
-            amlNode.$showSelection();
-        });
-    });*/
-    
-    //#ifdef __WITH_MULTIBINDING
-    //For MultiBinding
-    this.$showSelection = function(value){
-        //Set value in Label
-        var bc = this.$getMultiBind();
-
-        //Only display caption when a value is set
-        if (value === undefined) {
-            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.xmlRoot,
-                null, true);
-            if (sValue)
-                sValue2 = bc.applyRuleSetOnNode("caption", bc.xmlRoot, null, true);
-
-            if (!sValue2 && this.xmlRoot && sValue) {
-                var rule = this.getBindRule(this.mainBind).getAttribute("select");
-                
-                //#ifdef __SUPPORT_SAFARI
-                var xpath = this.traverse + "[" + rule + "='"
-                    + sValue.replace(/'/g, "\\'") + "']";
-                /*#else
-                xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
-                #endif */
-                
-                var xmlNode = this.xmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
-                value = this.applyRuleSetOnNode("caption", xmlNode);
-            } else {
-                value = sValue2 || sValue;
-            }
-        }
-
-        this.$setLabel(value || "");
-    };
-    
-    //I might want to move this method to the MultiLevelBinding baseclass
-    this.$updateOtherBindings = function(){
-        if (!this.multiselect) {
-            // Set Caption bind
-            var bc = this.$getMultiBind(), caption;
-            if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = apf.createNodeFromXpath(bc.xmlRoot,
-                    bc.bindingRules["caption"][0].getAttribute("select"));
-                if (!xmlNode)
-                    return;
-    
-                apf.setNodeValue(xmlNode,
-                    this.applyRuleSetOnNode("caption", this.selected));
-            }
-        }
-    };
-    //#endif
     
     // Private functions
     this.$blur = function(){
         this.slideUp();
-        //this.oExt.dispatchEvent("mouseout")
+        //this.$ext.dispatchEvent("mouseout")
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"])
-        //if(this.oExt.onmouseout) this.oExt.onmouseout();
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
         
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
     
     /*this.$focus = function(){
         apf.popup.forceHide();
-        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }*/
     
     this.$setClearMessage = function(msg){
@@ -354,8 +282,8 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
+        //var ctrlKey  = e.ctrlKey; << unused
+        //var shiftKey = e.shiftKey;
         
         if (!this.xmlRoot) return;
         
@@ -372,13 +300,11 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
                 if (!this.selected) 
                     return;
                     
-                node = this.getNextTraverseSelected(this.indicator
+                node = this.getNextTraverseSelected(this.caret
                     || this.selected, false);
 
-                if (node) {
+                if (node)
                     this.select(node);
-                }
-                
                 break;
             case 40:
                 //DOWN
@@ -392,16 +318,15 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
                     if (!node) 
                         return;
                 } 
-                else {
+                else
                     node = this.getNextTraverseSelected(this.selected, true);
-                }
                 
                 if (node)
                     this.select(node);
                 
                 break;
             default:
-                if (key == 9) return;	
+                if (key == 9 || !this.xmlRoot) return;	
             
                 //if(key > 64 && key < 
                 if (!this.lookup || new Date().getTime() - this.lookup.date.getTime() > 1000)
@@ -414,7 +339,7 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
                 
                 var caption, nodes = this.getTraverseNodes();
                 for (var i = 0; i < nodes.length; i++) {
-                    caption = this.applyRuleSetOnNode("caption", nodes[i]);
+                    caption = this.$applyBindRule("caption", nodes[i]);
                     if (caption && caption.indexOf(this.lookup.str) > -1) {
                         this.select(nodes[i]);
                         return;
@@ -437,43 +362,43 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmouseover", 'var o = apf.lookup(' + this.uniqueId
-                + ');o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
-            oExt.setAttribute("onmouseout", 'var o = apf.lookup(' + this.uniqueId
-                + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
+        this.$ext = this.$getExternal(null, null, function(oExt){
+            oExt.setAttribute("onmouseover", 'var o = apf.lookup(' + this.$uniqueId
+                + ');o.$setStyleClass(o.$ext, o.$baseCSSname + "Over");');
+            oExt.setAttribute("onmouseout", 'var o = apf.lookup(' + this.$uniqueId
+                + ');if(o.isOpen) return;o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"]);');
             
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'apf.lookup('
-                    + this.uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event);');
             }
             
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
-                    + this.uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event);');
             }
         });
-        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
+        this.oLabel = this.$getLayoutNode("main", "label", this.$ext);
         
         //#ifdef __SUPPORT_SAFARI
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif
         
-        this.oIcon = this.$getLayoutNode("main", "icon", this.oExt);
-        if (this.oButton)
-            this.oButton = this.$getLayoutNode("main", "button", this.oExt);
+        this.oIcon = this.$getLayoutNode("main", "icon", this.$ext);
+        if (this.$button)
+            this.$button = this.$getLayoutNode("main", "button", this.$ext);
         
-        this.oSlider = apf.xmldb.htmlImport(this.$getLayoutNode("container"),
+        this.oSlider = apf.insertHtmlNode(this.$getLayoutNode("container"),
             document.body);
-        this.oInt = this.$getLayoutNode("container", "contents", this.oSlider);
+        this.$int = this.$getLayoutNode("container", "contents", this.oSlider);
         
         //Set up the popup
-        this.pHtmlDoc = apf.popup.setContent(this.uniqueId, this.oSlider,
+        this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSlider,
             apf.skins.getCssString(this.skinName));
         
         //Get Options form skin
@@ -483,23 +408,24 @@ apf.dropdown = apf.component(apf.NODE_VISIBLE, function(){
         this.itemHeight     = this.$getOption("main", "item-height") || 18.5;
         this.widthdiff      = this.$getOption("main", "width-diff") || 0;
         this.ignoreOverflow = apf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
-        
-        if (this.$aml.childNodes.length)
-            this.$loadInlineData(this.$aml);
     };
     
-    this.$loadAml = function(x){
-        if (!this.selected && this.initialMsg)
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(){
+        if (typeof this["initial-message"] == "undefined")
+            this.$setInheritedAttribute("initial-message");
+        
+        if (!this.selected && this["initial-message"])
             this.$setLabel();
-    };
+    });
     
     this.$destroy = function(){
-        apf.popup.removeContent(this.uniqueId);
+        apf.popup.removeContent(this.$uniqueId);
         apf.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
     };
-}).implement(
-    apf.BaseList
-);
+}).call(apf.dropdown.prototype = new apf.BaseList());
 
+apf.config.$inheritProperties["initial-message"] = 1;
+
+apf.aml.setElement("dropdown", apf.dropdown);
 // #endif

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JSTATUSBAR || __INC_ALL
+// #ifdef __AMLSTATUSBAR || __INC_ALL
 
 /**
  * Element displaying a bar consisting of bars containing other text, icons
@@ -49,36 +49,38 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+apf.statusbar = function(struct, tagName){
+    this.$init(tagName || "statusbar", apf.NODE_VISIBLE, struct);
+};
 
-apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
+(function(){
     this.$focussable     = false;
     
     /**** DOM Hooks ****/
     var insertChild;
     
-    this.$domHandlers["removechild"].push(function(amlNode, doOnlyAdmin){
+    this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
 
     });
     
-    this.$domHandlers["insert"].push(insertChild = function (amlNode, beforeNode, withinParent){
+    this.addEventListener("AMLInsert",insertChild = function (amlNode, beforeNode, withinParent){
         if (amlNode.tagName != "bar")
             return;
         
         amlNode.$propHandlers["caption"] = function(value){
             apf.setNodeValue(
-                this.$getLayoutNode("bar", "caption", this.oExt), value);
+                this.$getLayoutNode("bar", "caption", this.$ext), value);
         }
         amlNode.$propHandlers["icon"] = function(value){
-            var oIcon = this.$getLayoutNode("bar", "icon", this.oExt);
+            var oIcon = this.$getLayoutNode("bar", "icon", this.$ext);
             if (!oIcon) return;
         
             if (value)
-                this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
+                this.$setStyleClass(this.$ext, this.$baseCSSname + "Icon");
             else
-                this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+                this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
             
             if (oIcon.tagName == "img") 
                 oIcon.setAttribute("src", value ? this.iconPath + value : "");
@@ -95,48 +97,22 @@ apf.statusbar = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
     };
     
     this.$loadAml = function(x){
-        var bar, tagName, i, l, node, nodes = this.$aml.childNodes;
-        
-        //Let's not parse our children, when we've already have them
-        if (!this.oInt && this.childNodes.length) 
-            return;
-        
-        //@todo Skin switching here...
-        
-        for (i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1) 
-                continue;
-            
-            tagName = node[apf.TAGNAME];
-            if (tagName == "bar") {
-                bar = new apf.bar(this.oInt, tagName);
-                bar.skinName = this.skinName
-                insertChild.call(this, bar);
-                bar.loadAml(node, this);
-                
-                bar.setCaption = function(value){
-                    bar.oInt.innerHTML = value;
-                }
-                
-                /*if (!bar.caption && node.childNodes.length == 1 
-                  && "3|4".indexOf(node.childNodes.nodeType) > -1)
-                    amlNode.setCaption(node.firstChild.nodeValue);*/
+        var nodes = this.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            if (nodes[i].localName == "section") {
+                nodes[i].addEventListener("DOMNodeInsertedIntoDocument", function(){
+                    this.$setStyleClass(this.$ext, this.$baseCSSname + "Last");
+                });
+                break;
             }
-            else if (tagName == "progressbar") {
-                new apf.progressbar(this.oInt, tagName).loadAml(node, this);
-            }
-        }
-        
-        if (bar) {
-            this.$setStyleClass(bar.oExt, bar.baseCSSname + "Last");
         }
     };
-}).implement(apf.Presentation);
+}).call(apf.statusbar.prototype = new apf.Presentation());
 
+apf.aml.setElement("statusbar", apf.statusbar);
 // #endif

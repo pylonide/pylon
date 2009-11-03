@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JTEXT || __INC_ALL
+// #ifdef __AMLTEXT || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -38,18 +38,35 @@
  * @since       0.1
  * @todo Please refactor this object
  */
-apf.text = apf.component(apf.NODE_VISIBLE, function(){
-    this.$focussable = true; // This object can't get the focus
-    this.focussable  = false;
-    this.$allowSelect = true;
+apf.text = function(struct, tagName){
+    this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    // #ifdef __WITH_CACHE
+    this.implement(apf.Cache);
+    // #endif
+
+    this.$focussable       = true; // This object can't get the focus
+    this.focussable        = false;
+    this.$allowSelect      = true;
     this.$hasStateMessages = true;
-    var _self        = this;
+
+    this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
 
     /**** Properties and Attributes ****/
 
     /**
-     * @attribute {Boolean} scrolldown  whether this elements viewport is always scrolled down. This is especially useful when this element is used to displayed streaming content such as a chat conversation.
-     * @attribute {Boolean} secure      whether the content loaded in this element should be filtered in order for it to not be able to execute javascript. This is especially useful when the content does not come from a trusted source, like a web service or xmpp feed.
+     * @attribute {Boolean} scrolldown  whether this elements viewport is always
+     *                                  scrolled down. This is especially useful
+     *                                  when this element is used to displayed
+     *                                  streaming content such as a chat conversation.
+     * @attribute {Boolean} secure      whether the content loaded in this element
+     *                                  should be filtered in order for it to not
+     *                                  be able to execute javascript. This is
+     *                                  especially useful when the content does
+     *                                  not come from a trusted source, like a
+     *                                  web service or xmpp feed.
      */
     this.$booleanProperties["scrolldown"] = true;
     this.$booleanProperties["secure"]     = true;
@@ -80,26 +97,26 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
 
         if (this.secure) {
             value = value.replace(/<a /gi, "<a target='_blank' ")
-            .replace(/<object.*?\/object>/g, "")
-            .replace(/<script.*?\/script>/g, "")
-            .replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona")
+                .replace(/<object.*?\/object>/g, "")
+                .replace(/<script.*?\/script>/g, "")
+                .replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout"
+                    + "|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange"
+                    + "|onpropertychange", "g"), "ona");
         }
 
         if (this.addOnly) {
             if (cacheObj)
                 cacheObj.contents += value;
             else
-                this.oInt.insertAdjacentHTML("beforeend", value);
+                this.$int.insertAdjacentHTML("beforeend", value);
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
 
-            //var win = window.open();
-            //win.document.write(value);
             if (cacheObj)
                 cacheObj.contents = value;
             else
-                this.oInt.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+                this.$int.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
 
         //Iframe bug fix for IE (leaves screen white);
@@ -110,7 +127,14 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
             this.oScroll.scrollTop = this.oScroll.scrollHeight;
     };
 
+    this.$propHandlers["empty-message"] = function(value) {
+        if (!this.childNodes.length)
+            this.$setClearMessage(this["empty-message"]);
+    };
+
     /**** Public methods ****/
+
+    //#ifdef __WITH_CONVENIENCE_API
 
     /**
      * Sets the value of this element. This should be one of the values
@@ -118,7 +142,7 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
 
     /**
@@ -126,39 +150,39 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
      * @return {String}
      */
     this.getValue = function(){
-        return this.oInt.innerHTML;
+        return this.$int.innerHTML;
     };
+    
+    //#endif
 
     /**** Keyboard Support ****/
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
 
         switch (key) {
             case 33:
                 //PGUP
-                this.oInt.scrollTop -= this.oInt.offsetHeight;
+                this.$int.scrollTop -= this.$int.offsetHeight;
                 break;
             case 34:
                 //PGDN
-                this.oInt.scrollTop += this.oInt.offsetHeight;
+                this.$int.scrollTop += this.$int.offsetHeight;
                 break;
             case 35:
                 //END
-                this.oInt.scrollTop = this.oInt.scrollHeight;
+                this.$int.scrollTop = this.$int.scrollHeight;
                 break;
             case 36:
                 //HOME
-                this.oInt.scrollTop = 0;
+                this.$int.scrollTop = 0;
                 break;
             case 38:
-                this.oInt.scrollTop -= 10;
+                this.$int.scrollTop -= 10;
                 break;
             case 40:
-                this.oInt.scrollTop += 10;
+                this.$int.scrollTop += 10;
                 break;
             default:
                 return;
@@ -181,27 +205,27 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
         //Refresh Properties
         if (this.addOnly) {
             apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
-            var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
-                + "|" + this.uniqueId);
+            var cacheObj = this.$findHtmlNode(listenNode.getAttribute("id")
+                + "|" + this.$uniqueId);
 
             this.$propHandlers["value"].call(this,
-                this.applyRuleSetOnNode("value", xmlNode) || "");
+                this.$applyBindRule("value", xmlNode) || "");
         }
         else {
             this.$propHandlers["value"].call(this,
-                this.applyRuleSetOnNode("value", this.xmlRoot) || "");
+                this.$applyBindRule("value", this.xmlRoot) || "");
         }
     };
 
     this.$load = function(node){
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(node, this);
-        var value = this.applyRuleSetOnNode("value", node);
+        var value = this.$applyBindRule("value", node);
 
         if (value || typeof value == "string") {
             if (this.caching) {
-                var cacheObj = this.getNodeFromCache(node.getAttribute("id")
-                    + "|" + this.uniqueId);
+                var cacheObj = this.$findHtmlNode(node.getAttribute("id")
+                    + "|" + this.$uniqueId);
                 if (cacheObj)
                     cacheObj.contents = value;
             }
@@ -216,54 +240,46 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
     this.$getCurrentFragment = function(){
         return {
             nodeType : 1,
-            contents : this.oInt.innerHTML
+            contents : this.$int.innerHTML
         }
     };
 
     this.$setCurrentFragment = function(fragment){
-        this.oInt.innerHTML = fragment.contents;
+        this.$int.innerHTML = fragment.contents;
         if (this.scrolldown)
-            this.oInt.scrollTop = this.oInt.scrollHeight;
+            this.$int.scrollTop = this.$int.scrollHeight;
     };
 
-    this.$findNode = function(cacheNode, id){
-        id = id.split("\|");
-
-        if ((cacheNode ? cacheNode : this).xmlRoot
-          .selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']"))
-            return (cacheNode ? cacheNode : null);
-
-        return false;
-    };
-
-    var lastMsg, lastClass, changedHeight;
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
-        if (lastClass)
+        if (this.$lastClass)
             this.$removeClearMessage();
-        apf.setStyleClass(this.oExt, 
-            (lastClass = this.baseCSSname + (className || "Empty").uCaseFirst()));//"Empty"); //@todo move to setClearMessage
+        //@todo move to setClearMessage
+        apf.setStyleClass(this.$ext, 
+            (this.$lastClass = this.$baseCSSname + (className || "Empty").uCaseFirst()));//"Empty");
         
         if (msg) {
-            if (this.oInt.offsetHeight 
-              && apf.getStyle(this.oInt, "height") == "auto" 
-              && (changedHeight = true))
-                this.oInt.style.height = (this.oInt.offsetHeight 
-                  - apf.getHeightDiff(this.oInt)) + "px";
-            this.oInt.innerHTML = msg;
-            lastMsg = this.oInt.innerHTML;
+            if (!this.height) {
+                if (this.$int.offsetHeight 
+                  && apf.getStyle(this.$int, "height") == "auto" 
+                  && (this.$changedHeight = true))
+                    this.$int.style.height = (this.$int.offsetHeight 
+                      - apf.getHeightDiff(this.$int)) + "px";
+                this.$int.innerHTML = msg;
+            }
+            this.$lastMsg = this.$int.innerHTML;
         }
     };
 
     this.$removeClearMessage = function(){
-        if (lastClass) {
-            apf.setStyleClass(this.oExt, "", [lastClass]);
-            lastClass = null;
+        if (this.$lastClass) {
+            apf.setStyleClass(this.$ext, "", [this.$lastClass]);
+            this.$lastClass = null;
         }
         
-        if (this.oInt.innerHTML == lastMsg) {
-            if (changedHeight && !(changedHeight = false))
-                this.oInt.style.height = "";
-            this.oInt.innerHTML = ""; //clear if no empty message is supported
+        if (this.$int.innerHTML == this.$lastMsg) {
+            if (this.$changedHeight && !(this.$changedHeight = false))
+                this.$int.style.height = "";
+            this.$int.innerHTML = ""; //clear if no empty message is supported
         }
     };
 
@@ -272,31 +288,32 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
 
     /**** Init ****/
 
-    var timer;
     this.$draw = function(){
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        var _self = this;
+        
+        this.$ext = this.$getExternal();
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
-        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.oInt, "padding"))
+        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.$int, "padding"))
             this.$fixScrollBug();
 
-        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.oInt;
+        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.$int;
 
         this.$scrolldown = true;
         this.oScroll.onscroll = function(){
             _self.$scrolldown = this.scrollTop >= this.scrollHeight
                 - this.offsetHeight + apf.getVerBorders(this);
         }
-        clearInterval(timer);
-        timer = setInterval(function(){
+        clearInterval(this.$textTimer);
+        this.$textTimer = setInterval(function(){
             if (_self.oScroll && _self.$scrolldown && _self.scrolldown) {
                 _self.oScroll.scrollTop = _self.oScroll.scrollHeight;
             }
         }, 60);
 
-        if (this.oInt.tagName.toLowerCase() == "iframe") {
+        if (this.$int.tagName.toLowerCase() == "iframe") {
             if (apf.isIE) {
-                this.oIframe = this.oInt;
+                this.oIframe = this.$int;
                 var iStyle = this.skin.selectSingleNode("iframe_style");
                 this.oIframe.contentWindow.document.write(
                     "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\
@@ -313,28 +330,28 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
                         </script>\
                     </head>\
                     <body oncontextmenu='return false'></body>");
-                this.oInt = this.oIframe.contentWindow.document.body;
+                this.$int = this.oIframe.contentWindow.document.body;
             }
             else {
                 var node = document.createElement("div");
-                this.oExt.parentNode.replaceChild(node, this.oExt);
-                node.className = this.oExt.className;
-                this.oExt = this.oInt = node;
+                this.$ext.parentNode.replaceChild(node, this.$ext);
+                node.className = this.$ext.className;
+                this.$ext = this.$int = node;
             }
         }
         else {
-            this.oInt.onselectstart = function(e){
+            this.$int.onselectstart = function(e){
                 (e ? e : event).cancelBubble = true;
-            }
+            };
 
-            this.oInt.oncontextmenu = function(e){
+            this.$int.oncontextmenu = function(e){
                 if (!this.host.contextmenus)
                     (e ? e : event).cancelBubble = true;
-            }
+            };
 
-            this.oInt.style.cursor = "";
+            this.$int.style.cursor = "";
 
-            this.oInt.onmouseover = function(e){
+            this.$int.onmouseover = function(e){
                 if (!self.STATUSBAR) return;
                 if (!e)
                     e = event;
@@ -348,36 +365,20 @@ apf.text = apf.component(apf.NODE_VISIBLE, function(){
                     STATUSBAR.status(this.lastStatus[0], this.lastStatus[1]);
                     this.lastStatus = false;
                 }
-            }
+            };
         }
     };
 
-    this.$loadAml = function(x){
-        this.caching = false;// hack
-        
-        if (this["empty-message"] && !this.childNodes.length)
-            this.$setClearMessage(this["empty-message"]);
-        
-        if (apf.isOnlyChild(x.firstChild, [3,4]))
-            this.setProperty("value", x.firstChild.nodeValue.trim());
-        else
-            apf.AmlParser.parseChildren(this.$aml, null, this);
-    };
-
-    this.$destroy = function(){
-        clearInterval(timer);
+    this.addEventListener("DOMNodeRemovedFromDocument", function() {
+        clearInterval(this.$textTimer);
         apf.destroyHtmlNode(this.oDrag);
-        this.oDrag   = null;
-        this.oIframe = null;
-        this.oScroll.onscoll = null;
-        this.oScroll = null;
-        this.oFocus  = null;
-    };
-}).implement(
-    // #ifdef __WITH_CACHE
-    apf.Cache,
-    // #endif
-    apf.BaseSimple
-);
+        
+        if (this.oScroll)
+            this.oScroll.onscoll = this.oScroll = null;
+        
+        this.oDrag = this.oIframe = this.oFocus  = null;
+    });
+}).call(apf.text.prototype = new apf.BaseSimple());
 
+apf.aml.setElement("text", apf.text);
 // #endif

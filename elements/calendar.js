@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JCALENDAR || __INC_ALL
+// #ifdef __AMLCALENDAR || __INC_ALL
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
@@ -65,9 +65,8 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  *
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.Validation
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
  * @inherits apf.XForms
  * 
  * @author      Lukasz Lipinski
@@ -75,48 +74,62 @@
  * @since       1.0
  *
  */
-apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
+apf.calendar = function(struct, tagName){
+    this.$init(tagName || "calendar", apf.NODE_VISIBLE, struct);
+    
     /**** Properties and Attributes ****/
-    var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
-                "Thursday", "Friday", "Saturday"];
-    var months = [{name : "January",   number : 31},
-                  {name : "February",  number : 28},
-                  {name : "March",     number : 31},
-                  {name : "April",     number : 30},
-                  {name : "May",       number : 31},
-                  {name : "June",      number : 30},
-                  {name : "July",      number : 31},
-                  {name : "August",    number : 31},
-                  {name : "September", number : 30},
-                  {name : "October",   number : 31},
-                  {name : "November",  number : 30},
-                  {name : "December",  number : 31}];
+    this.$calVars = {
+        days         : ["Sunday", "Monday", "Tuesday", "Wednesday",
+                        "Thursday", "Friday", "Saturday"],
+        months       : [{name : "January",   number : 31},
+                        {name : "February",  number : 28},
+                        {name : "March",     number : 31},
+                        {name : "April",     number : 30},
+                        {name : "May",       number : 31},
+                        {name : "June",      number : 30},
+                        {name : "July",      number : 31},
+                        {name : "August",    number : 31},
+                        {name : "September", number : 30},
+                        {name : "October",   number : 31},
+                        {name : "November",  number : 30},
+                        {name : "December",  number : 31}],
 
-    var _day          = null,
-        _month        = null,
-        _year         = null,
-        
-        _hours        = 1,
-        _minutes      = 0,
-        _seconds      = 0,
-        
-        _currentMonth = null,
-        _currentYear  = null,
-        _numberOfDays = null,
-        _dayNumber    = null,
-        
-        _temp         = null;
+        day          : null,
+        month        : null,
+        year         : null,
 
-    var _self = this;
-    var inited = false;
-    var startDiffs = [];
-    var prevWidth = 0;
+        hours        : 1,
+        minutes      : 0,
+        seconds      : 0,
 
+        currentMonth : null,
+        currentYear  : null,
+        numberOfDays : null,
+        dayNumber    : null,
 
-    this.$booleanProperties["disableremove"] = true;
+        temp         : null,
 
-    this.$supportedProperties.push("disableremove", "initial-message", 
-        "output-format", "default");
+        inited       : false,
+        startDiffs   : [],
+        prevWidth    : 0,
+
+        rRows        : [],
+        rCells       : [[], [], [], [], [], []],
+        rDoW         : []
+    };
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
+
+    this.$supportedProperties.push("output-format", "default");
 
     /**
      * @attribute {String} style of returned date
@@ -143,9 +156,10 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      */
     this.$propHandlers["output-format"] = function(value) {
         if (this.value) {
+            var c = this.$calVars;
             this.setProperty("value", 
                 new Date(
-                    _year, _month, _day, _hours, _minutes, _seconds
+                    c.year, c.month, c.day, c.hours, c.minutes, c.seconds
                 ).format(this.outputFormat = value)
             );
         }
@@ -154,38 +168,43 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     };
 
     this.$propHandlers["value"] = function(value) {
+        var c = this.$calVars;
+        
         if (!this.outputFormat) {
-            _temp = value;
+            c.temp = value;
             return;
         }
 
         var date = Date.parse(value, this.outputFormat);
 
         //#ifdef __DEBUG
-        if (!date) {
-            throw new Error(apf.formErrorString(this, "Parsing date",
-                "Invalid date: " + value));
+        if (!date || isNaN(date)) {
+            return;
+            /*throw new Error(apf.formErrorString(this, "Parsing date",
+                "Invalid date: " + value));*/
         }
         //#endif
 
-        _day     = date.getDate();
-        _month   = date.getMonth();
-        _year    = date.getFullYear();
-        _hours   = date.getHours();
-        _minutes = date.getMinutes();
-        _seconds = date.getSeconds();
+        c.day     = date.getDate();
+        c.month   = date.getMonth();
+        c.year    = date.getFullYear();
+        c.hours   = date.getHours();
+        c.minutes = date.getMinutes();
+        c.seconds = date.getSeconds();
 
         this.value = value;
-        this.redraw(_month, _year);
+        this.redraw(c.month, c.year);
     };
 
     /**** Public methods ****/
+
+    //#ifdef __WITH_CONVENIENCE_API
 
     /**
      * @method  Sets calendar date
      */
     this.setValue = function(value) {
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
     
     /**
@@ -196,6 +215,8 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
     this.getValue = function() {
         return this.value;
     };
+    
+    //#endif
 
     /**** Keyboard Support ****/
 
@@ -205,11 +226,12 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
-            shiftKey = e.shiftKey;
+            shiftKey = e.shiftKey,
+            c        = this.$calVars;
 
         switch (key) {
             case 13: /* enter */
-                this.selectDay(_day);
+                this.selectDay(c.day);
                 break;
 
             case 33: /* page up */
@@ -226,23 +248,23 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 else if (shiftKey)
                     this.prevYear();
                 else {
-                    if (_day - 1 < 1) {
+                    if (c.day - 1 < 1) {
                         this.prevMonth();
-                        this.selectDay(months[_currentMonth].number);
+                        this.selectDay(c.months[c.currentMonth].number);
                     }
                     else {
-                        this.selectDay(_day - 1);
+                        this.selectDay(c.day - 1);
                     }
                 }
                 break;
 
             case 38: /* up arrow */
-                if (_day - 7 < 1) {
+                if (c.day - 7 < 1) {
                     this.prevMonth();
-                    this.selectDay(months[_currentMonth].number + _day - 7);
+                    this.selectDay(c.months[c.currentMonth].number + c.day - 7);
                 }
                 else {
-                    this.selectDay(_day - 7);
+                    this.selectDay(c.day - 7);
                 }
                 break;
 
@@ -252,11 +274,11 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                 else if (shiftKey)
                     this.nextYear();
                 else
-                    this.selectDay(_day + 1);
+                    this.selectDay(c.day + 1);
                 break;
 
             case 40: /* down arrow */
-                    this.selectDay(_day + 7);
+                    this.selectDay(c.day + 7);
                 break;
 
             case 84:
@@ -270,11 +292,11 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
 
     this.$blur = function() {
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
     this.$focus = function() {
-        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }
 
     var isLeapYear = function(year) {
@@ -320,67 +342,63 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                + parseInt(apf.getStyle(oHtml, "padding-bottom"))];
     }
 
-    var rRows = [];
-    var rCells = [[], [], [], [], [], []];
-    var rDoW = [];
-    
     this.$resize = function() {
-        var width = parseInt(this.oExt.style.width);
+        var width = parseInt(this.$ext.style.width || 0),
+            c     = this.$calVars,
+            i, j, l, l2;
 
-        if (rRows.length == 0) {
-            var rows = this.oContent.childNodes;
+        if (c.rRows.length == 0) {
+            rows = this.oContent.childNodes;
 
-            for (var i = 0; i < rows.length; i++) {
+            for (i = 0, l = rows.length; i < l; i++) {
                 if ((rows[i].className || "").indexOf("row") > -1) {
-                    rRows.push(rows[i]);
+                    c.rRows.push(rows[i]);
 
-                    var cells = rows[i].childNodes;
-                    for (var j = 0; j < cells.length; j++) {
-                        if ((cells[j].className || "").indexOf("cell") > -1) {
-                            rCells[rRows.length - 1].push(cells[j]);
-                        }
+                    cells = rows[i].childNodes;
+                    for (j = 0, l2 = cells.length; j < l2; j++) {
+                        if ((cells[j].className || "").indexOf("cell") > -1)
+                            c.rCells[c.rRows.length - 1].push(cells[j]);
                     }
                 }
             }
         }
 
-        if (rDoW.length == 0) {
+        if (c.rDoW.length == 0) {
             var daysofweek = this.oDow.childNodes;
 
-            for (var i = 0; i < daysofweek.length; i++) {
-                if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                    rDoW.push(daysofweek[i]);
-                }
+            for (i = 0, l = daysofweek.length; i < l; i++) {
+                if ((daysofweek[i].className || "").indexOf("dayofweek") > -1)
+                    c.rDoW.push(daysofweek[i]);
             }
         }
 
-        if (width > 0 && prevWidth !== width) {
-            prevWidth = width;
+        if (width > 0 && c.prevWidth !== width) {
+            c.prevWidth = width;
 
-            var ctDiff = apf.getDiff(this.oExt);
-            var _width = parseInt(this.oExt.offsetWidth 
-                || this.oExt.style.width 
-                || apf.getStyle(this.oExt, "width")) - ctDiff[0];
-            
-            var rDiff = startDiffs[0], rDiff2 = startDiffs[1];
-            var cDiff = startDiffs[2], cDiff2 = startDiffs[3];
-            var eDiff = startDiffs[4];
+            var ctDiff = apf.getDiff(this.$ext),
+                _width = parseInt(this.$ext.offsetWidth
+                    || this.$ext.style.width
+                    || apf.getStyle(this.$ext, "width")) - ctDiff[0],
 
-            var rWidth = _width - rDiff[0] - rDiff2[0];
-            var cWidthf = Math.floor(rWidth * 0.125) - cDiff[0] - cDiff2[0];
+                rDiff = c.startDiffs[0], rDiff2 = c.startDiffs[1],
+                cDiff = c.startDiffs[2], cDiff2 = c.startDiffs[3],
+                eDiff = c.startDiffs[4],
+
+                rWidth = _width - rDiff[0] - rDiff2[0],
+                cWidthf = Math.floor(rWidth * 0.125) - cDiff[0] - cDiff2[0],
             
-            var height = cWidthf
-                + (cDiff[1] > cDiff[0] ? cDiff[0] - cDiff[1] : 0) 
-                + (cDiff2[1] > cDiff2[0] ? cDiff2[0] - cDiff2[1] : 0);
-            var paddingBT;
-            var pl = Math.floor((rWidth - rDiff[0] - rDiff2[0] 
+                height = cWidthf
+                    + (cDiff[1] > cDiff[0] ? cDiff[0] - cDiff[1] : 0)
+                    + (cDiff2[1] > cDiff2[0] ? cDiff2[0] - cDiff2[1] : 0),
+                paddingBT,
+                pl = Math.floor((rWidth - rDiff[0] - rDiff2[0]
                 - (cWidthf + cDiff[0] + cDiff2[0]) * 8) * 0.5);
 
-            for (var i = 0; i < rRows.length; i++) {
-                var row = rRows[i];
+            for (i = 0, l = c.rRows.length; i < l; i++) {
+                var row = c.rRows[i];
 
-                for (var j = 0; j < rCells[i].length; j++) {
-                    var cell = rCells[i][j];
+                for (j = 0, l2 = c.rCells[i].length; j < l2; j++) {
+                    var cell = c.rCells[i][j];
 
                     paddingBT = Math.ceil((height - this.$getFontSize(cell))*0.5);
                     
@@ -392,72 +410,73 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
                 row.style.paddingLeft = pl + "px";
 
-                this.oExt.style.paddingBottom = (Math.floor(eDiff[1] * 0.5) + pl) + "px";
+                this.$ext.style.paddingBottom = (Math.floor(eDiff[1] * 0.5) + pl) + "px";
             }
 
             this.oDow.style.paddingLeft = pl + "px";
     
-            for (var i = 0; i < rDoW.length; i++) {
-                var dof = rDoW[i];
+            for (i = 0, l = c.rDoW.length; i < l; i++) {
+                var dof = c.rDoW[i];
                 dof.style.width  = cWidthf + "px";
 
-                if (cWidthf < 16) {
+                if (cWidthf < 16)
                     dof.style.fontSize = "9px";
-                }
             }
         }
     }
 
     this.redraw = function(month, year) {
-        /* Calculations */
-        _currentMonth = month;
-        _currentYear  = year;
-        
-        var w_firstYearDay = new Date(year, 0, 1);
-        var w_dayInWeek    = w_firstYearDay.getDay();
-        var w_days         = w_dayInWeek;
+        var w_firstYearDay = new Date(year, 0, 1),
+            w_dayInWeek    = w_firstYearDay.getDay(),
+            w_days         = w_dayInWeek,
+            c              = this.$calVars;
+
+        c.currentMonth = month;
+        c.currentYear  = year;
         
         for (i = 0; i <= month; i++) {
             if (isLeapYear(year) && i == 1) {
                 w_days++;
             }
-            w_days += months[i].number;
+            w_days += c.months[i].number;
         }
 
-        var w_weeks  = Math.ceil(w_days / 7);
+        var w_weeks  = Math.ceil(w_days / 7),
+            date     = new Date(year, month);
 
-        var date = new Date(year, month);
-
-        _numberOfDays = months[date.getMonth()].number;
+        c.numberOfDays = c.months[date.getMonth()].number;
         if (isLeapYear(year) && date.getMonth() == 1) 
-            _numberOfDays++;
+            c.numberOfDays++;
 
-        _dayNumber = new Date(year, month, 1).getDay();
-        var prevMonth     = month == 0 ? 11 : month - 1;
-        var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
+        c.dayNumber = new Date(year, month, 1).getDay();
+        var prevMonth     = month == 0 ? 11 : month - 1,
+            prevMonthDays = c.months[prevMonth].number - c.dayNumber + 1,
 
-        var nextMonthDays = 1;
-        /* Calculations - end */
+            nextMonthDays = 1,
 
-        var ctDiff = apf.getDiff(this.oExt),
-            _width = parseInt(this.oExt.offsetWidth || this.oExt.style.width || apf.getStyle(this.oExt, "width")) - ctDiff[0];
+            ctDiff        = apf.getDiff(this.$ext),
+            _width        = parseInt(this.$ext.offsetWidth || this.$ext.style.width
+                            || apf.getStyle(this.$ext, "width")) - ctDiff[0],
+            /* Navigation buttons */
+            navi          = this.oNavigation.childNodes;
 
-        /* Navigation buttons */
-        var navi = this.oNavigation.childNodes;
+        //@todo fix this!! 
+        if (!_width) return;
+
         for (i = 0; i < navi.length; i++) {
             if ((navi[i].className || "").indexOf("today") != -1) {
                 navi[i].innerHTML = "T";
             }
             else if ((navi[i].className || "").indexOf("status") != -1) {
                 if (_width >= 300) {
-                    navi[i].innerHTML = months[_currentMonth].name
-                        + " " + _currentYear;
+                    navi[i].innerHTML = c.months[c.currentMonth].name
+                        + " " + c.currentYear;
                     navi[i].style.width = "100px";
                     navi[i].style.marginLeft = "-50px";
                 }
                 else {
-                    navi[i].innerHTML = (_currentMonth + 1)
-                        + "/" + _currentYear;
+                    navi[i].innerHTML = (c.currentMonth + 1)
+                        + "/" + c.currentYear;
                     navi[i].style.width = "40px";
                     navi[i].style.marginLeft = "-20px";
                 }
@@ -465,29 +484,29 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         }
 
         //Rows
-        var rows = this.oContent.childNodes;
-        var cWidthf, pl;
+        var rows = this.oContent.childNodes,
+            cWidthf, pl;
         for (var i = 0, z = 0, y = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") > -1) {
-                var rDiff = !inited ? apf.getDiff(rows[i]) : startDiffs[0];
-                var rDiff2 = !inited ? this.$getMargin(rows[i]) : startDiffs[1];
+                var rDiff = !c.inited ? apf.getDiff(rows[i]) : c.startDiffs[0];
+                var rDiff2 = !c.inited ? this.$getMargin(rows[i]) : c.startDiffs[1];
                 var rWidth = _width - rDiff[0] - rDiff2[0];
                 
-                if (!inited) {
-                    startDiffs[0] = rDiff
-                    startDiffs[1] = rDiff2;
+                if (!c.inited) {
+                    c.startDiffs[0] = rDiff
+                    c.startDiffs[1] = rDiff2;
                 }
 
                 //Cells
                 var cells = rows[i].childNodes;
                 for (var j = 0, disabledRow = 0; j < cells.length; j++) {
                     if ((cells[j].className || "").indexOf("cell") > -1) {
-                        var cDiff = !inited ? apf.getDiff(cells[j]) : startDiffs[2];
-                        var cDiff2 = !inited ? this.$getMargin(cells[j]) : startDiffs[3];
+                        var cDiff = !c.inited ? apf.getDiff(cells[j]) : c.startDiffs[2],
+                            cDiff2 = !c.inited ? this.$getMargin(cells[j]) : c.startDiffs[3];
 
-                        if (!inited) {
-                            startDiffs[2] = cDiff
-                            startDiffs[3] = cDiff2;
+                        if (!c.inited) {
+                            c.startDiffs[2] = cDiff
+                            c.startDiffs[3] = cDiff2;
                             
                         }
                         cWidthf = Math.floor(rWidth / 8)
@@ -520,33 +539,33 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                         z++;
                         if ((z - 1) % 8 == 0) {
                             cells[j].innerHTML = w_weeks 
-                                - Math.ceil((months[_month].number + _dayNumber) / 7)
+                                - Math.ceil((c.months[c.month].number + c.dayNumber) / 7)
                                 + 1 + (z - 1) / 8;
                             this.$setStyleClass(cells[j], "weeknumber");
                         }
                         else {
                             y++;
-                            if (y <= _dayNumber) {
+
+                            if (y <= c.dayNumber) {
                                 cells[j].innerHTML = prevMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled prev");
+                                
                             }
-                            else if (y > _dayNumber 
-                                && y <= _numberOfDays + _dayNumber) {
-                                cells[j].innerHTML = y - _dayNumber;
+                            else if (y > c.dayNumber
+                              && y <= c.numberOfDays + c.dayNumber) {
+                                cells[j].innerHTML = y - c.dayNumber;
         
                                 var dayNrWeek = new Date(year, month,
-                                    y - _dayNumber).getDay();
+                                    y - c.dayNumber).getDay();
         
-                                if (dayNrWeek == 0 || dayNrWeek == 6) {
+                                if (dayNrWeek == 0 || dayNrWeek == 6)
                                     this.$setStyleClass(cells[j], "weekend");
-                                }
         
-                                if (month == _month && year == _year
-                                    && y - _dayNumber == _day) {
+                                if (month == c.month && year == c.year
+                                  && y - c.dayNumber == c.day)
                                     this.$setStyleClass(cells[j], "active");
-                                }
                             }
-                            else if (y > _numberOfDays + _dayNumber) {
+                            else if (y > c.numberOfDays + c.dayNumber) {
                                 cells[j].innerHTML = nextMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled next");
                                 disabledRow++;
@@ -559,13 +578,12 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                     - (cWidthf + cDiff[0] + cDiff2[0])*8)/2);
                 rows[i].style.paddingLeft = pl + "px";
                 
-                var eDiff = !inited ? this.$getPadding(this.oExt) : startDiffs[4];
+                var eDiff = !c.inited ? this.$getPadding(this.$ext) : c.startDiffs[4];
                 
-                if (!inited) {
-                    startDiffs[4] = eDiff
-                }
+                if (!c.inited)
+                    c.startDiffs[4] = eDiff
                 
-                this.oExt.style.paddingBottom = 
+                this.$ext.style.paddingBottom = 
                     (Math.floor(eDiff[1]/2) + pl) + "px";
                 
                 
@@ -596,7 +614,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
                 if (z > 0) {
                     daysofweek[i].innerHTML = 
-                        days[z - 1].substr(0, cWidthf < 12
+                        c.days[z - 1].substr(0, cWidthf < 12
                             ? 1 : (cWidthf < 16 ? 2
                             : 3));
                 }
@@ -608,17 +626,18 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
         }
         
         
-        inited = true;
+        c.inited = true;
     };
 
     this.selectDay = function(nr, type) {
-        var newMonth = type == "prev"
-            ? _currentMonth
-            : (type == "next"
-                ? _currentMonth + 2
-                : _currentMonth + 1);
+        var c        = this.$calVars,
+            newMonth = type == "prev"
+                ? c.currentMonth
+                : (type == "next"
+                    ? c.currentMonth + 2
+                    : c.currentMonth + 1),
 
-        var newYear = _currentYear;
+            newYear = c.currentYear;
 
         if (newMonth < 1) {
             newMonth = 12;
@@ -629,22 +648,22 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
             newYear++;
         }
 
-        this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes,
-            _seconds).format(this.outputFormat));
+        this.change(new Date(newYear, (newMonth - 1), nr, c.hours, c.minutes,
+            c.seconds).format(this.outputFormat));
     };
 
     /**
      * Change displayed year to next
      */
     this.nextYear = function() {
-        this.redraw(_currentMonth, _currentYear + 1);
+        this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear + 1);
     };
 
     /**
      * Change displayed year to previous
      */
     this.prevYear = function() {
-        this.redraw(_currentMonth, _currentYear - 1);
+        this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear - 1);
     };
 
     /**
@@ -652,9 +671,10 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to next
      */
     this.nextMonth = function() {
+        var c = this.$calVars;
         this.redraw(
-            _currentMonth > 10 ? 0 : _currentMonth + 1, 
-            _currentMonth > 10 ? _currentYear + 1 : _currentYear
+            c.currentMonth > 10 ? 0 : c.currentMonth + 1,
+            c.currentMonth > 10 ? c.currentYear + 1 : c.currentYear
         );
     };
 
@@ -663,9 +683,10 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
      * change current displayed year to previous
      */
     this.prevMonth = function() {
+        var c = this.$calVars;
         this.redraw(
-            _currentMonth < 1 ? 11 : _currentMonth - 1, 
-            _currentMonth < 1 ? _currentYear - 1 : _currentYear
+            c.currentMonth < 1 ? 11 : c.currentMonth - 1,
+            c.currentMonth < 1 ? c.currentYear - 1 : c.currentYear
         );
     };
 
@@ -680,8 +701,7 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
 
     this.$draw = function() {
         //Build Main Skin
-        this.oExt = this.$getExternal("main", null, function(oExt) {
-            var oExt = this.$getLayoutNode("main", "contnainer", oExt);
+        this.$ext = this.$getExternal("main", null, function(oExt) {
             var oContent = this.$getLayoutNode("main", "content", oExt);
 
             for (var i = 0; i < 6; i++) {
@@ -695,13 +715,13 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                         oCell.setAttribute("onmouseover",
                             "if (this.className.indexOf('disabled') > -1 "
                             + "|| this.className.indexOf('active') > -1) "
-                            + "return; apf.lookup(" + this.uniqueId 
+                            + "return; apf.lookup(" + this.$uniqueId 
                             + ").$setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmouseout", 
-                            "var o = apf.lookup(" + this.uniqueId 
+                            "var o = apf.lookup(" + this.$uniqueId 
                             + ").$setStyleClass(this, '', ['hover']);");
                         oCell.setAttribute("onmousedown", 
-                            "var o = apf.lookup(" + this.uniqueId + ");"
+                            "var o = apf.lookup(" + this.$uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
                             + "o.selectDay(this.innerHTML, 'prev');}"
                             + " else if (this.className.indexOf('next') > -1) {"
@@ -723,27 +743,28 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
                     this.$setStyleClass(btn, buttons[i]);
                     if (buttons[i] !== "status")
                         btn.setAttribute("onmousedown", 'apf.lookup('
-                                         + this.uniqueId + ').'
+                                         + this.$uniqueId + ').'
                                          + buttons[i] + '()');
                 }
             }
 
             var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek", oExt);
 
-            for (var i = 0; i < days.length + 1; i++) {
+            for (var i = 0; i < this.$calVars.days.length + 1; i++) {
                 this.$getNewContext("day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
             }
         });
 
-        this.oNavigation = this.$getLayoutNode("main", "navigation",  this.oExt);
-        this.oDow        = this.$getLayoutNode("main", "daysofweek",  this.oExt);
-        this.oContent    = this.$getLayoutNode("main", "content",  this.oExt);
+        this.oNavigation = this.$getLayoutNode("main", "navigation",  this.$ext);
+        this.oDow        = this.$getLayoutNode("main", "daysofweek",  this.$ext);
+        this.oContent    = this.$getLayoutNode("main", "content",  this.$ext);
         
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.oExt, "resize", "var o = apf.all[" + this.uniqueId + "];\
+        apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
         if (o) o.$resize()", true);
+        apf.layout.queue(this.$ext);
         //#endif
     };
 
@@ -759,34 +780,27 @@ apf.calendar = apf.component(apf.NODE_VISIBLE, function() {
             }
         }
         else {
-            var date = Date.parse(_temp || this.value, this.outputFormat);
-            _day   = date.getDate();
-            _month = date.getMonth();
-            _year  = date.getFullYear();
+            var c    = this.$calVars,
+                date = Date.parse(c.temp || this.value, this.outputFormat);
+            c.day   = date.getDate();
+            c.month = date.getMonth();
+            c.year  = date.getFullYear();
 
-            this.setProperty("value", new Date(_year, _month, _day, _hours,
-                _minutes, _seconds).format(this.outputFormat));
+            if (c.day && c.month && c.year) {
+                this.setProperty("value", new Date(c.year, c.month, c.day, c.hours,
+                    c.minutes, c.seconds).format(this.outputFormat));
+            }
+            
         }
     };
-
-
     
     this.$destroy = function() {
-        apf.popup.removeContent(this.uniqueId);
-        apf.destroyHtmlNode(this.oExt);
+        apf.popup.removeContent(this.$uniqueId);
+        apf.destroyHtmlNode(this.$ext);
         this.oCalendar = null;
     };
-}).implement(
-    //#ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    //#endif
-    //#ifdef __WITH_VALIDATION
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+}).call(apf.calendar.prototype = new apf.StandardBinding());
+
+apf.aml.setElement("calendar", apf.calendar);
 
 // #endif

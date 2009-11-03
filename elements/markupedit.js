@@ -19,17 +19,17 @@
  *
  */
 
-// #ifdef __JMARKUPEDIT || __INC_ALL
+// #ifdef __AMLMARKUPEDIT || __INC_ALL
 // #define __WITH_CACHE 1
 // #define __WITH_DATABINDING 1
 // #define __WITH_MULTISELECT 1
 // #define __WITH_PRESENTATION 1
 // #define __WITH_GANIM 1
 
-var HAS_CHILD = 1 << 1;
-var IS_CLOSED = 1 << 2;
-var IS_LAST   = 1 << 3;
-var IS_ROOT   = 1 << 4;
+var HAS_CHILD = 1 << 1,
+    IS_CLOSED = 1 << 2,
+    IS_LAST   = 1 << 3,
+    IS_ROOT   = 1 << 4;
 
 /**
  * Element for editing markup in the same way firebug provides.
@@ -40,13 +40,11 @@ var IS_ROOT   = 1 << 4;
  * @allowchild {smartbinding}
  * @addnode elements:markupedit
  *
- * @inherits apf.Validation
  * @inherits apf.XForms
  * @inherits apf.MultiSelect
  * @inherits apf.Cache
- * @inherits apf.Presentation
- * @inherits apf.DataBinding
- * @inherits apf.AmlElement
+ * @inherits apf.DataAction
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -56,8 +54,24 @@ var IS_ROOT   = 1 << 4;
  * @binding css      Determines a css class for a node.
  * @binding empty    Determines the empty message of a node.
  */
-apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
-    this.isTreeArch  = true; // Tree Architecture for loading Data
+apf.markupedit = function(struct, tagName){
+    this.$init(tagName || "markupedit", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_XFORMS
+        //apf.XForms,
+        //#endif
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction,
+        //#endif
+        apf.Rename,
+        apf.MultiSelect,
+        apf.Cache
+    );
+
+    this.$isTreeArch  = true; // Tree Architecture for loading Data
     this.$focussable = true; // This object can get the focus
     
     this.clearMessage  = "There are no items";
@@ -82,12 +96,12 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.setAttributeValue = function(xmlNode, name, value){
         if (!xmlNode)
-            xmlNode = this.indicator || this.selected;
+            xmlNode = this.caret || this.selected;
 
         if (!xmlNode || xmlNode.getAttribute(name) == value) 
             return;
         
-        this.executeAction("setAttribute", [xmlNode, name, value],
+        this.$executeAction("setAttribute", [xmlNode, name, value],
             "setAttributeValue", xmlNode);
     };
     
@@ -97,12 +111,12 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.renameAttribute = function(xmlNode, name, newName){
         if (!xmlNode)
-            xmlNode = this.indicator || this.selected;
+            xmlNode = this.caret || this.selected;
 
         if (!xmlNode || name == newName) 
             return;
         
-        this.executeAction("multicall", [
+        this.$executeAction("multicall", [
               {func: "removeAttribute", args: [xmlNode, name]},
               {func: "setAttribute", args: [xmlNode, newName, xmlNode.getAttribute(name)]}
             ], "renameAttribute", xmlNode);
@@ -114,12 +128,12 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
      */
     this.setTextNode = function(xmlNode, value){
         if (!xmlNode)
-            xmlNode = this.indicator || this.selected;
+            xmlNode = this.caret || this.selected;
 
         if (!xmlNode || apf.queryValue(xmlNode, "text()") == value) 
             return;
         
-        this.executeAction("setTextNode", [xmlNode, value], "setTextNode", xmlNode);
+        this.$executeAction("setTextNode", [xmlNode, value], "setTextNode", xmlNode);
     };
     
     
@@ -238,24 +252,25 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
     //check databinding for how this is normally implemented
     //PROCINSTR
     this.doUpdate = function(xmlNode, container){
-        var rule       = this.getNodeFromRule("insert", xmlNode, null, true);
-        var xmlContext = rule 
-            ? xmlNode.selectSingleNode(rule.getAttribute("select") || ".") 
+        var rule       = this.$getBindRule("insert", xmlNode);
+        var xmlContext = rule && rule[1] 
+            ? rule[1](xmlNode) 
             : null;
         
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
             
             if (rule.getAttribute("get")) {
-                this.getModel().insertFrom(rule.getAttribute("get"), xmlContext, {
+                this.getModel().$insertFrom(rule.getAttribute("get"), {
+                    xmlNode     : xmlContext,
                     insertPoint : xmlContext, 
                     amlNode     : this
                 });
             }
             else {
-                var data = this.applyRuleSetOnNode("Insert", xmlNode);
+                var data = this.$applyBindRule("Insert", xmlNode);
                 if (data)
-                    this.insert(data, xmlContext);
+                    this.insert(data, {insertPoint: xmlContext});
             }
         }
         else
@@ -286,16 +301,16 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             //if isLast fix previousSibling
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
-                this.fixItem(prevSib, this.getNodeFromCache(
+                this.fixItem(prevSib, this.$findHtmlNode(
                     prevSib.getAttribute(apf.xmldb.xmlIdTag) + "|" 
-                    + this.uniqueId), null, true);
+                    + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage 
-              && xmlNode.parentNode.selectNodes(this.traverse).length == 1)
-                this.fixItem(xmlNode.parentNode, this.getNodeFromCache(
+              && xmlNode.parentNode.selectNodes(this.each).length == 1) //@todo each parent??
+                this.fixItem(xmlNode.parentNode, this.$findHtmlNode(
                     xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
-                    + "|" + this.uniqueId), null, false, true); 
+                    + "|" + this.$uniqueId), null, false, true); 
         }
         else {
             var hasChildren, container = this.$getLayoutNode("item", "container", htmlNode);
@@ -303,10 +318,10 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             if (noChildren)
                 hasChildren = false;
             else
-                if (xmlNode.selectNodes(this.traverse).length > 0)
+                if (xmlNode.selectNodes(this.each).length > 0)
                     hasChildren = true;
             else
-                if (this.bindingRules["insert"] && this.getNodeFromRule("insert", xmlNode))
+                if (this.$getBindRule("insert", xmlNode))
                     hasChildren = true;
             else
                 hasChildren = false;
@@ -329,9 +344,9 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 container.style.display = "none";
             
             if (state & HAS_CHILD) {
-                //this.$getLayoutNode("item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = apf.lookup(' + this.uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);apf.cancelBubble(e, o);');
-                //this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = apf.lookup(' + this.uniqueId + '); o.slideToggle(this);o.choose();');
-                //this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = apf.lookup(' + this.uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
+                //this.$getLayoutNode("item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = apf.lookup(' + this.$uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);apf.cancelBubble(e, o);');
+                //this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = apf.lookup(' + this.$uniqueId + '); o.slideToggle(this);o.choose();');
+                //this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = apf.lookup(' + this.$uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
             }
             /*else{
                 //Experimental
@@ -408,7 +423,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             elValue.setAttribute("title", value);
         
         elName.setAttribute("aname", name);
-        elName.setAttribute("onmousedown", "apf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
+        elName.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
         elName.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
@@ -422,7 +437,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         elValue.setAttribute("aname", name);
-        elValue.setAttribute("onmousedown", "apf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "');\
+        elValue.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
             event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "apf.selectTextHtml(this);\
             event.cancelBubble=true;\
@@ -436,7 +451,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         elValue.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         if (pNode.style) {
-            htmlNode = apf.xmldb.htmlImport(
+            htmlNode = apf.insertHtmlNode(
                 _self.$getLayoutNode("attribute"), 
                 pNode, 
                 _self.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
@@ -457,7 +472,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
         
-        elTextNode.setAttribute("onmousedown", "apf.lookup(" + _self.uniqueId + ").startRenameThis(this, '" + Lid + "');");
+        elTextNode.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
         elTextNode.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");
@@ -472,7 +487,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         apf.setNodeValue(elTag, "&gt;");
         
         if (pNode.style) {
-            var htmlNode = apf.xmldb.htmlImport(
+            var htmlNode = apf.insertHtmlNode(
                 _self.$getLayoutNode("textnode"), pNode, pNode.lastChild);
             animHighlight(_self.$getLayoutNode("textnode", "text", htmlNode));
         }
@@ -486,17 +501,17 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         this.$getNewContext("item");
         
         var hasChildren = (state & HAS_CHILD || this.emptyMessage 
-            && this.applyRuleSetOnNode("empty", xmlNode));
+            && this.$applyBindRule("empty", xmlNode));
         
         //should be restructured and combined events set per element 
         var elItem = this.$getLayoutNode("item");
-        elItem.setAttribute("onmouseover", 'var o = apf.lookup(' + this.uniqueId + ');\
+        elItem.setAttribute("onmouseover", 'var o = apf.lookup(' + this.$uniqueId + ');\
             if (o.onmouseover) \
                 o.onmouseover(event, this);');
-        elItem.setAttribute("onmouseout", 'var o = apf.lookup(' + this.uniqueId + ');\
+        elItem.setAttribute("onmouseout", 'var o = apf.lookup(' + this.$uniqueId + ');\
             if(o.onmouseout) \
                 o.onmouseout(event, this)');
-        elItem.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');\
+        elItem.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
             if (o.onmousedown) \
                 o.onmousedown(event, this);');
         elItem.setAttribute(apf.xmldb.htmlIdTag, Lid);
@@ -509,7 +524,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         var elOpenClose = this.$getLayoutNode("item", "openclose");
         if (hasChildren)
             elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
-                "var o = apf.lookup(" + this.uniqueId + ");\
+                "var o = apf.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) \
                     o.onmousedown(event, this);\
@@ -518,22 +533,22 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         //Select interaction
         var elSelect = this.$getLayoutNode("item", "select");
         if (hasChildren) {
-            var strFunc2 = "var o = apf.lookup(" + this.uniqueId + ");\
+            var strFunc2 = "var o = apf.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this, true);";
             //if(this.opencloseaction != "onmousedown") elSelect.setAttribute(this.opencloseaction || "ondblclick", strFunc2);
         }
         //if(event.button != 1) return; 
         //apf.isChildOf(o.$selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
-        elSelect.setAttribute("onmousedown", "var o = apf.lookup(" + this.uniqueId + ");\
+        elSelect.setAttribute("onmousedown", "var o = apf.lookup(" + this.$uniqueId + ");\
             apf.cancelBubble(event, o);\
             if (o.hasFocus()) \
                 o.select(this);\
             if (o.onmousedown) \
                 o.onmousedown(event, this);" 
             + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
-        //if(!elSelect.getAttribute("ondblclick")) elSelect.setAttribute("ondblclick", 'var o = apf.lookup(' + this.uniqueId + ');o.choose();');
+        //if(!elSelect.getAttribute("ondblclick")) elSelect.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose();');
 
-        //elItem.setAttribute("contextmenu", 'alert(1);var o = apf.lookup(' + this.uniqueId + ');o.dispatchEvent("contextMenu", o.selected);');
+        //elItem.setAttribute("contextmenu", 'alert(1);var o = apf.lookup(' + this.$uniqueId + ');o.dispatchEvent("contextMenu", o.selected);');
         
         var elBegin = this.$getLayoutNode("item", "begintag");
         apf.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
@@ -570,10 +585,10 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         }
         elBeginTail.parentNode.appendChild(elBeginTail);
         
-        elEnd.setAttribute("onmousedown", 'var o = apf.lookup(' + this.uniqueId + ');apf.cancelBubble(event, o);');
+        elEnd.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');apf.cancelBubble(event, o);');
         
         // #ifdef __WITH_CSS_BINDS
-        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
+        var cssClass = this.$applyBindRule("css", xmlNode);
         if (cssClass) {
             this.$setStyleClass(this.$getLayoutNode("item", null, 
                 this.$getLayoutNode("item")), cssClass);
@@ -609,7 +624,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         
         //this.fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
         /*throw new Error();
-        if(xmlNode.previousSibling) //should use traverse here
+        if(xmlNode.previousSibling) //should use each here
             this.fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
@@ -706,7 +721,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         }
         
         // #ifdef __WITH_CSS_BINDS
-        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
+        var cssClass = this.$applyBindRule("css", xmlNode);
         if (cssClass || this.dynCssClasses.length) {
             this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
             if (cssClass && !this.dynCssClasses.contains(cssClass))
@@ -723,7 +738,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         this.$getNewContext("empty");
         var oItem = this.$getLayoutNode("empty");
         this.$getLayoutNode("empty", "caption").nodeValue = this.emptyMessage;
-        apf.xmldb.htmlImport(oItem, container);
+        apf.insertHtmlNode(oItem, container);
         
         if (!this.startClosed) {
             if (container.style) {
@@ -737,7 +752,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
     this.$setLoading = function(xmlNode, container){
         this.$getNewContext("Loading");
         this.$setLoadStatus(xmlNode, "potential");
-        apf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
+        apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
     };
     
     this.$removeLoading = function(htmlNode){
@@ -758,7 +773,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
 
         if (e.action != "insert") return;
         
-        var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)+"|"+this.uniqueId);
+        var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)+"|"+this.$uniqueId);
         if (!htmlNode) return;
         if (this.$hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
@@ -783,53 +798,53 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        var selHtml  = this.$indicator || this.$selected;
+        var selHtml  = this.$caret || this.$selected;
         
         if (!selHtml || this.renaming) 
             return;
 
-        var selXml = this.indicator || this.selected;
-        var oExt   = this.oExt;
+        var selXml = this.caret || this.selected;
+        var oExt   = this.$ext;
 
         switch (key) {
             case 13:
                 if (this.$tempsel)
-                    this.selectTemp();
+                    this.$selectTemp();
             
                 if (this.ctrlselect == "enter")
-                    this.select(this.indicator, true);
+                    this.select(this.caret, true);
             
                 this.choose(selHtml);
                 break;
             case 32:
                 if (ctrlKey)
-                    this.select(this.indicator, true);
+                    this.select(this.caret, true);
                 break;
             case 46:
                 if (this.$tempsel)
-                    this.selectTemp();
+                    this.$selectTemp();
             
                 //DELETE
                 //this.remove();
-                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
+                this.remove(this.mode ? this.caret : null); //this.mode != "check"
                 break;
             case 109:
             case 37:
                 //LEFT
                 if (this.$tempsel)
-                    this.selectTemp();
+                    this.$selectTemp();
                     
-                if (this.indicator.selectSingleNode(this.traverse))
-                    this.slideToggle(this.$indicator || this.$selected, 2)
+                if (this.caret.selectSingleNode(this.each))
+                    this.slideToggle(this.$caret || this.$selected, 2)
                 break;
             case 107:
             case 39:
                 //RIGHT
                 if (this.$tempsel)
-                    this.selectTemp();
+                    this.$selectTemp();
             
-                if (this.indicator.selectSingleNode(this.traverse))
-                    this.slideToggle(this.$indicator || this.$selected, 1)
+                if (this.caret.selectSingleNode(this.each))
+                    this.slideToggle(this.$caret || this.$selected, 1)
                 break;
             case 187:
                 //+
@@ -856,7 +871,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                     
                     do {
                         var container = this.$getLayoutNode("item", "container",
-                            this.getNodeFromCache(apf.xmldb.getID(sNode, this)));
+                            this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
                         if (container && apf.getStyle(container, "display") == "block" 
                           && nodes.length) {
                                 sNode = nodes[nodes.length-1];
@@ -874,7 +889,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                     sNode = this.getTraverseParent(node);
 
                 if (sNode && sNode.nodeType == 1)
-                   this.setTempSelected(sNode, ctrlKey, shiftKey);
+                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
                 
                 if (this.$tempsel && this.$tempsel.offsetTop < oExt.scrollTop)
                     oExt.scrollTop = this.$tempsel.offsetTop;
@@ -894,7 +909,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 var sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
                     var container = this.$getLayoutNode("item", "container",
-                        this.getNodeFromCache(apf.xmldb.getID(node, this)));
+                        this.$findHtmlNode(apf.xmldb.getID(node, this)));
                     if (container && apf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
@@ -912,7 +927,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 }
                 
                 if (sNode && sNode.nodeType == 1)
-                   this.setTempSelected(sNode, ctrlKey, shiftKey);
+                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
                 
                 if (this.$tempsel && this.$tempsel.offsetTop + this.$tempsel.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight)
@@ -945,13 +960,11 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         //Why is this function called 3 times when adding one node? (hack/should)
-        var loadChildren = this.bindingRules["insert"] 
-            ? this.getNodeFromRule("insert", xmlNode) 
-            : false;
+        var loadChildren = this.$getBindRule("insert", xmlNode) ? true : false;
         var hasChildren  = (loadChildren 
-            || xmlNode.selectSingleNode(this.traverse)) ? true : false;
+            || xmlNode.selectSingleNode(this.each)) ? true : false;
         
-        var startClosed  = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
+        var startClosed  = this.startClosed;// || this.$applyBindRule("collapse", xmlNode, ".") !== false;
         var state        = (hasChildren ? HAS_CHILD : 0) 
             | (startClosed && hasChildren  || loadChildren ? IS_CLOSED : 0) 
             | (isLast ? IS_LAST : 0);
@@ -969,7 +982,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         if (loadChildren && !this.$hasLoadStatus(xmlNode))
             this.$setLoading(xmlNode, container);
         else if(!this.getTraverseNodes(xmlNode).length 
-          && this.applyRuleSetOnNode("empty", xmlNode))
+          && this.$applyBindRule("empty", xmlNode))
             this.setEmpty(container);
 
         if (!htmlParentNode && (xmlParentNode == this.xmlRoot 
@@ -988,10 +1001,10 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
                 htmlParentNode = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
-                    : this.oInt;
+                    : this.$int;
             }
             
-            if (htmlParentNode == this.oInt) {
+            if (htmlParentNode == this.$int) {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
                 
@@ -1012,11 +1025,11 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
-                var q = apf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
+                var q = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
                 animHighlight(this.$getLayoutNode("item", "select", q));
                 
                 if (!apf.isChildOf(htmlNode, container, true)) 
-                    var container = apf.xmldb.htmlImport(container, htmlParentNode, beforeNode);
+                    var container = apf.insertHtmlNode(container, htmlParentNode, beforeNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
@@ -1027,13 +1040,13 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
                 if(!startClosed && this.openOnAdd 
-                  && htmlParentNode != this.oInt 
+                  && htmlParentNode != this.$int 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode);
                 
                 //this.fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
                 this.fixItem(xmlParentNode, apf.xmldb.findHtmlNode(xmlParentNode, this));
-                if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
+                if (this.getNextTraverse(xmlNode, true)) { //should use each here
                     this.fixItem(this.getNextTraverse(xmlNode, true), 
                         apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true), this));
                 }
@@ -1054,7 +1067,7 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
         //Please please consider moving this to apf.databinding and make it generic.. this is a mess
         /*if(this.renderRoot){
             var htmlNode = apf.xmldb.findHtmlNode(this.xmlRoot, this);
-            if(!htmlNode || htmlNode.parentNode != this.oInt){
+            if(!htmlNode || htmlNode.parentNode != this.$int){
                 var nodes = nodes;
                 nodes = [];
                 
@@ -1067,14 +1080,14 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
             }
         }*/
 
-        apf.xmldb.htmlImport(nodes, container || this.oInt);
+        apf.insertHtmlNodes(nodes, container || this.$int);
         nodes.length = 0;
     };
     
     this.$getParentNode = function(htmlNode){
         return htmlNode 
             ? this.$getLayoutNode("item", "container", htmlNode) 
-            : this.oInt;
+            : this.$int;
     };
     
     /* ***********************
@@ -1133,48 +1146,35 @@ apf.markupedit = apf.component(apf.NODE_VISIBLE, function(){
     //render the outer framework of this object
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal(); 
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.$ext = this.$getExternal(); 
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
         this.opencloseaction = this.$getOption("Main", "openclose");
         
         //Need fix...
-        //this.oExt.style.MozUserSelect = "none";
+        //this.$ext.style.MozUserSelect = "none";
 
-        this.oExt.onclick = function(e){
+        this.$ext.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent : e || event});
         }
     };
     
     this.$loadAml = function(x){
         this.openOnAdd   = !apf.isFalse(x.getAttribute("openonadd"));
-        this.startClosed = !apf.isFalse(this.$aml.getAttribute("startclosed") 
+        this.startClosed = !apf.isFalse(this.getAttribute("startclosed") 
             || this.$getOption("Main", "startclosed"));
-        this.noCollapse  = apf.isTrue(this.$aml.getAttribute("nocollapse"));
+        this.noCollapse  = apf.isTrue(this.getAttribute("nocollapse"));
         if (this.noCollapse)
             this.startClosed = false;
-        this.singleopen  = apf.isTrue(this.$aml.getAttribute("singleopen"));
-        this.prerender   = !apf.isFalse(this.$aml.getAttribute("prerender"));
-        
-        apf.AmlParser.parseChildren(this.$aml, null, this);
+        this.singleopen  = apf.isTrue(this.getAttribute("singleopen"));
+        this.prerender   = !apf.isFalse(this.getAttribute("prerender"));
     };
     
     this.$destroy = function(){
-        this.oExt.onclick = null;
+        this.$ext.onclick = null;
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).implement(
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    //apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Rename,
-    apf.MultiSelect, 
-    apf.Cache,
-    apf.Presentation, 
-    apf.DataBinding
-);
+}).call(apf.markupedit.prototype = new apf.GuiElement());
 
+apf.aml.setElement("markupdit", apf.markupedit);
 // #endif

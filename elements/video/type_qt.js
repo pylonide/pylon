@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __AMLVIDEO || __INC_ALL
 
 apf.video.TypeQTCompat = (function(){
     var gTagAttrs           = null;
@@ -403,7 +403,7 @@ apf.video.TypeQTCompat = (function(){
  */
 apf.video.TypeQT = function(oVideo, node, options) {
     this.oVideo      = oVideo;
-    this.name        = "QT_" + this.oVideo.uniqueId;
+    this.name        = "QT_" + this.oVideo.$uniqueId;
     this.htmlElement = node;
 
     // Properties set by QT player

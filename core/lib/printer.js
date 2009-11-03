@@ -61,7 +61,13 @@ apf.printer = {
             for (i = 0; i < attr.length; i++) {
                 a = attr[i];
                 if (a.nodeName.indexOf("on") == 0)
-                    apf.addEventListener(a.nodeName, new Function(a.nodeValue));
+                    apf.addEventListener(a.nodeName, 
+                      // #ifdef __WITH_JSLT_EVENTS
+                      apf.lm.compile(a.nodeValue, {event: true, parsecode: true})
+                      /* #else
+                      new Function('event', a.nodeValue)
+                      #endif */
+                    );
             }
         }
 
@@ -69,7 +75,7 @@ apf.printer = {
         function printPNGFix(disable) {
             if (apf.supportPng24) return;
             // #ifdef __WITH_APPSETTINGS
-            if (!apf.appsettings.iePngFix) return;
+            if (!apf.config.iePngFix) return;
             // #endif
             for (var e, i = 0, j = document.all.length; i < j; i++) {
                 e = document.all[i];

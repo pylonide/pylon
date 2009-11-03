@@ -71,6 +71,25 @@ apf.isOnlyChild = function(node, nodeType){
 };
 
 /**
+ * Gets the position of a dom node within the list of child nodes of it's
+ * parent.
+ *
+ * @param {DOMNode} node the node for which the child position is determined.
+ * @return {Number} the child position of the node.
+ */
+apf.getChildNumber = function(node, sameTagname){
+    var p = node.parentNode, j = 0;
+    if (!p) return 0;
+    for (var i = 0; i < p.childNodes.length; i++) {
+        if (p.childNodes[i] == node)
+            return j;
+        if (!sameTagname || node.nodeType == 1 && node.tagName == p.childNodes[i].tagName)
+            j++;
+    }
+    return j;
+};
+
+/**
  * Integrates nodes as children of a parent. Optionally attributes are
  * copied as well.
  *
@@ -98,11 +117,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
             for (j = s.length - 1; j >= 0; j--) {
                 node = apf.all[s[j]];
                 if (node.dataParent && node.dataParent.xpath)
-                    node.dataParent.parent.signalXmlUpdate[node.uniqueId] = true;
-                else if (node.$model) {
-                    node.$listenRoot = apf.xmldb.addNodeListener(parentNode, node);
-                    node.xmlRoot = null; //.load(null)
-                }
+                    node.dataParent.parent.signalXmlUpdate[node.$uniqueId] = true;
+                else if (node.$model)
+                    node.$model.$waitForXml(node);
             }
         }
         
@@ -195,6 +212,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
  * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
  */
 apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
+    if (!xmlNode)
+        return;
+    
     var undoObj, xpath, newNodes;
     if (options) {
         undoObj  = options.undoObj;
@@ -344,13 +364,17 @@ apf.queryNode = function(sExpr, contextNode){
 apf.getInheritedAttribute = function(xml, attr, func){
     var result;
 
-    while (xml && xml.nodeType != 11 && xml.nodeType != 9
-      && !(result = attr && xml.getAttribute(attr) || func && func(xml))) {
+    //@todo optimize this
+    if (xml.nodeValue != 1)
+        xml = xml.parentNode;
+
+    while (xml && (xml.nodeType != 1 || !(result = attr 
+      && xml.getAttribute(attr) || func && func(xml)))) {
         xml = xml.parentNode;
     }
 
-    return !result && attr && apf.appsettings
-        ? apf.appsettings[attr]
+    return !result && attr && apf.config
+        ? apf.config[attr]
         : result;
 };
 
@@ -640,9 +664,7 @@ apf.getBoundValue = function(amlNode, xmlRoot, applyChanges){
     if (!xmlRoot && !amlNode.xmlRoot)
         return "";
 
-    var xmlNode = !amlNode.nodeFunc
-        ? xmlRoot.selectSingleNode(amlNode.getAttribute("ref"))
-        : amlNode.getNodeFromRule("value", amlNode.xmlRoot);
+    var xmlNode = amlNode.$getDataNode("value", amlNode.xmlRoot);
 
     return xmlNode ? apf.queryValue(xmlNode) : "";
 };
@@ -655,6 +677,16 @@ apf.getArrayFromNodelist = function(nodelist){
         nodes.push(nodelist[j]);
     return nodes;
 };
+
+apf.serializeChildren = function(xmlNode){
+    var s = [], nodes = xmlNode.childNodes;
+    for (var node, i = 0, l = nodes.length; i < l; i++) {
+        s[i] = (node = nodes[i]).nodeType == 1 
+            ? node.xml || node.serialize()
+            : (node.nodeType == 8 ? "" : node.nodeValue);
+    }
+    return s.join("");
+}
 
 /**
  * Returns a string version of the {@link term.datanode data node}.
@@ -695,7 +727,7 @@ apf.formatXml = function(strXml){
     lines.removeIndex(lines.length);
 
     for (var depth = 0, i = 0; i < lines.length; i++)
-        lines[i] = "\t".repeat((lines[i].match(/^\s*\<\//)
+        lines[i] = "    ".repeat((lines[i].match(/^\s*\<\//)
             ? (depth==0)?0:--depth
             : (lines[i].match(/^\s*\<[^\?][^>]+[^\/]\>/) ? depth++ : depth))) + lines[i];
     if (!strXml) return "";
@@ -703,20 +735,81 @@ apf.formatXml = function(strXml){
     return lines.join("\n");
 };
 
-/**
- * Syntax highlights an xml string using html.
- * @param {String} strXml the xml to highlight.
- * @return {String} the highlighted string.
- */
-apf.highlightXml = function(str){
-    return str.replace(/^[\r\n]/g,"").replace(/</g, "_@A@_")
-       .replace(/>/g, "_@B@_")
-       .replace(/(\s[\w-]+)(\s*=\s*)("[^"]*")/g, '<span style="color:#e61414">$1</span>$2<span style="color:black">$3</span>')
-       .replace(/(\s[\w-]+)(\s*=\s*)('[^']*')/g, "<span style='color:#e61414'>$1</span>$2<span style='color:black'>$3</span>")
-       .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-       .replace(/\n/g, "<br />")
-       .replace(/_@B@_/g, "<span style='color:#0866ab'>&gt;</span>")
-       .replace(/_@A@_([\-\!\[\\/\w:\.]+)?/g, "<span style='color:#0866ab'>&lt;$1</span>");
-}
+//@todo this function needs to be 100% proof, it's the core of the system
+//for RSB: xmlNode --> Xpath statement
+apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
+    if (!xmlNode) //@todo apf3.0
+        return "";
+    
+    if (useJid === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
+        return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
+            + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
+    }
+
+    if (apf != this && this.lookup && this.select) {
+        var def = this.lookup[xmlNode.tagName];
+        if (def) {
+            //unique should not have ' in it... -- can be fixed...
+            var unique = xmlNode.selectSingleNode(def).nodeValue;
+            return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
+        }
+        
+        for (var i = 0; i < this.select.length; i++) {
+            if (xmlNode.selectSingleNode(this.select[i][0])) {
+                var unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
+                return "//" + this.select[i][0] + "[" + this.select[i][1]
+                    + "='" + unique + "']";
+            }
+        }
+    }
+
+    if (xmlNode == xmlContext)
+        return ".";
+
+    if (!xmlNode.parentNode) {
+        //#ifdef __DEBUG
+        throw new Error(apf.formatErrorString(0, null, 
+            "Converting XML to Xpath", 
+            "Error xml node without parent and non matching context cannot\
+             be converted to xml.", xmlNode));
+        //#endif
+        
+        return false;
+    }
+
+    var str = [], lNode = xmlNode;
+    if (lNode.nodeType == 2) {
+        str.push("@" + lNode.nodeName);
+        lNode = lNode.ownerElement || xmlNode.selectSingleNode("..");
+    }
+    
+    var id;
+    do {
+        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
+            + "[" + (useJid && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
+                ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
+                : (apf.getChildNumber(lNode, true) + 1))
+             + "]");
+        lNode = lNode.parentNode;
+    } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
+
+    return str.join("/");
+};
+    
+//for RSB: Xpath statement --> xmlNode
+apf.xpathToXml = function(xpath, xmlNode){
+    if (!xmlNode) {
+        //#ifdef __DEBUG
+        throw new Error(apf.formatErrorString(0, null, 
+            "Converting Xpath to XML", 
+            "Error context xml node is empty, thus xml node cannot \
+             be found for '" + xpath + "'"));
+        //#endif
+        
+        return false;
+    }
+    
+    return xmlNode.selectSingleNode(xpath);
+};
 
 // #endif

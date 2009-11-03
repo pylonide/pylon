@@ -485,7 +485,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.setContent = function(html, bNoPrepare) {
         var range = this.getRange();
 
-        // #ifdef __PARSER_HTML
+        // #ifdef __WITH_HTML_CLEANER
         if (!bNoPrepare)
             html = apf.htmlCleaner.prepare(html, true);
         // #endif
@@ -598,7 +598,7 @@ apf.selection = function(oWin, oDoc, editor) {
             if (!range.collapsed) {
                 // If the anchor node is an element instead of a text node then
                 // return this element
-                if (apf.isSafari && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
+                if (apf.isWebkit && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
                     return oSel.anchorNode.childNodes[oSel.anchorOffset];
 
                 if (range.startContainer == range.endContainer) {

@@ -191,8 +191,8 @@ apf.runJaw = function(){
     XMLDocument.prototype.setProperty  = function(x,y){};
 
     apf.getHttpReq = function(){
-        if (apf.teleport.availHTTP.length)
-            return apf.teleport.availHTTP.pop();
+        if (apf.availHTTP.length)
+            return apf.availHTTP.pop();
         return new XMLHttpRequest();
     };
     
@@ -221,7 +221,5 @@ apf.runJaw = function(){
         
         return xml;
     };
-
-    apf.xmldb = new apf.XmlDatabase();
 }
 //#endif

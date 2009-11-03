@@ -36,6 +36,10 @@
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
  *
+ * Note on Internet Explorer 8. When switching between the IE7 compatibility mode
+ * and IE8 mode the history navigation will break. A browser restart is then 
+ * required to fix it. Individually history navigation works fine in each mode.
+ *
  * @event hashchange Fires when the hash changes. This can be either by setting
  * a new hash value or when a user uses the back or forward button. Typing a
  * new hash value in the location bar will also trigger this function.
@@ -81,8 +85,8 @@ apf.history = {
         location.hash = name;
         this.hasChanged(name || null);
 
-        if (apf.isIE8) {
-            document.body.onhashchange = function(){
+        if (apf.supportHashChange) {
+            window.onhashchange = function(){
                 var page = location.hash.replace("#", "");
                 apf.history.hasChanged(decodeURI(page));
             };

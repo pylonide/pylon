@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JBAR || __INC_ALL
+// #ifdef __AMLBAR || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -48,62 +48,62 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.section =
-apf.bar     = apf.component(apf.NODE_VISIBLE, function(){
-    this.canHaveChildren = true;
+apf.section = function(struct, tagName){
+    this.$init(tagName || "section", apf.NODE_VISIBLE, struct);
+};
+
+apf.menubar = function(struct, tagName){
+    this.$init(tagName || "menubar", apf.NODE_VISIBLE, struct);
+};
+
+apf.bar     = function(struct, tagName){
+    this.$init(tagName || "bar", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
     this.$focussable     = false;
-    this.canHaveChildren = true;
+    this.$canLeechSkin   = true;
+    this.$isLeechingSkin = false;
     
-    this.$domHandlers["reparent"].push(
+    this.$propHandlers["caption"] = function(value) {
+        this.$int.innerHTML = value;
+    }
+    
+    //@todo apf3.0 refactor
+    this.addEventListener("AMLReparent", 
         function(beforeNode, pNode, withinParent){
             if (!this.$amlLoaded)
                 return;
 
-            if (isUsingParentSkin && !withinParent 
+            if (this.$isLeechingSkin && !withinParent
               && this.skinName != pNode.skinName
-              || !isUsingParentSkin 
+              || !this.$isLeechingSkin
               && this.parentNode.$hasLayoutNode 
-              && this.parentNode.$hasLayoutNode(this.tagName)) {
-                isUsingParentSkin = true;
+              && this.parentNode.$hasLayoutNode(this.localName)) {
+                this.$isLeechingSkin = true;
                 this.$forceSkinChange(this.parentNode.skinName.split(":")[0] + ":" + skinName);
             }
         });
 
-    var isUsingParentSkin = false;
     this.$draw = function(){
-        if (this.parentNode && this.parentNode.$hasLayoutNode 
-          && this.parentNode.$hasLayoutNode(this.tagName)) {
-            isUsingParentSkin = true;
-            if (this.skinName != this.parentNode.skinName)
-                this.$loadSkin(this.parentNode.skinName);
-        }
-        else if(isUsingParentSkin){
-            isUsingParentSkin = false;
-            this.$loadSkin();
-        }
-
         //Build Main Skin
-        this.oExt = this.$getExternal(isUsingParentSkin 
-            ? this.tagName 
+        this.$ext = this.$getExternal(this.$isLeechingSkin
+            ? this.localName 
             : "main");
 
         //Draggable area support, mostly for a:toolbar
         if (this.oDrag) //Remove if already exist (skin change)
             this.oDrag.parentNode.removeChild(this.oDrag);
         
-        this.oDrag = this.$getLayoutNode(isUsingParentSkin 
-            ? this.tagName 
-            : "main", "dragger", this.oExt);
+        this.oDrag = this.$getLayoutNode(this.$isLeechingSkin
+            ? this.localName 
+            : "main", "dragger", this.$ext);
     };
 
     this.$loadAml = function(x){
-        var oInt = this.$getLayoutNode(isUsingParentSkin 
-            ? this.tagName 
-            : "main", "container", this.oExt);
-        
-        this.oInt = this.oInt
-            ? apf.AmlParser.replaceNode(oInt, this.oInt)
-            : apf.AmlParser.parseChildren(x, oInt, this);
+        this.$int = this.$getLayoutNode(this.$isLeechingSkin
+            ? this.localName 
+            : "main", "container", this.$ext);
     };
     
     /*#ifdef __WITH_SKIN_CHANGE
@@ -111,6 +111,13 @@ apf.bar     = apf.component(apf.NODE_VISIBLE, function(){
         
     }
     //#endif*/
-}).implement(apf.Presentation);
+}).call(apf.bar.prototype = new apf.Presentation());
+
+apf.menubar.prototype = 
+apf.section.prototype = apf.bar.prototype;
+
+apf.aml.setElement("bar", apf.bar);
+apf.aml.setElement("menubar", apf.menubar);
+apf.aml.setElement("section", apf.section);
 
 // #endif

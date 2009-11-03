@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-apf.namespace("storage.modules['air.file']", {
+apf.storage.modules['air.file'] = {
     initialized: false,
 	
     init: function(){
@@ -33,8 +33,8 @@ apf.namespace("storage.modules['air.file']", {
         this.FileStream = window.runtime.flash.filesystem.FileStream;
         this.FileMode = window.runtime.flash.filesystem.FileMode;
         
-        this.storagePath = "__JPF_" + (apf.appsettings.name
-            ? apf.appsettings.name.toUpperCase()
+        this.storagePath = "__JPF_" + (apf.config.name
+            ? apf.config.name.toUpperCase()
             : "STORAGE") + "/";
 
         // need to initialize our storage directory
@@ -300,6 +300,6 @@ apf.namespace("storage.modules['air.file']", {
         throw new Error(this.declaredClass
             + " does not support a storage settings user-interface");
     }
-});
+};
 
 //#endif

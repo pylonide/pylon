@@ -1,0 +1,16 @@
+//@todo apf3.0
+{
+
+    /**
+     * @define presentation element containing a skin definition
+     * @addnode global, anyaml
+     */
+    "presentation" : function(q){
+        var name = "skin" + Math.round(Math.random() * 100000);
+        q.parentNode.setAttribute("skin", name);
+        apf.skins.skins[name] = {name:name,templates:{}}
+        var t    = q.parentNode[apf.TAGNAME];
+        var skin = q.ownerDocument.createElement("skin"); skin.appendChild(q);
+        apf.skins.skins[name].templates[t] = skin;
+    }
+}

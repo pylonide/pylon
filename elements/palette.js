@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JPALETTE || __INC_ALL
+// #ifdef __AMLPALETTE || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -32,9 +32,7 @@
  * @addnode elements
  *
  * @inherits apf.XForms
- * @inherits apf.Presentation
- * @inherits apf.Validation
- * @inherits apf.DataBinding
+ * @inherits apf.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -57,8 +55,19 @@
  *  <a:palette ref="@color" />
  * </code>
  */
-apf.palette = apf.component(apf.NODE_VISIBLE, function(){
-    
+apf.palette = function(struct, tagName){
+    this.$init(tagName || "palette", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
     /**** Properties and Attributes ****/
     
     this.$focussable = true; // This object can get the focus
@@ -75,13 +84,15 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
     
     /**** Public methods ****/
     
+    //#ifdef __WITH_CONVENIENCE_API
+    
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
-        this.setProperty("value", value);
+        this.setProperty("value", value, false, true);
     };
     
     /**
@@ -89,8 +100,10 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
      * @return {String}
      */
     this.getValue = function(){
-        return this.value ? this.value.nodeValue : "";
+        return this.value ? this.value : "";
     };
+    
+    //#endif
     
     /**** Private state handling methods ****/
     
@@ -102,19 +115,19 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
         
         if (oContainer == this.oCustom) {
             oItem.setAttribute("onmousedown", "apf.lookup(" 
-                + this.uniqueId + ").$doCustom(this)");
+                + this.$uniqueId + ").$doCustom(this)");
             oItem.setAttribute("ondblclick", "apf.lookup(" 
-                + this.uniqueId + ").$doCustom(this, true)");
+                + this.$uniqueId + ").$doCustom(this, true)");
         }
         else 
-            oItem.setAttribute("onmousedown", "apf.lookup(" + this.uniqueId 
+            oItem.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId 
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
 
-        oItem = apf.xmldb.htmlImport(oItem, oContainer, null, true);
+        oItem = apf.insertHtmlNode(oItem, oContainer);
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = "#"+clr;
     };
     
-    this.$setCustom = function(oItem, clr){
+    this.$setCustom = function(oItem, clr){alert(1)
         oItem.style.backgroundColor = clr;
         this.change(clr);
     };
@@ -143,10 +156,10 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt      = this.$getExternal();
-        this.oViewer   = this.$getLayoutNode("main", "viewer", this.oExt);
-        this.oStandard = this.$getLayoutNode("main", "standard", this.oExt);
-        this.oCustom   = this.$getLayoutNode("main", "custom", this.oExt);
+        this.$ext      = this.$getExternal();
+        this.oViewer   = this.$getLayoutNode("main", "viewer", this.$ext);
+        this.oStandard = this.$getLayoutNode("main", "standard", this.$ext);
+        this.oCustom   = this.$getLayoutNode("main", "custom", this.$ext);
 
         var i;
         for (i = 0; i < this.colors.length; i++) 
@@ -154,19 +167,13 @@ apf.palette = apf.component(apf.NODE_VISIBLE, function(){
         for (i = 0; i < 9; i++) 
             this.$addColor("ffffff");
         
-        //this.oViewer.setAttribute("ondblclick", "apf.lookup(" + this.uniqueId + ").openColorPicker()");
+        //this.oViewer.setAttribute("ondblclick", "apf.lookup(" + this.$uniqueId + ").openColorPicker()");
     };
-}).implement(
-    // #ifdef __WITH_DATABINDING
-    apf.DataBinding,
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    apf.Validation,
-    //#endif
-    //#ifdef __WITH_XFORMS
-    apf.XForms,
-    //#endif
-    apf.Presentation
-);
+// #ifdef __WITH_DATABINDING
+}).call(apf.palette.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.palette.prototype = new apf.Presentation());
+#endif*/
 
+apf.aml.setElement("palette", apf.palette);
 // #endif

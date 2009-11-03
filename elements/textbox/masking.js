@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __ENABLE_TEXTBOX_MASKING && (__JTEXTBOX || __INC_ALL)
+// #ifdef __ENABLE_TEXTBOX_MASKING && (__AMLTEXTBOX || __INC_ALL)
 
 /**
  * @constructor
@@ -52,18 +52,18 @@ apf.textbox.masking = function(){
     
     var lastPos = -1;
     var masking = false;
-    var oExt    = this.oExt
+    var oExt    = this.$ext
     var initial, pos = [], myvalue, format, fcase, replaceChar;
 
     this.setPosition = function(setpos){
         setPosition(setpos || lastPos || 0);
     };
 
-    this.$clear = function(){
+    this.addEventListener("$clear", function(){
         this.value = "";
         if (this.mask) 
             return this.setValue("");
-    };
+    });
     
     this.$propHandlers["value"] = function(value){
         var data = "";
@@ -172,13 +172,13 @@ apf.textbox.masking = function(){
         this.$keyHandler = null; //temp solution
         masking = true;
         
-        this.oInt[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
+        this.$int[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;
         };
         
-        this.oInt.onpaste = function(e){
+        this.$int.onpaste = function(e){
             e = e || window.event;
             e.returnValue = false;
             this.host.setValue(window.clipboardData.getData("Text") || "");
@@ -190,9 +190,9 @@ apf.textbox.masking = function(){
         
         this.getValue = function(){
             if (this.includeNonTypedChars)
-                return initial == this.oInt.value 
+                return initial == this.$int.value 
                     ? "" 
-                    : this.oInt.value.replace(new RegExp(replaceChar, "g"), "");
+                    : this.$int.value.replace(new RegExp(replaceChar, "g"), "");
             else
                 return myvalue.join("");
         };
@@ -250,7 +250,7 @@ apf.textbox.masking = function(){
                 visual += chr;
         }
 
-        this.oInt.value = visual;
+        this.$int.value = visual;
         initial         = visual;
         //pos = pos;
         myvalue = [];
@@ -324,7 +324,7 @@ apf.textbox.masking = function(){
             range.moveStart("character", pos[lastPos]);
             range.moveEnd("character", 1);
             range.text = chr;
-            if (apf.window.focussed == this)
+            if (apf.document.activeElement == this)
                 range.select();
         }
         else {

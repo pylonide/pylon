@@ -120,9 +120,10 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
         else
             exclusion = [className];
     }
-    
+
     //Create regexp to remove classes
-    var re = new RegExp("(?:(^| +)" + (exclusion ? exclusion.join("|") : "") + "($| +))", "gi");
+    //var re = new RegExp("(?:(^| +)" + (exclusion ? exclusion.join("|") : "") + "($| +))", "gi");
+    var re = new RegExp("(^| +)(?:" + (exclusion ? exclusion.join("|") : "") + ")", "gi");
 
     //Set new class
     oHtml.className != null
@@ -194,6 +195,26 @@ apf.getStyleRecur = function(el, prop) {
 };
 
 /**
+ * This method imports a stylesheet defined in a multidimensional array 
+ * @param {Array}    def Required Multidimensional array specifying 
+ * @param {Object}    win Optional Reference to a window
+ * @method
+ * @deprecated
+ */    
+apf.importStylesheet = function (def, win){
+    for (var i = 0; i < def.length; i++) {
+        if (!def[i][1]) continue;
+        
+        if (apf.isIE)
+            (win || window).document.styleSheets[0].addRule(def[i][0],
+                def[i][1]);
+        else
+            (win || window).document.styleSheets[0].insertRule(def[i][0]
+                + " {" + def[i][1] + "}", 0);
+    }
+}
+
+/**
  * This method determines if specified coordinates are within the HTMLElement.
  * @param {HTMLElement} el  the element to check
  * @param {Number}      x   the x coordinate in pixels
@@ -250,6 +271,35 @@ apf.getPositionedParent = function(o){
  * @returns {Array} the x and y coordinate of oHtml.
  */
 apf.getAbsolutePosition = function(o, refParent, inclSelf){
+    if ("getBoundingClientRect" in document.documentElement) { 
+        if (apf.doesNotIncludeMarginInBodyOffset && o == document.body) { 
+            return [
+                o.offsetLeft + (parseFloat(apf.getStyle(o, apf.descPropJs ? "marginLeft" : "margin-top")) || 0),
+                o.offsetTop  + (parseFloat(apf.getStyle(o, apf.descPropJs ? "marginTop" : "margin-top")) || 0)
+            ];
+        } 
+        
+        var box  = o.getBoundingClientRect(), 
+            top  = box.top,
+            left = box.left;
+
+        if (refParent && false) {
+            if (refParent != document.body) {
+                var pos = apf.getAbsolutePosition(refParent);
+                top -= pos[1];
+                left -= pos[0];
+            }
+        }
+        
+        //if (apf.isIE) {
+            left += document.documentElement.scrollLeft - (apf.isIE && apf.isIE < 8 ? 2 : 0);
+            top  += document.documentElement.scrollTop - (apf.isIE && apf.isIE < 8 ? 2 : 0);
+        //}
+        
+        return [left, top];
+    }; 
+    
+    //@todo code below might be deprecated one day
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent || o.parentNode ;
 
@@ -279,7 +329,8 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
                 if (q.nodeType == 1) {
                     var fl = apf.getStyle(q, "styleFloat");
                     if (fl == "left") {
-                        wt -= parseInt(apf.getStyle(o, "marginLeft"));
+                        wt -= parseInt(apf.getStyle(o, "marginLeft")) 
+                            || 0;//-1 * (o.parentNode.offsetWidth - o.offsetWidth)/2; //assuming auto
                         break;
                     }
                     else if (fl == "right")
