@@ -189,7 +189,7 @@ apf.accordion = function(struct, tagName){
      * can be opened
      */
     this.startExpanded = 0;
-    
+
     //this.$appendedBars = 0;
 
     this.$booleanProperties["multiexpand"]  = true;
@@ -271,6 +271,8 @@ apf.accordion = function(struct, tagName){
 
         var bar = this.bars[id];
         
+        bar.htmlBody.style.display = "block";
+        
         if (!this.multiexpand && this.lastOpened.length > 0) {
             var _temp = this.lastOpened.shift();
             if (_temp !== id)
@@ -280,8 +282,6 @@ apf.accordion = function(struct, tagName){
         this.lastOpened.push(id);
 
         this.$setStyleClass(bar.htmlNode, "active");
-
-        bar.htmlBody.style.display = "block";
 
         if (this.$dir == "vertical") {
             //i don't know why scrollHeight in IE is equal 1
@@ -366,7 +366,7 @@ apf.accordion = function(struct, tagName){
                 });
             }
             else {
-                //alert(bar.htmlBody.scrollWidth)
+                //var startSH = bar.htmlBody.scrollHeight;
                 apf.tween.single(bar.htmlBody, {
                     steps    : this.$animStep[this.$animtype1],
                     type     : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
@@ -378,6 +378,10 @@ apf.accordion = function(struct, tagName){
                     interval : this.animdelay,
                     onfinish : function() {
                         _self.$setStyleClass(bar.htmlNode, "active", [""]);
+
+                        /*if (startSH !== bar.htmlBody.scrollHeight && _self.$dir == "vertical") {
+                            _self.slideDown(id);
+                        }*/
 
                         if (_self.$dir == "horizontal")
                             bar.htmlBody.style.width = "auto";
@@ -610,137 +614,7 @@ apf.accordion = function(struct, tagName){
     };
 
     this.$loadAml = function(x) {
-        
-        
 
-        
-        /*var i, l, node, bar, nodes = this.$aml.childNodes;
- 
-        for (i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-
-            if (node.nodeType != 1) 
-                continue;
-
-            if (node[apf.TAGNAME] == "bar") {
-                var bar = new apf.bar("bar", this.$int, null, true);
-                
-                var opened = node.getAttribute("expanded")
-                    ? (node.getAttribute("expanded") == "true"
-                        ? true
-                        : false)
-                    : false;
-
-                bar.skinName = this.skinName;
-                this.insertChild(bar);
-                
-                //returns errors
-                //bar.replaceMarkup(node, this);
-
-                var oTitle   = this.$getLayoutNode("bar", "title", bar.$ext),
-                    oCaption = this.$getLayoutNode("bar", "caption", bar.$ext),
-                    oIcon    = this.$getLayoutNode("bar", "icon", bar.$ext),
-                    _self    = this;
-                
-                apf.setUniqueHtmlId(oTitle);
-                
-                bar.$propHandlers["title"] = function(value) {
-                    var oTitle   = this.$getLayoutNode("bar", "title", this.$ext),
-                        oCaption = this.$getLayoutNode("bar", "caption", this.$ext);
-                    
-                    (oCaption || oTitle).innerHTML = value;
-                }
-                
-                bar.setProperty("title", node.getAttribute("title"));
-
-                //this.$setStyleClass(oTitle, "NotActive");
-
-                if (this.expand == "click") {
-                    oTitle.onmousedown = function(e) {
-                        _self.slideToggle(_self.id);
-                    };
-                    
-                    //oIcon.onmousedown = function(e) {
-                    //    _self.slideToggle(this.parentNode.id);
-                    //};
-                }
-                else if (this.expand == "hover") {
-                    oTitle.onmouseover = function(e) {
-                        (e || event).cancelBubble = true;
-                        var id = _self.id;
-                        
-                        clearInterval(_self.hoverTimer);
-                        _self.hoverTimer = setInterval(function() {
-                            _self.slideToggle(id);
-                            clearInterval(_self.hoverTimer);
-                        }, _self.hoverdelay);
-                    };
-                    oIcon.onmouseover = function(e) {
-                        (e || event).cancelBubble = true;
-                        
-                        var id = (e.srcElement || e.target).parentNode.id;
-
-                        clearInterval(_self.hoverTimer);
-                        _self.hoverTimer = setInterval(function() {
-                            _self.slideToggle(id);
-                            clearInterval(_self.hoverTimer);
-                        }, _self.hoverdelay);
-                       
-                    };
-                }
-
-                var oBody = this.$getLayoutNode("bar", "body", bar.$ext);
-                apf.setUniqueHtmlId(oBody);
-
-                this.bars[oTitle.id] = {
-                    bar  : bar,
-                    opened : false,
-                    oTitle : oTitle,
-                    oBody  : oBody
-                };
-
-                //opened && 
-                if ((opened || this.startexpanded) && (this.multiexpand || this.startExpanded == 0)) {
-                    //#ifdef __WITH_PROPERTY_WATCH
-                    if (!this.$ext.offsetHeight) {
-                        var openTitleId = oTitle.id;
-                        function propChange(name, old, value){
-                            if (apf.isTrue(value) && _self.$ext.offsetHeight) {
-                                _self.slideDown(openTitleId);
-                                
-                                var p = _self;
-                                while (p) {
-                                    p.unwatch("visible", propChange);
-                                    p = p.parentNode;
-                                }
-                            }
-                        };
-                    
-                        this.watch("visible", propChange);
-                        
-                        var p = this.parentNode;
-                        while(p) {
-                            p.watch("visible", propChange);
-                            p = p.parentNode;
-                        }
-                    }
-                    else
-                    //#endif
-                    {
-                        this.slideDown(oTitle.id);
-                    }
-                    
-                    this.startExpanded++;
-                }
-            }
-        }
-        this.$setStyleClass(oBody, "last");
-        
-        this.oEnding = this.$getExternal("ending");
-        var oEnding = this.$getLayoutNode("ending", "container", this.oEnding);
-
-        this.$int.appendChild(oEnding);
-        */
     };
 
     this.$destroy = function() {
