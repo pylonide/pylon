@@ -28,7 +28,9 @@ apf.__VALIDATION__ = 1 << 6;
  * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
  *
  * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
- * @attribute {String} margin   
+ */
+ // @attribute {String} margin   
+/**
  *
  * @constructor
  * @baseclass
