@@ -175,6 +175,7 @@ apf.rpc = function(struct, tagName){
         var callback, node = this.$methods[name];
         
         if (typeof args[args.length - 1] == "function") {
+            args = Array.prototype.slice.call(args); //@todo optimize?
             callback = args.pop();
         }
         else {
