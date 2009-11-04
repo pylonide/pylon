@@ -180,6 +180,11 @@ var apf = {
      */
     autoLoadSkin  : false,
     /**
+     * Boolean specifying whether apf has started loading scripts and started the init process.
+     * @type {Boolean}
+     */
+    started       : false,
+    /**
      * Namespace for all crypto libraries included with Ajax.org Platform.
      */
     crypto        : {}, //namespace
@@ -626,6 +631,11 @@ var apf = {
         //#ifdef __WITH_WINDOW
         //apf.window.init();
         //#endif
+
+        this.started = true;
+        // DOMReady already fired, so plz continue the loading and parsing
+        if (this.load_done)
+            this.execDeferred();
 
         //try{apf.root = !window.opener || !window.opener.apf;}
         //catch(e){apf.root = false}
@@ -1850,6 +1860,13 @@ var apf = {
         }
     },
 
+    execDeferred: function() {
+        // execute each function in the stack in the order they were added
+        var len = apf.load_events.length;
+        while (len--)
+            (apf.load_events.shift())();
+    },
+
     load_events: [],
     load_timer : null,
     load_done  : false,
@@ -1865,16 +1882,14 @@ var apf = {
         // create event function stack
         //apf.done = arguments.callee.done;
         if (!apf.load_init) {
-            apf.load_init = function () {
+            apf.load_init = function() {
                 if (apf.load_done) return;
                 // kill the timer
                 clearInterval(apf.load_timer);
                 apf.load_timer = null;
                 apf.load_done  = true;
-                // execute each function in the stack in the order they were added
-                var len = apf.load_events.length;
-                while (len--)
-                    (apf.load_events.shift())();
+                if (apf.started)
+                    apf.execDeferred();
             };
         }
 
