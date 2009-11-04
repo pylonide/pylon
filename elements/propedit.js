@@ -264,6 +264,7 @@ apf.propedit    = function(struct, tagName){
     
     this.$columns = ["50%", "50%"];
     this.$propHandlers["columns"] = function(value){
+        return;
         this.$columns = value && value.splitSafe(",") || ["50%", "50%"];
         
         if (!found) { //@todo removal???
