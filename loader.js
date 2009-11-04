@@ -391,6 +391,23 @@ apf.$x = apf.$loader
     //Let's start APF
     .wait(function(){
         apf.start();
+
+        //Conditional compilation workaround... (can this be improved??)
+        if (document.all) {
+            var oldWinError = window.onerror;
+            window.onerror = function(m){
+                apf.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
+
+                if (!arguments.caller)
+                    return true;
+            }
+        }
+        apf.Init.addConditional(function(){
+            if (document.all) //Conditional compilation workaround... (can this be improved??)
+                window.onerror = oldWinError;
+
+            apf.dispatchEvent("domready");
+        }, null, ["body", "class"]);
     })
     
     .script(apf.$required);
@@ -401,21 +418,6 @@ apf.require = function(){
         apf.$x.script(apf.getAbsolutePath(dir, arguments[i]));
     }
 }
-
-//Conditional compilation workaround... (can this be improved??)
-/*if (0 && document.all) {
-    var oldWinError = window.onerror;
-    window.onerror = function(m){
-        if (!arguments.caller)
-            return true;
-    }
-}
-apf.Init.addConditional(function(){
-    if (0 && document.all) //Conditional compilation workaround... (can this be improved??)
-        window.onerror = oldWinError;
-    
-    apf.dispatchEvent("domready");
-}, null, ["body", "class"]);*/
 
 /*if(document.body)
     apf.Init.run("body");
