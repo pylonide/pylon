@@ -423,7 +423,7 @@ apf.DragDrop = function(){
 
         var sNode,
             actRule     = ifcopy ? "copy" : "move",
-            parentXpath = node ? node.getAttribute("parent") : null; //@todo apf3.0 Should be lm syntax <-- WHAT is node? it's not defined anywhere
+            parentXpath = rule ? rule.getAttribute("parent") : null; //@todo apf3.0 Should be lm syntax <-- WHAT is node? it's not defined anywhere
         switch (action) {
             case "list-append":
                 xmlReceiver = (isParent 
