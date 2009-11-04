@@ -155,15 +155,12 @@ apf.textbox  = function(struct, tagName){
 
     //See validation
     //var oldPropHandler = this.$propHandlers["maxlength"];
-    this.$propHandlers["maxlength"] = function(value, prop){
-        //oldPropHandler.call(this, value, prop);
-        if (this.hasFeature(apf.__VALIDATION__))
-            apf.Validation.prototype.$propHandlers["maxlength"].call(this, value, prop);
+    this.addEventListener("prop.maxlength", function(e){
 
         //Special validation support using nativate max-length browser support
         if (this.$int.tagName.toLowerCase().match(/input|textarea/))
-            this.$int.maxLength = parseInt(value) || null;
-    };
+            this.$int.maxLength = parseInt(e.value) || null;
+    });
 
     /**
      * @attribute {String} mask a complex input pattern that the user should

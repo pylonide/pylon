@@ -1148,7 +1148,7 @@ var apf = {
      * @return {String} the directory portion of a url.
      */
     getDirname : function(url){
-        return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
+        return ((url || "").match(/^([^#]*\/)[^\/]*(?:$|\#)/) || {})[1]; //Mike will check out how to optimize this line
     },
     
     /**

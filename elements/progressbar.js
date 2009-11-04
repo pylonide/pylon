@@ -200,7 +200,10 @@ apf.progressbar = function(struct, tagName){
         //this.oSlider.style.display = "block";
         var _self = this;
         this.$timer = setInterval(function(){
-            _self.$step();
+            if (_self.$amlDestroyed)
+                clearInterval(_self.$timer);
+            else
+                _self.$step();
         }, time || 1000);
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Running");
     };
