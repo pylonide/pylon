@@ -461,6 +461,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.setCaption = function(caption) {
         var c = this.caption;
+        if (!c || c.nodeType != 1) return;
         c.innerHTML = caption;
         if (this.other.capPos == "inside") {
             if (c.offsetWidth !== 0 && c.offsetHeight !== 0) {

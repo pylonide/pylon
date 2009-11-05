@@ -337,10 +337,12 @@ apf.flowchart = function(struct, tagName){
 
 
     this.$selectCaption = function(o) {
+        if (!o || o.nodeType != 1) return;
         this.$setStyleClass(o, "selected");
     };
 
     this.$deselectCaption = function(o) {
+        if (!o || o.nodeType != 1) return;
         this.$setStyleClass(o, "", ["selected"]);
     };
 
@@ -960,8 +962,9 @@ apf.flowchart = function(struct, tagName){
             elimageContainer = this.$getLayoutNode("block", "imagecontainer"),
             elCaption        = this.$getLayoutNode("block", "caption");
 
-        elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
-            + ').$beforeRename(event); return false;');
+        if (elCaption)
+            elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
+                + ').$beforeRename(event); return false;');
 
         this.nodes.push(block);
 
@@ -991,7 +994,7 @@ apf.flowchart = function(struct, tagName){
                     for (k = 0, l = stylesFromTemplate.length; k < l; k++) {
                         _style = stylesFromTemplate[k].trim();
                         if (_style !== "") {
-                            if (_style.substr(0, 5) == "color")
+                            if (_style.substr(0, 5) == "color" && elCaption)
                                 elCaption.setAttribute("style", [_style].join(";"));
                             else
                                 style.push(_style);
@@ -1040,7 +1043,8 @@ apf.flowchart = function(struct, tagName){
         xmlNode.setAttribute("cap-pos", capPos);
         //apf.flow.alert_r(xmlNode);
 
-        this.$setStyleClass(elCaption, capPos);
+        if (elCaption)
+            this.$setStyleClass(elCaption, capPos);
 
         elSelect.setAttribute(this.itemSelectEvent ||
             "onmousedown", 'var o = apf.lookup('

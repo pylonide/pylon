@@ -421,21 +421,24 @@ apf.DragDrop = function(){
             action = (rule.caction || rule.compile("action"))(xmlNodeList[0]);
         else
             action = defaction;
-        
+
         //copy convenience variables
         var context = {
-            internal : apf.DragServer.dragdata.host == this,
-            ctrlKey  : event.ctrlKey,
-            keyCode  : event.keyCode
-        },
-        //@todo apf3.0 below should actually be compileNode with with_options
-        ifcopy = rule && rule.copy;//.getAttribute("copy");
+                internal : apf.DragServer.dragdata.host == this,
+                ctrlKey  : event.ctrlKey,
+                keyCode  : event.keyCode
+            },
+            //@todo apf3.0 below should actually be compileNode with with_options
+            ifcopy = rule && rule.copy;//.getAttribute("copy");
         
         if (ifcopy) {
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
-        else if (typeof this.dragcopy == "boolean") { //@todo apf3.0 boolean here?
-            if (this.dragcopy) {
+        else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
+            if (this.dropcopy) {
+                ifcopy = this.dropcopy;
+            }
+            else if (this.dragcopy) {
                 ifcopy = event.ctrlKey;
             }
             else {
@@ -451,10 +454,10 @@ apf.DragDrop = function(){
         }
 
         if (!ifcopy) { //Implemented one copy is all copy
-            for (var i = 0; i < srcRule.length; i++) {
+            for (var i = 0, l = srcRule.length; i < l; i++) {
                 ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
                     ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))
-                    : ctrlKey;
+                    : event.ctrlKey;
                 if (ifcopy) break;
             }
         }
@@ -691,9 +694,10 @@ apf.DragDrop = function(){
      *  </bindings>
      * </code>
      */
-    this.$propHandlers["drag"]     =
     this.$propHandlers["dragcopy"] =
-    this.$propHandlers["drop"]     = function(value, f, prop){
+    this.$propHandlers["dropcopy"] =
+    this.$propHandlers["drag"]     =
+    this.$propHandlers["drop"]     = function(value, prop){
         this[prop] = apf.isTrue(value);
 
         if (this.$dragInited && prop == "drag" && value && this.$dragInited != 2) {
@@ -702,7 +706,7 @@ apf.DragDrop = function(){
             return;
         }
 
-        if (prop == "dragcopy")
+        if (prop == "dragcopy" || prop == "dropcopy")
             return;
         
         if (!value && !this.drag && !this.drop && !this.$bindings 
@@ -723,8 +727,9 @@ apf.DragDrop = function(){
 };
 
 apf.GuiElement.propHandlers["dragcopy"] =
+apf.GuiElement.propHandlers["dropcopy"] =
 apf.GuiElement.propHandlers["drop"]     =
-apf.GuiElement.propHandlers["drag"]     = function(value, f, prop) {
+apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
     if (!apf.isFalse(value)) {
         if (!this.hasFeature(apf.__DRAGDROP__)) {
             this.implement(apf.DragDrop);
